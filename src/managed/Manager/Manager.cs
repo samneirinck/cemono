@@ -16,6 +16,9 @@ namespace Cemono
         {
             InitializeConsoleRedirect();
 
+            // Catch unhandled exceptions
+            AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionOccurred;
+
             Console.WriteLine("Finished intializing cemono manager");
         }
 
@@ -29,6 +32,12 @@ namespace Cemono
             Console.SetOut(_consoleRedirector);
             Console.SetError(_consoleRedirector);
         }
+
+        private void UnhandledExceptionOccurred(object sender, UnhandledExceptionEventArgs e)
+        {
+            Console.Error.WriteLine("An unhandled managed exception occured: {0}{1}", Environment.NewLine, e.ToString());
+        }
+
         #endregion
     }
 }
