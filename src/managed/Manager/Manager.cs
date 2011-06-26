@@ -15,6 +15,8 @@ namespace Cemono
         public Manager()
         {
             InitializeConsoleRedirect();
+
+            Console.WriteLine("Finished intializing cemono manager");
         }
 
         #endregion
@@ -23,6 +25,7 @@ namespace Cemono
         private void InitializeConsoleRedirect()
         {
             _consoleRedirector = new ConsoleRedirector();
+            _consoleRedirector.Logging = new ConsoleLogging();
             Console.SetOut(_consoleRedirector);
             Console.SetError(_consoleRedirector);
         }

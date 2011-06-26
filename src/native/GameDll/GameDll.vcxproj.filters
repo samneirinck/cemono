@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="StdAfx.cpp" />
+    <ClCompile Include="GameDll.cpp" />
+    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="FlowPostFXNodes.cpp">
+      <Filter>Legacy</Filter>
+    </ClCompile>
+    <ClCompile Include="Mono.cpp">
+      <Filter>Mono</Filter>
+    </ClCompile>
+    <ClCompile Include="LoggingBinding.cpp">
+      <Filter>Mono\Bindings</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="G2FlowBaseNode.h" />
+    <ClInclude Include="Mono.h">
+      <Filter>Mono</Filter>
+    </ClInclude>
+    <ClInclude Include="MonoPathUtils.h">
+      <Filter>Mono\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="MonoClassUtils.h">
+      <Filter>Mono\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="IMonoAPIBinding.h">
+      <Filter>Mono</Filter>
+    </ClInclude>
+    <ClInclude Include="LoggingBinding.h">
+      <Filter>Mono\Bindings</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Legacy">
+      <UniqueIdentifier>{1487d011-9991-403e-8d04-f63a18128ed9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mono">
+      <UniqueIdentifier>{dbb519bc-bdb4-41bb-81b3-2bbeb70a2705}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mono\Utils">
+      <UniqueIdentifier>{88d82fe9-08ba-45ab-a110-25e6f4abd04b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mono\Bindings">
+      <UniqueIdentifier>{d9dfcd0f-04fb-437e-b345-2eb072cae3df}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="mono.lib">
+      <Filter>Mono</Filter>
+    </Library>
+  </ItemGroup>
+</Project>
