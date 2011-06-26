@@ -1,19 +1,5 @@
 #include "StdAfx.h"
 #include "LoggingBinding.h"
-#include "IThreadTask.h"
-#include <windows.h>
-
-
-void SetCurrentThreadId( DWORD dwThreadId )
-{
-	_asm
-	{
-		mov eax, fs:[0x18];
-		mov ecx, dwThreadId;
-		mov [eax + 0x24], ecx; //not sure yet if this works on al operating systems, but it does on Windows 7 x64
-	}
-}
-
 
 CLoggingBinding::CLoggingBinding()
 {
