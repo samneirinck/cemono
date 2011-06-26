@@ -55,7 +55,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyLoaderTests.cs" />
     <Compile Include="BaseTests.cs" />
     <Compile Include="ConsoleRedirectortests.cs" />
     <Compile Include="ManagerTests.cs" />

@@ -28,6 +28,8 @@ bool CMono::Init()
 	if (!InitializeDomain())
 		return false;
 
+
+
 	// Register bindings
 	InitializeBindings();
 
