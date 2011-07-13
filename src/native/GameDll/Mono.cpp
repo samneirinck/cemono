@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "Mono.h"
+#include <mono\metadata\debug-helpers.h>
 
 #include "LoggingBinding.h"
 

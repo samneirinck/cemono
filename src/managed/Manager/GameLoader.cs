@@ -1,8 +1,10 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
+using System.Linq;
 using Microsoft.CSharp;
-using System.CodeDom.Compiler;
 
 namespace Cemono
 {
@@ -40,6 +42,38 @@ namespace Cemono
             compileStopwatch.Stop();
 
             Console.WriteLine("Compilation finished in {0}ms", compileStopwatch.ElapsedMilliseconds);
+
+            if (results.CompiledAssembly != null)
+            {
+                LoadGameAssembly(results.CompiledAssembly);
+            }
+
+
+        }
+
+        private void LoadGameAssembly(Assembly assembly)
+        {
+            if (assembly == null)
+            {
+                throw new ArgumentNullException("Tried loading a NULL game assembly");
+            }
+
+            Type baseGameType = typeof(BaseGame);
+            Type entityType = typeof(Entity);
+
+            foreach (Type type in assembly.GetTypes())
+            {
+                if (baseGameType.IsAssignableFrom(type) && !type.Equals(baseGameType))
+                {
+
+                }
+                else if (entityType.IsAssignableFrom(type) && !type.Equals(entityType))
+                {
+
+                }
+            }
+
+
         }
     }
 }
