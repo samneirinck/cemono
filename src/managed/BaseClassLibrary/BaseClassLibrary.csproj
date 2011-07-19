@@ -38,6 +38,8 @@
   <ItemGroup>
     <Compile Include="API\Logging.cs" />
     <Compile Include="BaseGame.cs" />
+    <Compile Include="API\Console.cs" />
+    <Compile Include="CVar.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="EntityFlags.cs" />
     <Compile Include="Interfaces\IEntity.cs" />

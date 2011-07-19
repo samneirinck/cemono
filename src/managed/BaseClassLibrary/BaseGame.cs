@@ -20,6 +20,7 @@ namespace Cemono
 
         public virtual IEnumerator Update(bool haveFocus)
         {
+            yield return null;
         }
     }
 }

@@ -56,7 +56,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseTests.cs" />
-    <Compile Include="ConsoleRedirectortests.cs" />
+    <Compile Include="ConsoleRedirectorTests.cs" />
+    <Compile Include="ConsoleTraceListenerTests.cs" />
     <Compile Include="ManagerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

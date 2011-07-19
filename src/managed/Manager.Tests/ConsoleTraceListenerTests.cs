@@ -15,14 +15,13 @@ namespace Manager.Tests
             string errorMessage = "Error message";
 
             var mocks = new MockRepository();
-            var logging = mocks.CreateMock<ILogging>();
-            logging.Log(msg);
+            var logging = mocks.StrictMock<ILogging>();
 
             mocks.ReplayAll();
 
             var redirector = new ConsoleRedirector();
             redirector.Logging = logging;
-            redirector.WriteLine(msg);
+            redirector.WriteLine(warningMessage);
 
             mocks.VerifyAll();
         }

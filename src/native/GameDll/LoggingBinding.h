@@ -1,7 +1,6 @@
 #pragma once
 
 #include "IMonoAPIBinding.h"
-#include "Mono.h"
 
 class CLoggingBinding : public IMonoAPIBinding
 {

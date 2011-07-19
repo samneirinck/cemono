@@ -3,10 +3,10 @@
 #include <mono\metadata\debug-helpers.h>
 
 #include "LoggingBinding.h"
-
+#include "ConsoleBinding.h"
 
 CMono::CMono()
-	: m_pMonoDomain(0),	m_pManagerAssembly(0), m_pManagerObject(0)
+	: m_pMonoDomain(0),	m_pManagerAssembly(0), m_pManagerObject(0), m_pBclAssembly(0)
 {
 	// Set up directories
 	mono_set_dirs(CMonoPathUtils::GetAssemblyPath(), CMonoPathUtils::GetConfigurationPath());
@@ -14,10 +14,19 @@ CMono::CMono()
 
 CMono::~CMono()
 {
+	// Clean up mono
 	if (m_pMonoDomain != NULL)
 	{
 		mono_jit_cleanup(m_pMonoDomain);
 	}
+
+	// Clean up bindings
+	std::vector<IMonoAPIBinding*>::iterator it;
+	for (it = m_apiBindings.begin(); it != m_apiBindings.end(); ++it)
+	{
+		delete *it;
+	}
+
 }
 
 
@@ -29,10 +38,11 @@ bool CMono::Init()
 	if (!InitializeDomain())
 		return false;
 
-
-
 	// Register bindings
 	InitializeBindings();
+
+	if (!InitializeBaseClassLibraries())
+		return false;
 
 	if (!InitializeManager())
 		return false;
@@ -77,17 +87,35 @@ bool CMono::InitializeManager()
 	}
 
 	m_pManagerObject = CMonoClassUtils::CreateInstanceOf(m_pMonoDomain, pClass);
-
 	return true;
 }
 
 bool CMono::InitializeBindings()
 {
 	AddBinding(new CLoggingBinding());
+	AddBinding(new CConsoleBinding());
 	return true;
 }
 
 void CMono::AddBinding(IMonoAPIBinding* pBinding)
 {
 	m_apiBindings.push_back(pBinding);
+}
+
+
+bool CMono::InitializeBaseClassLibraries()
+{
+	string bclPath = CMonoPathUtils::GetCemonoAssemblyPath() + "Cemono.Bcl.dll";
+	m_pBclAssembly = mono_domain_assembly_open(m_pMonoDomain, bclPath);
+	
+	if (m_pBclAssembly == NULL)
+	{
+		CryError("Failed to initialize base class libraries, assembly=NULL");
+		return false;
+	} else {
+		m_pBclImage = mono_assembly_get_image(m_pBclAssembly);
+
+		return m_pBclAssembly != NULL;
+	}
+
 }

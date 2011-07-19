@@ -14,7 +14,7 @@ namespace Manager.Tests
             string msg = "Hello log!";
 
             var mocks = new MockRepository();
-            var logging = mocks.CreateMock<ILogging>();
+            var logging = mocks.StrictMock<ILogging>();
             logging.Log(msg);
 
             mocks.ReplayAll();
