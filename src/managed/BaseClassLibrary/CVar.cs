@@ -1,6 +1,7 @@
 ﻿using System;
 namespace Cemono
 {
+    [Flags]
     public enum CVarFlags
     {
         /// <summary>

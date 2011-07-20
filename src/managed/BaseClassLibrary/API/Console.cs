@@ -21,6 +21,11 @@ namespace Cemono.API
         extern private static void _SetCVarValueFloat(string cvarName, float value);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern private static void _SetCVarValueString(string cvarName, string value);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        extern private static int _GetCVarFlags(string cvarName);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        extern private static void _SetCVarFlags(string cvarName, int flags);
+
 
         public static CVar<T> GetCVar<T>(string cvarName) where T : IConvertible
         {
@@ -70,11 +75,12 @@ namespace Cemono.API
 
         public static CVarFlags GetCVarFlags(string cvarName)
         {
-            return CVarFlags.VF_BITFIELD;
+            return (CVarFlags)_GetCVarFlags(cvarName);
         }
 
         public static void SetCVarFlags(string cvarName, CVarFlags flags)
         {
+            _SetCVarFlags(cvarName, (int)flags);
         }
 
 

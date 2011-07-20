@@ -18,7 +18,8 @@ protected:
 	static void _SetCVarValueInt(MonoString* cvarName, int value);
 	static void _SetCVarValueFloat(MonoString* cvarName, float value);
 	static void _SetCVarValueString(MonoString* cvarName, MonoString* value);
-
+	static int _GetCVarFlags(MonoString* cvarName);
+	static void _SetCVarFlags(MonoString* cvarName, int value);
 private:
 	static ICVar* GetCvarByName(MonoString* cvarName);
 };

@@ -14,6 +14,8 @@ CConsoleBinding::CConsoleBinding()
 	mono_add_internal_call("Cemono.API.Console::_SetCVarValueInt", _SetCVarValueInt);
 	mono_add_internal_call("Cemono.API.Console::_SetCVarValueFloat", _SetCVarValueFloat);
 	mono_add_internal_call("Cemono.API.Console::_SetCVarValueString", _SetCVarValueString);
+	mono_add_internal_call("Cemono.API.Console::_GetCVarFlags", _GetCVarFlags);
+	mono_add_internal_call("Cemono.API.Console::_SetCVarFlags", _SetCVarFlags);
 }
 
 
@@ -97,6 +99,24 @@ void CConsoleBinding::_SetCVarValueString(MonoString* cvarName, MonoString* valu
 	if (pCvar)
 	{
 		pCvar->Set(mono_string_to_utf8(value));
+	}
+}
+
+int CConsoleBinding::_GetCVarFlags(MonoString* cvarName)
+{
+	ICVar* pCvar = GetCvarByName(cvarName);
+	if (pCvar)
+	{
+		return pCvar->GetFlags();
+	}
+	return -1;
+}
+void CConsoleBinding::_SetCVarFlags(MonoString* cvarName, int value)
+{
+	ICVar* pCvar = GetCvarByName(cvarName);
+	if (pCvar)
+	{
+		pCvar->SetFlags(value);
 	}
 }
 
