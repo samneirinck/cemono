@@ -10,7 +10,7 @@ public:
 	virtual ~CConsoleBinding();
 
 protected:
-	static CCemonoCVar* _GetCVar(MonoString* cvarName);
+	static bool _GetCVar(MonoString* cvarName);
 	static MonoString* _GetCVarHelpText(MonoString* cvarName);
 
 private:

@@ -35,6 +35,7 @@ namespace Cemono
             // TODO: Add more references
             parameters.ReferencedAssemblies.Add("System.dll");
             //parameters.ReferencedAssemblies.Add("Cemono.bcl.dll");
+            parameters.ReferencedAssemblies.Add(@"E:\Games\Crysis Wars\cemono\lib\cemono\Cemono.Bcl.dll");
 
             Stopwatch compileStopwatch = new Stopwatch();
             compileStopwatch.Start();
@@ -42,6 +43,12 @@ namespace Cemono
             compileStopwatch.Stop();
 
             Console.WriteLine("Compilation finished in {0}ms", compileStopwatch.ElapsedMilliseconds);
+
+            // Log compilation result
+            foreach (var item in results.Output)
+            {
+                Console.WriteLine(item);
+            }
 
             if (results.CompiledAssembly != null)
             {
@@ -53,6 +60,7 @@ namespace Cemono
 
         private void LoadGameAssembly(Assembly assembly)
         {
+            Console.WriteLine("Loading game assembly " + assembly.ToString());
             if (assembly == null)
             {
                 throw new ArgumentNullException("Tried loading a NULL game assembly");
@@ -65,7 +73,8 @@ namespace Cemono
             {
                 if (baseGameType.IsAssignableFrom(type) && !type.Equals(baseGameType))
                 {
-
+                    Console.WriteLine("Loading game assembly");
+                    Activator.CreateInstance(type);
                 }
                 else if (entityType.IsAssignableFrom(type) && !type.Equals(entityType))
                 {
