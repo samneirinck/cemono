@@ -34,8 +34,12 @@ namespace Cemono
 #endif
             // TODO: Add more references
             parameters.ReferencedAssemblies.Add("System.dll");
-            //parameters.ReferencedAssemblies.Add("Cemono.bcl.dll");
-            parameters.ReferencedAssemblies.Add(@"E:\Games\Crysis Wars\cemono\lib\cemono\Cemono.Bcl.dll");
+
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies().Select(a => a.Location);
+            foreach (var assemblyPath in assemblies)
+            {
+                parameters.ReferencedAssemblies.Add(item);
+            }
 
             Stopwatch compileStopwatch = new Stopwatch();
             compileStopwatch.Start();
