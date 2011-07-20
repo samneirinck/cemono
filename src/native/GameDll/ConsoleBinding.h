@@ -11,5 +11,9 @@ public:
 
 protected:
 	static CCemonoCVar* _GetCVar(MonoString* cvarName);
+	static MonoString* _GetCVarHelpText(MonoString* cvarName);
+
+private:
+	static ICVar* GetCvarByName(MonoString* cvarName);
 };
 
