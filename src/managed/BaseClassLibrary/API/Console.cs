@@ -10,13 +10,17 @@ namespace Cemono.API
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern private static string _GetCVarHelpText(string cvarName);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern private static object _GetCVarValue(string cvarName);
+        extern private static int _GetCVarValueInt(string cvarName);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern private static void _SetCvarValueInt(string cvarName, int value);
+        extern private static float _GetCVarValueFloat(string cvarName);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern private static void _SetCvarValueFloat(string cvarName, float value);
+        extern private static string _GetCVarValueString(string cvarName);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern private static void _SetCvarValueString(string cvarName, string value);
+        extern private static void _SetCVarValueInt(string cvarName, int value);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        extern private static void _SetCVarValueFloat(string cvarName, float value);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        extern private static void _SetCVarValueString(string cvarName, string value);
 
         public static CVar<T> GetCVar<T>(string cvarName) where T : IConvertible
         {
@@ -26,7 +30,6 @@ namespace Cemono.API
             }
             else
             {
-                // TODO
                 return null;
             }
         }
@@ -38,9 +41,17 @@ namespace Cemono.API
 
         public static T GetCVarValue<T>(string cvarName)
         {
-            object returnValue = _GetCVarValue(cvarName);
+            var type = typeof(T);
 
-            return (T)returnValue;
+            if (type == typeof(int))
+                return (T)Convert.ChangeType(_GetCVarValueInt(cvarName), type);
+            else if (type == typeof(float))
+                return (T)Convert.ChangeType(_GetCVarValueFloat(cvarName), type);
+            else if (type == typeof(string))
+                return (T)Convert.ChangeType(_GetCVarValueString(cvarName), type);
+
+
+            return default(T);
         }
 
         public static void SetCVarValue<T>(string cvarName, T value) where T : IConvertible
@@ -49,11 +60,11 @@ namespace Cemono.API
             var culture = CultureInfo.InvariantCulture;
 
             if (type == typeof(int))
-                _SetCvarValueInt(cvarName, value.ToInt32(culture));
+                _SetCVarValueInt(cvarName, value.ToInt32(culture));
             else if (type == typeof(float))
-                _SetCvarValueFloat(cvarName, value.ToSingle(culture));
+                _SetCVarValueFloat(cvarName, value.ToSingle(culture));
             else if (type == typeof(string))
-                _SetCvarValueString(cvarName, value.ToString(culture));
+                _SetCVarValueString(cvarName, value.ToString(culture));
 
         }
 
