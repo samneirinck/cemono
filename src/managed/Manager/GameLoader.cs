@@ -38,7 +38,7 @@ namespace Cemono
             var assemblies = AppDomain.CurrentDomain.GetAssemblies().Select(a => a.Location);
             foreach (var assemblyPath in assemblies)
             {
-                parameters.ReferencedAssemblies.Add(item);
+                parameters.ReferencedAssemblies.Add(assemblyPath);
             }
 
             Stopwatch compileStopwatch = new Stopwatch();
