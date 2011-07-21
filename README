@@ -1,3 +1,10 @@
 Mono for CryENGINE
+by Sam Neirinck
 
-This is the readme file
+Flowgraph Plugin System
+by Cry-Vlok
+
+FGPS - Mono integration
+by i59
+
+1) Copy mono-2.0.dll from the ReqFiles directory to your Crysis Wars bin32 folder.

@@ -1,0 +1,1 @@
+..\..\bin32\editor -mod cemono

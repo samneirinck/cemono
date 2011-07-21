@@ -69,10 +69,10 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>E:\Games\Crysis Wars\Mods\cemono\bin32</OutDir>
+    <OutDir>$(SolutionDir)..\Bin32</OutDir>
     <TargetName>cemono</TargetName>
-    <IncludePath>E:\Games\Crysis Wars\CryENGINE.NET\src\Native\GameDll\include\mono-2.0;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\Games\Crysis Wars\CryENGINE.NET\src\Native\GameDll\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -85,7 +85,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;GAMEDLL_EXPORTS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Create</PrecompiledHeader>
-      <AdditionalIncludeDirectories>.\;E:\Games\Crysis Wars\CryENGINE.NET\src\Native\CryEngine\CryCommon;E:\Games\Crysis Wars\CryENGINE.NET\src\Native\CryEngine\CryAction;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\..\..\..\..\Code\CryEngine\CryCommon;..\..\..\..\..\Code\CryEngine\CryAction;include\mono-2.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <ExceptionHandling>false</ExceptionHandling>
       <FunctionLevelLinking>true</FunctionLevelLinking>
