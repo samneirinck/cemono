@@ -10,12 +10,8 @@ namespace Cemono
 {
     public class GameLoader : MarshalByRefObject
     {
-        public ConsoleRedirector ConsoleRedirector { get; set; }
-
         private void Init()
         {
-            Console.SetOut(ConsoleRedirector);
-            Console.SetError(ConsoleRedirector);
         }
         public void CompileAndLoad(string pathToMono, string pathToSourceFiles)
         {

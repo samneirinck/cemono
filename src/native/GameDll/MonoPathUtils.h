@@ -1,6 +1,7 @@
 #pragma once
 
 #include "StdAfx.h"
+#include "MonoProperties.h"
 
 class CMonoPathUtils
 {
@@ -15,32 +16,19 @@ public:
 
 	static string GetModPath()
 	{
-		return GetCrysisWarsPath().append(gEnv->pCryPak->GetModDir()).append("\\");
-	}
-
-	static string GetCemonoPath()
-	{
-		return GetCrysisWarsPath().append("cemono").append("\\");
-	}
-
-	static string GetConfigurationPath()
-	{
-		return GetCemonoPath().append("etc").append("\\");
+		return GetCrysisWarsPath().append(gEnv->pCryPak->GetModDir());
 	}
 
 	static string GetAssemblyPath()
 	{
-		return GetCemonoPath().append("lib").append("\\");
+		CryLogAlways(GetModPath().append(ASSEMBLY_PATH).append("\\"));
+		return GetModPath().append(ASSEMBLY_PATH).append("\\");
 	}
 
-	static string GetCemonoAssemblyPath()
+	static string GetConfigPath()
 	{
-		return GetAssemblyPath().append("cemono").append("\\");
-	}
-
-	static string GetModGameLogicPath()
-	{
-		return GetModPath().append("GameLogic").append("\\");
+		CryLogAlways(GetModPath());
+		CryLogAlways(GetModPath().append(CONFIG_PATH).append("\\"));
+		return GetModPath().append(CONFIG_PATH).append("\\");
 	}
 };
-

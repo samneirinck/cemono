@@ -10,18 +10,6 @@
     <ClCompile Include="Mono.cpp">
       <Filter>Mono</Filter>
     </ClCompile>
-    <ClCompile Include="LoggingBinding.cpp">
-      <Filter>Mono\Bindings</Filter>
-    </ClCompile>
-    <ClCompile Include="ConsoleBinding.cpp">
-      <Filter>Mono\Bindings</Filter>
-    </ClCompile>
-    <ClCompile Include="CemonoCVar.cpp">
-      <Filter>Mono\Objects</Filter>
-    </ClCompile>
-    <ClCompile Include="MonoClassUtils.cpp">
-      <Filter>Mono\Utils</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.h" />
@@ -30,23 +18,11 @@
     <ClInclude Include="Mono.h">
       <Filter>Mono</Filter>
     </ClInclude>
-    <ClInclude Include="MonoPathUtils.h">
-      <Filter>Mono\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="IMonoAPIBinding.h">
+    <ClInclude Include="MonoProperties.h">
       <Filter>Mono</Filter>
     </ClInclude>
-    <ClInclude Include="LoggingBinding.h">
-      <Filter>Mono\Bindings</Filter>
-    </ClInclude>
-    <ClInclude Include="ConsoleBinding.h">
-      <Filter>Mono\Bindings</Filter>
-    </ClInclude>
-    <ClInclude Include="CemonoCVar.h">
-      <Filter>Mono\Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="MonoClassUtils.h">
-      <Filter>Mono\Utils</Filter>
+    <ClInclude Include="MonoPathUtils.h">
+      <Filter>Mono</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -55,15 +31,6 @@
     </Filter>
     <Filter Include="Mono">
       <UniqueIdentifier>{dbb519bc-bdb4-41bb-81b3-2bbeb70a2705}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Mono\Utils">
-      <UniqueIdentifier>{88d82fe9-08ba-45ab-a110-25e6f4abd04b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Mono\Bindings">
-      <UniqueIdentifier>{d9dfcd0f-04fb-437e-b345-2eb072cae3df}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Mono\Objects">
-      <UniqueIdentifier>{3f811e4e-3921-4f01-85bb-8fae428472b0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

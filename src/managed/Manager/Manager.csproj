@@ -40,17 +40,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConsoleRedirector.cs" />
-    <Compile Include="ConsoleTraceListener.cs" />
     <Compile Include="GameLoader.cs" />
     <Compile Include="Manager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\BaseClassLibrary\BaseClassLibrary.csproj">
-      <Project>{4A7993B3-6611-4D9D-B8AB-836D6C27B12B}</Project>
-      <Name>BaseClassLibrary</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Debug\" />

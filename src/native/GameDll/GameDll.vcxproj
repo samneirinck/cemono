@@ -11,28 +11,20 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CemonoCVar.cpp" />
-    <ClCompile Include="ConsoleBinding.cpp" />
     <ClCompile Include="FlowPostFXNodes.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameDll.cpp" />
-    <ClCompile Include="LoggingBinding.cpp" />
     <ClCompile Include="Mono.cpp" />
-    <ClCompile Include="MonoClassUtils.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CemonoCVar.h" />
-    <ClInclude Include="ConsoleBinding.h" />
     <ClInclude Include="G2FlowBaseNode.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="IMonoAPIBinding.h" />
-    <ClInclude Include="LoggingBinding.h" />
     <ClInclude Include="Mono.h" />
-    <ClInclude Include="MonoClassUtils.h" />
     <ClInclude Include="MonoPathUtils.h" />
+    <ClInclude Include="MonoProperties.h" />
     <ClInclude Include="StdAfx.h" />
   </ItemGroup>
   <ItemGroup>
