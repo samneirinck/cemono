@@ -21,14 +21,16 @@ public:
 
 	static string GetAssemblyPath()
 	{
-		CryLogAlways(GetModPath().append(ASSEMBLY_PATH).append("\\"));
 		return GetModPath().append(ASSEMBLY_PATH).append("\\");
+	}
+
+	static string GetLibPath()
+	{
+		return GetModPath().append(MONO_LIB_PATH).append("\\");
 	}
 
 	static string GetConfigPath()
 	{
-		CryLogAlways(GetModPath());
-		CryLogAlways(GetModPath().append(CONFIG_PATH).append("\\"));
-		return GetModPath().append(CONFIG_PATH).append("\\");
+		return GetModPath().append(MONO_CONFIG_PATH).append("\\");
 	}
 };

@@ -4,9 +4,6 @@
     <ClCompile Include="StdAfx.cpp" />
     <ClCompile Include="GameDll.cpp" />
     <ClCompile Include="Game.cpp" />
-    <ClCompile Include="FlowPostFXNodes.cpp">
-      <Filter>Legacy</Filter>
-    </ClCompile>
     <ClCompile Include="Mono.cpp">
       <Filter>Mono</Filter>
     </ClCompile>
@@ -26,9 +23,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Legacy">
-      <UniqueIdentifier>{1487d011-9991-403e-8d04-f63a18128ed9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Mono">
       <UniqueIdentifier>{dbb519bc-bdb4-41bb-81b3-2bbeb70a2705}</UniqueIdentifier>
     </Filter>

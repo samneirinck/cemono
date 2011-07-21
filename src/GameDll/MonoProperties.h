@@ -2,7 +2,9 @@
 #define __MONO_PROPERTIES_H__
 
 // Path definitions, mod dir is root (mods/cemono)
-#define ASSEMBLY_PATH "mono\\lib"
-#define CONFIG_PATH "mono\\etc"
+#define MONO_LIB_PATH "mono\\lib"
+#define MONO_CONFIG_PATH "mono\\etc"
+
+#define ASSEMBLY_PATH "Bin32"
 
 #endif // __MONO_PROPERTIES_H__

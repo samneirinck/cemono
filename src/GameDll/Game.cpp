@@ -46,7 +46,6 @@ void CGame::GetMemoryStatistics(ICrySizer * s)
 
 bool CGame::CompleteInit() 
 {
-
 	if (IFlowSystem *pFlow = m_pFramework->GetIFlowSystem())
 	{
 		CG2AutoRegFlowNodeBase *pFactory = CG2AutoRegFlowNodeBase::m_pFirst;
@@ -78,7 +77,6 @@ int CGame::Update(bool haveFocus, unsigned int updateFlags)
 	bool updated = m_pFramework->PreUpdate(haveFocus, updateFlags);
 
 	m_pFramework->PostUpdate( haveFocus, updateFlags );
-
 
 	return updated;
 }

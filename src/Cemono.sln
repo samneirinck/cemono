@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manager", "managed\Manager\Manager.csproj", "{17C0D534-9049-4572-9385-863FB2F6F6D5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryEngine", "Integrated\CryEngine\CryEngine.csproj", "{17C0D534-9049-4572-9385-863FB2F6F6D5}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameDll", "native\GameDll\GameDll.vcxproj", "{0A626603-18B8-41F4-ACFB-0ABE9C4569F5}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameDll", "GameDll\GameDll.vcxproj", "{0A626603-18B8-41F4-ACFB-0ABE9C4569F5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
