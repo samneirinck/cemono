@@ -8,4 +8,4 @@ FGPS - Mono integration
 by i59
 
 1) Checkout into your Crysis Wars\Mods folder.
-2) Copy mono-2.0.dll from the Mods\cemono\ReqFiles directory to your Crysis Wars bin32 folder.
+2) Copy mono-2.0.dll from the Mods\cemono\Bin32 directory to your Crysis Wars bin32 folder.
