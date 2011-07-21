@@ -13,7 +13,7 @@ namespace Cemono
         #endregion
 
         #region Properties
-
+        public BaseGame Game { get; private set; }
         #endregion
 
         #region Constructor(s)

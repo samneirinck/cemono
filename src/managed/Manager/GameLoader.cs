@@ -46,7 +46,7 @@ namespace Cemono
             CompilerResults results = provider.CompileAssemblyFromFile(parameters, filesToCompile);
             compileStopwatch.Stop();
 
-            Console.WriteLine("Compilation finished in {0}ms", compileStopwatch.ElapsedMilliseconds);
+            Trace.TraceInformation("Compilation finished in {0}ms", compileStopwatch.ElapsedMilliseconds);
 
             // Log compilation result
             foreach (var item in results.Output)

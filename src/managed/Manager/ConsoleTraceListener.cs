@@ -12,7 +12,17 @@ namespace Cemono
 
         public override void WriteLine(string message)
         {
+            Logging.Log(message);
+        }
 
+        public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message)
+        {
+            switch (eventType)
+            {
+                default:
+                    Logging.Log(message);
+                    break;
+            }
         }
     }
 }
