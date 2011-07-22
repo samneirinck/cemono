@@ -5,12 +5,49 @@ using System.Text;
 
 namespace CryEngine.FlowSystem
 {
+    public class CG2AutoRegFlowNodeBase
+    {
+        CG2AutoRegFlowNodeBase( string sClassName )
+	    {
+		    m_sClassName = sClassName;
+		    m_pNext = null;
+		    if (m_pLast==null)
+		    {
+			    m_pFirst = this;
+		    }
+		    else
+			    m_pLast.m_pNext = this;
+		    m_pLast = this;
+	    }
+
+	    //////////////////////////////////////////////////////////////////////////
+	    string m_sClassName;
+	    CG2AutoRegFlowNodeBase m_pNext;
+	    public static CG2AutoRegFlowNodeBase m_pFirst;
+        public static CG2AutoRegFlowNodeBase m_pLast;
+	    //////////////////////////////////////////////////////////////////////////
+    }
+
+    // Registration table
+    public struct SPluginRegister
+    {
+        public SPluginRegister(bool useless)
+        {
+            nodesFirst = null;
+            nodesLast = null;
+        }
+
+	    // Flownode registration list
+	    public CG2AutoRegFlowNodeBase nodesFirst;
+	    public CG2AutoRegFlowNodeBase nodesLast;
+    }
+
     public enum EInputPortType
     {
         Void,
         String,
         Int
-    };
+    }
 
     public struct SInputPortConfig
     {
@@ -39,7 +76,7 @@ namespace CryEngine.FlowSystem
         public string sUIConfig;
 
         public EInputPortType inputType;
-    };
+    }
 
     public struct SOutputPortConfig
     {
@@ -56,7 +93,7 @@ namespace CryEngine.FlowSystem
         public string humanName;
 	    // Human readable description of this port (help)
         public string description;
-    };
+    }
 
     public enum EFlowNodeCategory
     {
@@ -66,7 +103,7 @@ namespace CryEngine.FlowSystem
 	    EFLN_WIP                   = 0x0080, // CATEGORY:  This node is work-in-progress and shouldn't be used by designers
 	    EFLN_LEGACY                = 0x0100, // CATEGORY:  This node is legacy and will VERY soon vanish
 	    EFLN_OBSOLETE              = 0x0200, // CATEGORY:  This node is obsolete and is not available in the editor
-    };
+    }
 
     public struct SFlowNodeConfig
     {
@@ -79,43 +116,5 @@ namespace CryEngine.FlowSystem
         public string sUIClassName;
 
         public EFlowNodeCategory category;
-    };
-
-    public enum EFlowEvent
-    {
-        Update,
-        Activate,				 // Sent if one or more input ports have been activated
-        FinalActivate,   // must be eFE_Activate+1 (same as activate, but at the end of FlowSystem:Update)
-        Initialize,      // Sent once after level has been loaded. Is NOT called on Serialization!
-        FinalInitialize, // must be eFE_Initialize+1
-        SetEntityId,     // This event is send to set the entity of the FlowNode. Might also be sent in conjunction (pre) other events (like eFE_Initialize)
-        Suspend,
-        Resume,
-        ConnectInputPort,
-        DisconnectInputPort,
-        ConnectOutputPort,
-        DisconnectOutputPort,
-        DontDoAnythingWithThisPlease
-    };
-
-    public class IFlowNode
-    {
-        public struct SNodeInfo
-        {
-            ushort nodeId;
-            uint entityId;
-        };
-
-        public bool IsPortActive( SNodeInfo nodeInfo,int nPort )
-	    {
-            // nodeInfo
-            // return pActInfo->pInputPorts[nPort].IsUserFlagSet();
-
-            return false;
-	    }
-
-        public void ActivateOutput(SNodeInfo nodeInfo, int nPort)
-        {
-        }
-    };
+    }
 }

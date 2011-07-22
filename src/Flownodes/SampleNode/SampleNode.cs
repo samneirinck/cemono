@@ -5,6 +5,16 @@ namespace FGPlugin
 {
     class SampleNode : IFlowNode
     {
+        public SPluginRegister RegisterWithPluginSystem()
+        {
+            SPluginRegister pluginRegister = new SPluginRegister(true);
+
+            pluginRegister.nodesFirst = CG2AutoRegFlowNodeBase.m_pFirst;
+            pluginRegister.nodesLast = CG2AutoRegFlowNodeBase.m_pLast;
+
+            return pluginRegister;
+        }
+
         // Input and Output port enumerations must be placed in the order they are declared in GetConfiguration()
         enum EInputPorts
         {
@@ -42,8 +52,8 @@ namespace FGPlugin
 
 		    SOutputPortConfig[] outputs =
 		    {
-			    new SOutputPortConfig("Started", "Called on start");
-                new SOutputPortConfig("Cancelled", "Called on cancel");
+			    new SOutputPortConfig("Started", "Called on start"),
+                new SOutputPortConfig("Cancelled", "Called on cancel")
 		    };
 
 		    config.pInputPorts = inputs;
@@ -54,24 +64,19 @@ namespace FGPlugin
             return config;
 	    }
 
-        public void ProcessEvent(EFlowEvent _event, SNodeInfo nodeInfo)
+        public void ProcessEvent(IFlowNode.EFlowEvent _event, IFlowNode.SActivationInfo nodeInfo)
         {
             switch (_event)
             {
                 case EFlowEvent.Activate:
-                    {
+                    {/*
                         if (IsPortActive(nodeInfo, (int)EInputPorts.EIP_Start))
                         {
                             ActivateOutput(nodeInfo, (int)EOutputPorts.EOP_Started);
-                        }
+                        }*/
                     }
                     break;
             }
-        }
-
-        void GetNodeProperties()
-        {
-            CryConsole.LogAlways("Retrieving node properties");
         }
     }
 }

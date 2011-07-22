@@ -10,7 +10,6 @@
 
 #include "PathUtils.h"
 
-ExtendedResourceList CFGPluginManager::m_ResourceList;
 CG2AutoRegFlowNodeBase* CFGPluginManager::m_LastNext;
 CG2AutoRegFlowNodeBase* CFGPluginManager::m_Last;
 FGPluginList CFGPluginManager::m_Plugins;
@@ -57,20 +56,17 @@ void CFGPluginManager::OnSystemEvent(ESystemEvent event, UINT_PTR wparam, UINT_P
 
 void CFGPluginManager::RetrieveNodes()
 {
-	string szPlugins = CPathUtils::GetFGNodePath();
+	string szPath = CPathUtils::GetFGNodePath();
 
 	CryLogAlways("---------------------------------");
-	CryLogAlways("Searching for FGPS nodes in %s", szPlugins);
+	CryLogAlways("Searching for FGPS nodes in %s", szPath);
 
 	ICryPak *pCryPak = gEnv->pCryPak;
 	
 	_finddata_t fileData;
-	char szPluginPath[MAX_PATH];
+	string szPlugins = szPath + "*.dll";
 
-	strncpy_s(szPluginPath, MAX_PATH, szPlugins, MAX_PATH);
-	strncat_s(szPluginPath, MAX_PATH, "*.dll", MAX_PATH);
-
-	intptr_t hFile = pCryPak->FindFirst(szPluginPath, &fileData);
+	intptr_t hFile = pCryPak->FindFirst(szPlugins, &fileData);
 	if (hFile > -1)
 	{
 		do
@@ -79,9 +75,9 @@ void CFGPluginManager::RetrieveNodes()
 			{
 				m_nPluginCounter++;
 
-				string dllPath = (szPlugins+fileData.name);
+				szPath += fileData.name;
 				CryLog("[%d] Attempting to load plugin \'%s\'...", m_nPluginCounter, fileData.name);
-				if (!RegisterPlugin(dllPath.c_str(), fileData.name))
+				if (!RegisterPlugin(szPath, fileData.name))
 					CryLogAlways("[Warning] [%d] Failed to load plugin!", m_nPluginCounter);
 			}
 		} while (pCryPak->FindNext(hFile, &fileData) > -1);
@@ -122,17 +118,42 @@ bool CFGPluginManager::RegisterPlugin(const char *fullPath, const char *DllName)
 
 	MonoImage *pImage = mono_assembly_get_image(pAssembly);
 
-	MonoObject *result = g_pMono->InvokeFunc("GetNodeProperties", mono_class_from_name(pImage, "FGPlugin", sDllName ), true);
-	SMonoFlowNodeConfig flowConfig = *(SMonoFlowNodeConfig*)mono_object_unbox (result);
-
-	string sResult = mono_string_to_utf8(flowConfig.sDescription);
+	MonoObject *result = g_pMono->InvokeFunc("RegisterWithPluginSystem", mono_class_from_name(pImage, "FGPlugin", sDllName ), true);
+	SPluginRegister registerResults = *(SPluginRegister*)mono_object_unbox (result);
 
 	SFGPlugin pluginEntry;
 	pluginEntry.pImage = pImage;
 	pluginEntry.name = sDllName;
+	pluginEntry.nodes = registerResults.nodesFirst;
 	m_Plugins.push_back(pluginEntry);
+
+	CG2AutoRegFlowNodeBase *node = registerResults.nodesFirst;
+	CryLogAlways("[%d] Flowgraph nodes registered:", m_nPluginCounter);
+	if (node)
+	{
+		int count = 0;
+		while (node)
+		{
+			CryLogAlways("[%d] -> (%d) %s", m_nPluginCounter, ++count, node->m_sClassName);
+			node = node->m_pNext;
+		}
+		if (count == 1)
+		{
+			CryLogAlways("[%d] The %d node was registered successfully!", m_nPluginCounter, count);
+		}
+			else
+		{
+			CryLogAlways("[%d] All %d nodes were registered successfully!", m_nPluginCounter, count);
+		}
+
+		// Add to flowgraph registration list
+		CG2AutoRegFlowNodeBase::m_pLast->m_pNext = registerResults.nodesFirst;
+		CG2AutoRegFlowNodeBase::m_pLast = registerResults.nodesLast;
+	}
+	else
+		CryLogAlways("[%d] -> No nodes were found!", m_nPluginCounter);
 		
-	return false;
+	return true;
 }
 
 ////////////////////////////////////////////////////

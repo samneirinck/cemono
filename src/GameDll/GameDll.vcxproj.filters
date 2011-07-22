@@ -26,9 +26,6 @@
     <ClCompile Include="FGPlugin\Modules\ModuleManager.cpp">
       <Filter>Mono\FGPS\Modules</Filter>
     </ClCompile>
-    <ClCompile Include="FlowNodeBase.cpp">
-      <Filter>Mono\FGPS</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.h" />
@@ -70,9 +67,6 @@
       <Filter>Utils &amp; Properties</Filter>
     </ClInclude>
     <ClInclude Include="G2FlowBaseNode.h">
-      <Filter>Mono\FGPS</Filter>
-    </ClInclude>
-    <ClInclude Include="FlowNodeBase.h">
       <Filter>Mono\FGPS</Filter>
     </ClInclude>
   </ItemGroup>

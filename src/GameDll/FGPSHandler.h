@@ -35,7 +35,6 @@ private:
 	static FGPluginList m_Plugins;
 	std::vector<uint16>	m_nodeIds;
 
-	static ExtendedResourceList m_ResourceList;
 	static CG2AutoRegFlowNodeBase *m_LastNext;
 	static CG2AutoRegFlowNodeBase *m_Last;
 

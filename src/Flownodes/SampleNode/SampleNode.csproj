@@ -41,8 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SampleNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SampleNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Integrated\CryEngine\CryEngine.csproj">
