@@ -3,29 +3,41 @@
 #include <IFlowSystem.h>
 #include "G2FlowBaseNode.h"
 
-CMono* g_pMono = 0;
-CGame* g_pGame = 0;
+#include "FGPSHandler.h"
+
+#include <CryLibrary.h>
+#include <windows.h>
+
+CMono *g_pMono = 0;
+CGame *g_pGame = 0;
 CG2AutoRegFlowNodeBase *CG2AutoRegFlowNodeBase::m_pFirst=0;
 CG2AutoRegFlowNodeBase *CG2AutoRegFlowNodeBase::m_pLast=0;
 
-
-
 CGame::CGame()
-	: m_pFramework(0),
-	m_pMono(0)
+	: m_pFramework(0)
 {
 	g_pGame = this;
+	g_pMono = new CMono;
 
 	GetISystem()->SetIGame( this );
 }
 
 CGame::~CGame()
 {
-	m_pFramework->EndGameContext();
-	m_pFramework->UnregisterListener(this);
-	g_pGame = 0;
+	SAFE_DELETE(g_pMono);
 
-	SAFE_DELETE(m_pMono);
+	if(m_pFramework)
+	{
+		m_pFramework->UnregisterListener(this);
+
+		if(m_pFramework->StartedGameContext())
+		{
+			if(((gEnv->bEditor && gEnv->bEditorGameMode) || !gEnv->bEditor) && !GetISystem()->IsDedicated())
+				m_pFramework->EndGameContext();
+		}	
+	}
+
+	g_pGame = NULL;
 }
 
 bool CGame::Init(IGameFramework *pFramework)
@@ -33,8 +45,7 @@ bool CGame::Init(IGameFramework *pFramework)
 	m_pFramework = pFramework;
 	m_pFramework->RegisterListener(this, "Game", FRAMEWORKLISTENERPRIORITY_GAME);
 
-	m_pMono = new CMono();
-	g_pMono = m_pMono;
+	m_pFGPluginManager = new CFGPluginManager();
 
 	return true;
 }
@@ -46,6 +57,10 @@ void CGame::GetMemoryStatistics(ICrySizer * s)
 
 bool CGame::CompleteInit() 
 {
+	g_pMono->Init();
+
+	m_pFGPluginManager->RetrieveNodes();
+
 	if (IFlowSystem *pFlow = m_pFramework->GetIFlowSystem())
 	{
 		CG2AutoRegFlowNodeBase *pFactory = CG2AutoRegFlowNodeBase::m_pFirst;
@@ -56,15 +71,13 @@ bool CGame::CompleteInit()
 			pFactory = pFactory->m_pNext;
 		}
 	}
-	
-	m_pMono->Init();
 
 	return true;
 }
 
 void CGame::Shutdown()
 {
-
+	
 }
 
 string CGame::InitMapReloading()
@@ -88,7 +101,6 @@ void CGame::ConfigureGameChannel(bool isServer, IProtocolBuilder *pBuilder)
 
 void CGame::EditorResetGame(bool bStart)
 {
-
 }
 
 void CGame::PlayerIdSet(EntityId playerId)

@@ -1,3 +1,6 @@
+#ifndef __GAME_H__
+#define __GAME_H__
+
 #pragma once
 
 #include <IGame.h>
@@ -5,6 +8,7 @@
 
 #include "Mono.h"
 
+class CFGPluginManager;
 
 class CGame : public IGame, public IGameFrameworkListener, public IInputEventListener
 {
@@ -42,11 +46,14 @@ public:
 	virtual bool OnInputEvent( const SInputEvent &event );
 	virtual bool OnInputEventUI( const SInputEvent &event );
 
+	CFGPluginManager *GetFGPluginManager() const { return m_pFGPluginManager; }
 
 protected:
-	IGameFramework*						m_pFramework;
-	CMono*								m_pMono;
+	IGameFramework						*m_pFramework;
 
+	CFGPluginManager					*m_pFGPluginManager;
 };
 
 extern CGame* g_pGame;
+
+#endif

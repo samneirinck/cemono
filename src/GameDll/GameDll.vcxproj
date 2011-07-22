@@ -11,19 +11,37 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DllMain.cpp" />
+    <ClCompile Include="FGPlugin\Modules\FlowModuleNodes.cpp" />
+    <ClCompile Include="FGPlugin\Modules\Module.cpp" />
+    <ClCompile Include="FGPlugin\Modules\ModuleManager.cpp" />
+    <ClCompile Include="FGPSHandler.cpp" />
+    <ClCompile Include="FlowNodeBase.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameDll.cpp" />
     <ClCompile Include="Mono.cpp" />
+    <ClCompile Include="MonoCVars.cpp" />
+    <ClCompile Include="MonoLogging.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FGPlugin\Common\PluginCommon.h" />
+    <ClInclude Include="FGPlugin\Modules\FlowModuleNodes.h" />
+    <ClInclude Include="FGPlugin\Modules\Module.h" />
+    <ClInclude Include="FGPlugin\Modules\ModuleCommon.h" />
+    <ClInclude Include="FGPlugin\Modules\ModuleManager.h" />
+    <ClInclude Include="FGPSHandler.h" />
+    <ClInclude Include="FlowNodeBase.h" />
     <ClInclude Include="G2FlowBaseNode.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="IMonoAPIBinding.h" />
     <ClInclude Include="Mono.h" />
-    <ClInclude Include="MonoPathUtils.h" />
-    <ClInclude Include="MonoProperties.h" />
+    <ClInclude Include="MonoCVars.h" />
+    <ClInclude Include="MonoLogging.h" />
+    <ClInclude Include="PathUtils.h" />
+    <ClInclude Include="Properties.h" />
     <ClInclude Include="StdAfx.h" />
   </ItemGroup>
   <ItemGroup>
@@ -77,7 +95,7 @@
       <PreprocessorDefinitions>WIN32;GAMEDLL_EXPORTS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <AdditionalIncludeDirectories>.\;..\..\..\..\Code\CryEngine\CryCommon;..\..\..\..\Code\CryEngine\CryAction;include\mono-2.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <TreatWarningAsError>true</TreatWarningAsError>
+      <TreatWarningAsError>false</TreatWarningAsError>
       <ExceptionHandling>false</ExceptionHandling>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>

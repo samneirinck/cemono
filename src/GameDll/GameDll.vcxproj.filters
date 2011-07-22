@@ -7,24 +7,93 @@
     <ClCompile Include="Mono.cpp">
       <Filter>Mono</Filter>
     </ClCompile>
+    <ClCompile Include="MonoCVars.cpp">
+      <Filter>Mono\Console</Filter>
+    </ClCompile>
+    <ClCompile Include="MonoLogging.cpp">
+      <Filter>Mono\Console</Filter>
+    </ClCompile>
+    <ClCompile Include="DllMain.cpp" />
+    <ClCompile Include="FGPSHandler.cpp">
+      <Filter>Mono\FGPS</Filter>
+    </ClCompile>
+    <ClCompile Include="FGPlugin\Modules\FlowModuleNodes.cpp">
+      <Filter>Mono\FGPS\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="FGPlugin\Modules\Module.cpp">
+      <Filter>Mono\FGPS\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="FGPlugin\Modules\ModuleManager.cpp">
+      <Filter>Mono\FGPS\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="FlowNodeBase.cpp">
+      <Filter>Mono\FGPS</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="G2FlowBaseNode.h" />
     <ClInclude Include="Mono.h">
       <Filter>Mono</Filter>
     </ClInclude>
-    <ClInclude Include="MonoProperties.h">
+    <ClInclude Include="MonoCVars.h">
+      <Filter>Mono\Console</Filter>
+    </ClInclude>
+    <ClInclude Include="MonoLogging.h">
+      <Filter>Mono\Console</Filter>
+    </ClInclude>
+    <ClInclude Include="IMonoAPIBinding.h">
       <Filter>Mono</Filter>
     </ClInclude>
-    <ClInclude Include="MonoPathUtils.h">
-      <Filter>Mono</Filter>
+    <ClInclude Include="FGPlugin\Common\PluginCommon.h">
+      <Filter>FGPS_Legacy</Filter>
+    </ClInclude>
+    <ClInclude Include="FGPSHandler.h">
+      <Filter>Mono\FGPS</Filter>
+    </ClInclude>
+    <ClInclude Include="FGPlugin\Modules\ModuleManager.h">
+      <Filter>Mono\FGPS\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="FGPlugin\Modules\FlowModuleNodes.h">
+      <Filter>Mono\FGPS\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="FGPlugin\Modules\Module.h">
+      <Filter>Mono\FGPS\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="FGPlugin\Modules\ModuleCommon.h">
+      <Filter>Mono\FGPS\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="PathUtils.h">
+      <Filter>Utils &amp; Properties</Filter>
+    </ClInclude>
+    <ClInclude Include="Properties.h">
+      <Filter>Utils &amp; Properties</Filter>
+    </ClInclude>
+    <ClInclude Include="G2FlowBaseNode.h">
+      <Filter>Mono\FGPS</Filter>
+    </ClInclude>
+    <ClInclude Include="FlowNodeBase.h">
+      <Filter>Mono\FGPS</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Mono">
       <UniqueIdentifier>{dbb519bc-bdb4-41bb-81b3-2bbeb70a2705}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mono\Console">
+      <UniqueIdentifier>{eb0ad671-ce78-4376-ab80-d4b7b7d33432}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FGPS_Legacy">
+      <UniqueIdentifier>{5e5ae2e4-94f9-4e83-b60c-c3b58343c53b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mono\FGPS">
+      <UniqueIdentifier>{94934d4e-f6f9-4113-8152-22e09d8f2dd1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mono\FGPS\Modules">
+      <UniqueIdentifier>{bfc8994e-3fcd-4eb8-9a41-90e6ac76d72c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils &amp; Properties">
+      <UniqueIdentifier>{4efc7b4d-2e65-43b9-b3fc-3f70986420af}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

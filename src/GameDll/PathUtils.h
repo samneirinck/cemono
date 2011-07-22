@@ -1,9 +1,12 @@
+#ifndef __MONO_PATHUTILS_H__
+#define __MONO_PATHUTILS_H__
+
 #pragma once
 
 #include "StdAfx.h"
-#include "MonoProperties.h"
+#include "Properties.h"
 
-class CMonoPathUtils
+class CPathUtils
 {
 public:
 	static string GetCrysisWarsPath()
@@ -14,14 +17,19 @@ public:
 		return string(path).append("\\");
 	}
 
-	static string GetModPath()
+	static string GetModPath(bool fullPath = true)
 	{
-		return GetCrysisWarsPath().append(gEnv->pCryPak->GetModDir());
+		return fullPath ? GetCrysisWarsPath().append(gEnv->pCryPak->GetModDir()) : gEnv->pCryPak->GetModDir();
 	}
 
 	static string GetAssemblyPath()
 	{
 		return GetModPath().append(ASSEMBLY_PATH).append("\\");
+	}
+
+	static string GetFGNodePath()
+	{
+		return GetModPath().append(NODE_PATH).append("\\");
 	}
 
 	static string GetLibPath()
@@ -34,3 +42,5 @@ public:
 		return GetModPath().append(MONO_CONFIG_PATH).append("\\");
 	}
 };
+
+#endif //__MONO_PATHUTILS_H__
