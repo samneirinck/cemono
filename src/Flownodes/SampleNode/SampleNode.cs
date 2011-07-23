@@ -3,17 +3,8 @@ using CryEngine.FlowSystem;
 
 namespace FGPlugin
 {
-    class SampleNode : IFlowNode
+    class SampleNode: IFlowNode
     {
-        public SPluginRegister RegisterWithPluginSystem()
-        {
-            SPluginRegister pluginRegister = new SPluginRegister(true);
-
-            pluginRegister.nodesFirst = CG2AutoRegFlowNodeBase.m_pFirst;
-            pluginRegister.nodesLast = CG2AutoRegFlowNodeBase.m_pLast;
-
-            return pluginRegister;
-        }
 
         // Input and Output port enumerations must be placed in the order they are declared in GetConfiguration()
         enum EInputPorts
@@ -80,3 +71,4 @@ namespace FGPlugin
         }
     }
 }
+

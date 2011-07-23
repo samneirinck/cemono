@@ -7,9 +7,9 @@ namespace CryEngine
 {
     class Manager
     {
-        static void Test(string msg) 
+        static void Init() 
         {
-            CryConsole.LogAlways("[Mono] Testing");
+            CryConsole.LogAlways("Initializing Mono Manager");
         }
     }
 }

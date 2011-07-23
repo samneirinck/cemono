@@ -49,11 +49,8 @@ bool CMono::Init()
 
 	m_pCryEngineAssembly = LoadAssembly(CPathUtils::GetAssemblyPath() + "CryEngine.dll");
 
-	void *args [1];
-	args [0] = mono_string_new (m_pMonoDomain, "C++ says hai via Mono.");
-
 	MonoImage *pImage = mono_assembly_get_image(m_pCryEngineAssembly);
-	InvokeFunc("Test", mono_class_from_name(pImage, "CryEngine", "Manager"), false, args);
+	InvokeFunc("Init", mono_class_from_name(pImage, "CryEngine", "Manager"));
 
 	return result;
 }

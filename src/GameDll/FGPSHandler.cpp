@@ -21,7 +21,7 @@ CFGPluginManager::CFGPluginManager()
 	// Create module manager
 	m_pModuleManager = new CModuleManager();
 	if (!m_pModuleManager || !m_pModuleManager->Init(CPathUtils::GetModPath(false)))
-		CryError("[Error] Failed to initialize FG Module Manager.");
+		CryError("[Error] Failed to initialize FG Module Manager");
 }
 
 CFGPluginManager::~CFGPluginManager()
@@ -59,7 +59,7 @@ void CFGPluginManager::RetrieveNodes()
 	string szPath = CPathUtils::GetFGNodePath();
 
 	CryLogAlways("---------------------------------");
-	CryLogAlways("Searching for FGPS nodes in %s", szPath);
+	CryLogAlways("Searching for FGPS plugins in %s", szPath);
 
 	ICryPak *pCryPak = gEnv->pCryPak;
 	
@@ -76,15 +76,15 @@ void CFGPluginManager::RetrieveNodes()
 				m_nPluginCounter++;
 
 				szPath += fileData.name;
-				CryLog("[%d] Attempting to load plugin \'%s\'...", m_nPluginCounter, fileData.name);
+				CryLog("Attempting to load plugin [%d] \(%s\)", m_nPluginCounter, fileData.name);
 				if (!RegisterPlugin(szPath, fileData.name))
-					CryLogAlways("[Warning] [%d] Failed to load plugin!", m_nPluginCounter);
+					CryLogAlways("[Warning] Failed to load plugin [%d]", m_nPluginCounter);
 			}
 		} while (pCryPak->FindNext(hFile, &fileData) > -1);
 		pCryPak->FindClose(hFile);
 	}
 	else
-		CryLog("No custom nodes found.");
+		CryLog("No custom plugins found.");
 }
 
 void Tokenize(const string& str, std::vector<string>& tokens, const string& delimiters = " ")
@@ -118,40 +118,35 @@ bool CFGPluginManager::RegisterPlugin(const char *fullPath, const char *DllName)
 
 	MonoImage *pImage = mono_assembly_get_image(pAssembly);
 
-	MonoObject *result = g_pMono->InvokeFunc("RegisterWithPluginSystem", mono_class_from_name(pImage, "FGPlugin", sDllName ), true);
+	MonoObject *result = g_pMono->InvokeFunc("RegisterWithPluginSystem", mono_class_from_name(pImage, "FGPlugin", "PluginMain" ), true);
 	SPluginRegister registerResults = *(SPluginRegister*)mono_object_unbox (result);
 
 	SFGPlugin pluginEntry;
-	pluginEntry.pImage = pImage;
+	pluginEntry.pAssembly = pAssembly;
 	pluginEntry.name = sDllName;
 	pluginEntry.nodes = registerResults.nodesFirst;
 	m_Plugins.push_back(pluginEntry);
 
+	CGame *pGame;
+	pGame->CompleteInit();
+
 	CG2AutoRegFlowNodeBase *node = registerResults.nodesFirst;
-	CryLogAlways("[%d] Flowgraph nodes registered:", m_nPluginCounter);
 	if (node)
 	{
 		int count = 0;
 		while (node)
 		{
-			CryLogAlways("[%d] -> (%d) %s", m_nPluginCounter, ++count, node->m_sClassName);
+			CryLog("[%d] -> (%d) %s", m_nPluginCounter, ++count, node->m_sClassName);
 			node = node->m_pNext;
 		}
-		if (count == 1)
-		{
-			CryLogAlways("[%d] The %d node was registered successfully!", m_nPluginCounter, count);
-		}
-			else
-		{
-			CryLogAlways("[%d] All %d nodes were registered successfully!", m_nPluginCounter, count);
-		}
+		CryLog("Successfully registered %d node(s) in plugin [%d]", count, m_nPluginCounter);
 
 		// Add to flowgraph registration list
 		CG2AutoRegFlowNodeBase::m_pLast->m_pNext = registerResults.nodesFirst;
 		CG2AutoRegFlowNodeBase::m_pLast = registerResults.nodesLast;
 	}
 	else
-		CryLogAlways("[%d] -> No nodes were found!", m_nPluginCounter);
+		CryLogAlways("No nodes were found in plugin [%d]!", m_nPluginCounter);
 		
 	return true;
 }
@@ -159,6 +154,9 @@ bool CFGPluginManager::RegisterPlugin(const char *fullPath, const char *DllName)
 ////////////////////////////////////////////////////
 void CFGPluginManager::FreePluginLibraries()
 {
+	for (std::vector<SFGPlugin>::iterator pluginIt = m_Plugins.begin(); pluginIt != m_Plugins.end(); pluginIt++)
+		delete pluginIt->pAssembly;
+
 	m_Plugins.clear();
 }
 

@@ -5,27 +5,38 @@ using System.Text;
 
 namespace CryEngine.FlowSystem
 {
+    public class CG2AutoRegFlowNode<T> : CG2AutoRegFlowNodeBase
+    {
+        public CG2AutoRegFlowNode(string nodeClassName) : base(nodeClassName)
+        {
+        }
+    }
+
     public class CG2AutoRegFlowNodeBase
     {
-        CG2AutoRegFlowNodeBase( string sClassName )
-	    {
-		    m_sClassName = sClassName;
-		    m_pNext = null;
-		    if (m_pLast==null)
-		    {
-			    m_pFirst = this;
-		    }
-		    else
-			    m_pLast.m_pNext = this;
-		    m_pLast = this;
-	    }
+        public CG2AutoRegFlowNodeBase(string nodeClassName)
+        {
+            m_sClassName = nodeClassName;
+            m_pNext = null;
+            if (m_pLast == null)
+            {
+                m_pFirst = this;
+            }
+            else
+                m_pLast.m_pNext = this;
+            m_pLast = this;
+        }
 
-	    //////////////////////////////////////////////////////////////////////////
-	    string m_sClassName;
-	    CG2AutoRegFlowNodeBase m_pNext;
-	    public static CG2AutoRegFlowNodeBase m_pFirst;
+        public CG2AutoRegFlowNodeBase()
+        {
+        }
+
+        //////////////////////////////////////////////////////////////////////////
+        string m_sClassName;
+        public CG2AutoRegFlowNodeBase m_pNext;
+        public static CG2AutoRegFlowNodeBase m_pFirst;
         public static CG2AutoRegFlowNodeBase m_pLast;
-	    //////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////
     }
 
     // Registration table

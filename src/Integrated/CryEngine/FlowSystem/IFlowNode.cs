@@ -7,9 +7,6 @@ namespace CryEngine.FlowSystem
 {
     public class IFlowNode
     {
-        CG2AutoRegFlowNodeBase m_pFirst;
-        CG2AutoRegFlowNodeBase m_pLast;
-
         public struct SActivationInfo
         {
             SActivationInfo(ushort myID = 0)

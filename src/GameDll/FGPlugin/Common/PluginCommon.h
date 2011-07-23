@@ -32,10 +32,10 @@ struct SPluginRegister
 struct SFGPlugin
 {
 	string name;
-	MonoImage *pImage;
+	MonoAssembly *pAssembly;
 	CG2AutoRegFlowNodeBase *nodes;
 
-	SFGPlugin() : pImage(NULL) {}
+	SFGPlugin() : pAssembly(NULL) {}
 };
 typedef std::vector<SFGPlugin> FGPluginList;
 
