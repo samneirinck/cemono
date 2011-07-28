@@ -1,15 +1,27 @@
 #include "StdAfx.h"
 #include "Mono.h"
-#include <mono\metadata\debug-helpers.h>
+#include <mono/metadata/debug-helpers.h>
+#include <mono/metadata/mono-debug.h>
 
 #include "LoggingBinding.h"
 #include "ConsoleBinding.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+
+FILE* stream;
 CMono::CMono()
 	: m_pMonoDomain(0),	m_pManagerAssembly(0), m_pManagerObject(0), m_pBclAssembly(0)
 {
+	//freopen("c:\\temp\\myfile.txt", "a", stderr);
+
+	setvbuf(stderr,NULL,_IONBF, 100);
+	fprintf(stderr, "Hello");
 	// Set up directories
 	mono_set_dirs(CMonoPathUtils::GetAssemblyPath(), CMonoPathUtils::GetConfigurationPath());
+	char* options = "--debugger-agent=transport=dt_socket,address=127.0.0.1:51740,loglevel=1,logfile=c:\\temp\\dbglog.txt,timeout=10000";
+	//char* options = "--profile=log:calls";
+	mono_jit_parse_options(1, &options);
 }
 
 CMono::~CMono()
@@ -56,6 +68,8 @@ bool CMono::Init()
 
 bool CMono::InitializeDomain()
 {
+	mono_debug_init(MONO_DEBUG_FORMAT_MONO);
+
 	// Create root domain
 	m_pMonoDomain = mono_jit_init_version("Cemono Root", "v4.0.30319");
 
