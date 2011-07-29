@@ -26,11 +26,14 @@ public:
 	MonoImage* GetBclImage() { return m_pBclImage; };
 
 
+
 private:
 	bool InitializeDomain();
 	bool InitializeManager();
 	bool InitializeBindings();
 	bool InitializeBaseClassLibraries();
+
+	bool m_bDebugging;
 
 	MonoDomain* m_pMonoDomain;
 	MonoAssembly* m_pManagerAssembly;

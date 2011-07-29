@@ -5,23 +5,24 @@
 
 #include "LoggingBinding.h"
 #include "ConsoleBinding.h"
+#include "ICmdLine.h"
 
-#include <stdio.h>
-#include <stdlib.h>
 
 FILE* stream;
 CMono::CMono()
-	: m_pMonoDomain(0),	m_pManagerAssembly(0), m_pManagerObject(0), m_pBclAssembly(0)
+	: m_pMonoDomain(0),	m_pManagerAssembly(0), m_pManagerObject(0), m_pBclAssembly(0), m_bDebugging(false)
 {
-	//freopen("c:\\temp\\myfile.txt", "a", stderr);
-
-	setvbuf(stderr,NULL,_IONBF, 100);
-	fprintf(stderr, "Hello");
 	// Set up directories
 	mono_set_dirs(CMonoPathUtils::GetAssemblyPath(), CMonoPathUtils::GetConfigurationPath());
-	char* options = "--debugger-agent=transport=dt_socket,address=127.0.0.1:51740,loglevel=1,logfile=c:\\temp\\dbglog.txt,timeout=10000";
-	//char* options = "--profile=log:calls";
-	mono_jit_parse_options(1, &options);
+
+	// Commandline switch -CEMONO_DEBUG makes the process connect to the debugging server
+	const ICmdLineArg* arg = gEnv->pSystem->GetICmdLine()->FindArg(eCLAT_Pre, "CEMONO_DEBUG");
+	if (arg != NULL)
+	{
+		m_bDebugging = true;
+		char* options = "--debugger-agent=transport=dt_socket,address=127.0.0.1:65432";
+		mono_jit_parse_options(1, &options);
+	}
 }
 
 CMono::~CMono()
@@ -41,8 +42,6 @@ CMono::~CMono()
 
 }
 
-
-
 bool CMono::Init()
 {
 	bool initializationResult = true;
@@ -59,8 +58,6 @@ bool CMono::Init()
 	if (!InitializeManager())
 		return false;
 
-
-
 	mono_thread_attach(m_pMonoDomain);
 
 	return initializationResult;
@@ -68,7 +65,10 @@ bool CMono::Init()
 
 bool CMono::InitializeDomain()
 {
-	mono_debug_init(MONO_DEBUG_FORMAT_MONO);
+	if (m_bDebugging)
+	{
+		mono_debug_init(MONO_DEBUG_FORMAT_MONO);
+	}
 
 	// Create root domain
 	m_pMonoDomain = mono_jit_init_version("Cemono Root", "v4.0.30319");
