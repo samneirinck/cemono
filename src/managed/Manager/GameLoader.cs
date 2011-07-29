@@ -5,6 +5,7 @@ using System.IO;
 using System.Reflection;
 using System.Linq;
 using Microsoft.CSharp;
+using SampleGame;
 
 namespace Cemono
 {
@@ -19,7 +20,7 @@ namespace Cemono
         }
         public void CompileAndLoad(string pathToMono, string pathToSourceFiles)
         {
-            Init();
+            /*Init();
             string[] filesToCompile = Directory.GetFiles(pathToSourceFiles, "*.cs", SearchOption.AllDirectories);
 
             CSharpCodeProvider provider = new CSharpCodeProvider();
@@ -57,7 +58,9 @@ namespace Cemono
             if (results.CompiledAssembly != null)
             {
                 LoadGameAssembly(results.CompiledAssembly);
-            }
+            }*/
+			
+			LoadGameAssembly(typeof(SampleGame.SampleGame).Assembly);
 
 
         }

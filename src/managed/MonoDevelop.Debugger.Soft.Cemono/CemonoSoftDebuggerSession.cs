@@ -1,28 +1,26 @@
 using System;
 using Mono.Debugging.Soft;
 using System.Diagnostics;
+using Mono.Debugging.Client;
 namespace MonoDevelop.Debugger.Soft.Cemono
 {
 	public class CemonoSoftDebuggerSession : SoftDebuggerSession
 	{
-		protected override void OnRun (Mono.Debugging.Client.DebuggerStartInfo startInfo)
+		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
-			CemonoDebuggerStartInfo dsi = (CemonoDebuggerStartInfo) startInfo;
+			var dsi = (CemonoDebuggerStartInfo)startInfo;
 			
-			StartGame(dsi);
-			StartListening(dsi);
+			int debugPort;
+			StartListening(dsi, out debugPort);
 			
+			// Start process
 		}
 		
-		private void StartGame (CemonoDebuggerStartInfo dsi)
+		protected override void EndSession ()
 		{
-			// TODO
+			// Stop process
+			base.EndSession();
 		}
-		
-		private void StartListening(CemonoDebuggerStartInfo dsi)
-		{
-			// TODO		
-		}
-}
+	}
 }
 

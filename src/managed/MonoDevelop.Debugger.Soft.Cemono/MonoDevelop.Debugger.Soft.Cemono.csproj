@@ -31,46 +31,56 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="MonoDevelop.Debugger.Soft, Version=2.4.0.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="Mono.TextEditor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files %28x86%29\MonoDevelop\AddIns\MonoDevelop.Debugger.Soft\MonoDevelop.Debugger.Soft.dll</HintPath>
+      <HintPath>C:\Program Files %28x86%29\MonoDevelop\bin\Mono.TextEditor.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Debugger.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+    <Reference Include="MonoDevelop.Core, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files %28x86%29\MonoDevelop\AddIns\MonoDevelop.Debugger.Soft\Mono.Debugger.Soft.dll</HintPath>
+      <HintPath>C:\Program Files %28x86%29\MonoDevelop\bin\MonoDevelop.Core.dll</HintPath>
     </Reference>
-    <Reference Include="MonoDevelop.Debugger, Version=2.4.0.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="MonoDevelop.Ide, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files %28x86%29\MonoDevelop\AddIns\MonoDevelop.Debugger\MonoDevelop.Debugger.dll</HintPath>
+      <HintPath>C:\Program Files %28x86%29\MonoDevelop\bin\MonoDevelop.Ide.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=5e9ce85b0923c84f">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files %28x86%29\MonoDevelop\bin\Mono.Debugging.dll</HintPath>
     </Reference>
+    <Reference Include="Mono.Debugger.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files %28x86%29\MonoDevelop\AddIns\MonoDevelop.Debugger.Soft\Mono.Debugger.Soft.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.Debugger.Soft, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files %28x86%29\MonoDevelop\AddIns\MonoDevelop.Debugger.Soft\MonoDevelop.Debugger.Soft.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.Debugger, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files %28x86%29\MonoDevelop\AddIns\MonoDevelop.Debugger\MonoDevelop.Debugger.dll</HintPath>
+    </Reference>
     <Reference Include="Mono.Debugging.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=5e9ce85b0923c84f">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files %28x86%29\MonoDevelop\AddIns\MonoDevelop.Debugger.Soft\Mono.Debugging.Soft.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.TextEditor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="MonoDevelop.Debugger.Soft.AspNet, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files %28x86%29\MonoDevelop\bin\Mono.TextEditor.dll</HintPath>
+      <HintPath>C:\Program Files %28x86%29\MonoDevelop\AddIns\MonoDevelop.Debugger.Soft\MonoDevelop.Debugger.Soft.AspNet.dll</HintPath>
     </Reference>
-    <Reference Include="MonoDevelop.Core, Version=2.4.0.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="MonoDevelop.Debugger.Soft.Moonlight, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files %28x86%29\MonoDevelop\bin\MonoDevelop.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="MonoDevelop.Ide, Version=2.4.0.0, Culture=neutral, PublicKeyToken=null">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files %28x86%29\MonoDevelop\bin\MonoDevelop.Ide.dll</HintPath>
+      <HintPath>C:\Program Files %28x86%29\MonoDevelop\AddIns\MonoDevelop.Debugger.Soft\MonoDevelop.Debugger.Soft.Moonlight.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="CemonoSoftDebuggerEngine.cs" />
     <Compile Include="CemonoSoftDebuggerSession.cs" />
+    <Compile Include="CemonoDebuggerStartInfo.cs" />
+    <Compile Include="CemonoProjectServiceExtension.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <None Include="MonoDevelop.Debugger.Soft.Cemono.addin.xml" />
+    <EmbeddedResource Include="MonoDevelop.Debugger.Soft.Cemono.addin.xml" />
   </ItemGroup>
 </Project>
