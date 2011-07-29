@@ -4,6 +4,7 @@
 
 #include "LoggingBinding.h"
 #include "ConsoleBinding.h"
+#include "EntitySystemBinding.h"
 
 CMono::CMono()
 	: m_pMonoDomain(0),	m_pManagerAssembly(0), m_pManagerObject(0), m_pBclAssembly(0)
@@ -94,6 +95,7 @@ bool CMono::InitializeBindings()
 {
 	AddBinding(new CLoggingBinding());
 	AddBinding(new CConsoleBinding());
+	AddBinding(new CEntitySystemBinding());
 	return true;
 }
 

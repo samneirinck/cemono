@@ -24,6 +24,7 @@ public:
 	void AddBinding(IMonoAPIBinding* pBinding);
 
 	MonoImage* GetBclImage() { return m_pBclImage; };
+	MonoAssembly* GetBclAssembly() { return m_pBclAssembly;}
 
 
 private:

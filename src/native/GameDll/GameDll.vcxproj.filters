@@ -22,6 +22,10 @@
     <ClCompile Include="MonoClassUtils.cpp">
       <Filter>Mono\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="EntitySystemBinding.cpp">
+      <Filter>Mono\Bindings</Filter>
+    </ClCompile>
+    <ClCompile Include="MonoEntity.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.h" />
@@ -48,6 +52,10 @@
     <ClInclude Include="MonoClassUtils.h">
       <Filter>Mono\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="EntitySystemBinding.h">
+      <Filter>Mono\Bindings</Filter>
+    </ClInclude>
+    <ClInclude Include="MonoEntity.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Legacy">
