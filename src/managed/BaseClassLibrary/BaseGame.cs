@@ -1,6 +1,6 @@
 ﻿using System.Collections;
-using CryEngine;
-namespace Cemono
+
+namespace CryEngine
 {
     public class BaseGame : IGame
     {
