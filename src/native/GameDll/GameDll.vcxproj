@@ -31,7 +31,7 @@
     <ClInclude Include="EntitySystemBinding.h" />
     <ClInclude Include="G2FlowBaseNode.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="IMonoAPIBinding.h" />
+    <ClInclude Include="MonoAPIBinding.h" />
     <ClInclude Include="LoggingBinding.h" />
     <ClInclude Include="Mono.h" />
     <ClInclude Include="MonoClassUtils.h" />

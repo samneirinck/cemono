@@ -22,7 +22,7 @@ CMono::~CMono()
 	}
 
 	// Clean up bindings
-	std::vector<IMonoAPIBinding*>::iterator it;
+	std::vector<MonoAPIBinding*>::iterator it;
 	for (it = m_apiBindings.begin(); it != m_apiBindings.end(); ++it)
 	{
 		delete *it;
@@ -99,7 +99,7 @@ bool CMono::InitializeBindings()
 	return true;
 }
 
-void CMono::AddBinding(IMonoAPIBinding* pBinding)
+void CMono::AddBinding(MonoAPIBinding* pBinding)
 {
 	m_apiBindings.push_back(pBinding);
 }

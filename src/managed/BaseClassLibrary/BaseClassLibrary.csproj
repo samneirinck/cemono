@@ -8,7 +8,7 @@
     <ProjectGuid>{4A7993B3-6611-4D9D-B8AB-836D6C27B12B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Cemono</RootNamespace>
+    <RootNamespace>CryEngine</RootNamespace>
     <AssemblyName>Cemono.Bcl</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

@@ -10,9 +10,9 @@
 
 #include "MonoPathUtils.h"
 #include "MonoClassUtils.h"
-#include "IMonoAPIBinding.h"
+#include "MonoAPIBinding.h"
 
-struct IMonoAPIBinding;
+class MonoAPIBinding;
 
 class CMono
 {
@@ -21,7 +21,7 @@ public:
 	virtual ~CMono(void);
 
 	bool Init();
-	void AddBinding(IMonoAPIBinding* pBinding);
+	void AddBinding(MonoAPIBinding* pBinding);
 
 	MonoImage* GetBclImage() { return m_pBclImage; };
 	MonoAssembly* GetBclAssembly() { return m_pBclAssembly;}
@@ -39,7 +39,7 @@ private:
 	MonoImage* m_pBclImage;
 	MonoObject* m_pManagerObject;
 
-	std::vector<IMonoAPIBinding*> m_apiBindings;
+	std::vector<MonoAPIBinding*> m_apiBindings;
 };
 
 extern CMono* g_pMono;

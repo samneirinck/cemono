@@ -1,4 +1,4 @@
-﻿namespace Cemono
+﻿namespace CryEngine
 {
     public interface ILogging
     {

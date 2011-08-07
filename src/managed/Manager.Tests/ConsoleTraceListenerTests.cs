@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using Rhino.Mocks;
 using Cemono;
+using CryEngine;
 namespace Manager.Tests
 {
     [TestFixture]

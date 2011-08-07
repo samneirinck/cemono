@@ -6,7 +6,7 @@
 
 CEntitySystemBinding::CEntitySystemBinding()
 {
-	mono_add_internal_call("Cemono.API.EntitySystem::_GetEntities", &_GetEntities);
+	RegisterAPIBinding("_GetEntities", _GetEntities);
 }
 
 

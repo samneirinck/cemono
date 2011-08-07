@@ -3,9 +3,9 @@
 
 CLoggingBinding::CLoggingBinding()
 {
-	mono_add_internal_call("Cemono.API.Logging::_LogAlways", &_LogAlways);
-	mono_add_internal_call("Cemono.API.Logging::_Log", &_Log);
-	mono_add_internal_call("Cemono.API.Logging::_CryWarning", &_CryWarning);
+	RegisterAPIBinding("_LogAlways", _LogAlways);
+	RegisterAPIBinding("_Log", _Log);
+	RegisterAPIBinding("_CryWarning", _CryWarning);
 }
 
 

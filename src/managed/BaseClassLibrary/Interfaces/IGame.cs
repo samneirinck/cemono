@@ -1,5 +1,5 @@
 ﻿using System.Collections;
-namespace Cemono
+namespace CryEngine
 {
     public interface IGame
     {

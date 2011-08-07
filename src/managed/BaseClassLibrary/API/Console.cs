@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using System;
 using System.Globalization;
-namespace Cemono.API
+namespace CryEngine.API
 {
     public class Console
     {

@@ -5,6 +5,7 @@ using System.IO;
 using System.Reflection;
 using System.Linq;
 using Microsoft.CSharp;
+using CryEngine;
 
 namespace Cemono
 {

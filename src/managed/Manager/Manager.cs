@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.IO;
 using System.Diagnostics;
+using CryEngine;
 namespace Cemono
 {
     public class Manager

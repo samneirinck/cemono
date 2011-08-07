@@ -1,15 +1,17 @@
 #pragma once
-#include "IMonoAPIBinding.h"
+#include "MonoAPIBinding.h"
 #include "CemonoCVar.h"
 #include "IConsole.h"
 
-class CConsoleBinding : public IMonoAPIBinding
+class CConsoleBinding : public MonoAPIBinding
 {
 public:
 	CConsoleBinding();
 	virtual ~CConsoleBinding();
 
 protected:
+	virtual const char* GetClassName() { return "Console"; }
+
 	static bool _GetCVar(MonoString* cvarName);
 	static MonoString* _GetCVarHelpText(MonoString* cvarName);
 	static int _GetCVarValueInt(MonoString* cvarName);

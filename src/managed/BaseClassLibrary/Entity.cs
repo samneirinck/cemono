@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Cemono
+namespace CryEngine
 {
     [Serializable]
     public class Entity : IEntity

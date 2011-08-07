@@ -37,9 +37,6 @@
     <ClInclude Include="MonoPathUtils.h">
       <Filter>Mono\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="IMonoAPIBinding.h">
-      <Filter>Mono</Filter>
-    </ClInclude>
     <ClInclude Include="LoggingBinding.h">
       <Filter>Mono\Bindings</Filter>
     </ClInclude>
@@ -56,6 +53,9 @@
       <Filter>Mono\Bindings</Filter>
     </ClInclude>
     <ClInclude Include="MonoEntity.h" />
+    <ClInclude Include="MonoAPIBinding.h">
+      <Filter>Mono</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Legacy">

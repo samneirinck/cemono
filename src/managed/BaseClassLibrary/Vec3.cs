@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using System;
 
-namespace Cemono
+namespace CryEngine
 {
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]

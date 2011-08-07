@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using CryEngine;
 namespace Cemono
 {
     public class ConsoleTraceListener : TraceListener

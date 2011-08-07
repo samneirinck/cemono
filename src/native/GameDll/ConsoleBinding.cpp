@@ -6,16 +6,16 @@ struct IConsole;
 
 CConsoleBinding::CConsoleBinding()
 {
-	mono_add_internal_call("Cemono.API.Console::_GetCVar",_GetCVar);
-	mono_add_internal_call("Cemono.API.Console::_GetCVarHelpText", _GetCVarHelpText);
-	mono_add_internal_call("Cemono.API.Console::_GetCVarValueInt", _GetCVarValueInt);
-	mono_add_internal_call("Cemono.API.Console::_GetCVarValueFloat", _GetCVarValueFloat);
-	mono_add_internal_call("Cemono.API.Console::_GetCVarValueString", _GetCVarValueString);
-	mono_add_internal_call("Cemono.API.Console::_SetCVarValueInt", _SetCVarValueInt);
-	mono_add_internal_call("Cemono.API.Console::_SetCVarValueFloat", _SetCVarValueFloat);
-	mono_add_internal_call("Cemono.API.Console::_SetCVarValueString", _SetCVarValueString);
-	mono_add_internal_call("Cemono.API.Console::_GetCVarFlags", _GetCVarFlags);
-	mono_add_internal_call("Cemono.API.Console::_SetCVarFlags", _SetCVarFlags);
+	RegisterAPIBinding("_GetCVar", _GetCVar);
+	RegisterAPIBinding("_GetCVarHelpText", _GetCVarHelpText);
+	RegisterAPIBinding("_GetCVarValueInt", _GetCVarValueInt);
+	RegisterAPIBinding("_GetCVarValueFloat", _GetCVarValueFloat);
+	RegisterAPIBinding("_GetCVarValueString", _GetCVarValueString);
+	RegisterAPIBinding("_SetCVarValueInt", _SetCVarValueInt);
+	RegisterAPIBinding("_SetCVarValueFloat", _SetCVarValueFloat);
+	RegisterAPIBinding("_SetCVarValueString", _SetCVarValueString);
+	RegisterAPIBinding("_GetCVarFlags", _GetCVarFlags);
+	RegisterAPIBinding("_SetCVarFlags", _SetCVarFlags);
 }
 
 
