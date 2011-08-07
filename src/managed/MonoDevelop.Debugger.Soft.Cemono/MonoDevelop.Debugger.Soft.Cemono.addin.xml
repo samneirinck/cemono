@@ -1,4 +1,11 @@
-<Addin id="MonoDevelop.Debugger.Soft.Cemono" name="Mono Soft Debugger Support for CryEngine" author="Sam Neirinck" copyright="MIT/X11" url="http://cemono.samneirinck.com" description="Mono Soft Debugger Support for CryEngine" category="Debugging" version="2.6">
+<Addin 	id="MonoDevelop.Debugger.Soft.Cemono" 
+		name="Mono Soft Debugger Support for CryEngine" 
+		author="Sam Neirinck" 
+		copyright="MIT/X11" 
+		url="http://cemono.samneirinck.com" 
+		description="Mono Soft Debugger Support for CryEngine" 
+		category="Debugging" 
+		version="2.6">
 	<Dependencies>
 		<Addin id="MonoDevelop.Ide" version="2.6" />
 		<Addin id="MonoDevelop.Core" version="2.6" />

@@ -10,7 +10,7 @@ namespace MonoDevelop.Debugger.Soft.Cemono
 	{
 		public bool CanDebugCommand(ExecutionCommand command)
 		{
-			return true;	
+			return true;
 		}
 		
 		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand cmd)
