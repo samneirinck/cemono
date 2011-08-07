@@ -1,17 +1,16 @@
 #include "StdAfx.h"
 #include "Game.h"
 #include <IFlowSystem.h>
-#include "G2FlowBaseNode.h"
 
 #include "FGPSHandler.h"
 
 #include <CryLibrary.h>
 #include <windows.h>
 
+#include "FlowBaseNode.h"
+
 CMono *g_pMono = 0;
 CGame *g_pGame = 0;
-CG2AutoRegFlowNodeBase *CG2AutoRegFlowNodeBase::m_pFirst=0;
-CG2AutoRegFlowNodeBase *CG2AutoRegFlowNodeBase::m_pLast=0;
 
 CGame::CGame()
 	: m_pFramework(0)
@@ -45,8 +44,6 @@ bool CGame::Init(IGameFramework *pFramework)
 	m_pFramework = pFramework;
 	m_pFramework->RegisterListener(this, "Game", FRAMEWORKLISTENERPRIORITY_GAME);
 
-	m_pFGPluginManager = new CFGPluginManager();
-
 	return true;
 }
 
@@ -58,19 +55,6 @@ void CGame::GetMemoryStatistics(ICrySizer * s)
 bool CGame::CompleteInit() 
 {
 	g_pMono->Init();
-
-	m_pFGPluginManager->RetrieveNodes();
-
-	if (IFlowSystem *pFlow = m_pFramework->GetIFlowSystem())
-	{
-		CG2AutoRegFlowNodeBase *pFactory = CG2AutoRegFlowNodeBase::m_pFirst;
-
-		while (pFactory)
-		{
-			pFlow->RegisterType( pFactory->m_sClassName,pFactory );
-			pFactory = pFactory->m_pNext;
-		}
-	}
 
 	return true;
 }

@@ -7,9 +7,6 @@
     <ClCompile Include="Mono.cpp">
       <Filter>Mono</Filter>
     </ClCompile>
-    <ClCompile Include="MonoCVars.cpp">
-      <Filter>Mono\Console</Filter>
-    </ClCompile>
     <ClCompile Include="MonoLogging.cpp">
       <Filter>Mono\Console</Filter>
     </ClCompile>
@@ -17,14 +14,8 @@
     <ClCompile Include="FGPSHandler.cpp">
       <Filter>Mono\FGPS</Filter>
     </ClCompile>
-    <ClCompile Include="FGPlugin\Modules\FlowModuleNodes.cpp">
-      <Filter>Mono\FGPS\Modules</Filter>
-    </ClCompile>
-    <ClCompile Include="FGPlugin\Modules\Module.cpp">
-      <Filter>Mono\FGPS\Modules</Filter>
-    </ClCompile>
-    <ClCompile Include="FGPlugin\Modules\ModuleManager.cpp">
-      <Filter>Mono\FGPS\Modules</Filter>
+    <ClCompile Include="MonoFlowBaseNode.cpp">
+      <Filter>Mono\FGPS\Base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -32,9 +23,6 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="Mono.h">
       <Filter>Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="MonoCVars.h">
-      <Filter>Mono\Console</Filter>
     </ClInclude>
     <ClInclude Include="MonoLogging.h">
       <Filter>Mono\Console</Filter>
@@ -48,26 +36,17 @@
     <ClInclude Include="FGPSHandler.h">
       <Filter>Mono\FGPS</Filter>
     </ClInclude>
-    <ClInclude Include="FGPlugin\Modules\ModuleManager.h">
-      <Filter>Mono\FGPS\Modules</Filter>
-    </ClInclude>
-    <ClInclude Include="FGPlugin\Modules\FlowModuleNodes.h">
-      <Filter>Mono\FGPS\Modules</Filter>
-    </ClInclude>
-    <ClInclude Include="FGPlugin\Modules\Module.h">
-      <Filter>Mono\FGPS\Modules</Filter>
-    </ClInclude>
-    <ClInclude Include="FGPlugin\Modules\ModuleCommon.h">
-      <Filter>Mono\FGPS\Modules</Filter>
-    </ClInclude>
     <ClInclude Include="PathUtils.h">
       <Filter>Utils &amp; Properties</Filter>
     </ClInclude>
     <ClInclude Include="Properties.h">
       <Filter>Utils &amp; Properties</Filter>
     </ClInclude>
-    <ClInclude Include="G2FlowBaseNode.h">
-      <Filter>Mono\FGPS</Filter>
+    <ClInclude Include="MonoFlowBaseNode.h">
+      <Filter>Mono\FGPS\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="FlowBaseNode.h">
+      <Filter>Mono\FGPS\Base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -83,11 +62,11 @@
     <Filter Include="Mono\FGPS">
       <UniqueIdentifier>{94934d4e-f6f9-4113-8152-22e09d8f2dd1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Mono\FGPS\Modules">
-      <UniqueIdentifier>{bfc8994e-3fcd-4eb8-9a41-90e6ac76d72c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Utils &amp; Properties">
       <UniqueIdentifier>{4efc7b4d-2e65-43b9-b3fc-3f70986420af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mono\FGPS\Base">
+      <UniqueIdentifier>{0a996f6b-12ae-4460-88d1-84afc27da7d7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

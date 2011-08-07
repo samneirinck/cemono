@@ -1,108 +1,7 @@
-/*************************************************************************
-Crytek Source File.
-Copyright (C), Crytek Studios, 2001-2006.
--------------------------------------------------------------------------
-$Id$
-$DateTime$
-Description: Based on G4FlowBaseNode.h which was written by Nick Hesketh
-
--------------------------------------------------------------------------
-History:
-- 16:01:2006: Created by Mathieu Pinard
-
-*************************************************************************/
-#ifndef __G2FLOWBASENODE_H__
-#define __G2FLOWBASENODE_H__
+#ifndef __FLOWBASENODE_H__
+#define __FLOWBASENODE_H__
 
 #include <IFlowSystem.h>
-
-//////////////////////////////////////////////////////////////////////////
-// Auto registration for flow nodes.
-//////////////////////////////////////////////////////////////////////////
-class CG2AutoRegFlowNodeBase : public IFlowNodeFactory
-{
-public:
-	CG2AutoRegFlowNodeBase( const char *sClassName )
-	{
-		m_sClassName = sClassName;
-		m_pNext = 0;
-		if (!m_pLast)
-		{
-			m_pFirst = this;
-		}
-		else
-			m_pLast->m_pNext = this;
-		m_pLast = this;
-	}
-	void AddRef() {}
-	void Release() {}
-
-	//////////////////////////////////////////////////////////////////////////
-	const char *m_sClassName;
-	CG2AutoRegFlowNodeBase* m_pNext;
-	static CG2AutoRegFlowNodeBase *m_pFirst;
-	static CG2AutoRegFlowNodeBase *m_pLast;
-	//////////////////////////////////////////////////////////////////////////
-};
-
-//////////////////////////////////////////////////////////////////////////
-template <class T>
-class CG2AutoRegFlowNode : public CG2AutoRegFlowNodeBase
-{
-public:
-	CG2AutoRegFlowNode( const char *sClassName ) : CG2AutoRegFlowNodeBase( sClassName ) {}
-	IFlowNodePtr Create( IFlowNode::SActivationInfo * pActInfo ) { return new T(pActInfo); }
-	void GetMemoryStatistics(ICrySizer * s)
-	{ 
-		SIZER_SUBCOMPONENT_NAME(s, "CG2AutoRegFlowNode");
-		s->Add(*this);
-	}
-};
-
-//////////////////////////////////////////////////////////////////////////
-class CFlowBaseNode;
-
-template <class T>
-class CG2AutoRegFlowNodeSingleton : public CG2AutoRegFlowNodeBase
-{
-public:
-	CG2AutoRegFlowNodeSingleton( const char *sClassName ) : CG2AutoRegFlowNodeBase( sClassName )
-	{
-		// this makes sure, the derived class DOES NOT implement a Clone method
-		typedef IFlowNodePtr (CFlowBaseNode::*PtrToMemFunc) (IFlowNode::SActivationInfo*);
-		static const PtrToMemFunc f = &T::Clone; // likely to get optimized away
-	}
-	IFlowNodePtr Create( IFlowNode::SActivationInfo * pActInfo ) 
-	{ 
-		if (!m_pInstance)
-			m_pInstance = new T(pActInfo);
-		return m_pInstance;
-	}
-	void GetMemoryStatistics(ICrySizer * s)
-	{ 
-		SIZER_SUBCOMPONENT_NAME(s, "CG2AutoRegFlowNodeSingleton");
-		s->Add(*this);
-	}
-private:
-	IFlowNodePtr m_pInstance;
-};
-
-//////////////////////////////////////////////////////////////////////////
-// Use this define to register a new flow node class.
-// Ex. REGISTER_FLOW_NODE( "Delay",CFlowDelayNode )
-//////////////////////////////////////////////////////////////////////////
-#define REGISTER_FLOW_NODE( FlowNodeClassName,FlowNodeClass ) \
-	CG2AutoRegFlowNode<FlowNodeClass> g_AutoReg##FlowNodeClass ( FlowNodeClassName );
-
-#define REGISTER_FLOW_NODE_EX( FlowNodeClassName,FlowNodeClass,RegName ) \
-	CG2AutoRegFlowNode<FlowNodeClass> g_AutoReg##RegName ( FlowNodeClassName );
-
-#define REGISTER_FLOW_NODE_SINGLETON( FlowNodeClassName,FlowNodeClass ) \
-	CG2AutoRegFlowNodeSingleton<FlowNodeClass> g_AutoReg##FlowNodeClass ( FlowNodeClassName );
-
-#define REGISTER_FLOW_NODE_SINGLETON_EX( FlowNodeClassName,FlowNodeClass,RegName ) \
-	CG2AutoRegFlowNodeSingleton<FlowNodeClass> g_AutoReg##RegName ( FlowNodeClassName );
-
 
 class CFlowBaseNode : public IFlowNode
 {
@@ -215,4 +114,4 @@ private:
 	int m_refs;
 };
 
-#endif
+#endif // __FLOWBASENODE_H__

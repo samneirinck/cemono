@@ -1,30 +1,15 @@
 ﻿using CryEngine;
 using CryEngine.FlowSystem;
 
-namespace FGPlugin
+namespace WhateverNamespaceTheNodeMakerWants
 {
-    class SampleNode: IFlowNode
+    [NodeCategory("Mono")] // Decides which category the node will appear in, inside the Flowgraph Editor.
+    // The node name is actually the class name, no need to define it somewhere else!
+    class SampleNode : IFlowNode // Basic functionality provided by the base FlowNode, all nodes inheriting from the FlowNode class will be registered automatically.
     {
-
-        // Input and Output port enumerations must be placed in the order they are declared in GetConfiguration()
-        enum EInputPorts
-        {
-            EIP_Start,
-            EIP_Cancel
-        };
-
-        enum EOutputPorts
-        {
-            EOP_Started,
-            EOP_Cancelled
-        };
-
         public SampleNode()
         {
-        }
-
-        ~SampleNode()
-        {
+            CryConsole.LogAlways("Constructing SampleNode");
         }
 
         ////////////////////////////////////////////////////
@@ -43,20 +28,22 @@ namespace FGPlugin
 
 		    SOutputPortConfig[] outputs =
 		    {
-			    new SOutputPortConfig("Started", "Called on start"),
-                new SOutputPortConfig("Cancelled", "Called on cancel")
+			    new SOutputPortConfig("Started", EOutputPortType.Void, "Called on start"),
+                new SOutputPortConfig("Cancelled", EOutputPortType.Void, "Called on cancel")
 		    };
 
-		    config.pInputPorts = inputs;
-		    config.pOutputPorts = outputs;
-		    config.sDescription = "Does nothing!";
-            config.category = EFlowNodeCategory.EFLN_DEBUG;
+		    config.inputs = inputs;
+		    config.outputs = outputs;
+            config.description = "Does nothing!";
+            config.category = EFlowNodeFlags.EFLN_DEBUG;
 
             return config;
-	    }
+	    }   
 
         public void ProcessEvent(IFlowNode.EFlowEvent _event, IFlowNode.SActivationInfo nodeInfo)
         {
+            CryConsole.LogAlways("Process Event; Mono style.");
+
             switch (_event)
             {
                 case EFlowEvent.Activate:
@@ -71,4 +58,3 @@ namespace FGPlugin
         }
     }
 }
-

@@ -3,16 +3,20 @@
 
 #include <mono/jit/jit.h>
 #include <mono/metadata/assembly.h>
+
 #include <mono/metadata/debug-helpers.h>
 
 #include "PathUtils.h"
 #include "Properties.h"
 
 #include "MonoLogging.h"
-#include "MonoCVars.h"
+
+#include "FGPSHandler.h"
 
 CMono::CMono()
-	: m_pMonoDomain(0), m_pCryEngineAssembly(0)
+	: m_pMonoDomain(0)
+	, m_pCryEngineAssembly(0)
+	, m_bInitialized(false)
 {
 	// Set up directories
 	mono_set_dirs(CPathUtils::GetLibPath(), CPathUtils::GetConfigPath());
@@ -49,8 +53,11 @@ bool CMono::Init()
 
 	m_pCryEngineAssembly = LoadAssembly(CPathUtils::GetAssemblyPath() + "CryEngine.dll");
 
-	MonoImage *pImage = mono_assembly_get_image(m_pCryEngineAssembly);
-	InvokeFunc("Init", mono_class_from_name(pImage, "CryEngine", "Manager"));
+	//InvokeFunc("Init", "Manager", "CryEngine", mono_assembly_get_image(m_pCryEngineAssembly));
+
+	m_pFGPluginManager = new CFGPluginManager();
+
+	m_bInitialized = result;
 
 	return result;
 }
@@ -67,34 +74,9 @@ MonoAssembly *CMono::LoadAssembly(const char *fullPath)
 	return pAssembly;
 }
 
-MonoObject *CMono::InvokeFunc(string funcName, MonoClass *pClass, bool useInstance, void **args)
-{
-	MonoMethodDesc *pFooDesc = mono_method_desc_new (":" + funcName, false);
-	MonoMethod* monoMethod = mono_method_desc_search_in_class(pFooDesc, pClass); 
-    assert(monoMethod != NULL); //OK
-
-	mono_method_desc_free (pFooDesc);
-
-	MonoObject *pResult;
-	if(useInstance)
-	{
-		 /* allocate memory for the object */
-		MonoObject *pClassInstance = mono_object_new (m_pMonoDomain, pClass);
-		/* execute the default argument-less constructor */
-		mono_runtime_object_init (pClassInstance);
-
-		pResult = mono_runtime_invoke(monoMethod, pClassInstance, args ? args : NULL, NULL);
-	}
-	else
-		pResult = mono_runtime_invoke(monoMethod, NULL, args ? args : NULL, NULL);
-
-	return pResult ? pResult : NULL;
-}
-
 bool CMono::InitializeBindings()
 {
 	AddBinding(new CMonoLogging());
-	AddBinding(new CMonoCVars());
 
 	return true;
 }
@@ -102,4 +84,30 @@ bool CMono::InitializeBindings()
 void CMono::AddBinding(IMonoAPIBinding* pBinding)
 {
 	m_apiBindings.push_back(pBinding);
+}
+
+MonoObject *CMono::InvokeFunc(string funcName, MonoClass *pClass, MonoObject *pInstance, void **args)
+{
+	MonoMethodDesc *pFooDesc = mono_method_desc_new (":" + funcName, false);
+
+	MonoMethod* monoMethod = mono_method_desc_search_in_class(pFooDesc, pClass); 
+    assert(monoMethod != NULL); //OK
+
+	mono_method_desc_free (pFooDesc);
+
+	MonoObject *pResult = mono_runtime_invoke(monoMethod, pInstance ? pInstance : NULL, args, NULL);
+
+	return pResult ? pResult : NULL;
+}
+
+MonoObject *CMono::InvokeFunc(string funcName, string _className, string _nameSpace, MonoImage *pImage, MonoObject *pInstance, void **args)
+{
+	MonoClass *pClass;
+
+	if(pImage)
+		pClass = mono_class_from_name(pImage, _nameSpace, _className);
+	else
+		pClass = mono_class_from_name(GetNativeLibraryImage(), _nameSpace, _className);
+
+	return InvokeFunc(funcName, pClass, pInstance, args);
 }

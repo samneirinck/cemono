@@ -12,14 +12,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DllMain.cpp" />
-    <ClCompile Include="FGPlugin\Modules\FlowModuleNodes.cpp" />
-    <ClCompile Include="FGPlugin\Modules\Module.cpp" />
-    <ClCompile Include="FGPlugin\Modules\ModuleManager.cpp" />
     <ClCompile Include="FGPSHandler.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameDll.cpp" />
     <ClCompile Include="Mono.cpp" />
-    <ClCompile Include="MonoCVars.cpp" />
+    <ClCompile Include="MonoFlowBaseNode.cpp" />
     <ClCompile Include="MonoLogging.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -27,16 +24,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FGPlugin\Common\PluginCommon.h" />
-    <ClInclude Include="FGPlugin\Modules\FlowModuleNodes.h" />
-    <ClInclude Include="FGPlugin\Modules\Module.h" />
-    <ClInclude Include="FGPlugin\Modules\ModuleCommon.h" />
-    <ClInclude Include="FGPlugin\Modules\ModuleManager.h" />
     <ClInclude Include="FGPSHandler.h" />
-    <ClInclude Include="G2FlowBaseNode.h" />
+    <ClInclude Include="FlowBaseNode.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="IMonoAPIBinding.h" />
     <ClInclude Include="Mono.h" />
-    <ClInclude Include="MonoCVars.h" />
+    <ClInclude Include="MonoFlowBaseNode.h" />
     <ClInclude Include="MonoLogging.h" />
     <ClInclude Include="PathUtils.h" />
     <ClInclude Include="Properties.h" />

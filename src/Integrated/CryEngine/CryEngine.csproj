@@ -40,11 +40,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CVars.cs" />
-    <Compile Include="FlowSystem\FlowNodeCommon.cs" />
+    <Compile Include="FlowSystem\FlowSystem.cs" />
     <Compile Include="FlowSystem\IFlowNode.cs" />
     <Compile Include="Logging.cs" />
-    <Compile Include="Manager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

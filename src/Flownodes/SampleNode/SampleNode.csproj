@@ -8,7 +8,7 @@
     <ProjectGuid>{9909C231-CE43-4DBD-8F97-8C9469C1F718}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FGPlugin</RootNamespace>
+    <RootNamespace>WhateverNamespaceTheNodeMakerWants</RootNamespace>
     <AssemblyName>SampleNode</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -41,7 +41,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PluginMain.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SampleNode.cs" />
   </ItemGroup>
