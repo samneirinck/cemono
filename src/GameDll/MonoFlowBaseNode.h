@@ -43,7 +43,7 @@ public:
 		s->Add(*this); 
 	}
 
-	TFlowNodeId m_nodeId;
+	SActivationInfo *m_pActInfo;
 };
 
 enum EMonoInputPortType

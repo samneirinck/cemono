@@ -3,6 +3,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 
 using System.Reflection;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace CryEngine.FlowSystem
@@ -30,35 +31,39 @@ namespace CryEngine.FlowSystem
 
             Assembly plugin;
             object[] customAttributes;
-            string category = "Default";
+            string category;
+
+            int nodeCounter;
 
             for (int i = 0; i < files.Length; i++)
             {
+                nodeCounter = 0;
                 files[i] = files[i].Replace(path, "");
 
-                if (files[i] == "CryEngine.dll") // Skip this, if it was placed in here for some reason.
-                    files[i] = null;
-
-                if (files[i] != null)
+                if (files[i] != "CryEngine.dll") // Not sure if I can make it stop outputting CryEngine.dll here when building the 
                 {
-                    CryConsole.LogAlways("Loading nodes in file {0}", files[i]);
-
                     plugin = Assembly.LoadFile(path + files[i]);
 
                     foreach (Type type in plugin.GetTypes())
                     {
-                        if (type.IsSubclassOf(typeof(IFlowNode)))
+                        if (type.IsSubclassOf(typeof(FlowNode)))
                         {
+                            category = "NoCategory";
+
                             customAttributes = type.GetCustomAttributes(typeof(NodeCategory), true);
 
                             foreach (NodeCategory cat in customAttributes)
                                 category = cat.category;
 
-                            nodeTypes.Add(type.Name, type);
+                            nodes.Add(GetNodeId("TestScripted"), new NodeData(type, null)); // Incredibly harcoded hax. TestScripted = last node to get loaded. For some reason, GetNodeId(*name of the last loaded node*) returns the next available node id. Ah well, works for now. TODO: Fix.
 
                             RegisterNode(category, type.Name);
+
+                            nodeCounter++;
                         }
                     }
+
+                    CryConsole.LogAlways("[FGPS] Registered {0} nodes in {1}", nodeCounter, files[i]);
                 }
             }
         }
@@ -71,11 +76,23 @@ namespace CryEngine.FlowSystem
             _RegisterNode(category, nodeName);
         }
 
-        void NodeProcessEvent(IFlowNode.EFlowEvent flowEvent, UInt16 nodeId)
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        extern protected static UInt16 _GetNodeId(string nodeName);
+
+        public UInt16 GetNodeId(string nodeName)
+        {
+            return _GetNodeId(nodeName);
+        }
+
+        void NodeProcessEvent(FlowNode.EFlowEvent flowEvent, UInt16 nodeId)
         {
             CryConsole.LogAlways("Process event on node of type {0}", nodeId);
 
-            InvokeNodeFunc(nodeId, "ProcessEvent");
+            object[] args = new object[2];
+            args[0] = flowEvent;
+            args[1] = nodeId;
+
+            InvokeNodeFunc(nodeId, "ProcessEvent", args);
         }
 
         SFlowNodeConfig GetConfiguration(UInt16 nodeId)
@@ -83,42 +100,24 @@ namespace CryEngine.FlowSystem
             return (SFlowNodeConfig)InvokeNodeFunc(nodeId, "GetConfiguration");
         }
 
-        object InvokeNodeFunc(UInt16 nodeId, string func)
+        object InvokeNodeFunc(UInt16 nodeId, string func, object[] args = null)
         {
-            CryConsole.LogAlways("Mono.1");
-
-            if (nodes.ContainsKey(nodeId))
+            if (nodes[nodeId].obj == null)
             {
-                CryConsole.LogAlways("Mono.2");
+                NodeData data = nodes[nodeId];
 
-                return nodes[nodeId].type.InvokeMember(func,
+                data.obj = Activator.CreateInstance(nodes[nodeId].type);
+
+                nodes[nodeId] = data;
+            }
+
+            return nodes[nodeId].type.InvokeMember(func,
                 BindingFlags.DeclaredOnly |
                 BindingFlags.Public | BindingFlags.NonPublic |
-                BindingFlags.Instance | BindingFlags.InvokeMethod, null, nodes[nodeId].obj, null);
-            }
-            else
-            {
-                CryConsole.LogAlways("Mono.3");
-
-                Type type = nodeTypes["SampleNode"];
-
-                CryConsole.LogAlways("Mono.4");
-                
-                // Construct
-                object typeInstance = Activator.CreateInstance(type); // crash
-
-                CryConsole.LogAlways("Mono.5");
-
-                nodes.Add(nodeId, new NodeData(type, typeInstance));
-
-                CryConsole.LogAlways("Mono.6");
-
-                return InvokeNodeFunc(nodeId, func);
-            }
+                BindingFlags.Instance | BindingFlags.InvokeMethod, null, nodes[nodeId].obj, args);
         }
 
         Dictionary<UInt16, NodeData> nodes = new Dictionary<UInt16, NodeData>();
-        Dictionary<string, Type> nodeTypes = new Dictionary<string, Type>();
     }
 
     public struct NodeData
@@ -217,54 +216,26 @@ namespace CryEngine.FlowSystem
     {
         public SInputPortConfig[] inputs
         {
-            get
-            {
-                return inputPorts;
-            }
-            set
-            {
-                inputPorts = value;
-
-                inputSize = inputPorts.Length;
-            }
+            get { return inputPorts; }
+            set {  inputPorts = value; inputSize = inputPorts.Length; }
         }
 
         public SOutputPortConfig[] outputs
         {
-            get
-            {
-                return outputPorts;
-            }
-            set
-            {
-                outputPorts = value;
-
-                outputSize = outputPorts.Length;
-            }
+            get { return outputPorts; }
+            set { outputPorts = value; outputSize = outputPorts.Length; }
         }
 
         public string description
         {
-            get
-            {
-                return sDescription;
-            }
-            set
-            {
-                sDescription = value;
-            }
+            get { return sDescription; }
+            set { sDescription = value; }
         }
 
         public EFlowNodeFlags category
         {
-            get
-            {
-                return eCategory;
-            }
-            set
-            {
-                eCategory = value;
-            }
+            get { return eCategory; }
+            set { eCategory = value; }
         }
 
         private SInputPortConfig[] inputPorts;

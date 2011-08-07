@@ -22,12 +22,12 @@ public:
 
 	MonoObject *GetFlowSystemInstance() const { return m_pFlowSystemInstance; }
 
-	static void RegisterNode(MonoString *category, MonoString *nodeName); // Called from C# node dll
+	// Mono funcs
+	static void RegisterNode(MonoString *category, MonoString *nodeName);
+
+	static uint16 GetNodeId(MonoString *name);
 
 private:
-	// Dll Plugin list
-	int m_nPluginCounter;
-
 	MonoObject *m_pFlowSystemInstance;
 };
 

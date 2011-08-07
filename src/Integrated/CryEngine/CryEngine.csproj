@@ -41,7 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FlowSystem\FlowSystem.cs" />
-    <Compile Include="FlowSystem\IFlowNode.cs" />
+    <Compile Include="FlowSystem\FlowNode.cs" />
     <Compile Include="Logging.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

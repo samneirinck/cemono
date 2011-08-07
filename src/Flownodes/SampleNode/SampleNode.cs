@@ -1,11 +1,14 @@
 ﻿using CryEngine;
 using CryEngine.FlowSystem;
 
+using System;
+
+
 namespace WhateverNamespaceTheNodeMakerWants
 {
     [NodeCategory("Mono")] // Decides which category the node will appear in, inside the Flowgraph Editor.
     // The node name is actually the class name, no need to define it somewhere else!
-    class SampleNode : IFlowNode // Basic functionality provided by the base FlowNode, all nodes inheriting from the FlowNode class will be registered automatically.
+    class SampleNode : FlowNode // Basic functionality provided by the base FlowNode, all nodes inheriting from the FlowNode class will be registered automatically.
     {
         public SampleNode()
         {
@@ -40,7 +43,7 @@ namespace WhateverNamespaceTheNodeMakerWants
             return config;
 	    }   
 
-        public void ProcessEvent(IFlowNode.EFlowEvent _event, IFlowNode.SActivationInfo nodeInfo)
+        public void ProcessEvent(FlowNode.EFlowEvent _event, UInt16 id)
         {
             CryConsole.LogAlways("Process Event; Mono style.");
 

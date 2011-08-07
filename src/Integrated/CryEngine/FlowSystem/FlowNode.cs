@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CryEngine.FlowSystem
 {
-    public class IFlowNode
+    public class FlowNode
     {
         public struct SActivationInfo
         {

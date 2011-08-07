@@ -40,7 +40,7 @@ bool CMono::Init()
 {
 	bool result = true;
 
-	m_pMonoDomain = mono_jit_init("CryMono");
+	m_pMonoDomain = mono_jit_init("cemono");
 	if(!m_pMonoDomain)
 	{
 		GameWarning("Mono initialization failed!");
@@ -52,8 +52,6 @@ bool CMono::Init()
 	InitializeBindings();
 
 	m_pCryEngineAssembly = LoadAssembly(CPathUtils::GetAssemblyPath() + "CryEngine.dll");
-
-	//InvokeFunc("Init", "Manager", "CryEngine", mono_assembly_get_image(m_pCryEngineAssembly));
 
 	m_pFGPluginManager = new CFGPluginManager();
 
@@ -67,9 +65,6 @@ MonoAssembly *CMono::LoadAssembly(const char *fullPath)
 	MonoAssembly *pAssembly = mono_domain_assembly_open(m_pMonoDomain, fullPath);
 	if(!pAssembly)
 		return false;
-	/*else
-		mono_jit_exec(m_pMonoDomain, pAssembly, NULL, NULL);
-		*/
 
 	return pAssembly;
 }
