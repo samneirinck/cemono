@@ -37,21 +37,19 @@ MonoClass* CMonoClassUtils::GetClassByName(const char* nameSpace, const char* cl
 	return pClass;
 }
 
-MonoObject *CMonoClassUtils::CallMethod(const char *funcName, MonoClass *pClass, MonoObject *pInstance, void **args)
+MonoObject *CMonoClassUtils::CallMethod(string funcName, MonoClass *pClass, MonoObject *pInstance, void **args)
 {
-	MonoMethodDesc *pFooDesc = mono_method_desc_new (":" + (string)funcName, false);
+	MonoMethodDesc *pFooDesc = mono_method_desc_new (":" + funcName, false);
 
 	MonoMethod* monoMethod = mono_method_desc_search_in_class(pFooDesc, pClass); 
     assert(monoMethod != NULL); //OK
 
 	mono_method_desc_free (pFooDesc);
 
-	MonoObject *pResult = mono_runtime_invoke(monoMethod, pInstance ? pInstance : NULL, args, NULL);
-
-	return pResult;
+	return mono_runtime_invoke(monoMethod, pInstance, args, NULL);
 }
 
-MonoObject *CMonoClassUtils::CallMethod(const char *funcName, string _className, string _nameSpace, MonoImage *pImage, MonoObject *pInstance, void **args)
+MonoObject *CMonoClassUtils::CallMethod(string funcName, string _className, string _nameSpace, MonoImage *pImage, MonoObject *pInstance, void **args)
 {
 	MonoClass *pClass = mono_class_from_name(pImage, _nameSpace, _className);
 

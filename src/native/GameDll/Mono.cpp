@@ -13,8 +13,7 @@ CMono::CMono()
 {
 	// Set up directories
 
-	mono_set_dirs("D:\\Apps\\Mono\\lib", "D:\\Apps\\Mono\\etc");
-	//mono_set_dirs(CMonoPathUtils::GetLibPath(), CMonoPathUtils::GetConfigPath());
+	mono_set_dirs(CMonoPathUtils::GetLibPath(), CMonoPathUtils::GetConfigPath());
 }
 
 CMono::~CMono()
@@ -120,6 +119,6 @@ bool CMono::InitializeBaseClassLibraries()
 	{
 		m_pBclImage = mono_assembly_get_image(m_pBclAssembly);
 
-		return m_pBclAssembly != NULL;
+		return m_pBclImage != NULL;
 	}
 }

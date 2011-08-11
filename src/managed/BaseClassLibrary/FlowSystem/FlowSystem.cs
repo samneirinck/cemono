@@ -27,8 +27,10 @@ namespace CryEngine.FlowSystem
         {
         }
 
-        private void RegisterNodes(string path)
+        public void RegisterNodes(string path)
         {
+           // Logging.LogAlways("sup");
+            /*
             string[] files = Directory.GetFiles(@path, "*.dll", SearchOption.TopDirectoryOnly);
 
             Assembly plugin;
@@ -65,9 +67,9 @@ namespace CryEngine.FlowSystem
                         }
                     }
 
-                    Logging./*CryConsole.*/LogAlways("[FGPS] Registered {0} nodes in {1}", nodeCounter, files[i]);
+                    Logging.LogAlways("[FGPS] Registered {0} nodes in {1}", nodeCounter, files[i]);
                 }
-            }
+            }*/
         }
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
@@ -88,7 +90,7 @@ namespace CryEngine.FlowSystem
 
         void NodeProcessEvent(FlowNode.EFlowEvent flowEvent, UInt16 nodeId)
         {
-            Logging./*CryConsole.*/LogAlways("Process event on node of type {0}", nodeId);
+            Logging.LogAlways("Process event on node of type {0}", nodeId);
 
             object[] args = new object[2];
             args[0] = flowEvent;

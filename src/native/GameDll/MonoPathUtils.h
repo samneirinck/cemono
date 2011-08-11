@@ -32,19 +32,19 @@ public:
 		return GetModPath().append(NODE_PATH).append("\\");
 	}
 
+	static string GetCemonoPath()
+	{
+		return GetCrysisWarsPath().append("cemono").append("\\");
+	}
+
 	static string GetLibPath()
 	{
-		return GetModPath().append(MONO_LIB_PATH).append("\\");
+		return GetCemonoPath().append(MONO_LIB_PATH).append("\\");
 	}
 
 	static string GetConfigPath()
 	{
-		return GetModPath().append(MONO_CONFIG_PATH).append("\\");
-	}
-
-	static string GetCemonoPath()
-	{
-		return GetCrysisWarsPath().append("cemono").append("\\");
+		return GetCemonoPath().append(MONO_CONFIG_PATH).append("\\");
 	}
 
 	static string GetModGameLogicPath()

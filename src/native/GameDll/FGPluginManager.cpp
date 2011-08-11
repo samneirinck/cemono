@@ -9,13 +9,13 @@ CFGPluginManager::CFGPluginManager()
 	MonoClass *nativeClass = mono_class_from_name(g_pMono->GetBclImage(), "CryEngine.FlowSystem", "FlowManager");
 
 	m_pFlowSystemInstance = CMonoClassUtils::CreateInstanceOf(nativeClass);
-	mono_runtime_object_init(m_pFlowSystemInstance);
 	
 	RegisterAPIBinding("_RegisterNode", RegisterNode);
 	RegisterAPIBinding("_GetNodeId", GetNodeId);
 	
 	// Retrieve C# nodes
-	void *args[1]  = { mono_string_new(mono_domain_get(), CMonoPathUtils::GetFGNodePath()) };
+	void *args[1];
+	args [0] = mono_string_new(mono_domain_get(), CMonoPathUtils::GetFGNodePath());
 
 	CMonoClassUtils::CallMethod("RegisterNodes", nativeClass, m_pFlowSystemInstance, args);
 }
