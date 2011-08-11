@@ -7,7 +7,7 @@ private:
 protected:
 	const char* GetNamespace()
 	{
-		return "CryEngine";
+		return "CryEngine.API";
 	}
 	virtual const char* GetClassName() = 0;
 
