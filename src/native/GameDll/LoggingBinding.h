@@ -10,6 +10,7 @@ public:
 
 protected:
 	virtual const char* GetClassName() { return "Logging"; }
+	virtual const char* GetNamespaceExtension() { return "API"; }
 
 	static void _LogAlways(MonoString *msg);
 	static void _Log(MonoString *msg);

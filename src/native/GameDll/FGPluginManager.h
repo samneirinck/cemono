@@ -24,7 +24,8 @@ public:
 	static uint16 GetNodeId(MonoString *name);
 
 protected:
-	virtual const char* GetClassName() { return "FlowSystem.FlowManager"; }
+	virtual const char* GetClassName() { return "FlowManager"; }
+	virtual const char* GetNamespaceExtension() { return "FlowSystem"; }
 
 private:
 	MonoObject *m_pFlowSystemInstance;

@@ -10,6 +10,7 @@ public:
 
 protected:
 	virtual const char* GetClassName() { return "EntitySystem"; }
+	virtual const char* GetNamespaceExtension() { return "API"; }
 
 	static MonoArray* _GetEntities();
 	static MonoObject* CreateMonoEntity(IEntity *pEnt);

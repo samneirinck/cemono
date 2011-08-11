@@ -29,8 +29,6 @@ namespace CryEngine.FlowSystem
 
         public void RegisterNodes(string path)
         {
-           // Logging.LogAlways("sup");
-            /*
             string[] files = Directory.GetFiles(@path, "*.dll", SearchOption.TopDirectoryOnly);
 
             Assembly plugin;
@@ -69,7 +67,7 @@ namespace CryEngine.FlowSystem
 
                     Logging.LogAlways("[FGPS] Registered {0} nodes in {1}", nodeCounter, files[i]);
                 }
-            }*/
+            }
         }
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
