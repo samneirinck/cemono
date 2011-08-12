@@ -7,7 +7,7 @@ private:
 protected:
 	const char* GetNamespace() { return "CryEngine"; }
 
-	virtual const char* GetNamespaceExtension() { return  ""; } // i.e. "API" if your class is located in namespace "CryEngine.API"
+	virtual const char* GetNamespaceExtension() { return  "API"; } // i.e. "FlowSystem" if your class is located in namespace "CryEngine.FlowSystem"
 	virtual const char* GetClassName() = 0;
 
 public:
