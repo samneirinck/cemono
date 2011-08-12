@@ -11,6 +11,7 @@ public:
 
 protected:
 	virtual const char* GetClassName() { return "Console"; }
+	virtual const char* GetNamespaceExtension() { return "API"; }
 
 	static bool _GetCVar(MonoString* cvarName);
 	static MonoString* _GetCVarHelpText(MonoString* cvarName);

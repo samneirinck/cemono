@@ -1,6 +1,10 @@
+#ifndef __MONO_PATHUTILS_H__
+#define __MONO_PATHUTILS_H__
+
 #pragma once
 
 #include "StdAfx.h"
+#include "MonoProperties.h"
 
 class CMonoPathUtils
 {
@@ -13,9 +17,19 @@ public:
 		return string(path).append("\\");
 	}
 
-	static string GetModPath()
+	static string GetModPath(bool fullPath = true)
 	{
-		return GetCrysisWarsPath().append(gEnv->pCryPak->GetModDir()).append("\\");
+		return fullPath ? GetCrysisWarsPath().append(gEnv->pCryPak->GetModDir()) : gEnv->pCryPak->GetModDir();
+	}
+
+	static string GetAssemblyPath()
+	{
+		return GetModPath().append(ASSEMBLY_PATH).append("\\");
+	}
+
+	static string GetFGNodePath()
+	{
+		return GetModPath().append(NODE_PATH).append("\\");
 	}
 
 	static string GetCemonoPath()
@@ -23,19 +37,14 @@ public:
 		return GetCrysisWarsPath().append("cemono").append("\\");
 	}
 
-	static string GetConfigurationPath()
+	static string GetLibPath()
 	{
-		return GetCemonoPath().append("etc").append("\\");
+		return GetCemonoPath().append(MONO_LIB_PATH).append("\\");
 	}
 
-	static string GetAssemblyPath()
+	static string GetConfigPath()
 	{
-		return GetCemonoPath().append("lib").append("\\");
-	}
-
-	static string GetCemonoAssemblyPath()
-	{
-		return GetAssemblyPath().append("cemono").append("\\");
+		return GetCemonoPath().append(MONO_CONFIG_PATH).append("\\");
 	}
 
 	static string GetModGameLogicPath()
@@ -44,3 +53,4 @@ public:
 	}
 };
 
+#endif

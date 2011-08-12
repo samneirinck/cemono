@@ -12,6 +12,7 @@
 #include "MonoClassUtils.h"
 #include "MonoAPIBinding.h"
 
+class CFGPluginManager;
 class MonoAPIBinding;
 
 class CMono
@@ -26,12 +27,18 @@ public:
 	MonoImage* GetBclImage() { return m_pBclImage; };
 	MonoAssembly* GetBclAssembly() { return m_pBclAssembly;}
 
+	CFGPluginManager *GetFGPluginManager() const { return m_pFGPluginManager; }
 
 private:
+	MonoAssembly *LoadAssembly(const char *fullPath) { return mono_domain_assembly_open(m_pMonoDomain, fullPath); }
+
 	bool InitializeDomain();
 	bool InitializeManager();
 	bool InitializeBindings();
 	bool InitializeBaseClassLibraries();
+
+private:
+	CFGPluginManager* m_pFGPluginManager;
 
 	MonoDomain* m_pMonoDomain;
 	MonoAssembly* m_pManagerAssembly;

@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>E:\Games\Crysis Wars\cemono\lib\cemono\</OutputPath>
+    <OutputPath>..\..\..\Bin32\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -42,6 +42,8 @@
     <Compile Include="CVar.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="EntityFlags.cs" />
+    <Compile Include="FlowSystem\FlowNode.cs" />
+    <Compile Include="FlowSystem\FlowSystem.cs" />
     <Compile Include="Interfaces\IEntity.cs" />
     <Compile Include="Interfaces\IGame.cs" />
     <Compile Include="Interfaces\ILogging.cs" />

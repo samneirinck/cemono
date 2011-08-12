@@ -14,6 +14,7 @@
     <ClCompile Include="CemonoCVar.cpp" />
     <ClCompile Include="ConsoleBinding.cpp" />
     <ClCompile Include="EntitySystemBinding.cpp" />
+    <ClCompile Include="FGPluginManager.cpp" />
     <ClCompile Include="FlowPostFXNodes.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameDll.cpp" />
@@ -21,6 +22,7 @@
     <ClCompile Include="Mono.cpp" />
     <ClCompile Include="MonoClassUtils.cpp" />
     <ClCompile Include="MonoEntity.cpp" />
+    <ClCompile Include="MonoFlowBaseNode.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
@@ -29,6 +31,8 @@
     <ClInclude Include="CemonoCVar.h" />
     <ClInclude Include="ConsoleBinding.h" />
     <ClInclude Include="EntitySystemBinding.h" />
+    <ClInclude Include="fgpluginmanager.h" />
+    <ClInclude Include="flowbasenode.h" />
     <ClInclude Include="G2FlowBaseNode.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="MonoAPIBinding.h" />
@@ -36,7 +40,9 @@
     <ClInclude Include="Mono.h" />
     <ClInclude Include="MonoClassUtils.h" />
     <ClInclude Include="MonoEntity.h" />
+    <ClInclude Include="monoflowbasenode.h" />
     <ClInclude Include="MonoPathUtils.h" />
+    <ClInclude Include="monoproperties.h" />
     <ClInclude Include="StdAfx.h" />
   </ItemGroup>
   <ItemGroup>

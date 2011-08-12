@@ -5,21 +5,21 @@
 #include "LoggingBinding.h"
 #include "ConsoleBinding.h"
 #include "EntitySystemBinding.h"
+#include "FGPluginManager.h"
 
 CMono::CMono()
 	: m_pMonoDomain(0),	m_pManagerAssembly(0), m_pManagerObject(0), m_pBclAssembly(0)
 {
 	// Set up directories
-	mono_set_dirs(CMonoPathUtils::GetAssemblyPath(), CMonoPathUtils::GetConfigurationPath());
+
+	mono_set_dirs(CMonoPathUtils::GetLibPath(), CMonoPathUtils::GetConfigPath());
 }
 
 CMono::~CMono()
 {
 	// Clean up mono
-	if (m_pMonoDomain != NULL)
-	{
+	if (m_pMonoDomain)
 		mono_jit_cleanup(m_pMonoDomain);
-	}
 
 	// Clean up bindings
 	std::vector<MonoAPIBinding*>::iterator it;
@@ -27,14 +27,11 @@ CMono::~CMono()
 	{
 		delete *it;
 	}
-
 }
-
-
 
 bool CMono::Init()
 {
-	bool initializationResult = true;
+	bool initResult = true;
 
 	if (!InitializeDomain())
 		return false;
@@ -48,17 +45,22 @@ bool CMono::Init()
 	if (!InitializeManager())
 		return false;
 
-
-
 	mono_thread_attach(m_pMonoDomain);
 
-	return initializationResult;
+	m_pFGPluginManager = new CFGPluginManager();
+
+	return initResult;
 }
 
 bool CMono::InitializeDomain()
 {
 	// Create root domain
-	m_pMonoDomain = mono_jit_init_version("Cemono Root", "v4.0.30319");
+	m_pMonoDomain = mono_jit_init("cemono");
+	if(!m_pMonoDomain)
+	{
+		GameWarning("Mono initialization failed!");
+		return false;
+	}
 
 	return (m_pMonoDomain != NULL);
 }
@@ -66,15 +68,13 @@ bool CMono::InitializeDomain()
 bool CMono::InitializeManager()
 {
 	// Open assembly in domain
-	m_pManagerAssembly = mono_domain_assembly_open(m_pMonoDomain, CMonoPathUtils::GetCemonoAssemblyPath() + "Cemono.Manager.dll");
+	m_pManagerAssembly = LoadAssembly(CMonoPathUtils::GetAssemblyPath() + "Cemono.Manager.dll");
 
-	if (m_pManagerAssembly == NULL)
-	{
+	if (!m_pManagerAssembly)
 		return false;
-	}
 
 	MonoImage* pMonoImage = mono_assembly_get_image(m_pManagerAssembly);
-	if (pMonoImage == NULL)
+	if (!pMonoImage)
 	{
 		CryError("Failed to load mono manager image");
 		return false;
@@ -107,17 +107,17 @@ void CMono::AddBinding(MonoAPIBinding* pBinding)
 
 bool CMono::InitializeBaseClassLibraries()
 {
-	string bclPath = CMonoPathUtils::GetCemonoAssemblyPath() + "Cemono.Bcl.dll";
-	m_pBclAssembly = mono_domain_assembly_open(m_pMonoDomain, bclPath);
+	m_pBclAssembly = LoadAssembly(CMonoPathUtils::GetAssemblyPath() + "Cemono.Bcl.dll");
 	
-	if (m_pBclAssembly == NULL)
+	if (!m_pBclAssembly)
 	{
 		CryError("Failed to initialize base class libraries, assembly=NULL");
 		return false;
-	} else {
+	} 
+	else
+	{
 		m_pBclImage = mono_assembly_get_image(m_pBclAssembly);
 
-		return m_pBclAssembly != NULL;
+		return m_pBclImage != NULL;
 	}
-
 }

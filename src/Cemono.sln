@@ -10,8 +10,14 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manager.Tests", "managed\Manager.Tests\Manager.Tests.csproj", "{B3512C8F-527E-48CF-BD90-0CA77B8E17B5}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameDll", "native\GameDll\GameDll.vcxproj", "{0A626603-18B8-41F4-ACFB-0ABE9C4569F5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{17C0D534-9049-4572-9385-863FB2F6F6D5} = {17C0D534-9049-4572-9385-863FB2F6F6D5}
+		{4A7993B3-6611-4D9D-B8AB-836D6C27B12B} = {4A7993B3-6611-4D9D-B8AB-836D6C27B12B}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleGame", "E:\Games\Crysis Wars\Mods\cemono\Game\Logic\SampleGame.csproj", "{0EE09A93-C7AC-4FF6-8A0A-159DB963C883}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleNode", "samples\SampleNode\SampleNode.csproj", "{9909C231-CE43-4DBD-8F97-8C9469C1F718}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -83,6 +89,16 @@ Global
 		{0EE09A93-C7AC-4FF6-8A0A-159DB963C883}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{0EE09A93-C7AC-4FF6-8A0A-159DB963C883}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{0EE09A93-C7AC-4FF6-8A0A-159DB963C883}.Release|Win32.ActiveCfg = Release|Any CPU
+		{9909C231-CE43-4DBD-8F97-8C9469C1F718}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9909C231-CE43-4DBD-8F97-8C9469C1F718}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9909C231-CE43-4DBD-8F97-8C9469C1F718}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{9909C231-CE43-4DBD-8F97-8C9469C1F718}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{9909C231-CE43-4DBD-8F97-8C9469C1F718}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{9909C231-CE43-4DBD-8F97-8C9469C1F718}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9909C231-CE43-4DBD-8F97-8C9469C1F718}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9909C231-CE43-4DBD-8F97-8C9469C1F718}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{9909C231-CE43-4DBD-8F97-8C9469C1F718}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{9909C231-CE43-4DBD-8F97-8C9469C1F718}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

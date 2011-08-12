@@ -18,7 +18,7 @@ namespace Cemono
         #endregion
 
         #region Constructor(s)
-        public Manager()
+        Manager()
         {
             InitializeConsoleRedirect();
 
@@ -55,13 +55,17 @@ namespace Cemono
 
         private void InitializeGameDomain()
         {
-            AppDomain domain = AppDomain.CreateDomain("cemono Game");
+            string dir = @"E:\Games\Crysis Wars\Mods\cemono\Game\Logic";
+            if (Directory.Exists(dir))
+            {
+                AppDomain domain = AppDomain.CreateDomain("cemono Game");
 
-            GameLoader gameLoader = (GameLoader)domain.CreateInstanceFromAndUnwrap(Assembly.GetExecutingAssembly().Location, typeof(GameLoader).ToString());
-            gameLoader.ConsoleRedirector = _consoleRedirector;
-            gameLoader.CompileAndLoad("", @"E:\Games\Crysis Wars\Mods\cemono\Game\Logic");
+                GameLoader gameLoader = (GameLoader)domain.CreateInstanceFromAndUnwrap(Assembly.GetExecutingAssembly().Location, typeof(GameLoader).ToString());
+                gameLoader.ConsoleRedirector = _consoleRedirector;
+                gameLoader.CompileAndLoad("", dir);
 
-            _gameDomain = domain;
+                _gameDomain = domain;
+            }
         }
         #endregion
     }

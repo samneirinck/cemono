@@ -66,9 +66,7 @@ MonoObject* CEntitySystemBinding::CreateMonoEntity(IEntity *pEnt)
 		CMonoClassUtils::CallMethod(pEntity, ":.ctor(long)", args);
 		
 		return pEntity;
-	}	 else
-	{
+	} else {
 		return NULL;
 	}
-	
 }
