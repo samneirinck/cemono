@@ -46,7 +46,7 @@
     <ClInclude Include="StdAfx.h" />
   </ItemGroup>
   <ItemGroup>
-    <Library Include="mono.lib" />
+    <Library Include="..\..\..\lib\native\mono.lib" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0A626603-18B8-41F4-ACFB-0ABE9C4569F5}</ProjectGuid>

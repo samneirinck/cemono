@@ -87,7 +87,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Library Include="mono.lib">
+    <Library Include="..\..\..\lib\native\mono.lib">
       <Filter>Mono</Filter>
     </Library>
   </ItemGroup>
