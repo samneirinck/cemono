@@ -46,3 +46,6 @@ _ReSharper*/
 
 *.userprefs
 *.pidb
+
+# Output directory
+output

@@ -79,15 +79,17 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>E:\Games\Crysis Wars\Mods\cemono\bin32</OutDir>
+    <OutDir>$(ProjectDir)..\..\..\output\native\$(ProjectName)</OutDir>
     <TargetName>cemono</TargetName>
-    <IncludePath>E:\Games\Crysis Wars\CryENGINE.NET\src\Native\GameDll\include\mono-2.0;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\Games\Crysis Wars\CryENGINE.NET\src\Native\GameDll\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)..\..\..\lib\native\mono;$(ProjectDir)..\..\..\lib\native\CryEngine\CryCommon;$(ProjectDir)..\..\..\lib\native\CryEngine\CryAction;$(ProjectDir)..\..\..\lib\native\STLPORT;$(ProjectDir)..\..\..\lib\native\boost;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\..\..\Mods\ce.net\Bin32</OutDir>
+    <OutDir>$(ProjectDir)..\..\..\output\native\$(ProjectName)</OutDir>
     <TargetName>ce.net</TargetName>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)..\..\..\lib\native\mono;$(ProjectDir)..\..\..\lib\native\CryEngine\CryCommon;$(ProjectDir)..\..\..\lib\native\CryEngine\CryAction;$(ProjectDir)..\..\..\lib\native\STLPORT;$(ProjectDir)..\..\..\lib\native\boost;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -95,7 +97,8 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;GAMEDLL_EXPORTS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Create</PrecompiledHeader>
-      <AdditionalIncludeDirectories>.\;E:\Games\Crysis Wars\CryENGINE.NET\src\Native\CryEngine\CryCommon;E:\Games\Crysis Wars\CryENGINE.NET\src\Native\CryEngine\CryAction;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <ExceptionHandling>false</ExceptionHandling>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -116,7 +119,8 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;GAMEDLL_EXPORTS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>..\CryEngine\CryAction;..\CryEngine\CryCommon;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
