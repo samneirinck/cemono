@@ -39,7 +39,7 @@ bool CGame::Init(IGameFramework *pFramework)
 	return true;
 }
 
-void CGame::GetMemoryStatistics(ICrySizer * s)
+void CGame::GetMemoryStatistics(ICrySizer * s) const
 {
 
 }
@@ -47,16 +47,16 @@ void CGame::GetMemoryStatistics(ICrySizer * s)
 bool CGame::CompleteInit() 
 {
 
-	if (IFlowSystem *pFlow = m_pFramework->GetIFlowSystem())
-	{
-		CG2AutoRegFlowNodeBase *pFactory = CG2AutoRegFlowNodeBase::m_pFirst;
+	//if (IFlowSystem *pFlow = m_pFramework->GetIFlowSystem())
+	//{
+	//	CG2AutoRegFlowNodeBase *pFactory = CG2AutoRegFlowNodeBase::m_pFirst;
 
-		while (pFactory)
-		{
-			pFlow->RegisterType( pFactory->m_sClassName,pFactory );
-			pFactory = pFactory->m_pNext;
-		}
-	}
+	//	while (pFactory)
+	//	{
+	//		pFlow->RegisterType( pFactory->m_sClassName,pFactory );
+	//		pFactory = pFactory->m_pNext;
+	//	}
+	//}
 	
 	m_pMono->Init();
 
@@ -66,11 +66,6 @@ bool CGame::CompleteInit()
 void CGame::Shutdown()
 {
 
-}
-
-string CGame::InitMapReloading()
-{
-	return "";
 }
 
 int CGame::Update(bool haveFocus, unsigned int updateFlags)
@@ -121,17 +116,57 @@ void CGame::OnClearPlayerIds()
 {
 }
 
-bool CGame::IsReloading()
+IGame::TSaveGameName CreateSaveGameName()
 {
-	return false;
+	return NULL;
 }
 
-const char* CGame::CreateSaveGameName()
+const char* CGame::GetMappedLevelName(const char* levelName) const
 {
 	return "";
 }
 
-const char* CGame::GetMappedLevelName(const char* levelName) const
+IGameStateRecorder* CGame::CreateGameStateRecorder(IGameplayListener* pL)
+{
+	return NULL;
+}
+
+const bool CGame::DoInitialSavegame() const
+{
+	return true;
+}
+
+uint32 CGame::AddGameWarning(const char* stringId, const char* paramMessage, IGameWarningsListener* pListener)
+{
+	return 0;
+}
+
+void CGame::RenderGameWarnings()
+{
+}
+
+void CGame::RemoveGameWarning(const char* stringId)
+{
+}
+
+bool CGame::GameEndLevel(const char* stringId)
+{
+	return true;
+}
+
+void CGame::SetUserProfileChanged(bool yesNo)
+{
+}
+
+void CGame::OnRenderScene()
+{
+}
+const uint8* CGame::GetDRMKey()
+{
+	return 0;
+}
+
+const char* CGame::GetDRMFileList()
 {
 	return "";
 }

@@ -13,9 +13,9 @@
   <ItemGroup>
     <ClCompile Include="CemonoCVar.cpp" />
     <ClCompile Include="ConsoleBinding.cpp" />
+    <ClCompile Include="EditorGame.cpp" />
     <ClCompile Include="EntitySystemBinding.cpp" />
     <ClCompile Include="FGPluginManager.cpp" />
-    <ClCompile Include="FlowPostFXNodes.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameDll.cpp" />
     <ClCompile Include="LoggingBinding.cpp" />
@@ -30,9 +30,9 @@
   <ItemGroup>
     <ClInclude Include="CemonoCVar.h" />
     <ClInclude Include="ConsoleBinding.h" />
+    <ClInclude Include="EditorGame.h" />
     <ClInclude Include="EntitySystemBinding.h" />
     <ClInclude Include="fgpluginmanager.h" />
-    <ClInclude Include="flowbasenode.h" />
     <ClInclude Include="G2FlowBaseNode.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="MonoAPIBinding.h" />
@@ -46,7 +46,7 @@
     <ClInclude Include="StdAfx.h" />
   </ItemGroup>
   <ItemGroup>
-    <Library Include="..\..\..\lib\native\mono.lib" />
+    <Library Include="..\..\lib\mono.lib" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0A626603-18B8-41F4-ACFB-0ABE9C4569F5}</ProjectGuid>
@@ -79,39 +79,43 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\output\native\$(ProjectName)</OutDir>
-    <TargetName>cemono</TargetName>
-    <LibraryPath>$(LibraryPath)</LibraryPath>
-    <IncludePath>$(ProjectDir)..\..\..\lib\native\mono;$(ProjectDir)..\..\..\lib\native\CryEngine\CryCommon;$(ProjectDir)..\..\..\lib\native\CryEngine\CryAction;$(ProjectDir)..\..\..\lib\native\STLPORT;$(ProjectDir)..\..\..\lib\native\boost;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include</IncludePath>
+    <OutDir>$(SolutionDir)..\..\Bin32\</OutDir>
+    <TargetName>$(ProjectName)</TargetName>
+    <IncludePath>D:\___dev\mixed\cemono\src\native\inc\mono;E:\Games\cemono\Code\SDKs\boost;$(IncludePath)</IncludePath>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\output\native\$(ProjectName)</OutDir>
+    <OutDir>$(ProjectDir)..\..\..\..\output\$(ProjectName)\</OutDir>
     <TargetName>ce.net</TargetName>
     <LibraryPath>$(LibraryPath)</LibraryPath>
-    <IncludePath>$(ProjectDir)..\..\..\lib\native\mono;$(ProjectDir)..\..\..\lib\native\CryEngine\CryCommon;$(ProjectDir)..\..\..\lib\native\CryEngine\CryAction;$(ProjectDir)..\..\..\lib\native\STLPORT;$(ProjectDir)..\..\..\lib\native\boost;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\inc\stlport;$(ProjectDir)..\..\inc\boost;$(ProjectDir)..\..\inc\cryengine\CryCommon;$(ProjectDir)..\..\inc\cryengine\CryAction;$(ProjectDir)..\..\inc\mono;$(VCInstallDir)atlmfc\include;$(VCInstallDir)include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;GAMEDLL_EXPORTS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GAMEDLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Create</PrecompiledHeader>
-      <AdditionalIncludeDirectories>
-      </AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;$(ProjectDir)..\..\inc\cryengine\CryCommon;$(ProjectDir)..\..\inc\cryengine\CryAction</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <ExceptionHandling>false</ExceptionHandling>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ErrorReporting>Prompt</ErrorReporting>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
-      <ImportLibrary>
-      </ImportLibrary>
+      <ImportLibrary>E:\Games\ce3\BinTemp\Win32\Debug\GameDll\CryGame.lib</ImportLibrary>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <OutputFile>$(OutDir)CryGame.dll</OutputFile>
+      <ProgramDatabaseFile>$(TargetDir)CryGame.pdb</ProgramDatabaseFile>
+      <LinkErrorReporting>PromptImmediately</LinkErrorReporting>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

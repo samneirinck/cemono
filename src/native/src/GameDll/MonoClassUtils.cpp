@@ -6,14 +6,14 @@ MonoObject* CMonoClassUtils::CreateInstanceOf(MonoDomain* pDomain, MonoClass* pC
 {
 	if (!pClass)
 	{
-		CryError("Tried to create an instance of a NULL class");
+		gEnv->pLog->LogError("Tried to create an instance of a NULL class");
 		return NULL;
 	}
 
 	MonoObject* pObject = mono_object_new(pDomain, pClass);
 	if (!pObject)
 	{
-		CryError("Failed to create mono object");
+		gEnv->pLog->LogError("Failed to create mono object");
 		return NULL;
 	}
 
@@ -32,7 +32,7 @@ MonoClass* CMonoClassUtils::GetClassByName(const char* nameSpace, const char* cl
 	MonoClass* pClass = mono_class_from_name(g_pMono->GetBclImage(), nameSpace, className);
 	if (!pClass)
 	{
-		CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "Could not find class %s in %s", className, nameSpace);
+		gEnv->pLog->LogError("Could not find class %s in %s", className, nameSpace);
 	}
 	return pClass;
 }
@@ -80,17 +80,17 @@ MonoObject* CMonoClassUtils::CallMethod(MonoObject* pObjectInstance, const char*
 			} 
 			else 
 			{
-				CryError("Failed to find method %s", methodName);
+				gEnv->pLog->LogError("Failed to find method %s", methodName);
 			}
 		} 
 		else 
 		{
-			CryError("Invalid method description %s", methodName);
+			gEnv->pLog->LogError("Invalid method description %s", methodName);
 		}
 	} 
 	else 
 	{
-		CryError("Failed to find class while trying to invoke %s", methodName);
+		gEnv->pLog->LogError("Failed to find class while trying to invoke %s", methodName);
 	}
 
 	// Clean up

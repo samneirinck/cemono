@@ -1,18 +1,4 @@
-/*************************************************************************
-Crytek Source File.
-Copyright (C), Crytek Studios, 2001-2006.
--------------------------------------------------------------------------
-$Id$
-$DateTime$
-Description: Based on G4FlowBaseNode.h which was written by Nick Hesketh
-
--------------------------------------------------------------------------
-History:
-- 16:01:2006: Created by Mathieu Pinard
-
-*************************************************************************/
-#ifndef __G2FLOWBASENODE_H__
-#define __G2FLOWBASENODE_H__
+#pragma once
 
 #include <IFlowSystem.h>
 
@@ -37,6 +23,8 @@ public:
 	void AddRef() {}
 	void Release() {}
 
+	void Reset() {}
+
 	//////////////////////////////////////////////////////////////////////////
 	const char *m_sClassName;
 	CG2AutoRegFlowNodeBase* m_pNext;
@@ -52,7 +40,7 @@ class CG2AutoRegFlowNode : public CG2AutoRegFlowNodeBase
 public:
 	CG2AutoRegFlowNode( const char *sClassName ) : CG2AutoRegFlowNodeBase( sClassName ) {}
 	IFlowNodePtr Create( IFlowNode::SActivationInfo * pActInfo ) { return new T(pActInfo); }
-	void GetMemoryStatistics(ICrySizer * s)
+	void GetMemoryUsage(ICrySizer * s) const
 	{ 
 		SIZER_SUBCOMPONENT_NAME(s, "CG2AutoRegFlowNode");
 		s->Add(*this);
@@ -68,9 +56,11 @@ class CG2AutoRegFlowNodeSingleton : public CG2AutoRegFlowNodeBase
 public:
 	CG2AutoRegFlowNodeSingleton( const char *sClassName ) : CG2AutoRegFlowNodeBase( sClassName )
 	{
+#ifndef __SNC__
 		// this makes sure, the derived class DOES NOT implement a Clone method
 		typedef IFlowNodePtr (CFlowBaseNode::*PtrToMemFunc) (IFlowNode::SActivationInfo*);
 		static const PtrToMemFunc f = &T::Clone; // likely to get optimized away
+#endif
 	}
 	IFlowNodePtr Create( IFlowNode::SActivationInfo * pActInfo ) 
 	{ 
@@ -78,7 +68,7 @@ public:
 			m_pInstance = new T(pActInfo);
 		return m_pInstance;
 	}
-	void GetMemoryStatistics(ICrySizer * s)
+	void GetMemoryUsage(ICrySizer * s) const
 	{ 
 		SIZER_SUBCOMPONENT_NAME(s, "CG2AutoRegFlowNodeSingleton");
 		s->Add(*this);
@@ -214,5 +204,3 @@ public:
 private:
 	int m_refs;
 };
-
-#endif

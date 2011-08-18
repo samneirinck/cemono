@@ -14,6 +14,7 @@
 
 class CFGPluginManager;
 class MonoAPIBinding;
+struct IScriptTable;
 
 class CMono
 {

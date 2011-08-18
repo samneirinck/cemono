@@ -12,14 +12,15 @@ public:
 	static string GetCrysisWarsPath()
 	{
 		char path[256];
-		CryGetCurrentDirectory(256, path);
+		//CryGetCurrentDirectory(256, path);
 
 		return string(path).append("\\");
 	}
 
 	static string GetModPath(bool fullPath = true)
 	{
-		return fullPath ? GetCrysisWarsPath().append(gEnv->pCryPak->GetModDir()) : gEnv->pCryPak->GetModDir();
+		//return fullPath ? GetCrysisWarsPath().append(gEnv->pCryPak->GetModDir()) : gEnv->pCryPak->GetModDir();
+		return "";
 	}
 
 	static string GetAssemblyPath()

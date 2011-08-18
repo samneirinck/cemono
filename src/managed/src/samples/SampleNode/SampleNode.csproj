@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\Bin32\Flownodes\</OutputPath>
+    <OutputPath>..\..\..\..\..\output\samples\SampleNode\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -36,7 +36,6 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -45,7 +44,7 @@
     <Compile Include="SampleNode.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\managed\BaseClassLibrary\BaseClassLibrary.csproj">
+    <ProjectReference Include="..\..\BaseClassLibrary\BaseClassLibrary.csproj">
       <Project>{4A7993B3-6611-4D9D-B8AB-836D6C27B12B}</Project>
       <Name>BaseClassLibrary</Name>
     </ProjectReference>

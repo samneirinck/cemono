@@ -1,4 +1,5 @@
 #pragma once
+#include <IScriptSystem.h>
 #include <IGameObject.h>
 #include "Mono.h"
 

@@ -1,6 +1,8 @@
 #include "StdAfx.h"
 #include "MonoEntity.h"
 
+
+
 std::vector<CMonoEntity*> CMonoEntity::m_monoEntities;
 
 CMonoEntity::CMonoEntity()
@@ -18,7 +20,7 @@ CMonoEntity::CMonoEntity(MonoClass *pClass, MonoImage *pImage)
 	m_pMonoObject = mono_object_new(mono_domain_get(), pClass);
 	if (!m_pMonoObject)
 	{
-		CryError("Failed to create mono object :(");
+		gEnv->pLog->LogError("Failed to create mono object:(");
 	}
 
 	mono_runtime_object_init(m_pMonoObject);

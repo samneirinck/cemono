@@ -76,14 +76,14 @@ bool CMono::InitializeManager()
 	MonoImage* pMonoImage = mono_assembly_get_image(m_pManagerAssembly);
 	if (!pMonoImage)
 	{
-		CryError("Failed to load mono manager image");
+		gEnv->pLog->LogError("Failed to load mono manager image");
 		return false;
 	}
 
 	MonoClass* pClass = mono_class_from_name(pMonoImage, "Cemono", "Manager");
 	if (!pClass)
 	{
-		CryError("Failed to find cemono Manager class");
+		gEnv->pLog->LogError("Failed to find cemono Manager class");
 		return false;
 	}
 
@@ -111,7 +111,7 @@ bool CMono::InitializeBaseClassLibraries()
 	
 	if (!m_pBclAssembly)
 	{
-		CryError("Failed to initialize base class libraries, assembly=NULL");
+		gEnv->pLog->LogError("Failed to initialize base class libraries, assembly=NULL");
 		return false;
 	} 
 	else

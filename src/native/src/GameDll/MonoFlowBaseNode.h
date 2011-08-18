@@ -3,7 +3,7 @@
 
 #include <IFlowSystem.h>
 
-#include "FlowBaseNode.h"
+#include "G2FlowBaseNode.h"
 #include "Mono.h"
 
 class CMonoFlowNode : public CFlowBaseNode, public IFlowNodeFactory
@@ -34,10 +34,11 @@ public:
 	virtual bool SerializeXML( SActivationInfo *, const XmlNodeRef& root, bool reading ) { return true; }
 	virtual void Serialize( SActivationInfo *, TSerialize ser ) {}
 	virtual void ProcessEvent( EFlowEvent event, SActivationInfo * );
+	virtual void Reset() {}
 
 	//const char *GetNodeName(SActivationInfo *);
 
-	virtual void GetMemoryStatistics(ICrySizer * s) 
+	virtual void GetMemoryUsage(ICrySizer * s) const
 	{ 
 		SIZER_SUBCOMPONENT_NAME(s, "CMonoFlowNode");
 		s->Add(*this); 
