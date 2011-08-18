@@ -79,17 +79,21 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)..\..\Bin32\</OutDir>
+    <OutDir>$(SolutionDir)..\output\bin32\</OutDir>
     <TargetName>$(ProjectName)</TargetName>
-    <IncludePath>D:\___dev\mixed\cemono\src\native\inc\mono;E:\Games\cemono\Code\SDKs\boost;$(IncludePath)</IncludePath>
-    <IntDir>$(SolutionDir)..\..\BinTemp\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IncludePath>$(ProjectDir)..\..\inc\stlport;$(ProjectDir)..\..\inc\boost;$(ProjectDir)..\..\inc\cryengine\CryCommon;$(ProjectDir)..\..\inc\cryengine\CryAction;$(ProjectDir)..\..\inc\mono;$(VCInstallDir)atlmfc\include;$(VCInstallDir)include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include</IncludePath>
+    <IntDir>$(SolutionDir)..\output\temp\bin32\</IntDir>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <IgnoreImportLibrary>true</IgnoreImportLibrary>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\..\output\$(ProjectName)\</OutDir>
+    <OutDir>$(SolutionDir)..\output\bin32\</OutDir>
     <TargetName>ce.net</TargetName>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <IncludePath>$(ProjectDir)..\..\inc\stlport;$(ProjectDir)..\..\inc\boost;$(ProjectDir)..\..\inc\cryengine\CryCommon;$(ProjectDir)..\..\inc\cryengine\CryAction;$(ProjectDir)..\..\inc\mono;$(VCInstallDir)atlmfc\include;$(VCInstallDir)include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include</IncludePath>
+    <IntDir>$(SolutionDir)..\output\temp\bin32\</IntDir>
+    <IgnoreImportLibrary>true</IgnoreImportLibrary>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -97,7 +101,8 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>GAMEDLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Create</PrecompiledHeader>
-      <AdditionalIncludeDirectories>.\;$(ProjectDir)..\..\inc\cryengine\CryCommon;$(ProjectDir)..\..\inc\cryengine\CryAction</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <ExceptionHandling>false</ExceptionHandling>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -108,12 +113,13 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
       <ImportLibrary>E:\Games\ce3\BinTemp\Win32\Debug\GameDll\CryGame.lib</ImportLibrary>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
-      <OutputFile>$(OutDir)CryGame.dll</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <ProgramDatabaseFile>$(TargetDir)CryGame.pdb</ProgramDatabaseFile>
       <LinkErrorReporting>PromptImmediately</LinkErrorReporting>
     </Link>
@@ -121,7 +127,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WIN32;GAMEDLL_EXPORTS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GAMEDLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
@@ -131,6 +137,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>
       </AdditionalDependencies>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
