@@ -81,10 +81,9 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)..\output\bin32\</OutDir>
     <TargetName>$(ProjectName)</TargetName>
-    <IncludePath>$(ProjectDir)..\..\inc\stlport;$(ProjectDir)..\..\inc\boost;$(ProjectDir)..\..\inc\cryengine\CryCommon;$(ProjectDir)..\..\inc\cryengine\CryAction;$(ProjectDir)..\..\inc\mono;$(VCInstallDir)atlmfc\include;$(VCInstallDir)include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\inc\stlport;$(ProjectDir)..\..\inc\boost;$(ProjectDir)..\..\inc\cryengine\CryCommon;$(ProjectDir)..\..\inc\cryengine\CryAction;$(ProjectDir)..\..\inc\mono;$(VCInstallDir)atlmfc\include;$(VCInstallDir)include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;$(IncludePath)</IncludePath>
     <IntDir>$(SolutionDir)..\output\temp\bin32\</IntDir>
     <LibraryPath>$(LibraryPath)</LibraryPath>
-    <IgnoreImportLibrary>true</IgnoreImportLibrary>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -113,8 +112,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>
-      </AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
       <ImportLibrary>E:\Games\ce3\BinTemp\Win32\Debug\GameDll\CryGame.lib</ImportLibrary>

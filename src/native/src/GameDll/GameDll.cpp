@@ -3,6 +3,15 @@
 #include "EditorGame.h"
 
 #include <CryLibrary.h>
+#include <platform_impl.h>
+
+#ifdef WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+// get rid of (really) annoying MS defines
+#undef min
+#undef max
+#endif
 
 #define GAME_FRAMEWORK_FILENAME	"cryaction.dll"
 

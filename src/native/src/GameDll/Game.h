@@ -2,6 +2,7 @@
 
 #include <IGame.h>
 #include <IGameFramework.h>
+#include <CryFixedString.h>
 
 #include "Mono.h"
 

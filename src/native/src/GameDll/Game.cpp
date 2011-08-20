@@ -116,7 +116,7 @@ void CGame::OnClearPlayerIds()
 {
 }
 
-IGame::TSaveGameName CreateSaveGameName()
+IGame::TSaveGameName CGame::CreateSaveGameName()
 {
 	return NULL;
 }
