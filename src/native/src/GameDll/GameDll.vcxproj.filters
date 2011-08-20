@@ -2,7 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="StdAfx.cpp" />
-    <ClCompile Include="Game.cpp" />
     <ClCompile Include="Mono.cpp">
       <Filter>Mono</Filter>
     </ClCompile>
@@ -21,19 +20,30 @@
     <ClCompile Include="EntitySystemBinding.cpp">
       <Filter>Mono\Bindings</Filter>
     </ClCompile>
-    <ClCompile Include="MonoEntity.cpp" />
-    <ClCompile Include="FGPluginManager.cpp" />
-    <ClCompile Include="MonoFlowBaseNode.cpp" />
     <ClCompile Include="GameDll.cpp">
       <Filter>Startup Files</Filter>
     </ClCompile>
     <ClCompile Include="EditorGame.cpp">
-      <Filter>EditorGame</Filter>
+      <Filter>Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStartup.cpp">
+      <Filter>Startup Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="MonoEntity.cpp">
+      <Filter>Mono</Filter>
+    </ClCompile>
+    <ClCompile Include="MonoFlowBaseNode.cpp">
+      <Filter>Mono</Filter>
+    </ClCompile>
+    <ClCompile Include="FGPluginManager.cpp">
+      <Filter>Mono</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.h" />
-    <ClInclude Include="Game.h" />
     <ClInclude Include="Mono.h">
       <Filter>Mono</Filter>
     </ClInclude>
@@ -55,18 +65,35 @@
     <ClInclude Include="EntitySystemBinding.h">
       <Filter>Mono\Bindings</Filter>
     </ClInclude>
-    <ClInclude Include="MonoEntity.h" />
     <ClInclude Include="MonoAPIBinding.h">
       <Filter>Mono</Filter>
     </ClInclude>
-    <ClInclude Include="fgpluginmanager.h" />
-    <ClInclude Include="monoflowbasenode.h" />
-    <ClInclude Include="monoproperties.h" />
     <ClInclude Include="EditorGame.h">
-      <Filter>EditorGame</Filter>
+      <Filter>Editor</Filter>
     </ClInclude>
     <ClInclude Include="G2FlowBaseNode.h">
       <Filter>Nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStartup.h">
+      <Filter>Startup Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="monoproperties.h">
+      <Filter>Mono</Filter>
+    </ClInclude>
+    <ClInclude Include="MonoEntity.h">
+      <Filter>Mono</Filter>
+    </ClInclude>
+    <ClInclude Include="monoflowbasenode.h">
+      <Filter>Mono</Filter>
+    </ClInclude>
+    <ClInclude Include="fgpluginmanager.h">
+      <Filter>Mono</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Resources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -94,16 +121,35 @@
     <Filter Include="Startup Files">
       <UniqueIdentifier>{ef550d23-b592-49b5-8286-a3b61434226e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="EditorGame">
-      <UniqueIdentifier>{c211d393-2124-4dbc-9fbb-db7b2ba50543}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Nodes">
       <UniqueIdentifier>{b931edd3-bb0b-4f3f-9609-3bb846070f09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Editor">
+      <UniqueIdentifier>{c211d393-2124-4dbc-9fbb-db7b2ba50543}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{0ce7428b-4f37-4cc8-a373-dbeb12c6981a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{9cb73f17-17f4-490e-a053-b951d177a7ba}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\..\lib\mono.lib">
       <Filter>lib</Filter>
     </Library>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="CryGame.rc">
+      <Filter>Resources</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Cursor.cur">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="CryGame.ico">
+      <Filter>Resources</Filter>
+    </None>
   </ItemGroup>
 </Project>

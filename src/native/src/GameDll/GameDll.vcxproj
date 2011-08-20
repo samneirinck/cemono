@@ -18,6 +18,7 @@
     <ClCompile Include="FGPluginManager.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameDll.cpp" />
+    <ClCompile Include="GameStartup.cpp" />
     <ClCompile Include="LoggingBinding.cpp" />
     <ClCompile Include="Mono.cpp" />
     <ClCompile Include="MonoClassUtils.cpp" />
@@ -35,6 +36,7 @@
     <ClInclude Include="fgpluginmanager.h" />
     <ClInclude Include="G2FlowBaseNode.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GameStartup.h" />
     <ClInclude Include="MonoAPIBinding.h" />
     <ClInclude Include="LoggingBinding.h" />
     <ClInclude Include="Mono.h" />
@@ -43,16 +45,25 @@
     <ClInclude Include="monoflowbasenode.h" />
     <ClInclude Include="MonoPathUtils.h" />
     <ClInclude Include="monoproperties.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="StdAfx.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\..\lib\mono.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="CryGame.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CryGame.ico" />
+    <None Include="Cursor.cur" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0A626603-18B8-41F4-ACFB-0ABE9C4569F5}</ProjectGuid>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <Keyword>ManagedCProj</Keyword>
     <RootNamespace>GameDll</RootNamespace>
+    <ProjectName>CryGame</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -121,6 +132,9 @@
       <ProgramDatabaseFile>$(TargetDir)CryGame.pdb</ProgramDatabaseFile>
       <LinkErrorReporting>PromptImmediately</LinkErrorReporting>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(TargetPath) E:\Games\cemono\Bin32</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
