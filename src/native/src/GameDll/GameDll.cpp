@@ -22,7 +22,6 @@ extern "C"
 	}
 	GAME_API IEditorGame *CreateEditorGame()
 	{
-		// TODO
-		return NULL;
+		return new CEditorGame();
 	}
 }
