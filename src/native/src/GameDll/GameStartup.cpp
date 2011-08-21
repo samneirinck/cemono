@@ -17,6 +17,7 @@ const char* CGameStartup::FRAMEWORK_DLL_NAME = "cryaction.dll";
 const char* CGameStartup::WINDOW_CLASS_NAME = "CryENGINE";
 IGameFramework* CGameStartup::m_pGameFramework = NULL;
 IGame* CGameStartup::m_pGame = NULL;
+ICemono* CGameStartup::m_pCemono = NULL;
 HMODULE CGameStartup::m_gameFrameworkDll;
 HMODULE CGameStartup::m_gameDll;
 bool CGameStartup::m_initWindow = false;
@@ -58,11 +59,6 @@ IGameRef CGameStartup::Init(SSystemInitParams &startupParams)
 
 	IGameRef pOut = Reset();
 
-	if (!InitCemono())
-	{
-		return NULL;
-	}
-
 	if (!m_pGameFramework->CompleteInit())
 	{
 		pOut->Shutdown();
@@ -71,6 +67,11 @@ IGameRef CGameStartup::Init(SSystemInitParams &startupParams)
 
 	if (startupParams.bExecuteCommandLine)
 		pSystem->ExecuteCommandLine();
+
+	if (!InitCemono())
+	{
+		return NULL;
+	}
 
 
 	return pOut;
@@ -475,12 +476,19 @@ bool CGameStartup::InitCemono()
 	bool result = false;
 	ICemonoPtr pCemono;
 
-	auto res = CryLoadLibrary("cemono.dll");
-
-	//if (CryCreateClassInstance(MAKE_CRYGUID(0xc37b8ad5d62f47de, 0xa8debe525ff0fc8a), pCemono))
-	if (CryCreateClassInstance("Cemono", pCemono))
+	// TODO: Load this via extensibility, ideally, but not for now
+	auto cemonoDll = CryLoadLibrary("cemono.dll");
+	ICemono::TEntryFunction CreateCemono = (ICemono::TEntryFunction)CryGetProcAddress(cemonoDll, "CreateCemono");
+	if (!CreateCemono)
 	{
-		result = pCemono->Init();
+		CryFatalError("Specified Cemono DLL is not valid!");
+		return false;
+	}
+
+	m_pCemono = CreateCemono();
+	if (m_pCemono)
+	{
+		result = m_pCemono->Init();
 	}
 
 	return result;

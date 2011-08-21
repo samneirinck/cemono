@@ -1,3 +1,5 @@
+#pragma once
+
 #include <CryExtension/ICryUnknown.h>
 
 struct ICemono : public ICryUnknown
@@ -7,6 +9,7 @@ struct ICemono : public ICryUnknown
 
 	virtual bool Init() = 0;
 	virtual void Shutdown() = 0;
+	typedef ICemono *(*TEntryFunction)();
 
 };
 

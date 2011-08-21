@@ -22,3 +22,10 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 	return TRUE;
 }
 
+extern "C"
+{
+	GAME_API ICemono* CreateCemono()
+	{
+		return CCemono::CreateClassInstance().get();
+	}
+}

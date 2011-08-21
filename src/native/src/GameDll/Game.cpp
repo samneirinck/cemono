@@ -58,7 +58,7 @@ bool CGame::CompleteInit()
 	//	}
 	//}
 	
-	m_pMono->Init();
+	//m_pMono->Init();
 
 	return true;
 }

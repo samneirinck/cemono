@@ -9,6 +9,8 @@
 #undef max
 #endif
 
+#include <ICemono.h>
+
 
 class CGameStartup : public IGameStartup
 {
@@ -46,5 +48,6 @@ private:
 	static HMODULE m_gameFrameworkDll;
 	static HMODULE m_gameDll;
 	static IGame* m_pGame;
+	static ICemono* m_pCemono;
 
 };
