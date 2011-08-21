@@ -3,6 +3,9 @@
 #include <CryLibrary.h>
 #include <platform_impl.h>
 #include <IHardwareMouse.h>
+#include <ICemono.h>
+#include <CryExtension/CryCreateClassInstance.h>
+#include <CryExtension/ICryFactoryRegistry.h>
 
 #include "GameStartup.h"
 #include "Game.h"
@@ -55,6 +58,11 @@ IGameRef CGameStartup::Init(SSystemInitParams &startupParams)
 
 	IGameRef pOut = Reset();
 
+	if (!InitCemono())
+	{
+		return NULL;
+	}
+
 	if (!m_pGameFramework->CompleteInit())
 	{
 		pOut->Shutdown();
@@ -63,6 +71,7 @@ IGameRef CGameStartup::Init(SSystemInitParams &startupParams)
 
 	if (startupParams.bExecuteCommandLine)
 		pSystem->ExecuteCommandLine();
+
 
 	return pOut;
 }
@@ -459,4 +468,20 @@ void CGameStartup::CleanupFrameworkDll()
 	CryFreeLibrary( m_gameFrameworkDll );
 	m_gameFrameworkDll = NULL;
 
+}
+
+bool CGameStartup::InitCemono()
+{
+	bool result = false;
+	ICemonoPtr pCemono;
+
+	auto res = CryLoadLibrary("cemono.dll");
+
+	//if (CryCreateClassInstance(MAKE_CRYGUID(0xc37b8ad5d62f47de, 0xa8debe525ff0fc8a), pCemono))
+	if (CryCreateClassInstance("Cemono", pCemono))
+	{
+		result = pCemono->Init();
+	}
+
+	return result;
 }

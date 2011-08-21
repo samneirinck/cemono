@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manager", "managed\src\Mana
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manager.Tests", "managed\src\Manager.Tests\Manager.Tests.csproj", "{B3512C8F-527E-48CF-BD90-0CA77B8E17B5}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameDll", "native\src\GameDll\GameDll.vcxproj", "{0A626603-18B8-41F4-ACFB-0ABE9C4569F5}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CryGame", "native\src\GameDll\GameDll.vcxproj", "{0A626603-18B8-41F4-ACFB-0ABE9C4569F5}"
 	ProjectSection(ProjectDependencies) = postProject
 		{17C0D534-9049-4572-9385-863FB2F6F6D5} = {17C0D534-9049-4572-9385-863FB2F6F6D5}
 		{4A7993B3-6611-4D9D-B8AB-836D6C27B12B} = {4A7993B3-6611-4D9D-B8AB-836D6C27B12B}
@@ -26,6 +26,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CryAction", "native\inc\cryengine\CryAction\CryActionHeaders.vcxproj", "{498187B3-E46F-45FA-A202-992AE9FDA01A}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CryCommon", "native\inc\cryengine\CryCommon\CryCommon.vcxproj", "{AEB958D4-45CA-478B-BA8E-D0E897CE974B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Cemono", "native\src\Cemono\Cemono.vcxproj", "{B41C810B-A08F-4AFD-8E68-D4D7ABA39044}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -193,6 +195,24 @@ Global
 		{AEB958D4-45CA-478B-BA8E-D0E897CE974B}.Release|Win32.Build.0 = Release|Win32
 		{AEB958D4-45CA-478B-BA8E-D0E897CE974B}.Release|x64.ActiveCfg = Release|x64
 		{AEB958D4-45CA-478B-BA8E-D0E897CE974B}.Release|x64.Build.0 = Release|x64
+		{B41C810B-A08F-4AFD-8E68-D4D7ABA39044}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{B41C810B-A08F-4AFD-8E68-D4D7ABA39044}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{B41C810B-A08F-4AFD-8E68-D4D7ABA39044}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{B41C810B-A08F-4AFD-8E68-D4D7ABA39044}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B41C810B-A08F-4AFD-8E68-D4D7ABA39044}.Debug|Win32.Build.0 = Debug|Win32
+		{B41C810B-A08F-4AFD-8E68-D4D7ABA39044}.Debug|x64.ActiveCfg = Debug|Win32
+		{B41C810B-A08F-4AFD-8E68-D4D7ABA39044}.Profile|Any CPU.ActiveCfg = Release|Win32
+		{B41C810B-A08F-4AFD-8E68-D4D7ABA39044}.Profile|Mixed Platforms.ActiveCfg = Release|Win32
+		{B41C810B-A08F-4AFD-8E68-D4D7ABA39044}.Profile|Mixed Platforms.Build.0 = Release|Win32
+		{B41C810B-A08F-4AFD-8E68-D4D7ABA39044}.Profile|Win32.ActiveCfg = Release|Win32
+		{B41C810B-A08F-4AFD-8E68-D4D7ABA39044}.Profile|Win32.Build.0 = Release|Win32
+		{B41C810B-A08F-4AFD-8E68-D4D7ABA39044}.Profile|x64.ActiveCfg = Release|Win32
+		{B41C810B-A08F-4AFD-8E68-D4D7ABA39044}.Release|Any CPU.ActiveCfg = Release|Win32
+		{B41C810B-A08F-4AFD-8E68-D4D7ABA39044}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{B41C810B-A08F-4AFD-8E68-D4D7ABA39044}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{B41C810B-A08F-4AFD-8E68-D4D7ABA39044}.Release|Win32.ActiveCfg = Release|Win32
+		{B41C810B-A08F-4AFD-8E68-D4D7ABA39044}.Release|Win32.Build.0 = Release|Win32
+		{B41C810B-A08F-4AFD-8E68-D4D7ABA39044}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -206,6 +226,7 @@ Global
 		{0A626603-18B8-41F4-ACFB-0ABE9C4569F5} = {5EE5F93C-98B8-43E7-AAAB-F81FBEC0AD2E}
 		{498187B3-E46F-45FA-A202-992AE9FDA01A} = {5EE5F93C-98B8-43E7-AAAB-F81FBEC0AD2E}
 		{AEB958D4-45CA-478B-BA8E-D0E897CE974B} = {5EE5F93C-98B8-43E7-AAAB-F81FBEC0AD2E}
+		{B41C810B-A08F-4AFD-8E68-D4D7ABA39044} = {5EE5F93C-98B8-43E7-AAAB-F81FBEC0AD2E}
 		{9909C231-CE43-4DBD-8F97-8C9469C1F718} = {8C59484B-E679-4A95-A2C2-DE7207CDFA24}
 	EndGlobalSection
 EndGlobal

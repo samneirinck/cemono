@@ -26,6 +26,7 @@ public:
 	virtual int Run( const char * autoStartLevelName );
 	// -IGameStartup
 
+	bool InitCemono();
 	virtual IGameRef Reset();
 	static HMODULE GetFrameworkDll(const char* binariesDirectory);
 	static void CleanupFrameworkDll();

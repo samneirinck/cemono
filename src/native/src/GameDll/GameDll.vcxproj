@@ -92,7 +92,7 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)..\output\bin32\</OutDir>
     <TargetName>$(ProjectName)</TargetName>
-    <IncludePath>$(ProjectDir)..\..\inc\stlport;$(ProjectDir)..\..\inc\boost;$(ProjectDir)..\..\inc\cryengine\CryCommon;$(ProjectDir)..\..\inc\cryengine\CryAction;$(ProjectDir)..\..\inc\mono;$(VCInstallDir)atlmfc\include;$(VCInstallDir)include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\inc\stlport;$(ProjectDir)..\..\inc\boost;$(ProjectDir)..\..\inc\cryengine\CryCommon;$(ProjectDir)..\..\inc\cryengine\CryAction;$(ProjectDir)..\..\inc\mono;$(ProjectDir)..\Cemono\headers;$(VCInstallDir)atlmfc\include;$(VCInstallDir)include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;$(IncludePath)</IncludePath>
     <IntDir>$(SolutionDir)..\output\temp\bin32\</IntDir>
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
@@ -101,7 +101,7 @@
     <OutDir>$(SolutionDir)..\output\bin32\</OutDir>
     <TargetName>ce.net</TargetName>
     <LibraryPath>$(LibraryPath)</LibraryPath>
-    <IncludePath>$(ProjectDir)..\..\inc\stlport;$(ProjectDir)..\..\inc\boost;$(ProjectDir)..\..\inc\cryengine\CryCommon;$(ProjectDir)..\..\inc\cryengine\CryAction;$(ProjectDir)..\..\inc\mono;$(VCInstallDir)atlmfc\include;$(VCInstallDir)include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\inc\stlport;$(ProjectDir)..\..\inc\boost;$(ProjectDir)..\..\inc\cryengine\CryCommon;$(ProjectDir)..\..\inc\cryengine\CryAction;$(ProjectDir)..\..\inc\mono;$(ProjectDir)..\Cemono\headers;$(VCInstallDir)atlmfc\include;$(VCInstallDir)include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;</IncludePath>
     <IntDir>$(SolutionDir)..\output\temp\bin32\</IntDir>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
   </PropertyGroup>
