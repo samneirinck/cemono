@@ -3,6 +3,8 @@
 #include <IGameRef.h>
 #include <IEditorGame.h>
 
+struct IGameStartup;
+
 class CEditorGame : public IEditorGame
 {
 public:
@@ -28,4 +30,16 @@ public:
 	virtual bool SupportsMultiplayerGameRules();
 	virtual void ToggleMultiplayerGameRules();
 	// -IEditorGame
+
+private:
+	bool ConfigureNetContext(bool on);
+	void EnablePlayer(bool player);
+	const char* GetGameRulesName();
+
+	bool m_bEnabled;
+	bool m_bPlayer;
+	bool m_bGameMode;
+	IGameRef m_pGame;
+	IGameStartup* m_pGameStartup;
+	static const uint16 EDITOR_SERVER_PORT;
 };

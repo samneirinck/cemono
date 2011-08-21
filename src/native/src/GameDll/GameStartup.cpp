@@ -432,8 +432,6 @@ void CGameStartup::ShutdownFramework()
 	}
 
 	ShutdownWindow();
-	//CryFreeLibrary( m_gameFrameworkDll );
-	//m_gameFrameworkDll = 0;
 }
 
 HMODULE CGameStartup::GetFrameworkDll(const char* binariesDirectory)
