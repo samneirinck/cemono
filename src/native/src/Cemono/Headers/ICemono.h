@@ -9,7 +9,7 @@ struct ICemono : public ICryUnknown
 
 	virtual bool Init() = 0;
 	virtual void Shutdown() = 0;
-	typedef ICemono *(*TEntryFunction)();
+	typedef void *(*TEntryFunction)(ISystem* pSystem);
 
 };
 

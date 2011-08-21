@@ -8,7 +8,6 @@
 #include <mono/metadata/threads.h>
 #include <mono/metadata/environment.h>
 
-#include "MonoPathUtils.h"
 #include "MonoClassUtils.h"
 #include "MonoAPIBinding.h"
 

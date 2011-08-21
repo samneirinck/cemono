@@ -41,6 +41,7 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(ProjectDir)..\..\inc\stlport;$(ProjectDir)..\..\inc\boost;$(ProjectDir)..\..\inc\cryengine\CryCommon;$(ProjectDir)..\..\inc\cryengine\CryAction;$(ProjectDir)..\..\inc\mono;$(VCInstallDir)atlmfc\include;$(VCInstallDir)include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)..\output\bin32\</OutDir>
+    <LibraryPath>D:\___dev\mixed\cemono\src\native\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -79,6 +80,7 @@
   <ItemGroup>
     <ClInclude Include="Cemono.h" />
     <ClInclude Include="Headers\ICemono.h" />
+    <ClInclude Include="MonoPathUtils.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
@@ -88,6 +90,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\..\lib\mono.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

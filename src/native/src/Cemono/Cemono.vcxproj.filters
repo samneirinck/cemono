@@ -6,6 +6,9 @@
     <ClInclude Include="Headers\ICemono.h">
       <Filter>Headers</Filter>
     </ClInclude>
+    <ClInclude Include="MonoPathUtils.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -16,5 +19,16 @@
     <Filter Include="Headers">
       <UniqueIdentifier>{2274758e-72ad-46e0-8409-df6cebf00772}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{f5895699-5c0e-4777-9f3e-d51287474e8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lib">
+      <UniqueIdentifier>{92453920-6810-4c36-a32a-0895b8bfed66}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\..\lib\mono.lib">
+      <Filter>lib</Filter>
+    </Library>
   </ItemGroup>
 </Project>

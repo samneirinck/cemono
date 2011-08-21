@@ -6,8 +6,8 @@
 #include "Cemono.h"
 
 BOOL APIENTRY DllMain( HMODULE hModule,
-                       DWORD  ul_reason_for_call,
-                       LPVOID lpReserved
+					   DWORD  ul_reason_for_call,
+					   LPVOID lpReserved
 					 )
 {
 	switch (ul_reason_for_call)
@@ -24,8 +24,8 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 
 extern "C"
 {
-	GAME_API ICemono* CreateCemono()
+	GAME_API void InitCemono(ISystem* pSystem)
 	{
-		return CCemono::CreateClassInstance().get();
+		ModuleInitISystem(pSystem, "Cemono");
 	}
 }

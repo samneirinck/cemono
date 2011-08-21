@@ -15,7 +15,7 @@ CFGPluginManager::CFGPluginManager()
 	
 	// Retrieve C# nodes
 	void *args[1];
-	args [0] = mono_string_new(mono_domain_get(), CMonoPathUtils::GetFGNodePath());
+	args [0] = mono_string_new(mono_domain_get(), /*CMonoPathUtils::GetFGNodePath()*/"");
 
 	CMonoClassUtils::CallMethod("RegisterNodes", nativeClass, m_pFlowSystemInstance, args);
 }

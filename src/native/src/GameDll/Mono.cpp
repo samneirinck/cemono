@@ -12,7 +12,7 @@ CMono::CMono()
 {
 	// Set up directories
 
-	mono_set_dirs(CMonoPathUtils::GetLibPath(), CMonoPathUtils::GetConfigPath());
+//	mono_set_dirs(CMonoPathUtils::GetLibPath(), CMonoPathUtils::GetConfigPath());
 }
 
 CMono::~CMono()
@@ -68,7 +68,7 @@ bool CMono::InitializeDomain()
 bool CMono::InitializeManager()
 {
 	// Open assembly in domain
-	m_pManagerAssembly = LoadAssembly(CMonoPathUtils::GetAssemblyPath() + "Cemono.Manager.dll");
+	m_pManagerAssembly = LoadAssembly(/*CMonoPathUtils::GetAssemblyPath() +*/ "Cemono.Manager.dll");
 
 	if (!m_pManagerAssembly)
 		return false;
@@ -107,7 +107,7 @@ void CMono::AddBinding(MonoAPIBinding* pBinding)
 
 bool CMono::InitializeBaseClassLibraries()
 {
-	m_pBclAssembly = LoadAssembly(CMonoPathUtils::GetAssemblyPath() + "Cemono.Bcl.dll");
+	m_pBclAssembly = LoadAssembly(/*CMonoPathUtils::GetAssemblyPath() + */"Cemono.Bcl.dll");
 	
 	if (!m_pBclAssembly)
 	{
