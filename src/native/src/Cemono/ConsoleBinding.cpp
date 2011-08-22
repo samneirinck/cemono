@@ -1,21 +1,20 @@
 #include "StdAfx.h"
 #include "ConsoleBinding.h"
-#include "MonoClassUtils.h"
 
 struct IConsole;
 
 CConsoleBinding::CConsoleBinding()
 {
-	RegisterAPIBinding("_GetCVar", _GetCVar);
-	RegisterAPIBinding("_GetCVarHelpText", _GetCVarHelpText);
-	RegisterAPIBinding("_GetCVarValueInt", _GetCVarValueInt);
-	RegisterAPIBinding("_GetCVarValueFloat", _GetCVarValueFloat);
-	RegisterAPIBinding("_GetCVarValueString", _GetCVarValueString);
-	RegisterAPIBinding("_SetCVarValueInt", _SetCVarValueInt);
-	RegisterAPIBinding("_SetCVarValueFloat", _SetCVarValueFloat);
-	RegisterAPIBinding("_SetCVarValueString", _SetCVarValueString);
-	RegisterAPIBinding("_GetCVarFlags", _GetCVarFlags);
-	RegisterAPIBinding("_SetCVarFlags", _SetCVarFlags);
+	REGISTER_METHOD(_GetCVar);
+	REGISTER_METHOD(_GetCVarHelpText);
+	REGISTER_METHOD(_GetCVarValueInt);
+	REGISTER_METHOD(_GetCVarValueFloat);
+	REGISTER_METHOD(_GetCVarValueString);
+	REGISTER_METHOD(_SetCVarValueInt);
+	REGISTER_METHOD(_SetCVarValueFloat);
+	REGISTER_METHOD(_SetCVarValueString);
+	REGISTER_METHOD(_GetCVarFlags);
+	REGISTER_METHOD(_SetCVarFlags);
 }
 
 

@@ -41,7 +41,7 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(ProjectDir)..\..\inc\stlport;$(ProjectDir)..\..\inc\boost;$(ProjectDir)..\..\inc\cryengine\CryCommon;$(ProjectDir)..\..\inc\cryengine\CryAction;$(ProjectDir)..\..\inc\mono;$(VCInstallDir)atlmfc\include;$(VCInstallDir)include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)..\output\bin32\</OutDir>
-    <LibraryPath>D:\___dev\mixed\cemono\src\native\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -78,14 +78,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BaseCemonoClassBinding.h" />
     <ClInclude Include="Cemono.h" />
+    <ClInclude Include="ConsoleBinding.h" />
+    <ClInclude Include="EntitySystemBinding.h" />
     <ClInclude Include="Headers\ICemono.h" />
+    <ClInclude Include="Headers\ICemonoClassBinding.h" />
+    <ClInclude Include="LoggingBinding.h" />
     <ClInclude Include="MonoPathUtils.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Cemono.cpp" />
     <ClCompile Include="CemonoDll.cpp" />
+    <ClCompile Include="ConsoleBinding.cpp" />
+    <ClCompile Include="EntitySystemBinding.cpp" />
+    <ClCompile Include="LoggingBinding.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

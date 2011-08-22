@@ -1,6 +1,7 @@
 #pragma once
 
 #include <CryExtension/ICryUnknown.h>
+#include "ICemonoClassBinding.h"
 
 struct ICemono : public ICryUnknown
 {
@@ -9,6 +10,8 @@ struct ICemono : public ICryUnknown
 
 	virtual bool Init() = 0;
 	virtual void Shutdown() = 0;
+	virtual void AddClassBinding(ICemonoClassBinding* pBinding) = 0;
+
 	typedef void *(*TEntryFunction)(ISystem* pSystem);
 
 };

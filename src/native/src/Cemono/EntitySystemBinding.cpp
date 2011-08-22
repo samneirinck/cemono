@@ -1,12 +1,12 @@
 #include "StdAfx.h"
 #include "EntitySystemBinding.h"
-#include "IEntitySystem.h"
-#include "MonoEntity.h"
+#include <IEntitySystem.h>
+//#include "MonoEntity.h"
 
 
 CEntitySystemBinding::CEntitySystemBinding()
 {
-	RegisterAPIBinding("_GetEntities", _GetEntities);
+	//REGISTER_METHOD(_GetEntities);
 }
 
 
@@ -16,7 +16,7 @@ CEntitySystemBinding::~CEntitySystemBinding()
 
 MonoArray* CEntitySystemBinding::_GetEntities()
 {
-	MonoClass* pClass = CMonoClassUtils::GetClassByName("Cemono", "Entity");
+	/*MonoClass* pClass = CMonoClassUtils::GetClassByName("Cemono", "Entity");
 
 	std::vector<IEntity*> entities;
 	IEntityItPtr pIt = gEnv->pEntitySystem->GetEntityIterator();
@@ -44,14 +44,15 @@ MonoArray* CEntitySystemBinding::_GetEntities()
 		}
 
 	}
-	return entityArray;
+	return entityArray;*/
+	return NULL;
 }
 
 
 // UTIL
 MonoObject* CEntitySystemBinding::CreateMonoEntity(IEntity *pEnt)
 {
-	if (pEnt)
+	/*if (pEnt)
 	{
 		uint id = pEnt->GetId();
 		void* args[1];
@@ -68,5 +69,6 @@ MonoObject* CEntitySystemBinding::CreateMonoEntity(IEntity *pEnt)
 		return pEntity;
 	} else {
 		return NULL;
-	}
+	}*/
+	return NULL;
 }

@@ -25,6 +25,7 @@ public:
 	// ICemono interface
 	virtual bool Init();
 	virtual void Shutdown();
+	virtual void AddClassBinding(ICemonoClassBinding* pBinding);
 	// -ICemono
 
 private:
@@ -35,5 +36,7 @@ private:
 	MonoAssembly* m_pBclAssembly;
 	MonoImage* m_pBclImage;
 	MonoObject* m_pManagerObject;
+
+	std::vector<ICemonoClassBinding*>  m_classBindings;
 
 };

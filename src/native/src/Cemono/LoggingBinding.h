@@ -1,8 +1,8 @@
 #pragma once
 
-#include "MonoAPIBinding.h"
+#include "BaseCemonoClassBinding.h"
 
-class CLoggingBinding : public MonoAPIBinding
+class CLoggingBinding : public BaseCemonoClassBinding
 {
 public:
 	CLoggingBinding();
@@ -10,7 +10,6 @@ public:
 
 protected:
 	virtual const char* GetClassName() { return "Logging"; }
-	virtual const char* GetNamespaceExtension() { return "API"; }
 
 	static void _LogAlways(MonoString *msg);
 	static void _Log(MonoString *msg);

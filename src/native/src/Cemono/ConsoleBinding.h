@@ -1,9 +1,8 @@
 #pragma once
-#include "MonoAPIBinding.h"
-#include "CemonoCVar.h"
+#include "BaseCemonoClassBinding.h"
 #include "IConsole.h"
 
-class CConsoleBinding : public MonoAPIBinding
+class CConsoleBinding : public BaseCemonoClassBinding
 {
 public:
 	CConsoleBinding();
@@ -11,7 +10,6 @@ public:
 
 protected:
 	virtual const char* GetClassName() { return "Console"; }
-	virtual const char* GetNamespaceExtension() { return "API"; }
 
 	static bool _GetCVar(MonoString* cvarName);
 	static MonoString* _GetCVarHelpText(MonoString* cvarName);

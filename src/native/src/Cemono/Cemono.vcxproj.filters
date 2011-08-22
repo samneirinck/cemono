@@ -9,11 +9,35 @@
     <ClInclude Include="MonoPathUtils.h">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="BaseCemonoClassBinding.h">
+      <Filter>Bindings</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\ICemonoClassBinding.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="LoggingBinding.h">
+      <Filter>Bindings</Filter>
+    </ClInclude>
+    <ClInclude Include="ConsoleBinding.h">
+      <Filter>Bindings</Filter>
+    </ClInclude>
+    <ClInclude Include="EntitySystemBinding.h">
+      <Filter>Bindings</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="Cemono.cpp" />
     <ClCompile Include="CemonoDll.cpp" />
+    <ClCompile Include="ConsoleBinding.cpp">
+      <Filter>Bindings</Filter>
+    </ClCompile>
+    <ClCompile Include="EntitySystemBinding.cpp">
+      <Filter>Bindings</Filter>
+    </ClCompile>
+    <ClCompile Include="LoggingBinding.cpp">
+      <Filter>Bindings</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Headers">
@@ -24,6 +48,9 @@
     </Filter>
     <Filter Include="lib">
       <UniqueIdentifier>{92453920-6810-4c36-a32a-0895b8bfed66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Bindings">
+      <UniqueIdentifier>{b74b7f2e-21ba-41b0-bfc0-0c6746e17f19}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

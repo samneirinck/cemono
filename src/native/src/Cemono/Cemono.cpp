@@ -32,6 +32,34 @@ void CCemono::Shutdown()
 
 }
 
+void CCemono::AddClassBinding(ICemonoClassBinding* pBinding)
+{
+	std::vector<ICemonoMethodBinding> methodBindings = pBinding->GetMethods();
+	std::vector<ICemonoMethodBinding>::iterator it;
+	
+	// Get all methods registered in this class
+	for (it = methodBindings.begin(); it != methodBindings.end(); ++it)
+	{
+		// Construct the full method name
+		// Typically something like CryEngine.API.Console._LogAlways
+		string fullName = pBinding->GetNamespace();
+		if (strcmp(pBinding->GetNamespaceExtension(), ""))
+		{
+			fullName.append(".");
+			fullName.append(pBinding->GetNamespaceExtension());
+		}
+		fullName.append(".");
+		fullName.append(pBinding->GetClassName());
+		fullName.append("::");
+		fullName.append((*it).methodName);
+
+		mono_add_internal_call(fullName, (*it).method);
+	}
+	
+
+	m_classBindings.push_back(pBinding);
+}
+
 bool CCemono::InitializeDomain()
 {
 	// Create root domain

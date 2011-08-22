@@ -11,15 +11,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CemonoCVar.cpp" />
-    <ClCompile Include="ConsoleBinding.cpp" />
     <ClCompile Include="EditorGame.cpp" />
-    <ClCompile Include="EntitySystemBinding.cpp" />
     <ClCompile Include="FGPluginManager.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameDll.cpp" />
     <ClCompile Include="GameStartup.cpp" />
-    <ClCompile Include="LoggingBinding.cpp" />
     <ClCompile Include="Mono.cpp" />
     <ClCompile Include="MonoClassUtils.cpp" />
     <ClCompile Include="MonoEntity.cpp" />
@@ -29,16 +25,11 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CemonoCVar.h" />
-    <ClInclude Include="ConsoleBinding.h" />
     <ClInclude Include="EditorGame.h" />
-    <ClInclude Include="EntitySystemBinding.h" />
     <ClInclude Include="fgpluginmanager.h" />
     <ClInclude Include="G2FlowBaseNode.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameStartup.h" />
-    <ClInclude Include="MonoAPIBinding.h" />
-    <ClInclude Include="LoggingBinding.h" />
     <ClInclude Include="Mono.h" />
     <ClInclude Include="MonoClassUtils.h" />
     <ClInclude Include="MonoEntity.h" />

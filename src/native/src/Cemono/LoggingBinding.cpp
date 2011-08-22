@@ -3,9 +3,9 @@
 
 CLoggingBinding::CLoggingBinding()
 {
-	RegisterAPIBinding("_LogAlways", _LogAlways);
-	RegisterAPIBinding("_Log", _Log);
-	RegisterAPIBinding("_CryWarning", _CryWarning);
+	REGISTER_METHOD(_LogAlways);
+	REGISTER_METHOD(_Log);
+	REGISTER_METHOD(_CryWarning);
 }
 
 

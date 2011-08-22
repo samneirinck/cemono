@@ -1,8 +1,8 @@
 #pragma once
-#include "MonoAPIBinding.h"
-#include "Mono.h"
 
-class CEntitySystemBinding : public MonoAPIBinding
+#include "BaseCemonoClassBinding.h"
+
+class CEntitySystemBinding : public BaseCemonoClassBinding
 {
 public:
 	CEntitySystemBinding();
@@ -10,7 +10,6 @@ public:
 
 protected:
 	virtual const char* GetClassName() { return "EntitySystem"; }
-	virtual const char* GetNamespaceExtension() { return "API"; }
 
 	static MonoArray* _GetEntities();
 	static MonoObject* CreateMonoEntity(IEntity *pEnt);

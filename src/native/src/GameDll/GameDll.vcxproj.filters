@@ -5,20 +5,8 @@
     <ClCompile Include="Mono.cpp">
       <Filter>Mono</Filter>
     </ClCompile>
-    <ClCompile Include="LoggingBinding.cpp">
-      <Filter>Mono\Bindings</Filter>
-    </ClCompile>
-    <ClCompile Include="ConsoleBinding.cpp">
-      <Filter>Mono\Bindings</Filter>
-    </ClCompile>
-    <ClCompile Include="CemonoCVar.cpp">
-      <Filter>Mono\Objects</Filter>
-    </ClCompile>
     <ClCompile Include="MonoClassUtils.cpp">
       <Filter>Mono\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="EntitySystemBinding.cpp">
-      <Filter>Mono\Bindings</Filter>
     </ClCompile>
     <ClCompile Include="GameDll.cpp">
       <Filter>Startup Files</Filter>
@@ -50,23 +38,8 @@
     <ClInclude Include="MonoPathUtils.h">
       <Filter>Mono\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="LoggingBinding.h">
-      <Filter>Mono\Bindings</Filter>
-    </ClInclude>
-    <ClInclude Include="ConsoleBinding.h">
-      <Filter>Mono\Bindings</Filter>
-    </ClInclude>
-    <ClInclude Include="CemonoCVar.h">
-      <Filter>Mono\Objects</Filter>
-    </ClInclude>
     <ClInclude Include="MonoClassUtils.h">
       <Filter>Mono\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="EntitySystemBinding.h">
-      <Filter>Mono\Bindings</Filter>
-    </ClInclude>
-    <ClInclude Include="MonoAPIBinding.h">
-      <Filter>Mono</Filter>
     </ClInclude>
     <ClInclude Include="EditorGame.h">
       <Filter>Editor</Filter>
@@ -102,12 +75,6 @@
     </Filter>
     <Filter Include="Mono\Utils">
       <UniqueIdentifier>{88d82fe9-08ba-45ab-a110-25e6f4abd04b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Mono\Bindings">
-      <UniqueIdentifier>{d9dfcd0f-04fb-437e-b345-2eb072cae3df}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Mono\Objects">
-      <UniqueIdentifier>{3f811e4e-3921-4f01-85bb-8fae428472b0}</UniqueIdentifier>
     </Filter>
     <Filter Include="Mono\FlowSystem">
       <UniqueIdentifier>{238192f7-49f5-4197-bbcb-3ca754d3036d}</UniqueIdentifier>
