@@ -187,7 +187,7 @@ int CGameStartup::Run( const char * autoStartLevelName )
 			}
 			else
 			{
- 				break;
+				break;
 			}
 		}
 		else
@@ -285,6 +285,7 @@ bool CGameStartup::InitFramework(SSystemInitParams &startupParams)
 		CryFatalError("Failed to initialize CryENGINE!");
 		return false;
 	}
+
 	ModuleInitISystem(m_pGameFramework->GetISystem(),"CryGame");
 
 	return true;

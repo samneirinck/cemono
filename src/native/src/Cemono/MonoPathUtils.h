@@ -40,6 +40,11 @@ public:
 		return GetCemonoPath().append(MONO_LIB_FOLDER).append("\\");
 	}
 
+	static string GetCemonoLibPath()
+	{
+		return GetLibPath().append("cemono").append("\\");
+	}
+
 	static string GetConfigPath()
 	{
 		return GetCemonoPath().append(MONO_CONFIG_FOLDER).append("\\");

@@ -30,6 +30,9 @@ public:
 
 private:
 	bool InitializeDomain();
+	void RegisterDefaultBindings();
+	bool InitializeBaseClassLibraries();
+	bool InitializeManager();
 
 	MonoDomain* m_pMonoDomain;
 	MonoAssembly* m_pManagerAssembly;
