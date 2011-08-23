@@ -82,9 +82,13 @@
     <ClInclude Include="Cemono.h" />
     <ClInclude Include="ConsoleBinding.h" />
     <ClInclude Include="EntitySystemBinding.h" />
+    <ClInclude Include="FGPluginManager.h" />
+    <ClInclude Include="G2FlowBaseNode.h" />
     <ClInclude Include="Headers\ICemono.h" />
     <ClInclude Include="Headers\ICemonoClassBinding.h" />
     <ClInclude Include="LoggingBinding.h" />
+    <ClInclude Include="MonoClassUtils.h" />
+    <ClInclude Include="MonoFlowBaseNode.h" />
     <ClInclude Include="MonoPathUtils.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
@@ -93,7 +97,10 @@
     <ClCompile Include="CemonoDll.cpp" />
     <ClCompile Include="ConsoleBinding.cpp" />
     <ClCompile Include="EntitySystemBinding.cpp" />
+    <ClCompile Include="FGPluginManager.cpp" />
     <ClCompile Include="LoggingBinding.cpp" />
+    <ClCompile Include="MonoClassUtils.cpp" />
+    <ClCompile Include="MonoFlowBaseNode.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

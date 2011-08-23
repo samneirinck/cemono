@@ -8,9 +8,6 @@
 #include <mono/metadata/threads.h>
 #include <mono/metadata/environment.h>
 
-#include "MonoClassUtils.h"
-#include "MonoAPIBinding.h"
-
 class CFGPluginManager;
 class MonoAPIBinding;
 struct IScriptTable;

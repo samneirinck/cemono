@@ -4,8 +4,6 @@
 #include <IGameFramework.h>
 #include <CryFixedString.h>
 
-#include "Mono.h"
-
 
 class CGame : public IGame, public IGameFrameworkListener, public IInputEventListener
 {
@@ -54,7 +52,6 @@ public:
 
 protected:
 	IGameFramework*						m_pFramework;
-	CMono*								m_pMono;
 
 };
 

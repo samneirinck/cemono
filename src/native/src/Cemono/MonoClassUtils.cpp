@@ -1,8 +1,8 @@
 #include "StdAfx.h"
 #include "MonoClassUtils.h"
-#include "IValidator.h"
+#include <IValidator.h>
 
-MonoObject* CMonoClassUtils::CreateInstanceOf(MonoDomain* pDomain, MonoClass* pClass)
+MonoObject* MonoClassUtils::CreateInstanceOf(MonoDomain* pDomain, MonoClass* pClass)
 {
 	if (!pClass)
 	{
@@ -22,27 +22,28 @@ MonoObject* CMonoClassUtils::CreateInstanceOf(MonoDomain* pDomain, MonoClass* pC
 	return pObject;
 }
 
-MonoObject* CMonoClassUtils::CreateInstanceOf(MonoClass* pClass)
+MonoObject* MonoClassUtils::CreateInstanceOf(MonoClass* pClass)
 {
 	return CreateInstanceOf(mono_domain_get(), pClass);
 }
 
-MonoClass* CMonoClassUtils::GetClassByName(const char* nameSpace, const char* className)
+MonoClass* MonoClassUtils::GetClassByName(const char* nameSpace, const char* className)
 {
-	MonoClass* pClass = mono_class_from_name(g_pMono->GetBclImage(), nameSpace, className);
+	/*MonoClass* pClass = mono_class_from_name(g_pMono->GetBclImage(), nameSpace, className);
 	if (!pClass)
 	{
 		gEnv->pLog->LogError("Could not find class %s in %s", className, nameSpace);
 	}
-	return pClass;
+	return pClass;*/
+	return NULL;
 }
 
-MonoObject* CMonoClassUtils::CallMethod(MonoObject* pObjectInstance, const char* methodName)
+MonoObject* MonoClassUtils::CallMethod(MonoObject* pObjectInstance, const char* methodName)
 {
 	return CallMethod(pObjectInstance, methodName, NULL);
 }
 
-MonoObject* CMonoClassUtils::CallMethod(MonoObject* pObjectInstance, MonoMethod* pMethod)
+MonoObject* MonoClassUtils::CallMethod(MonoObject* pObjectInstance, MonoMethod* pMethod)
 {
 	MonoClass *pClass;
 	MonoObject *pReturnObject = NULL;
@@ -59,7 +60,7 @@ MonoObject* CMonoClassUtils::CallMethod(MonoObject* pObjectInstance, MonoMethod*
 	return NULL;
 }
 
-MonoObject* CMonoClassUtils::CallMethod(MonoObject* pObjectInstance, const char* methodName, void** args)
+MonoObject* MonoClassUtils::CallMethod(MonoObject* pObjectInstance, const char* methodName, void** args)
 {
 	MonoClass *pClass;
 	MonoMethod *pMethod;
@@ -102,19 +103,19 @@ MonoObject* CMonoClassUtils::CallMethod(MonoObject* pObjectInstance, const char*
 }
 
 
-MonoObject *CMonoClassUtils::CallMethod(string funcName, MonoClass *pClass, MonoObject *pInstance, void **args)
+MonoObject *MonoClassUtils::CallMethod(string funcName, MonoClass *pClass, MonoObject *pInstance, void **args)
 {
 	MonoMethodDesc *pFooDesc = mono_method_desc_new (":" + funcName, false);
 
 	MonoMethod* monoMethod = mono_method_desc_search_in_class(pFooDesc, pClass); 
-    assert(monoMethod != NULL); //OK
+	assert(monoMethod != NULL); //OK
 
 	mono_method_desc_free (pFooDesc);
 
 	return mono_runtime_invoke(monoMethod, pInstance, args, NULL);
 }
 
-MonoObject *CMonoClassUtils::CallMethod(string funcName, string _className, string _nameSpace, MonoImage *pImage, MonoObject *pInstance, void **args)
+MonoObject *MonoClassUtils::CallMethod(string funcName, string _className, string _nameSpace, MonoImage *pImage, MonoObject *pInstance, void **args)
 {
 	MonoClass *pClass = mono_class_from_name(pImage, _nameSpace, _className);
 

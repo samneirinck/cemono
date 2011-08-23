@@ -1,14 +1,12 @@
-#ifndef __FLOWGRAPH_PLUGIN_MANAGER_H__
-#define __FLOWGRAPH_PLUGIN_MANAGER_H__
-
 #pragma once
 
 #include <map>
+#include <mono/jit/jit.h>
 
-#include "Mono.h"
 #include "MonoFlowBaseNode.h"
+#include "BaseCemonoClassBinding.h"
 
-class CFGPluginManager : public MonoAPIBinding
+class CFGPluginManager : public BaseCemonoClassBinding
 {
 public:
 	CFGPluginManager();
@@ -30,5 +28,3 @@ protected:
 private:
 	MonoObject *m_pFlowSystemInstance;
 };
-
-#endif //__FLOWGRAPH_PLUGIN_MANAGER_H__

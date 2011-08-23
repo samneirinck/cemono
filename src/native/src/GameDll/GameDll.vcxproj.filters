@@ -2,12 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="StdAfx.cpp" />
-    <ClCompile Include="Mono.cpp">
-      <Filter>Mono</Filter>
-    </ClCompile>
-    <ClCompile Include="MonoClassUtils.cpp">
-      <Filter>Mono\Utils</Filter>
-    </ClCompile>
     <ClCompile Include="GameDll.cpp">
       <Filter>Startup Files</Filter>
     </ClCompile>
@@ -20,32 +14,11 @@
     <ClCompile Include="Game.cpp">
       <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="MonoEntity.cpp">
-      <Filter>Mono</Filter>
-    </ClCompile>
-    <ClCompile Include="MonoFlowBaseNode.cpp">
-      <Filter>Mono</Filter>
-    </ClCompile>
-    <ClCompile Include="FGPluginManager.cpp">
-      <Filter>Mono</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.h" />
-    <ClInclude Include="Mono.h">
-      <Filter>Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="MonoPathUtils.h">
-      <Filter>Mono\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="MonoClassUtils.h">
-      <Filter>Mono\Utils</Filter>
-    </ClInclude>
     <ClInclude Include="EditorGame.h">
       <Filter>Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="G2FlowBaseNode.h">
-      <Filter>Nodes</Filter>
     </ClInclude>
     <ClInclude Include="GameStartup.h">
       <Filter>Startup Files</Filter>
@@ -53,43 +26,16 @@
     <ClInclude Include="Game.h">
       <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="monoproperties.h">
-      <Filter>Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="MonoEntity.h">
-      <Filter>Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="monoflowbasenode.h">
-      <Filter>Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="fgpluginmanager.h">
-      <Filter>Mono</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Resources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Mono">
-      <UniqueIdentifier>{dbb519bc-bdb4-41bb-81b3-2bbeb70a2705}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Mono\Utils">
-      <UniqueIdentifier>{88d82fe9-08ba-45ab-a110-25e6f4abd04b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Mono\FlowSystem">
-      <UniqueIdentifier>{238192f7-49f5-4197-bbcb-3ca754d3036d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Mono\FlowSystem\Base">
-      <UniqueIdentifier>{f1674ec0-2c41-4905-9c6b-6e344e2fc0f5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="lib">
       <UniqueIdentifier>{1487ebd5-3974-4559-a4dc-725083d73bdc}</UniqueIdentifier>
     </Filter>
     <Filter Include="Startup Files">
       <UniqueIdentifier>{ef550d23-b592-49b5-8286-a3b61434226e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Nodes">
-      <UniqueIdentifier>{b931edd3-bb0b-4f3f-9609-3bb846070f09}</UniqueIdentifier>
     </Filter>
     <Filter Include="Editor">
       <UniqueIdentifier>{c211d393-2124-4dbc-9fbb-db7b2ba50543}</UniqueIdentifier>

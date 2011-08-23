@@ -1,9 +1,10 @@
 #pragma once
 
 #include "StdAfx.h"
-#include "Mono.h"
+#include <mono/jit/jit.h>
+#include <mono/metadata/debug-helpers.h>
 
-class CMonoClassUtils
+class MonoClassUtils
 {
 public:
 	static MonoObject *CallMethod(string funcName, string _className, string _nameSpace, MonoImage *pImage, MonoObject *pInstance = NULL, void **args = NULL);

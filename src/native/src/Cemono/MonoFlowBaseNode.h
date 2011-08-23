@@ -2,9 +2,8 @@
 #define __MONO_FLOWBASENODE_H__
 
 #include <IFlowSystem.h>
-
+#include <mono/jit/jit.h>
 #include "G2FlowBaseNode.h"
-#include "Mono.h"
 
 class CMonoFlowNode : public CFlowBaseNode, public IFlowNodeFactory
 {

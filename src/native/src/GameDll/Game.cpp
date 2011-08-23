@@ -3,7 +3,6 @@
 #include <IFlowSystem.h>
 #include "G2FlowBaseNode.h"
 
-CMono* g_pMono = 0;
 CGame* g_pGame = 0;
 CG2AutoRegFlowNodeBase *CG2AutoRegFlowNodeBase::m_pFirst=0;
 CG2AutoRegFlowNodeBase *CG2AutoRegFlowNodeBase::m_pLast=0;
@@ -11,8 +10,7 @@ CG2AutoRegFlowNodeBase *CG2AutoRegFlowNodeBase::m_pLast=0;
 
 
 CGame::CGame()
-	: m_pFramework(0),
-	m_pMono(0)
+	: m_pFramework(0)
 {
 	g_pGame = this;
 
@@ -24,17 +22,12 @@ CGame::~CGame()
 	m_pFramework->EndGameContext();
 	m_pFramework->UnregisterListener(this);
 	g_pGame = 0;
-
-	SAFE_DELETE(m_pMono);
 }
 
 bool CGame::Init(IGameFramework *pFramework)
 {
 	m_pFramework = pFramework;
 	m_pFramework->RegisterListener(this, "Game", FRAMEWORKLISTENERPRIORITY_GAME);
-
-	m_pMono = new CMono();
-	g_pMono = m_pMono;
 
 	return true;
 }

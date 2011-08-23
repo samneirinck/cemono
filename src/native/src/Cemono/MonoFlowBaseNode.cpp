@@ -1,7 +1,6 @@
 #include "StdAfx.h"
 #include "MonoFlowBaseNode.h"
 
-#include "Mono.h"
 #include "FGPluginManager.h"
 
 CMonoFlowNode::CMonoFlowNode(SActivationInfo *pActInfo)
@@ -80,5 +79,5 @@ void CMonoFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 		args[0] = &event;
 		args[1] = &pActInfo->myID;
 
-		CMonoClassUtils::CallMethod("NodeProcessEvent", "FlowManager", "CryEngine.FlowSystem", NULL /* Use native library */, g_pMono->GetFGPluginManager()->GetFlowSystemInstance(), args);
+		//MonoClassUtils::CallMethod("NodeProcessEvent", "FlowManager", "CryEngine.FlowSystem", NULL /* Use native library */, g_pMono->GetFGPluginManager()->GetFlowSystemInstance(), args);
 }
