@@ -73,7 +73,6 @@ IGameRef CGameStartup::Init(SSystemInitParams &startupParams)
 		return NULL;
 	}
 
-
 	return pOut;
 }
 
@@ -168,11 +167,45 @@ const char* CGameStartup::GetPatch() const
 
 bool CGameStartup::GetRestartMod(char* pModName, int nameLenMax)
 {
-	return true;
+	return false;
 }
 
 int CGameStartup::Run( const char * autoStartLevelName )
 {
+	gEnv->pConsole->ExecuteString("exec autoexec.cfg");
+
+	for(;;)
+	{
+		MSG msg;
+
+		if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
+		{
+			if (msg.message != WM_QUIT)
+			{
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+			}
+			else
+			{
+ 				break;
+			}
+		}
+		else
+		{
+			if (!Update(true, 0))
+			{
+				// need to clean the message loop (WM_QUIT might cause problems in the case of a restart)
+				// another message loop might have WM_QUIT already so we cannot rely only on this 
+				while(PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
+				{
+					TranslateMessage(&msg);
+					DispatchMessage(&msg);
+				}
+				break;
+			}
+		}
+	}
+
 	return 0;
 }
 
