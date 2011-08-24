@@ -1,7 +1,6 @@
 #include "StdAfx.h"
 #include "Game.h"
 #include <IFlowSystem.h>
-
 CGame* g_pGame = 0;
 
 
