@@ -1,8 +1,28 @@
-Mono for CryENGINE
-by Sam Neirinck
+Cemono - Mono for CryENGINE3
+	by Sam Neirinck
 
-Flowgraph Plugin System
-by Cry-Vlok
+Credits:
+	Flowgraph Plugin System - Cry-Vlok, Cry-JR
+	FGPS Cemono integration - i59
 
-FGPS - Mono integration
-by i59
+== Description ==
+// TODO
+	
+== Compilation ==
+It is advisable to install a stable Cemono version before compiling from source. This will setup the correct directories/assemblies required that are not available on github.
+
+Open /src/Cemono.sln with Visual Studio 2010 or above, and build all projects
+All projects have their output set to the /output directory, look in there for the compiled assemblies.
+
+== Installation ==
+Assuming your game is in c:\games\mygame\ (<mygamedirectory>) [NOTE: Not the /Game directory, but the root game folder)
+Go to the /output folder and copy the files:
+
+- Cemono.Bcl.dll 		-> <mygamedirectory>\engine\lib\cemono
+- Cemono.Manager.dll 	-> <mygamedirectory>\engine\lib\cemono
+- bin32\Cemono.dll		-> <mygamedirectory>\bin32
+- bin32\CryGame.dll		-> <mygamedirectory>\bin32
+
+== Using Cemono in an existing project ==
+Cemono can be used as an extension to your existing project
+// TODO
