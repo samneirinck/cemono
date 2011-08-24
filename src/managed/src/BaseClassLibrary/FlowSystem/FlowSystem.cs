@@ -1,11 +1,8 @@
 ﻿using System;
-using System.IO;
-using System.Runtime.CompilerServices;
-
-using System.Reflection;
-using System.Collections;
 using System.Collections.Generic;
-
+using System.IO;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using CryEngine.API;
 
 namespace CryEngine.FlowSystem

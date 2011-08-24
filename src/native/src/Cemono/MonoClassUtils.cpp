@@ -22,6 +22,28 @@ MonoObject* MonoClassUtils::CreateInstanceOf(MonoDomain* pDomain, MonoClass* pCl
 	return pObject;
 }
 
+MonoObject* MonoClassUtils::CreateInstanceOfWithComplexConstructor(MonoDomain *pDomain, MonoClass* pClass, void** constructorParameters)
+{
+	if (!pClass)
+	{
+		gEnv->pLog->LogError("Tried to create an instance of a NULL class");
+		return NULL;
+	}
+
+	MonoObject* pObject = mono_object_new(pDomain, pClass);
+	if (!pObject)
+	{
+		gEnv->pLog->LogError("Failed to create mono object");
+		return NULL;
+	}
+
+	MonoClassUtils::CallMethod(pObject, ":.ctor(string)", constructorParameters);
+
+	return pObject;
+}
+
+
+
 MonoObject* MonoClassUtils::CreateInstanceOf(MonoClass* pClass)
 {
 	return CreateInstanceOf(mono_domain_get(), pClass);

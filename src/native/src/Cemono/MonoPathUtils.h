@@ -8,6 +8,11 @@
 class MonoPathUtils
 {
 public:
+	static string GetBasePath()
+	{
+		return "";
+	}
+
 	static string GetEnginePath()
 	{
 		//char path[256];

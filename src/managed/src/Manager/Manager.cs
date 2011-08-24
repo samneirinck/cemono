@@ -11,6 +11,7 @@ namespace Cemono
         private ConsoleRedirector _consoleRedirector;
         private ConsoleTraceListener _consoleTraceListener;
         private AppDomain _gameDomain;
+        private Folders _folders = new Folders();
         #endregion
 
         #region Properties
@@ -20,6 +21,10 @@ namespace Cemono
         #region Constructor(s)
         Manager()
         {
+            // Initialize all folders
+            InitializeFolders();
+
+            // Set up console redirect (Console.* methods)
             InitializeConsoleRedirect();
 
             // Catch unhandled exceptions
@@ -28,10 +33,18 @@ namespace Cemono
             // Initialize game appdomain
             InitializeGameDomain();
         }
-
         #endregion
 
         #region Methods
+        private void InitializeFolders()
+        {
+            _folders.RootFolder = Directory.GetCurrentDirectory();
+            _folders.GameFolder = Path.Combine(_folders.RootFolder, CryEngine.API.Console.GetCVarValue<string>("sys_game_folder"));
+            _folders.NodeFolder = Path.Combine(_folders.GameFolder, "Nodes");
+            _folders.LogicFolder = Path.Combine(_folders.GameFolder, "Logic");
+            _folders.EntitiesFolder = Path.Combine(_folders.GameFolder, "Entities");
+        }
+
         private void InitializeConsoleRedirect()
         {
             var consoleLogging = new ConsoleLogging();
@@ -55,17 +68,13 @@ namespace Cemono
 
         private void InitializeGameDomain()
         {
-            string dir = @"E:\Games\Crysis Wars\Mods\cemono\Game\Logic";
-            if (Directory.Exists(dir))
-            {
-                AppDomain domain = AppDomain.CreateDomain("cemono Game");
+            AppDomain domain = AppDomain.CreateDomain("cemono Game");
 
-                GameLoader gameLoader = (GameLoader)domain.CreateInstanceFromAndUnwrap(Assembly.GetExecutingAssembly().Location, typeof(GameLoader).ToString());
-                gameLoader.ConsoleRedirector = _consoleRedirector;
-                gameLoader.CompileAndLoad("", dir);
+            GameLoader gameLoader = (GameLoader)domain.CreateInstanceFromAndUnwrap(Assembly.GetExecutingAssembly().Location, typeof(GameLoader).ToString());
+            gameLoader.ConsoleRedirector = _consoleRedirector;
+            gameLoader.CompileAndLoadScripts(_folders);
 
-                _gameDomain = domain;
-            }
+            _gameDomain = domain;
         }
         #endregion
     }

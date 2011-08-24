@@ -42,8 +42,10 @@
   <ItemGroup>
     <Compile Include="ConsoleRedirector.cs" />
     <Compile Include="ConsoleTraceListener.cs" />
+    <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="GameLoader.cs" />
     <Compile Include="Manager.cs" />
+    <Compile Include="Folders.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
