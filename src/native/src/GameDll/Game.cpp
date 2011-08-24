@@ -1,11 +1,8 @@
 #include "StdAfx.h"
 #include "Game.h"
 #include <IFlowSystem.h>
-#include "G2FlowBaseNode.h"
 
 CGame* g_pGame = 0;
-CG2AutoRegFlowNodeBase *CG2AutoRegFlowNodeBase::m_pFirst=0;
-CG2AutoRegFlowNodeBase *CG2AutoRegFlowNodeBase::m_pLast=0;
 
 
 
