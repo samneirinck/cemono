@@ -22,13 +22,6 @@ namespace Cemono
             Console.SetError(ConsoleRedirector);
         }
 
-
-        public void CompileAndLoad(string pathToSourceFiles)
-        {
-            Init();
-
-        }
-
         private void LoadGameAssembly(Assembly assembly)
         {
             if (assembly == null)
