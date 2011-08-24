@@ -111,7 +111,8 @@
       <LinkErrorReporting>PromptImmediately</LinkErrorReporting>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(TargetPath) E:\Games\cemono\Bin32</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
