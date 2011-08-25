@@ -2,7 +2,7 @@
 
 namespace CryEngine.FlowSystem
 {
-    public struct NodeData
+    public class NodeData
     {
         public NodeData(Type nodeType, object _obj)
         {

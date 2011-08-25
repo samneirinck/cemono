@@ -1,6 +1,6 @@
 ﻿namespace CryEngine.FlowSystem
 {
-    public struct InputPortConfig
+    public class InputPortConfig
     {
         public InputPortConfig(string sName, InputPortTypes inType, string sDescription = null, string sHumanName = null, string UIConfig = null)
         {
