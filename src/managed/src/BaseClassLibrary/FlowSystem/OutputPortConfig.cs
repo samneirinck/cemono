@@ -28,6 +28,6 @@
         /// <summary>
         /// Output port type
         /// </summary>
-        public OutputPortTypes OutputType;
+        public OutputPortTypes OutputType { get; set; }
     }
 }

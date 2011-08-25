@@ -10,7 +10,7 @@ namespace CryEngine.FlowSystem
             this.Object = _obj;
         }
 
-        public Type Type;
-        public object Object;
+        public Type Type { get; set; }
+        public object Object { get; set; }
     }
 }
