@@ -83,6 +83,7 @@
     <ClInclude Include="ConsoleBinding.h" />
     <ClInclude Include="EntitySystemBinding.h" />
     <ClInclude Include="FGPluginManager.h" />
+    <ClInclude Include="FlowSystemBinding.h" />
     <ClInclude Include="G2FlowBaseNode.h" />
     <ClInclude Include="Headers\ICemono.h" />
     <ClInclude Include="Headers\ICemonoClassBinding.h" />
@@ -98,6 +99,7 @@
     <ClCompile Include="ConsoleBinding.cpp" />
     <ClCompile Include="EntitySystemBinding.cpp" />
     <ClCompile Include="FGPluginManager.cpp" />
+    <ClCompile Include="FlowSystemBinding.cpp" />
     <ClCompile Include="LoggingBinding.cpp" />
     <ClCompile Include="MonoClassUtils.cpp" />
     <ClCompile Include="MonoFlowBaseNode.cpp" />

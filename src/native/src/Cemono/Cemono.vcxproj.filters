@@ -36,6 +36,9 @@
     <ClInclude Include="G2FlowBaseNode.h">
       <Filter>FlowSystem</Filter>
     </ClInclude>
+    <ClInclude Include="FlowSystemBinding.h">
+      <Filter>Bindings</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -58,6 +61,9 @@
     </ClCompile>
     <ClCompile Include="MonoFlowBaseNode.cpp">
       <Filter>FlowSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="FlowSystemBinding.cpp">
+      <Filter>Bindings</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

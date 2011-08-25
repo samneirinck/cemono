@@ -28,6 +28,10 @@ public:
 	virtual void AddClassBinding(ICemonoClassBinding* pBinding);
 	// -ICemono
 
+
+	virtual void GetMemoryStatistics(ICrySizer * s) const;
+
+
 private:
 	bool InitializeDomain();
 	void RegisterDefaultBindings();

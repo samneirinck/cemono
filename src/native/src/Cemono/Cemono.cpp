@@ -8,6 +8,7 @@
 // Bindings
 #include "ConsoleBinding.h"
 #include "LoggingBinding.h"
+#include "FlowSystemBinding.h"
 
 CRYREGISTER_CLASS(CCemono)
 
@@ -31,6 +32,8 @@ CCemono::~CCemono()
 
 bool CCemono::Init()
 {
+	CryLog("Cemono initialization");
+	CryLog("    Initializing Cemono ...");
 	bool result = true;
 
 	mono_set_dirs(MonoPathUtils::GetLibPath(),MonoPathUtils::GetConfigPath());
@@ -47,6 +50,9 @@ bool CCemono::Init()
 
 	if (!InitializeManager())
 		return false;
+
+	CryLog("    Initializing Cemono done, MemUsage=1337Kb" );
+
 
 	return result;
 }
@@ -101,6 +107,7 @@ void CCemono::RegisterDefaultBindings()
 {
 	AddClassBinding(new CConsoleBinding());
 	AddClassBinding(new CLoggingBinding());
+	AddClassBinding(new CFlowSystemBinding());
 }
 
 bool CCemono::InitializeBaseClassLibraries()
@@ -147,4 +154,18 @@ bool CCemono::InitializeManager()
 
 	m_pManagerObject = MonoClassUtils::CreateInstanceOf(m_pMonoDomain, pClass);
 	return true;
+}
+
+
+void CCemono::GetMemoryStatistics(ICrySizer * s) const
+{
+	s->Add(*this);
+	
+	//s->Add(m_classBindings);
+	//s->Add(*m_pBclAssembly);
+	//s->Add(*m_pBclImage);
+	//s->Add(*m_pManagerAssembly);
+	//s->Add(*m_pManagerObject);
+	//s->Add(*m_pMonoDomain);
+
 }
