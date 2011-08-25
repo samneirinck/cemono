@@ -54,7 +54,9 @@
       <Name>BaseClassLibrary</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Util\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if exist E:\Games\cemono\Engine\Cemono\lib\cemono copy $(TargetPath) E:\Games\cemono\Engine\Cemono\lib\cemono</PostBuildEvent>

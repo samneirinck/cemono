@@ -7,5 +7,19 @@ namespace Cemono.Extensions
         {
             return baseType.IsAssignableFrom(thisType) && !thisType.Equals(baseType);
         }
+
+        public static T GetAttribute<T>(this Type thisType) where T : Attribute
+        {
+            var attributes = thisType.GetCustomAttributes(typeof(T), true);
+
+            if (attributes.Length > 0)
+            {
+                return (T)attributes[0];
+            }
+            else
+            {
+                return default(T);
+            }
+        }
     }
 }

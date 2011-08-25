@@ -1,23 +1,33 @@
 ﻿namespace CryEngine.FlowSystem
 {
-    public struct OutputPortConfig
+    public class OutputPortConfig
     {
         public OutputPortConfig(string sName, OutputPortTypes outType, string sDescription = null, string sHumanName = null)
         {
             this.Name = sName;
             this.Description = sDescription;
             this.HumanName = sHumanName;
-
-            outputType = outType;
+            this.OutputType = outType;
         }
 
-        // name of this port
+        /// <summary>
+        /// Name of the port
+        /// </summary>
         public string Name { get; set; }
-        // Human readable name of this port (default: same as name)
-        public string HumanName {                 g  et  ;   set; }
-        // Human readable description of this port (help)
-        public string Description {get;set;}
 
-        public OutputPortTypes outputType;
+        /// <summary>
+        ///  Human readable name of this port (default: same as name)
+        /// </summary>
+        public string HumanName { get; set; }
+
+        /// <summary>
+        ///  Human readable description of this port (help)
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// Output port type
+        /// </summary>
+        public OutputPortTypes OutputType;
     }
 }

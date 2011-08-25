@@ -9,8 +9,18 @@ namespace CryEngine.FlowSystem
 {
     public class FlowManager
     {
-        FlowManager()
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        extern private static void _RegisterNode(string category, string nodeName);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        extern private static UInt16 _GetNodeId(string nodeName);
+
+        public static void RegisterNode(string category, string nodeName)
         {
+            _RegisterNode(category, nodeName);
+        }
+        public UInt16 GetNodeId(string nodeName)
+        {
+            return _GetNodeId(nodeName);
         }
 
         public void RegisterNodes(string path)
@@ -56,21 +66,6 @@ namespace CryEngine.FlowSystem
             }
         }
 
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern protected static void _RegisterNode(string category, string nodeName);
-
-        public void RegisterNode(string category, string nodeName)
-        {
-            _RegisterNode(category, nodeName);
-        }
-
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern protected static UInt16 _GetNodeId(string nodeName);
-
-        public UInt16 GetNodeId(string nodeName)
-        {
-            return _GetNodeId(nodeName);
-        }
 
         void NodeProcessEvent(FlowNode.EFlowEvent flowEvent, UInt16 nodeId)
         {
@@ -90,19 +85,19 @@ namespace CryEngine.FlowSystem
 
         object InvokeNodeFunc(UInt16 nodeId, string func, object[] args = null)
         {
-            if (nodes[nodeId].obj == null)
+            if (nodes[nodeId].Object == null)
             {
                 NodeData data = nodes[nodeId];
 
-                data.obj = Activator.CreateInstance(nodes[nodeId].type);
+                data.Object = Activator.CreateInstance(nodes[nodeId].Type);
 
                 nodes[nodeId] = data;
             }
 
-            return nodes[nodeId].type.InvokeMember(func,
+            return nodes[nodeId].Type.InvokeMember(func,
                 BindingFlags.DeclaredOnly |
                 BindingFlags.Public | BindingFlags.NonPublic |
-                BindingFlags.Instance | BindingFlags.InvokeMethod, null, nodes[nodeId].obj, args);
+                BindingFlags.Instance | BindingFlags.InvokeMethod, null, nodes[nodeId].Object, args);
         }
 
         Dictionary<UInt16, NodeData> nodes = new Dictionary<UInt16, NodeData>();

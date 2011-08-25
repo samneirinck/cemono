@@ -84,7 +84,18 @@ namespace Cemono
 
         private void LoadFlowNode(Type type)
         {
-            throw new NotImplementedException();
+            Trace.TraceInformation("Loading flow node " + type.Name);
+
+            string nodeCategory = "Cemono";
+            string nodeName = type.Name;
+            var categoryAttribute = type.GetAttribute<NodeCategoryAttribute>();
+            if (categoryAttribute != null)
+            {
+                nodeCategory = categoryAttribute.Category;
+            }
+
+            FlowManager.RegisterNode(nodeCategory, nodeName);
+
         }
 
         private void LoadEntities(List<Type> entityTypes)
@@ -97,7 +108,6 @@ namespace Cemono
 
         private void LoadEntity(Type type)
         {
-            throw new NotImplementedException();
         }
 
         public void CompileAndLoadScripts(Folders folders)

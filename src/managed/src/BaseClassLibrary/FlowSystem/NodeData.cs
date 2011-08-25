@@ -6,11 +6,11 @@ namespace CryEngine.FlowSystem
     {
         public NodeData(Type nodeType, object _obj)
         {
-            type = nodeType;
-            obj = _obj;
+            this.Type = nodeType;
+            this.Object = _obj;
         }
 
-        public Type type;
-        public object obj;
+        public Type Type;
+        public object Object;
     }
 }
