@@ -15,29 +15,29 @@ namespace WhateverNamespaceTheNodeMakerWants
         }
 
         ////////////////////////////////////////////////////
-        public SFlowNodeConfig GetConfiguration()
+        public FlowNodeConfig GetConfiguration()
 	    {
             Logging./*CryConsole.*/LogAlways("Retrieving flownode configuration");
 
-            SFlowNodeConfig config = new SFlowNodeConfig();
+            FlowNodeConfig config = new FlowNodeConfig();
 
-            SInputPortConfig res = new SInputPortConfig("Start", EInputPortType.Void, "Start input");
-		    SInputPortConfig[] inputs =
+            InputPortConfig res = new InputPortConfig("Start", InputPortTypes.Void, "Start input");
+		    InputPortConfig[] inputs =
 		    {
-                new SInputPortConfig("Start", EInputPortType.Void, "Start input"),
-                new SInputPortConfig("Cancel", EInputPortType.Void, "Cancel input")
+                new InputPortConfig("Start", InputPortTypes.Void, "Start input"),
+                new InputPortConfig("Cancel", InputPortTypes.Void, "Cancel input")
 		    };
 
-		    SOutputPortConfig[] outputs =
+		    OutputPortConfig[] outputs =
 		    {
-			    new SOutputPortConfig("Started", EOutputPortType.Void, "Called on start"),
-                new SOutputPortConfig("Cancelled", EOutputPortType.Void, "Called on cancel")
+			    new OutputPortConfig("Started", OutputPortTypes.Void, "Called on start"),
+                new OutputPortConfig("Cancelled", OutputPortTypes.Void, "Called on cancel")
 		    };
 
 		    config.inputs = inputs;
 		    config.outputs = outputs;
             config.description = "Does nothing!";
-            config.category = EFlowNodeFlags.EFLN_DEBUG;
+            config.category = FlowNodeFlags.Debug;
 
             return config;
 	    }   

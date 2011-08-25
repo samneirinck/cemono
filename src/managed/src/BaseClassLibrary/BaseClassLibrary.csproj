@@ -42,8 +42,16 @@
     <Compile Include="CVar.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="EntityFlags.cs" />
+    <Compile Include="FlowSystem\FlowManager.cs" />
     <Compile Include="FlowSystem\FlowNode.cs" />
-    <Compile Include="FlowSystem\FlowSystem.cs" />
+    <Compile Include="FlowSystem\FlowNodeConfig.cs" />
+    <Compile Include="FlowSystem\FlowNodeFlags.cs" />
+    <Compile Include="FlowSystem\InputPortConfig.cs" />
+    <Compile Include="FlowSystem\InputPortTypes.cs" />
+    <Compile Include="FlowSystem\NodeCategoryAttribute.cs" />
+    <Compile Include="FlowSystem\NodeData.cs" />
+    <Compile Include="FlowSystem\OutputPortConfig.cs" />
+    <Compile Include="FlowSystem\OutputPortTypes.cs" />
     <Compile Include="Interfaces\IEntity.cs" />
     <Compile Include="Interfaces\IGame.cs" />
     <Compile Include="Interfaces\ILogging.cs" />
