@@ -44,6 +44,7 @@ private:
 	MonoImage* m_pBclImage;
 	MonoObject* m_pManagerObject;
 
+	bool m_bDebugging;
 	std::vector<ICemonoClassBinding*>  m_classBindings;
 
 };

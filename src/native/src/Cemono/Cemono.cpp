@@ -1,7 +1,10 @@
 #include "stdafx.h"
 #include "Cemono.h"
 #include "MonoClassUtils.h"
+
 #include <CryExtension/Impl/ClassWeaver.h>
+#include <mono/metadata/mono-debug.h>
+#include <ICmdLine.h>
 
 
 
@@ -12,7 +15,7 @@
 
 CRYREGISTER_CLASS(CCemono)
 
-CCemono::CCemono() : m_pMonoDomain(0)
+CCemono::CCemono() : m_pMonoDomain(0), m_bDebugging(false)
 {
 }
 
@@ -38,6 +41,16 @@ bool CCemono::Init()
 
 	mono_set_dirs(MonoPathUtils::GetLibPath(),MonoPathUtils::GetConfigPath());
 
+	// Commandline switch -CEMONO_DEBUG makes the process connect to the debugging server
+	const ICmdLineArg* arg = gEnv->pSystem->GetICmdLine()->FindArg(eCLAT_Pre, "CEMONO_DEBUG");
+	if (arg != NULL)
+	{
+		m_bDebugging = true;
+		char* options = "--debugger-agent=transport=dt_socket,address=127.0.0.1:65432";
+		
+		mono_jit_parse_options(1, &options);
+		mono_debug_init(MONO_DEBUG_FORMAT_MONO);
+	}
 	if (!InitializeDomain())
 	{
 		return false;
