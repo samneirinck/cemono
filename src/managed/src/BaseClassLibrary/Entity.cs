@@ -69,6 +69,11 @@ namespace CryEngine
             return (ent == null) ? false : this.Id == ent.Id;
         }
 
+        public override int GetHashCode()
+        {
+            return _id.GetHashCode();
+        }
+
 
         protected virtual void OnInit(long entityId)
         {

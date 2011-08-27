@@ -41,6 +41,7 @@
     <Compile Include="API\Console.cs" />
     <Compile Include="CVar.cs" />
     <Compile Include="Entity.cs" />
+    <Compile Include="EntityAttribute.cs" />
     <Compile Include="EntityFlags.cs" />
     <Compile Include="FlowSystem\FlowManager.cs" />
     <Compile Include="FlowSystem\FlowNode.cs" />
