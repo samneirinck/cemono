@@ -1,4 +1,6 @@
 ﻿using System;
+using CryEngine.API;
+using System.Diagnostics;
 
 namespace CryEngine
 {
@@ -51,11 +53,11 @@ namespace CryEngine
         #endregion
 
         #region Constructor(s)
-        public Entity()
+        protected Entity()
         {
         }
 
-        public Entity(long id)
+        protected Entity(long id)
             : this()
         {
             _id = id;
@@ -72,6 +74,29 @@ namespace CryEngine
         public override int GetHashCode()
         {
             return _id.GetHashCode();
+        }
+
+        protected void SetProperty<T>(string propertyName, T value)
+        {
+            EntitySystem.SetProperty(_id, propertyName, value);
+        }
+
+        protected object GetProperty(string propertyName)
+        {
+            return EntitySystem.GetProperty(_id, propertyName);
+        }
+
+        protected T GetProperty<T>(string propertyName)
+        {
+            try
+            {
+                return (T)GetProperty(propertyName);
+            }
+            catch (InvalidCastException ex)
+            {
+                Trace.TraceWarning("GetProperty<{0}>(\"{1}\") - Invalid cast, returning default");
+                return default(T);
+            }
         }
 
 

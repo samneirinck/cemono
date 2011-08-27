@@ -108,6 +108,23 @@ namespace Cemono
 
         private void LoadEntity(Type type)
         {
+            var entityAttribute = type.GetAttribute<EntityAttribute>();
+            IList<EntityProperty> entityProperties = new List<EntityProperty>();
+            foreach (PropertyInfo property in type.GetProperties())
+            {
+                var propertyAttribute = property.GetAttribute<PropertyAttribute>();
+                var entityProperty = new EntityProperty();
+                if (propertyAttribute != null)
+                {
+                    if (!String.IsNullOrEmpty(propertyAttribute.Description))
+                    {
+                        entityProperty.Description = propertyAttribute.Description;
+                    }
+
+                }
+
+                entityProperties.Add(entityProperty);
+            }
         }
 
         public void CompileAndLoadScripts(Folders folders)

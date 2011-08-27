@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 namespace Cemono.Extensions
 {
     public static class TypeExtensions
@@ -12,6 +13,19 @@ namespace Cemono.Extensions
         {
             var attributes = thisType.GetCustomAttributes(typeof(T), true);
 
+            if (attributes.Length > 0)
+            {
+                return (T)attributes[0];
+            }
+            else
+            {
+                return default(T);
+            }
+        }
+
+        public static T GetAttribute<T>(this PropertyInfo propertyInfo) where T : Attribute
+        {
+            var attributes = propertyInfo.GetCustomAttributes(typeof(T), true);
             if (attributes.Length > 0)
             {
                 return (T)attributes[0];
