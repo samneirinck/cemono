@@ -13,7 +13,7 @@ public:
 	virtual const char* GetName() const;
 	virtual uint32 GetFlags() const;
 	virtual void SetFlags(uint32 nFlags);
-	virtual const char* GetScriptFile() /*const*/;
+	virtual const char* GetScriptFile() const;
 	virtual IEntityScript* GetIEntityScript() const;
 	virtual IScriptTable* GetScriptTable() const;
 	virtual const char* GetEditorHelperObjectName() const;

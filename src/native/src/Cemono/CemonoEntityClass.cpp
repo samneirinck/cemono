@@ -42,7 +42,7 @@ void CCemonoEntityClass::SetFlags(uint32 nFlags)
 	m_flags = nFlags;
 }
 
-const char* CCemonoEntityClass::GetScriptFile() 
+const char* CCemonoEntityClass::GetScriptFile() const
 {
 	// This is a *horrible* workaround to be able to have entities in folders in the editor
 	// Only on the 6th call of this method we would like to return a dummy path, which then makes the correct directory structure in the editor
