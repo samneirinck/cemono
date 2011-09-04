@@ -9,7 +9,7 @@ Credits:
 // TODO
 	
 == Compilation ==
-It is advisable to install a stable Cemono version before compiling from source. This will setup the correct directories/assemblies required that are not available on github.
+It is advisable to install a stable Cemono version before compiling from source. These files can be downloaded from https://github.com/downloads/samneirinck/cemono/cemono-base.zip
 
 Open /src/Cemono.sln with Visual Studio 2010 or above, and build all projects
 All projects have their output set to the /output directory, look in there for the compiled assemblies.
@@ -18,8 +18,8 @@ All projects have their output set to the /output directory, look in there for t
 Assuming your game is in c:\games\mygame\ (<mygamedirectory>) [NOTE: Not the /Game directory, but the root game folder)
 Go to the /output folder and copy the files:
 
-- Cemono.Bcl.dll 		-> <mygamedirectory>\engine\lib\cemono
-- Cemono.Manager.dll 	-> <mygamedirectory>\engine\lib\cemono
+- Cemono.Bcl.dll 		-> <mygamedirectory>\engine\cemono\lib\cemono
+- Cemono.Manager.dll 	-> <mygamedirectory>\engine\cemono\lib\cemono
 - bin32\Cemono.dll		-> <mygamedirectory>\bin32
 - bin32\CryGame.dll		-> <mygamedirectory>\bin32
 
