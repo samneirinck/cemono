@@ -28,10 +28,10 @@ void CMonoFlowNode::GetConfiguration(SFlowNodeConfig &config)
 		{
 			inputPortConfig = mono_array_get(monoConfig.pInputPorts, SMonoInputPortConfig, i);
 			
-			inputs[i] = MonoInputPortConfig(inputPortConfig.inputType, SafeString(mono_string_to_utf8(inputPortConfig.name)), 
-							SafeString(_HELP(mono_string_to_utf8(inputPortConfig.description))), 
-							SafeString(mono_string_to_utf8(inputPortConfig.humanName)), 
-							SafeString(mono_string_to_utf8(inputPortConfig.sUIConfig)));
+			inputs[i] = MonoInputPortConfig(inputPortConfig.inputType, SafeString(CCemono::ToString(inputPortConfig.name)), 
+							SafeString(_HELP(CCemono::ToString(inputPortConfig.description))), 
+							SafeString(CCemono::ToString(inputPortConfig.humanName)), 
+							SafeString(CCemono::ToString(inputPortConfig.sUIConfig)));
 		}
 
 		SOutputPortConfig *outputs = new SOutputPortConfig[monoConfig.outputSize];
@@ -41,9 +41,9 @@ void CMonoFlowNode::GetConfiguration(SFlowNodeConfig &config)
 		{
 			outputPortConfig = mono_array_get(monoConfig.pOutputPorts, SMonoOutputPortConfig, i);
 
-			outputs[i] = MonoOutputPortConfig(outputPortConfig.outputType, SafeString(mono_string_to_utf8(outputPortConfig.name)), 
-							SafeString(_HELP(mono_string_to_utf8(outputPortConfig.description))), 
-							SafeString(mono_string_to_utf8(outputPortConfig.humanName)));
+			outputs[i] = MonoOutputPortConfig(outputPortConfig.outputType, SafeString(CCemono::ToString(outputPortConfig.name)), 
+							SafeString(_HELP(CCemono::ToString(outputPortConfig.description))), 
+							SafeString(CCemono::ToString(outputPortConfig.humanName)));
 		}
 		*/
 		
@@ -63,7 +63,7 @@ void CMonoFlowNode::GetConfiguration(SFlowNodeConfig &config)
 		
 		config.pInputPorts = inputs;
 		config.pOutputPorts = outputs;
-		config.sDescription = _HELP("Relatively useless");//_HELP(mono_string_to_utf8(monoConfig.sDescription));
+		config.sDescription = _HELP("Relatively useless");//_HELP(CCemono::ToString(monoConfig.sDescription));
 		config.SetCategory(EFLN_APPROVED/*monoConfig.flags*/);
 }
 

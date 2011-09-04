@@ -1,7 +1,9 @@
 #pragma once
 
 #include "Headers/ICemonoClassBinding.h"
+#include "Cemono.h"
 #include <mono/jit/jit.h>
+
 
 #define REGISTER_METHOD(method) RegisterMethod(#method, method)
 

@@ -20,12 +20,12 @@ CEntitySystemBinding::~CEntitySystemBinding()
 
 void CEntitySystemBinding::_RegisterEntityClass(int flags, MonoString* monoName, MonoString* monoEditorHelper, MonoString* monoEditorIcon, MonoString* monoCategory, MonoString* monoFullyQualifiedName, MonoString* monoPathToAssembly, MonoArray* monoProperties)
 {
-	const char* name = mono_string_to_utf8(monoName);
-	const char* editorHelper=  mono_string_to_utf8(monoEditorHelper);
-	const char* editorIcon = mono_string_to_utf8(monoEditorIcon);
-	const char* fullyQualifiedName = mono_string_to_utf8(monoFullyQualifiedName);
-	const char* pathToAssembly = mono_string_to_utf8(monoPathToAssembly);
-	const char* category = mono_string_to_utf8(monoCategory);
+	string name = CCemono::ToString(monoName);
+	string editorHelper=  CCemono::ToString(monoEditorHelper);
+	string editorIcon = CCemono::ToString(monoEditorIcon);
+	string fullyQualifiedName = CCemono::ToString(monoFullyQualifiedName);
+	string pathToAssembly = CCemono::ToString(monoPathToAssembly);
+	string category = CCemono::ToString(monoCategory);
 
 	int numProperties = mono_array_length(monoProperties);
 	MonoClass* pClass = NULL;
@@ -43,9 +43,9 @@ void CEntitySystemBinding::_RegisterEntityClass(int flags, MonoString* monoName,
 			IEntityPropertyHandler::SPropertyInfo propertyInfo;
 
 			// Horrible, needs a refactor
-			propertyInfo.name = mono_string_to_utf8( (MonoString*)mono_property_get_value(mono_class_get_property_from_name(pClass, "Name"), obj, NULL,NULL));
-			propertyInfo.description = mono_string_to_utf8( (MonoString*)mono_property_get_value(mono_class_get_property_from_name(pClass, "Description"), obj, NULL,NULL));
-			propertyInfo.editType = mono_string_to_utf8( (MonoString*)mono_property_get_value(mono_class_get_property_from_name(pClass, "EditorType"), obj, NULL,NULL));
+			propertyInfo.name = CCemono::ToString( (MonoString*)mono_property_get_value(mono_class_get_property_from_name(pClass, "Name"), obj, NULL,NULL));
+			propertyInfo.description = CCemono::ToString( (MonoString*)mono_property_get_value(mono_class_get_property_from_name(pClass, "Description"), obj, NULL,NULL));
+			propertyInfo.editType = CCemono::ToString( (MonoString*)mono_property_get_value(mono_class_get_property_from_name(pClass, "EditorType"), obj, NULL,NULL));
 			propertyInfo.flags = *(int*)mono_object_unbox(mono_property_get_value(mono_class_get_property_from_name(pClass, "Flags"), obj, NULL, NULL));
 			propertyInfo.type = (IEntityPropertyHandler::EPropertyType)*(int*)mono_object_unbox(mono_property_get_value(mono_class_get_property_from_name(pClass, "Type"), obj, NULL, NULL));
 			propertyInfo.limits.min = *(float*)mono_object_unbox(mono_property_get_value(mono_class_get_property_from_name(pClass, "MinValue"), obj, NULL, NULL));

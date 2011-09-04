@@ -14,15 +14,15 @@ CFGPluginManager::CFGPluginManager()
 	
 	// Retrieve C# nodes
 	void *args[1];
-	args [0] = mono_string_new(mono_domain_get(), /*CMonoPathUtils::GetFGNodePath()"");
+	args [0] = CCemono::ToMonoString(mono_domain_get(), /*CMonoPathUtils::GetFGNodePath()"");
 
 	CMonoClassUtils::CallMethod("RegisterNodes", nativeClass, m_pFlowSystemInstance, args);*/
 }
 
 void CFGPluginManager::RegisterNode(MonoString *category, MonoString *nodeName)
 {
-	/*string sNodeName = mono_string_to_utf8(nodeName);
-	string sCategory = mono_string_to_utf8(category) + (string)":" + sNodeName; 
+	/*string sNodeName = CCemono::ToString(nodeName);
+	string sCategory = CCemono::ToString(category) + (string)":" + sNodeName; 
 
 	CMonoFlowNode *pNode = new CMonoFlowNode();
 	if(IFlowSystem *pFlow = g_pGame->GetIGameFramework()->GetIFlowSystem())
@@ -33,6 +33,6 @@ void CFGPluginManager::RegisterNode(MonoString *category, MonoString *nodeName)
 
 uint16 CFGPluginManager::GetNodeId(MonoString *name)
 {
-	//return g_pGame->GetIGameFramework()->GetIFlowSystem()->GetTypeId(mono_string_to_utf8(name));
+	//return g_pGame->GetIGameFramework()->GetIFlowSystem()->GetTypeId(CCemono::ToString(name));
 	return 0;
 }

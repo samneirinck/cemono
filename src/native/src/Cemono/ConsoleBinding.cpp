@@ -35,7 +35,7 @@ MonoString* CConsoleBinding::_GetCVarHelpText(MonoString* cvarName)
 	ICVar* pCvar = GetCvarByName(cvarName);
 	if (pCvar)
 	{
-		return mono_string_new(mono_domain_get(), pCvar->GetHelp());
+		return CCemono::ToMonoString(pCvar->GetHelp());
 	}
 	return NULL;
 }
@@ -69,7 +69,7 @@ MonoString* CConsoleBinding::_GetCVarValueString(MonoString* cvarName)
 	ICVar* pCvar = GetCvarByName(cvarName);
 	if (pCvar)
 	{
-		return mono_string_new(mono_domain_get(), pCvar->GetString());
+		return CCemono::ToMonoString(pCvar->GetString());
 	}
 	else {
 		return NULL;
@@ -97,7 +97,7 @@ void CConsoleBinding::_SetCVarValueString(MonoString* cvarName, MonoString* valu
 	ICVar* pCvar = GetCvarByName(cvarName);
 	if (pCvar)
 	{
-		pCvar->Set(mono_string_to_utf8(value));
+		pCvar->Set(CCemono::ToString(value));
 	}
 }
 
@@ -121,5 +121,5 @@ void CConsoleBinding::_SetCVarFlags(MonoString* cvarName, int value)
 
 ICVar* CConsoleBinding::GetCvarByName(MonoString* cvarName)
 {
-	return gEnv->pConsole->GetCVar(mono_string_to_utf8(cvarName));
+	return gEnv->pConsole->GetCVar(CCemono::ToString(cvarName));
 }

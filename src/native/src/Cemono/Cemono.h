@@ -31,6 +31,17 @@ public:
 
 	virtual void GetMemoryStatistics(ICrySizer * s) const;
 
+	// Statics
+	static string ToString(MonoString* monoString)
+	{
+		return mono_string_to_utf8(monoString);
+	}
+
+	static MonoString* ToMonoString(const char* string)
+	{
+		return mono_string_new(mono_domain_get(), string);
+	}
+
 
 private:
 	bool InitializeDomain();

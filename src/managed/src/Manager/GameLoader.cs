@@ -133,7 +133,7 @@ namespace Cemono
                         {
                             // This is pretty bad, but I can't seem to get the boolean checkbox in the editor right
                             entityProperty.Name = entityProperty.Name;
-                            entityProperty.Type = PropertyTypes.Int;
+                            entityProperty.Type = PropertyTypes.Bool;
                             entityProperty.EditorType = "Bool";
                             entityProperty.MinValue = 0;
                             entityProperty.MaxValue = 1;

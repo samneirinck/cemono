@@ -80,6 +80,7 @@
   <ItemGroup>
     <ClInclude Include="BaseCemonoClassBinding.h" />
     <ClInclude Include="Cemono.h" />
+    <ClInclude Include="CemonoAssembly.h" />
     <ClInclude Include="CemonoEntityClass.h" />
     <ClInclude Include="CemonoEntityEventHandler.h" />
     <ClInclude Include="CemonoEntityPropertyHandler.h" />
@@ -98,6 +99,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Cemono.cpp" />
+    <ClCompile Include="CemonoAssembly.cpp" />
     <ClCompile Include="CemonoDll.cpp" />
     <ClCompile Include="CemonoEntityClass.cpp" />
     <ClCompile Include="CemonoEntityEventHandler.cpp" />
