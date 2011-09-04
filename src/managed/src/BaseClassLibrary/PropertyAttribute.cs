@@ -8,11 +8,18 @@ namespace CryEngine
         public PropertyAttribute()
             : base()
         {
+            Name = "";
+            Type = PropertyTypes.None;
+            EditorType = EditorTypes.None;
+            Description = "No description";
+            Flags = 0;
+            MinValue = Single.MinValue;
+            MaxValue = Single.MaxValue;
         }
 
         public string Name { get; set; }
-        public int Type { get; set; }
-        public string EditorType { get; set; }
+        public PropertyTypes Type { get; set; }
+        public EditorTypes EditorType { get; set; }
         public string Description { get; set; }
         public int Flags { get; set; }
         public float MinValue { get; set; }

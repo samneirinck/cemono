@@ -39,6 +39,15 @@
     <ClInclude Include="FlowSystemBinding.h">
       <Filter>Bindings</Filter>
     </ClInclude>
+    <ClInclude Include="CemonoEntityClass.h">
+      <Filter>Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="CemonoEntityPropertyHandler.h">
+      <Filter>Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="CemonoEntityEventHandler.h">
+      <Filter>Entity</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -65,6 +74,15 @@
     <ClCompile Include="FlowSystemBinding.cpp">
       <Filter>Bindings</Filter>
     </ClCompile>
+    <ClCompile Include="CemonoEntityClass.cpp">
+      <Filter>Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="CemonoEntityPropertyHandler.cpp">
+      <Filter>Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="CemonoEntityEventHandler.cpp">
+      <Filter>Entity</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Headers">
@@ -81,6 +99,9 @@
     </Filter>
     <Filter Include="FlowSystem">
       <UniqueIdentifier>{bb13a40b-099d-4911-9f4e-f0a9cbf66c4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity">
+      <UniqueIdentifier>{1857290e-dd32-4472-8b5c-a022967ef95d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

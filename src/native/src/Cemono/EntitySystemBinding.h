@@ -11,9 +11,7 @@ public:
 protected:
 	virtual const char* GetClassName() { return "EntitySystem"; }
 
-	static MonoArray* _GetEntities();
-	static MonoObject* CreateMonoEntity(IEntity *pEnt);
-
+	static void _RegisterEntityClass(int flags, MonoString* name, MonoString* editorHelper, MonoString* editorIcon, MonoString* category, MonoString* fullyQualifiedName, MonoString* pathToAssembly, MonoArray* properties);
 
 };
 

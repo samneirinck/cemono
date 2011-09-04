@@ -12,6 +12,7 @@
 #include "ConsoleBinding.h"
 #include "LoggingBinding.h"
 #include "FlowSystemBinding.h"
+#include "EntitySystemBinding.h"
 
 CRYREGISTER_CLASS(CCemono)
 
@@ -121,6 +122,7 @@ void CCemono::RegisterDefaultBindings()
 	AddClassBinding(new CConsoleBinding());
 	AddClassBinding(new CLoggingBinding());
 	AddClassBinding(new CFlowSystemBinding());
+	AddClassBinding(new CEntitySystemBinding());
 }
 
 bool CCemono::InitializeBaseClassLibraries()

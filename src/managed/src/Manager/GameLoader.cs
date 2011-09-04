@@ -9,6 +9,7 @@ using CryEngine.FlowSystem;
 using Microsoft.CSharp;
 using Cemono.Extensions;
 using System.Diagnostics;
+using System.Text;
 
 namespace Cemono
 {
@@ -108,23 +109,47 @@ namespace Cemono
 
         private void LoadEntity(Type type)
         {
+            // TODO: Refactor
             var entityAttribute = type.GetAttribute<EntityAttribute>();
             IList<EntityProperty> entityProperties = new List<EntityProperty>();
             foreach (PropertyInfo property in type.GetProperties())
             {
                 var propertyAttribute = property.GetAttribute<PropertyAttribute>();
-                var entityProperty = new EntityProperty();
                 if (propertyAttribute != null)
                 {
-                    if (!String.IsNullOrEmpty(propertyAttribute.Description))
+                    var entityProperty = new EntityProperty();
+
+                    entityProperty.Name = property.Name;
+                    entityProperty.Type = (propertyAttribute.Type == PropertyTypes.None) ? PropertyTypes.String : propertyAttribute.Type;
+                    entityProperty.EditorType = (propertyAttribute.EditorType == EditorTypes.None) ? EditorTypes.String.ToString() : propertyAttribute.EditorType.ToString();
+                    entityProperty.Description = propertyAttribute.Description;
+                    entityProperty.Flags = propertyAttribute.Flags;
+                    entityProperty.MinValue = propertyAttribute.MinValue;
+                    entityProperty.MaxValue = propertyAttribute.MaxValue;
+
+                    if (propertyAttribute.Type == PropertyTypes.None)
                     {
-                        entityProperty.Description = propertyAttribute.Description;
+                        if (property.PropertyType.Equals(typeof(bool)))
+                        {
+                            // This is pretty bad, but I can't seem to get the boolean checkbox in the editor right
+                            entityProperty.Name = entityProperty.Name;
+                            entityProperty.Type = PropertyTypes.Int;
+                            entityProperty.EditorType = "Bool";
+                            entityProperty.MinValue = 0;
+                            entityProperty.MaxValue = 1;
+                        }
+                        else if (property.PropertyType.Equals(typeof(int)))
+                        {
+                            entityProperty.Type = PropertyTypes.Int;
+                            entityProperty.EditorType = "i";
+                        }
                     }
 
+                    entityProperties.Add(entityProperty);
                 }
-
-                entityProperties.Add(entityProperty);
             }
+
+            CryEngine.API.EntitySystem.RegisterEntityClass(entityAttribute.Flags, type.Name, entityAttribute.EditorHelperObjectName, entityAttribute.EditorIconName, entityAttribute.Category, type.FullName, type.Assembly.CodeBase.Replace("file:///", ""), entityProperties.ToArray());
         }
 
         public void CompileAndLoadScripts(Folders folders)

@@ -41,8 +41,10 @@
     <Compile Include="BaseGame.cs" />
     <Compile Include="API\Console.cs" />
     <Compile Include="CVar.cs" />
+    <Compile Include="EditorTypes.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="EntityAttribute.cs" />
+    <Compile Include="EntityClassFlags.cs" />
     <Compile Include="EntityFlags.cs" />
     <Compile Include="EntityProperty.cs" />
     <Compile Include="FlowSystem\FlowManager.cs" />
@@ -61,6 +63,7 @@
     <Compile Include="ConsoleLogging.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyAttribute.cs" />
+    <Compile Include="PropertyTypes.cs" />
     <Compile Include="Vec3.cs" />
   </ItemGroup>
   <ItemGroup />

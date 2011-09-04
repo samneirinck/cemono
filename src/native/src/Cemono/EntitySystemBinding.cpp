@@ -1,12 +1,16 @@
 #include "StdAfx.h"
 #include "EntitySystemBinding.h"
+#include "CemonoEntityClass.h"
+
 #include <IEntitySystem.h>
-//#include "MonoEntity.h"
+#include <IEntityClass.h>
+#include <IGame.h>
+#include <IGameFramework.h>
 
 
 CEntitySystemBinding::CEntitySystemBinding()
 {
-	//REGISTER_METHOD(_GetEntities);
+	REGISTER_METHOD(_RegisterEntityClass);
 }
 
 
@@ -14,61 +18,54 @@ CEntitySystemBinding::~CEntitySystemBinding()
 {
 }
 
-MonoArray* CEntitySystemBinding::_GetEntities()
+void CEntitySystemBinding::_RegisterEntityClass(int flags, MonoString* monoName, MonoString* monoEditorHelper, MonoString* monoEditorIcon, MonoString* monoCategory, MonoString* monoFullyQualifiedName, MonoString* monoPathToAssembly, MonoArray* monoProperties)
 {
-	/*MonoClass* pClass = CMonoClassUtils::GetClassByName("Cemono", "Entity");
+	const char* name = mono_string_to_utf8(monoName);
+	const char* editorHelper=  mono_string_to_utf8(monoEditorHelper);
+	const char* editorIcon = mono_string_to_utf8(monoEditorIcon);
+	const char* fullyQualifiedName = mono_string_to_utf8(monoFullyQualifiedName);
+	const char* pathToAssembly = mono_string_to_utf8(monoPathToAssembly);
+	const char* category = mono_string_to_utf8(monoCategory);
 
-	std::vector<IEntity*> entities;
-	IEntityItPtr pIt = gEnv->pEntitySystem->GetEntityIterator();
-	while (!pIt->IsEnd())
+	int numProperties = mono_array_length(monoProperties);
+	MonoClass* pClass = NULL;
+	std::vector<IEntityPropertyHandler::SPropertyInfo> properties;
+
+	for	(int i = 0; i < numProperties; ++i)
 	{
-		if (IEntity * pEnt = pIt->Next())
+		MonoObject* obj = mono_array_get(monoProperties, MonoObject*, i);
+
+		if (!pClass)
 		{
-			entities.push_back(pEnt);
+			pClass = mono_object_get_class(obj);
+
 		}
+			IEntityPropertyHandler::SPropertyInfo propertyInfo;
+
+			// Horrible, needs a refactor
+			propertyInfo.name = mono_string_to_utf8( (MonoString*)mono_property_get_value(mono_class_get_property_from_name(pClass, "Name"), obj, NULL,NULL));
+			propertyInfo.description = mono_string_to_utf8( (MonoString*)mono_property_get_value(mono_class_get_property_from_name(pClass, "Description"), obj, NULL,NULL));
+			propertyInfo.editType = mono_string_to_utf8( (MonoString*)mono_property_get_value(mono_class_get_property_from_name(pClass, "EditorType"), obj, NULL,NULL));
+			propertyInfo.flags = *(int*)mono_object_unbox(mono_property_get_value(mono_class_get_property_from_name(pClass, "Flags"), obj, NULL, NULL));
+			propertyInfo.type = (IEntityPropertyHandler::EPropertyType)*(int*)mono_object_unbox(mono_property_get_value(mono_class_get_property_from_name(pClass, "Type"), obj, NULL, NULL));
+			propertyInfo.limits.min = *(float*)mono_object_unbox(mono_property_get_value(mono_class_get_property_from_name(pClass, "MinValue"), obj, NULL, NULL));
+			propertyInfo.limits.max = *(float*)mono_object_unbox(mono_property_get_value(mono_class_get_property_from_name(pClass, "MaxValue"), obj, NULL, NULL));
+
+			properties.push_back(propertyInfo);
 	}
 
-	MonoArray* entityArray = mono_array_new(mono_domain_get(), pClass, entities.size());
-
-	for(int i=0; i < entities.size(); i++)
-	{
-		IEntity* pEnt = entities.at(i);
-		const char* className = pEnt->GetClass()->GetName();
-		CMonoEntity* monoEntity = CMonoEntity::GetById(pEnt->GetId());
-
-		if (monoEntity != NULL)
-		{
-			mono_array_set(entityArray, MonoObject*, i, monoEntity->GetMonoObject());
-		} else {
-			mono_array_set(entityArray, MonoObject*, i, CreateMonoEntity(pEnt));
-		}
-
-	}
-	return entityArray;*/
-	return NULL;
-}
+	IEntityClassRegistry::SEntityClassDesc entityClassDesc;
+	entityClassDesc.flags = flags;
+	entityClassDesc.sName = name;
+	entityClassDesc.sEditorHelper = editorHelper;
+	entityClassDesc.sEditorIcon = editorIcon;
+	//gEnv->pEntitySystem->GetClassRegistry()->RegisterStdClass(entityClassDesc);
+	
+	CCemonoEntityClass* entityClass = new CCemonoEntityClass(entityClassDesc, category, properties);
 
 
-// UTIL
-MonoObject* CEntitySystemBinding::CreateMonoEntity(IEntity *pEnt)
-{
-	/*if (pEnt)
-	{
-		uint id = pEnt->GetId();
-		void* args[1];
-		
-		args[0] = &id;
 
-		MonoAssembly *pAss = g_pMono->GetBclAssembly();
+	bool result = gEnv->pEntitySystem->GetClassRegistry()->RegisterClass(entityClass);
 
-		MonoClass *pClass = mono_class_from_name(g_pMono->GetBclImage(), "Cemono", "Entity");
-		MonoObject *pEntity = mono_object_new(mono_domain_get(), pClass);
 
-		CMonoClassUtils::CallMethod(pEntity, ":.ctor(long)", args);
-		
-		return pEntity;
-	} else {
-		return NULL;
-	}*/
-	return NULL;
 }
