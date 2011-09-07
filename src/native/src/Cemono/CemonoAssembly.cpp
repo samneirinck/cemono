@@ -1,13 +1,29 @@
 #include "StdAfx.h"
 #include "CemonoAssembly.h"
+
 #include <mono/metadata/debug-helpers.h>
+#include <mono/metadata/assembly.h>
 
-
-CCemonoAssembly::CCemonoAssembly(const char* assemblyPath)
+CCemonoAssembly::CCemonoAssembly(MonoDomain* pDomain, const char* assemblyPath)
 {
+	CRY_ASSERT_MESSAGE(pDomain, "CCemonoAssembly::ctor Domain is NULL");
+	CRY_ASSERT_MESSAGE(assemblyPath, "CCemonoAssembly::ctor assemblyPath is NULL");
+
 	m_assemblyPath = assemblyPath;
+	m_pDomain = pDomain;
 	
-	m_pAssembly = mono_domain_assembly_open(mono_domain_get(),assemblyPath);
+	m_pAssembly = mono_domain_assembly_open(m_pDomain,assemblyPath);
+	if (!m_pAssembly)
+	{
+		gEnv->pLog->LogError("Failed to create assembly from %s", assemblyPath);
+		return;
+	}
+	m_pImage = mono_assembly_get_image(m_pAssembly);
+	if (!m_pImage)
+	{
+		gEnv->pLog->LogError("Failed to get image from assembly %s", assemblyPath);
+		return;
+	}
 }
 
 

@@ -16,7 +16,7 @@
 
 CRYREGISTER_CLASS(CCemono)
 
-CCemono::CCemono() : m_pMonoDomain(0), m_bDebugging(false)
+CCemono::CCemono() : m_pMonoDomain(0), m_bDebugging(false), m_pBclAssembly(0), m_pManagerAssembly(0)
 {
 }
 
@@ -32,6 +32,9 @@ CCemono::~CCemono()
 	{
 		delete *it;
 	}
+
+	SAFE_DELETE(m_pManagerAssembly);
+	SAFE_DELETE(m_pBclAssembly);
 }
 
 bool CCemono::Init()
@@ -128,46 +131,20 @@ void CCemono::RegisterDefaultBindings()
 bool CCemono::InitializeBaseClassLibraries()
 {
 	string bclPath = MonoPathUtils::GetCemonoLibPath() + "Cemono.Bcl.dll";
-	m_pBclAssembly = mono_domain_assembly_open(m_pMonoDomain, bclPath);
-	
-	if (m_pBclAssembly == NULL)
-	{
-		//CryError("Failed to initialize base class libraries, assembly=NULL");
-		CryFatalError("no base class libraries");
-		return false;
-	} else {
-		m_pBclImage = mono_assembly_get_image(m_pBclAssembly);
-
-		return m_pBclAssembly != NULL;
-	}
-	return true;
+	m_pBclAssembly = new CCemonoAssembly(m_pMonoDomain, bclPath);
+	return m_pBclAssembly != NULL;
 }
 
 bool CCemono::InitializeManager()
 {
-	// Open assembly in domain
-	m_pManagerAssembly = mono_domain_assembly_open(m_pMonoDomain, MonoPathUtils::GetCemonoLibPath() + "Cemono.Manager.dll");
-
+	string managerPath = MonoPathUtils::GetCemonoLibPath() + "Cemono.Manager.dll";
+	m_pManagerAssembly = new CCemonoAssembly(m_pMonoDomain, managerPath);
 	if (m_pManagerAssembly == NULL)
 	{
 		return false;
 	}
 
-	MonoImage* pMonoImage = mono_assembly_get_image(m_pManagerAssembly);
-	if (pMonoImage == NULL)
-	{
-		CryFatalError("Failed to load mono manager image");
-		return false;
-	}
-
-	MonoClass* pClass = mono_class_from_name(pMonoImage, "Cemono", "Manager");
-	if (!pClass)
-	{
-		CryFatalError("Failed to find cemono Manager class");
-		return false;
-	}
-
-	m_pManagerObject = MonoClassUtils::CreateInstanceOf(m_pMonoDomain, pClass);
+	m_pManagerObject = m_pManagerAssembly->CreateInstanceOf("Cemono", "Manager");
 	return true;
 }
 

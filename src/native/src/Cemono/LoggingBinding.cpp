@@ -15,15 +15,15 @@ CLoggingBinding::~CLoggingBinding()
 
 void CLoggingBinding::_LogAlways(MonoString *msg)
 {
-	CryLogAlways(CCemono::ToString(msg));
+	CryLogAlways(CCemonoString::ToString(msg));
 }
 
 void CLoggingBinding::_Log(MonoString *msg)
 {
-	CryLog(CCemono::ToString(msg));
+	CryLog(CCemonoString::ToString(msg));
 }
 
 void CLoggingBinding::_CryWarning(MonoString *msg) 
 { 
-	CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, CCemono::ToString(msg)); 
+	CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, CCemonoString::ToString(msg)); 
 }

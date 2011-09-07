@@ -2,6 +2,10 @@
 
 #include "Headers/ICemono.h"
 #include "MonoPathUtils.h"
+#include "CemonoAssembly.h"
+#include "CemonoArray.h"
+#include "CemonoString.h"
+#include "CemonoObject.h"
 
 #include <CryExtension/Impl/ClassWeaver.h>
 #include <mono/jit/jit.h>
@@ -32,16 +36,6 @@ public:
 	virtual void GetMemoryStatistics(ICrySizer * s) const;
 
 	// Statics
-	static string ToString(MonoString* monoString)
-	{
-		return mono_string_to_utf8(monoString);
-	}
-
-	static MonoString* ToMonoString(const char* string)
-	{
-		return mono_string_new(mono_domain_get(), string);
-	}
-
 
 private:
 	bool InitializeDomain();
@@ -50,12 +44,10 @@ private:
 	bool InitializeManager();
 
 	MonoDomain* m_pMonoDomain;
-	MonoAssembly* m_pManagerAssembly;
-	MonoAssembly* m_pBclAssembly;
-	MonoImage* m_pBclImage;
+	CCemonoAssembly* m_pBclAssembly;
+	CCemonoAssembly* m_pManagerAssembly;
 	MonoObject* m_pManagerObject;
 
 	bool m_bDebugging;
 	std::vector<ICemonoClassBinding*>  m_classBindings;
-
 };

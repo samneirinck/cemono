@@ -51,11 +51,19 @@
     <ClInclude Include="CemonoAssembly.h">
       <Filter>Cemono</Filter>
     </ClInclude>
+    <ClInclude Include="CemonoArray.h">
+      <Filter>Cemono</Filter>
+    </ClInclude>
+    <ClInclude Include="CemonoString.h">
+      <Filter>Cemono</Filter>
+    </ClInclude>
+    <ClInclude Include="CemonoObject.h">
+      <Filter>Cemono</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="Cemono.cpp" />
-    <ClCompile Include="CemonoDll.cpp" />
     <ClCompile Include="ConsoleBinding.cpp">
       <Filter>Bindings</Filter>
     </ClCompile>
@@ -87,6 +95,15 @@
       <Filter>Entity</Filter>
     </ClCompile>
     <ClCompile Include="CemonoAssembly.cpp">
+      <Filter>Cemono</Filter>
+    </ClCompile>
+    <ClCompile Include="CemonoDll.cpp">
+      <Filter>Cemono</Filter>
+    </ClCompile>
+    <ClCompile Include="CemonoObject.cpp">
+      <Filter>Cemono</Filter>
+    </ClCompile>
+    <ClCompile Include="CemonoArray.cpp">
       <Filter>Cemono</Filter>
     </ClCompile>
   </ItemGroup>

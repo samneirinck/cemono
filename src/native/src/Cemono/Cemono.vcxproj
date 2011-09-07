@@ -80,10 +80,13 @@
   <ItemGroup>
     <ClInclude Include="BaseCemonoClassBinding.h" />
     <ClInclude Include="Cemono.h" />
+    <ClInclude Include="CemonoArray.h" />
     <ClInclude Include="CemonoAssembly.h" />
     <ClInclude Include="CemonoEntityClass.h" />
     <ClInclude Include="CemonoEntityEventHandler.h" />
     <ClInclude Include="CemonoEntityPropertyHandler.h" />
+    <ClInclude Include="CemonoObject.h" />
+    <ClInclude Include="CemonoString.h" />
     <ClInclude Include="ConsoleBinding.h" />
     <ClInclude Include="EntitySystemBinding.h" />
     <ClInclude Include="FGPluginManager.h" />
@@ -99,11 +102,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Cemono.cpp" />
+    <ClCompile Include="CemonoArray.cpp" />
     <ClCompile Include="CemonoAssembly.cpp" />
     <ClCompile Include="CemonoDll.cpp" />
     <ClCompile Include="CemonoEntityClass.cpp" />
     <ClCompile Include="CemonoEntityEventHandler.cpp" />
     <ClCompile Include="CemonoEntityPropertyHandler.cpp" />
+    <ClCompile Include="CemonoObject.cpp" />
     <ClCompile Include="ConsoleBinding.cpp" />
     <ClCompile Include="EntitySystemBinding.cpp" />
     <ClCompile Include="FGPluginManager.cpp" />

@@ -5,7 +5,7 @@
 class CCemonoAssembly
 {
 public:
-	CCemonoAssembly(const char* assemblyPath);
+	CCemonoAssembly(MonoDomain* pDomain, const char* assemblyPath);
 	virtual ~CCemonoAssembly(void);
 	MonoObject* CreateInstanceOf(const char* nameSpace, const char* className);
 	MonoObject* CallMethod(MonoObject* pObjectInstance, const char* methodName);
