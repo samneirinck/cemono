@@ -132,9 +132,8 @@ namespace Cemono
                         if (property.PropertyType.Equals(typeof(bool)))
                         {
                             // This is pretty bad, but I can't seem to get the boolean checkbox in the editor right
-                            entityProperty.Name = entityProperty.Name;
                             entityProperty.Type = PropertyTypes.Bool;
-                            entityProperty.EditorType = "Bool";
+                            entityProperty.EditorType = "i";
                             entityProperty.MinValue = 0;
                             entityProperty.MaxValue = 1;
                         }

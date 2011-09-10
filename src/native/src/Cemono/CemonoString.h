@@ -7,7 +7,7 @@
 class CCemonoString
 {
 public:
-	static string ToString(MonoString* monoString)
+	static const char* ToString(MonoString* monoString)
 	{
 		return mono_string_to_utf8(monoString);
 	}

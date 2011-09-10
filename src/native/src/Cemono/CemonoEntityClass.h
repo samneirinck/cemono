@@ -35,10 +35,10 @@ public:
 
 protected:
 	uint32	m_flags;
-	const char*	m_name;
-	const char* m_editorHelper;
-	const char* m_editorIcon;
-	const char* m_category;
+	string	m_name;
+	string m_editorHelper;
+	string m_editorIcon;
+	string m_category;
 	int m_getScriptFileCallCount;
 	static const int EditorFolderCall = 6;
 

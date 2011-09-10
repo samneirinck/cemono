@@ -13,13 +13,9 @@ public:
 
 	template <class T> T GetPropertyValue(string propertyName)
 	{
-		return (reinterpret_cast<T>(mono_property_get_value(mono_class_get_property_from_name(GetClass(), propertyName), m_pObject, NULL,NULL)));
+		return (T)(mono_property_get_value(mono_class_get_property_from_name(GetClass(), propertyName), m_pObject, NULL,NULL));
 	}
 	template <> const char* GetPropertyValue(string propertyName)
-	{
-		return CCemonoString::ToString(GetPropertyValue<MonoString*>(propertyName));
-	}
-	template <> string GetPropertyValue(string propertyName)
 	{
 		return CCemonoString::ToString(GetPropertyValue<MonoString*>(propertyName));
 	}
