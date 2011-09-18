@@ -19,7 +19,7 @@ Assuming your game is in c:\games\mygame\ (<mygamedirectory>) [NOTE: Not the /Ga
 Go to the /output folder and copy the files:
 
 - Cemono.Bcl.dll 		-> <mygamedirectory>\engine\cemono\lib\cemono
-- Cemono.Manager.dll 	-> <mygamedirectory>\engine\cemono\lib\cemono
+- Cemono.Manager.dll	 	-> <mygamedirectory>\engine\cemono\lib\cemono
 - bin32\Cemono.dll		-> <mygamedirectory>\bin32
 - bin32\CryGame.dll		-> <mygamedirectory>\bin32
 
