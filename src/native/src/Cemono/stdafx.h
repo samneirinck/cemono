@@ -66,3 +66,7 @@ inline float LinePointDistanceSqr(const Line& line, const Vec3& point, float zSc
 
 	return ((x2-x1).Cross(x1-x0)).GetLengthSquared()/(x2-x1).GetLengthSquared();
 }
+
+namespace ce {
+	typedef string string;
+}

@@ -16,10 +16,6 @@
 #include <mono/metadata/threads.h>
 #include <mono/metadata/environment.h>
 
-namespace ce {
-	typedef string string;
-}
-
 class CCemono : public ICemono
 {
 	CRYINTERFACE_BEGIN()
