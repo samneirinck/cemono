@@ -16,6 +16,9 @@
 #include <mono/metadata/threads.h>
 #include <mono/metadata/environment.h>
 
+namespace ce {
+	typedef string string;
+}
 
 class CCemono : public ICemono
 {
@@ -29,7 +32,7 @@ public:
 	// ICemono interface
 	virtual bool Init();
 	virtual void Shutdown();
-	virtual void AddClassBinding(ICemonoClassBinding* pBinding);
+	virtual void AddClassBinding(std::shared_ptr<ICemonoClassBinding> pBinding);
 	// -ICemono
 
 
@@ -50,5 +53,5 @@ private:
 	MonoObject* m_pManagerObject;
 
 	bool m_bDebugging;
-	std::vector<ICemonoClassBinding*>  m_classBindings;
+	std::vector<std::shared_ptr<ICemonoClassBinding>>  m_classBindings;
 };

@@ -10,7 +10,7 @@ struct ICemono : public ICryUnknown
 
 	virtual bool Init() = 0;
 	virtual void Shutdown() = 0;
-	virtual void AddClassBinding(ICemonoClassBinding* pBinding) = 0;
+	virtual void AddClassBinding(std::shared_ptr<ICemonoClassBinding> pBinding) = 0;
 
 	typedef void *(*TEntryFunction)(ISystem* pSystem);
 
