@@ -11,10 +11,10 @@ class BaseCemonoClassBinding : public ICemonoClassBinding
 {
 public:
 	// ICemonoClassBinding interface
-	virtual const char* GetNamespace() { return "CryEngine"; }
-	virtual const char* GetNamespaceExtension() { return  "API"; } // i.e. "FlowSystem" if your class is located in namespace "CryEngine.FlowSystem"
-	virtual const char* GetClassName() = 0;
-	virtual const std::vector<ICemonoMethodBinding> GetMethods() { return m_methods; }
+	virtual const char* GetNamespace() override { return "CryEngine"; }
+	virtual const char* GetNamespaceExtension() override { return  "API"; } // i.e. "FlowSystem" if your class is located in namespace "CryEngine.FlowSystem"
+	virtual const char* GetClassName() override = 0;
+	virtual const std::vector<ICemonoMethodBinding> GetMethods() override { return m_methods; }
 	// -ICemonoClassBinding 
 
 protected:

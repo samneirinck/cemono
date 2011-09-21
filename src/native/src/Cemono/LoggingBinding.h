@@ -9,7 +9,7 @@ public:
 	virtual ~CLoggingBinding();
 
 protected:
-	virtual const char* GetClassName() { return "Logging"; }
+	virtual const char* GetClassName() override { return "Logging"; }
 
 	static void _LogAlways(MonoString *msg);
 	static void _Log(MonoString *msg);

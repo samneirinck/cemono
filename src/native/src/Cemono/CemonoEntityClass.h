@@ -9,25 +9,25 @@ public:
 	virtual ~CCemonoEntityClass();
 
 	// IEntityClass interface
-	virtual void Release();
-	virtual const char* GetName() const;
-	virtual uint32 GetFlags() const;
-	virtual void SetFlags(uint32 nFlags);
-	virtual const char* GetScriptFile() const;
-	virtual IEntityScript* GetIEntityScript() const;
-	virtual IScriptTable* GetScriptTable() const;
-	virtual const char* GetEditorHelperObjectName() const;
-	virtual const char* GetEditorIconName() const;
-	virtual bool LoadScript(bool bForceReload);
-	virtual IEntityClass::UserProxyCreateFunc GetUserProxyCreateFunc() const;
-	virtual void* GetUserProxyData() const;
-	virtual IEntityPropertyHandler* GetPropertyHandler() const;
-	virtual IEntityEventHandler* GetEventHandler() const;
-	virtual IEntityScriptFileHandler* GetScriptFileHandler() const;
-	virtual int GetEventCount();
-	virtual IEntityClass::SEventInfo GetEventInfo( int nIndex );
-	virtual bool FindEventInfo( const char *sEvent,SEventInfo &event );
-	virtual void GetMemoryUsage( ICrySizer *pSizer ) const;
+	virtual void Release() override;
+	virtual const char* GetName() const override;
+	virtual uint32 GetFlags() const override;
+	virtual void SetFlags(uint32 nFlags) override;
+	virtual const char* GetScriptFile() const override;
+	virtual IEntityScript* GetIEntityScript() const override;
+	virtual IScriptTable* GetScriptTable() const override;
+	virtual const char* GetEditorHelperObjectName() const override;
+	virtual const char* GetEditorIconName() const override;
+	virtual bool LoadScript(bool bForceReload) override;
+	virtual IEntityClass::UserProxyCreateFunc GetUserProxyCreateFunc() const override;
+	virtual void* GetUserProxyData() const override;
+	virtual IEntityPropertyHandler* GetPropertyHandler() const override;
+	virtual IEntityEventHandler* GetEventHandler() const override;
+	virtual IEntityScriptFileHandler* GetScriptFileHandler() const override;
+	virtual int GetEventCount() override;
+	virtual IEntityClass::SEventInfo GetEventInfo( int nIndex ) override;
+	virtual bool FindEventInfo( const char *sEvent,SEventInfo &event ) override;
+	virtual void GetMemoryUsage( ICrySizer *pSizer ) const override;
 	// -IEntityClass
 
 	ILINE void SetName(const char* name) { m_name = name;}

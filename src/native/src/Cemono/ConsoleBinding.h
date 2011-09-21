@@ -9,7 +9,7 @@ public:
 	virtual ~CConsoleBinding();
 
 protected:
-	virtual const char* GetClassName() { return "Console"; }
+	virtual const char* GetClassName() override { return "Console"; }
 
 	static bool _GetCVar(MonoString* cvarName);
 	static MonoString* _GetCVarHelpText(MonoString* cvarName);

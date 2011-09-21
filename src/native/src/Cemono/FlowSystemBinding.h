@@ -8,8 +8,8 @@ public:
 	virtual ~CFlowSystemBinding();
 
 protected:
-	virtual const char* GetClassName() { return "FlowManager"; }
-	virtual const char* GetNamespaceExtension() { return "FlowSystem"; }
+	virtual const char* GetClassName() override { return "FlowManager"; }
+	virtual const char* GetNamespaceExtension() override { return "FlowSystem"; }
 
 	static void _RegisterNode(MonoString* category, MonoString* nodeName);
 };

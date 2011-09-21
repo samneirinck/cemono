@@ -8,12 +8,12 @@ public:
 	virtual ~CCemonoEntityEventHandler();
 
 	// IEntityEventHandler interface
-	virtual void GetMemoryUsage( ICrySizer *pSizer ) const;
-	virtual void RefreshEvents();
-	virtual void LoadEntityXMLEvents(IEntity* entity, const XmlNodeRef& xml);
-	virtual int GetEventCount() const;
-	virtual bool GetEventInfo(int index, SEventInfo& info ) const;
-	virtual void SendEvent(IEntity* entity, const char* eventName);
+	virtual void GetMemoryUsage( ICrySizer *pSizer ) const override;
+	virtual void RefreshEvents() override;
+	virtual void LoadEntityXMLEvents(IEntity* entity, const XmlNodeRef& xml) override;
+	virtual int GetEventCount() const override;
+	virtual bool GetEventInfo(int index, SEventInfo& info ) const override;
+	virtual void SendEvent(IEntity* entity, const char* eventName) override;
 	// -IEntityEventHandler
 
 protected:

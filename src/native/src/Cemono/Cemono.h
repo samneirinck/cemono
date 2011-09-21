@@ -26,9 +26,9 @@ class CCemono : public ICemono
 
 public:
 	// ICemono interface
-	virtual bool Init();
-	virtual void Shutdown();
-	virtual void AddClassBinding(std::shared_ptr<ICemonoClassBinding> pBinding);
+	virtual bool Init() override;
+	virtual void Shutdown() override;
+	virtual void AddClassBinding(std::shared_ptr<ICemonoClassBinding> pBinding) override;
 	// -ICemono
 
 
