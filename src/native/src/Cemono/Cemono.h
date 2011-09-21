@@ -34,6 +34,7 @@ public:
 
 
 	virtual void GetMemoryStatistics(ICrySizer * s) const;
+	virtual void GetMemoryUsage( ICrySizer *pSizer ) const;
 
 	// Statics
 

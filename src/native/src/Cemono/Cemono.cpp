@@ -161,3 +161,8 @@ void CCemono::GetMemoryStatistics(ICrySizer * s) const
 	//s->Add(*m_pMonoDomain);
 
 }
+
+void CCemono::GetMemoryUsage(ICrySizer* pSizer) const
+{
+	
+}

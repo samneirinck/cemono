@@ -49,6 +49,7 @@ bool CEditorGame::Init( ISystem *pSystem,IGameToEditorInterface *pEditorInterfac
 	SetGameMode(false);
 	ConfigureNetContext(true);
 
+
 	return true;
 }
 
