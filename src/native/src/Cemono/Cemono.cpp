@@ -73,7 +73,7 @@ void CCemono::Shutdown()
 
 }
 
-void CCemono::AddClassBinding(std::shared_ptr<ICemonoClassBinding> pBinding)
+void CCemono::AddClassBinding(shared_ptr<ICemonoClassBinding> pBinding)
 {
 	vector<ICemonoMethodBinding> methodBindings = pBinding->GetMethods();
 	
@@ -114,10 +114,10 @@ bool CCemono::InitializeDomain()
 void CCemono::RegisterDefaultBindings()
 {
 	
-	AddClassBinding(std::make_shared<CConsoleBinding>());
-	AddClassBinding(std::make_shared<CLoggingBinding>());
-	AddClassBinding(std::make_shared<CFlowSystemBinding>());
-	AddClassBinding(std::make_shared<CEntitySystemBinding>());
+	AddClassBinding(make_shared<CConsoleBinding>());
+	AddClassBinding(make_shared<CLoggingBinding>());
+	AddClassBinding(make_shared<CFlowSystemBinding>());
+	AddClassBinding(make_shared<CEntitySystemBinding>());
 }
 
 bool CCemono::InitializeBaseClassLibraries()
