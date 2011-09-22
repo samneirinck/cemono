@@ -1,6 +1,10 @@
 #include "StdAfx.h"
 #include "Game.h"
+#include "Actor.h"
+
 #include <IFlowSystem.h>
+#include <IGameFramework.h>
+
 CGame* g_pGame = 0;
 
 
@@ -24,6 +28,9 @@ bool CGame::Init(IGameFramework *pFramework)
 {
 	m_pFramework = pFramework;
 	m_pFramework->RegisterListener(this, "Game", FRAMEWORKLISTENERPRIORITY_GAME);
+
+	REGISTER_FACTORY(pFramework, "Actor", CActor, false);
+	//TODOREGISTER_FACTORY(pFramework, "GameRules", CGameRules, false);
 
 	return true;
 }

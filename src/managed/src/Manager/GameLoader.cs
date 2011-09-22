@@ -73,6 +73,7 @@ namespace Cemono
 
         private void LoadGame(Type gameType)
         {
+            var game = (BaseGame)Activator.CreateInstance(gameType);
         }
 
         private void LoadFlowNodes(List<Type> flowNodeTypes)

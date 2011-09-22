@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Actor.cpp" />
     <ClCompile Include="EditorGame.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameDll.cpp" />
@@ -20,6 +21,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Actor.h" />
     <ClInclude Include="EditorGame.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameStartup.h" />

@@ -14,20 +14,26 @@
     <ClCompile Include="Game.cpp">
       <Filter>Game</Filter>
     </ClCompile>
+    <ClCompile Include="Actor.cpp">
+      <Filter>Actors</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="EditorGame.h">
       <Filter>Editor</Filter>
     </ClInclude>
-    <ClInclude Include="GameStartup.h">
-      <Filter>Startup Files</Filter>
-    </ClInclude>
     <ClInclude Include="Game.h">
       <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStartup.h">
+      <Filter>Startup Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Actor.h">
+      <Filter>Actors</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -45,6 +51,12 @@
     </Filter>
     <Filter Include="Resources">
       <UniqueIdentifier>{9cb73f17-17f4-490e-a053-b951d177a7ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Actors">
+      <UniqueIdentifier>{279ca825-29a7-4c45-a895-cd351d8bf290}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameRules">
+      <UniqueIdentifier>{53a2ace7-9939-4c58-b064-b421bfd91747}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
