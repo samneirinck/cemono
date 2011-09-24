@@ -143,7 +143,7 @@ void CEditorGame::OnBeforeLevelLoad()
 	EnablePlayer(false);
 	ConfigureNetContext(true);
 	const char *pGameRulesName = GetGameRulesName();
-	m_pGame->GetIGameFramework()->GetIGameRulesSystem()->CreateGameRules(pGameRulesName);
+	auto createdRules = m_pGame->GetIGameFramework()->GetIGameRulesSystem()->CreateGameRules(pGameRulesName);
 	m_pGame->GetIGameFramework()->GetILevelSystem()->OnLoadingStart(0);
 }
 
@@ -253,5 +253,5 @@ void CEditorGame::EnablePlayer(bool player)
 
 const char* CEditorGame::GetGameRulesName()
 {
-	return "SinglePlayer";
+	return "CemonoRules";
 }

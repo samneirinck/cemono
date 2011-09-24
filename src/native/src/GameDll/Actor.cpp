@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "Actor.h"
+#include "Game.h"
 
 
 CActor::CActor(void)
@@ -85,7 +86,16 @@ void CActor::OnPreparedFromPool() { }
 void CActor::MountedGunControllerEnabled(bool val) { }
 bool CActor::MountedGunControllerEnabled() const { return false; }
 void CActor::GetMemoryUsage(ICrySizer *pSizer) const { }
-bool CActor::Init( IGameObject * pGameObject ) { return true; }
+bool CActor::Init( IGameObject * pGameObject ) 
+{ 
+	SetGameObject(pGameObject);
+
+	GetGameObject()->BindToNetwork();
+
+	g_pGame->GetIGameFramework()->GetIActorSystem()->AddActor(GetEntityId(), this);
+
+	return true; 
+}
 void CActor::PostInit( IGameObject * pGameObject ) { }
 void CActor::InitClient(int channelId) { }
 void CActor::PostInitClient(int channelId) { }

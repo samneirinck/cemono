@@ -17,6 +17,9 @@
     <ClCompile Include="Actor.cpp">
       <Filter>Actors</Filter>
     </ClCompile>
+    <ClCompile Include="GameRules.cpp">
+      <Filter>GameRules</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.h" />
@@ -34,6 +37,9 @@
     </ClInclude>
     <ClInclude Include="Actor.h">
       <Filter>Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="GameRules.h">
+      <Filter>GameRules</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

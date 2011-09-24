@@ -1,9 +1,11 @@
 #include "StdAfx.h"
 #include "Game.h"
 #include "Actor.h"
+#include "GameRules.h"
 
 #include <IFlowSystem.h>
 #include <IGameFramework.h>
+#include <IPlayerProfiles.h>
 
 CGame* g_pGame = 0;
 
@@ -30,7 +32,11 @@ bool CGame::Init(IGameFramework *pFramework)
 	m_pFramework->RegisterListener(this, "Game", FRAMEWORKLISTENERPRIORITY_GAME);
 
 	REGISTER_FACTORY(pFramework, "Actor", CActor, false);
-	//TODOREGISTER_FACTORY(pFramework, "GameRules", CGameRules, false);
+	REGISTER_FACTORY(pFramework, "GameRules", CGameRules, false);
+
+	pFramework->GetIGameRulesSystem()->RegisterGameRules("CemonoRules", "GameRules");
+
+	LoadActionMaps("libs/config/defaultProfile.xml");
 
 	return true;
 }
@@ -106,6 +112,33 @@ const char* CGame::GetName()
 
 void CGame::LoadActionMaps(const char* filename)
 {
+	IActionMapManager *pActionMapMan = m_pFramework->GetIActionMapManager();
+	pActionMapMan->AddInputDeviceMapping(eAID_KeyboardMouse, "keyboard");
+	pActionMapMan->AddInputDeviceMapping(eAID_XboxPad, "xboxpad");
+	pActionMapMan->AddInputDeviceMapping(eAID_PS3Pad, "ps3pad");
+
+	// make sure that they are also added to the GameActions.actions file!
+	XmlNodeRef rootNode = m_pFramework->GetISystem()->LoadXmlFromFile(filename);
+	if(rootNode)
+	{
+		pActionMapMan->Clear();
+		pActionMapMan->LoadFromXML(rootNode);
+
+		// enable defaults
+		pActionMapMan->EnableActionMap("default",true);
+
+		// enable debug
+		pActionMapMan->EnableActionMap("debug",gEnv->pSystem->IsDevMode());
+
+		// enable player action map
+		pActionMapMan->EnableActionMap("player",true);
+	}
+	else
+	{
+		CryLogAlways("[game] error: Could not open configuration file %s", filename);
+		CryLogAlways("[game] error: this will probably cause an infinite loop later while loading a map");
+	}
+
 }
 
 void CGame::OnClearPlayerIds()

@@ -15,6 +15,7 @@
     <ClCompile Include="EditorGame.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameDll.cpp" />
+    <ClCompile Include="GameRules.cpp" />
     <ClCompile Include="GameStartup.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -24,6 +25,7 @@
     <ClInclude Include="Actor.h" />
     <ClInclude Include="EditorGame.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GameRules.h" />
     <ClInclude Include="GameStartup.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="StdAfx.h" />
@@ -100,6 +102,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <CompileAs>CompileAsCpp</CompileAs>
       <ErrorReporting>Prompt</ErrorReporting>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -135,4 +138,9 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="CryGame.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>
