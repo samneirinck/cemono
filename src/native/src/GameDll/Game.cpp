@@ -102,18 +102,6 @@ void CGame::ConfigureGameChannel(bool isServer, IProtocolBuilder *pBuilder)
 
 void CGame::EditorResetGame(bool bStart)
 {
-	if (bStart)
-	{
-		auto engine = gEnv->pSystem->GetI3DEngine();
-		auto terrain = engine->GetITerrain();
-		auto voxTerrain = engine->GetIVoxTerrain();
-
-		auto viewSystem = g_pGame->GetIGameFramework()->GetIViewSystem();
-		auto view = viewSystem->GetActiveView();
-		auto viewParams = view->GetCurrentParams();
-		int i = 0;
-		++i;
-	}
 }
 
 void CGame::PlayerIdSet(EntityId playerId)
