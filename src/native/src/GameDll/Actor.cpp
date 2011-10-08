@@ -10,6 +10,8 @@ CActor::CActor(void)
 
 CActor::~CActor(void)
 {
+	if(g_pGame && g_pGame->GetIGameFramework() && g_pGame->GetIGameFramework()->GetIActorSystem())
+		g_pGame->GetIGameFramework()->GetIActorSystem()->RemoveActor( GetEntityId() );
 }
 
 void CActor::SetHealth( float health ) { }
@@ -57,8 +59,8 @@ void CActor::SetSleepTimer(float timer) { }
 IMaterial* CActor::GetReplacementMaterial() { return NULL; }
 bool CActor::IsThirdPerson() const { return true; }
 void CActor::ToggleThirdPerson() { }
-void CActor::Release() { }
-bool CActor::IsPlayer() const { return true; }
+void CActor::Release() { delete this; }
+bool CActor::IsPlayer() const { return false; }
 bool CActor::IsClient() const { return true; }
 bool CActor::IsMigrating() const { return false; }
 void CActor::SetMigrating(bool isMigrating) { }
@@ -90,9 +92,9 @@ bool CActor::Init( IGameObject * pGameObject )
 { 
 	SetGameObject(pGameObject);
 
-	GetGameObject()->BindToNetwork();
-
 	g_pGame->GetIGameFramework()->GetIActorSystem()->AddActor(GetEntityId(), this);
+	GetGameObject()->BindToNetwork();
+	GetEntity()->SetFlags(GetEntity()->GetFlags()|(ENTITY_FLAG_ON_RADAR|ENTITY_FLAG_CUSTOM_VIEWDIST_RATIO));
 
 	return true; 
 }

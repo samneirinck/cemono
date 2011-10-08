@@ -1,6 +1,7 @@
 #pragma once
 
 #include <IActorSystem.h>
+#include <IViewSystem.h>
 
 class CActor : 	public CGameObjectExtensionHelper<CActor, IActor>
 {
@@ -142,6 +143,7 @@ public:
 	virtual const void * GetRMIBase() const override;
 	virtual void PostUpdate( float frameTime ) override;
 	virtual void PostRemoteSpawn() override;
+
 
 };
 

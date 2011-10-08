@@ -6,6 +6,7 @@
 
 #include "EditorGame.h"
 #include "GameStartup.h"
+#include "Game.h"
 
 extern "C" 
 {
@@ -78,17 +79,6 @@ bool CEditorGame::SetGameMode(bool bGameMode)
 		}
 		IGameFramework* pGameFramework = m_pGame->GetIGameFramework();
 		pGameFramework->OnEditorSetGameMode(bGameMode);
-
-		IActor* pActor = m_pGame->GetIGameFramework()->GetClientActor();
-		if (pActor)
-		{
-			if (bGameMode)
-			{
-				// TODO
-			} else {
-				// TODO
-			}
-		}
 	} else {
 		GameWarning("Failed configuring net context");
 	}

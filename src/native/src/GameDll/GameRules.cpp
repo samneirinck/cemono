@@ -25,7 +25,10 @@ bool CGameRules::OnClientConnect(int channelId, bool isReset)
 	return true; 
 }
 void CGameRules::OnClientDisconnect(int channelId, EDisconnectionCause cause, const char *desc, bool keepClient) { }
-bool CGameRules::OnClientEnteredGame(int channelId, bool isReset) { return true; }
+bool CGameRules::OnClientEnteredGame(int channelId, bool isReset)
+{ 
+	return true; 
+}
 void CGameRules::OnEntitySpawn(IEntity *pEntity) { }
 void CGameRules::OnEntityRemoved(IEntity *pEntity) { }
 void CGameRules::OnEntityReused(IEntity *pEntity, SEntitySpawnParams &params, EntityId prevId) { }
@@ -64,7 +67,10 @@ bool CGameRules::Init( IGameObject * pGameObject )
 	g_pGame->GetIGameFramework()->GetIGameRulesSystem()->SetCurrentGameRules(this);
 	return true; 
 }
-void CGameRules::PostInit( IGameObject * pGameObject ) { }
+void CGameRules::PostInit( IGameObject * pGameObject ) 
+{
+	GetGameObject()->EnableUpdateSlot(this,0);
+}
 void CGameRules::InitClient(int channelId) { }
 void CGameRules::PostInitClient(int channelId) { }
 bool CGameRules::ReloadExtension( IGameObject * pGameObject, const SEntitySpawnParams &params ) { return true; }
@@ -75,7 +81,11 @@ bool CGameRules::NetSerialize( TSerialize ser, EEntityAspects aspect, uint8 prof
 void CGameRules::PostSerialize() { }
 void CGameRules::SerializeSpawnInfo( TSerialize ser ) { }
 ISerializableInfoPtr CGameRules::GetSpawnInfo() { return NULL; }
-void CGameRules::Update( SEntityUpdateContext& ctx, int updateSlot ) { }
+void CGameRules::Update( SEntityUpdateContext& ctx, int updateSlot ) 
+{
+	if (gEnv->bServer)
+		GetGameObject()->ChangedNetworkState( eEA_GameServerDynamic );
+}
 void CGameRules::HandleEvent( const SGameObjectEvent& event ) { }
 void CGameRules::SetChannelId(uint16 id) { }
 void CGameRules::SetAuthority( bool auth ) { }

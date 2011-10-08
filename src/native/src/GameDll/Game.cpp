@@ -6,6 +6,7 @@
 #include <IFlowSystem.h>
 #include <IGameFramework.h>
 #include <IPlayerProfiles.h>
+#include <IViewSystem.h>
 
 CGame* g_pGame = 0;
 
@@ -37,6 +38,7 @@ bool CGame::Init(IGameFramework *pFramework)
 	pFramework->GetIGameRulesSystem()->RegisterGameRules("CemonoRules", "GameRules");
 
 	LoadActionMaps("libs/config/defaultProfile.xml");
+
 
 	return true;
 }
@@ -74,9 +76,22 @@ int CGame::Update(bool haveFocus, unsigned int updateFlags)
 {
 	bool updated = m_pFramework->PreUpdate(haveFocus, updateFlags);
 
-	m_pFramework->PostUpdate( haveFocus, updateFlags );
+	auto viewParams = *g_pGame->GetIGameFramework()->GetIViewSystem()->GetActiveView()->GetCurrentParams();
+	//viewParams.position = Vec3(0,0,0);
+	////viewParams.rotation = Quat::CreateRotationXYZ(Ang3(-90,0,0));
+	viewParams.fov = 1.3f;
+	g_pGame->GetIGameFramework()->GetIViewSystem()->GetActiveView()->SetCurrentParams(viewParams);
+	
+	//m_pFramework->PostUpdate( haveFocus, updateFlags );
+	CCamera cam = gEnv->pSystem->GetViewCamera();
+	cam.SetAngles( Ang3(DEG2RAD(-90),0,0) );
+	cam.SetPosition( Vec3(2048/2,2048/2,200) );
+	gEnv->pSystem->SetViewCamera( cam );
 
 
+	m_pFramework->PostUpdate(true, updateFlags);
+
+	
 	return updated;
 }
 
@@ -87,7 +102,18 @@ void CGame::ConfigureGameChannel(bool isServer, IProtocolBuilder *pBuilder)
 
 void CGame::EditorResetGame(bool bStart)
 {
+	if (bStart)
+	{
+		auto engine = gEnv->pSystem->GetI3DEngine();
+		auto terrain = engine->GetITerrain();
+		auto voxTerrain = engine->GetIVoxTerrain();
 
+		auto viewSystem = g_pGame->GetIGameFramework()->GetIViewSystem();
+		auto view = viewSystem->GetActiveView();
+		auto viewParams = view->GetCurrentParams();
+		int i = 0;
+		++i;
+	}
 }
 
 void CGame::PlayerIdSet(EntityId playerId)

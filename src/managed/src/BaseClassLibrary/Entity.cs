@@ -53,11 +53,11 @@ namespace CryEngine
         #endregion
 
         #region Constructor(s)
-        protected Entity()
+        private Entity()
         {
         }
 
-        protected Entity(long id)
+        private Entity(long id)
             : this()
         {
             _id = id;
