@@ -41,7 +41,7 @@ public:
   operator _I*() const { return p; } 
   operator const _I*() const { return p; }
   _I& operator*() const { return *p; }
-  _I* operator->(void) const { return p; }
+  _I* operator->() const { return p; }
 	_I* get() const { return p; }
   _smart_ptr&  operator=(_I* newp)
 	{

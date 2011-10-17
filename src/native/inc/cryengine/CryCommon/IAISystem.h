@@ -24,7 +24,6 @@ History:
 #include "SerializeFwd.h"
 #include "IAIRecorder.h"
 #include <IPhysics.h>
-#include <CryFixedArray.h>
 
 struct AgentPathfindingProperties;
 struct INavigation;

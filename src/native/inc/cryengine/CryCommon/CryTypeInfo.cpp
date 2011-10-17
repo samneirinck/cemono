@@ -510,19 +510,6 @@ cstr CTypeInfo::CVarInfo::GetComment() const
 //////////////////////////////////////////////////////////////////////
 // CStructInfo implementation
 
-inline size_t Align(size_t num, size_t align)
-{
-	return (num + align-1) & ~(align-1);
-}
-
-template<class T> void binary_swap(T& a, T& b)
-{
-	char c[sizeof(T)];
-	memcpy(&c, &a, sizeof(T));
-	memcpy(&a, &b, sizeof(T));
-	memcpy(&b, &c, sizeof(T));
-}
-
 inline cstr DisplayName(cstr name)					
 { 
 	// Skip prefixes in Name.
@@ -1086,7 +1073,7 @@ CEnumInfo::CEnumInfo( cstr name, size_t size, size_t num_elems, CEnumElem* elems
 		MinValue = MaxValue = Elems[0].Value;
 		for (int i = 0; i < Elems.size(); i++)
 		{
-			if (Elems[i].Value != i)
+			if (Elems[i].Value != i + Elems[0].Value)
 				bRegular = false;
 			MinValue = min(MinValue, Elems[i].Value);
 			MaxValue = max(MaxValue, Elems[i].Value);
@@ -1167,20 +1154,17 @@ string CEnumInfo::ToString(const void* data, FToString flags, const void* def_da
 
 	if (flags._SkipDefault)
 	{
-		if (def_data)
-		{
-			if (!memcmp(data, def_data, Size))
-				return string();
-		}
-		else if (!val)
+		int def_val = def_data ? ReadInt(def_data, Size) : 0;
+		if (val == def_val)
 			return string();
 	}
 
 	// Find matching element.
 	if (bRegular)
 	{
-		if (val >= 0 && val < Elems.size())
-			return Elems[val].ShortName;
+		int index = val - MinValue;
+		if (index >= 0 && index < Elems.size())
+			return Elems[index].ShortName;
 	}
 	else
 	{

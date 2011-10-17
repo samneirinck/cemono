@@ -228,16 +228,18 @@ struct SMusicMood
 struct SMusicTheme
 {
 	SMusicTheme()
-		:	fDefaultMoodTimeout(0.0f)
+		:	fDefaultMoodTimeout(0.0f),
+		  bKeepMood(false)
 	{
 	}
 
 	string					sName;
 	TMoodMap				mapMoods;
 	TThemeBridgeMap	mapBridges;
-	// default mood
 	string					sDefaultMood;
+	string					sStartMood;
 	float						fDefaultMoodTimeout;
+	bool						bKeepMood;
 };
 
 
@@ -441,6 +443,22 @@ struct SMusicSystemStatus
 	TPatternInstancesVec	m_vecPatternInstances;
 };
 
+// Music mood hierarchy info struct
+//////////////////////////////////////////////////////////////////////////
+struct SMusicMoodHierarchy
+{
+	SMusicMoodHierarchy(CryFixedStringT<16> const _sMood, CryFixedStringT<16> const _sHigherMood, CryFixedStringT<16> const _sLowerMood)
+		: sMood(_sMood),
+		  sHigherMood(_sHigherMood),
+		  sLowerMood(_sLowerMood){}
+
+	CryFixedStringT<16> const sMood;
+	CryFixedStringT<16> const sHigherMood;
+	CryFixedStringT<16> const sLowerMood;
+};
+
+// Music mood vector typedef
+typedef std::vector<SMusicMoodHierarchy> TMoodsHierarchyVec;
 
 //////////////////////////////////////////////////////////////////////////
 // Main music-interface
@@ -459,9 +477,9 @@ struct IMusicSystem
 	virtual void Pause(bool bPause) = 0;
 	virtual bool IsPaused() const = 0;
 	virtual void EnableEventProcessing(bool bEnable) = 0;
-	
-	// theme stuff
-	virtual bool SetTheme(const char *pszTheme, bool bForceChange=true, bool bKeepMood=true, int nDelayInSec=-1) = 0;
+
+	// Theme stuff
+	virtual bool SetTheme(const char *pszTheme, bool bForceChange=true, bool bKeepMood=true, int nDelayInSec=-1, char const* const sStartMood = NULL) = 0;
 	virtual bool EndTheme(EThemeFadeType ThemeFade=EThemeFade_FadeOut, int nForceEndLimitInSec=10, bool bEndEverything=true) = 0;
 	virtual const char* GetTheme() const = 0;
 	virtual IStringItVec* GetThemes() const = 0;
@@ -474,7 +492,11 @@ struct IMusicSystem
 	virtual IStringItVec* GetMoods(const char *pszTheme) const = 0;
 	virtual bool AddMusicMoodEvent(const char *pszMood, float fTimeout) = 0;
 	virtual CTimeValue GetMoodTime() const = 0;
+	virtual TMoodsHierarchyVec const& GetMusicMoodHierarchy() const = 0;
 	
+	// Patterns
+	virtual IStringItVec* const GetPatterns() const = 0;
+
 	// general
 	virtual SMusicSystemStatus* GetStatus() = 0;		// retrieve status of music-system... dont keep returning pointer !
 	virtual void GetMemoryUsage(class ICrySizer* pSizer) const = 0;
@@ -495,13 +517,12 @@ struct IMusicSystem
 	virtual void UpdatePattern( SMusicInfo::Pattern *pPattern ) = 0;
 	virtual void RenamePattern( const char *sOldName,const char *sNewName ) = 0;
 	virtual void PlayPattern( const char *sPattern, bool bStopPrevious, bool bPlaySynched ) = 0;
+	virtual bool StopPattern(char const* const sPatternNameToStop) = 0;
 	virtual void DeletePattern( const char *sPattern ) = 0;
+	virtual char const* const GetPatternNameTrack1() const = 0;
 	virtual void Silence() = 0;
 
 	virtual void PlayStinger() = 0;
-
-	// writes output to screen in debug
-	virtual void DrawInformation(IRenderer* pRenderer, float xpos, float ypos) = 0;
 
 	// for serialization
 	virtual void Serialize(TSerialize ser) = 0;
@@ -509,6 +530,19 @@ struct IMusicSystem
 
 	//main update timing
 	virtual float GetUpdateMilliseconds() = 0;
+
+	// Summary:
+	//	 Registers listener to the music system.
+	virtual void AddEventListener(IMusicSystemEventListener* const pListener) = 0;
+
+	// Summary:
+	//	 Removes listener to the music system.
+	virtual void RemoveEventListener(IMusicSystemEventListener* const pListener) = 0;
+
+#ifndef _RELEASE
+	// Production only stuff
+	virtual void DrawInformation(IRenderer* const pRenderer, float xpos, float ypos) = 0;
+#endif // _RELEASE
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -577,6 +611,7 @@ UNIQUE_IFACE struct IMusicLogic
 
 	virtual bool Start() = 0;
 	virtual bool Stop() = 0;
+	virtual bool const IsActive() const = 0;
 
 	virtual void Update() = 0;
 

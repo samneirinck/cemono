@@ -300,8 +300,8 @@ public:
 		}
 	}
 
-	template<typename T,typename Alloc>
-	void AddObject( const DynArray<T,Alloc> &rVector)
+	template<typename T,typename I,typename S>
+	void AddObject( const DynArray<T,I,S> &rVector)
 	{
 		if( rVector.empty() )
 		{
@@ -311,24 +311,7 @@ public:
 
 		if( !this->AddObject(rVector.begin(), rVector.get_alloc_size() )) return;
 
-		for( typename DynArray<T,Alloc>::const_iterator it = rVector.begin() ; it != rVector.end() ; ++it )
-		{			
-			this->AddObject(*it);		
-		}
-	}
-
-	template<typename T,int nAlign>
-	void AddObject( const FastDynArray<T,nAlign> &rVector)
-	{
-		if( rVector.empty() )
-		{
-			this->AddObject(rVector.begin(), rVector.get_alloc_size());			
-			return;
-		}
-
-		if( !this->AddObject(rVector.begin(), rVector.get_alloc_size() )) return;
-
-		for( typename FastDynArray<T,nAlign>::const_iterator it = rVector.begin() ; it != rVector.end() ; ++it )
+		for( typename DynArray<T,I,S>::const_iterator it = rVector.begin() ; it != rVector.end() ; ++it )
 		{			
 			this->AddObject(*it);		
 		}

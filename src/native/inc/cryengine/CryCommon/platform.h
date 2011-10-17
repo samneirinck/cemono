@@ -402,6 +402,24 @@ enum ETunerIDs
 // Includes core CryEngine modules definitions.
 #include "CryModuleDefs.h"
 
+//////////////////////////////////////////////////////////////////////////
+// Provide special cast function which mirrors C++ style casts to support aliasing correct type punning casts in gcc with strict-aliasing enabled
+template<typename DestinationType, typename SourceType>
+ILINE DestinationType alias_cast( SourceType pPtr )
+{
+
+
+
+	union { 
+		SourceType pSrc;
+		DestinationType pDst;
+	} conv_union;
+	conv_union.pSrc = pPtr;
+	return conv_union.pDst;
+
+}
+//////////////////////////////////////////////////////////////////////////
+
 /////////////////////////////////////////////////////////////////////////
 // CryModule memory manager routines must always be included.
 // They are used by any module which doesn't define NOT_USE_CRY_MEMORY_MANAGER
@@ -431,6 +449,8 @@ inline int IsHeapValid()
 	#define snPause()
 #endif
 
+//defines necessary stuff for SPU Software Cache
+//needs to be included for all platforms (mostly empty decls. there)
 #if !defined __CRYCG__
 #define __CRYCG_NOINLINE__
 #if defined __cplusplus
@@ -470,8 +490,6 @@ inline int IsHeapValid()
 #endif
 #endif /* __CRYCG__ */
 
-//defines necessary stuff for SPU Software Cache
-//needs to be included for all platforms (mostly empty decls. there)
 
 //////////////////////////////////////////////////////////////////////////
 #ifndef DEPRICATED
@@ -652,6 +670,10 @@ T& non_const(const T& t)
 
 #define using_type(super, type) \
 	typedef typename super::type type;
+
+typedef unsigned char	uchar;
+typedef unsigned int uint;
+typedef const char* cstr;
 
 //---------------------------------------------------------------------------
 // Align function works on integer or pointer values.
@@ -995,10 +1017,6 @@ enum ETriState
 	#define __spu_flush_cache()
 	#define __spu_cache_barrier()
 #endif
-
-typedef unsigned char	uchar;
-typedef unsigned int uint;
-typedef const char* cstr;
 
 #if !defined(LINUX) && !defined(PS3)
 	typedef int socklen_t;

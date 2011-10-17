@@ -292,7 +292,7 @@ inline size_t CryModuleFree(void *p) {
 
 #if defined(__cplusplus) && defined(LINUX)
 	inline void * __cdecl operator new   (size_t  size) throw(std::bad_alloc) { return CryModuleMalloc(size); }
-	inline void * __cdecl operator new (size_t size, const std::nothrow_t &nothrow) { CryModuleMalloc(size); };
+	inline void * __cdecl operator new (size_t size, const std::nothrow_t &nothrow) { return CryModuleMalloc(size); };
 	inline void * __cdecl operator new[](size_t size) throw(std::bad_alloc) { return CryModuleMalloc(size); }; 
 	inline void * __cdecl operator new[](size_t size, const std::nothrow_t &nothrow) { return CryModuleMalloc(size); }
 	inline void __cdecl operator delete  (void *p) { CryModuleFree(p); };
@@ -372,7 +372,7 @@ CRYMEMORYMANAGER_API void CryGetIMemoryManagerInterface( void **pIMemoryManager 
 #endif //_USRDLL
 
 /////////////////////////////////////////////////////////////////////////
-// Extern declarations,used by overrided new and delete operators.
+// Extern declarations,used by overriden new and delete operators.
 //////////////////////////////////////////////////////////////////////////
 extern "C"
 {
@@ -420,6 +420,42 @@ extern "C"
 #endif
 #endif
 }
+
+#if !defined(PS3)
+// Align alloc helpers
+inline void* SetAlignPrefix(void* ptr, size_t alignment)
+{
+	uint8* p = static_cast<uint8*>(ptr);
+	if (p)
+	{
+		uint8 offset = (uint8)(alignment - ((UINT_PTR)p & (alignment - 1)));
+		p += offset;
+		p[-1] = offset;
+	}
+	return p;
+}
+inline void* GetAlignPrefix(void* ptr)
+{
+	uint8* p = static_cast<uint8*>(ptr);
+	if (p)
+	{
+		p -= p[-1];
+	}
+	return p;
+}
+
+#ifndef _LIB
+inline void* CryModuleMemalign( size_t size, size_t alignment ) throw()
+{
+	return SetAlignPrefix(malloc(size + alignment), alignment);
+}
+inline void CryModuleMemalignFree(void* p) throw()
+{
+	free(GetAlignPrefix(p));
+}
+#endif
+
+#endif
 
 
 

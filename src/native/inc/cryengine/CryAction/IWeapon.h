@@ -149,6 +149,9 @@ struct IFireMode
 	virtual void Unlock() = 0;
 
 	virtual void OnZoomStateChanged() = 0;
+
+	// need to know which fire modes are melee fire modes
+	virtual bool IsMelee() const { return false; }
 };
 
 

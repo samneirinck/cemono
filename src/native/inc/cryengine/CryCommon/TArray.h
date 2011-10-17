@@ -539,8 +539,8 @@ public:
 	void push_back (const T& rSample) {Add(rSample);}
 	void pop_back () {m_nCount--; MEMSTAT_USAGE(begin(), MemSize()); }
   void erase (T *pElem) {
-    int n = pElem-m_pElements;
-    assert(n>=0 && n<m_nCount);
+    uint n = uint(pElem-m_pElements);
+    assert(n<m_nCount);
     _Remove(n, 1);
   }
 	T* begin() {return m_pElements;}

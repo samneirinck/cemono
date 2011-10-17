@@ -564,7 +564,7 @@ UNIQUE_IFACE struct IMaterialEffects
 
 	virtual void SetCustomParameter(TMFXEffectId effectId, const char* customParameter, const SMFXCustomParamValue& customParameterValue) = 0;
 
-	virtual void OnSurfaceTypesCreated() = 0;
+	virtual void CompleteInit() = 0;
 
 	virtual void ReloadMatFXFlowGraphs() = 0;
 	virtual int GetMatFXFlowGraphCount() const = 0;

@@ -174,6 +174,7 @@
 
 
 
+
 #if defined(RESOURCE_COMPILER) || defined(_RELEASE)
   #undef CAPTURE_REPLAY_LOG
 #endif
@@ -192,6 +193,11 @@
 #	define TAGES_EXPORT
 
 
+#if defined(USING_CRYDEV_TAGES_SECURITY)
+# define CRYDEV_TAGES_EXPORT __declspec(dllexport)
+#else
+# define CRYDEV_TAGES_EXPORT
+#endif
 
 // test -------------------------------------
 //#define EXCLUDE_CVARHELP

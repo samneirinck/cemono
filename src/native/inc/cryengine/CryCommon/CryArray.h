@@ -7,8 +7,6 @@
 #define _CRY_ARRAY_H_
 #pragma once
 
-#include "RangeIter.h"
-
 #if defined __CRYCG__
 	#ifndef SPU_NO_INLINE
 			#define SPU_NO_INLINE __attribute__ ((crycg_attr ("noinline")))
@@ -18,6 +16,39 @@
 		#define SPU_NO_INLINE 
 	#endif
 #endif
+
+//---------------------------------------------------------------------------
+// Convenient iteration macros
+#define for_iter(IT, it, b, e)			for (IT it = (b), _e = (e); it != _e; ++it)
+#define for_container(CT, it, cont)	for_iter (CT::iterator, it, (cont).begin(), (cont).end())
+
+#define for_ptr(T, it, b, e)				for (T* it = (b), *_e = (e); it != _e; ++it)
+#define for_array_ptr(T, it, arr)		for_ptr (T, it, (arr).begin(), (arr).end())
+
+#define for_array(i, arr)						for (int i = 0; i < (arr).size(); i++)
+#define for_all(cont)								for_array (_i, cont) cont[_i]
+
+//---------------------------------------------------------------------------
+// Specify semantics for moving objects.
+// If raw_movable() is true, objects will be moved with memmove().
+// If false, with the templated move_init() function.
+template<class T>
+bool raw_movable(T const& dest)
+{
+	return false; 
+}
+
+// Generic move function: transfer an existing source object to uninitialised dest address.
+// Addresses must not overlap (requirement on caller).
+// May be specialised for specific types, to provide a more optimal move.
+// For types that can be trivially moved (memcpy), do not specialise move_init, rather specialise raw_movable to return true.
+template<class T>
+void move_init(T& dest, T& source)
+{
+	assert(&dest != &source);
+	new(&dest) T(source);
+	source.~T();
+}
 
 /*---------------------------------------------------------------------------
 Public classes:
@@ -31,19 +62,6 @@ Public classes:
 
 Support classes are placed in namespaces NArray and NAlloc to reduce global name usage.
 ---------------------------------------------------------------------------*/
-
-// Useful functions and macros.
-
-template<class T>
-inline size_t mem_offset(T* a, T* b)
-{ 
-	assert(b >= a);
-	return size_t(b) - size_t(a); 
-}
-
-template<class T>
-inline T* mem_adjust(T* ptr, T* a, T* b)
-	{ return (T*)( size_t(ptr) + size_t(b) - size_t(a) ); }
 
 namespace NArray
 {
@@ -62,7 +80,6 @@ namespace NArray
 	struct Storage<typename T>
 	{
 		typedef size_type;
-		typedef difference_type;
 
 		[const] T* begin() [const];
 		size_type size() const;
@@ -70,24 +87,66 @@ namespace NArray
 
 	---------------------------------------------------------------------------*/
 
+	// Automatic inference of signed from unsigned int type.
+	template<class T> struct IntTraits
+	{
+		typedef T TSigned;
+	};
+
+	template<> struct IntTraits<uint>
+	{
+		typedef int TSigned;
+	};
+	template<> struct IntTraits<uint64>
+	{
+		typedef int64 TSigned;
+	};
+#if !defined(LINUX)
+	template<> struct IntTraits<unsigned long>
+	{
+		typedef long TSigned;
+	};
+#endif
+
+	//---------------------------------------------------------------------------
+	// Move array elements, with proper direction and move semantics.
+	template<class T>
+	void move_init(T* dest, T* source, size_t count)
+	{
+		if (source != dest)
+		{
+			assert(source > dest || source + count <= dest);
+			if (raw_movable(*source))
+			{
+				memcpy(dest, source, count * sizeof(T));
+			}
+			else
+			{
+				for (T* dest_end = dest+count; dest < dest_end; )
+					::move_init(*dest++, *source++);
+			}
+		}
+	}
+
 	//---------------------------------------------------------------------------
 	// Array<T,S>: Non-growing array.
 	// S serves as base class, and implements storage scheme: begin(), size()
 
-	template<class T> struct ArrayStorage;
+	template<class T, class I = int> struct ArrayStorage;
 };
 
-template< class T, class S = NArray::ArrayStorage<T> >
+template< class T, class I = int, class S = NArray::ArrayStorage<T,I> >
 struct Array: S
 {
 	// Tedious redundancy.
 	using_type(S, size_type)
-	using_type(S, difference_type)
 
 	using S::size;
 	using S::begin;
 
 	// STL-compatible typedefs.
+	typedef typename NArray::IntTraits<size_type>::TSigned 
+												difference_type;
 	typedef T							value_type;
 	typedef T*						pointer;
 	typedef const T*			const_pointer;
@@ -102,13 +161,13 @@ struct Array: S
 		{}
 
 	// Forward single- and double-argument constructors.
-	template<class I>
-	explicit Array(const I& i)
+	template<class In>
+	explicit Array(const In& i)
 		: S(i)
 		{}
 
-	template<class I1, class I2>
-	Array(const I1& i1, const I2& i2)
+	template<class In1, class In2>
+	Array(const In1& i1, const In2& i2)
 		: S(i1, i2)
 		{}
 
@@ -151,11 +210,6 @@ struct Array: S
 		return begin()[i];
 	} )
 
-	CONST_VAR_FUNCTION( T* GetForPrecache(int i),
-	{ 
-		return i >= size() ? begin() : begin() + i;
-	} )
-
 	// Conversion to canonical array type.
 	operator Array<T>()
 		{ return Array<T>(begin(), size()); }
@@ -163,15 +217,15 @@ struct Array: S
 		{ return Array<const T>(begin(), size()); }
 
 	// Additional conversion via operator() to full or sub array.
-	Array<T> operator ()(size_type i = 0, size_type count = 0)
+	Array<T> operator ()(size_type i = 0, size_type count = -1)
 	{
-		assert(i >= 0 && count >= 0 && i+count <= size());
-		return Array<T>( SPU_MAIN_PTR(begin()+i), count ? count : size()-i);
+		assert(i >= 0 && i+count <= size());
+		return Array<T>( SPU_MAIN_PTR(begin()+i), count >= 0 ? count : size()-i);
 	}
-	Array<const T> operator ()(size_type i = 0, size_type count = 0) const
+	Array<const T> operator ()(size_type i = 0, size_type count = -1) const
 	{
-		assert(i >= 0 && count >= 0 && i+count <= size());
-		return Array<const T>(begin()+i, count ? count : size()-i);
+		assert(i >= 0 && i+count <= size());
+		return Array<const T>(begin()+i, count >= 0 ? count : size()-i);
 	}
 
 	// Basic element assignment functions.
@@ -179,7 +233,7 @@ struct Array: S
 	// Copy values to existing elements.
 	void assign(const T& val)
 	{
-		for_range (T, it, (*this))
+		for_array_ptr (T, it, *this)
 			*it = val;
 	}
 
@@ -187,53 +241,21 @@ struct Array: S
 	{
 		assert(array.size() == size());
 		const T* src = array.begin();
-		for_range (T, it, (*this))
+		for_array_ptr (T, it, *this)
 			*it = *src++;
 	}
 
-protected:
-
-	// Init raw elements to default or copied values.
-	iterator init(iterator start, size_type count)
+	Array<T>& operator = (Array<const T> array)
 	{
-		assert(start >= begin() && start+count <= end());
-		for_range (T, it, (start, start+count))
-			new(&*it) T;
-		return start;
-	}
-	iterator init(iterator start, size_type count, const T& val)
-	{
-		assert(start >= begin() && start+count <= end());
-		for_range (T, it, (start, start+count))
-			new(&*it) T(val);
-		return start;
-	}
-	iterator init(iterator start, Array<const T> array)
-	{
-		assert(start >= begin() && start+array.size() <= end());
-		const_iterator src = array.begin();
-		for_range (T, it, (start, start+array.size()))
-			new(&*it) T(*src++);
-		return start;
-	}
-
-	// Destroy in reverse order, to match construction order.
-	void destroy(iterator start, iterator finish)
-	{
-		assert(start >= begin() && finish <= end());
-		while (finish-- > start)
-			finish->~T();
-	}
-	void destroy()
-	{
-		destroy(begin(), end());
+		assign(array);
+		return *this;
 	}
 };
 
 // Type-inferring constructor.
 
-template<class T>
-inline Array<T> ArrayT(T* elems, int count)
+template<class T, class I>
+inline Array<T> ArrayT(T* elems, I count)
 {
 	return Array<T>(elems, count);
 }
@@ -245,13 +267,11 @@ inline Array<T> ArrayT(T* elems, int count)
 
 namespace NArray
 {
-	template<class T>
+	template<class T, class I>
 	struct ArrayStorage
 	{
-		// Use default int for allocation and indexing types, for convenience,
-		// and because we don't require arrays larger than 2 GB.
-		typedef int size_type;
-		typedef int difference_type;
+		typedef T value_type;
+		typedef I size_type;
 
 		// Construction.
 		inline ArrayStorage()
@@ -299,18 +319,17 @@ namespace NArray
 	// StaticArrayStorage: Alternate STORAGE scheme for Array<T,STORAGE>.
 	// Array is statically sized inline member.
 
-	template<class T, int nSIZE> 
+	template<class T, int nSIZE, class I = int>
 	struct StaticArrayStorage
 	{
 		typedef T value_type;
-		typedef int size_type;
-		typedef int difference_type;
+		typedef I size_type;
 
 		// Basic storage.
 		CONST_VAR_FUNCTION( T* begin(),
 			{ return m_aElems; } )
 		inline static size_type size()
-			{ return nSIZE; }
+			{ return (size_type)nSIZE; }
 
 	protected:
 		T				m_aElems[nSIZE];
@@ -323,14 +342,50 @@ namespace NArray
 	//		structured:	StaticArray<Type,256> array;
 };
 
-template<class T, int nSIZE> 
-struct StaticArray: Array< T, NArray::StaticArrayStorage<T,nSIZE> >
+template<class T, int nSIZE, class I = int> 
+struct StaticArray: Array< T, I, NArray::StaticArrayStorage<T,nSIZE,I> >
 {
 };
 
 namespace NAlloc
 {
-	struct CrossModuleAlloc;
+	// Adds prefix bytes to allocation, preserving alignment
+	template<class A>
+	struct AllocPrefix
+	{
+		static void* alloc( size_t& nNewBytes, bool bSlack, int nAlign, int nPrefixBytes )
+		{
+			assert(nNewBytes);
+			nPrefixBytes = Align(nPrefixBytes, nAlign);
+			nNewBytes += nPrefixBytes;
+			void* pNew = A::alloc( nNewBytes, bSlack, nAlign );
+			if (nNewBytes)
+				nNewBytes -= nPrefixBytes;
+			if (pNew)
+				pNew = (char*)pNew + nPrefixBytes;
+			return pNew;
+		}
+
+		static void dealloc( void* pMem, int nAlign, int nPrefixBytes )
+		{
+			assert(pMem);
+			nPrefixBytes = Align(nPrefixBytes, nAlign);
+			pMem = (char*)pMem - nPrefixBytes;
+			A::dealloc( pMem, nAlign );
+		}
+
+		static size_t alloc_size( void* pMem, size_t nMemBytes, int nAlign = 1, int nPrefixBytes = 0 )
+		{
+			if (!pMem)
+				return 0;
+			nPrefixBytes = Align(nPrefixBytes, nAlign);
+			nMemBytes += nPrefixBytes;
+			pMem = (char*)pMem - nPrefixBytes;
+			return A::alloc_size(pMem, nMemBytes, nAlign);
+		}
+	};
+
+	struct StandardAlloc;
 };
 
 namespace NArray
@@ -343,12 +398,16 @@ namespace NArray
 	{
 		size_type capacity();
 		size_type max_size();
-		void resize( size_type new_size, size_type nCap = 0 );
+		void set_size( size_type new_size );
+		void resize_raw( size_type new_size, size_type new_cap, bool allow_slack = false );
+		void destroy( T* );
+		void init( T* );
+		void init( T*, const T& val );
 		~DynStorage();
 	};
 	---------------------------------------------------------------------------*/
 
-	template<class T, class A = NAlloc::CrossModuleAlloc, int nALIGN = 0> struct SmallDynStorage;
+	template<class T, class I = int, class A = NAlloc::StandardAlloc> struct SmallDynStorage;
 };
 
 //---------------------------------------------------------------------------
@@ -357,8 +416,8 @@ namespace NArray
 // Does not specify allocation scheme, any DynArray can convert to it.
 // Simply an Array alias.
 
-template< class T, class S = NArray::SmallDynStorage<T> >
-struct DynArrayRef: Array<T,S>
+template< class T, class I = int, class S = NArray::SmallDynStorage<T,I> >
+struct DynArrayRef: Array<T,I,S>
 {
 };
 
@@ -367,15 +426,14 @@ struct DynArrayRef: Array<T,S>
 // S specifies storage scheme, as with Array, but adds resize(), capacity(), ...
 // A specifies the actual memory allocation function: alloc()
 
-template< class T, class S = NArray::SmallDynStorage<T> >
-struct DynArray: DynArrayRef<T,S>
+template< class T, class I = int, class S = NArray::SmallDynStorage<T,I> >
+struct DynArray: DynArrayRef<T,I,S>
 {
-	typedef DynArray<T,S> self_type;
-	typedef DynArrayRef<T,S> super_type;
+	typedef DynArray<T,I,S> self_type;
+	typedef DynArrayRef<T,I,S> super_type;
 
 	// Tedious redundancy for GCC.
 	using_type(super_type, size_type);
-	using_type(super_type, difference_type);
 	using_type(super_type, iterator);
 	using_type(super_type, const_iterator);
 
@@ -385,7 +443,7 @@ struct DynArray: DynArrayRef<T,S>
 	using super_type::begin;
 	using super_type::end;
 	using super_type::back;
-	using super_type::destroy;
+	using super_type::assign;
 
 	//
 	// Construction.
@@ -393,12 +451,21 @@ struct DynArray: DynArrayRef<T,S>
 	inline DynArray()
 		{}
 
+	DynArray(size_type count)
+	{
+		grow(count);
+	}
+	DynArray(size_type count, const T& val)
+	{
+		grow(count, val);
+	}
+
 	// Copying from a generic array type.
 	DynArray(Array<const T> a)
 	{
 		push_back(a);
 	}
-	self_type& operator =(Array<const T> a)
+	SPU_NO_INLINE self_type& operator =(Array<const T> a)
 	{
 		if (a.begin() >= begin() && a.end() <= end())
 		{
@@ -418,9 +485,9 @@ struct DynArray: DynArrayRef<T,S>
 			else
 			{
 				// If different sizes, destroy then copy init elements.
-				destroy();
-				resize_raw(a.size());
-				init(begin(), a);
+				pop_back(size());
+				S::resize_raw(a.size(), a.size());
+				init(*this, a.begin());
 			}
 		}
 		return *this;
@@ -460,137 +527,142 @@ struct DynArray: DynArrayRef<T,S>
 	// Allocation modifiers.
 	//
 
-	// Resize without initialising new members.
-	void resize_raw(size_type count, size_type cap)
-	{
-		S::resize(count, cap);
-
-		MEMSTAT_USAGE(begin(), sizeof(T) * size());
-	}
-	void resize_raw(size_type count)
-	{
-		S::resize(count, capacity());
-	}
-
 	void reserve(size_type count)
 	{
 		if (count > capacity())
-			resize_raw(size(), count);
+			S::resize_raw(size(), count);
 	}
 
-	T* grow_raw(size_type count = 1)
+	// Grow array if needed, return iterator to new raw elems.
+	iterator grow_raw(size_type count = 1)
 	{
-		assert(count >= 0);
-		resize_raw(size()+count, 0);
-		return end() - count;
+		return expand_raw(end(), count);
+	}
+	Array<T> append_raw(size_type count = 1)
+	{
+		return Array<T>(expand_raw(end(), count), count);
 	}
 	iterator grow(size_type count)
 	{
-		return init(grow_raw(count), count);
+		return init(append_raw(count));
 	}
 	iterator grow(size_type count, const T& val)
 	{
-		return init(grow_raw(count), count, val);
+		return init(append_raw(count), val);
 	}
 
 	void shrink()
 	{
-		S::resize(size(), size());
-
-		MEMSTAT_USAGE(begin(), sizeof(T) * size());
+		// Realloc memory to exact array size.
+		S::resize_raw(size(), size());
 	}
+
 	SPU_NO_INLINE void resize(size_type new_size)
 	{
-		if (new_size > size())
-			grow(new_size - size());
+		size_type s = size();
+		if (new_size > s)
+			grow(new_size - s);
 		else
-		{
-			destroy(begin()+new_size, end());
-			resize_raw(new_size);
-		}
+			pop_back(s-new_size);
 	}
 	SPU_NO_INLINE void resize(size_type new_size, const T& val)
 	{
-		if (new_size > size())
-			grow(new_size - size(), val);
+		size_type s = size();
+		if (new_size > s)
+			grow(new_size - s, val);
 		else
-		{
-			destroy(begin()+new_size, end());
-			resize_raw(new_size);
-		}
+			pop_back(s-new_size);
+	}
+
+	void assign(size_type n, const T& val)
+	{
+		resize(n);
+		assign(val);
+	}
+
+  void assign(const_iterator start, const_iterator finish)
+	{
+		*this = Array<const T>(start, finish);
 	}
 
 	iterator push_back()
 	{
-		return new(grow_raw()) T;
+		return grow(1);
 	}
 	iterator push_back(const T& val)
 	{ 
-		return new(grow_raw()) T(val);
+		return grow(1, val);
 	}
 	iterator push_back(Array<const T> array)
 	{
-		return init( grow_raw(array.size()), array);
+		return init(append_raw(array.size()), array.begin());
 	}
 
-	T* insert_raw(iterator it, size_type count = 1)
+	SPU_NO_INLINE Array<T> insert_raw(iterator pos, size_type count = 1)
 	{
-		assert(it >= begin() && it <= end());
+		// Grow array if needed, return iterator to inserted raw elems.
+		pos = expand_raw(pos, count);
 
-		// Realloc, then move elements.
-		T* old_begin = begin();
-		grow_raw(count);
-		it = mem_adjust(it, old_begin, begin());
+		// Copy-init to end elements.
+		T* dest = end();
+		T* dest_start = NArray::max(end()-count, pos+count);
+		while (dest-- > dest_start)
+			S::init(dest, *(dest-count));
 
-		memmove(it+count, it, mem_offset(it+count, end()));
-		return it;
+		// Copy moved elements.
+		dest_start = pos+count;
+		dest++;
+		while (dest-- > dest_start)
+			*dest = *(dest-count);
+
+		// Destroy first copied elements.
+		dest = NArray::min(dest+1, end() - count);
+		while (dest-- > pos)
+			S::destroy(dest);
+
+		return Array<T>(pos, count);
 	}
 
-	iterator insert(iterator it)
+	iterator insert(iterator it, size_type count = 1)
 	{
-		return new(insert_raw(it)) T;
+		return init(insert_raw(it, count));
 	}
 	iterator insert(iterator it, const T& val)
 	{
-		return new(insert_raw(it)) T(val);
+		return init(insert_raw(it, 1), val);
+	}
+	iterator insert(iterator it, size_type count, const T& val)
+	{
+		return init(insert_raw(it, count), val);
 	}
 	iterator insert(iterator it, Array<const T> array)
 	{
-		return init( insert_raw(it, array.size()), array);
+		return init(insert_raw(it, array.size()), array.begin());
 	}
 	iterator insert(iterator it, const_iterator start, const_iterator finish)
 	{
 		return insert( it, Array<T>(start, check_cast<size_type>(finish-start)) );
 	}
-	iterator insert(iterator it, size_type count, const T* pval = 0)
-	{
-		return init(insert_raw(it, count), count);
-	}
-	iterator insert(iterator it, size_type count, const T& val)
-	{
-		return init(insert_raw(it, count), count, val);
-	}
 
-	void pop_back()
+	void pop_back(size_type count = 1)
 	{
-		if (!empty())
-		{
-			back().~T();
-			resize_raw(size()-1);
-		}
+		// Destroy erased elems, change size without reallocing.
+		assert(count <= size());
+		size_type new_size = size()-count;
+		destroy((*this)(new_size));
+		S::set_size(new_size);
 	}
 
-	iterator erase(iterator start, iterator finish)
+	SPU_NO_INLINE iterator erase(iterator start, iterator finish)
 	{
-		// Destroy, then delete elems.
-		destroy(start, finish);
-		memmove(start, finish, mem_offset(finish, end()));
+		assert(start >= begin() && finish >= start && finish <= end());
 
-		// Resize mem.
-		T* old_begin = begin();
-		size_type count = check_cast<size_type>(finish - start);
-		resize_raw(size() - count);
-		return mem_adjust(start, old_begin, begin());
+		// Copy over erased elems, destroy those at end.
+		iterator it = start, e = end();
+		while (finish < e)
+			*it++ = *finish++;
+		pop_back(check_cast<size_type>(finish - it));
+		return start;
 	}
 
 	iterator erase(iterator it)
@@ -598,20 +670,9 @@ struct DynArray: DynArrayRef<T,S>
 		return erase(it, it+1);
 	}
 
-	size_type erase(size_type i, size_type count = 1)
+	iterator erase(size_type pos, size_type count = 1)
 	{
-		// Destroy, then delete elems.
-		destroy(begin()+i, begin()+i+count);
-
-		T* dst = SPU_MAIN_PTR( begin()+i );
-		T* src = SPU_MAIN_PTR( dst + count );
-		size_type num = (size()-i-count)*sizeof(T);
-
-		memmove(dst, src, num);
-
-		// Resize mem.
-		resize_raw(size() - count);
-		return i-1;
+		return erase(begin()+pos, begin()+pos+count);
 	}
 
 	void clear()
@@ -619,35 +680,107 @@ struct DynArray: DynArrayRef<T,S>
 		if (capacity())
 		{
 			destroy();
-			resize_raw(0, 0);
+			S::resize_raw(0, 0);
 		}
+	}
+
+protected:
+
+	// Grow array if needed, return iterator to inserted raw elems.
+	SPU_NO_INLINE iterator expand_raw(iterator pos, size_type count)
+	{
+		assert(pos >= begin() && pos <= end());
+		size_type new_size = size()+count;
+		if (new_size > capacity())
+		{
+			T* old = begin();
+			S::resize_raw(new_size, new_size, new_size > count);
+			pos = begin() + (pos - old);
+		}
+		else
+			S::set_size(new_size);
+		return pos;
+	}
+
+	//
+	// Raw element construct/destruct functions.
+	//
+	static void destroy(Array<T> range)
+	{
+		// Destroy in reverse order, to complement construction order.
+		for (iterator it = range.end(); it-- > range.begin(); )
+			S::destroy(it);
+	}
+
+	void destroy()
+	{
+		destroy(*this);
+	}
+
+	static iterator init(Array<T> range)
+	{
+		for_array_ptr (T, it, range)
+			S::init(it);
+		return range.begin();
+	}
+
+	static iterator init(Array<T> range, const T& val)
+	{
+		for_array_ptr (T, it, range)
+			S::init(it, val);
+		return range.begin();
+	}
+
+	static iterator init(Array<T> range, const T* source)
+	{
+		assert(source + range.size() <= range.begin() || source >= range.end());
+		for_array_ptr (T, it, range)
+			S::init(it, *source++);
+		return range.begin();
 	}
 };
 
 //---------------------------------------------------------------------------
-// FixedDynStorage: STORAGE scheme for DynArray<T,STORAGE> which simply
+// FixedDynStorage: STORAGE scheme for DynArray<> which simply
 // uses a non-growable array type, and adds a current count.
 
 namespace NArray
 {
-	template<class ARRAY>
-	struct FixedDynStorage
+	// Base class specifying init/destroy behavior for uninitialised storage.
+	template<class T>
+	struct RawStorage
 	{
-		using_type(ARRAY, size_type);
-		using_type(ARRAY, difference_type);
-		using_type(ARRAY, value_type);
+		static void destroy(T* obj)
+			{ obj->~T(); }
+		static void init(T* obj)
+			{ new(obj) T; }
+		static void init(T* obj, const T& val)
+			{ new(obj) T(val); }
+	};
+
+	// Base class specifying init/destroy behavior for pre-initialised storage.
+	template<class T>
+	struct InitStorage
+	{
+		static void destroy(T* obj)
+			{}
+		static void init(T* obj)
+			{ obj->~T(); new(obj) T; }
+		static void init(T* obj, const T& val)
+			{ *obj = val; }
+	};
+
+	template<class S>
+	struct FixedDynStorage: InitStorage<typename S::value_type>
+	{
+		using_type(S, size_type);
+		using_type(S, value_type);
 		typedef value_type T;
 
 		// Construction.
 		FixedDynStorage()
 			: m_nCount(0)
 		{}
-
-		void set( const ARRAY& array )
-		{ 
-			m_Array = array; 
-			m_nCount = 0;
-		}
 
 		CONST_VAR_FUNCTION( T* begin(),
 			{ return m_Array.begin(); } )
@@ -656,36 +789,48 @@ namespace NArray
 		size_type get_alloc_size() const
 			{ return 0; }
 
-		inline size_type capacity() const
+		size_type capacity() const
 			{ return m_Array.size(); }
-		inline size_type max_size() const
+		size_type max_size() const
 			{ return m_Array.size(); }
 
-		void resize( size_type new_size, size_type new_cap = 0 )
+		void set_size( size_type new_size )
+		{
+			assert(new_size >= 0 && new_size <= capacity());
+			m_nCount = new_size;
+			MEMSTAT_USAGE(m_Array.begin(), new_size * sizeof(T));
+		}
+		void resize_raw( size_type new_size, size_type new_cap, bool allow_slack = false)
 		{
 			// capacity unchangeable, just assert new_cap within range.
-			assert(new_size >= 0 && new_size <= max_size());
 			assert(new_cap <= max_size());
-			m_nCount = new_size;
+			set_size(new_size);
 		}
 
 	protected:
 		size_type		m_nCount;
-		ARRAY				m_Array;
+		S						m_Array;
 	};
 };
 
-template<class T, class ARRAY = Array<T> >
-struct FixedDynArray: DynArray< T, NArray::FixedDynStorage<ARRAY> >
+template<class T, class I = int>
+struct FixedDynArray: DynArray< T, I, NArray::FixedDynStorage< NArray::ArrayStorage<T,I> > >
 {
-	FixedDynArray()
-		{}
-	FixedDynArray( const ARRAY& array )
-		{ set(array); }
+	void set( Array<T,I> array )
+	{
+		this->m_Array = array; 
+		this->m_nCount = 0;
+	}
 };
 
+template<class T, int nSIZE, class I = int>
+struct StaticDynArray: DynArray< T, I, NArray::FixedDynStorage< NArray::StaticArrayStorage<T,nSIZE,I> > >
+{
+};
+
+// Alias for legacy array class.
 template<class T, int nSIZE>
-struct StaticDynArray: FixedDynArray< T, NArray::StaticArrayStorage<T,nSIZE> >
+struct CryFixedArray: StaticDynArray<T, nSIZE, size_t>
 {
 };
 
@@ -694,38 +839,35 @@ struct StaticDynArray: FixedDynArray< T, NArray::StaticArrayStorage<T,nSIZE> >
 
 struct Alloc
 {
-	static void* alloc( void* pCur, size_t nCurBytes, bool& bStoredAlloc, size_t& nNewBytes, bool bSlack = false, int nAlign = 1, int nPrefixBytes = 0 );
-	static size_t alloc_size( void* pCur, size_t nCurBytes, bool bStoredAlloc, int nAlign = 1, int nPrefixBytes = 0 );
+	static void* alloc( size_t& nNewBytes, bool bSlack = false, int nAlign = 1, int nPrefixBytes = 0 );
+	static void dealloc( void* pMem, int nAlign = 1, int nPrefixBytes = 0 );
+	static size_t alloc_size( void* pMem, size_t nUsedBytes, int nAlign = 1, int nPrefixBytes = 0 );
 };
 
 ---------------------------------------------------------------------------*/
 
 namespace NArray
 {
-	template<class A>
-	void AllocFree( void* pCur, bool bStoredAlloc, int nAlign = 1, int nPrefixBytes = 0 )
-	{
-		size_t nNewBytes = 0;
-		A::alloc(pCur, 0, bStoredAlloc, nNewBytes, false, nAlign, nPrefixBytes);
-	}
-
 	//---------------------------------------------------------------------------
 	// FastDynStorage: STORAGE scheme for Array<T,STORAGE> and descendents.
 	// Simple extension to ArrayStorage: size & capacity fields are inline, 3 words storage, fast access.
 
-	template<class T, class A = NAlloc::CrossModuleAlloc, int nALIGN = 0>
-	struct FastDynStorage: ArrayStorage<T>, NoCopy
+	template<class T, class I = int, class A = NAlloc::StandardAlloc>
+	struct FastDynStorage: ArrayStorage<T,I>, RawStorage<T>
 	{
-		typedef FastDynStorage<T,A,nALIGN> self_type;
-		typedef ArrayStorage<T> super_type;
+		typedef FastDynStorage<T,I,A> self_type;
+		typedef ArrayStorage<T,I> super_type;
 		using_type(super_type, size_type);
 
+		using super_type::m_aElems;
+		using super_type::m_nCount;
+
 		static int alignment()
-			{ return nALIGN ? nALIGN : alignof(T); }
+			{ return alignof(T); }
 
 		// Construction.
 		FastDynStorage()
-			: m_nCapacity(0), m_bStoredAlloc(0)
+			: m_nCapacity(0)
 		{
 			MEMSTAT_REGISTER_CONTAINER(this, EMemStatContainerType::MSC_Vector, T);
 		}
@@ -733,57 +875,78 @@ namespace NArray
 		~FastDynStorage()
 		{
 			if (m_aElems)
-				AllocFree<A>( m_aElems, m_bStoredAlloc, alignment() );
+				A::dealloc( m_aElems, alignment() );
 
 			MEMSTAT_UNREGISTER_CONTAINER(this);
+		}
+
+		void swap(self_type& a)
+		{
+			self_type temp = *this;
+			*this = a;
+			a = temp;
+			MEMSTAT_SWAP_CONTAINERS(this, &a);
 		}
 
 		inline size_type capacity() const
 			{ return m_nCapacity; }
 		inline size_type get_alloc_size() const
-			{ return A::alloc_size(m_aElems, capacity() * sizeof(T), m_bStoredAlloc, alignment()); }
+			{ return A::alloc_size(m_aElems, capacity() * sizeof(T), alignment()); }
 
-		using super_type::m_aElems;
-		using super_type::m_nCount;
-
-		void resize( size_type new_size, size_type new_cap = 0 )
+		void set_size( size_type new_size )
 		{
-			bool bSlack = new_cap == 0;
-			new_cap = NArray::max(new_size, new_cap);
-			if (bSlack && new_size > 0)
-				new_cap = NArray::max(new_cap, capacity());
+			assert(new_size <= capacity());
+			m_nCount = new_size;
+			MEMSTAT_USAGE(m_aElems, new_size * sizeof(T));
+		}
+
+		SPU_NO_INLINE void resize_raw( size_type new_size, size_type new_cap, bool allow_slack = false )
+		{
+			assert(new_cap >= new_size);
 			if (new_cap != capacity())
 			{
-				bool bStoredAlloc = m_bStoredAlloc;
+				if (new_cap == 0)
+				{
+					// Free memory.
+					A::dealloc( m_aElems, alignment() );
+					m_aElems = 0;
+					m_nCount = m_nCapacity = 0;
+					return;
+				}
+
+				T* old_elems = m_aElems;
 				size_t nNewBytes = new_cap * sizeof(T);
-				m_aElems = (T*) A::alloc( m_aElems, m_nCount * sizeof(T), bStoredAlloc, nNewBytes, bSlack, alignment() );
-				m_bStoredAlloc = bStoredAlloc;
+				m_aElems = (T*) A::alloc( nNewBytes, allow_slack, alignment() );
 				m_nCapacity = size_type(nNewBytes / sizeof(T));
 				assert((int)m_nCapacity >= new_cap);				// Check for overflow or bad alloc.
 
 				MEMSTAT_BIND_TO_CONTAINER(this, m_aElems);
-				//assert(IsAligned(m_aElems, alignment()));
+				assert(IsAligned(m_aElems, alignment()));
+
+				if (old_elems)
+				{
+					NArray::move_init(m_aElems, old_elems, NArray::min(m_nCount, new_size));
+					A::dealloc(old_elems, alignment());
+				}
 			}
-			m_nCount = new_size;
+			set_size(new_size);
 		}
 
 	protected:
-		uint32		m_nCapacity: 31;
-		uint32		m_bStoredAlloc: 1;
+		uint32		m_nCapacity;
 	};
 
 	//---------------------------------------------------------------------------
-	// SmallDynStorage: STORAGE scheme for Array<T,STORAGE> and descendents.
+	// SmallDynStorage: STORAGE scheme for Array<T,STORAGE> and descendants.
 	// Array is just a single pointer, size and capacity information stored before the array data.
 	// Slightly slower than FastDynStorage, optimal for saving space, especially when array likely to be empty.
 
-	template<class T, class A, int nALIGN> 
-	struct SmallDynStorage: NoCopy
+	template<class T, class I, class A> 
+	struct SmallDynStorage: RawStorage<T>
 	{
-		typedef SmallDynStorage<T,A,nALIGN> self_type;
-
-		typedef int size_type;
-		typedef int difference_type;
+		typedef SmallDynStorage<T,I,A> self_type;
+		typedef NAlloc::AllocPrefix<A> AP;
+		typedef I size_type;
 
 		// Construction.
 		SmallDynStorage()
@@ -796,7 +959,7 @@ namespace NArray
 		~SmallDynStorage()
 		{
 			if (!is_null())
-				AllocFree<A>( m_aElems, header()->stored_alloc(), alignment(), sizeof(Header) );
+				AP::dealloc( m_aElems, alignment(), sizeof(Header) );
 
 			MEMSTAT_UNREGISTER_CONTAINER(this);
 		}
@@ -817,41 +980,46 @@ namespace NArray
 		inline size_type capacity() const
 			{ return header()->capacity(); }
 		inline size_type get_alloc_size() const
-			{ return is_null() ? 0 : A::alloc_size( m_aElems, capacity() * sizeof(T), header()->stored_alloc(), alignment(), sizeof(Header) ); }
+			{ return is_null() ? 0 : AP::alloc_size( m_aElems, capacity() * sizeof(T), alignment(), sizeof(Header) ); }
 
-		void resize( size_type new_size, size_type new_cap = 0 )
+		void set_size( size_type new_size )
 		{
-			if (new_size == 0 && new_cap == 0)
+			assert(new_size <= capacity());
+			header()->set_sizes(new_size, capacity());
+			MEMSTAT_USAGE(m_aElems, new_size * sizeof(T));
+		}
+
+		SPU_NO_INLINE void resize_raw( size_type new_size, size_type new_cap, bool allow_slack = false )
+		{
+			assert(new_cap >= new_size);
+			if (new_cap != capacity())
 			{
-				// Free
-				if (!is_null())
+				if (new_cap == 0)
 				{
-					AllocFree<A>( m_aElems, header()->stored_alloc(), alignment(), sizeof(Header) );
+					// Free memory.
+					AP::dealloc( m_aElems, alignment(), sizeof(Header) );
 					set_null();
+					return;
 				}
-			}
-			else
-			{
-				bool bSlack = new_cap == 0;
-				new_cap = NArray::max(new_size, new_cap);
-				if (bSlack && new_size > 0)
-					new_cap = NArray::max(new_cap, capacity());
-				if (new_cap != capacity())
+
+				T* old_elems = m_aElems;
+				Header* old_header = header();
+				size_t nNewBytes = new_cap * sizeof(T);
+				m_aElems = (T*) SPU_MAIN_PTR( AP::alloc( nNewBytes, allow_slack, alignment(), sizeof(Header) ));
+				MEMSTAT_BIND_TO_CONTAINER(this, m_aElems);
+
+				// Store actual allocated capacity.
+				assert(nNewBytes >= new_cap*sizeof(T));
+				new_cap = size_type(nNewBytes / sizeof(T));
+
+				if (!old_header->is_null())
 				{
-					bool bStoredAlloc = header()->stored_alloc();
-					size_t nNewBytes = new_cap * sizeof(T);
-					m_aElems = (T*) SPU_MAIN_PTR( A::alloc( is_null() ? 0 : m_aElems, size() * sizeof(T), 
-						bStoredAlloc, nNewBytes, bSlack, alignment(), sizeof(Header) ));
-
-					MEMSTAT_BIND_TO_CONTAINER(this, m_aElems);
-
-					// Store actual allocated capacity.
-					assert(nNewBytes >= new_cap*sizeof(T));
-					header()->set_stored_alloc(bStoredAlloc);
-					new_cap = size_type(nNewBytes / sizeof(T));
+					// Move elements.
+					NArray::move_init(m_aElems, old_elems, NArray::min(old_header->size(), new_size));
+					AP::dealloc( old_elems, alignment(), sizeof(Header) );
 				}
-				header()->set_sizes(new_size, new_cap);
 			}
+			header()->set_sizes(new_size, new_cap);
 		}
 
 	protected:
@@ -860,39 +1028,46 @@ namespace NArray
 
 		struct Header
 		{
+			static const size_type nCAP_BIT = size_type(1) << (sizeof(size_type)*8 - 1);
+
+			ILINE T* elems() const				
+			{
+				const Header* tmp = SPU_MAIN_PTR( this+1 );
+				return SPU_MAIN_PTR( (T*)tmp );
+			}
 			bool is_null() const
-				{ return nSize + bCapacity == 0; }
-			size_type size() const
-				{ return nSize; }
+				{ return m_nSizeCap == 0; }
+			ILINE size_type size() const
+				{ return m_nSizeCap & ~nCAP_BIT; }
 
 			size_type	capacity() const
-			{ 
-				if (!bCapacity)
-					return nSize;
-				uint8* pCap = SPU_MAIN_PTR( (uint8*)(elems() + nSize) );
-				if (*pCap)
-					// Stored as byte.
-					return nSize + *pCap;
-				else
+			{
+				size_type cap = m_nSizeCap;
+				if (cap & nCAP_BIT)
 				{
-					// Stored in next aligned word.
-					pCap = SPU_MAIN_PTR( Align(pCap+1, alignof(size_type)) );
-					return nSize + *(size_type*)pCap;
+					cap &= ~nCAP_BIT;
+					uint8* pCap = SPU_MAIN_PTR( (uint8*)(elems() + cap) );
+					if (*pCap)
+						// Stored as byte.
+						cap += *pCap;
+					else
+					{
+						// Stored in next aligned word.
+						pCap = SPU_MAIN_PTR( Align(pCap+1, alignof(size_type)) );
+						cap += *(size_type*)pCap;
+					}
 				}
+				return cap;
 			}
 
 			void set_sizes( size_type s, size_type c )
 			{
 				// Store size, and assert against overflow.
-				nSize = s; assert(nSize == s); 
-				if (c <= s)
-				{
-					bCapacity = false;
-				}
-				else
+				m_nSizeCap = s;
+				if (c > s)
 				{
 					// Store extra capacity after elements.
-					bCapacity = true;
+					m_nSizeCap |= nCAP_BIT;
 					uint8* pCap = SPU_MAIN_PTR( (uint8*)(elems() + s) );
 					size_type nExtra = c - s;
 					if (nExtra < 256)
@@ -906,33 +1081,17 @@ namespace NArray
 						*(size_type*)pCap = nExtra;
 					}
 				}
+				assert(size() == s);
+				assert(capacity() == c);
 			}
-
-			bool stored_alloc() const
-				{ return (bool)bStoredAlloc; }
-			void set_stored_alloc( bool b )
-				{ bStoredAlloc = b; }
 
 		protected:
-			uint32		nSize:				30,
-								bCapacity:		1,			// Bit indicates capacity > size, stored after elems.
-								bStoredAlloc:	1;			// Bit indicates custom alloc pointer stored before header.
-																			// Ensures compatibility across Debug/Release modules.
-																			// If start allocated in debug module, actual allocation function stored as extra data.
-																			// Stored debug allocator or default release allocator used in subsequent reallocs or frees.
-																			// No additional data stored in release modules.
-
-			T* elems() const				
-			{
-				const Header* tmp = SPU_MAIN_PTR( this+1 );
-				return SPU_MAIN_PTR( (T*)tmp );
-			}
+			size_type		m_nSizeCap;				// Store allocation size, with last bit indicating extra capacity.
 		};
 
 		static int alignment()
 		{
-			int nTypeAlignment = nALIGN ? nALIGN : alignof(T);
-			return nTypeAlignment > alignof(Header) ? nTypeAlignment : alignof(Header);
+			return NArray::max(alignof(T), alignof(Header));
 		}
 
 		CONST_VAR_FUNCTION( Header* header(),
@@ -944,7 +1103,7 @@ namespace NArray
 		struct EmptyHeader
 		{
 			Header	head;
-			char		pad[nALIGN ? nALIGN : alignof(T)];
+			char		pad[alignof(T)];
 		}; 
 
 		// workaround for SPUS which can't handle function static variables:
@@ -987,84 +1146,9 @@ namespace NArray
 //---------------------------------------------------------------------------
 namespace NAlloc
 {
-	//---------------------------------------------------------------------------
-	// Alloc adapters, to provide alignment, prefix, and stored allocator functionality
-	// to a base allocator.
-	//
-
-	template<class A>
-	struct AllocPrefix
-	{
-
-		static void* alloc( void* pCur, size_t& nNewBytes, size_t nCurBytes, bool bSlack, int nAlign, int nPrefixBytes )
-		{
-			nPrefixBytes = Align(nPrefixBytes, nAlign);
-			if (pCur)
-				pCur = (char*)pCur - nPrefixBytes;
-			if (nNewBytes)
-				nNewBytes += nPrefixBytes;
-
-
-
-			(void)nCurBytes; // mark as used
-			void* pNew = A::alloc( pCur, nNewBytes, bSlack, nAlign );
-
-			if (nNewBytes)
-				nNewBytes -= nPrefixBytes;
-			if (pNew)
-				pNew = (char*)pNew + nPrefixBytes;
-			return pNew;
-		}
-	};
-
-	template<class A>
-	struct AllocAlign
-	{
-		static void* alloc( void* pCur, size_t nCurBytes, size_t& nNewBytes, bool bSlack = false, int nAlign = 1, int nPrefixBytes = 0 )
-		{
-			assert(nAlign > 0);
-			bSlack = bSlack && pCur && nNewBytes > nCurBytes;
-			if (nAlign <= A::max_alignment)
-				return AllocPrefix<A>::alloc( pCur, nNewBytes, nCurBytes, bSlack, nAlign, nPrefixBytes );
-			
-			char* pNew = NULL;
-			if (nNewBytes)
-			{
-				nNewBytes += nPrefixBytes + nAlign + sizeof(int);
-				char* pNewAlloc = (char*)A::alloc( 0, nNewBytes, bSlack );
-				pNew = SPU_MAIN_PTR(Align(pNewAlloc + nPrefixBytes + sizeof(int), nAlign) - nPrefixBytes);
-
-				// Store alignment offset.
-				int nOffset = check_cast<int>(pNew - pNewAlloc);
-				assert(nOffset <= nAlign);
-
-				((int*)SPU_MAIN_PTR(pNew))[-1] = nOffset;
-				nNewBytes -= nPrefixBytes + nOffset;
-
-				if (nCurBytes)
-				{
-					// Copy old data.
-					assert(pCur);
-					memcpy( SPU_MAIN_PTR(pNew), SPU_MAIN_PTR( (char*)pCur - nPrefixBytes ), NArray::min(nCurBytes, nNewBytes) + nPrefixBytes );
-				}
-				SPU_MAIN_PTR(pNew += nPrefixBytes);
-			}
-			if (pCur)
-			{
-				// Free old data.
-				pCur = (char*)pCur - nPrefixBytes;
-				pCur = (char*)pCur - ((int*)pCur)[-1];
-				A::alloc( pCur, nCurBytes = 0 );
-			}
-			return SPU_MAIN_PTR(pNew);
-		}
-	};
-
 	// since this file is also included for compiling SPU jobs, we get double implementations
 	// for all non-template classes, so an ifdef is needed
 #if !defined(_SPU_JOB)
-
-	typedef void* (*TPFAlloc)( void* pCur, size_t nCurBytes, size_t& nNewBytes, bool bSlack, int nAlign, int nPrefixBytes );
 
 	inline size_t ReallocSize( size_t nMinSize )
 	{
@@ -1091,143 +1175,54 @@ namespace NAlloc
 	//---------------------------------------------------------------------------
 	// Allocators for DynArray.
 
-	// ModuleAlloc: Base DynArray<> allocator, using CryModuleRealloc.
-	struct ModuleAlloc
+	// StandardAlloc: Base DynArray<> allocator.
+	// Uses aligned or standard versions of CryModuleMalloc, etc.
+	struct StandardAlloc
 	{
-		struct Standard
+		union align_type { void* p; double d; };
+
+		static void* alloc( size_t& nNewBytes, bool bSlack = false, int nAlign = 1 )
 		{
-			union align_type { void* p; double d; };		
-
-			// Guaranteed align of stdc realloc.
-			static const int max_alignment = alignof(align_type);
-
-			static void* alloc( void* pCur, size_t& nNewBytes, bool bSlack = false, int nAlign = 1 )
-			{
-				if (bSlack && nNewBytes)
-					nNewBytes = ReallocSize(nNewBytes);
-
-
-
-
-				assert(nAlign <= max_alignment);
-				return SPU_MAIN_PTR( CryModuleRealloc( SPU_MAIN_PTR(pCur), nNewBytes) );
-			}
-
-
-
-
-
-
-
-
-
-
-
-
-
-			
-		};
-
-		static void* alloc( void* pCur, size_t nCurBytes, bool& bStoredAlloc, size_t& nNewBytes, bool bSlack = false, int nAlign = 1, int nPrefixBytes = 0 )
-		{
-			assert(!bStoredAlloc);
-			void* pNew = AllocAlign<Standard>::alloc(pCur, nCurBytes, nNewBytes, bSlack, nAlign, nPrefixBytes);
-			//assert(IsAligned(pNew, nAlign));
-			return pNew;
+			assert(nNewBytes);
+			if (bSlack)
+				nNewBytes = ReallocSize(nNewBytes);
+			if (nAlign > alignof(align_type))
+				return SPU_MAIN_PTR( CryModuleMemalign(nNewBytes, nAlign) );
+			else
+				return SPU_MAIN_PTR( CryModuleMalloc(nNewBytes) );
 		}
 
-		static size_t alloc_size( void* pCur, size_t nCurBytes, bool bStoredAlloc, int nAlign = 1, int nPrefixBytes = 0 )
+		static void dealloc( void* pMem, int nAlign = 1 )
 		{
-			if (!pCur)
+			if (nAlign > alignof(align_type))
+				CryModuleMemalignFree(pMem);
+			else
+				CryModuleFree(pMem);
+		}
+
+		static size_t alloc_size( void* pMem, size_t nMemBytes, int nAlign = 1 )
+		{
+			if (!pMem)
 				return 0;
 
-			nCurBytes = Align(nCurBytes, nAlign);
-			if (bStoredAlloc)
-				nPrefixBytes += sizeof(TPFAlloc);
-			if (nAlign > Standard::max_alignment)
-			{
-				pCur = (char*)pCur - nPrefixBytes;
-				nPrefixBytes += ((int*)pCur)[-1];
-			}
-			else
-				nPrefixBytes = Align(nPrefixBytes, nAlign);
-			return nCurBytes + nPrefixBytes;
+			nMemBytes = Align(nMemBytes, nAlign);
+			if (nAlign > alignof(align_type))
+				// Add assumed alignment padding.
+				nMemBytes += nAlign;
+			return nMemBytes;
 		}
-	};
-
-	// CrossModuleAlloc: Default DynArray<> allocator, uses stdlib realloc in debug modules.
-	// Safe for use across modules, as all non-default/Profile allocations store the alloc function pointer.
-
-	struct CrossModuleAlloc: ModuleAlloc
-	{
-#if !defined(PS3)
-
-		#ifdef _DEBUG
-			struct Debug: Standard
-			{
-				static void* alloc( void* pCur, size_t& nNewBytes, bool bSlack = false, int nAlign = 1 )
-				{
-					assert(nAlign <= max_alignment);
-					if (bSlack && nNewBytes)
-						nNewBytes = ReallocSize(nNewBytes);
-					if (!nNewBytes)
-					{
-						free(pCur);
-						return NULL;
-					}
-					return realloc(pCur, nNewBytes);
-				}
-			};
-		#endif
-
-		static void* alloc( void* pCur, size_t nCurBytes, bool& bStoredAlloc, size_t& nNewBytes, bool bSlack = false, int nAlign = 1, int nPrefixBytes = 0 )
-		{
-			TPFAlloc pAlloc = AllocAlign<Standard>::alloc;
-			if (!pCur)
-			{
-				// Default alloc when none stored in block.
-				#ifdef _DEBUG
-					pAlloc = AllocAlign<Debug>::alloc;
-					bStoredAlloc = true;
-				#else
-					bStoredAlloc = false;
-				#endif
-			}
-
-			if (bStoredAlloc)
-			{
-				// Extract and store allocator before mem.
-				nPrefixBytes += sizeof(TPFAlloc);
-				if (pCur)
-					pAlloc = *(TPFAlloc*)((char*)pCur - nPrefixBytes);
-			}
-
-			void* pNew = (*pAlloc)(pCur, nCurBytes, nNewBytes, bSlack, nAlign, nPrefixBytes);
-			if (bStoredAlloc && pNew)
-				*(TPFAlloc*)((char*)pNew - nPrefixBytes) = pAlloc;
-
-			assert(IsAligned(pNew, nAlign));
-			return pNew;
-		}
-#endif
 	};
 
 #endif // !_SPU_JOB
 };
 
 #if !defined(_SPU_JOB)
-template<class T, int nALIGN = 0>
-struct FastDynArray: DynArray<T, NArray::FastDynStorage<T, NAlloc::ModuleAlloc, nALIGN> >
+template<class T, class I = int>
+struct FastDynArray: DynArray<T, I, NArray::FastDynStorage<T,I> >
 {
 };
 
 #endif // !_SPU_JOB
-
-//---------------------------------------------------------------------------
-// Convenient array iteration macros
-
-#define for_array(i, arr)									for (int i = 0; i < arr.size(); i++)
-#define for_all(cont)											for_array (_i, cont) cont[_i]
 
 #if !defined(__SPU__) || defined(__CRYCG__)
 	#include "CryPodArray.h"

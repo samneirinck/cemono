@@ -1233,7 +1233,7 @@ UNIQUE_IFACE struct IVehicleSeat
 {
 	enum EVehicleTransition
 	{
-		eVT_None = 0,
+		eVT_None = 0,		// Assigned passenger is inside [9/21/2011 evgeny]
 		eVT_Entering,
 		eVT_Exiting,
 		eVT_ExitingWarped,    

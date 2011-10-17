@@ -301,8 +301,8 @@ public:
 
 #if defined(WIN32) || defined(WIN64)
 	static int _vscpf( const_str format, va_list args);
-	static int _vsnpf( value_type* buf, int cnt, const_str format, va_list args);
 #endif
+	static int _vsnpf( value_type* buf, int cnt, const_str format, va_list args);
 
 public:
 	//////////////////////////////////////////////////////////////////////////
@@ -558,6 +558,20 @@ template<>
 inline int CryStringT<wchar_t>::_vsnpf(value_type* buf, int cnt, const_str format, va_list args)
 {
 	return _vsnwprintf(buf, cnt, format, args);
+}
+
+#else
+
+template<>
+inline int CryStringT<char>::_vsnpf(value_type* buf, int cnt, const_str format, va_list args)
+{
+	return vsnprintf(buf, cnt, format, args);
+}
+
+template<>
+inline int CryStringT<wchar_t>::_vsnpf(value_type* buf, int cnt, const_str format, va_list args)
+{
+	return vswprintf(buf, cnt, format, args);
 }
 
 #endif
@@ -2069,28 +2083,13 @@ inline CryStringT<T>& CryStringT<T>::Format( const_str format,... )
 	value_type temp[4096]; // Limited to 4096 characters!
 	va_list argList;
 	va_start(argList, format );
-	vsnprintf( temp,4096,format,argList ); 
+	_vsnpf( temp,4096,format,argList ); 
 	temp[4095] = '\0';
 	va_end(argList);
 	*this = temp;
 	return *this;
 #endif
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //////////////////////////////////////////////////////////////////////////
 #define __ascii_tolower(c)      ( (((c) >= 'A') && ((c) <= 'Z')) ? ((c) - 'A' + 'a') : (c) )

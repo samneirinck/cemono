@@ -33,13 +33,16 @@ struct IFlowgraphModuleManager
 {
 	virtual bool DeleteModuleXML(const char* moduleName) = 0;
 	virtual bool RenameModuleXML(const char* moduleName, const char* newName) = 0;
+	virtual bool AddModulePathInfo(const char* path) = 0;
 	virtual IModuleIteratorPtr CreateModuleIterator() = 0;
-	virtual const char* GetModuleFolderName() = 0;
-	virtual const char* GetStartNodeName() = 0;
-	virtual const char* GetReturnNodeName() = 0;
-	virtual const char* GetCallerNodeName() = 0;
-	virtual int GetModuleMaxParams() = 0;
+	virtual const char* GetModuleFolderName() const = 0;
+	virtual const char* GetStartNodeName() const = 0;
+	virtual const char* GetReturnNodeName() const = 0;
+	virtual const char* GetCallerNodeName() const = 0;
+	virtual int GetModuleMaxParams() const = 0;
 	virtual void ScanForModules() = 0;
+	virtual const char* GetModulePath(const char* name) = 0;
+	virtual bool ReloadModule(const char* moduleName) = 0;
 };
 
 #endif //FLOWGRAPHMODULEMANAGERINTERFACE_H

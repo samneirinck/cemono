@@ -169,15 +169,16 @@ UNIQUE_IFACE struct IParticleEffect : public _i_reference_target_t
 	// Summary:
 	//     Gets the name of this particle effect.
 	// Return Value:
-	//     A C string which holds the fully qualified name of this effect, with parents and library.
+	//     A C string which holds the minimally qualified name of this effect.
+	//     For top level effects, includes library.group qualifier.
+	//     For child effects, includes only the base name.
 	virtual cstr GetName() const = 0;
 
 	// Summary:
-	//     Gets the base name of this particle effect.
+	//     Gets the name of this particle effect.
 	// Return Value:
-	//     A C string which holds the base name of this effect.
-	//		 For top-level effects, this includes group qualifier.
-	virtual cstr GetBaseName() const = 0;
+	//     A std::string which holds the fully qualified name of this effect, with all parents and library.
+	virtual string GetFullName() const = 0;
 
 	// Summary:
 	//     Enables or disables the effect.

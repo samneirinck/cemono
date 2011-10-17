@@ -155,7 +155,7 @@ struct GoalParams;
 #define AIREADIBILITY_NOPRIORITY		1
 
 #define AIGOALPIPE_LOOP				0
-#define AIGOALPIPE_RUN_ONCE			1		// Todo: Not working yet - see PipeUser.cpp
+#define AIGOALPIPE_RUN_ONCE			1
 #define AIGOALPIPE_NOTDUPLICATE	2
 #define AIGOALPIPE_HIGHPRIORITY		4		// It will be not removed when a goal pipe is selected.
 #define AIGOALPIPE_SAMEPRIORITY		8		// Sets the priority to be the same as active goal pipe.
@@ -934,73 +934,63 @@ struct SAIActorTargetRequest
 {
 	SAIActorTargetRequest() :
 		id(0),
-		approachLocation(ZERO),
-		approachDirection(ZERO),
-		animLocation(ZERO),
-		animDirection(ZERO),
-		//animFinalLocation(0,0,0),
-		vehicleSeat(0),
-		speed(0),
-		directionTolerance(0),
-		startArcAngle(0),
-		startWidth(0),
-		signalAnimation(true),
-		projectEndPoint(true),
-		lowerPrecision(false),
-		useAssetAlignment(false),
+		vApproachPos(ZERO),
+		vApproachDir(ZERO),
+		vAnimPos(ZERO),
+		vAnimDir(ZERO),
+		nVehicleSeat(0),
+		fDirectionTolerance(0.f),
+		fStartArcAngle(0.f),
+		fStartWidth(0.f),
 		stance(STANCE_NULL),
-		pQueryStart(0),
-		pQueryEnd(0)
+		pQueryStart(NULL),
+		pQueryEnd(NULL),
+		bSignalAnimation(true),
+		bProjectEndPoint(true),
+		bLowerPrecision(false)
 	{
 	}
 
 	void Reset()
 	{
 		id = 0;
-		approachLocation.zero();
-		approachDirection.zero();
-		animLocation.zero();
-		animDirection.zero();
-		//do not reset this, it's needed as "last position"
-		//animFinalLocation.zero();
-		vehicleSeat = 0;
-		speed = 0;
-		directionTolerance = 0;
-		startArcAngle = 0;
-		startWidth = 0;
-		signalAnimation = true;
-		projectEndPoint = true;
-		lowerPrecision = false;
-		useAssetAlignment = false;
+		vApproachPos.zero();
+		vApproachDir.zero();
+		vAnimPos.zero();
+		vAnimDir.zero();
+		nVehicleSeat = 0;
+		fDirectionTolerance = 0.f;
+		fStartArcAngle = 0.f;
+		fStartWidth = 0.f;
 		stance = STANCE_NULL;
-		pQueryStart = 0;
-		pQueryEnd = 0;
-		vehicleName = "";
-		animation = "";
+		pQueryStart = NULL;
+		pQueryEnd = NULL;
+		sVehicleName.clear();
+		sAnimation.clear();
+		bSignalAnimation = true;
+		bProjectEndPoint = true;
+		bLowerPrecision = false;
 	}
 
 	void Serialize(TSerialize ser);
 
-	int id;	// id=0 means invalid
-	Vec3 approachLocation;
-	Vec3 approachDirection;
-	Vec3 animLocation;
-	Vec3 animDirection;
-	//Vec3 animFinalLocation;
-	string vehicleName;
-	int vehicleSeat;
-	float speed;
-	float directionTolerance;
-	float startArcAngle;
-	float startWidth;
-	bool signalAnimation;
-	bool projectEndPoint;
-	bool lowerPrecision; // Lower precision should be true when passing through a navSO.
-	bool useAssetAlignment;
-	string animation;
+	int id;	// id = 0 means invalid
+	Vec3 vApproachPos;
+	Vec3 vApproachDir;
+	Vec3 vAnimPos;
+	Vec3 vAnimDir;
+	string sVehicleName;
+	int nVehicleSeat;
+	float fDirectionTolerance;
+	float fStartArcAngle;
+	float fStartWidth;
+	string sAnimation;
 	EStance stance;
-	TAnimationGraphQueryID * pQueryStart;
-	TAnimationGraphQueryID * pQueryEnd;
+	TAnimationGraphQueryID* pQueryStart;
+	TAnimationGraphQueryID* pQueryEnd;
+	bool bSignalAnimation;
+	bool bProjectEndPoint;
+	bool bLowerPrecision; // Lower precision should be true when passing through a navSO.
 };
 
 struct IPipeUser
@@ -1177,9 +1167,6 @@ struct IPuppet
 	virtual IFireCommandHandler* GetFirecommandHandler() const = 0;
 
 	// Description:
-	//	 Sets the aproximation radius where speed starts to fall off (negative values mean no change)
-	virtual void SetSpeedFalloffRadius(float fWalk = -1.f, float fRun = -1.0f, float fSprint = -1.0f) {;}
-	// Description:
 	//	 Changes flag so this puppet can be shoot or not.
 	virtual void SetCanBeShot(bool bCanBeShot) {;}
 	virtual bool GetCanBeShot() const { return true; }
@@ -1344,7 +1331,6 @@ struct SOBJECTSTATE
 	int		bodystate;
 	float	lean;
 	float peekOver;
-	float	fHitProbability;
 	Vec3	vShootTargetPos;	// The requested position to shoot at. This value must be passed directly to weapon system,
 	// the AI system has decided already if the shot should miss or hit. Notes: can be (0,0,0) if not begin requested!
 	Vec3	vAimTargetPos;		// The requested position to aim at. This value is slightly different from the vShootTarget, and is
@@ -1387,8 +1373,7 @@ struct SOBJECTSTATE
 	Vec3									curActorTargetFinishPos;				// Return value.
 	SAIActorTargetRequest	actorTargetReq;
 
-	bool	bCloseContact;
-	bool	bHurryNow;	// Needs to skip animation transitions - going from idle to combat.
+	bool bCloseContact;
 	bool bReevaluate;
 	bool bTargetEnabled;
 	bool bTargetIsGroupTarget;
@@ -1443,7 +1428,6 @@ struct SOBJECTSTATE
 
 		stl::free_container(predictedCharacterStates.states);
 		bTargetEnabled = false;
-		bHurryNow = false;
 	}
 
 	void FullReset()
@@ -1492,7 +1476,6 @@ struct SOBJECTSTATE
 		nAuxPriority = 0;
 		fMovementUrgency = AISPEED_WALK;
 		fDesiredSpeed = 1.0f;
-		fHitProbability = 1.0f;
 
 		lean = 0.0f;
 		peekOver = 0.0f;

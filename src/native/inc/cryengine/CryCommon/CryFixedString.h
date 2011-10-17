@@ -403,6 +403,8 @@ public:
 	_Self& operator=( const CryStringT<T> &str );
 #endif
 
+	void move(_Self& src);
+
 #if defined(LINUX)
 	template<size_t AnySize>
 	_Self& operator=(const CryStackStringT<T, AnySize> &str)
@@ -1620,12 +1622,20 @@ inline CryStackStringT<T,S>& CryStackStringT<T,S>::replace( const_str strOld,con
 
 //////////////////////////////////////////////////////////////////////////
 template <class T, size_t S> 
+inline void CryStackStringT<T,S>::move( CryStackStringT<T,S>& str )
+{
+	memcpy(this, &str, sizeof(*this));
+	if (str.m_str == str.m_strBuf)
+		m_str = m_strBuf;
+}
+
+template <class T, size_t S> 
 inline void CryStackStringT<T,S>::swap( CryStackStringT<T,S>& _Str )
 {
 	CryStackStringT<T,S> temp;
-	temp = *this;
-	*this = _Str;
-	_Str = temp;
+	temp.move(*this);
+	move(_Str);
+	_Str.move(temp);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1908,6 +1918,21 @@ inline CryStackStringT<T,S> CryStackStringT<T,S>::Tokenize( const_str charSet, i
 	nStart = -1;
 	return CryStackStringT<T,S>();
 }
+
+//////////////////////////////////////////////////////////////////////////
+// Specialization providing efficient move semantics for array classes.
+template <class T, size_t S>
+bool raw_movable( const CryStackStringT<T,S>& str )
+{ 
+	return false; 
+}
+
+template <class T, size_t S>
+void move_init(CryStackStringT<T,S>& dest, CryStackStringT<T,S>& source)
+{
+	dest.move(source);
+}
+
 
 #if defined(_RELEASE)
 #define ASSERT_LEN        (void)(0)

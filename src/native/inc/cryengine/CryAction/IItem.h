@@ -316,6 +316,7 @@ struct IItem : public IGameObjectExtension
 	virtual void RemoveAllAccessories() = 0;
 	//virtual void FillAmmo() = 0;//bad code, remove this!!!
 
+	virtual int  GetDefaultHand() const = 0;
 	virtual void SetHand(int hand) = 0;
 
 	virtual void StartUse(EntityId userId) = 0;

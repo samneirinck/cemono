@@ -170,7 +170,13 @@ struct SShaderParam
     memcpy(m_Name, src.m_Name, sizeof(m_Name));
     m_Script = src.m_Script;
     m_Type = src.m_Type;
-    memcpy(&m_Value,&src.m_Value,sizeof(src.m_Value));
+    if (m_Type == eType_STRING)
+		{
+      m_Value.m_String = new char[ strlen(src.m_Value.m_String)+1 ];
+      strcpy(m_Value.m_String, src.m_Value.m_String);
+		}
+		else
+			m_Value = src.m_Value;
   }
   inline SShaderParam& operator = (const SShaderParam& src)
   {
@@ -2675,63 +2681,8 @@ public:
   }
 
   CDLight(const CDLight& other)
+		: SRenderLight(other)
   {
-    operator=(other);
-  }
-
-  CDLight& operator=(const CDLight& dl)
-  {
-    if (this == &dl) return *this;
-
-    SAFE_RELEASE(m_Shader.m_pShader);
-    SAFE_RELEASE(m_pLightImage);
-    SAFE_RELEASE(m_pDiffuseCubemap);
-    SAFE_RELEASE(m_pSpecularCubemap);
-    SAFE_RELEASE(m_pLightAttenMap);
-    SAFE_RELEASE(m_pDeferredRenderMesh);
-	
-		m_pOwner=dl.m_pOwner;
-		m_pObject[MAX_RECURSION_LEVELS]=dl.m_pObject[MAX_RECURSION_LEVELS];
-		m_pDeferredRenderMesh=dl.m_pDeferredRenderMesh;
-		m_Shader=dl.m_Shader;
-		m_pShadowMapFrustums=dl.m_pShadowMapFrustums;
-		m_pDiffuseCubemap=dl.m_pDiffuseCubemap;
-		m_pSpecularCubemap=dl.m_pSpecularCubemap;
-		m_pLightImage=dl.m_pLightImage;
-		m_pLightAttenMap=dl.m_pLightAttenMap;
-		m_sName=dl.m_sName;
-		m_sDeferredGeom=dl.m_sDeferredGeom;
-		m_ProjMatrix=dl.m_ProjMatrix;
-		m_ObjMatrix=dl.m_ObjMatrix;
-		m_ClipBox=dl.m_ClipBox;
-		m_Color=dl.m_Color;
-		m_BaseColor=dl.m_BaseColor;
-		m_Origin=dl.m_Origin;
-		m_BaseOrigin=dl.m_BaseOrigin;
-		m_fRadius=dl.m_fRadius;
-		m_SpecMult=dl.m_SpecMult;
-		m_BaseSpecMult=dl.m_BaseSpecMult;
-		m_fHDRDynamic=dl.m_fHDRDynamic;
-		m_fAnimSpeed=dl.m_fAnimSpeed;  
-		m_fCoronaScale=dl.m_fCoronaScale;
-		m_fCoronaDistSizeFactor=dl.m_fCoronaDistSizeFactor;
-		m_fCoronaDistIntensityFactor=dl.m_fCoronaDistIntensityFactor;
-		m_fLightFrustumAngle=dl.m_fLightFrustumAngle;
-		m_fProjectorNearPlane=dl.m_fProjectorNearPlane;
-		m_Flags=dl.m_Flags;
-		m_Id=dl.m_Id; 
-		m_n3DEngineLightId=dl.m_n3DEngineLightId;
-		m_n3DEngineUpdateFrameID=dl.m_n3DEngineUpdateFrameID;
-		m_sX=dl.m_sX;
-		m_sY=dl.m_sY;
-		m_sWidth=dl.m_sWidth;
-		m_sHeight=dl.m_sHeight;
-		for (int i=0; i<3; m_AnimRotation[i]=dl.m_AnimRotation[i],++i);
-		m_nLightStyle=dl.m_nLightStyle;
-		m_nLightPhase=dl.m_nLightPhase;
-		m_nPostEffect=dl.m_nPostEffect;
-		m_ShadowChanMask=dl.m_ShadowChanMask;
-
     if (m_Shader.m_pShader)
       m_Shader.m_pShader->AddRef();
     if (m_pLightImage)
@@ -2744,6 +2695,21 @@ public:
       m_pLightAttenMap->AddRef();
     if (m_pDeferredRenderMesh)
       m_pDeferredRenderMesh->AddRef();
+  }
+
+  CDLight& operator=(const CDLight& other)
+  {
+    if (this == &other) return *this;
+
+    SAFE_RELEASE(m_Shader.m_pShader);
+    SAFE_RELEASE(m_pLightImage);
+    SAFE_RELEASE(m_pDiffuseCubemap);
+    SAFE_RELEASE(m_pSpecularCubemap);
+    SAFE_RELEASE(m_pLightAttenMap);
+    SAFE_RELEASE(m_pDeferredRenderMesh);
+	
+		new(this) CDLight(other);
+
     return *this;
   }
 

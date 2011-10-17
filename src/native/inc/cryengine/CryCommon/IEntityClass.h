@@ -251,7 +251,6 @@ UNIQUE_IFACE struct IEntityClass
 	//    Returns the Lua script file name.
 	// Returns:
 	//    Lua Script filename, return empty string if entity does not use script.
-	// ins: Removed const for entity creation
 	virtual const char* GetScriptFile() const = 0;
 
 	// Description:

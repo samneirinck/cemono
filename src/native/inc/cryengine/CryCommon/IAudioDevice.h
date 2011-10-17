@@ -84,8 +84,7 @@ struct AudioDeviceSettings
 {
 	AudioDeviceSettings()
 		:	nSoftwareChannels(0),
-			nMinHWChannels(0),
-			nMaxHWchannels(0),
+			nHWChannels(0),
 			nMPEGDecoders(0),
 			nXMADecoders(0),
 			nADPCMDecoders(0),
@@ -94,8 +93,7 @@ struct AudioDeviceSettings
 			bCacheStatic(false){}
 
 	int nSoftwareChannels;
-	int nMinHWChannels;
-	int nMaxHWchannels;
+	int nHWChannels;
 	int nMPEGDecoders;
 	int nXMADecoders;
 	int nADPCMDecoders;

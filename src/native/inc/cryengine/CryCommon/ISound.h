@@ -195,6 +195,7 @@ typedef uint32	tSoundID;
 #define UPDATE_SOUND_AUDIODEVICE_IN_MS		15
 
 #define SONIC_SPEED_METER_PER_SEC	343.0f
+#define FMOD_MAX_NUM_NONBLOCKING_LOADING_THREADS 5
 
 enum ESoundSystemErrorCode
 {
@@ -445,6 +446,20 @@ enum ESoundSystemCallbackEvent
 };
 
 // Description:
+//	 MusicSystem events to callback MusicSystem events listeners.
+enum EMusicSystemCallbackEvent
+{
+	MUSICSYSTEM_EVENT_ON_UPDATE,            // Fired every time the music system is updated.
+	MUSICSYSTEM_EVENT_ON_THEME_START,       // Fired when a theme starts.
+	MUSICSYSTEM_EVENT_ON_THEME_END,         // Fired when a theme ends.
+	MUSICSYSTEM_EVENT_ON_MOOD_SWITCH,       // Fired when a mood switch occurred.
+	MUSICSYSTEM_EVENT_ON_UPDATE_LOOP_COUNT, // Fired when the pattern playing on the main layer looped again.
+	MUSICSYSTEM_EVENT_ON_PATTERN_START,     // Fired when a pattern starts.
+	MUSICSYSTEM_EVENT_ON_PATTERN_FINISHED,  // Fired when a pattern played until its end.
+	MUSICSYSTEM_EVENT_ON_PATTERN_STOP,      // Fired when a pattern was stopped prematurely.
+};
+
+// Description:
 //	 Structure for sound obstruction
 //	 a single obstruction test.
 typedef struct  
@@ -686,6 +701,26 @@ public:
 	size_t				anAllocations[eAllocationsArraySize];
 } SSoundMemoryInfo;
 
+// music system info struct
+//////////////////////////////////////////////////////////////////////////
+struct SMusicSystemInfo
+{
+	SMusicSystemInfo()
+		: nMainPatternCurrentLoopCount(0),
+		  nThemeLoopCount(0),
+	    fMainPatternCurrentProgress(0.0f),
+	    fMainPatternPlayTimeInSeconds(0.0f),
+	    fMainPatternRemainingPlayTimeInSeconds(0.0f){}
+
+	size_t nMainPatternCurrentLoopCount;           // Indicates the amount of loops the same pattern performed (gets reset once the pattern changes)
+	size_t nThemeLoopCount;                        // Indicates how often pattern looped on track #1 within a theme (patterns can change and this resets only once the theme changes or ends)
+	float  fMainPatternCurrentProgress;
+	float  fMainPatternPlayTimeInSeconds;
+	float  fMainPatternRemainingPlayTimeInSeconds;
+
+	CryFixedStringT<64> sMusicPatternNameTrack1;
+};
+
 // Summary:
 //	 Listener interface for the sound.
 struct ISoundEventListener
@@ -706,6 +741,16 @@ struct ISoundSystemEventListener
 	virtual void OnSoundSystemEvent( ESoundSystemCallbackEvent event,ISound *pSound ) = 0;
 };
 
+// Summary:
+//	 Listener interface for the musicsystem.
+struct IMusicSystemEventListener
+{
+	virtual ~IMusicSystemEventListener(){}
+
+	// Summary:
+	//	 Callback event.
+	virtual void OnMusicSystemEvent(EMusicSystemCallbackEvent const eEvent, SMusicSystemInfo const& rMusicSystemInfo) = 0;
+};
 
 // Note:
 //	 Marco's NOTE: this is a redefine of the EAX preset OFF, since it seems
@@ -789,15 +834,17 @@ enum EAudioFileCacheType
 // State of file cached in the FileCacheManager
 enum EAudioFileCacheState
 {
-	eAFCS_VALID              = BIT(0),
-	eAFCS_NOTCACHED          = BIT(1),
-	eAFCS_NOTFOUND           = BIT(2),
-	eAFCS_MEMALLOCFAIL       = BIT(3),
-	eAFCS_REMOVABLE          = BIT(4),
-	eAFCS_LOADING            = BIT(5),
-	eAFCS_QUEUED_FOR_PRELOAD = BIT(6),
-	eAFCS_QUEUED_FOR_UNLOAD  = BIT(7),
-	eAFCS_PRELOADED          = BIT(8)
+	eAFCS_VALID               = BIT(0),
+	eAFCS_NOTCACHED           = BIT(1),
+	eAFCS_NOTFOUND            = BIT(2),
+	eAFCS_MEMALLOCFAIL        = BIT(3),
+	eAFCS_REMOVABLE           = BIT(4),
+	eAFCS_LOADING             = BIT(5),
+	eAFCS_QUEUED_FOR_PRELOAD  = BIT(6),
+	eAFCS_QUEUED_FOR_UNLOAD   = BIT(7),
+	eAFCS_PRELOADED           = BIT(8),
+	eAFCS_VIRTUAL             = BIT(9),
+	eAFCS_REMOVE_AFTER_UNLOAD = BIT(10)
 };
 
 // Summary:

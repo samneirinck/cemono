@@ -18,7 +18,7 @@
 
 #include <CryExtension/ICryUnknown.h>
 #include <CryExtension/CryCreateClassInstance.h>
-#include <IScaleformGFx.h>
+#include <IFlashPlayer.h>
 #include <IFlowSystem.h>
 
 #define IFlashUIExtensionName "FlashUI"
@@ -384,13 +384,13 @@ struct SUIArguments
 	}
 
 	template< class T >
-	void AddArgument( const T& arg )
+	inline void AddArgument( const T& arg )
 	{
 		m_ArgList.push_back( TUIData( arg ) );
 		m_Dirty = eBDF_ALL;
 	}
 
-	void Clear()
+	inline void Clear()
 	{
 		m_ArgList.clear();
 		m_Dirty = eBDF_ALL;
@@ -404,29 +404,27 @@ struct SUIArguments
 		return args;
 	}
 
-	int GetArgCount() const { return m_ArgList.size(); }
+	inline int GetArgCount() const { return m_ArgList.size(); }
 
 	const char* GetAsString() const { return updateStringBuffer( m_sArgStringBuffer, eBDF_String ); }
 	const wchar_t* GetAsWString() const { return updateStringBuffer( m_sArgWStringBuffer, eBDF_WString ); }
 	const SFlashVarValue* GetAsList() const { return updateFlashBuffer(); }
 
-	const TUIData& GetArg( int index ) const
+	inline const TUIData& GetArg( int index ) const
 	{
-		if ( index >= 0 && index < m_ArgList.size() )
-			return m_ArgList[index];
-		static TUIData undef( string( "undefined" ) );
-		return undef;
+		assert( index >= 0 && index < m_ArgList.size() );
+		return m_ArgList[index];
 	}
 
 	template < class T >
-	bool GetArg( int index, T &val ) const
+	inline bool GetArg( int index, T &val ) const
 	{
 		if ( index >= 0 && index < m_ArgList.size() )
 			return m_ArgList[index].GetValueWithConversion( val );
 		return false;
 	}
 
-	void SetDelimiter( const string& delimiter ) 
+	inline void SetDelimiter( const string& delimiter ) 
 	{ 
 		if ( delimiter != m_cDelimiter )
 		{
@@ -595,7 +593,7 @@ struct SUIParameterDesc
 
 	inline bool operator==( const SUIParameterDesc& other ) const
 	{
-		return sName == other.sName && sDisplayName == other.sDisplayName;
+		return sName == other.sName;
 	}
 };
 typedef DynArray< SUIParameterDesc > TUIParams;
@@ -609,7 +607,7 @@ struct SUIEventDesc : public SUIParameterDesc
 
 	inline bool operator==( const SUIEventDesc& other ) const
 	{		
-		bool res = sName == other.sName && sDisplayName == other.sDisplayName && IsDynamic == other.IsDynamic && Params.size() == other.Params.size();
+		bool res = sName == other.sName && IsDynamic == other.IsDynamic && Params.size() == other.Params.size();
 		for ( int i = 0; i < Params.size() && res; ++i)
 		{
 			res &= Params[i] == other.Params[i];
@@ -640,8 +638,12 @@ protected:
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 struct IUIElementEventListener
 {
-	virtual void OnUIEvent( const SUIEventDesc& event, const SUIArguments& args ) {};
-	virtual void OnUnload() {};
+	virtual void OnUIEvent( const SUIEventDesc& event, const SUIArguments& args ) {}
+	virtual void OnUIEventEx( const char* fscommand, const SUIArguments& args, void* pUserData ) {}
+
+	virtual void OnInit( IFlashPlayer* pFlashPlayer ) {}
+	virtual void OnUnload() {}
+	virtual void OnSetVisible( bool bVisible ) {}
 protected:
   virtual ~IUIElementEventListener() {}; 
 };
@@ -688,7 +690,7 @@ UNIQUE_IFACE struct IUIElement
 		{
 		}
 
-		SUIConstraints( EPositionType type, int left, int top, int width, int height, EPositionAlign halign, EPositionAlign valign, bool scale )
+		SUIConstraints( EPositionType type, int left, int top, int width, int height, EPositionAlign halign, EPositionAlign valign, bool scale, bool ismax )
 			: eType(type)
 			, iLeft(left)
 			, iTop(top)
@@ -697,6 +699,7 @@ UNIQUE_IFACE struct IUIElement
 			, eHAlign(halign)
 			, eVAlign(valign)
 			, bScale(scale)
+			, bMax(ismax)
 		{
 		}
 
@@ -708,17 +711,25 @@ UNIQUE_IFACE struct IUIElement
 		EPositionAlign eHAlign;
 		EPositionAlign eVAlign;
 		bool bScale;
+		bool bMax;
 	};
 
 	enum EFlashUIFlags
 	{
-		eFUI_HARDWARECURSOR = 0x001,
-		eFUI_MOUSEEVENTS	= 0x002,
-		eFUI_KEYEVENTS		= 0x004,
-		eFUI_CONSOLE_MOUSE	= 0x008,
-		eFUI_CONSOLE_CURSOR = 0x010,
-		eFUI_CONTROLLER_INPUT = 0x020,
-		eFUI_EVENTS_EXCLUSIVE = 0x040,
+		// flags per instance
+		eFUI_HARDWARECURSOR    = 0x0001,
+		eFUI_MOUSEEVENTS       = 0x0002,
+		eFUI_KEYEVENTS         = 0x0004,
+		eFUI_CONSOLE_MOUSE     = 0x0008,
+		eFUI_CONSOLE_CURSOR    = 0x0010,
+		eFUI_CONTROLLER_INPUT  = 0x0020,
+		eFUI_EVENTS_EXCLUSIVE  = 0x0040,
+		eFUI_RENDER_LOCKLESS   = 0x0080,
+		eFUI_MASK_PER_INSTANCE = 0x0FFF,
+
+		// flags per UIElement
+		eFUI_FORCE_NO_UNLOAD   = 0x1000,
+		eFUI_MASK_PER_ELEMENT  = 0xF000,
 	};
 
 	enum EControllerInputEvent
@@ -755,11 +766,19 @@ UNIQUE_IFACE struct IUIElement
 	virtual const char* GetFlashFile() const = 0;
 
 	virtual bool Init( bool bLoadAsset = true ) = 0;
-	virtual void Unload() = 0; 
-	virtual void Reload() = 0;
+	virtual void Unload( bool bAllInstances = false ) = 0; 
+	virtual void Reload( bool bAllInstances = false ) = 0;
+	virtual bool IsInit() const = 0;
+
+	virtual void UnloadBootStrapper() = 0;
+	virtual void ReloadBootStrapper() = 0;
+
 	virtual void Update( float fDeltaTime ) = 0;
 	virtual void Render() = 0;
 	virtual void RenderLockless() = 0;
+
+	virtual void RenderLoadtimeThread() = 0;
+	virtual void UpdateLoadtimeThread(float fDeltaTime) = 0;
 
 	// visibility
 	virtual void RequestHide() = 0;
@@ -831,13 +850,13 @@ UNIQUE_IFACE struct IUIElement
 	virtual bool GetArray( const SUIParameterDesc* pArrayDesc, SUIArguments& valuesOut ) = 0;
 
 	template <class T>
-	bool SetVar( const char* varName, const T& value)
+	inline bool SetVar( const char* varName, const T& value)
 	{
 		return SetVariable( varName, TUIData(value) );
 	}
 
 	template <class T>
-	T GetVar( const char* varName )
+	inline T GetVar( const char* varName )
 	{
 		TUIData out;
 		if ( GetVariable( varName, out ) )
@@ -1010,7 +1029,7 @@ public:
 	virtual void Reload() = 0;
 
 	// shut down
-	virtual void ShutDown() = 0;
+	virtual void Shutdown() = 0;
 
 	virtual bool LoadElementsFromFile( const char* fileName ) = 0;
 	virtual bool LoadActionFromFile( const char* fileName ) = 0;

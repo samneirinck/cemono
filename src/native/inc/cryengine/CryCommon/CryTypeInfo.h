@@ -161,7 +161,7 @@ struct CTypeInfo
 																						// Remaining text considered as comment.
 
 		// Accessors.
-		cstr GetName() const									{ assert(*Name || bBaseClass); return Name; }
+		cstr GetName() const									{ return Name; }
 		size_t GetDim() const									{ return bBitfield ? 1 : ArrayDim; }
 		size_t GetSize() const								
 		{ 

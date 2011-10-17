@@ -567,6 +567,7 @@ struct STerrainInfo
 #define ISOTREE_CHUNK_VERSION 3
 
 #define SERIALIZATION_FLAG_BIG_ENDIAN 1
+#define SERIALIZATION_FLAG_SECTOR_PALETTES 2
 
 #define TCH_FLAG2_AREA_ACTIVATION_IN_USE 1
 
@@ -731,10 +732,16 @@ UNIQUE_IFACE struct ITerrain
 	virtual int GetTerrainLightmapTexId( Vec4 & vTexGenInfo, int nSID = 0 ) = 0;
 
 	// Summary:
-	//	 Updates part of hight map.
+	//	 Updates part of height map.
 	// Notes:
 	//	 In terrain units, by default update only elevation.
 	virtual void SetTerrainElevation(int x1, int y1, int nSizeX, int nSizeY, float * pTerrainBlock, uint8 * pSurfaceData, uint32 * pResolMap, int nResolMapSizeX, int nResolMapSizeY, int nSID=0) = 0;
+
+	// Summary:
+	//	 Checks if it is possible to paint on the terrain with a given surface type ID.
+	// Notes:
+	//	 Should be called by the editor to avoid overflowing the sector surface type palettes.
+	virtual bool CanPaintSurfaceType(int x, int y, int r, uint16 usGlobalSurfaceType) = 0;
 
 	// Summary:
 	//	 Returns current amount of terrain textures requests for streaming, if more than 0 = there is streaming in progress.

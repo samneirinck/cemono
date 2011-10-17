@@ -455,7 +455,7 @@ namespace spline
 			{
 				// Find spline segment.
 				VStore prev_val = m_value0;
-				for (range_iter<const OptElem> it(m_elems, m_elems+m_elemcount); it; ++it )
+				for_ptr (const OptElem, it, m_elems, m_elems+m_elemcount)
 				{
 					float cur_t = FromStorage(it->st1);
 					if (t <= cur_t)
@@ -477,7 +477,7 @@ namespace spline
 		{
 			non_const(*this).update();
 			VStore sval = m_value0;
-			for (range_iter<const OptElem> it(m_elems, m_elems+m_elemcount); it; ++it )
+			for_ptr (const OptElem, it, m_elems, m_elems+m_elemcount)
 				for (int i = 0; i < DIM; i++)
 					sval[i] = min(sval[i], it->sv1[i]);
 			FromStorage(val, sval);
@@ -487,7 +487,7 @@ namespace spline
 		{
 			non_const(*this).update();
 			VStore sval = m_value0;
-			for (range_iter<const OptElem> it(m_elems, m_elems+m_elemcount); it; ++it )
+			for_ptr (const OptElem, it, m_elems, m_elems+m_elemcount)
 				for (int i = 0; i < DIM; i++)
 					sval[i] = max(sval[i], it->sv1[i]);
 			FromStorage(val, sval);
@@ -550,7 +550,7 @@ namespace spline
 #endif
 		}
 
-		OptElem*			m_elems;			// It hurts to use manual array management rather than DynArray, but saves a few bytes.
+		OptElem*			m_elems;			// Manually maintain array, saves a few bytes compared to standard containers.
 		uint8					m_elemcount;	// Will combine with m_value0 for TStore types we use.
 		TStore				m_time0;
 		VStore				m_value0;

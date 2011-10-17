@@ -14,6 +14,7 @@ struct IPlayerProfile;
 struct IActionMap;
 struct ISaveGame;
 struct ILoadGame;
+struct SCryLobbyUserData;
 
 UNIQUE_IFACE struct ISaveGameThumbnail
 {

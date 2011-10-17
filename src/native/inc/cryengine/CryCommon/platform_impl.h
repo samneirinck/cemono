@@ -221,7 +221,7 @@ void __stl_debug_message(const char * format_str, ...)
 	vsnprintf(__buffer, sizeof(__buffer) / sizeof(char), format_str, __args);
 	OutputDebugStringA(__buffer);
 #endif
-	gEnv->pLog->LogV( ILog::eErrorAlways,format_str,__args );
+	if(gEnv && gEnv->pLog) gEnv->pLog->LogV( ILog::eErrorAlways,format_str,__args );
 	va_end(__args);
 }
 #endif //_STLP_DEBUG_MESSAGE

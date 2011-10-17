@@ -154,52 +154,52 @@ struct GoalParams
 
     union
     {
-      bool        boolean;
-      int32       number;
-      float       fnumber;
-      float       vec[3];
-      const char *str;
+      bool  boolean;
+      int32 number;
+      float fnumber;
+      float vec[3];
     };
   };
+	string str;
 
-  _data                     m_Data;
-  const char                *m_Name;
-  DynArray<GoalParams>      m_Childs;
+  _data                m_Data;
+  string               m_Name;
+  DynArray<GoalParams> m_Childs;
 
-  GoalParams() : m_Name(0) { m_Data.d = eD_INVALID; }
-  GoalParams(bool value) : m_Name(0) { SetValue(value); }
-  GoalParams(int32 value) : m_Name(0) { SetValue(value); }
-  GoalParams(float value) : m_Name(0) { SetValue(value); }
-  GoalParams(const char *value) : m_Name(0) { SetValue(value); }
+  GoalParams() { m_Data.d = eD_INVALID; }
+  GoalParams(bool value) { SetValue(value); }
+  GoalParams(int32 value) { SetValue(value); }
+  GoalParams(float value) { SetValue(value); }
+  GoalParams(const char* value) { SetValue(value); }
 
-  void SetValue(bool b)               {m_Data.boolean = b; m_Data.d = eD_BOOL;}
-  bool GetValue(bool &b) const        {b = m_Data.boolean; return m_Data.d == eD_BOOL;}
+  void SetValue(bool b)               { m_Data.boolean = b; m_Data.d = eD_BOOL; }
+  bool GetValue(bool& b) const        { b = m_Data.boolean; return m_Data.d == eD_BOOL; }
 
-  void SetValue(int number)           {m_Data.number = number; m_Data.d = eD_NUMBER;}
-  bool GetValue(int &number) const    {number = m_Data.number; return m_Data.d == eD_NUMBER;}
+  void SetValue(int number)           { m_Data.number = number; m_Data.d = eD_NUMBER; }
+  bool GetValue(int& number) const    { number = m_Data.number; return m_Data.d == eD_NUMBER; }
 
-  void SetValue(uint32 number)        {m_Data.number = number; m_Data.d = eD_NUMBER;}
-  bool GetValue(uint32 &number) const {number = m_Data.number; return m_Data.d == eD_NUMBER;}
+  void SetValue(uint32 number)        { m_Data.number = number; m_Data.d = eD_NUMBER; }
+  bool GetValue(uint32& number) const { number = m_Data.number; return m_Data.d == eD_NUMBER; }
 
-  void SetValue(float fnumber)        {m_Data.fnumber = fnumber; m_Data.d = eD_FNUMBER;}
-  bool GetValue(float &fnumber) const {fnumber = m_Data.fnumber; return m_Data.d == eD_FNUMBER;}
+  void SetValue(float fnumber)        { m_Data.fnumber = fnumber; m_Data.d = eD_FNUMBER; }
+  bool GetValue(float& fnumber) const { fnumber = m_Data.fnumber; return m_Data.d == eD_FNUMBER; }
 
-  void SetValue(const char *str)        {m_Data.str = str; m_Data.d = eD_STRING; }
-  bool GetValue(const char *&str) const {str = m_Data.str; return m_Data.d == eD_STRING;}
+  void SetValue(const char* rhs_str)        { str = rhs_str; m_Data.d = eD_STRING; }
+  bool GetValue(const char*& rhs_str) const { rhs_str = str.c_str(); return m_Data.d == eD_STRING; }
 
-  void SetValue(const Vec3 &vec)        {m_Data.vec[0] = vec.x; m_Data.vec[1] = vec.y; m_Data.vec[2] = vec.z; m_Data.d = eD_VEC3; }
-  bool GetValue(Vec3 &vec) const        {vec.Set(m_Data.vec[0], m_Data.vec[1], m_Data.vec[2]); return m_Data.d == eD_VEC3;}
+  void SetValue(const Vec3& vec)        { m_Data.vec[0] = vec.x; m_Data.vec[1] = vec.y; m_Data.vec[2] = vec.z; m_Data.d = eD_VEC3; }
+  bool GetValue(Vec3& vec) const        { vec.Set(m_Data.vec[0], m_Data.vec[1], m_Data.vec[2]); return m_Data.d == eD_VEC3; }
 
 
-  void        SetName(const char *name) { m_Name = name;}
-  const char* GetName() const           { return m_Name;}
+  void        SetName(const char* szName) { m_Name = szName; }
+  const char* GetName() const             { return m_Name.c_str(); }
 
   void              AddChild(const GoalParams &params)  { m_Childs.push_back(params); }
   size_t            GetChildCount() const               { return m_Childs.size(); }
 	GoalParams&				GetChild(uint32 index)							{ assert( static_cast<DynArray<GoalParams>::size_type>(index) < m_Childs.size()); return m_Childs[index]; }
 	const GoalParams& GetChild(uint32 index) const        { assert( static_cast<DynArray<GoalParams>::size_type>(index) < m_Childs.size()); return m_Childs[index]; }
 
-  operator bool() {return m_Name != 0;}
+  operator bool() { return !m_Name.empty();}
 };
 
 
@@ -215,8 +215,6 @@ UNIQUE_IFACE struct IGoalPipe
 
 	virtual ~IGoalPipe() {}
 
-	// TODO evgeny Further clean-up from here
-
 	virtual const char* GetName() const = 0;
 	virtual void HighPriority() = 0;
 
@@ -227,12 +225,12 @@ UNIQUE_IFACE struct IGoalPipe
 	virtual void PushGoal(IGoalOp* pGoalOp, EGoalOperations op, bool bBlocking, EGroupType eGrouping, const GoalParameters& params) = 0;
 
 	virtual void PushGoal(EGoalOperations name, bool bBlocking, EGroupType eGrouping, GoalParameters& params) = 0;
-	virtual void PushLabel(const char* label) = 0;
+	virtual void PushLabel(const char* szLabel) = 0;
 	virtual void PushPipe(const char* szName, bool bBlocking, EGroupType eGrouping, GoalParameters& params) = 0;
-  virtual void SetDebugName(const char* name) = 0;
+  virtual void SetDebugName(const char* szDebugName) = 0;
 
-  VIRTUAL void ParseParams  (const GoalParams &node) = 0;
-  VIRTUAL void ParseParam   (const char* param, const GoalParams &node) = 0;
+  VIRTUAL void ParseParams(const GoalParams& node) = 0;
+  VIRTUAL void ParseParam(const char* szParam, const GoalParams& node) = 0;
 };
 
 

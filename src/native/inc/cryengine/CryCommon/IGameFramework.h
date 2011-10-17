@@ -900,7 +900,7 @@ UNIQUE_IFACE struct IGameFramework
 
 	// Music Logic
 	virtual IAnimationGraphState * GetMusicGraphState() = 0;
-	virtual IMusicLogic * GetMusicLogic() = 0;
+	virtual IMusicLogic * GetMusicLogic() const = 0;
 
 
 	//Description:

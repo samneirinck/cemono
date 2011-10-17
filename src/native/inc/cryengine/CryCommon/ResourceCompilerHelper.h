@@ -49,6 +49,14 @@ public:
 	virtual ~IResourceCompilerListener(){}
 };
 
+enum ERcExitCode
+{
+	eRcExitCode_Success = 0,   // must be 0
+	eRcExitCode_Error = 1,
+	eRcExitCode_FatalError = 100,
+	eRcExitCode_UserFixing = 200,
+};
+
 //////////////////////////////////////////////////////////////////////////
 // Provides settings and functions to make calls to RC.
 class CResourceCompilerHelper

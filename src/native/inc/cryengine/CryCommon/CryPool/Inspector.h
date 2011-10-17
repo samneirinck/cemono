@@ -170,6 +170,10 @@ public:
 															return FindBiggest(TAllocator::m_Items.First());
 														}
 
+	ILINE uint8*              FirstItem()
+	{
+		return TAllocator::m_Items.First()->Data();
+	}
 };
 
 

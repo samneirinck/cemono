@@ -143,7 +143,7 @@ public:
 	VIRTUAL bool CompleteInit();
 	VIRTUAL void Shutdown();
 	VIRTUAL bool PreUpdate(bool haveFocus, unsigned int updateFlags);
-	VIRTUAL void PostUpdate(bool haveFocus, unsigned int updateFlags);
+	CRYDEV_TAGES_EXPORT VIRTUAL void PostUpdate(bool haveFocus, unsigned int updateFlags);
 	VIRTUAL void Reset(bool clients);
 	VIRTUAL void GetMemoryUsage( ICrySizer *pSizer ) const;
 
@@ -267,7 +267,7 @@ public:
 
 	// Music Logic
 	VIRTUAL IAnimationGraphState * GetMusicGraphState() { return m_pMusicGraphState; }
-	VIRTUAL IMusicLogic * GetMusicLogic() {return m_pMusicLogic; }
+	VIRTUAL IMusicLogic* GetMusicLogic() const {return m_pMusicLogic; }
 
 	INetNub * GetServerNetNub();
 	INetNub * GetClientNetNub();

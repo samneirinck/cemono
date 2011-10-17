@@ -113,7 +113,7 @@ const int CM_MaxMemSize[eCryM_Num] =
     "CryGame",
     "CryRender",
     "Launcher",
-	"Cemono",
+	"Cemono"
   };
 #endif
 
@@ -717,38 +717,6 @@ void CryGetMemoryInfoForModule(CryModuleMemoryInfo * pInfo)
 #endif
 }
 
-//FIX: just emulate of allocation of aligned memory for PC
-void* CryModuleMemalign( size_t size, size_t alignment ) throw()
-{
-#  if !defined(NOT_USE_CRY_MEMORY_MANAGER)
-	uint8 * p = (uint8 *)_CryMemoryManagerPoolHelper::Malloc(size + alignment);
-#else
-	uint8 * p = (uint8 *)malloc(size + alignment);
-#endif
-	if (p)
-	{
-		uint8 offset = (BYTE)(alignment - ((UINT_PTR)p & (alignment - 1)));
-		p += offset;
-		p[-1] = offset;
-	}
-	return p;
-};
-
-void CryModuleMemalignFree(void* p) throw()
-{
-	if(p)
-	{
-		uint8* pb = static_cast<uint8*>(p);
-		pb -= pb[-1];
-#  if !defined(NOT_USE_CRY_MEMORY_MANAGER)
-		_CryMemoryManagerPoolHelper::Free(pb);
-#else
-		free(pb);
-#endif
-	}
-};
-
-
 #else
 
 
@@ -765,28 +733,15 @@ void CryModuleMemalignFree(void* p) throw()
 
 
 
-//FIX: just emulate of allocation of aligned memory for PC
+
 	void* CryModuleMemalign( size_t size, size_t alignment, ECryModule eCM ) throw()
 	{
-		uint8 * p = (uint8 *)_CryMemoryManagerPoolHelper::Malloc(size + alignment, eCM);
-		if (p)
-		{
-			uint8 offset = (BYTE)(alignment - ((UINT_PTR)p & (alignment - 1)));
-			p += offset;
-			p[-1] = offset;
-		}
-		return p;
-	};
-
+		return SetAlignPrefix( _CryMemoryManagerPoolHelper::Malloc(size + alignment, eCM), alignment );
+	}
 	void CryModuleMemalignFree(void* p, ECryModule eCM) throw()
 	{
-		if(p)
-		{
-			uint8* pb = static_cast<uint8*>(p);
-			pb -= pb[-1];
-			_CryMemoryManagerPoolHelper::Free(pb, eCM);
-		}
-	};
+		_CryMemoryManagerPoolHelper::Free( GetAlignPrefix(p), eCM );
+	}
 
 
 //////////////////////////////////////////////////////////////////////////
