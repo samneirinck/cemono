@@ -21,6 +21,7 @@ enum ECryModule
   eCryM_Game,
   eCryM_Render,
   eCryM_Launcher,
+  eCryM_Cemono,
 
   eCryM_Num,
 };

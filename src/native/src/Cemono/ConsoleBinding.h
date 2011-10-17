@@ -21,6 +21,11 @@ protected:
 	static void _SetCVarValueString(MonoString* cvarName, MonoString* value);
 	static int _GetCVarFlags(MonoString* cvarName);
 	static void _SetCVarFlags(MonoString* cvarName, int value);
+	
+	static void _RegisterCVarInt(MonoString* cvarName, int defaultValue, int flags, MonoString* help);
+	static void _RegisterCVarFloat(MonoString* cvarName, float defaultValue, int flags, MonoString* help);
+	static void _RegisterCVarString(MonoString* cvarName, MonoString* defaultValue, int flags, MonoString* help);
+
 private:
 	static ICVar* GetCvarByName(MonoString* cvarName);
 };

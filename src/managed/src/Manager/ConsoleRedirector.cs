@@ -76,7 +76,7 @@ namespace Cemono
 
         public override void Write(string format, params object[] arg)
         {
-            Write(format, arg);
+            Write(String.Format(format, arg));
         }
 
         public override void Write(string value)

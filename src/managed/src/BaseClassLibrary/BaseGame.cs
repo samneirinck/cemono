@@ -1,9 +1,14 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 
 namespace CryEngine
 {
     public class BaseGame : IGame
     {
+        #region Events
+        public event EventHandler GameStarted;
+        #endregion
+
         public virtual bool Init()
         {
             return true;

@@ -21,6 +21,7 @@ ICemonoPtr CGameStartup::m_pCemono;
 HMODULE CGameStartup::m_gameFrameworkDll;
 HMODULE CGameStartup::m_gameDll;
 bool CGameStartup::m_initWindow = false;
+ICemonoPtr g_pCemono;
 
 
 CGameStartup::CGameStartup()
@@ -525,10 +526,13 @@ bool CGameStartup::InitCemono()
 		return false;
 	}
 
+	g_pCemono = m_pCemono;
+
 	if (m_pCemono)
 	{
 		result = m_pCemono->Init();
 	}
+
 
 	return result;
 }

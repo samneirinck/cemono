@@ -30,6 +30,9 @@ namespace Cemono
             // Catch unhandled exceptions
             AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionOccurred;
 
+            // Create cemono cvars
+            InitializeCVars();
+            
             // Initialize game appdomain
             InitializeGameDomain();
         }
@@ -75,6 +78,15 @@ namespace Cemono
             gameLoader.CompileAndLoadScripts(_folders);
 
             _gameDomain = domain;
+        }
+
+        private void InitializeCVars()
+        {
+            // Create some cemono cvars
+            CVar<string>.Create("cm_version", Assembly.GetCallingAssembly().GetName().Version.ToString(), CVarFlags.ReadOnly);
+            CVar<int>.Create("cm_debug", 0, CVarFlags.Cheat);
+
+
         }
         #endregion
     }

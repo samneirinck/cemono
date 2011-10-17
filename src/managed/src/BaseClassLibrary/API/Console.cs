@@ -25,6 +25,12 @@ namespace CryEngine.API
         extern private static int _GetCVarFlags(string cvarName);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern private static void _SetCVarFlags(string cvarName, int flags);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        extern private static void _RegisterCVarInt(string cvarName, int defaultValue, int flags, string help);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        extern private static void _RegisterCVarFloat(string cvarName, float defaultValue, int flags, string help);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        extern private static void _RegisterCVarString(string cvarName, string defaultValue, int flags, string help);
 
 
         /// <summary>
@@ -114,6 +120,19 @@ namespace CryEngine.API
         public static void SetCVarFlags(string cvarName, CVarFlags flags)
         {
             _SetCVarFlags(cvarName, (int)flags);
+        }
+
+        public static void RegisterCVar<T>(string cvarName, T defaultValue, CVarFlags flags, string help) where T : IConvertible
+        {
+            var type = typeof(T);
+
+            if (type == typeof(int))
+                _RegisterCVarInt(cvarName, Convert.ToInt32(defaultValue), (int)flags, help);
+            else if (type == typeof(float))
+                _RegisterCVarFloat(cvarName, Convert.ToSingle(defaultValue), (int)flags, help);
+            else if (type == typeof(string))
+                _RegisterCVarString(cvarName, Convert.ToString(defaultValue), (int)flags, help);
+
         }
 
 

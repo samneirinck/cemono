@@ -15,6 +15,9 @@ CConsoleBinding::CConsoleBinding()
 	REGISTER_METHOD(_SetCVarValueString);
 	REGISTER_METHOD(_GetCVarFlags);
 	REGISTER_METHOD(_SetCVarFlags);
+	REGISTER_METHOD(_RegisterCVarInt);
+	REGISTER_METHOD(_RegisterCVarFloat);
+	REGISTER_METHOD(_RegisterCVarString);
 }
 
 
@@ -122,4 +125,17 @@ void CConsoleBinding::_SetCVarFlags(MonoString* cvarName, int value)
 ICVar* CConsoleBinding::GetCvarByName(MonoString* cvarName)
 {
 	return gEnv->pConsole->GetCVar(CCemonoString::ToString(cvarName));
+}
+
+void CConsoleBinding::_RegisterCVarInt(MonoString* cvarName, int defaultValue, int flags, MonoString* help)
+{
+	gEnv->pConsole->RegisterInt(CCemonoString::ToString(cvarName), defaultValue, flags, CCemonoString::ToString(help));
+}
+void CConsoleBinding::_RegisterCVarFloat(MonoString* cvarName, float defaultValue, int flags, MonoString* help)
+{
+	gEnv->pConsole->RegisterFloat(CCemonoString::ToString(cvarName), defaultValue, flags, CCemonoString::ToString(help));
+}
+void CConsoleBinding::_RegisterCVarString(MonoString* cvarName, MonoString* defaultValue, int flags, MonoString* help)
+{
+	gEnv->pConsole->RegisterString(CCemonoString::ToString(cvarName), CCemonoString::ToString(defaultValue), flags, CCemonoString::ToString(help));
 }

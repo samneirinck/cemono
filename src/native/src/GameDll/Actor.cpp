@@ -2,6 +2,7 @@
 #include "Actor.h"
 #include "Game.h"
 
+#include <IGameRulesSystem.h>
 
 CActor::CActor(void)
 {

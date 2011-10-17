@@ -3,6 +3,7 @@
 #include <IGame.h>
 #include <IGameFramework.h>
 #include <CryFixedString.h>
+#include <ICemono.h>
 
 
 class CGame : public IGame, public IGameFrameworkListener, public IInputEventListener
@@ -49,10 +50,16 @@ public:
 	virtual bool OnInputEvent( const SInputEvent &event );
 	virtual bool OnInputEventUI( const SInputEvent &event );
 
+	// Cemono 
+//	virtual void SetCemonoGameObject(CCemonoObject pGameObject);
+
+
 
 protected:
 	IGameFramework*						m_pFramework;
+//	CCemonoObject						m_gameObject;
 
 };
 
 extern CGame* g_pGame;
+extern ICemonoPtr g_pCemono;

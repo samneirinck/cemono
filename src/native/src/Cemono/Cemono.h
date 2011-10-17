@@ -29,8 +29,8 @@ public:
 	virtual bool Init() override;
 	virtual void Shutdown() override;
 	virtual void AddClassBinding(std::shared_ptr<ICemonoClassBinding> pBinding) override;
+	virtual void PostInit() override;
 	// -ICemono
-
 
 	virtual void GetMemoryStatistics(ICrySizer * s) const;
 	virtual void GetMemoryUsage( ICrySizer *pSizer ) const;

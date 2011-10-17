@@ -86,6 +86,7 @@
     <ClInclude Include="CemonoEntityClass.h" />
     <ClInclude Include="CemonoEntityEventHandler.h" />
     <ClInclude Include="CemonoEntityPropertyHandler.h" />
+    <ClInclude Include="CemonoGameRulesListener.h" />
     <ClInclude Include="CemonoObject.h" />
     <ClInclude Include="CemonoString.h" />
     <ClInclude Include="ConsoleBinding.h" />
@@ -110,6 +111,7 @@
     <ClCompile Include="CemonoEntityClass.cpp" />
     <ClCompile Include="CemonoEntityEventHandler.cpp" />
     <ClCompile Include="CemonoEntityPropertyHandler.cpp" />
+    <ClCompile Include="CemonoGameRulesListener.cpp" />
     <ClCompile Include="CemonoObject.cpp" />
     <ClCompile Include="ConsoleBinding.cpp" />
     <ClCompile Include="EntitySystemBinding.cpp" />

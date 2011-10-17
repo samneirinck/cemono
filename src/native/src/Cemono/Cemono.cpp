@@ -13,6 +13,7 @@ using namespace std;
 #include "LoggingBinding.h"
 #include "FlowSystemBinding.h"
 #include "EntitySystemBinding.h"
+#include "GameSystemBinding.h"
 
 CRYREGISTER_CLASS(CCemono)
 
@@ -59,8 +60,6 @@ bool CCemono::Init()
 	if (!InitializeBaseClassLibraries())
 		return false;
 
-	if (!InitializeManager())
-		return false;
 
 	CryLog("    Initializing Cemono done, MemUsage=1337Kb" );
 
@@ -70,6 +69,13 @@ bool CCemono::Init()
 
 void CCemono::Shutdown()
 {
+
+}
+
+void CCemono::PostInit()
+{
+	// Set up gamerules
+	InitializeManager();
 
 }
 
@@ -118,6 +124,7 @@ void CCemono::RegisterDefaultBindings()
 	AddClassBinding(make_shared<CLoggingBinding>());
 	AddClassBinding(make_shared<CFlowSystemBinding>());
 	AddClassBinding(make_shared<CEntitySystemBinding>());
+	AddClassBinding(make_shared<CGameSystemBinding>());
 }
 
 bool CCemono::InitializeBaseClassLibraries()

@@ -113,6 +113,7 @@ const int CM_MaxMemSize[eCryM_Num] =
     "CryGame",
     "CryRender",
     "Launcher",
+	"Cemono",
   };
 #endif
 

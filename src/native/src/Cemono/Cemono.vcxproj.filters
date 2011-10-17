@@ -63,6 +63,9 @@
     <ClInclude Include="GameSystemBinding.h">
       <Filter>Bindings</Filter>
     </ClInclude>
+    <ClInclude Include="CemonoGameRulesListener.h">
+      <Filter>Cemono</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -111,6 +114,9 @@
     </ClCompile>
     <ClCompile Include="GameSystemBinding.cpp">
       <Filter>Bindings</Filter>
+    </ClCompile>
+    <ClCompile Include="CemonoGameRulesListener.cpp">
+      <Filter>Cemono</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

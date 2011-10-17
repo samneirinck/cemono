@@ -16,6 +16,7 @@ namespace Cemono
     public class GameLoader : MarshalByRefObject
     {
         public ConsoleRedirector ConsoleRedirector { get; set; }
+        public BaseGame Game { get; set; }
 
         private void Init()
         {
@@ -73,7 +74,9 @@ namespace Cemono
 
         private void LoadGame(Type gameType)
         {
-            var game = (BaseGame)Activator.CreateInstance(gameType);
+            Game = (BaseGame)Activator.CreateInstance(gameType);
+
+            CryEngine.API.GameSystem.RegisterGameClass(Game);
         }
 
         private void LoadFlowNodes(List<Type> flowNodeTypes)
@@ -186,11 +189,11 @@ namespace Cemono
 
             CompilerResults results = provider.CompileAssemblyFromFile(compilerParameters, filesToCompile.ToArray());
 
-            //// Log compilation result
-            //foreach (var item in results.Output)
-            //{
-            //    Console.WriteLine(item);
-            //}
+            // Log compilation result
+            foreach (var item in results.Output)
+            {
+                Console.WriteLine(item);
+            }
 
             if (results.CompiledAssembly != null)
             {

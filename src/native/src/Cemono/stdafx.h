@@ -2,6 +2,8 @@
 
 #include <CryModuleDefs.h>
 
+#define eCryModule eCryM_Cemono
+
 // Insert your headers here
 #include <platform.h>
 #include <algorithm>

@@ -10,8 +10,6 @@
 
 CGame* g_pGame = 0;
 
-
-
 CGame::CGame()
 	: m_pFramework(0)
 {
@@ -36,7 +34,7 @@ bool CGame::Init(IGameFramework *pFramework)
 	REGISTER_FACTORY(pFramework, "GameRules", CGameRules, false);
 
 	pFramework->GetIGameRulesSystem()->RegisterGameRules("CemonoRules", "GameRules");
-
+	
 	LoadActionMaps("libs/config/defaultProfile.xml");
 
 
@@ -76,18 +74,20 @@ int CGame::Update(bool haveFocus, unsigned int updateFlags)
 {
 	bool updated = m_pFramework->PreUpdate(haveFocus, updateFlags);
 
-	auto viewParams = *g_pGame->GetIGameFramework()->GetIViewSystem()->GetActiveView()->GetCurrentParams();
-	//viewParams.position = Vec3(0,0,0);
-	////viewParams.rotation = Quat::CreateRotationXYZ(Ang3(-90,0,0));
-	viewParams.fov = 1.3f;
-	g_pGame->GetIGameFramework()->GetIViewSystem()->GetActiveView()->SetCurrentParams(viewParams);
+	if (g_pGame && g_pGame->GetIGameFramework() && g_pGame->GetIGameFramework()->GetIViewSystem() && g_pGame->GetIGameFramework()->GetIViewSystem()->GetActiveView())
+	{
+		auto viewParams = *g_pGame->GetIGameFramework()->GetIViewSystem()->GetActiveView()->GetCurrentParams();
+		//viewParams.position = Vec3(0,0,0);
+		////viewParams.rotation = Quat::CreateRotationXYZ(Ang3(-90,0,0));
+		viewParams.fov = 1.3f;
+		g_pGame->GetIGameFramework()->GetIViewSystem()->GetActiveView()->SetCurrentParams(viewParams);
 	
-	//m_pFramework->PostUpdate( haveFocus, updateFlags );
-	CCamera cam = gEnv->pSystem->GetViewCamera();
-	cam.SetAngles( Ang3(DEG2RAD(-90),0,0) );
-	cam.SetPosition( Vec3(2048/2,2048/2,200) );
-	gEnv->pSystem->SetViewCamera( cam );
-
+		//m_pFramework->PostUpdate( haveFocus, updateFlags );
+		CCamera cam = gEnv->pSystem->GetViewCamera();
+		cam.SetAngles( Ang3(DEG2RAD(-90),0,0) );
+		cam.SetPosition( Vec3(2048/2,2048/2,200) );
+		gEnv->pSystem->SetViewCamera( cam );
+	}
 
 	m_pFramework->PostUpdate(true, updateFlags);
 
@@ -248,3 +248,4 @@ bool CGame::OnInputEventUI( const SInputEvent &event )
 {
 	return false;
 }
+

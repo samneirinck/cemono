@@ -65,6 +65,7 @@ bool CGameRules::Init( IGameObject * pGameObject )
 	SetGameObject(pGameObject);
 	GetGameObject()->BindToNetwork();
 	g_pGame->GetIGameFramework()->GetIGameRulesSystem()->SetCurrentGameRules(this);
+	g_pCemono->PostInit();
 	return true; 
 }
 void CGameRules::PostInit( IGameObject * pGameObject ) 
@@ -93,4 +94,16 @@ const void * CGameRules::GetRMIBase() const { return NULL; }
 void CGameRules::PostUpdate( float frameTime ) { }
 void CGameRules::PostRemoteSpawn() { }
 void CGameRules::Release() { }
-void CGameRules::ProcessEvent( SEntityEvent& event ) { }
+void CGameRules::ProcessEvent( SEntityEvent& entityEvent ) 
+{
+		int i = 0;
+	switch (entityEvent.event)
+	{
+	case ENTITY_EVENT_START_GAME:
+		++i;
+		break;
+
+	default:
+		break;
+	}
+}
