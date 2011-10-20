@@ -151,13 +151,6 @@ bool CCemono::InitializeManager()
 void CCemono::GetMemoryStatistics(ICrySizer * s) const
 {
 	s->Add(*this);
-	
-	//s->Add(m_classBindings);
-	//s->Add(*m_pBclAssembly);
-	//s->Add(*m_pBclImage);
-	//s->Add(*m_pManagerAssembly);
-	//s->Add(*m_pManagerObject);
-	//s->Add(*m_pMonoDomain);
 
 }
 
