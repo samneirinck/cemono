@@ -38,7 +38,7 @@ namespace CryEngine.API
         /// </summary>
         /// <typeparam name="T">int/float/string</typeparam>
         /// <param name="cvarName">Name of the cvar</param>
-        /// <returns></returns>
+        /// <returns>CVar instance</returns>
         public static CVar<T> GetCVar<T>(string cvarName) where T : IConvertible
         {
             if (_GetCVar(cvarName))
@@ -54,8 +54,8 @@ namespace CryEngine.API
         /// <summary>
         /// Gets the help text of a cvar
         /// </summary>
-        /// <param name="cvarName"></param>
-        /// <returns></returns>
+        /// <param name="cvarName">Name of the cvar</param>
+        /// <returns>Help text</returns>
         public static string GetCVarHelpText(string cvarName)
         {
             return _GetCVarHelpText(cvarName);
@@ -65,8 +65,8 @@ namespace CryEngine.API
         /// Gets the value of the cvar
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="cvarName"></param>
-        /// <returns></returns>
+        /// <param name="cvarName">Name of the cvar</param>
+        /// <returns>Cvar value</returns>
         public static T GetCVarValue<T>(string cvarName)
         {
             var type = typeof(T);
@@ -86,8 +86,8 @@ namespace CryEngine.API
         /// Sets a cvar value
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="cvarName"></param>
-        /// <param name="value"></param>
+        /// <param name="cvarName">Name of the cvar</param>
+        /// <param name="value">Cvar value</param>
         public static void SetCVarValue<T>(string cvarName, T value) where T : IConvertible
         {
             var type = typeof(T);
@@ -105,8 +105,8 @@ namespace CryEngine.API
         /// <summary>
         /// Get the flags of a cvar
         /// </summary>
-        /// <param name="cvarName"></param>
-        /// <returns></returns>
+        /// <param name="cvarName">Name of the cvar</param>
+        /// <returns>Flags</returns>
         public static CVarFlags GetCVarFlags(string cvarName)
         {
             return (CVarFlags)_GetCVarFlags(cvarName);
@@ -115,13 +115,21 @@ namespace CryEngine.API
         /// <summary>
         /// Set the flags of a cvar
         /// </summary>
-        /// <param name="cvarName"></param>
-        /// <param name="flags"></param>
+        /// <param name="cvarName">Name of the cvar</param>
+        /// <param name="flags">Flags</param>
         public static void SetCVarFlags(string cvarName, CVarFlags flags)
         {
             _SetCVarFlags(cvarName, (int)flags);
         }
 
+        /// <summary>
+        /// Registers a cvar
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="cvarName">Name of the cvar</param>
+        /// <param name="defaultValue">Default value</param>
+        /// <param name="flags">Cvar flags</param>
+        /// <param name="help">Help text</param>
         public static void RegisterCVar<T>(string cvarName, T defaultValue, CVarFlags flags, string help) where T : IConvertible
         {
             var type = typeof(T);

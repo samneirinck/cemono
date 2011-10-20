@@ -14,7 +14,7 @@ namespace CryEngine.API
         /// <summary>
         /// Registers the game class to the engine
         /// </summary>
-        /// <param name="game"></param>
+        /// <param name="game">Implementation of the BaseGame abstract class</param>
         public static void RegisterGameClass(BaseGame game)
         {
             _RegisterGameClass(game);
