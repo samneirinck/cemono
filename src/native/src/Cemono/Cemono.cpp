@@ -19,6 +19,7 @@ CRYREGISTER_CLASS(CCemono)
 
 CCemono::CCemono() : m_pMonoDomain(0), m_bDebugging(false), m_pBclAssembly(0), m_pManagerAssembly(0)
 {
+	
 }
 
 CCemono::~CCemono()
@@ -59,6 +60,9 @@ bool CCemono::Init()
 	
 	if (!InitializeBaseClassLibraries())
 		return false;
+
+
+	if (true){}
 
 
 	CryLog("    Initializing Cemono done, MemUsage=1337Kb" );

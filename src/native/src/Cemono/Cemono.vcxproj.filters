@@ -118,6 +118,9 @@
     <ClCompile Include="CemonoGameRulesListener.cpp">
       <Filter>Cemono</Filter>
     </ClCompile>
+    <ClCompile Include="Tests\CemonoTests.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Headers">
@@ -140,6 +143,9 @@
     </Filter>
     <Filter Include="Cemono">
       <UniqueIdentifier>{2de1619b-2f0c-4705-a8e5-59c8778b080d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tests">
+      <UniqueIdentifier>{7b0d13be-5791-4f5d-8b93-fddc270c3af5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
