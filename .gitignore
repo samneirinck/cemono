@@ -22,12 +22,14 @@
 *.lib
 *.sbr
 *.sdf
+*.pdb
 *.opensdf
 ipch/
 obj/
 [Bb]in
 [Dd]ebug*/
 [Rr]elease*/
+ipch*/
 Ankh.NoLoad
 
 #Tooling
