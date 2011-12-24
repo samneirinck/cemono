@@ -62,9 +62,6 @@ bool CCemono::Init()
 		return false;
 
 
-	if (true){}
-
-
 	CryLog("    Initializing Cemono done, MemUsage=1337Kb" );
 
 
