@@ -1,6 +1,5 @@
-﻿# CryMono Licence
-
 Copyright © 2011 Ink Studios Ltd. – http://inkdev.net
+
 CryMono is available free of charge to any individual, educational or business entity with a turnover of less than 100,000USD in the previous fiscal year. If you, as an individual, educational or business entity, do not meet this requirement, please contact business@inkdev.net to discuss licensing options.
 
 You may not redistribute the software in either source or binary form without express permission from Ink Studios Ltd.
