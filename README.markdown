@@ -21,7 +21,7 @@ Using another folder structure is up to the user, but will require customization
 See the article on our Wiki here; https://github.com/inkdev/CryMono/wiki/Integrating-CryMono-into-an-existing-CryENGINE-project
 
 # IDE Compatibility
-The solution has been worked on internally using Visual Studio 2010, but should support 2005 and up in theory.
+The solution has been worked on internally using Visual Studio 2010, but should support 2005 and up in theory. Express versions are supported as of CryMono v0.2.
 
 ### Debugging managed code
-Debugging managed code is not supported yet, but will be supported on MonoDevelop in the near future.
+Debugging managed code is not supported yet, but will be supported in the near future.
