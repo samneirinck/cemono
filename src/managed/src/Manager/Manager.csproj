@@ -59,7 +59,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if exist f:\Games\cemono\Engine\Cemono\lib\cemono copy $(TargetPath) f:\Games\cemono\Engine\Cemono\lib\cemono</PostBuildEvent>
+    <PostBuildEvent>if exist d:\Games\cemono\Engine\Cemono\lib\cemono copy $(TargetPath) d:\Games\cemono\Engine\Cemono\lib\cemono
+if exist d:\Games\cemono\bin32 copy $(TargetPath) d:\Games\cemono\bin32</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

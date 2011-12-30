@@ -1,35 +1,49 @@
 ﻿using System.Runtime.CompilerServices;
 using System;
 using System.Globalization;
+using System.Runtime.InteropServices;
 namespace CryEngine.API
 {
     public class Console
     {
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        [DllImport(Constants.DebuggingDll)]
         extern private static bool _GetCVar(string cvarName);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        [DllImport(Constants.DebuggingDll)]
         extern private static string _GetCVarHelpText(string cvarName);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        [DllImport(Constants.DebuggingDll)]
         extern private static int _GetCVarValueInt(string cvarName);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        [DllImport(Constants.DebuggingDll)]
         extern private static float _GetCVarValueFloat(string cvarName);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        [DllImport(Constants.DebuggingDll)]
         extern private static string _GetCVarValueString(string cvarName);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        [DllImport(Constants.DebuggingDll)]
         extern private static void _SetCVarValueInt(string cvarName, int value);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        [DllImport(Constants.DebuggingDll)]
         extern private static void _SetCVarValueFloat(string cvarName, float value);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        [DllImport(Constants.DebuggingDll)]
         extern private static void _SetCVarValueString(string cvarName, string value);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        [DllImport(Constants.DebuggingDll)]
         extern private static int _GetCVarFlags(string cvarName);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        [DllImport(Constants.DebuggingDll)]
         extern private static void _SetCVarFlags(string cvarName, int flags);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        [DllImport(Constants.DebuggingDll)]
         extern private static void _RegisterCVarInt(string cvarName, int defaultValue, int flags, string help);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        [DllImport(Constants.DebuggingDll)]
         extern private static void _RegisterCVarFloat(string cvarName, float defaultValue, int flags, string help);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        [DllImport(Constants.DebuggingDll)]
         extern private static void _RegisterCVarString(string cvarName, string defaultValue, int flags, string help);
 
 

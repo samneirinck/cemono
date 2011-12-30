@@ -31,14 +31,16 @@
     <ClInclude Include="StdAfx.h" />
   </ItemGroup>
   <ItemGroup>
-    <Library Include="..\..\lib\mono.lib" />
-  </ItemGroup>
-  <ItemGroup>
     <ResourceCompile Include="CryGame.rc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="CryGame.ico" />
     <None Include="Cursor.cur" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\..\lib\mono.lib">
+      <FileType>Document</FileType>
+    </Library>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0A626603-18B8-41F4-ACFB-0ABE9C4569F5}</ProjectGuid>
@@ -102,7 +104,8 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <CompileAs>CompileAsCpp</CompileAs>
       <ErrorReporting>Prompt</ErrorReporting>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <MinimalRebuild>true</MinimalRebuild>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -116,7 +119,7 @@
       <LinkErrorReporting>PromptImmediately</LinkErrorReporting>
     </Link>
     <PostBuildEvent>
-      <Command>if exist f:\Games\cemono\Bin32 copy $(TargetPath) f:\Games\cemono\Bin32</Command>
+      <Command>if exist d:\Games\cemono\Bin32 copy $(TargetPath) d:\Games\cemono\Bin32</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

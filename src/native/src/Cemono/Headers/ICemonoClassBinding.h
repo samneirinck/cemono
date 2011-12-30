@@ -13,4 +13,6 @@ struct ICemonoClassBinding
 	virtual const char* GetNamespaceExtension() = 0;
 	virtual const char* GetClassName() = 0;
 	virtual const std::vector<ICemonoMethodBinding> GetMethods() = 0;
+	virtual const ICemonoMethodBinding* GetMethodsArray() = 0;
+	virtual const int GetNumMethods() = 0;
 };

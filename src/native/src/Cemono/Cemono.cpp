@@ -6,6 +6,9 @@
 #include <mono/metadata/mono-debug.h>
 #include <ICmdLine.h>
 
+#include <Windows.h>
+#undef GetClassName
+
 using namespace std;
 
 // Bindings
@@ -16,6 +19,8 @@ using namespace std;
 #include "GameSystemBinding.h"
 
 CRYREGISTER_CLASS(CCemono)
+
+typedef void (*InitCemonoDebuggingFunction)(int, std::vector<std::shared_ptr<ICemonoClassBinding>>);
 
 CCemono::CCemono() : m_pMonoDomain(0), m_bDebugging(false), m_pBclAssembly(0), m_pManagerAssembly(0)
 {
@@ -38,19 +43,31 @@ bool CCemono::Init()
 	CryLog("Cemono initialization");
 	CryLog("    Initializing Cemono ...");
 	bool result = true;
-
-	mono_set_dirs(MonoPathUtils::GetLibPath(),MonoPathUtils::GetConfigPath());
+	HINSTANCE debuggingDll;
 
 	// Commandline switch -CEMONO_DEBUG makes the process connect to the debugging server
 	const ICmdLineArg* arg = gEnv->pSystem->GetICmdLine()->FindArg(eCLAT_Pre, "CEMONO_DEBUG");
 	if (arg != NULL)
 	{
 		m_bDebugging = true;
-		char* options = "--debugger-agent=transport=dt_socket,address=127.0.0.1:65432";
+		// This is the monodevelop debugging solution
+		//char* options = "--debugger-agent=transport=dt_socket,address=127.0.0.1:65432";
+		//
+		//mono_set_dirs(MonoPathUtils::GetLibPath(),MonoPathUtils::GetConfigPath());
+		//mono_jit_parse_options(1, &options);
+		//mono_debug_init(MONO_DEBUG_FORMAT_MONO);
+
+		// Launch mixed mode debugging
 		
-		mono_jit_parse_options(1, &options);
-		mono_debug_init(MONO_DEBUG_FORMAT_MONO);
+		debuggingDll = LoadLibrary("Cemono.Debugging.dll");
+		if (!debuggingDll)
+		{
+			CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "Could not find Cemono.Debugging.dll, ignoring debug option");
+		}
 	}
+
+	mono_set_dirs(MonoPathUtils::GetLibPath(),MonoPathUtils::GetConfigPath());
+
 	if (!InitializeDomain())
 	{
 		return false;
@@ -60,6 +77,17 @@ bool CCemono::Init()
 	
 	if (!InitializeBaseClassLibraries())
 		return false;
+
+	if (m_bDebugging && debuggingDll)
+	{
+		auto initDebugging = (InitCemonoDebuggingFunction)GetProcAddress(debuggingDll, "InitCemonoDebugging");
+
+		auto numClassBindings = m_classBindings.size();
+
+		int num = m_classBindings.size();
+
+		initDebugging(5, m_classBindings);
+	}
 
 
 	CryLog("    Initializing Cemono done, MemUsage=1337Kb" );
@@ -82,31 +110,37 @@ void CCemono::PostInit()
 
 void CCemono::AddClassBinding(shared_ptr<ICemonoClassBinding> pBinding)
 {
-	vector<ICemonoMethodBinding> methodBindings = pBinding->GetMethods();
+	if (!m_bDebugging)
+	{
+		vector<ICemonoMethodBinding> methodBindings = pBinding->GetMethods();
 	
-	// Get all methods registered in this class
-	for_each( begin(methodBindings), end(methodBindings), [&]( ICemonoMethodBinding& binding) {
-		// Construct the full method name
-		// Typically something like CryEngine.API.Console._LogAlways
-		ce::string fullName = pBinding->GetNamespace();
-		if (strcmp(pBinding->GetNamespaceExtension(), ""))
-		{
+		// Get all methods registered in this class
+		for_each( begin(methodBindings), end(methodBindings), [&]( ICemonoMethodBinding& binding) {
+			// Construct the full method name
+			// Typically something like CryEngine.API.Console._LogAlways
+			ce::string fullName = pBinding->GetNamespace();
+			if (strcmp(pBinding->GetNamespaceExtension(), ""))
+			{
+				fullName.append(".");
+				fullName.append(pBinding->GetNamespaceExtension());
+			}
 			fullName.append(".");
-			fullName.append(pBinding->GetNamespaceExtension());
-		}
-		fullName.append(".");
-		fullName.append(pBinding->GetClassName());
-		fullName.append("::");
-		fullName.append(binding.methodName);
+			fullName.append(pBinding->GetClassName());
+			fullName.append("::");
+			fullName.append(binding.methodName);
 
-		mono_add_internal_call(fullName, binding.method);
-	});
+			mono_add_internal_call(fullName, binding.method);
+		});
+	}
 
 	m_classBindings.push_back(pBinding);
 }
 
 bool CCemono::InitializeDomain()
 {
+	//if (m_bDebugging)
+	//	return true;
+
 	// Create root domain
 	m_pMonoDomain = mono_jit_init_version("Cemono Root", "v4.0.30319");
 	if(!m_pMonoDomain)
@@ -130,6 +164,9 @@ void CCemono::RegisterDefaultBindings()
 
 bool CCemono::InitializeBaseClassLibraries()
 {
+	if (m_bDebugging)
+		return true;
+
 	ce::string bclPath = MonoPathUtils::GetCemonoLibPath() + "Cemono.Bcl.dll";
 	m_pBclAssembly = new CCemonoAssembly(m_pMonoDomain, bclPath);
 	return m_pBclAssembly != NULL;

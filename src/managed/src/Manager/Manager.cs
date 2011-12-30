@@ -19,8 +19,12 @@ namespace Cemono
         #endregion
 
         #region Constructor(s)
-        Manager()
+        public Manager()
         {
+            // Temp
+            var cvar = CryEngine.API.Console.GetCVar<string>("sys_game_folder");
+
+
             // Initialize all folders
             InitializeFolders();
 
@@ -71,19 +75,21 @@ namespace Cemono
 
         private void InitializeGameDomain()
         {
-            AppDomain domain = AppDomain.CreateDomain("cemono Game");
+            AppDomain domain = AppDomain.CreateDomain("cemonaaaao Game");
 
-            GameLoader gameLoader = (GameLoader)domain.CreateInstanceFromAndUnwrap(Assembly.GetExecutingAssembly().Location, typeof(GameLoader).ToString());
+            /*GameLoader gameLoader = (GameLoader)domain.CreateInstanceFromAndUnwrap(Assembly.GetExecutingAssembly().Location, typeof(GameLoader).ToString());
             gameLoader.ConsoleRedirector = _consoleRedirector;
             gameLoader.CompileAndLoadScripts(_folders);
 
-            _gameDomain = domain;
+            _gameDomain = domain;*/
         }
 
         private void InitializeCVars()
         {
             // Create some cemono cvars
-            CVar<string>.Create("cm_version", Assembly.GetCallingAssembly().GetName().Version.ToString(), CVarFlags.ReadOnly);
+            var version = CVar<string>.Create("cm_version", Assembly.GetCallingAssembly().GetName().Version.ToString(), CVarFlags.ReadOnly);
+            var flags = version.Flags;
+
             CVar<int>.Create("cm_debug", 0, CVarFlags.Cheat);
 
 

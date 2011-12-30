@@ -66,11 +66,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Library Include="..\..\lib\mono.lib">
-      <Filter>lib</Filter>
-    </Library>
-  </ItemGroup>
-  <ItemGroup>
     <ResourceCompile Include="CryGame.rc">
       <Filter>Resources</Filter>
     </ResourceCompile>
@@ -82,5 +77,10 @@
     <None Include="CryGame.ico">
       <Filter>Resources</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\..\lib\mono.lib">
+      <Filter>lib</Filter>
+    </Library>
   </ItemGroup>
 </Project>

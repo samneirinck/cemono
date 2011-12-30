@@ -15,6 +15,8 @@ public:
 	virtual const char* GetNamespaceExtension() override { return  "API"; } // i.e. "FlowSystem" if your class is located in namespace "CryEngine.FlowSystem"
 	virtual const char* GetClassName() override = 0;
 	virtual const std::vector<ICemonoMethodBinding> GetMethods() override { return m_methods; }
+	virtual const ICemonoMethodBinding* GetMethodsArray() override {return &m_methods[0]; }
+	virtual const int GetNumMethods() override { return m_methods.size(); }
 	// -ICemonoClassBinding 
 
 protected:

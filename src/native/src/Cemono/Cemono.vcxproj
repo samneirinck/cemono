@@ -53,13 +53,16 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_WIN32</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <CompileAsManaged>false</CompileAsManaged>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>if exist f:\Games\cemono\Bin32 copy $(TargetPath) f:\Games\cemono\Bin32</Command>
+      <Command>if exist d:\Games\cemono\Bin32 copy $(TargetPath) d:\Games\cemono\Bin32</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
