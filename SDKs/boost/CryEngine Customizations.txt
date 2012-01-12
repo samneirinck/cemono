@@ -1,0 +1,3 @@
+boost/config/user.hpp is the central file for CryEngine boost customizations. If you're looking to make a change, go there first! Make sure this file is correctly integrated when upgrading to a new version.
+
+boost/assert.hpp has been modified redefine BOOST_ASSERT to CRY_ASSERT when CRY_ASSERT is defined.

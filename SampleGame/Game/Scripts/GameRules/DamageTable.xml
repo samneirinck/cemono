@@ -1,0 +1,15 @@
+<DamageTable>
+	<Body part="helmet" damageMultiplier="2.8"/>
+	<Body part="kevlar" damageMultiplier="2.5"/>
+
+	<Body part="head" damageMultiplier="100"/>
+	<Body part="torso" damageMultiplier="1.6"/>
+	<Body part="arm_left" damageMultiplier="0.6"/>
+	<Body part="arm_right" damageMultiplier="0.6"/>
+	<Body part="hand_left" damageMultiplier="0.2"/>
+	<Body part="hand_right" damageMultiplier="0.2"/>
+	<Body part="leg_left" damageMultiplier="0.7"/>
+	<Body part="leg_right" damageMultiplier="0.7"/>
+	<Body part="foot_left" damageMultiplier="0.2"/>
+	<Body part="foot_right" damageMultiplier="0.2"/>
+</DamageTable>

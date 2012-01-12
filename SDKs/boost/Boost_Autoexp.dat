@@ -1,0 +1,103 @@
+;-----------------------------------------
+; BOOST_VISUALIZERS_START
+
+;------------------------------------------------------------------------------
+; boost::shared_ptr
+; 
+; History:
+; - 01.10.2009: Created by David Ramos
+; 
+; Basically a ripped-off version of std::tr1:shared_ptr
+;------------------------------------------------------------------------------
+boost::shared_ptr<*>{
+	preview (
+		#if ($e.px == 0) (
+			"empty"
+		) #else (
+			; "shared_ptr= <object> [N strong refs, M weak refs]".
+			#(
+				"shared_ptr= ",
+				*$e.px,
+				" [",
+				$e.pn.pi_->use_count_,
+				#if ($e.pn.pi_->use_count_ == 1) (" strong ref") #else (" strong refs"),
+				#if ($e.pn.pi_->weak_count_ - 1 > 0) (
+					#(
+						", ",
+						$e.pn.pi_->weak_count_ - 1,
+						#if ($e.pn.pi_->weak_count_ - 1 == 1) (" weak ref") #else (" weak refs")
+					)
+				),
+				"]"
+			)
+		)
+	)
+
+	children (
+		#if ($e.px == 0) (
+			; We make empty shared_ptrs (and shared_ptrs that own
+			; the null pointer) appear to have no children.
+			#array(expr: 0, size: 0)
+		) #else (
+			#(
+				; We make shared_ptr appear to have a single child,
+				; its stored pointer, with a fake name of [ptr].
+				#([ptr] : $e.px),
+				#([actual members] : [$e,!])
+			)
+		)
+	)
+}
+
+;------------------------------------------------------------------------------
+;  boost::weak_ptr
+;
+; History:
+; - 01.10.2009: Created by David Ramos
+; 
+; Basically a ripped-off version of std::tr1:shared_ptr
+;------------------------------------------------------------------------------
+boost::weak_ptr<*>{
+	preview (
+		#if ($e.px == 0) (
+			"empty"
+		) #elif ($e.pn.pi_->use_count_ == 0) (
+			; weak_ptr is just like shared_ptr, except that a weak_ptr can be expired.
+			"expired"
+		) #else (
+			#(
+				"weak_ptr= ",
+				*$e.px,
+				" [",
+				$e.pn.pi_->use_count_,
+				#if ($e.pn.pi_->use_count_ == 1) (" strong ref") #else (" strong refs"),
+				#if ($e.pn.pi_->weak_count_ - 1 > 0) (
+					#(
+						", ",
+						$e.pn.pi_->weak_count_ - 1,
+						#if ($e.pn.pi_->weak_count_ - 1 == 1) (" weak ref") #else (" weak refs")
+					)
+				),
+				"]"
+			)
+		)
+	)
+
+	children (
+		#if ($e.px == 0) (
+			#array(expr: 0, size: 0)
+		) #elif ($e.pn.pi_->use_count_ == 0) (
+			; When a weak_ptr is expired, we make it appear to have no children.
+			#array(expr: 0, size: 0)
+		) #else (
+			#(
+				#([ptr] : $e.px),
+				#([actual members] : [$e,!])
+			)
+		)
+	)
+}
+
+;
+; BOOST_VISUALIZERS_END
+;---------------------------------------
