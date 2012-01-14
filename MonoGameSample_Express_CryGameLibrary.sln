@@ -1,11 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameDll", "SampleGame\GameDll\GameDll.vcxproj", "{2EB52047-0A81-4343-B703-DF221CA5CC2A}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CryAction", "SDKs\CryAction\CryActionHeaders.vcxproj", "{498187B3-E46F-45FA-A202-992AE9FDA01A}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CryCommon", "SDKs\CryCommon\CryCommon.vcxproj", "{AEB958D4-45CA-478B-BA8E-D0E897CE974B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryGameLibrary", "SampleGame\CryGameLibrary\CryGameLibrary.csproj", "{F95F543D-A167-4505-A157-AA969A60BF41}"
 EndProject
 Global
@@ -18,31 +12,6 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2EB52047-0A81-4343-B703-DF221CA5CC2A}.Debug|Win32.ActiveCfg = Debug|Win32
-		{2EB52047-0A81-4343-B703-DF221CA5CC2A}.Debug|Win32.Build.0 = Debug|Win32
-		{2EB52047-0A81-4343-B703-DF221CA5CC2A}.Debug|x64.ActiveCfg = Debug|x64
-		{2EB52047-0A81-4343-B703-DF221CA5CC2A}.Profile|Win32.ActiveCfg = Profile|Win32
-		{2EB52047-0A81-4343-B703-DF221CA5CC2A}.Profile|Win32.Build.0 = Profile|Win32
-		{2EB52047-0A81-4343-B703-DF221CA5CC2A}.Profile|x64.ActiveCfg = Profile|x64
-		{2EB52047-0A81-4343-B703-DF221CA5CC2A}.Release|Win32.ActiveCfg = Release|Win32
-		{2EB52047-0A81-4343-B703-DF221CA5CC2A}.Release|Win32.Build.0 = Release|Win32
-		{2EB52047-0A81-4343-B703-DF221CA5CC2A}.Release|x64.ActiveCfg = Release|x64
-		{498187B3-E46F-45FA-A202-992AE9FDA01A}.Debug|Win32.ActiveCfg = Debug|Win32
-		{498187B3-E46F-45FA-A202-992AE9FDA01A}.Debug|x64.ActiveCfg = Debug|Win32
-		{498187B3-E46F-45FA-A202-992AE9FDA01A}.Profile|Win32.ActiveCfg = Profile|Win32
-		{498187B3-E46F-45FA-A202-992AE9FDA01A}.Profile|Win32.Build.0 = Profile|Win32
-		{498187B3-E46F-45FA-A202-992AE9FDA01A}.Profile|x64.ActiveCfg = Profile|Win32
-		{498187B3-E46F-45FA-A202-992AE9FDA01A}.Release|Win32.ActiveCfg = Release|Win32
-		{498187B3-E46F-45FA-A202-992AE9FDA01A}.Release|Win32.Build.0 = Release|Win32
-		{498187B3-E46F-45FA-A202-992AE9FDA01A}.Release|x64.ActiveCfg = Release|Win32
-		{AEB958D4-45CA-478B-BA8E-D0E897CE974B}.Debug|Win32.ActiveCfg = Debug|Win32
-		{AEB958D4-45CA-478B-BA8E-D0E897CE974B}.Debug|x64.ActiveCfg = Debug|Win32
-		{AEB958D4-45CA-478B-BA8E-D0E897CE974B}.Profile|Win32.ActiveCfg = Profile|Win32
-		{AEB958D4-45CA-478B-BA8E-D0E897CE974B}.Profile|Win32.Build.0 = Profile|Win32
-		{AEB958D4-45CA-478B-BA8E-D0E897CE974B}.Profile|x64.ActiveCfg = Profile|Win32
-		{AEB958D4-45CA-478B-BA8E-D0E897CE974B}.Release|Win32.ActiveCfg = Release|Win32
-		{AEB958D4-45CA-478B-BA8E-D0E897CE974B}.Release|Win32.Build.0 = Release|Win32
-		{AEB958D4-45CA-478B-BA8E-D0E897CE974B}.Release|x64.ActiveCfg = Release|Win32
 		{F95F543D-A167-4505-A157-AA969A60BF41}.Debug|Win32.ActiveCfg = Debug|x64
 		{F95F543D-A167-4505-A157-AA969A60BF41}.Debug|x64.ActiveCfg = Debug|x64
 		{F95F543D-A167-4505-A157-AA969A60BF41}.Debug|x64.Build.0 = Debug|x64

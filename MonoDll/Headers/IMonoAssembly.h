@@ -12,9 +12,18 @@
 struct IMonoClass;
 struct IMonoArray;
 
+/// <summary>
+/// Reference to a Mono assembly; used to for example instantiate classes contained within a C# dll.
+/// </summary>
 struct IMonoAssembly
 {
 public:
+	/// <summary>
+	/// Instantiates a class within the assembly.
+	/// </summary>
+	/// <example>
+	/// IMonoClass *pClass = InstantiateClass("CryEngine", "MyClass");
+	/// </example>
 	virtual IMonoClass *InstantiateClass(const char *nameSpace, const char *className, IMonoArray *pConstructorArguments = NULL) = 0;
 };
 

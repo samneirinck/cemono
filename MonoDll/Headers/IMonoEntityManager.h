@@ -9,8 +9,14 @@
 #ifndef __I_MONO_ENTITY_MANAGER_H__
 #define __I_MONO_ENTITY_MANAGER_H__
 
+/// <summary>
+/// The entity manager is used to register and handle Mono-registered entities.
+/// </summary>
 struct IMonoEntityManager
 {
+	/// <summary>
+	/// Retrieve the script id of an entity, returns -1 if script could not be located.
+	/// </summary>
 	virtual int GetScriptId(EntityId entityId) = 0;
 };
 

@@ -202,11 +202,6 @@ void CScriptBind_GameRules::RegisterMethods()
 
 	REGISTER_METHOD(ProcessEMPEffect);
 	REGISTER_METHOD(PerformDeadHit);
-
-	REGISTER_METHOD(RegisterGameMode);
-	REGISTER_METHOD(AddGameModeAlias);
-	REGISTER_METHOD(AddGameModeLevelLocation);
-	REGISTER_METHOD(SetDefaultGameMode);
 }
 
 //------------------------------------------------------------------------
@@ -353,7 +348,7 @@ mono::array CScriptBind_GameRules::GetPlayers()
 	CGameRules::TPlayers players;
 	pGameRules->GetPlayers(players);
 
-	IMonoArray *pArray = gEnv->pMonoScriptSystem->GetConverter()->CreateArray(players.size());
+	IMonoArray *pArray = CreateMonoArray(players.size());
 	for(CGameRules::TPlayers::iterator it = players.begin(); it != players.end(); ++it)
 		pArray->Insert(*it);
 
@@ -452,7 +447,7 @@ mono::array CScriptBind_GameRules::GetSpawnLocations()
 		return NULL;
 
 	int spawnCount = pGameRules->GetSpawnLocationCount();
-	IMonoArray *pArray = gEnv->pMonoScriptSystem->GetConverter()->CreateArray(spawnCount);
+	IMonoArray *pArray = CreateMonoArray(spawnCount);
 	for(int i = 0; i < spawnCount; i++)
 		pArray->Insert(pGameRules->GetSpawnLocation(i));
 
@@ -549,7 +544,7 @@ mono::array CScriptBind_GameRules::GetSpawnGroups(int teamId)
 		return NULL;
 
 	int spawnGroupCount = pGameRules->GetSpawnGroupCount();
-	IMonoArray *pArray = gEnv->pMonoScriptSystem->GetConverter()->CreateArray(spawnGroupCount);
+	IMonoArray *pArray = CreateMonoArray(spawnGroupCount);
 	for(int i = 0; i < spawnGroupCount; i++)
 		pArray->Insert(pGameRules->GetSpawnGroup(i));
 
@@ -646,7 +641,7 @@ mono::array CScriptBind_GameRules::GetSpectatorLocations()
 		return NULL;
 
 	int spectatorLocationCount = pGameRules->GetSpectatorLocationCount();
-	IMonoArray *pArray = gEnv->pMonoScriptSystem->GetConverter()->CreateArray(spectatorLocationCount);
+	IMonoArray *pArray = CreateMonoArray(spectatorLocationCount);
 	for(int i = 0; i < spectatorLocationCount; i++)
 		pArray->Insert(pGameRules->GetSpectatorLocation(i));
 
@@ -962,7 +957,7 @@ mono::array CScriptBind_GameRules::GetTeamPlayers(int teamId)
 	CGameRules::TPlayers players;
 	pGameRules->GetPlayers(players);
 
-	IMonoArray *pArray = gEnv->pMonoScriptSystem->GetConverter()->CreateArray(players.size());
+	IMonoArray *pArray = CreateMonoArray(players.size());
 	for(CGameRules::TPlayers::iterator it = players.begin(); it != players.end(); ++it)
 	{
 		if(pGameRules->GetTeam(*it)==teamId)
@@ -1521,33 +1516,4 @@ bool CScriptBind_GameRules::PerformDeadHit()
 #else
 	return true;
 #endif // CRAPDOLLS
-}
-
-//-----------------------------------------------------------------------------
-void CScriptBind_GameRules::RegisterGameMode(mono::string gamemode)
-{
-	// gEnv->pGameFramework is set too late, so we'll have to set it earlier in CGameStartup::InitFramework. (gEnv->pGameFramework = m_pFramework after the ModuleInitISystem call)
-	if(IGameRulesSystem *pGameRulesSystem = gEnv->pGameFramework ? gEnv->pGameFramework->GetIGameRulesSystem() : NULL)
-	{
-		if(!pGameRulesSystem->HaveGameRules(*gamemode))
-			pGameRulesSystem->RegisterGameRules(*gamemode, "GameRules");
-	}
-}
-
-//-----------------------------------------------------------------------------
-void CScriptBind_GameRules::AddGameModeAlias(mono::string gamemode, mono::string alias)
-{
-	gEnv->pGameFramework->GetIGameRulesSystem()->AddGameRulesAlias(*gamemode, *alias);
-}
-
-//-----------------------------------------------------------------------------
-void CScriptBind_GameRules::AddGameModeLevelLocation(mono::string gamemode, mono::string location)
-{
-	gEnv->pGameFramework->GetIGameRulesSystem()->AddGameRulesLevelLocation(*gamemode, *location);
-}
-
-//-----------------------------------------------------------------------------
-void CScriptBind_GameRules::SetDefaultGameMode(mono::string gamemode)
-{
-	gEnv->pConsole->GetCVar("sv_gamerulesdefault")->Set(*gamemode);
 }

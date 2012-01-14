@@ -19,6 +19,8 @@ struct IMonoScriptBind;
 struct IMonoScript;
 struct IMonoObject;
 struct IMonoArray;
+
+struct IMonoAssembly;
 struct IMonoClass;
 
 struct IMonoEntityManager;
@@ -35,26 +37,65 @@ enum EMonoScriptType
 	EMonoScriptType_Actor
 };
 
+/// <summary>
+/// The main module in CryMono; initializes mono domain and handles calls to C# scripts.
+/// </summary>
 struct IMonoScriptSystem : public ICryUnknown
 {
 	CRYINTERFACE_DECLARE(IMonoScriptSystem, 0x86169744ce38420f, 0x9768a98386be991f)
 
+	/// <summary>
+	/// Initializes the Mono runtime.
+	/// Called prior to CryGame initialization; resides within CGameStartup::Init in the sample project.
+	/// </summary>
 	virtual bool Init() = 0 ;
+	/// <summary>
+	/// Registers default Mono bindings and initializes CryBrary.dll. (Scripts are compiled after this is called)
+	/// Called post-CryGame initialization; resides within CGameStartup::Init in the sample project.
+	/// </summary>
 	virtual void PostInit() = 0;
 
+	/// <summary>
+	/// Deletes script system instance; cleans up mono objects etc.
+	/// Called from the dll which implements CryMono on engine shutdown (CGameStartup destructor within the sample project)
+	/// </summary>
 	virtual void Release() = 0;
 
-	// Updates the system, once per frame.
+	/// <summary>
+	/// Updates the system, once per frame.
+	/// </summary>
 	virtual void Update() = 0;
 
 	virtual IMonoEntityManager *GetEntityManager() const = 0;
-
+	
+	/// <summary>
+	/// Registers a Mono scriptbind which inherits from IMonoScriptBind, and the methods contained within.
+	/// Note that binded methods also have to be declared as externals within your C# assembly.
+	/// </summary>
 	virtual void RegisterScriptBind(IMonoScriptBind *pScriptBind) = 0;
 
+	/// <summary>
+	/// Instantiates a script (with constructor parameters if supplied) of type and name
+	/// This assumes that the script was present in a .dll in Plugins or within a .cs file when PostInit was called.
+	/// </summary>
 	virtual int InstantiateScript(EMonoScriptType scriptType, const char *scriptName, IMonoArray *pConstructorParameters = nullptr) = 0;
+	/// <summary>
+	/// Gets the instantied script with the supplied id.
+	/// </summary>
 	virtual IMonoScript *GetScriptById(int id) = 0;
+	/// <summary>
+	/// Removes and destructs an instantiated script with the supplied id if found.
+	/// </summary>
 	virtual void RemoveScriptInstance(int id) = 0;
 
+	/// <summary>
+	/// Loads an Mono assembly and returns a fully initialized IMonoAssembly.
+	/// </summary>
+	virtual IMonoAssembly *LoadAssembly(const char *assemblyPath) = 0;
+
+	/// <summary>
+	/// Invokes a script method with the supplied args.
+	/// </summary>
 	virtual IMonoObject *CallScript(int scriptId, const char *funcName, IMonoArray *pArgs = NULL) = 0;
 	template <typename T> T CallScript(int scriptId, const char *funcName, IMonoArray *pArgs = NULL)
 	{
@@ -64,16 +105,30 @@ struct IMonoScriptSystem : public ICryUnknown
 		return default(T);
 	}
 
-	// Gets a custom C# class.
-	// Example: gEnv->pMonoScriptSystem->GetCustomClass("MyClass")->CallMethod("Initialize");
-	virtual IMonoClass *GetCustomClass(const char *className, const char *nameSpace = "CryEngine") = 0;
-	// Instantiates a class created in C#.
+	/// <summary>
+	/// Gets a custom C# class from within the specified assembly.
+	/// Uses CryBrary if assembly is NULL.
+	/// </summary>
+	/// <example>
+	/// gEnv->pMonoScriptSystem->GetCustomClass("MyClass")->CallMethod("Initialize");
+	/// </example>
+	virtual IMonoClass *GetCustomClass(const char *className, const char *nameSpace = "CryEngine", IMonoAssembly *pAssembly = NULL) = 0;
+	/// <summary>
+	/// Instantiates a class created in C#.
+	/// </summary>
 	virtual IMonoClass *InstantiateClass(const char *className, const char *nameSpace = "CryEngine", IMonoArray *pConstructorParameters = NULL) = 0;
 
+	/// <summary>
+	/// Retrieves an instance of the IMonoConverter; a class used to easily convert C# types to C++ and the other way around.
+	/// </summary>
 	virtual IMonoConverter *GetConverter() = 0;
 
+	/// <summary>
+	/// Entry point of the dll, used to set up CryMono.
+	/// </summary>
 	typedef void *(*TEntryFunction)(ISystem* pSystem);
 };
+
 
 static IMonoObject *CallMonoScript(int scriptId, const char *funcName)
 {

@@ -21,7 +21,7 @@ Open MonoGameSample.sln and build all projects.
 Our Visual Studio projects have been set up to expect all contents to be placed inside a folder within the Code folder shipped with the CryENGINE Free SDK.
 
 Example:
-D:\Dev\INK\CryENGINE\Code\CryMono <-- Check out to this folder.
+D:\Dev\INK\CryENGINE\Code\CryMono
 
 Using another folder structure is up to the developer, but will require customization in order to get Visual Studio to output compiled libraries to the correct location.
 

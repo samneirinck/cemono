@@ -1,0 +1,706 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CryBrary</name>
+    </assembly>
+    <members>
+        <member name="T:CryEngine.CryConsole">
+            <summary>
+            The CryConsole provides access to CryENGINE's console interface, including redirecting .NET logging to
+            the CryENGINE console.
+            Additionally, it handles CVar / CCommand interpretation.
+            </summary>
+        </member>
+        <member name="M:CryEngine.CryConsole.RegisterCVar``1(System.String,``0,CryEngine.CVarFlags,System.String)">
+            <summary>
+            Invoked by a CVar after its creation. Should <b>not</b> be visible outside this assembly.
+            </summary>
+        </member>
+        <member name="M:CryEngine.CryConsole.GetCVar(System.String)">
+            <summary>
+            Gets a CVar by name
+            </summary>
+            <param name="name">The name of the CVar to retrieve</param>
+            <returns></returns>
+        </member>
+        <member name="M:CryEngine.CryConsole.TryGetCVar(System.String,CryEngine.CVar@)">
+            <summary>
+            Firstly checks whether a specified CVar is valid, then if so, modifies the cvar reference
+            </summary>
+            <param name="name">The name of the CVar to retrieve</param>
+            <param name="cvar">The CVar object to modify (usually blank)</param>
+            <returns>True if the CVar exists, otherwise false</returns>
+        </member>
+        <member name="M:CryEngine.CryConsole.OnMonoCmd(System.String)">
+            <summary>
+            Called from C++ when a console command registered via Mono is invoked.
+            </summary>
+            <param name="cmdName"></param>
+        </member>
+        <member name="M:CryEngine.CryConsole.Log(System.String,System.Object[])">
+            <summary>
+            Logs a message to the console
+            </summary>
+            <param name="format"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:CryEngine.CryConsole.Log(System.String)">
+            <summary>
+            Logs a message to the console
+            </summary>
+        </member>
+        <member name="M:CryEngine.CryConsole.LogAlways(System.String,System.Object[])">
+            <summary>
+            Logs a message to the console, regardless of log_verbosity settings
+            </summary>
+            <param name="format"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:CryEngine.CryConsole.LogAlways(System.String)">
+            <summary>
+            Logs a message to the console, regardless of log_verbosity settings
+            </summary>
+        </member>
+        <member name="M:CryEngine.CryConsole.LogException(System.Exception)">
+            <summary>
+            Logs an exception message to the console
+            </summary>
+            <remarks>Useful when exceptions are caught and data is still needed from them</remarks>
+            <param name="ex"></param>
+        </member>
+        <member name="M:CryEngine.CryConsole.Warning(System.String,System.Object[])">
+            <summary>
+            Outputs a warning message
+            </summary>
+            <param name="format"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:CryEngine.CryConsole.Warning(System.String)">
+            <summary>
+            Outputs a warning message
+            </summary>
+        </member>
+        <member name="M:CryEngine.CryConsole.#ctor">
+            <summary>
+            Constructs a new CryConsole object and sets up output redirection and error tracing.
+            </summary>
+        </member>
+        <member name="T:CryEngine.CryScriptInstance">
+            <summary>
+            This interface permits derived interfaces to be used for script compilation recognition.
+            </summary>
+        </member>
+        <member name="M:CryEngine.BaseFlowNode.OnPortActivated(System.Int32,System.Object)">
+            <summary>
+            Called if one or more input ports have been activated.
+            </summary>
+        </member>
+        <member name="M:CryEngine.BaseFlowNode.OnInitialized">
+            <summary>
+            Called after level has been loaded, is not called on serialization.
+            </summary>
+        </member>
+        <member name="M:CryEngine.BaseFlowNode.OnUpdate">
+            <summary>
+            Called each frame if node has been set to be regularly updated (See SetRegularlyUpdated)
+            </summary>
+        </member>
+        <member name="M:CryEngine.BaseFlowNode.ActivateOutput(System.Int32)">
+            <summary>
+            Activates one of the node's output ports, without an output value. (Used for outputs of type NodePortType.Void)
+            </summary>
+            <param name="port"></param>
+        </member>
+        <member name="M:CryEngine.BaseFlowNode.ActivateOutput(System.Int32,System.Object)">
+            <summary>
+            Activates one of the node's output ports, with the desired output value.
+            </summary>
+            <param name="port">The id of the port, from the order it was registered (first is 0)</param>
+            <param name="value"></param>
+        </member>
+        <member name="M:CryEngine.BaseFlowNode.IsPortActive(System.Int32)">
+            <summary>
+            Used to check whether an input port is currently activated.
+            </summary>
+            <param name="port"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CryEngine.BaseFlowNode.SetRegularlyUpdated(System.Boolean)">
+            <summary>
+            Will toggle ProcessEvent being regularly updated with the Update flow event. Disabled by default.
+            </summary>
+            <param name="updated"></param>
+        </member>
+        <member name="P:CryEngine.FlowNodeAttribute.UICategory">
+            <summary>
+            Category in which the node will appear when right-clicking in the Flowgraph Editor.
+            </summary>
+        </member>
+        <member name="P:CryEngine.FlowNodeAttribute.Category">
+            <summary>
+            The Sandbox filtering category
+            </summary>
+        </member>
+        <member name="F:CryEngine.FlowNodeFlags.TargetEntity">
+            <summary>
+            This node targets an entity, entity id must be provided.
+            </summary>
+        </member>
+        <member name="F:CryEngine.FlowNodeFlags.HideUI">
+            <summary>
+            This node cannot be selected by user for placement in flow graph UI.
+            </summary>
+        </member>
+        <member name="F:CryEngine.FlowNodeFlags.DynamicOutput">
+            <summary>
+            This node is setup for dynamic output port growth in runtime.
+            </summary>
+        </member>
+        <member name="F:CryEngine.FlowNodeCategory.Approved">
+            <summary>
+            This node is approved for designers
+            </summary>
+        </member>
+        <member name="F:CryEngine.FlowNodeCategory.Advanced">
+            <summary>
+            This node is slightly advanced and approved.
+            </summary>
+        </member>
+        <member name="F:CryEngine.FlowNodeCategory.Debug">
+            <summary>
+            This node is for debug purpose only.
+            </summary>
+        </member>
+        <member name="F:CryEngine.FlowNodeCategory.Obsolete">
+            <summary>
+            This node is obsolete and is not available in the editor.
+            </summary>
+        </member>
+        <member name="T:CryEngine.ActorSystem">
+            <summary>
+            Used internally by this assembly for the Player base class.
+            </summary>
+        </member>
+        <member name="M:CryEngine.EntitySystem.SpawnEntity(CryEngine.EntitySpawnParams,System.Boolean)">
+            <summary>
+            Spawns an entity with the specified parameters.
+            </summary>
+            <param name="spawnParams">The <see cref="T:CryEngine.EntitySpawnParams"/></param>
+            <param name="autoInit">Should the entity automatically be initialised?</param>
+            <returns></returns>
+        </member>
+        <member name="M:CryEngine.EntitySystem.RegisterEntityClass(CryEngine.EntityConfig)">
+            <summary>
+            Register a new entity type.
+            </summary>
+            <param name="config">The Entity configuration.</param>
+            <returns>True if registration succeeded, otherwise false.</returns>
+        </member>
+        <member name="M:CryEngine.EntitySystem.GetEntity(System.UInt32)">
+            <summary>
+            Get an entity by its unique ID.
+            </summary>
+            <param name="entityId">The ID as an unsigned integer.</param>
+            <returns>A reference to the entity.</returns>
+            <remarks>If the entity does not exist in the managed space, this function will attempt to find
+            a C++ entity with the specified ID></remarks>
+        </member>
+        <member name="M:CryEngine.EntitySystem.GetEntity(System.String)">
+            <summary>
+            Get an entity by name.
+            </summary>
+            <param name="name">The name of the entity.</param>
+            <returns>A reference to the entity.</returns>
+            <remarks>If multiple entities have the same name, it will return the first found.
+            Consider using IDs where necessary.</remarks>
+        </member>
+        <member name="M:CryEngine.EntitySystem.GetEntities(System.String)">
+            <summary>
+            Gets an array of entities that are of a given class.
+            </summary>
+            <param name="className">The entity class to search for.</param>
+            <returns>An array of entities.</returns>
+        </member>
+        <member name="M:CryEngine.EntitySystem.GetEntities``1">
+            <summary>
+            Gets an array of entities that are of a given class.
+            </summary>
+            <typeparam name="T">The entity class to search for.</typeparam>
+            <returns>An array of entities of type T.</returns>
+        </member>
+        <member name="F:CryEngine.EntitySystem.m_internalEntities">
+            <summary>
+            Contains the entities registered with mono.
+            EntityId, Entity are stored in here. EntityId is also stored within Entity, but storing it seperately here provides for fast lookup and rids of us too many foreach loops.
+            </summary>
+        </member>
+        <member name="T:CryEngine.EntityFlags">
+            <summary>
+            These flags control entity instance behaviour.
+            </summary>
+        </member>
+        <member name="T:CryEngine.EntityClassFlags">
+            <summary>
+            These flags define behaviour for entity classes.
+            </summary>
+        </member>
+        <member name="F:CryEngine.EntityClassFlags.Invisible">
+            <summary>
+            If set this class will not be visible in editor,and entity of this class cannot be placed manually in editor.
+            </summary>
+        </member>
+        <member name="F:CryEngine.EntityClassFlags.Default">
+            <summary>
+            If this is default entity class.
+            </summary>
+        </member>
+        <member name="F:CryEngine.EntityConfig.registerParams">
+            <summary>
+            The registration information.
+            </summary>
+        </member>
+        <member name="F:CryEngine.EntityConfig.properties">
+            <summary>
+            The properties that will be displayed inside Sandbox.
+            </summary>
+        </member>
+        <member name="M:CryEngine.Initialization.Manager.Update">
+            <summary>
+            Called once per frame.
+            </summary>
+        </member>
+        <member name="T:CryEngine.ItemSystem">
+            <summary>
+            ItemSystem contains scriptbinds used in relation to the item system.
+            </summary>
+        </member>
+        <member name="T:CryEngine.BaseEntity">
+            <summary>
+            Entities must inherit this in order to be registered.
+            It is no longer an interface, due to basic functionality each entity <b>must</b> have.
+            </summary>
+        </member>
+        <member name="M:CryEngine.BaseEntity.Initialize(System.UInt32,System.Boolean)">
+            <summary>
+            Initializes the entity, not recommended to set manually.
+            </summary>
+            <param name="entityId"></param>
+            <param name="externallyRegistered"></param>
+        </member>
+        <member name="M:CryEngine.BaseEntity.OnUpdate">
+            <summary>
+            Called once per frame.
+            </summary>
+        </member>
+        <member name="M:CryEngine.BaseEntity.OnSpawn">
+            <summary>
+            This callback is called when this entity has finished spawning. The entity has been created and added to the list of entities.
+            </summary>
+        </member>
+        <member name="M:CryEngine.BaseEntity.OnRemove">
+            <summary>
+            Called when the entity is being removed.
+            </summary>
+            <returns>True to allow removal, false to deny.</returns>
+        </member>
+        <member name="M:CryEngine.CryNetwork.InitializeNetworkStatics(System.Boolean,System.Boolean)">
+            <summary>
+            Initializes static variables which never change, i.e. IsEditor.
+            </summary>
+            <param name="isEditor"></param>
+            <param name="isDedicated"></param>
+        </member>
+        <member name="M:CryEngine.CryNetwork.InitializeNetwork(System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            Initializes variables which change, i.e. IsServer.
+            </summary>
+            <param name="isClient"></param>
+            <param name="isServer"></param>
+        </member>
+        <member name="M:CryEngine.CVar.#ctor(System.String,System.Object,CryEngine.CVarFlags,System.String)">
+            <summary>
+            Used by CryConsole.RegisterCVar to construct the CVar.
+            </summary>
+            <param name="name"></param>
+            <param name="value"></param>
+            <param name="flags"></param>
+            <param name="help"></param>
+        </member>
+        <member name="M:CryEngine.CVar.#ctor(System.String)">
+            <summary>
+            Used to construct an "empty" CVar used to handle C++ registered CVars.
+            </summary>
+            <param name="name"></param>
+        </member>
+        <member name="F:CryEngine.CVarFlags.Null">
+            <summary>
+            just to have one recognizable spot where the flags are located in the Register call
+            </summary>
+        </member>
+        <member name="F:CryEngine.CVarFlags.Cheat">
+            <summary>
+            stays in the default state when cheats are disabled
+            </summary>
+        </member>
+        <member name="F:CryEngine.CVarFlags.ReadOnly">
+            <summary>
+            can not be changed by the user
+            </summary>
+        </member>
+        <member name="F:CryEngine.CVarFlags.WarningNotUsed">
+            <summary>
+             shows warning that this var was not used in config file
+            </summary>
+        </member>
+        <member name="F:CryEngine.CVarFlags.CopyName">
+            <summary>
+            otherwise the const char * to the name will be stored without copying the memory
+            </summary>
+        </member>
+        <member name="F:CryEngine.CVarFlags.Modified">
+            <summary>
+            Set when variable value modified.
+            </summary>
+        </member>
+        <member name="F:CryEngine.CVarFlags.WasInConfig">
+            <summary>
+            Set when variable was present in config file.
+            </summary>
+        </member>
+        <member name="F:CryEngine.CVarFlags.Bitfield">
+            <summary>
+            Allow bitfield setting syntax.
+            </summary>
+        </member>
+        <member name="F:CryEngine.CVarFlags.RestrictedMode">
+            <summary>
+            is visible and usable in restricted (normal user) console mode
+            </summary>
+        </member>
+        <member name="F:CryEngine.CVarFlags.Invisible">
+            <summary>
+            Invisible to the user in console
+            </summary>
+        </member>
+        <member name="F:CryEngine.CVarFlags.AlwaysOnChange">
+            <summary>
+            Always accept variable value and call on change callback even if variable value didnt change
+            </summary>
+        </member>
+        <member name="F:CryEngine.CVarFlags.BlockFrame">
+            <summary>
+            Blocks the execution of console commands for one frame
+            </summary>
+        </member>
+        <member name="F:CryEngine.CVarFlags.ConstCVar">
+            <summary>
+            Set if it is a const cvar not to be set inside cfg-files
+            </summary>
+        </member>
+        <member name="F:CryEngine.CVarFlags.CheatAlwaysCheck">
+            <summary>
+            This variable is critical to check in every hash, since it's extremely vulnerable
+            </summary>
+        </member>
+        <member name="F:CryEngine.CVarFlags.CheatNoCheck">
+            <summary>
+            This variable is set as VF_CHEAT but doesn't have to be checked/hashed since it's harmless to workaround
+            </summary>
+        </member>
+        <member name="F:CryEngine.CVarFlags.NotNetSyncedInternal">
+            <summary>
+            can be changed on client and when connecting the var not sent to the client (is set for all vars in Game/scripts/Network/cvars.txt)
+            </summary>
+        </member>
+        <member name="T:CryEngine.CVarException">
+            <summary>
+            This exception is called when invalid CVar operations are performed.
+            </summary>
+        </member>
+        <member name="T:CryEngine.ExcludeFromCompilationAttribute">
+            <summary>
+            If this attribute is attached to a class, it will be excluded from compilation.
+            </summary>
+        </member>
+        <member name="T:CryEngine.DefaultGamemodeAttribute">
+            <summary>
+            Using this in a class will make it be used as the default game mode.
+            </summary>
+        </member>
+        <member name="T:CryEngine.CryPath">
+            <summary>
+            CryPath provides a clean method of retrieving commonly used engine filepaths.
+            </summary>
+        </member>
+        <member name="M:CryEngine.CryPath.GetRootFolder">
+            <summary>
+            Gets the root engine folder.
+            </summary>
+            <returns>The filepath to the root folder as a string, ex:</returns>
+            <example>"C:\CryENGINE3\"</example>
+        </member>
+        <member name="M:CryEngine.CryPath.GetBinaryFolder">
+            <summary>
+            Gets the current folder containing binaries relevant to current build type (Bin32 / Bin64).
+            </summary>
+            <returns>The filepath to the Binary folder as a string, ex:
+            <example>"C:\CryENGINE3\Bin32\"</example></returns>
+        </member>
+        <member name="M:CryEngine.CryPath.GetEngineFolder">
+            <summary>
+            Gets the engine folder.
+            CryENGINE uses this store engine content which is not specific to the game being developed, i.e. shaders and configuration files.
+            </summary>
+            <returns>The filepath to the Engine folder as a string, ex:
+            <example>"C:\CryENGINE3\Engine\"</example></returns>
+        </member>
+        <member name="M:CryEngine.CryPath.GetGameFolder">
+            <summary>
+            Gets the current game folder.
+            CryENGINE uses this as the root for all game-related content.
+            </summary>
+            <returns>The filepath to the Game folder as a string, ex:
+            <example>"C:\CryENGINE3\Game\"</example></returns>
+        </member>
+        <member name="M:CryEngine.CryPath.GetScriptsFolder">
+            <summary>
+            Gets the folder in which the engine stores scripts.
+            We use this as the root for our .cs files and .dll plugins.
+            </summary>
+            <returns>The filepath to the Scripts folder as a string, ex:
+            <example>"C:\CryENGINE3\Game\Scripts\"</example></returns>
+        </member>
+        <member name="T:CryEngine.Vec3">
+            <summary>
+            The Vec3 struct is used for all 3D coordinates within the engine.
+            TODO: Implement a Quat class for rotation in place of angles.
+            </summary>
+        </member>
+        <member name="M:CryEngine.Vec3.op_UnaryNegation(CryEngine.Vec3)">
+            <summary>
+            Negate this vector.
+            </summary>
+        </member>
+        <member name="M:CryEngine.Vec3.op_Addition(CryEngine.Vec3,CryEngine.Vec3)">
+            <summary>
+            Add two vectors component-wise.
+            </summary>
+        </member>
+        <member name="M:CryEngine.Vec3.op_Subtraction(CryEngine.Vec3,CryEngine.Vec3)">
+            <summary>
+            Subtract two vectors component-wise.
+            </summary>
+        </member>
+        <member name="M:CryEngine.Vec3.op_Multiply(CryEngine.Vec3,System.Single)">
+            <summary>
+            Multiply this vector by a scalar.
+            </summary>
+        </member>
+        <member name="M:CryEngine.Vec3.op_Multiply(System.Single,CryEngine.Vec3)">
+            <summary>
+            Multiply this vector by a scalar.
+            </summary>
+        </member>
+        <member name="M:CryEngine.Vec3.Dot(CryEngine.Vec3,CryEngine.Vec3)">
+            <summary>
+            Perform the dot product on two vectors.
+            </summary>
+        </member>
+        <member name="M:CryEngine.Vec3.Cross(CryEngine.Vec3,CryEngine.Vec3)">
+            <summary>
+            Perform the cross product on two vectors.
+            </summary>
+        </member>
+        <member name="T:CryEngine.BasePlayer">
+            <summary>
+            WIP Player class.
+            </summary>
+        </member>
+        <member name="M:CryEngine.BasePlayer.Initialize(System.UInt32,System.Int32)">
+            <summary>
+            Initializes the player.
+            </summary>
+            <param name="entityId"></param>
+            <param name="channelId"></param>
+        </member>
+        <member name="T:CryEngine.Utils.CryStats">
+            <summary>
+            CryStats enables tracking of commonly used library statistics such as memory usage.
+            </summary>
+        </member>
+        <member name="P:CryEngine.Utils.CryStats.MemoryUsageMB">
+            <summary>
+            The current approximate memory usage in megabytes.
+            </summary>
+        </member>
+        <member name="P:CryEngine.Utils.CryStats.MemoryUsageKB">
+            <summary>
+            The current approximate memory usage in kilobytes.
+            </summary>
+        </member>
+        <member name="P:CryEngine.Utils.CryStats.MemoryUsage">
+            <summary>
+            The current approximate memory usage in bytes.
+            </summary>
+        </member>
+        <member name="T:CryEngine.ScriptCompiler">
+            <summary>
+            The script compiler is responsible for all CryScript compilation.
+            </summary>
+        </member>
+        <member name="M:CryEngine.ScriptCompiler.Instantiate(System.String,System.Object[])">
+            <summary>
+            Instantiates a script using its name and interface.
+            </summary>
+            <param name="scriptName"></param>
+            <returns>New instance scriptId or -1 if instantiation failed.</returns>
+        </member>
+        <member name="M:CryEngine.ScriptCompiler.LoadLibrariesInFolder(System.String)">
+            <summary>
+            This function will automatically scan for C# dll (*.dll) files and load the types contained within them.
+            </summary>
+        </member>
+        <member name="M:CryEngine.ScriptCompiler.CompileScriptsInFolder(System.String)">
+            <summary>
+            This function will automatically scan for C# (*.cs) files and compile them using CompileScripts.
+            </summary>
+        </member>
+        <member name="M:CryEngine.ScriptCompiler.CompileScripts(System.String[])">
+            <summary>
+            Compiles the scripts and compiles them into an assembly.
+            </summary>
+            <param name="scripts">A string array containing full paths to scripts to be compiled.</param>
+            <returns></returns>
+        </member>
+        <member name="M:CryEngine.ScriptCompiler.LoadAssembly(System.Reflection.Assembly)">
+            <summary>
+            Loads an C# assembly and return encapulsated script Type.
+            </summary>
+        </member>
+        <member name="F:CryEngine.ScriptCompiler.m_referencedAssemblies">
+            <summary>
+            All libraries passed through LoadLibrariesInFolder will be automatically added to this list.
+            </summary>
+        </member>
+        <member name="T:CryEngine.CryScript">
+            <summary>
+            Represents a given class.
+            </summary>
+        </member>
+        <member name="P:CryEngine.CryScript.ScriptInstances">
+            <summary>
+            Stores all instances of this class.
+            </summary>
+        </member>
+        <member name="T:CryEngine.CryTime">
+            <summary>
+            Contains useful functions related to game timing.
+            </summary>
+        </member>
+        <member name="P:CryEngine.CryTime.DeltaTime">
+            <summary>
+            The time used to render the current frame. Useful for creating framerate independent operations.
+            </summary>
+            <example>public override void OnUpdate() { this.Position.X += 10 * CryTime.DeltaTime; }</example>
+        </member>
+        <member name="T:CryEngine.Utils.CryFileMonitor">
+            <summary>
+            This class monitors the file system and reloads the C# game code in reponse.
+            </summary>
+        </member>
+        <member name="P:CryEngine.Utils.CryFileMonitor.Enabled">
+            <summary>
+            Enables and disables the automatic script/plugin reloading.
+            </summary>
+        </member>
+        <member name="T:CryEngine.GameRulesSystem">
+            <summary>
+            GameRules contains scriptbinds used in relation to the game rules system.
+            </summary>
+        </member>
+        <member name="M:CryEngine.GameRulesSystem.RegisterGameMode(System.String)">
+            <summary>
+            Registers a gamemode.
+            </summary>
+        </member>
+        <member name="M:CryEngine.GameRulesSystem.AddGameModeAlias(System.String,System.String)">
+            <summary>
+            Adds an alias name for the specified game rules (i.e. "vs" for the "Versus" gamemode.)
+            </summary>
+        </member>
+        <member name="M:CryEngine.GameRulesSystem.AddGameModeLevelLocation(System.String,System.String)">
+            <summary>
+            Adds a default level location for the specified game rules. Level system will look up levels here.
+            </summary>
+        </member>
+        <member name="M:CryEngine.GameRulesSystem.SetDefaultGameMode(System.String)">
+            <summary>
+            Sets the default game mode.
+            </summary>
+        </member>
+        <member name="T:CryEngine.EntityAttribute">
+            <summary>
+            Defines additional information used by the entity registration system.
+            </summary>
+        </member>
+        <member name="P:CryEngine.EntityAttribute.EditorHelper">
+            <summary>
+            The helper mesh displayed inside Sandbox.
+            </summary>
+        </member>
+        <member name="P:CryEngine.EntityAttribute.Flags">
+            <summary>
+            The class flags for this entity.
+            </summary>
+        </member>
+        <member name="P:CryEngine.EntityAttribute.Category">
+            <summary>
+            The category in which the entity will be placed.
+            Does not currently function. All entities are placed inside the Default folder.
+            </summary>
+        </member>
+        <member name="P:CryEngine.EntityAttribute.Icon">
+            <summary>
+            The helper graphic displayed inside Sandbox.
+            </summary>
+        </member>
+        <member name="T:CryEngine.EditorPropertyAttribute">
+            <summary>
+            Defines a property that is displayed and editable inside Sandbox.
+            </summary>
+        </member>
+        <member name="P:CryEngine.EditorPropertyAttribute.Min">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:CryEngine.EditorPropertyAttribute.Max">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:CryEngine.EditorPropertyAttribute.Type">
+            <summary>
+            If set, overrides the field type.
+            Should be used for special types such as files.
+            </summary>
+        </member>
+        <member name="P:CryEngine.EditorPropertyAttribute.Description">
+            <summary>
+            The description to display when the user hovers over this property inside Sandbox.
+            </summary>
+        </member>
+        <member name="T:CryEngine.EntityPropertyType">
+            <summary>
+            Defines the list of supported editor types.
+            Bool is not currently functioning.
+            </summary>
+        </member>
+        <member name="T:CryEngine.BaseGameRules">
+            <summary>
+            This is the base GameRules interface. All game rules must implement this.
+            </summary>
+            <remarks>For most use cases, deriving from CryGameCode's BaseGameRules is a more efficient solution.</remarks>
+        </member>
+    </members>
+</doc>

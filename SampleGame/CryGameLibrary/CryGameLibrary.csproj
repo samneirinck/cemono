@@ -5,10 +5,10 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{11564500-9662-485F-889A-089D34FDB32E}</ProjectGuid>
+    <ProjectGuid>{F95F543D-A167-4505-A157-AA969A60BF41}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>CryGameCode</RootNamespace>
-    <AssemblyName>CryGameCode</AssemblyName>
+    <RootNamespace>CryGame</RootNamespace>
+    <AssemblyName>CryGameLibrary</AssemblyName>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\</OutputPath>
+    <OutputPath>..\Game\Scripts\Plugins\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -33,14 +33,14 @@
     <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\..\</OutputPath>
+    <OutputPath>..\Game\Scripts\Plugins\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Debug\</OutputPath>
+    <OutputPath>..\Game\Scripts\Plugins\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
@@ -58,7 +58,7 @@
     <Optimize>false</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>bin\x64\Release\</OutputPath>
+    <OutputPath>..\Game\Scripts\Plugins\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -76,12 +76,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CryBrary">
-      <HintPath>..\..\Bin32\CryBrary.dll</HintPath>
-    </Reference>
-    <Reference Include="CryGameLibrary, Version=0.0.0.0, Culture=neutral, processorArchitecture=x86">
+    <Reference Include="CryBrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Plugins\CryGameLibrary.dll</HintPath>
+      <HintPath>..\..\..\..\..\ProjectInk\Bin32\CryBrary.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -95,16 +93,7 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Entities\Actor\PlayableCharacter.cs" />
-    <Compile Include="Entities\Multiplayer\SpawnPoint.cs" />
-    <Compile Include="Entities\SampleEntity.cs" />
-    <Compile Include="FlowNodes\Math\Mult.cs" />
-    <Compile Include="FlowNodes\SampleNode.cs" />
-    <Compile Include="FlowNodes\Testing\TestALLThePortTypes.cs" />
-    <Compile Include="GameRules\BaseGameRules.cs" />
-    <Compile Include="GameRules\Campaign.cs" />
-    <Compile Include="GameRules\DeathMatch.cs" />
-    <Compile Include="GameRules\Versus.cs" />
+    <Compile Include="GameRules.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

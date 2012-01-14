@@ -14,12 +14,31 @@ enum EMonoScriptType;
 struct IMonoArray;
 struct IMonoObject;
 
+typedef int MonoScriptId;
+
+/// <summary>
+/// Created for each Mono class instance (Entities, FlowNodes & GameRules) and can be used to invoke methods
+/// This can be retrieved using IMonoScriptSystem::GetScriptById.
+/// To invoke script methods, utilize the global CallMonoScript method.
+/// </summary>
 struct IMonoScript
 {
-	virtual int GetId() = 0;
+	/// <summary>
+	/// Retrieves this script's identifier.
+	/// </summary>
+	virtual MonoScriptId GetId() = 0;
+	/// <summary>
+	/// Retrieves the name of this script class.
+	/// </summary>
 	virtual const char *GetName() = 0;
+	/// <summary>
+	/// Returns the script type.
+	/// </summary>
 	virtual EMonoScriptType GetType() = 0;
 
+	/// <summary>
+	/// Invokes a method on this script instance, with the specified args if provided.
+	/// </summary>
 	virtual IMonoObject *InvokeMethod(const char *func, IMonoArray *pArgs = NULL) = 0;
 	template <typename T>
 	T InvokeMethod(const char *func, IMonoArray *pArgs = NULL)
@@ -30,7 +49,5 @@ struct IMonoScript
 		return (T)0;
 	}
 };
-
-typedef int MonoScriptId;
 
 #endif //__IMONOSCRIPT_H__

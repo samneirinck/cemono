@@ -10,6 +10,9 @@
 #ifndef __MONO_ANY_VALUE__
 #define __MONO_ANY_VALUE__
 
+/// <summary>
+/// Used within MonoAnyValue and IMonoObject to easily get the object type contained within.
+/// </summary>
 enum MonoAnyType
 {
 	MONOTYPE_NULL = -1,
@@ -28,6 +31,10 @@ enum MonoAnyType
 	MONOTYPE_LAST
 };
 
+/// <summary>
+/// Simple class used to easily convert common C++ types to their C# equivalents.
+/// Serialization support is built-in, although untested at the moment. Will be functional in time for CryMono 0.3.
+/// </summary>
 struct MonoAnyValue
 {
 	MonoAnyValue(bool value) : type(MONOTYPE_BOOL) { b = value; }

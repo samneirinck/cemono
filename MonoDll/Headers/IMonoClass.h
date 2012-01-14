@@ -12,9 +12,21 @@
 struct IMonoObject;
 struct IMonoArray;
 
+/// <summary>
+/// Reference to a Mono class, used to call static methods and etc.
+/// </summary>
+/// <example>
+/// IMonoClass *pCryNetwork = gEnv->pMonoScriptSystem->GetCustomClass("CryNetwork", "CryEngine");
+/// </example>
 struct IMonoClass
 {
 public:
+	/// <summary>
+	/// Invokes a method on the specified class.
+	/// </summary>
+	/// <example>
+	/// CallMethod("InitializeNetwork", pParameters, true");
+	/// </example>
 	virtual IMonoObject *CallMethod(const char *methodName, IMonoArray *params = NULL, bool _static = false) = 0;
 };
 

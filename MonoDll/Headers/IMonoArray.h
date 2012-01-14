@@ -20,32 +20,67 @@ namespace mono
 struct IMonoObject;
 
 struct MonoAnyValue;
-struct HitInfo;
-struct ExplosionInfo;
 
+/// <summary>
+/// Used to wrap arrays sent from C#, and also used when passing arrays of elements from C++.
+/// </summary>
 struct IMonoArray : public CMonoSerializable
 {
 public:
+	/// <summary>
+	/// Clears the array of all its elements.
+	/// Note that the pre-determined size set when the array was created remains.
+	/// </summary>
 	virtual void Clear() = 0;
+	/// <summary>
+	/// Retrieves the size of the array.
+	/// </summary>
 	virtual int GetSize() const = 0;
 
+	/// <summary>
+	/// Retrieves an IMonoObject at the selected index of the array.
+	/// </summary>
 	virtual IMonoObject *GetItem(int index) = 0;
+	/// <summary>
+	/// Retrieves an unboxed IMonoObject at the selected index of the array.
+	/// </summary>
 	template <class T>
 	T GetItemUnboxed(int index) { return GetItem(index)->Unbox<T>(); }
+	/// <summary>
+	/// Retrieves a string at the selected index of the array.
+	/// </summary>
 	virtual const char *GetItemString(int index) = 0;
+	/// <summary>
+	/// Retrieves an IMonoArray at the selected index of the array.
+	/// </summary>
 	virtual IMonoArray *GetItemArray(int index) = 0;
 
+	/// <summary>
+	/// Inserts an MonoAnyValue object into the array.
+	/// </summary>
 	virtual void Insert(MonoAnyValue value) = 0;
-
+	/// <summary>
+	/// Inserts an IMonoObject into the array
+	/// </summary>
 	virtual void Insert(IMonoObject *pObject) = 0;
+	/// <summary>
+	/// Inserts an IMonoArray into the array.
+	/// </summary>
 	virtual void Insert(IMonoArray *pArray) = 0;
 
+	/// <summary>
+	/// Inserts a mono string into the array.
+	/// </summary>
 	virtual void InsertString(mono::string string) = 0;
-	virtual void InsertArray(mono::array array) = 0;
 
+	/// <summary>
+	/// Retrieves the mono array, can be passed directly to C#.
+	/// </summary>
 	virtual mono::array GetMonoArray() = 0;
 
-	// Operator overloads to easily cast to mono types
+	/// <summary>
+	/// Simple overloaded operator to allow direct casting to Mono type array.
+	/// </summary>
 	operator mono::array() const
 	{
 		return const_cast<IMonoArray *>(this)->GetMonoArray();

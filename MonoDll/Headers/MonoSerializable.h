@@ -11,11 +11,17 @@
 
 #include <MonoAnyValue.h>
 
+/// <summary>
+/// Serializable mono value, used within IMonoObject and IMonoArray.
+/// This functionality is highly experimental and should be avoided.
+/// </summary>
 class CMonoSerializable
 {
 public:
 	CMonoSerializable() : value(0) {}
 
+	/// <summary>
+	/// </summary>
 	virtual void Serialize(TSerialize ser)
 	{
 		// the value of value is set in the parent, i.e. IMonoObject::Serialize.
@@ -26,6 +32,8 @@ public:
 	}
 
 protected:
+	/// <summary>
+	/// </summary>
 	MonoAnyValue value;
 };
 

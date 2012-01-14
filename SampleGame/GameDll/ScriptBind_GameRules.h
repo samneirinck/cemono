@@ -860,11 +860,6 @@ public:
 	virtual const char *GetClassName() { return "GameRules"; }
 	// ~IMonoScriptBind
 
-	static void RegisterGameMode(mono::string gamemode);
-	static void AddGameModeAlias(mono::string gamemode, mono::string alias);
-	static void AddGameModeLevelLocation(mono::string gamemode, mono::string location);
-	static void SetDefaultGameMode(mono::string gamemode);
-
 private:
 	void RegisterMethods();
 
