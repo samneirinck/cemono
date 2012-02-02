@@ -25,11 +25,6 @@ D:\Dev\INK\CryENGINE\Code\CryMono
 
 Using another folder structure is up to the developer, but will require customization in order to get Visual Studio to output compiled libraries to the correct location.
 
-### CryMono source access
-As of version 0.2, we no longer ship source to CryMono.dll.
-
-If you are interested in obtaining source for this, please contact us at business@inkdev.net
-
 # IDE Compatibility
 The solution has been worked on internally using Visual Studio 2010, but should support 2005 and up in theory. Express versions are supported as of CryMono v0.2.
 
