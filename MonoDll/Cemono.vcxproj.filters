@@ -1,0 +1,229 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Headers\IMonoScriptBind.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="MonoAssembly.h">
+      <Filter>Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="MonoClass.h">
+      <Filter>Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="MonoEntityClass.h">
+      <Filter>EntitySystem</Filter>
+    </ClInclude>
+    <ClInclude Include="MonoEntityEventHandler.h">
+      <Filter>EntitySystem</Filter>
+    </ClInclude>
+    <ClInclude Include="MonoObject.h">
+      <Filter>Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="Scriptbinds\Console.h">
+      <Filter>ScriptBinds</Filter>
+    </ClInclude>
+    <ClInclude Include="MonoEntityPropertyHandler.h">
+      <Filter>EntitySystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\IMonoScriptSystem.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="MonoScriptSystem.h">
+      <Filter>Mono</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\IMonoArray.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\IMonoObject.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="MonoArray.h">
+      <Filter>Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\IMonoClass.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\IMonoAssembly.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="MonoTester.h">
+      <Filter>Mono</Filter>
+    </ClInclude>
+    <ClInclude Include="CallbackHandler.h">
+      <Filter>Mono\Callbacks</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\IMonoEntityManager.h">
+      <Filter>Interfaces\Subsystems</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityManager.h">
+      <Filter>EntitySystem</Filter>
+    </ClInclude>
+    <ClInclude Include="FlowManager.h">
+      <Filter>FlowSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="MonoFlowNode.h">
+      <Filter>FlowSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\MonoSerializable.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="MonoPathUtils.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\MonoCommon.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\IMonoConverter.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="MonoConverter.h">
+      <Filter>Mono</Filter>
+    </ClInclude>
+    <ClInclude Include="Scriptbinds\ScriptBind_GameRules.h">
+      <Filter>ScriptBinds</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\MonoAnyValue.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\IMonoAutoRegScriptbind.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Scriptbinds\ActorSystem.h">
+      <Filter>ActorSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="MonoActorClass.h">
+      <Filter>ActorSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="MonoEntity.h">
+      <Filter>EntitySystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptBinds\ScriptBind_StaticEntity.h">
+      <Filter>ScriptBinds</Filter>
+    </ClInclude>
+    <ClInclude Include="Scriptbinds\ScriptBind_3DEngine.h">
+      <Filter>ScriptBinds\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Scriptbinds\ScriptBind_Renderer.h">
+      <Filter>ScriptBinds\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Scriptbinds\ScriptBind_PhysicalWorld.h">
+      <Filter>ScriptBinds\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Scriptbinds\ItemSystem.h">
+      <Filter>ScriptBinds</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="MonoAssembly.cpp">
+      <Filter>Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="MonoClass.cpp">
+      <Filter>Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="MonoEntityClass.cpp">
+      <Filter>EntitySystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Scriptbinds\Console.cpp">
+      <Filter>ScriptBinds</Filter>
+    </ClCompile>
+    <ClCompile Include="MonoEntityPropertyHandler.cpp">
+      <Filter>EntitySystem</Filter>
+    </ClCompile>
+    <ClCompile Include="MonoArray.cpp">
+      <Filter>Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="MonoTester.cpp">
+      <Filter>Mono</Filter>
+    </ClCompile>
+    <ClCompile Include="CallbackHandler.cpp">
+      <Filter>Mono\Callbacks</Filter>
+    </ClCompile>
+    <ClCompile Include="MonoScriptSystem.cpp">
+      <Filter>Mono</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityManager.cpp">
+      <Filter>EntitySystem</Filter>
+    </ClCompile>
+    <ClCompile Include="FlowManager.cpp">
+      <Filter>FlowSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="MonoFlowNode.cpp">
+      <Filter>FlowSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="MonoObject.cpp">
+      <Filter>Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="CemonoDll.cpp" />
+    <ClCompile Include="MonoConverter.cpp">
+      <Filter>Mono</Filter>
+    </ClCompile>
+    <ClCompile Include="Scriptbinds\ScriptBind_GameRules.cpp">
+      <Filter>ScriptBinds</Filter>
+    </ClCompile>
+    <ClCompile Include="Scriptbinds\ActorSystem.cpp">
+      <Filter>ActorSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="MonoActorClass.cpp">
+      <Filter>ActorSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="MonoEntity.cpp">
+      <Filter>EntitySystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptBinds\ScriptBind_StaticEntity.cpp">
+      <Filter>ScriptBinds</Filter>
+    </ClCompile>
+    <ClCompile Include="Scriptbinds\ScriptBind_3DEngine.cpp">
+      <Filter>ScriptBinds\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Scriptbinds\ScriptBind_PhysicalWorld.cpp">
+      <Filter>ScriptBinds\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Scriptbinds\ScriptBind_Renderer.cpp">
+      <Filter>ScriptBinds\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Scriptbinds\ItemSystem.cpp">
+      <Filter>ScriptBinds</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Mono">
+      <UniqueIdentifier>{2de1619b-2f0c-4705-a8e5-59c8778b080d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ScriptBinds">
+      <UniqueIdentifier>{b74b7f2e-21ba-41b0-bfc0-0c6746e17f19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Wrappers">
+      <UniqueIdentifier>{399bdcdf-4fb8-4ed3-83c1-f29f83c7c09b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfaces">
+      <UniqueIdentifier>{2274758e-72ad-46e0-8409-df6cebf00772}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mono\Callbacks">
+      <UniqueIdentifier>{f40082af-b3c5-4cbe-a79c-19b63a0de8f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EntitySystem">
+      <UniqueIdentifier>{f5c2f1b4-f7f2-4f27-be93-8c656a23cdb2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfaces\Subsystems">
+      <UniqueIdentifier>{c8d89b01-9d52-4b04-b3e0-3b66f52199f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FlowSystem">
+      <UniqueIdentifier>{e86e83fb-fa9c-4662-9e45-e9f845946fc0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{aa1f26db-41b9-4103-b477-74ef21bd29e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ActorSystem">
+      <UniqueIdentifier>{32d4459d-d985-405f-b557-6c1c738d1804}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ScriptBinds\Engine">
+      <UniqueIdentifier>{eced402b-3030-4e66-851f-54f11f392c9b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="CryMono.rc" />
+  </ItemGroup>
+</Project>
