@@ -189,6 +189,7 @@ typedef struct MonoAotCompile {
 	GString *as_args;
 	char *assembly_name_sym;
 	gboolean thumb_mixed, need_no_dead_strip, need_pt_gnu_stack;
+	GHashTable *ginst_hash;
 } MonoAotCompile;
 
 typedef struct {
@@ -2892,8 +2893,16 @@ add_generic_class_with_depth (MonoAotCompile *acfg, MonoClass *klass, int depth)
 	if (!klass->generic_class && !klass->rank)
 		return;
 
+	if (!acfg->ginst_hash)
+		acfg->ginst_hash = g_hash_table_new (NULL, NULL);
+
+	if (g_hash_table_lookup (acfg->ginst_hash, klass))
+		return;
+
 	if (check_type_depth (&klass->byval_arg, 0))
 		return;
+
+	g_hash_table_insert (acfg->ginst_hash, klass, klass);
 
 	iter = NULL;
 	while ((method = mono_class_get_methods (klass, &iter))) {
@@ -2919,6 +2928,10 @@ add_generic_class_with_depth (MonoAotCompile *acfg, MonoClass *klass, int depth)
 
 		add_method (acfg, method);
 	}
+
+	/* Add superclasses */
+	if (klass->parent)
+		add_generic_class_with_depth (acfg, klass->parent, depth);
 
 	/* 
 	 * For ICollection<T>, add instances of the helper methods
@@ -3843,7 +3856,7 @@ emit_exception_debug_info (MonoAotCompile *acfg, MonoCompile *cfg)
 	use_unwind_ops = cfg->unwind_ops != NULL;
 #endif
 
-	flags = (jinfo->has_generic_jit_info ? 1 : 0) | (use_unwind_ops ? 2 : 0) | (header->num_clauses ? 4 : 0) | (seq_points ? 8 : 0) | (cfg->compile_llvm ? 16 : 0) | (jinfo->has_try_block_holes ? 32 : 0) | (cfg->gc_map ? 64 : 0);
+	flags = (jinfo->has_generic_jit_info ? 1 : 0) | (use_unwind_ops ? 2 : 0) | (header->num_clauses ? 4 : 0) | (seq_points ? 8 : 0) | (cfg->compile_llvm ? 16 : 0) | (jinfo->has_try_block_holes ? 32 : 0) | (cfg->gc_map ? 64 : 0) | (jinfo->has_arch_eh_info ? 128 : 0);
 
 	encode_value (flags, p, &p);
 
@@ -3955,6 +3968,13 @@ emit_exception_debug_info (MonoAotCompile *acfg, MonoCompile *cfg)
 			encode_value (hole->length, p, &p);
 			encode_value (hole->offset, p, &p);
 		}
+	}
+
+	if (jinfo->has_arch_eh_info) {
+		MonoArchEHJitInfo *eh_info;
+
+		eh_info = mono_jit_info_get_arch_eh_info (jinfo);
+		encode_value (eh_info->stack_size, p, &p);
 	}
 
 	if (seq_points) {
@@ -4898,6 +4918,14 @@ compile_method (MonoAotCompile *acfg, MonoMethod *method)
 
 				if (klass->generic_class && !mono_generic_context_is_sharable (&klass->generic_class->context, FALSE))
 					add_generic_class_with_depth (acfg, klass, depth + 5);
+				break;
+			}
+			case MONO_PATCH_INFO_SFLDA: {
+				MonoClass *klass = patch_info->data.field->parent;
+
+				/* The .cctor needs to run at runtime. */
+				if (klass->generic_class && !mono_generic_context_is_sharable (&klass->generic_class->context, FALSE) && mono_class_get_cctor (klass))
+					add_extra_method_with_depth (acfg, mono_class_get_cctor (klass), depth + 1);
 				break;
 			}
 			default:

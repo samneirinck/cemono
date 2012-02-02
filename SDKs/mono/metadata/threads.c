@@ -43,7 +43,7 @@
 #include <mono/utils/mono-mmap.h>
 #include <mono/utils/mono-membar.h>
 #include <mono/utils/mono-time.h>
-#include <mono/utils/hazard-pointer.h>
+#include <mono/utils/mono-tls.h>
 
 #include <mono/metadata/gc-internal.h>
 
@@ -152,7 +152,7 @@ static MonoGHashTable *threads_starting_up = NULL;
 static MonoGHashTable *thread_start_args = NULL;
 
 /* The TLS key that holds the MonoObject assigned to each thread */
-static guint32 current_object_key = -1;
+static MonoNativeTlsKey current_object_key;
 
 #ifdef HAVE_KW_THREAD
 /* we need to use both the Tls* functions and __thread because
@@ -161,12 +161,12 @@ static guint32 current_object_key = -1;
 static __thread MonoInternalThread * tls_current_object MONO_TLS_FAST;
 #define SET_CURRENT_OBJECT(x) do { \
 	tls_current_object = x; \
-	TlsSetValue (current_object_key, x); \
+	mono_native_tls_set_value (current_object_key, x); \
 } while (FALSE)
 #define GET_CURRENT_OBJECT() tls_current_object
 #else
-#define SET_CURRENT_OBJECT(x) TlsSetValue (current_object_key, x)
-#define GET_CURRENT_OBJECT() (MonoThread*) TlsGetValue (current_object_key)
+#define SET_CURRENT_OBJECT(x) mono_native_tls_set_value (current_object_key, x)
+#define GET_CURRENT_OBJECT() (MonoThread*) mono_native_tls_get_value (current_object_key)
 #endif
 
 /* function called at thread start */
@@ -238,8 +238,8 @@ get_next_managed_thread_id (void)
 	return InterlockedIncrement (&managed_thread_id_counter);
 }
 
-guint32
-mono_thread_get_tls_key (void)
+MonoNativeTlsKey
+mono_thread_get_native_tls_key (void)
 {
 	return current_object_key;
 }
@@ -455,6 +455,20 @@ is_pointer_hazardous (gpointer p)
 	return FALSE;
 }
 
+MonoThreadHazardPointers*
+mono_hazard_pointer_get (void)
+{
+	MonoInternalThread *current_thread = mono_thread_internal_current ();
+
+	if (!(current_thread && current_thread->small_id >= 0)) {
+		static MonoThreadHazardPointers emerg_hazard_table;
+		g_warning ("Thread %p may have been prematurely finalized", current_thread);
+		return &emerg_hazard_table;
+	}
+
+	return &hazard_table [current_thread->small_id];
+}
+
 static void
 try_free_delayed_free_item (int index)
 {
@@ -478,6 +492,45 @@ try_free_delayed_free_item (int index)
 		if (item.p != NULL)
 			item.free_func (item.p);
 	}
+}
+
+void
+mono_thread_hazardous_free_or_queue (gpointer p, MonoHazardousFreeFunc free_func)
+{
+	int i;
+
+	/* First try to free a few entries in the delayed free
+	   table. */
+	for (i = 2; i >= 0; --i)
+		try_free_delayed_free_item (i);
+
+	/* Now see if the pointer we're freeing is hazardous.  If it
+	   isn't, free it.  Otherwise put it in the delay list. */
+	if (is_pointer_hazardous (p)) {
+		DelayedFreeItem item = { p, free_func };
+
+		++mono_stats.hazardous_pointer_count;
+
+		EnterCriticalSection (&delayed_free_table_mutex);
+		g_array_append_val (delayed_free_table, item);
+		LeaveCriticalSection (&delayed_free_table_mutex);
+	} else
+		free_func (p);
+}
+
+void
+mono_thread_hazardous_try_free_all (void)
+{
+	int len;
+	int i;
+
+	if (!delayed_free_table)
+		return;
+
+	len = delayed_free_table->len;
+
+	for (i = len - 1; i >= 0; --i)
+		try_free_delayed_free_item (i);
 }
 
 static void ensure_synch_cs_set (MonoInternalThread *thread)
@@ -2597,7 +2650,7 @@ void mono_thread_init (MonoThreadStartCB start_cb,
 	mono_init_static_data_info (&thread_static_info);
 	mono_init_static_data_info (&context_static_info);
 
-	current_object_key=TlsAlloc();
+	mono_native_tls_alloc (&current_object_key, NULL);
 	THREAD_DEBUG (g_message ("%s: Allocated current_object_key %d", __func__, current_object_key));
 
 	mono_thread_start_cb = start_cb;
@@ -2647,7 +2700,7 @@ void mono_thread_cleanup (void)
 	g_array_free (delayed_free_table, TRUE);
 	delayed_free_table = NULL;
 
-	TlsFree (current_object_key);
+	mono_native_tls_free (current_object_key);
 }
 
 void

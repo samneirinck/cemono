@@ -1236,6 +1236,8 @@ mono_arch_create_vars (MonoCompile *cfg)
 	if ((cinfo->ret.storage != ArgValuetypeInReg) && MONO_TYPE_ISSTRUCT (sig->ret)) {
 		cfg->vret_addr = mono_compile_create_var (cfg, &mono_defaults.int_class->byval_arg, OP_ARG);
 	}
+
+	cfg->arch_eh_jit_info = 1;
 }
 
 /*
@@ -5510,7 +5512,7 @@ mono_arch_setup_jit_tls_data (MonoJitTlsData *tls)
 			 * We need to init this multiple times, since when we are first called, the key might not
 			 * be initialized yet.
 			 */
-			appdomain_tls_offset = mono_domain_get_tls_key ();
+			appdomain_tls_offset = mono_domain_get_native_tls_key ();
 			lmf_tls_offset = mono_get_jit_tls_key ();
 
 			/* Only 64 tls entries can be accessed using inline code */

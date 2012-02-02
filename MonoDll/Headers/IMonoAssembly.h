@@ -22,9 +22,17 @@ public:
 	/// Instantiates a class within the assembly.
 	/// </summary>
 	/// <example>
-	/// IMonoClass *pClass = InstantiateClass("CryEngine", "MyClass");
+	/// IMonoClass *pClass = pAssembly->InstantiateClass("CryEngine", "MyClass");
 	/// </example>
 	virtual IMonoClass *InstantiateClass(const char *nameSpace, const char *className, IMonoArray *pConstructorArguments = NULL) = 0;
+	/// <summary>
+	/// Gets a custom C# class from within the assembly.
+	/// Note: This does not construct an new instance of the class, only returns an uninitialized IMonoClass. To instantiate a class, see IMonoAssembly::InstantiateClass
+	/// </summary>
+	/// <example>
+	/// IMonoClass *pClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("Vec3");
+	/// </example>
+	virtual IMonoClass *GetCustomClass(const char *className, const char *nameSpace = "CryEngine") = 0;
 };
 
 #endif //__I_MONO_ASSEMBLY__`	

@@ -1,3 +1,21 @@
+2011-11-24  Zoltan Varga  <vargaz@gmail.com>
+
+	Always free _WapiFileShare entries using _wapi_free_share_info (),
+	otherwise zeroed out entries remain in the hash table when shared
+	handles are disabled. Fixes #2170.
+
+2011-11-11  Alan McGovern  <alan.mcgovern@gmail.com>
+
+	[io-layer] Use lstat as a fallback for stat in SetFileAttributes
+
+	Make SetFileAttributes consistent with GetFileAttributes - if stat
+	fails and ENOENT try to use lstat in case it's a dangling symlink.
+
+2011-11-04  Zoltan Varga  <vargaz@gmail.com>
+
+	Avoid adding a ref in OpenProcess (), it is already added in
+	_wapi_search_handle (). Fixes #1682.
+
 2011-09-06  Rodrigo Kumpera  <kumpera@gmail.com>
 
 	Let the system figure our permissions instead of doing a poor job

@@ -254,7 +254,7 @@ typedef struct {
 #define HEADER_LENGTH 11
 
 #define MAJOR_VERSION 2
-#define MINOR_VERSION 4
+#define MINOR_VERSION 5
 
 typedef enum {
 	CMD_SET_VM = 1,
@@ -457,7 +457,8 @@ typedef enum {
 	CMD_OBJECT_REF_IS_COLLECTED = 3,
 	CMD_OBJECT_REF_GET_ADDRESS = 4,
 	CMD_OBJECT_REF_GET_DOMAIN = 5,
-	CMD_OBJECT_REF_SET_VALUES = 6
+	CMD_OBJECT_REF_SET_VALUES = 6,
+	CMD_OBJECT_REF_GET_INFO = 7,
 } CmdObject;
 
 typedef struct {
@@ -3385,7 +3386,24 @@ insert_breakpoint (MonoSeqPointInfo *seq_points, MonoDomain *domain, MonoJitInfo
 	}
 
 	if (i == seq_points->len) {
+		/*
+		 * The set of IL offsets with seq points doesn't completely match the
+		 * info returned by CMD_METHOD_GET_DEBUG_INFO (#407).
+		 */
+		for (i = 0; i < seq_points->len; ++i) {
+			SeqPoint *sp = &seq_points->seq_points [i];
+
+			if (sp->il_offset != METHOD_ENTRY_IL_OFFSET && sp->il_offset != METHOD_EXIT_IL_OFFSET && sp->il_offset + 1 == bp->il_offset)
+				break;
+		}
+	}
+
+	if (i == seq_points->len) {
 		char *s = g_strdup_printf ("Unable to insert breakpoint at %s:%d, seq_points=%d\n", mono_method_full_name (ji->method, TRUE), bp->il_offset, seq_points->len);
+
+		for (i = 0; i < seq_points->len; ++i)
+			printf ("%d\n", seq_points->seq_points [i].il_offset);
+
 		if (error) {
 			mono_error_set_error (error, MONO_ERROR_GENERIC, "%s", s);
 			g_free (s);
@@ -5355,7 +5373,7 @@ vm_commands (int command, int id, guint8 *p, guint8 *end, Buffer *buf)
 		MonoInternalThread *thread;
 		DebuggerTlsData *tls;
 		MonoClass *env_class;
-		MonoMethod *exit_method;
+		MonoMethod *exit_method = NULL;
 		gpointer *args;
 		int exit_code;
 
@@ -7025,6 +7043,10 @@ object_commands (int command, guint8 *p, guint8 *end, Buffer *buf)
 		buffer_add_long (buf, (gssize)obj);
 		break;
 	case CMD_OBJECT_REF_GET_DOMAIN:
+		buffer_add_domainid (buf, obj->vtable->domain);
+		break;
+	case CMD_OBJECT_REF_GET_INFO:
+		buffer_add_typeid (buf, obj->vtable->domain, obj->vtable->klass);
 		buffer_add_domainid (buf, obj->vtable->domain);
 		break;
 	default:

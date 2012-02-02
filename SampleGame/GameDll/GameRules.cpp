@@ -305,12 +305,7 @@ void CGameRules::PostSerialize()
 void CGameRules::OnGamemodeChanged(const char *newMode)
 {
 	if(IMonoScriptSystem *pScriptSystem = gEnv->pMonoScriptSystem)
-	{
-		IMonoArray *pConstructorArgs = pScriptSystem->GetConverter()->CreateArray(1);
-		pConstructorArgs->Insert(GetEntityId());
-
-		m_monoScriptId = pScriptSystem->InstantiateScript(EMonoScriptType_GameRules, newMode, pConstructorArgs);
-	}
+		m_monoScriptId = pScriptSystem->InstantiateScript(EMonoScriptType_GameRules, newMode);
 
 	RegisterHits();
 }

@@ -1,31 +1,20 @@
-using System;
-
 using CryEngine;
 
 namespace CryGameCode.Entities
 {
 	[Entity(Category="TestCategory", EditorHelper="Editor/Objects/anchor.cgf", Icon="", Flags=EntityClassFlags.Default)]
-    public class SampleEntity : BaseEntity
+    public class SampleEntity : StaticEntity
     {
-        public override void OnUpdate()
-        {
-        }
-
         public override void OnSpawn()
         {
-            CryConsole.LogAlways("OnSpawn");
-        }
-
-        public override bool OnRemove()
-        {
-            return true;
+            Console.LogAlways("OnSpawn");
         }
 
 		//Floats/ints have optional constraints
 		[EditorProperty(Description="How awesome is this entity?", Min=0, Max=9001)]
 		public float awesomenessLevel;
 
-		[EditorProperty(Type=EntityPropertyType.File)]
+        [EditorProperty(Type = EntityPropertyType.File)]
 		public string fileSelector;
 
 		[EditorProperty(Type=EntityPropertyType.Object)]

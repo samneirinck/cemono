@@ -1,4 +1,6 @@
-﻿using System;
+﻿using System.IO;
+using System.Collections.Generic;
+//using System.Xml.Linq;
 
 using CryEngine;
 
@@ -11,22 +13,23 @@ using CryEngine;
 [ExcludeFromCompilation]
 public class GameRulesBase : BaseGameRules
 {
-    public GameRulesBase(UInt32 entityId)
-        : base(entityId)
+    public GameRulesBase() 
     {
+        m_damageTable = new Dictionary<string, float>(); 
     }
-
-    public GameRulesBase() { }
 
     public override void OnSpawn()
     {
-        GameRules._InitHits();
+        //XDocument damageTable = XDocument.Load(Path.Combine(CryPath.GetScriptsFolder(), @"GameRules\DamageTable.xml"));
+
+       // foreach (XElement body in damageTable.Root.Nodes())
+            //m_damageTable.Add(body.Attribute("part").Value, Convert.ToSingle(body.Attribute("damageMultiplier").Value));
     }
 
     // Client / Server shared
-	public virtual void PrecacheLevel()
+	public override void PrecacheLevel()
 	{
-		CryConsole.LogAlways("PrecacheLevel");
+		Console.LogAlways("PrecacheLevel");
 		string[] items = { "OffHand" };
 
 		foreach(var item in items)
@@ -36,138 +39,152 @@ public class GameRulesBase : BaseGameRules
 		}
 	}
 
-	public virtual void RequestSpawnGroup(UInt32 spawnGroupId)
+    public override void RequestSpawnGroup(uint spawnGroupId)
 	{
-		CryConsole.LogAlways("RequestSpawnGroup");
+		Console.LogAlways("RequestSpawnGroup");
 	}
 
-	public virtual void SetPlayerSpawnGroup(UInt32 playerId, UInt32 spawnGroupId)
+    public override void SetPlayerSpawnGroup(uint playerId, uint spawnGroupId)
 	{
-		CryConsole.LogAlways("SetPlayerSpawnGroup");
+		Console.LogAlways("SetPlayerSpawnGroup");
 	}
 
-	public virtual UInt32 GetPlayerSpawnGroup(UInt32 actorId)
+    public override uint GetPlayerSpawnGroup(uint actorId)
 	{
-		CryConsole.LogAlways("GetPlayerSpawnGroup");
+		Console.LogAlways("GetPlayerSpawnGroup");
         return 0;
 	}
 
-	public virtual void ShowScores(bool show)
+    public override void ShowScores(bool show)
 	{
-		CryConsole.LogAlways("ShowScores");
+		Console.LogAlways("ShowScores");
 	}
 
 	// Server-only
-    public virtual void OnClientConnect(int channelId, bool isReset = false, string playerName = "")
+    public override float GetDamageMult(string materialType)
+    {
+        Console.LogAlways("GetDamageMult");
+
+        if (m_damageTable.ContainsKey(materialType))
+            return m_damageTable[materialType];
+
+        Console.LogAlways("ret");
+
+        return 1.0f;
+    }
+
+    public override void OnClientConnect(int channelId, bool isReset = false, string playerName = "")
 	{
-		CryConsole.LogAlways("OnClientConnect");
+		Console.LogAlways("OnClientConnect");
 	}
 
-    public virtual void OnClientDisconnect(int channelId)
+    public override void OnClientDisconnect(int channelId)
 	{
-		CryConsole.LogAlways("OnClientDisconnect");
+		Console.LogAlways("OnClientDisconnect");
 	}
 
-    public virtual void OnClientEnteredGame(int channelId, uint playerId, bool reset, bool loadingSaveGame)
+    public override void OnClientEnteredGame(int channelId, uint playerId, bool reset, bool loadingSaveGame)
 	{
-		CryConsole.LogAlways("OnClientEnteredGame");
+		Console.LogAlways("OnClientEnteredGame");
 	}
 
-	public virtual void OnItemDropped(UInt32 itemId, UInt32 actorId)
+    public override void OnItemDropped(uint itemId, uint actorId)
 	{
-		CryConsole.LogAlways("OnItemDropped");
+		Console.LogAlways("OnItemDropped");
 	}
 
-	public virtual void OnItemPickedUp(UInt32 itemId, UInt32 actorId)
+    public override void OnItemPickedUp(uint itemId, uint actorId)
 	{
-		CryConsole.LogAlways("OnItemPickedUp");
+		Console.LogAlways("OnItemPickedUp");
 	}
 
-	public virtual void SvOnVehicleDestroyed(UInt32 vehicleId)
+    public override void SvOnVehicleDestroyed(uint vehicleId)
 	{
-		CryConsole.LogAlways("SvOnVehicleDestroyed");
+		Console.LogAlways("SvOnVehicleDestroyed");
 	}
 
-	public virtual void SvOnVehicleSubmerged(UInt32 vehicleId, float ratio)
+    public override void SvOnVehicleSubmerged(uint vehicleId, float ratio)
 	{
-		CryConsole.LogAlways("SvOnVehicleSubmerged");
+		Console.LogAlways("SvOnVehicleSubmerged");
 	}
 
-	public virtual void OnAddTaggedEntity(UInt32 shooterId, UInt32 targetId)
+    public override void OnAddTaggedEntity(uint shooterId, uint targetId)
 	{
-		CryConsole.LogAlways("OnAddTaggedEntity");
+		Console.LogAlways("OnAddTaggedEntity");
 	}
 
-	public virtual void OnChangeSpectatorMode(UInt32 actorId, byte mode, UInt32 targetId, bool resetAll)
+    public override void OnChangeSpectatorMode(uint actorId, byte mode, uint targetId, bool resetAll)
 	{
-		CryConsole.LogAlways("OnChangeSpectatorMode");
+		Console.LogAlways("OnChangeSpectatorMode");
 	}
 
-	public virtual void RequestSpectatorTarget(UInt32 playerId, int change)
+	public override void RequestSpectatorTarget(uint playerId, int change)
 	{
-		CryConsole.LogAlways("RequestSpectatorTarget");
+		Console.LogAlways("RequestSpectatorTarget");
 	}
 
-	public virtual void OnChangeTeam(UInt32 actorId, int teamId)
+	public override void OnChangeTeam(uint actorId, int teamId)
 	{
-		CryConsole.LogAlways("OnChangeTeam");
+		Console.LogAlways("OnChangeTeam");
 	}
 
-	public virtual void OnClientSetTeam(UInt32 actorId, int teamId)
+	public override void OnClientSetTeam(uint actorId, int teamId)
 	{
-		CryConsole.LogAlways("OnClientSetTeam");
+		Console.LogAlways("OnClientSetTeam");
 	}
 
-	public virtual void OnSpawnGroupInvalid(UInt32 playerId, UInt32 spawnGroupId)
+	public override void OnSpawnGroupInvalid(uint playerId, uint spawnGroupId)
 	{
-		CryConsole.LogAlways("OnSpawnGroupInvalid");
+		Console.LogAlways("OnSpawnGroupInvalid");
 	}
 
-	public virtual void RestartGame(bool forceInGame)
+	public override void RestartGame(bool forceInGame)
 	{
-		CryConsole.LogAlways("RestartGame");
+		Console.LogAlways("RestartGame");
 	}
 
 	// Client-only
-	public virtual void OnConnect()
+	public override void OnConnect()
 	{
-		CryConsole.LogAlways("OnConnect");
+		Console.LogAlways("OnConnect");
 	}
 
-	public virtual void OnDisconnect(int cause, string desc)
+	public override void OnDisconnect(int cause, string desc)
 	{
-		CryConsole.LogAlways("OnDisconnect");
+		Console.LogAlways("OnDisconnect");
 	}
 
-	public virtual void OnRevive(UInt32 actorId, Vec3 pos, Vec3 rot, int teamId)
+	public override void OnRevive(uint actorId, Vec3 pos, Vec3 rot, int teamId)
 	{
-		CryConsole.LogAlways("OnRevive pos: {0} {1} {2} rot: {3} {4} {5}", pos.X.ToString(), pos.Y.ToString(), pos.Z.ToString(), rot.X.ToString(), rot.Y.ToString(), rot.Z,ToString());
+		Console.LogAlways("OnRevive pos: {0} {1} {2} rot: {3} {4} {5}", pos.X.ToString(), pos.Y.ToString(), pos.Z.ToString(), rot.X.ToString(), rot.Y.ToString(), rot.Z,ToString());
 
         //ItemSystem.GiveItem(actorId, "R870");
 	}
 
-	public virtual void OnReviveInVehicle(UInt32 actorId, UInt32 vehicleId, int seatId, int teamId)
+	public override void OnReviveInVehicle(uint actorId, uint vehicleId, int seatId, int teamId)
 	{
-		CryConsole.LogAlways("OnReviveInVehicle");
+		Console.LogAlways("OnReviveInVehicle");
 	}
 
-	public virtual void OnKill(UInt32 actorId, UInt32 shooterId, string weaponClassName, int damage, int material, int hit_type)
+	public override void OnKill(uint actorId, uint shooterId, string weaponClassName, int damage, int material, int hit_type)
 	{
-		CryConsole.LogAlways("OnKill");
+		Console.LogAlways("OnKill");
 	}
 
-	public virtual void OnSetTeam(UInt32 actorId, int teamId)
+	public override void OnSetTeam(uint actorId, int teamId)
 	{
-		CryConsole.LogAlways("OnSetTeam");
+		Console.LogAlways("OnSetTeam");
 	}
 
-	public virtual void OnVehicleDestroyed(UInt32 vehicleId)
+	public override void OnVehicleDestroyed(uint vehicleId)
 	{
-		CryConsole.LogAlways("OnVehicleDestroyed");
+		Console.LogAlways("OnVehicleDestroyed");
 	}
 
-	public virtual void OnVehicleSubmerged(UInt32 vehicleId, float ratio)
+	public override void OnVehicleSubmerged(uint vehicleId, float ratio)
 	{
-		CryConsole.LogAlways("OnVehicleSubmerged");
+		Console.LogAlways("OnVehicleSubmerged");
 	}
+
+    Dictionary<string /* material type */, float /* damage mult */> m_damageTable;
 }

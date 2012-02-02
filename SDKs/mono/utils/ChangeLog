@@ -1,3 +1,50 @@
+2011-12-14  Duncan Mak  <duncan.mak@xamarin.com>
+
+	Fix typo from commit b4c110c.
+
+2011-12-08  Paolo Molaro  <lupus@oddwiz.org>
+
+	Do the multiplication/division with floating point numbers in time
+	calculations on win32.
+
+2011-12-07  Paolo Molaro  <lupus@oddwiz.org>
+
+	Fix overflow in the win32 monotonic time (xambug #183).
+
+2011-12-05  Rodrigo Kumpera  <kumpera@gmail.com>
+
+	Backport utils/mono-tls.h.
+
+2011-11-21  Jonathan Pryor  <jonp@xamarin.com>
+
+	[MonoDroid] Fix the libmono build.
+
+	7e49d08a nee 2763aae9c doesn't build because <fcntl.h> is missing:
+
+	mono/utils/mono-proclib.c:517: error: 'O_RDONLY' undeclared (first
+	use in this function
+
+	Fix the build.
+
+2011-11-16  Jérémie Laval  <jeremie.laval@gmail.com>
+
+	Fix previous commit
+
+2011-11-16  Jérémie Laval  <jeremie.laval@gmail.com>
+
+	[MonoDroid] Query hardware CPU count for
+	Environment.ProcessorCount
+
+2011-11-04  Sebastien Pouliot  <sebastien@xamarin.com>
+
+	OSX and iOS does not support CLOCK_MONOTONIC so we use
+	mach_timebase_info instead. Fix bug #1366
+
+2011-10-13  David Evans  <devans@mac.com>
+
+	Fix regression to System.Diagnostics.Process.PrivateMemorySize64
+	(). Fixes #1459
+
 2011-08-17  Miguel de Icaza  <miguel@gnome.org>
 
 	updated copyrights

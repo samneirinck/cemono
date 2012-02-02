@@ -12,16 +12,16 @@
 #include <MonoAnyValue.h>
 
 #include <IMonoArray.h>
+#include <IMonoClass.h>
 
 #include <CryExtension/ICryUnknown.h>
+#include <IEngineModule.h>
 
 struct IMonoScriptBind;
-struct IMonoScript;
 struct IMonoObject;
 struct IMonoArray;
 
 struct IMonoAssembly;
-struct IMonoClass;
 
 struct IMonoEntityManager;
 
@@ -40,9 +40,16 @@ enum EMonoScriptType
 /// <summary>
 /// The main module in CryMono; initializes mono domain and handles calls to C# scripts.
 /// </summary>
-struct IMonoScriptSystem : public ICryUnknown
+struct IMonoScriptSystem : public IEngineModule
 {
 	CRYINTERFACE_DECLARE(IMonoScriptSystem, 0x86169744ce38420f, 0x9768a98386be991f)
+
+	// IEngineModule
+	virtual const char *GetName() { return "CryMono"; }
+	virtual const char *GetCategory() { return "CryEngine"; }
+
+	virtual bool Initialize( SSystemGlobalEnvironment &env,const SSystemInitParams &initParams ) { return true; }
+	// ~IEngineModule
 
 	/// <summary>
 	/// Initializes the Mono runtime.
@@ -64,7 +71,7 @@ struct IMonoScriptSystem : public ICryUnknown
 	/// <summary>
 	/// Updates the system, once per frame.
 	/// </summary>
-	virtual void Update() = 0;
+	virtual void Update(float frameTime) = 0;
 
 	virtual IMonoEntityManager *GetEntityManager() const = 0;
 	
@@ -82,41 +89,20 @@ struct IMonoScriptSystem : public ICryUnknown
 	/// <summary>
 	/// Gets the instantied script with the supplied id.
 	/// </summary>
-	virtual IMonoScript *GetScriptById(int id) = 0;
+	virtual IMonoClass *GetScriptById(int id) = 0;
 	/// <summary>
 	/// Removes and destructs an instantiated script with the supplied id if found.
 	/// </summary>
 	virtual void RemoveScriptInstance(int id) = 0;
 
 	/// <summary>
+	/// Gets a pointer to the CryBrary assembly containing all default CryMono types.
+	/// </summary>
+	virtual IMonoAssembly *GetCryBraryAssembly() = 0;
+	/// <summary>
 	/// Loads an Mono assembly and returns a fully initialized IMonoAssembly.
 	/// </summary>
 	virtual IMonoAssembly *LoadAssembly(const char *assemblyPath) = 0;
-
-	/// <summary>
-	/// Invokes a script method with the supplied args.
-	/// </summary>
-	virtual IMonoObject *CallScript(int scriptId, const char *funcName, IMonoArray *pArgs = NULL) = 0;
-	template <typename T> T CallScript(int scriptId, const char *funcName, IMonoArray *pArgs = NULL)
-	{
-		if(IMonoObject *pObject = CallScript(scriptId, funcName, pArgs))
-			return pObject->Unbox<T>();
-
-		return default(T);
-	}
-
-	/// <summary>
-	/// Gets a custom C# class from within the specified assembly.
-	/// Uses CryBrary if assembly is NULL.
-	/// </summary>
-	/// <example>
-	/// gEnv->pMonoScriptSystem->GetCustomClass("MyClass")->CallMethod("Initialize");
-	/// </example>
-	virtual IMonoClass *GetCustomClass(const char *className, const char *nameSpace = "CryEngine", IMonoAssembly *pAssembly = NULL) = 0;
-	/// <summary>
-	/// Instantiates a class created in C#.
-	/// </summary>
-	virtual IMonoClass *InstantiateClass(const char *className, const char *nameSpace = "CryEngine", IMonoArray *pConstructorParameters = NULL) = 0;
 
 	/// <summary>
 	/// Retrieves an instance of the IMonoConverter; a class used to easily convert C# types to C++ and the other way around.
@@ -129,85 +115,97 @@ struct IMonoScriptSystem : public ICryUnknown
 	typedef void *(*TEntryFunction)(ISystem* pSystem);
 };
 
-
 static IMonoObject *CallMonoScript(int scriptId, const char *funcName)
 {
-	if(scriptId==-1)
-		return NULL;
+	IMonoObject *pResult = NULL;
+	if(IMonoClass *pClass = gEnv->pMonoScriptSystem->GetScriptById(scriptId))
+		pResult = pClass->CallMethod(funcName);
 
-	return gEnv->pMonoScriptSystem->CallScript(scriptId, funcName, NULL);
+	return pResult;
 };
 template<typename P1> 
 static IMonoObject *CallMonoScript(int scriptId, const char *funcName, const P1 &p1)
 {
-	if(scriptId==-1)
-		return NULL;
-
 	IMonoArray *pArray = gEnv->pMonoScriptSystem->GetConverter()->CreateArray(1);
 	pArray->Insert(p1);
 
-	return gEnv->pMonoScriptSystem->CallScript(scriptId, funcName, pArray);
+	IMonoObject *pResult = NULL;
+	if(IMonoClass *pClass = gEnv->pMonoScriptSystem->GetScriptById(scriptId))
+		pResult = pClass->CallMethod(funcName, pArray);
+		
+	SAFE_DELETE(pArray);
+
+	return pResult;
 };
 template<typename P1, typename P2> 
 static IMonoObject *CallMonoScript(int scriptId, const char *funcName, const P1 &p1, const P2 &p2)
 {
-	if(scriptId==-1)
-		return NULL;
-
 	IMonoArray *pArray = gEnv->pMonoScriptSystem->GetConverter()->CreateArray(2);
 	pArray->Insert(p1);
 	pArray->Insert(p2);
 
-	return gEnv->pMonoScriptSystem->CallScript(scriptId, funcName, pArray);
+	IMonoObject *pResult = NULL;
+	if(IMonoClass *pClass = gEnv->pMonoScriptSystem->GetScriptById(scriptId))
+		pResult = pClass->CallMethod(funcName, pArray);
+
+	SAFE_DELETE(pArray);
+
+	return pResult;
 };
 template<typename P1, typename P2, typename P3> 
 static IMonoObject *CallMonoScript(int scriptId, const char *funcName, const P1 &p1, const P2 &p2, const P3 &p3)
 {
-	if(scriptId==-1)
-		return NULL;
-
 	IMonoArray *pArray = gEnv->pMonoScriptSystem->GetConverter()->CreateArray(3);
 	pArray->Insert(p1);
 	pArray->Insert(p2);
 	pArray->Insert(p3);
+	
+	IMonoObject *pResult = NULL;
+	if(IMonoClass *pClass = gEnv->pMonoScriptSystem->GetScriptById(scriptId))
+		pResult = pClass->CallMethod(funcName, pArray);
 
-	return gEnv->pMonoScriptSystem->CallScript(scriptId, funcName, pArray);
+	SAFE_DELETE(pArray);
+
+	return pResult;
 };
 template<typename P1, typename P2, typename P3, typename P4> 
 static IMonoObject *CallMonoScript(int scriptId, const char *funcName, const P1 &p1, const P2 &p2, const P3 &p3, const P4 &p4)
 {
-	if(scriptId==-1)
-		return NULL;
-
 	IMonoArray *pArray = gEnv->pMonoScriptSystem->GetConverter()->CreateArray(4);
 	pArray->Insert(p1);
 	pArray->Insert(p2);
 	pArray->Insert(p3);
 	pArray->Insert(p4);
+	
+	IMonoObject *pResult = NULL;
+	if(IMonoClass *pClass = gEnv->pMonoScriptSystem->GetScriptById(scriptId))
+		pResult = pClass->CallMethod(funcName, pArray);
 
-	return gEnv->pMonoScriptSystem->CallScript(scriptId, funcName, pArray);
+	SAFE_DELETE(pArray);
+
+	return pResult;
 };
 template<typename P1, typename P2, typename P3, typename P4, typename P5> 
 static IMonoObject *CallMonoScript(int scriptId, const char *funcName, const P1 &p1, const P2 &p2, const P3 &p3, const P4 &p4, const P5 &p5)
 {
-	if(scriptId==-1)
-		return NULL;
-
 	IMonoArray *pArray = gEnv->pMonoScriptSystem->GetConverter()->CreateArray(5);
 	pArray->Insert(p1);
 	pArray->Insert(p2);
 	pArray->Insert(p3);
 	pArray->Insert(p4);
 	pArray->Insert(p5);
+	
+	IMonoObject *pResult = NULL;
+	if(IMonoClass *pClass = gEnv->pMonoScriptSystem->GetScriptById(scriptId))
+		pResult = pClass->CallMethod(funcName, pArray);
 
-	return gEnv->pMonoScriptSystem->CallScript(scriptId, funcName, pArray);
+	SAFE_DELETE(pArray);
+
+	return pResult;
 };
 template<typename P1, typename P2, typename P3, typename P4, typename P5, typename P6> 
 static IMonoObject *CallMonoScript(int scriptId, const char *funcName, const P1 &p1, const P2 &p2, const P3 &p3, const P4 &p4, const P5 &p5, const P6 &p6)
 {
-	if(scriptId==-1)
-		return NULL;
-
 	IMonoArray *pArray = gEnv->pMonoScriptSystem->GetConverter()->CreateArray(6);
 	pArray->Insert(p1);
 	pArray->Insert(p2);
@@ -215,8 +213,14 @@ static IMonoObject *CallMonoScript(int scriptId, const char *funcName, const P1 
 	pArray->Insert(p4);
 	pArray->Insert(p5);
 	pArray->Insert(p6);
+	
+	IMonoObject *pResult = NULL;
+	if(IMonoClass *pClass = gEnv->pMonoScriptSystem->GetScriptById(scriptId))
+		pResult = pClass->CallMethod(funcName, pArray);
 
-	return gEnv->pMonoScriptSystem->CallScript(scriptId, funcName, pArray);
+	SAFE_DELETE(pArray);
+
+	return pResult;
 };
 
 typedef boost::shared_ptr<IMonoScriptSystem> IMonoPtr;

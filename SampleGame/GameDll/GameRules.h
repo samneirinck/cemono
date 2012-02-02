@@ -29,7 +29,6 @@
 #include "CinematicInput.h"
 
 #include <IMonoScriptSystem.h>
-#include <IMonoScript.h>
 #include <IMonoArray.h>
 #include <MonoSerializable.h>
 #include "IMonoObject.h"
@@ -427,7 +426,7 @@ public:
   virtual void ClientHit(const HitInfo &hitInfo);
 	virtual void ServerHit(const HitInfo &hitInfo);
 	virtual void ProcessServerHit(const HitInfo &hitInfo);
-	virtual void OnHit(const HitInfo &hitInfo);
+	virtual void OnHit(HitInfo &hitInfo);
 
 	void CullEntitiesInExplosion(const ExplosionInfo &explosionInfo);
 	virtual void ServerExplosion(const ExplosionInfo &explosionInfo);
@@ -1147,7 +1146,7 @@ protected:
 	SmartScriptTable		m_collisionTableSource;
 	SmartScriptTable		m_collisionTableTarget;
 
-	MonoScriptId			m_monoScriptId;
+	int			m_monoScriptId;
 	string					m_gameRulesName;
 
 	INetChannel					*m_pClientNetChannel;

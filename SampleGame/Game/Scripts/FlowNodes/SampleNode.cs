@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 using CryEngine;
@@ -6,21 +5,16 @@ using CryEngine;
 namespace CryGameCode
 {
     [FlowNode(UICategory = "Samples", Category = FlowNodeCategory.Approved, Description = "Does awesome Mono things")]
-    public class SampleNode : BaseFlowNode
+    public class SampleNode : FlowNode
     {
-        public override void OnInitialized()
-        {
-            SetRegularlyUpdated(true);
-        }
-
-        public override void OnUpdate()
+        public override void OnInit()
         {
         }
 
         [InputPort(Name = "Activate", Description = "Test of a void input")]
         public void OnActivateTriggered()
         {
-            CryConsole.LogAlways("The activate port was triggered.");
+            Console.LogAlways("The activate port was triggered.");
 
             ActivateOutput(activatedPortId);
         }
@@ -28,7 +22,7 @@ namespace CryGameCode
         [InputPort(Name = "Test Int", Description = "Test of an int input")]
         public void OnIntTriggered(int value)
         {
-            CryConsole.LogAlways("The int port was triggered, value is {0}", value.ToString());
+            Console.LogAlways("The int port was triggered, value is {0}", value.ToString());
 
             ActivateOutput(testIntPortId, value);
         }

@@ -23,6 +23,9 @@ struct MonoAnyValue;
 
 /// <summary>
 /// Used to wrap arrays sent from C#, and also used when passing arrays of elements from C++.
+/// 
+/// Creating an IMonoArray: IMonoArray *pMyArray = CreateMonoArray(arraySize);
+/// Converting an mono::array: IMonoArray *pConvertedArray = *(mono::array)monoArray;
 /// </summary>
 struct IMonoArray : public CMonoSerializable
 {
@@ -67,6 +70,17 @@ public:
 	/// Inserts an IMonoArray into the array.
 	/// </summary>
 	virtual void Insert(IMonoArray *pArray) = 0;
+
+	/// <summary>
+	/// Inserts an vector containing a specific type into the array.
+	/// Does not support strings / mono strings at the moment.
+	/// </summary>
+	template <typename T>
+	void Insert(std::vector<T> vector)
+	{
+		for(std::vector<T>::iterator it = vector.begin(); it != vector.end(); ++it)
+			Insert(*it);
+	}
 
 	/// <summary>
 	/// Inserts a mono string into the array.

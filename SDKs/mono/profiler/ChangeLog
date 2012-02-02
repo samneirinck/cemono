@@ -1,3 +1,34 @@
+2011-11-09  Rolf Bjarne Kvinge  <rolf@xamarin.com>
+
+	Log profiler: fix comment typo
+
+2011-11-08  Zoltan Varga  <vargaz@gmail.com>
+
+	Fix profiler build if boehm is disabled.
+
+2011-10-26  Rolf Bjarne Kvinge  <rolf@xamarin.com>
+
+	Log profiler: ensure the size we pass to getsockname is initalized
+	correctly.
+
+2011-10-20  Rolf Bjarne Kvinge  <rolf@xamarin.com>
+
+	Log profiler: flush file after writing to it.
+
+2011-10-14  Rolf Bjarne Kvinge  <rolf@xamarin.com>
+
+	Log profiler: add support for writing to an existing file
+	descriptor.
+
+2011-10-13  Rolf Bjarne Kvinge  <rolf@xamarin.com>
+
+	Profiler: add support embedded profilers whose entry point ends
+	with _<profiler name>.
+
+2011-10-12  Rolf Bjarne Kvinge  <rolf@xamarin.com>
+
+	Log profiler: Don't include major collections in ondemand mode.
+
 2011-03-31  Alan McGovern  <alan.mcgovern@gmail.com>
 
 	[log profiler] Keep correct stats about gchandles

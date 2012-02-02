@@ -3,7 +3,7 @@
 namespace CryGameCode.FlowNodes.Samples
 {
     [FlowNode(UICategory = "Samples", Description = "Reimplementation of multiplication in C#", Category = FlowNodeCategory.Approved)]
-    public class Multiplier : BaseFlowNode
+    public class Multiplier : FlowNode
     {
         [InputPort(Name = "Activate", Description = "Do the maths")]
         public void Activate()

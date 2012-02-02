@@ -5,7 +5,7 @@ namespace CryGameCode.FlowNodes.Testing
 	[FlowNode(UICategory = "Samples",
 		Description = "Testing node for various node operations",
 		Category = FlowNodeCategory.Debug)]
-	public class TestALLThePortTypes : BaseFlowNode
+	public class TestALLThePortTypes : FlowNode
 	{
 		[InputPort(Name = "Activation Test", Description = "")]
 		public void Activate() { ActivateOutput(activatedOutput); }

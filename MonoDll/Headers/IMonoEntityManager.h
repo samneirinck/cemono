@@ -17,7 +17,7 @@ struct IMonoEntityManager
 	/// <summary>
 	/// Retrieve the script id of an entity, returns -1 if script could not be located.
 	/// </summary>
-	virtual int GetScriptId(EntityId entityId) = 0;
+	virtual int GetScriptId(EntityId entityId, bool returnBackIfInvalid = false) = 0;
 };
 
 #endif //__I_MONO_ENTITY_MANAGER_H__

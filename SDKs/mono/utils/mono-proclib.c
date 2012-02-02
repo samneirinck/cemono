@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <fcntl.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -431,7 +432,7 @@ get_pid_status_item (int pid, const char *item, MonoProcessError *error, int mul
 
 	s = get_pid_status_item_buf (pid, item, buf, sizeof (buf), error);
 	if (s)
-		return atoi (s) * multiplier;
+		return ((gint64) atol (s)) * multiplier;
 	return 0;
 #endif
 }
@@ -507,7 +508,26 @@ mono_process_get_data (gpointer pid, MonoProcessData data)
 int
 mono_cpu_count (void)
 {
-	int count;
+	int count = 0;
+#ifdef PLATFORM_ANDROID
+	/* Android tries really hard to save power by powering off CPUs on SMP phones which
+	 * means the normal way to query cpu count returns a wrong value with userspace API.
+	 * Instead we use /sys entries to query the actual hardware CPU count.
+	 */
+	char buffer[8] = {'\0'};
+	int present = open ("/sys/devices/system/cpu/present", O_RDONLY);
+	/* Format of the /sys entry is a cpulist of indexes which in the case
+	 * of present is always of the form "0-(n-1)" when there is more than
+	 * 1 core, n being the number of CPU cores in the system. Otherwise
+	 * the value is simply 0
+	 */
+	if (present != -1 && read (present, (char*)buffer, sizeof (buffer)) > 3)
+		count = strtol (((char*)buffer) + 2, NULL, 10);
+	if (present != -1)
+		close (present);
+	if (count > 0)
+		return count + 1;
+#endif
 #ifdef _SC_NPROCESSORS_ONLN
 	count = sysconf (_SC_NPROCESSORS_ONLN);
 	if (count > 0)

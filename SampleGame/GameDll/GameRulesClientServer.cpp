@@ -67,15 +67,16 @@ void CGameRules::ClientHit(const HitInfo &hitInfo)
 	if(pActor == pClientActor)
 		if (gEnv->pInput) gEnv->pInput->ForceFeedbackEvent( SFFOutputEvent(eDI_XI, eFF_Rumble_Basic, 0.5f * hitInfo.damage * 0.01f, hitInfo.damage * 0.02f, 0.0f));
 
-	OnHit(hitInfo);
+	HitInfo tempInfo(hitInfo);
+	OnHit(tempInfo);
 
-	bool backface = hitInfo.dir.Dot(hitInfo.normal)>0;
-	if (!hitInfo.remote && hitInfo.targetId && !backface)
+	bool backface = tempInfo.dir.Dot(hitInfo.normal)>0;
+	if (!tempInfo.remote && tempInfo.targetId && !backface)
 	{
 		if (!gEnv->bServer)
-			GetGameObject()->InvokeRMI(SvRequestHit(), hitInfo, eRMI_ToServer);
+			GetGameObject()->InvokeRMI(SvRequestHit(), tempInfo, eRMI_ToServer);
 		else
-			ServerHit(hitInfo);
+			ServerHit(tempInfo);
 	}
 }
 
@@ -191,7 +192,8 @@ void CGameRules::ProcessServerHit(const HitInfo &hitInfo)
 
 	if (ok)
 	{
-		OnHit(hitInfo);
+		HitInfo tempInfo(hitInfo);
+		OnHit(tempInfo);
 
 		// call hit listeners if any
 		if (m_hitListeners.empty() == false)
@@ -199,7 +201,7 @@ void CGameRules::ProcessServerHit(const HitInfo &hitInfo)
 			for (size_t i = 0; i < m_hitListeners.size(); )
 			{
 				size_t count = m_hitListeners.size();
-				m_hitListeners[i]->OnHit(hitInfo);
+				m_hitListeners[i]->OnHit(tempInfo);
 				if (count == m_hitListeners.size())
 					i++;
 				else
@@ -207,19 +209,19 @@ void CGameRules::ProcessServerHit(const HitInfo &hitInfo)
 			}
 		}
 
-		if (pShooter && hitInfo.shooterId!=hitInfo.targetId && hitInfo.weaponId!=hitInfo.shooterId && hitInfo.weaponId!=hitInfo.targetId && hitInfo.damage>=0)
+		if (pShooter && tempInfo.shooterId!=tempInfo.targetId && tempInfo.weaponId!=tempInfo.shooterId && tempInfo.weaponId!=tempInfo.targetId && tempInfo.damage>=0)
 		{
 			EntityId params[2];
-			params[0] = hitInfo.weaponId;
-			params[1] = hitInfo.targetId;
+			params[0] = tempInfo.weaponId;
+			params[1] = tempInfo.targetId;
 			m_pGameplayRecorder->Event(pShooter->GetEntity(), GameplayEvent(eGE_WeaponHit, 0, 0, (void *)params));
 		}
 
 		if (pShooter)
-			m_pGameplayRecorder->Event(pShooter->GetEntity(), GameplayEvent(eGE_Hit, 0, 0, (void *)hitInfo.weaponId));
+			m_pGameplayRecorder->Event(pShooter->GetEntity(), GameplayEvent(eGE_Hit, 0, 0, (void *)tempInfo.weaponId));
 
 		if (pShooter)
-			m_pGameplayRecorder->Event(pShooter->GetEntity(), GameplayEvent(eGE_Damage, 0, hitInfo.damage, (void *)hitInfo.weaponId));
+			m_pGameplayRecorder->Event(pShooter->GetEntity(), GameplayEvent(eGE_Damage, 0, tempInfo.damage, (void *)tempInfo.weaponId));
 	}
 }
 
@@ -502,19 +504,70 @@ void CGameRules::ClientExplosion(const ExplosionInfo &explosionInfo)
 
 }
 
-void CGameRules::OnHit(const HitInfo &hit)
+void CGameRules::OnHit(HitInfo &hitInfo)
 {
 	if(gEnv->bServer)
 	{
-		if(hit.targetId<1 || hit.shooterId<1)
-			return;
+		if(hitInfo.targetId>0)
+		{
+			CActor *pTargetActor = GetActorByEntityId(hitInfo.targetId);
 
-		IMonoObject *pResult = CallMonoScript(m_monoScriptId, "CalcDamage", hit.material, hit.damage);
-		if(!pResult)
-			return;
+			if(pTargetActor->IsGod())
+				hitInfo.damage = 0;
 
-		if(IActor *pActor = gEnv->pGameFramework->GetIActorSystem()->GetActor(hit.targetId))
-			pActor->SetHealth(pActor->GetHealth() - pResult->Unbox<float>());
+			/*if(pTargetActor->IsDead())
+			{
+				float lastDeathImpulse = pTargetActor->GetLastDeathImpulse();
+
+				if(gEnv->pTimer->GetFrameStartTime().GetMilliSeconds() - lastDeathImpulse > 10)
+				{
+					hitInfo.dir.z = hitInfo.dir.z + 1;
+
+					Vec3 angAxis = Vec3();
+					angAxis.x = Random() * 2 - 1;
+					angAxis.y = Random() * 2 - 1;
+					angAxis.z = Random() * 2 - 1;
+
+					IEntityPhysicalProxy *pPhysicsProxy = (IEntityPhysicalProxy*)GetEntity()->GetProxy(ENTITY_PROXY_PHYSICS);
+					pPhysicsProxy->AddImpulse(hitInfo.partId, hitInfo.pos, hitInfo.dir, 1, Random() * 20 + 10);
+
+					pTargetActor->SetLastDeathImpulse(gEnv->pTimer->GetFrameStartTime().GetMilliSeconds());
+				}
+			}*/
+
+			if(ISurfaceType *pHitSurface = GetHitMaterial(hitInfo.material))
+			{
+				if(IMonoObject *pResult = CallMonoScript(m_monoScriptId, "GetDamageMult", pHitSurface->GetType()))
+				{
+					hitInfo.damage *= pResult->Unbox<float>();
+
+					SAFE_DELETE(pResult);
+				}
+			}
+
+			if(!strcmp(GetHitType(hitInfo.type), "event"))
+			{
+				pTargetActor->SetHealth(0);
+				pTargetActor->Kill();
+
+				this->SPNotifyPlayerKill(hitInfo.targetId, hitInfo.weaponId, !strcmp(GetHitMaterial(hitInfo.material)->GetType(), "head"));
+
+				pTargetActor->DropItem(pTargetActor->GetCurrentItemId(), 1.0f, false, true);
+				pTargetActor->DropAttachedItems();
+			}
+			else
+			{
+				SmartScriptTable serverScript = 0;
+				pTargetActor->GetEntity()->GetScriptTable()->GetValue("Server", serverScript);
+
+				CreateScriptHitInfo(m_scriptHitInfo, hitInfo);
+
+				CallScript(serverScript, "OnHit", m_scriptHitInfo);
+			}
+		}
+	}
+	else
+	{
 	}
 }
 

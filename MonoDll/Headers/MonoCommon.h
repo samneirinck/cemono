@@ -13,6 +13,7 @@ namespace mono
 {
 	class _string; typedef _string* string; 
 	class _array; typedef _array* array;
+	class _object; typedef _object* object;
 };
 
 #include <IMonoScriptSystem.h>
@@ -85,8 +86,18 @@ namespace mono
 		}
 	};
 
+	class _object
+	{
+	public:
+		operator IMonoObject *() const
+		{
+			return gEnv->pMonoScriptSystem->GetConverter()->ToObject(const_cast<_object *>(this));
+		}
+	};
+
 	typedef _string* string;
 	typedef _array* array;
+	typedef _object* object;
 };
 
 #endif //__MONO_COMMON_H__

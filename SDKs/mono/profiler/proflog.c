@@ -277,7 +277,7 @@ typedef struct _LogBuffer LogBuffer;
  * 	[object: sleb128] the object as a difference from obj_base
  * 	[root_type: uleb128] the root_type: MonoProfileGCRootType (profiler.h)
  * 	[extra_info: uleb128] the extra_info value
- * 	object, root_type_extra_info are repeated num_roots times
+ * 	object, root_type and extra_info are repeated num_roots times
  *
  * type sample format
  * type: TYPE_SAMPLE
@@ -563,6 +563,7 @@ dump_header (MonoProfiler *profiler)
 	}
 #else
 	fwrite (hbuf, p - hbuf, 1, profiler->file);
+	fflush (profiler->file);
 #endif
 }
 
@@ -588,6 +589,7 @@ dump_buffer (MonoProfiler *profiler, LogBuffer *buf)
 #endif
 		fwrite (hbuf, p - hbuf, 1, profiler->file);
 		fwrite (buf->buf, buf->data - buf->buf, 1, profiler->file);
+		fflush (profiler->file);
 #if defined (HAVE_SYS_ZLIB)
 	}
 #endif
@@ -667,8 +669,8 @@ heap_walk (MonoProfiler *profiler)
 		do_walk = 1;
 	else if (hs_mode_gc && (gc_count % hs_mode_gc) == 0)
 		do_walk = 1;
-	else if (hs_mode_ondemand && heapshot_requested)
-		do_walk = 1;
+	else if (hs_mode_ondemand)
+		do_walk = heapshot_requested;
 	else if (!hs_mode_ms && !hs_mode_gc && profiler->last_gc_gen_started == mono_gc_max_generation ())
 		do_walk = 1;
 
@@ -1950,6 +1952,7 @@ start_helper_thread (MonoProfiler* prof)
 		close (prof->server_socket);
 		return 0;
 	}
+	slen = sizeof (server_address);
 	if (getsockname (prof->server_socket, (struct sockaddr *)&server_address, &slen) == 0) {
 		prof->command_port = ntohs (server_address.sin_port);
 		/*fprintf (stderr, "Assigned server port: %d\n", prof->command_port);*/
@@ -1997,6 +2000,9 @@ create_profiler (const char *filename)
 	if (*nf == '|') {
 		prof->file = popen (nf + 1, "w");
 		prof->pipe_output = 1;
+	} else if (*nf == '#') {
+		int fd = strtol (nf + 1, NULL, 10);
+		prof->file = fdopen (fd, "a");
 	} else {
 		FILE *f;
 		if (force_delete)
@@ -2197,6 +2203,19 @@ set_hsmode (char* val, int allow_empty)
  */
 extern void
 mono_profiler_startup (const char *desc);
+
+extern void
+mono_profiler_startup_log (const char *desc);
+
+/*
+ * this is the entry point that will be used when the profiler
+ * is embedded inside the main executable.
+ */
+void
+mono_profiler_startup_log (const char *desc)
+{
+	mono_profiler_startup (desc);
+}
 
 void
 mono_profiler_startup (const char *desc)

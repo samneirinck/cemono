@@ -5448,12 +5448,9 @@ setup_tls_access (void)
 #endif
 	}
 	if (monodomain_key == -1) {
-		ptk = mono_domain_get_tls_key ();
+		ptk = mono_domain_get_native_tls_key ();
 		if (ptk < 1024) {
-			ptk = mono_pthread_key_for_tls (ptk);
-			if (ptk < 1024) {
-				monodomain_key = ptk;
-			}
+			monodomain_key = ptk;
 		}
 	}
 	if (lmf_pthread_key == -1) {
@@ -5468,15 +5465,10 @@ setup_tls_access (void)
 		}
 	}
 	if (monothread_key == -1) {
-		ptk = mono_thread_get_tls_key ();
+		ptk = mono_thread_get_native_tls_key ();
 		if (ptk < 1024) {
-			ptk = mono_pthread_key_for_tls (ptk);
-			if (ptk < 1024) {
-				monothread_key = ptk;
-				/*g_print ("thread inited: %d\n", ptk);*/
-			}
-		} else {
-			/*g_print ("thread not inited yet %d\n", ptk);*/
+			monothread_key = ptk;
+			/*g_print ("thread inited: %d\n", ptk);*/
 		}
 	}
 }

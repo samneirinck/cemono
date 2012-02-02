@@ -589,15 +589,17 @@ public:
 	//virtual int MeleeEffect(IFunctionHandler *pH);
 
 	// IMonoScriptBind
+	virtual void Release() { delete this; }
+
 	virtual const char* GetClassName() { return "ActorSystem"; }
 	// ~IMonoScriptBind
 
-	static void RegisterPlayerClass(mono::string className);
+	MonoMethod(void, RegisterPlayerClass, mono::string);
 
-	static float GetPlayerHealth(EntityId playerId);
-	static void SetPlayerHealth(EntityId playerId, float newHealth);
-	static float GetPlayerMaxHealth(EntityId playerId);
-	static void SetPlayerMaxHealth(EntityId playerId, float newMaxHealth);
+	MonoMethod(float, GetPlayerHealth, EntityId);
+	MonoMethod(void, SetPlayerHealth, EntityId, float);
+	MonoMethod(float, GetPlayerMaxHealth, EntityId);
+	MonoMethod(void, SetPlayerMaxHealth, EntityId, float);
 
 protected:
 	// <title GetActor>

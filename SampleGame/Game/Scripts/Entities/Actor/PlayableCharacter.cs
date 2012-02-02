@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -15,19 +14,9 @@ namespace CryGameCode
 
         public override void OnSpawn()
         {
-            CryConsole.LogAlways("Player.OnSpawn");
+            Console.LogAlways("Player.OnSpawn");
 
-            Inventory.GiveEquipmentPack("SinglePlayer");
+            Inventory.GiveEquipmentPack("Singleplayer");
         }
-
-		public void VoidRMITest()
-		{
-			CryConsole.LogAlways("RMI'd, bitch");
-		}
-
-		public void ValueRMITest(int inty, string stringy, float floaty)
-		{
-			CryConsole.LogAlways("RMI'd with values, bitch: {0} | {1} | {2}", inty, stringy, floaty);
-		}
     }
 }

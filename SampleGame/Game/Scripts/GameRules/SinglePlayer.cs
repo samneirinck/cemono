@@ -1,5 +1,3 @@
-using System;
-
 using CryEngine;
 
 /// <summary>
@@ -10,12 +8,9 @@ namespace CryGameCode
     [DefaultGamemodeAttribute]
 	public class SinglePlayer : GameRulesBase
 	{
-        public SinglePlayer(UInt32 entityId)
-            : base(entityId)
+        public SinglePlayer()
         {
         }
-
-        public SinglePlayer() { }
 
         public override void OnClientEnteredGame(int channelId, uint playerId, bool reset, bool loadingSaveGame)
         {
@@ -30,20 +25,19 @@ namespace CryGameCode
 
             if (player == null)
             {
-                CryConsole.Log("OnClientConnect: Failed to spawn the player!");
+                Console.Log("OnClientConnect: Failed to spawn the player!");
                 return;
             }
 
             player.OnSpawn();
 
-            BaseEntity[] spawnPoints = EntitySystem.GetEntities("SpawnPoint");
+            StaticEntity[] spawnPoints = EntitySystem.GetEntities("SpawnPoint");
             if (spawnPoints == null)
                 return;
 
             if (spawnPoints.Length > 0)
             {
-                BaseEntity spawnPoint = spawnPoints[0];
-
+                StaticEntity spawnPoint = spawnPoints[0];
                 if (spawnPoint != null)
                 {
                     player.Position = spawnPoint.Position;
@@ -53,7 +47,7 @@ namespace CryGameCode
                 }
             }
 
-            CryConsole.LogAlways("$1warning: No spawn points; using default spawn location!");
+            Console.LogAlways("$1warning: No spawn points; using default spawn location!");
         }
 	}
 }

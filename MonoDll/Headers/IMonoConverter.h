@@ -11,12 +11,15 @@
 
 namespace mono 
 { 
-	class _string; typedef _string* string;
-	class _array; typedef _array* array; 
+	class _string; typedef _string *string;
+	class _array; typedef _array *array; 
+	class _object; typedef _object *object;
 }
 
 struct IMonoArray;
 struct IMonoObject;
+struct IMonoClass;
+
 struct MonoAnyValue;
 
 /// <summary>
@@ -38,7 +41,7 @@ struct IMonoConverter
 	/// </summary>
 	virtual IMonoArray *CreateArray(int size) = 0;
 	/// <summary>
-	/// Converts a mono array to a IMonoArray (To provide GetSize, GetItem etc functionality.)
+	/// Converts a mono array to a IMonoArray. (To provide GetSize, GetItem etc functionality.)
 	/// </summary>
 	virtual IMonoArray *ToArray(mono::array arr) = 0;
 
@@ -47,8 +50,19 @@ struct IMonoConverter
 	/// </summary>
 	virtual IMonoObject *CreateObject(MonoAnyValue &value) = 0;
 	/// <summary>
+	/// Converts an mono object to a IMonoObject.
 	/// </summary>
-	virtual IMonoObject *CreateObjectOfCustomType(void *object, const char *typeName, const char *namespaceName = "CryEngine") = 0;
+	virtual IMonoObject *ToObject(mono::object obj) = 0;
+	/// <summary>
+	/// Converts an IMonoObject to a class, if valid mono object is contained within.
+	/// Allows for invoking methods, properties etc.
+	/// </summary>
+	virtual IMonoClass *ToClass(IMonoObject *pObject) = 0;
+
+	/// <summary>
+	/// Converts an object into the specified managed type.
+	/// </summary>
+	virtual IMonoObject *ToManagedType(IMonoClass *pTo, void *object) = 0;
 };
 
 #endif //__I_MONO_CONVERTER_H__

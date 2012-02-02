@@ -1,3 +1,74 @@
+2011-12-19  Rolf Bjarne Kvinge  <rolf@xamarin.com>
+
+	Disable gdb backtracing until #2548 has been fixed.
+
+2011-12-06  Rodrigo Kumpera  <kumpera@gmail.com>
+
+	Use mono-tls for the current domain.
+
+2011-12-06  Rodrigo Kumpera  <kumpera@gmail.com>
+
+	Move current thread to use mono-tls.
+
+2011-12-05  Zoltan Varga  <vargaz@gmail.com>
+
+	Fix infinite recursion introduced by the previous patch.
+
+2011-12-05  Zoltan Varga  <vargaz@gmail.com>
+
+	AOT the cctor of generic classes which are referenced by SFLDA
+	patches and superclasses of generic instances. Fixes #2155
+
+2011-11-28  Miguel de Icaza  <miguel@gnome.org>
+
+	Fix the build, add declaration for SeqPoint
+
+2011-11-26  Zoltan Varga  <vargaz@gmail.com>
+
+	Add a heuristic to insert_breakpoint () to avoid 'Unable to insert
+	breakpoint' errors in some cases, since the set of IL offsets in
+	the debug info doesn't completely match what the JIT generates.
+	Fixes #407.
+
+2011-11-24  Zoltan Varga  <vargaz@gmail.com>
+
+	Save the stack space used by arguments into MonoJitInfo to avoid
+	calling mono_arch_get_arg_info () during stack walking, since it
+	is not signal safe. Fixes #2190.
+
+2011-11-20  Zoltan Varga  <vargaz@gmail.com>
+
+	Free debug info for dynamic methods by storing it in malloc-ed
+	memory instead of the normal debugger tables. Fixes #731579.
+
+2011-11-02  Zoltan Varga  <vargaz@gmail.com>
+
+	Fix a crash which happens when an inlined method ends with a throw
+	inside a branch, i.e. the return value is not on one branch, and
+	not on the other. Fixes #1835.
+
+2011-11-01  Zoltan Varga  <vargaz@gmail.com>
+
+	Delete unused link.h include
+
+2011-10-18  Rolf Bjarne Kvinge  <rolf@xamarin.com>
+
+	When providing stack trace for a crash make sure we attach to the
+	crashed process, not the forked process that will become gdb.
+
+2011-09-29  Rodrigo Kumpera  <kumpera@gmail.com>
+
+	Request ObjectMirror type and domain in a single request.
+
+2011-09-27  Zoltan Varga  <vargaz@gmail.com>
+
+	Save/restore argument registers when instrumenting tail calls.
+	Fixes #971
+
+2011-09-16  Gonzalo Paniagua Javier  <gonzalo.mono@gmail.com>
+
+	Avoid warning
+
 2011-09-06  Zoltan Varga  <vargaz@gmail.com>
 
 	Handle threads which die without detaching.

@@ -1,3 +1,192 @@
+2011-12-09  Jeffrey Stedfast  <jeff@xamarin.com>
+
+	[GetTimeZoneData icall] Fixed logic for zones where there is only
+	a start date
+
+	Thanks to Kirill for this patch.
+
+	Bug #2223.
+
+2011-12-08  Rodrigo Kumpera  <kumpera@gmail.com>
+
+	Fix another case where bridge would not be triggered.
+
+2011-12-07  Rodrigo Kumpera  <kumpera@gmail.com>
+
+	Fix severe breakage of sgen bridge code. 2nd and 3rd step where
+	not been called anymore.
+
+2011-12-07  Rodrigo Kumpera  <kumpera@gmail.com>
+
+	* sgen-bridge.c: * sgen-gc.c: After we split bridge processing in
+	two, one step with world stopped and another with world running,
+	we introduced the following regression:
+
+	A minor collection starts and find an young bridge object ready to
+	be processed. Major heap overflows and a major GC is triggered.
+	The object mentioned above will remain collectible and will be
+	queued for processing again. Since we do the first step in
+	finish_gray_stack, it will be done twice in the above scenario.
+	This will cause an assertion due to duplicate entries in the
+	hashtable.
+
+	The solution is to split the step that is performed with world
+	stopped into another two. One that happens during collections,
+	that can be done multiple times per duty cycle and another one
+	that is done only once before we restart the world.
+
+	This split has the minor advantage of reducing duplicated work for
+	the dfs1 step. Nothing big as this is one of the fastest steps.
+
+2011-12-07  Rodrigo Kumpera  <kumpera@gmail.com>
+
+	Remove some dead code
+
+2011-12-06  Rodrigo Kumpera  <kumpera@gmail.com>
+
+	* domain.c: Use mono-tls for the current domain variable. Sgen
+	depends on this so it has to be lock free and the io-layer version
+	is not.
+
+	Fixes bxc #2326
+
+2011-12-06  Rodrigo Kumpera  <kumpera@gmail.com>
+
+	Move current thread to use mono-tls.
+
+2011-12-01  Paolo Molaro  <lupus@oddwiz.org>
+
+	Fixed complex value type scan (xmarin bug#228).
+
+2011-11-24  Zoltan Varga  <vargaz@gmail.com>
+
+	Save the stack space used by arguments into MonoJitInfo to avoid
+	calling mono_arch_get_arg_info () during stack walking, since it
+	is not signal safe. Fixes #2190.
+
+2011-11-23  Rodrigo Kumpera  <kumpera@gmail.com>
+
+	* sgen-cardtable.c (sgen_card_table_mark_range): The number of
+	pages to be marked must be correctly calculated to avoid the case
+	when the in-card offset of the start address is bigger than of the
+	end address and cause the last card to be skipped.
+
+	Fixes #1917
+
+2011-11-22  Zoltan Varga  <vargaz@gmail.com>
+
+	Fix a crash introduced by
+	64d35e3940f7b0e1839c1906855c29862e6ab8c1. Fixes #2150.
+
+2011-11-22  Rodrigo Kumpera  <kumpera@gmail.com>
+
+	* sgen-gc.c (mark_ephemerons_in_range): All ephemeron arrays must
+	be scanned during a nursery collection since we ignore them during
+	remset processing for a good reason.
+
+	In the future we should use cardtable information to avoid
+	scanning the whole thing.
+
+	Fixes bxc #1175.
+
+2011-11-20  Zoltan Varga  <vargaz@gmail.com>
+
+	Free debug info for dynamic methods by storing it in malloc-ed
+	memory instead of the normal debugger tables. Fixes #731579.
+
+2011-11-15  Rodrigo Kumpera  <kumpera@gmail.com>
+
+	Add JIT counters to the local set of counters we support.
+
+2011-11-04  Zoltan Varga  <vargaz@gmail.com>
+
+	Fix a crash if a profiler is not found. Fixes #1855.
+
+2011-11-03  Rodrigo Kumpera  <kumpera@gmail.com>
+
+	Implement the icalls needed by the new mobile mmap code.
+
+2011-11-02  alexrp  <xtzgzorex@gmail.com>
+
+	Fix call to mono_sgen_gc_unlock () in mono_gc_toggleref_add ().
+
+2011-10-26  Rodrigo Kumpera  <kumpera@gmail.com>
+
+	* sgen-toggleref.c: GC backed toggleref machinery. This enables
+	embedders to support toggleref style of external memory management
+	without hooking up to the host retain/release machinery.
+
+	The API export two entry points. The first let the caller register
+	a callback with sgen that decides the state of a given object, by
+	probably inspecting its native state. The second allows
+	registration of objects with the toggleref machinery.
+
+	The idea of toggleref is that we keep an external reference to an
+	object and it can be either a strong or weak reference. We use a
+	weak reference when the external peer has no interest into the
+	object and a strong otherwise.
+
+2011-10-26  Rodrigo Kumpera  <kumpera@gmail.com>
+
+	Export a bunch of sgen functions for internal usage.
+
+2011-10-13  Rolf Bjarne Kvinge  <rolf@xamarin.com>
+
+	Profiler: add support embedded profilers whose entry point ends
+	with _<profiler name>.
+
+2011-10-22  Miguel de Icaza  <miguel@gnome.org>
+
+	Patch from Mario Kosmiskas for Bug 1460: add support for
+	Path.GetFileName to work with MONO_IOMAP
+
+2011-10-19  Marek Safar  <marek.safar@gmail.com>
+
+	Fix VolatileRead(uint&), VolatileWrite(uint&,uint) to use correct
+	word size
+
+2011-09-29  Zoltan Varga  <vargaz@gmail.com>
+
+	Avoid a crash if mono_debug_open_image_from_memory is called
+	without --debug. Fixes #1093.
+
+2011-09-26  Rodrigo Kumpera  <kumpera@gmail.com>
+
+	* sgen-bridge.c: Bridge processing must be split in two steps
+	because the object scanning step must be done with world stop and
+	before we copy the finalizable objects and the ones pointed by
+	them.
+
+2011-09-26  Rodrigo Kumpera  <kumpera@gmail.com>
+
+	* sgen-gc.c (finish_gray_stack): We must process ephemerons before
+	we check for non track weak refs to make sure we mark those values
+	whose only root are their keys.
+
+2011-06-23  Mark Probst  <mark.probst@gmail.com>
+
+	[sgen] Do the bridge callback after the world has been restarted.
+
+	Conflicts:
+
+	mono/metadata/sgen-gc.c
+
+2011-09-25  Gonzalo Paniagua Javier  <gonzalo.mono@gmail.com>
+
+	Create the first tp thread right away.
+
+	Avoid 500ms delay. Fixes Xamarin bug #1036.
+
+2011-09-19  Miguel de Icaza  <miguel@gnome.org>
+
+	Fix my profiler loader.
+
+	This is what happens when you test on a pre-configured environment
+	that already worked fine. This depended on a function that was
+	never called so we ended up probing for paths on NULL (repeating
+	the same process twice) instead of loading the profiler from the
+	installation directory.
+
 2011-09-13  Rodrigo Kumpera  <kumpera@gmail.com>
 
 	Avoid duplicates in the SSC xrefs.

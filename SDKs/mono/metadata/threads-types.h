@@ -181,6 +181,17 @@ MonoException* mono_thread_get_undeniable_exception (void);
 
 MonoException* mono_thread_get_and_clear_pending_exception (void) MONO_INTERNAL;
 
+typedef struct {
+	gpointer hazard_pointers [2];
+} MonoThreadHazardPointers;
+
+typedef void (*MonoHazardousFreeFunc) (gpointer p);
+
+void mono_thread_hazardous_free_or_queue (gpointer p, MonoHazardousFreeFunc free_func);
+void mono_thread_hazardous_try_free_all (void);
+
+MonoThreadHazardPointers* mono_hazard_pointer_get (void);
+
 void mono_threads_install_notify_pending_exc (MonoThreadNotifyPendingExcFunc func) MONO_INTERNAL;
 
 #define mono_hazard_pointer_set(hp,i,v)	\

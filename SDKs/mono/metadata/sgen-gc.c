@@ -424,7 +424,7 @@ enum {
 	REMSET_LOCATION, /* just a pointer to the exact location */
 	REMSET_RANGE,    /* range of pointer fields */
 	REMSET_OBJECT,   /* mark all the object for scanning */
-	REMSET_VTYPE,    /* a valuetype array described by a gc descriptor and a count */
+	REMSET_VTYPE,    /* a valuetype array described by a MonoClass pointer and a count */
 	REMSET_TYPE_MASK = 0x3
 };
 
@@ -820,7 +820,6 @@ align_pointer (void *ptr)
 
 typedef SgenGrayQueue GrayQueue;
 
-typedef void (*CopyOrMarkObjectFunc) (void**, GrayQueue*);
 typedef char* (*ScanObjectFunc) (char*, GrayQueue*);
 
 
@@ -970,9 +969,9 @@ alloc_complex_descriptor (gsize *bitmap, int numbits)
 }
 
 gsize*
-mono_sgen_get_complex_descriptor (GCVTable *vt)
+mono_sgen_get_complex_descriptor (mword desc)
 {
-	return complex_descriptors + (vt->desc >> LOW_TYPE_BITS);
+	return complex_descriptors + (desc >> LOW_TYPE_BITS);
 }
 
 /*
@@ -2502,12 +2501,26 @@ bridge_register_finalized_object (MonoObject *object)
 }
 
 static void
+stw_bridge_process (void)
+{
+	g_assert (mono_sgen_need_bridge_processing ());
+	mono_sgen_bridge_processing_stw_step ();
+}
+
+static void
+bridge_process (void)
+{
+	g_assert (mono_sgen_need_bridge_processing ());
+	mono_sgen_bridge_processing_finish ();
+}
+
+static void
 finish_gray_stack (char *start_addr, char *end_addr, int generation, GrayQueue *queue)
 {
 	TV_DECLARE (atv);
 	TV_DECLARE (btv);
 	int fin_ready;
-	int ephemeron_rounds = 0;
+	int done_with_ephemerons, ephemeron_rounds = 0;
 	int num_loops;
 	CopyOrMarkObjectFunc copy_func = current_collection_generation == GENERATION_NURSERY ? major_collector.copy_object : major_collector.copy_or_mark_object;
 
@@ -2529,6 +2542,40 @@ finish_gray_stack (char *start_addr, char *end_addr, int generation, GrayQueue *
 	DEBUG (2, fprintf (gc_debug_file, "%s generation done\n", generation_name (generation)));
 
 	/*
+	 * Walk the ephemeron tables marking all values with reachable keys. This must be completely done
+	 * before processing finalizable objects or non-tracking weak hamdle to avoid finalizing/clearing
+	 * objects that are in fact reachable.
+	 */
+	done_with_ephemerons = 0;
+	do {
+		done_with_ephemerons = mark_ephemerons_in_range (copy_func, start_addr, end_addr, queue);
+		drain_gray_stack (queue);
+		++ephemeron_rounds;
+	} while (!done_with_ephemerons);
+
+	mono_sgen_scan_togglerefs (copy_func, start_addr, end_addr, queue);
+	if (generation == GENERATION_OLD)
+		mono_sgen_scan_togglerefs (copy_func, nursery_start, nursery_real_end, queue);
+
+	if (mono_sgen_need_bridge_processing ()) {
+		if (finalized_array == NULL) {
+			finalized_array_capacity = 32;
+			finalized_array = mono_sgen_alloc_internal_dynamic (sizeof (MonoObject*) * finalized_array_capacity, INTERNAL_MEM_BRIDGE_DATA);
+		}
+		finalized_array_entries = 0;		
+
+		collect_bridge_objects (copy_func, start_addr, end_addr, generation, queue);
+		if (generation == GENERATION_OLD)
+			collect_bridge_objects (copy_func, nursery_start, nursery_real_end, GENERATION_NURSERY, queue);
+
+		if (finalized_array_entries > 0) {
+			mono_sgen_bridge_processing_register_objects (finalized_array_entries, finalized_array);
+			finalized_array_entries = 0;
+		}
+		drain_gray_stack (queue);
+	}
+
+	/*
 	We must clear weak links that don't track resurrection before processing object ready for
 	finalization so they can be cleared before that.
 	*/
@@ -2536,11 +2583,6 @@ finish_gray_stack (char *start_addr, char *end_addr, int generation, GrayQueue *
 	if (generation == GENERATION_OLD)
 		null_link_in_range (copy_func, start_addr, end_addr, GENERATION_NURSERY, TRUE, queue);
 
-	if (finalized_array == NULL && mono_sgen_need_bridge_processing ()) {
-		finalized_array_capacity = 32;
-		finalized_array = mono_sgen_alloc_internal_dynamic (sizeof (MonoObject*) * finalized_array_capacity, INTERNAL_MEM_BRIDGE_DATA);
-	}
-	finalized_array_entries = 0;
 
 	/* walk the finalization queue and move also the objects that need to be
 	 * finalized: use the finalized objects as new roots so the objects they depend
@@ -2551,36 +2593,13 @@ finish_gray_stack (char *start_addr, char *end_addr, int generation, GrayQueue *
 	 */
 	num_loops = 0;
 	do {
-		/*
-		 * Walk the ephemeron tables marking all values with reachable keys. This must be completely done
-		 * before processing finalizable objects to avoid finalizing reachable values.
-		 *
-		 * It must be done inside the finalizaters loop since objects must not be removed from CWT tables
-		 * while they are been finalized.
-		 */
-		int done_with_ephemerons = 0;
-		do {
-			done_with_ephemerons = mark_ephemerons_in_range (copy_func, start_addr, end_addr, queue);
-			drain_gray_stack (queue);
-			++ephemeron_rounds;
-		} while (!done_with_ephemerons);
-
-		if (mono_sgen_need_bridge_processing ()) {
-			collect_bridge_objects (copy_func, start_addr, end_addr, generation, queue);
-			if (generation == GENERATION_OLD)
-				collect_bridge_objects (copy_func, nursery_start, nursery_real_end, GENERATION_NURSERY, queue);
-		}
-
 		fin_ready = num_ready_finalizers;
 		finalize_in_range (copy_func, start_addr, end_addr, generation, queue);
 		if (generation == GENERATION_OLD)
 			finalize_in_range (copy_func, nursery_start, nursery_real_end, GENERATION_NURSERY, queue);
 
-		if (fin_ready != num_ready_finalizers) {
+		if (fin_ready != num_ready_finalizers)
 			++num_loops;
-			if (finalized_array != NULL)
-				mono_sgen_bridge_processing (finalized_array_entries, finalized_array);
-		}
 
 		/* drain the new stack that might have been created */
 		DEBUG (6, fprintf (gc_debug_file, "Precise scan of gray area post fin\n"));
@@ -2589,6 +2608,16 @@ finish_gray_stack (char *start_addr, char *end_addr, int generation, GrayQueue *
 
 	if (mono_sgen_need_bridge_processing ())
 		g_assert (num_loops <= 1);
+
+	/*
+	 * This must be done again after processing finalizable objects since CWL slots are cleared only after the key is finalized.
+	 */
+	done_with_ephemerons = 0;
+	do {
+		done_with_ephemerons = mark_ephemerons_in_range (copy_func, start_addr, end_addr, queue);
+		drain_gray_stack (queue);
+		++ephemeron_rounds;
+	} while (!done_with_ephemerons);
 
 	/*
 	 * Clear ephemeron pairs with unreachable keys.
@@ -4067,6 +4096,13 @@ mono_gc_alloc_mature (MonoVTable *vtable)
  */
 #define object_is_fin_ready(obj) (!object_is_pinned (obj) && !object_is_forwarded (obj))
 
+
+gboolean
+mono_sgen_gc_is_object_ready_for_finalization (void *object)
+{
+	return !major_collector.is_object_live (object) && object_is_fin_ready (object);
+}
+
 static gboolean
 is_critical_finalizer (FinalizeEntry *entry)
 {
@@ -4218,8 +4254,6 @@ next_step:
 			entry = entry->next;
 		}
 	}
-
-	drain_gray_stack (queue);
 }
 
 /* LOCKING: requires that the GC lock is held */
@@ -4435,9 +4469,15 @@ mark_ephemerons_in_range (CopyOrMarkObjectFunc copy_func, char *start, char *end
 		char *object = current->array;
 		DEBUG (5, fprintf (gc_debug_file, "Ephemeron array at %p\n", object));
 
-		/*We ignore arrays in old gen during minor collections since all objects are promoted by the remset machinery.*/
-		if (object < start || object >= end)
-			continue;
+		/*
+		For now we process all ephemerons during all collections.
+		Ideally we should use remset information to partially scan those
+		arrays.
+		We already emit write barriers for Ephemeron fields, it's
+		just that we don't process them.
+		*/
+		/*if (object < start || object >= end)
+			continue;*/
 
 		/*It has to be alive*/
 		if (!object_is_reachable (object, start, end)) {
@@ -5325,6 +5365,9 @@ stop_world (int generation)
 {
 	int count;
 
+	/*XXX this is the right stop, thought might not be the nicest place to put it*/
+	mono_sgen_process_togglerefs ();
+
 	mono_profiler_gc_event (MONO_GC_EVENT_PRE_STOP_WORLD, generation);
 	acquire_gc_locks ();
 
@@ -5370,6 +5413,7 @@ restart_world (int generation)
 		}
 	}
 
+	stw_bridge_process ();
 	release_gc_locks ();
 
 	count = mono_sgen_thread_handshake (restart_signal_num);
@@ -5378,6 +5422,8 @@ restart_world (int generation)
 	max_pause_usec = MAX (usec, max_pause_usec);
 	DEBUG (2, fprintf (gc_debug_file, "restarted %d thread(s) (pause time: %d usec, max: %d)\n", count, (int)usec, (int)max_pause_usec));
 	mono_profiler_gc_event (MONO_GC_EVENT_POST_START_WORLD, generation);
+
+	bridge_process ();
 
 	TV_GETTIME (end_bridge);
 	bridge_usec = TV_ELAPSED (end_sw, end_bridge);
@@ -5569,10 +5615,9 @@ handle_remset (mword *p, void *start_nursery, void *end_nursery, gboolean global
 		ptr = (void**)(*p & ~REMSET_TYPE_MASK);
 		if (((void*)ptr >= start_nursery && (void*)ptr < end_nursery))
 			return p + 3;
-		desc = p [1];
 		count = p [2];
 		while (count-- > 0)
-			ptr = (void**) major_collector.minor_scan_vtype ((char*)ptr, desc, start_nursery, end_nursery, queue);
+			ptr = (void**) major_collector.minor_scan_vtype ((char*)ptr, (MonoClass*)p [1], start_nursery, end_nursery, queue);
 		return p + 3;
 	}
 	default:
@@ -6501,7 +6546,7 @@ mono_gc_wbarrier_value_copy (gpointer dest, gpointer src, int count, MonoClass *
 
 		if (rs->store_next + 3 < rs->end_set) {
 			*(rs->store_next++) = (mword)dest | REMSET_VTYPE;
-			*(rs->store_next++) = (mword)klass->gc_descr;
+			*(rs->store_next++) = (mword)klass;
 			*(rs->store_next++) = (mword)count;
 			UNLOCK_GC;
 			return;
@@ -6513,7 +6558,7 @@ mono_gc_wbarrier_value_copy (gpointer dest, gpointer src, int count, MonoClass *
 		mono_sgen_thread_info_lookup (ARCH_GET_THREAD ())->remset = rs;
 #endif
 		*(rs->store_next++) = (mword)dest | REMSET_VTYPE;
-		*(rs->store_next++) = (mword)klass->gc_descr;
+		*(rs->store_next++) = (mword)klass;
 		*(rs->store_next++) = (mword)count;
 	}
 	UNLOCK_GC;
@@ -6657,7 +6702,7 @@ find_in_remset_loc (mword *p, char *addr, gboolean *found)
 		return p + 1;
 	case REMSET_VTYPE:
 		ptr = (void**)(*p & ~REMSET_TYPE_MASK);
-		desc = p [1];
+		desc = ((MonoClass*)p [1])->gc_descr;
 		count = p [2];
 
 		switch (desc & 0x7) {
@@ -8074,6 +8119,18 @@ FILE*
 mono_sgen_get_logfile (void)
 {
 	return gc_debug_file;
+}
+
+void
+mono_sgen_gc_lock (void)
+{
+	LOCK_GC;
+}
+
+void
+mono_sgen_gc_unlock (void)
+{
+	UNLOCK_GC;
 }
 
 #endif /* HAVE_SGEN_GC */

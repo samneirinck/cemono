@@ -119,7 +119,7 @@ typedef gint64 mgreg_t;
 #endif
 
 /* Version number of the AOT file format */
-#define MONO_AOT_FILE_VERSION 75
+#define MONO_AOT_FILE_VERSION ((2 << 16) | (10 << 8) | 75)
 
 //TODO: This is x86/amd64 specific.
 #define mono_simd_shuffle_mask(a,b,c,d) ((a) | ((b) << 2) | ((c) << 4) | ((d) << 6))
@@ -1285,6 +1285,7 @@ typedef struct {
 	guint            explicit_null_checks : 1;
 	guint            compute_gc_maps : 1;
 	guint            soft_breakpoints : 1;
+	guint            arch_eh_jit_info : 1;
 	gpointer         debug_info;
 	guint32          lmf_offset;
     guint16          *intvars;
@@ -2398,8 +2399,8 @@ void mono_runtime_cleanup_handlers (void) MONO_INTERNAL;
 void mono_runtime_setup_stat_profiler (void) MONO_INTERNAL;
 void mono_runtime_shutdown_stat_profiler (void) MONO_INTERNAL;
 void mono_runtime_posix_install_handlers (void) MONO_INTERNAL;
-int mono_runtime_syscall_fork (void) MONO_INTERNAL;
-gboolean mono_gdb_render_native_backtraces (void) MONO_INTERNAL;
+pid_t mono_runtime_syscall_fork (void) MONO_INTERNAL;
+gboolean mono_gdb_render_native_backtraces (pid_t crashed_pid) MONO_INTERNAL;
 
 /*
  * Signal handling

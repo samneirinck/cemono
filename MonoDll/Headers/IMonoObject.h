@@ -9,6 +9,7 @@
 #ifndef __I_MONO_OBJECT_H__
 #define __I_MONO_OBJECT_H__
 
+#include <MonoCommon.h>
 #include <MonoSerializable.h>
 
 /// <summary>
@@ -25,13 +26,9 @@ public:
 	T Unbox() { return *(T *)UnboxObject(); }
 
 	/// <summary>
-	/// Gets a property within this Mono object as an IMonoObject.
 	/// </summary>
-	/// <example>
-	/// [C#] public float X { get; set; }
-	/// [C++] float X = GetProperty("X")->Unbox<float>();
-	/// </example>
-	virtual IMonoObject *GetProperty(const char *propertyName) = 0;
+	template <>
+	IMonoClass *Unbox() { return gEnv->pMonoScriptSystem->GetConverter()->ToClass(this); }
 
 	// CMonoSerializable
 	/// <summary>
@@ -53,6 +50,18 @@ public:
 	/// Gets the value of this object as an MonoAnyValue.
 	/// </summary>
 	virtual MonoAnyValue GetAnyValue() = 0;
+	
+	/// <summary>
+	/// </summary>
+	virtual mono::object GetMonoObject() = 0;
+
+	/// <summary>
+	/// Simple overloaded operator to allow direct casting to Mono type object.
+	/// </summary>
+	operator mono::object() const
+	{
+		return const_cast<IMonoObject *>(this)->GetMonoObject();
+	}
 
 private:
 	/// <summary>
