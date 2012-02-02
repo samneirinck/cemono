@@ -24,6 +24,10 @@
 *.sdf
 *.pdb
 *.opensdf
+*.tlog
+*.intermediate.manifest
+*.exp
+*.lastbuildstate
 ipch/
 obj/
 [Bb]in

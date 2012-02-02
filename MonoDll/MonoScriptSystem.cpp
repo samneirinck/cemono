@@ -43,7 +43,7 @@ CMonoScriptSystem::CMonoScriptSystem()
 	, m_pLibraryAssembly(NULL)
 	, m_pCallbackHandler(NULL)
 {
-	CryLog("Initializing Mono Script System");
+	CryLogAlways("Initializing Mono Script System");
 
 	//system(CMonoPathUtils::GetMonoPath() + "bin\\pdb2mdb.exe" + " " + CMonoPathUtils::GetBinaryPath() + "CryBrary.dll");
 
@@ -104,7 +104,7 @@ CMonoScriptSystem::~CMonoScriptSystem()
 
 bool CMonoScriptSystem::Init()
 {
-	CryLog("    Initializing CryMono...");
+	CryLogAlways("    Initializing CryMono...");
 	
 	if (!InitializeDomain())
 		return false;
@@ -117,18 +117,18 @@ bool CMonoScriptSystem::Init()
 
 	m_pScriptCompiler = m_pLibraryAssembly->InstantiateClass("CryEngine", "ScriptCompiler");
 
-	CryLog("    Registering default scriptbinds...");
+	CryLogAlways("    Registering default scriptbinds...");
 	RegisterDefaultBindings();
 
-	CryLog("    Initializing subsystems...");
+	CryLogAlways("    Initializing subsystems...");
 	InitializeSystems();
 
-	CryLog("    Compiling scripts...");
+	CryLogAlways("    Compiling scripts...");
 	m_pScriptCompiler->CallMethod("Initialize");
 
 	CryModuleMemoryInfo memInfo;
 	CryModuleGetMemoryInfo(&memInfo);
-	CryLog("    Initializing CryMono done, MemUsage=%iKb", (memInfo.allocated + m_pLibraryAssembly->GetCustomClass("CryStats", "CryEngine.Utils")->GetProperty("MemoryUsage")->Unbox<long>()) / 1024);
+	CryLogAlways("    Initializing CryMono done, MemUsage=%iKb", (memInfo.allocated + m_pLibraryAssembly->GetCustomClass("CryStats", "CryEngine.Utils")->GetProperty("MemoryUsage")->Unbox<long>()) / 1024);
 
 	return true;
 }
