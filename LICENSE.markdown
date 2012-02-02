@@ -1,6 +1,6 @@
 Copyright © 2011 Ink Studios Ltd. – http://inkdev.net
 
-CryMono (the software) is available in binary form, free of charge, to any individual, educational or business entity seeking to use the software solely for non-commercial purposes. If you wish to use the software in a commercial project or wish to licence the source code, please contact business@inkdev.net to discuss licensing options.
+CryMono (the software) is available in both source and binary form, free of charge, to any individual or organisation seeking to use the software solely for non-commercial purposes. If you wish to use the software in a commercial project, please contact business@inkdev.net to discuss licensing options.
 
 Permission is additionally granted to download and modify ("fork") the software, provided the modified source code is available to the public at no cost and this licence is retained and prominently displayed. The same restrictions with regards to commercial use apply to all forks.
 
