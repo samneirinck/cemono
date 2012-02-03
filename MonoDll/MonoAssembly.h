@@ -18,7 +18,7 @@ struct IMonoArray;
 class CMonoAssembly : public IMonoAssembly
 {
 public:
-	CMonoAssembly(MonoDomain *pDomain, const char *assemblyPath);
+	CMonoAssembly(const char *assemblyPath);
 	virtual ~CMonoAssembly() {}
 
 	// IMonoAssembly
