@@ -75,12 +75,13 @@ namespace CryEngine
 			}
 		}
 
-		/// <summary>
-		/// Instantiates a script using its name and interface.
-		/// </summary>
-		/// <param name="scriptName"></param>
-		/// <returns>New instance scriptId or -1 if instantiation failed.</returns>
-		[EditorBrowsable(EditorBrowsableState.Never)]
+	    /// <summary>
+	    /// Instantiates a script using its name and interface.
+	    /// </summary>
+	    /// <param name="scriptName"></param>
+	    /// <param name="constructorParams"></param>
+	    /// <returns>New instance scriptId or -1 if instantiation failed.</returns>
+	    [EditorBrowsable(EditorBrowsableState.Never)]
 		public int InstantiateScript(string scriptName, object[] constructorParams = null)
 		{
 			if(scriptName.Length < 1)
@@ -103,9 +104,6 @@ namespace CryEngine
 			if(!script.Type.Implements(typeof(CryScriptInstance)))
 				return -1;
 
-
-			if(script.ScriptInstances == null)
-				script.ScriptInstances = new List<CryScriptInstance>();
 
 			m_numInstances++;
 			//ScriptId
@@ -156,7 +154,7 @@ namespace CryEngine
 			{
 				if(m_compiledScripts[i].ScriptInstances != null)
 				{
-					CryScriptInstance tempInstance = m_compiledScripts[i].ScriptInstances.Where(instance => instance.ScriptId == id).FirstOrDefault();
+					CryScriptInstance tempInstance = m_compiledScripts[i].ScriptInstances.FirstOrDefault(instance => instance.ScriptId == id);
 
 					if(tempInstance != default(CryScriptInstance))
 						return tempInstance;
@@ -824,7 +822,7 @@ namespace CryEngine
 		/// <summary>
 		/// Stores all instances of this class.
 		/// </summary>
-		public List<CryScriptInstance> ScriptInstances { get; set; }
+		public List<CryScriptInstance> ScriptInstances { get; private set; }
 	}
 
 	public struct InternalCallMethod

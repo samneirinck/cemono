@@ -75,8 +75,7 @@ namespace CryEngine
             for (int i = 0; i < entitiesByClass.Length; i++)
                 entities[i] = GetEntity((uint)entitiesByClass[i]);
 
-            entitiesByClass = null;
-            return entities;
+		    return entities;
         }
 
 		/// <summary>
@@ -105,6 +104,7 @@ namespace CryEngine
 	/// <summary>
 	/// These flags control entity instance behaviour.
 	/// </summary>
+	[Flags]
     public enum EntityFlags
     {
         CastShadow = (1 << 1),
@@ -129,6 +129,7 @@ namespace CryEngine
 	/// <summary>
 	/// These flags define behaviour for entity classes.
 	/// </summary>
+	[Flags]
     public enum EntityClassFlags
     {
         /// <summary>

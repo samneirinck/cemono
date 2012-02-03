@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Reflection;
 using CryEngine.Extensions;
 
@@ -32,7 +30,7 @@ namespace CryEngine
                 InputPortAttribute input;
                 NodePortType portType;
 
-                if (method.TryGetAttribute<InputPortAttribute>(out input))
+                if (method.TryGetAttribute(out input))
                 {
                     if (method.GetParameters().Length > 0)
                     {
@@ -90,7 +88,7 @@ namespace CryEngine
             OutputPortAttribute output;
             foreach (var property in type.GetProperties())
             {
-                if (property.TryGetAttribute<OutputPortAttribute>(out output))
+                if (property.TryGetAttribute(out output))
                 {
                     outputs.Add(new OutputPortConfig(output.Name, output.Name, output.Description, output.Type));
 
@@ -100,7 +98,7 @@ namespace CryEngine
             }
             foreach (var field in type.GetFields())
             {
-                if (field.TryGetAttribute<OutputPortAttribute>(out output))
+                if (field.TryGetAttribute(out output))
                 {
                     outputs.Add(new OutputPortConfig(output.Name, output.Name, output.Description, output.Type));
 
@@ -133,7 +131,7 @@ namespace CryEngine
 			else if(type == typeof(uint))
 				return NodePortType.EntityId;
 			else
-				throw new Exception("Invalid flownode port type specified!");
+				throw new ArgumentException("Invalid flownode port type specified!");
 		}
 
 		#region Callbacks
@@ -184,7 +182,7 @@ namespace CryEngine
             else if (value is Vec3)
                 FlowSystem._ActivateOutputVec3(ScriptId, port, (Vec3)value);
             else
-                throw new Exception("Attempted to activate output with invalid value!");
+                throw new ArgumentException("Attempted to activate output with invalid value!");
 		}
 
 		public int GetIntValue(Action<int> port)
@@ -220,7 +218,7 @@ namespace CryEngine
 					return i;
 			}
 
-			throw new Exception("Invalid input method specified");
+			throw new ArgumentException("Invalid input method specified");
 		}
 
 		/// <summary>
@@ -270,6 +268,7 @@ namespace CryEngine
 		public FlowNodeFlags Flags { get; set; }
 	}
 
+    [Flags]
 	public enum FlowNodeFlags
 	{
 		/// <summary>
