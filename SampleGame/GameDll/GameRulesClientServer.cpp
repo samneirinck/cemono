@@ -510,30 +510,51 @@ void CGameRules::OnHit(HitInfo &hitInfo)
 	{
 		if(hitInfo.targetId>0)
 		{
-			CActor *pTargetActor = GetActorByEntityId(hitInfo.targetId);
-
-			if(pTargetActor->IsGod())
-				hitInfo.damage = 0;
-
-			/*if(pTargetActor->IsDead())
+			if(CActor *pTargetActor = GetActorByEntityId(hitInfo.targetId))
 			{
-				float lastDeathImpulse = pTargetActor->GetLastDeathImpulse();
+				if(pTargetActor->IsGod())
+					hitInfo.damage = 0;
 
-				if(gEnv->pTimer->GetFrameStartTime().GetMilliSeconds() - lastDeathImpulse > 10)
+				/*if(pTargetActor->IsDead())
 				{
-					hitInfo.dir.z = hitInfo.dir.z + 1;
+					float lastDeathImpulse = pTargetActor->GetLastDeathImpulse();
 
-					Vec3 angAxis = Vec3();
-					angAxis.x = Random() * 2 - 1;
-					angAxis.y = Random() * 2 - 1;
-					angAxis.z = Random() * 2 - 1;
+					if(gEnv->pTimer->GetFrameStartTime().GetMilliSeconds() - lastDeathImpulse > 10)
+					{
+						hitInfo.dir.z = hitInfo.dir.z + 1;
 
-					IEntityPhysicalProxy *pPhysicsProxy = (IEntityPhysicalProxy*)GetEntity()->GetProxy(ENTITY_PROXY_PHYSICS);
-					pPhysicsProxy->AddImpulse(hitInfo.partId, hitInfo.pos, hitInfo.dir, 1, Random() * 20 + 10);
+						Vec3 angAxis = Vec3();
+						angAxis.x = Random() * 2 - 1;
+						angAxis.y = Random() * 2 - 1;
+						angAxis.z = Random() * 2 - 1;
 
-					pTargetActor->SetLastDeathImpulse(gEnv->pTimer->GetFrameStartTime().GetMilliSeconds());
+						IEntityPhysicalProxy *pPhysicsProxy = (IEntityPhysicalProxy*)GetEntity()->GetProxy(ENTITY_PROXY_PHYSICS);
+						pPhysicsProxy->AddImpulse(hitInfo.partId, hitInfo.pos, hitInfo.dir, 1, Random() * 20 + 10);
+
+						pTargetActor->SetLastDeathImpulse(gEnv->pTimer->GetFrameStartTime().GetMilliSeconds());
+					}
+				}*/
+
+				if(!strcmp(GetHitType(hitInfo.type), "event"))
+				{
+					pTargetActor->SetHealth(0);
+					pTargetActor->Kill();
+
+					this->SPNotifyPlayerKill(hitInfo.targetId, hitInfo.weaponId, !strcmp(GetHitMaterial(hitInfo.material)->GetType(), "head"));
+
+					pTargetActor->DropItem(pTargetActor->GetCurrentItemId(), 1.0f, false, true);
+					pTargetActor->DropAttachedItems();
 				}
-			}*/
+				else
+				{
+					SmartScriptTable serverScript = 0;
+					pTargetActor->GetEntity()->GetScriptTable()->GetValue("Server", serverScript);
+
+					CreateScriptHitInfo(m_scriptHitInfo, hitInfo);
+
+					CallScript(serverScript, "OnHit", m_scriptHitInfo);
+				}
+			}
 
 			if(ISurfaceType *pHitSurface = GetHitMaterial(hitInfo.material))
 			{
@@ -543,26 +564,6 @@ void CGameRules::OnHit(HitInfo &hitInfo)
 
 					SAFE_DELETE(pResult);
 				}
-			}
-
-			if(!strcmp(GetHitType(hitInfo.type), "event"))
-			{
-				pTargetActor->SetHealth(0);
-				pTargetActor->Kill();
-
-				this->SPNotifyPlayerKill(hitInfo.targetId, hitInfo.weaponId, !strcmp(GetHitMaterial(hitInfo.material)->GetType(), "head"));
-
-				pTargetActor->DropItem(pTargetActor->GetCurrentItemId(), 1.0f, false, true);
-				pTargetActor->DropAttachedItems();
-			}
-			else
-			{
-				SmartScriptTable serverScript = 0;
-				pTargetActor->GetEntity()->GetScriptTable()->GetValue("Server", serverScript);
-
-				CreateScriptHitInfo(m_scriptHitInfo, hitInfo);
-
-				CallScript(serverScript, "OnHit", m_scriptHitInfo);
 			}
 		}
 	}
