@@ -28,6 +28,7 @@
 *.intermediate.manifest
 *.exp
 *.lastbuildstate
+*.res
 ipch/
 obj/
 [Bb]in
