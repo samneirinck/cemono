@@ -8,7 +8,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CryCommon", "SDKs\CryCommon
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Managed", "Managed", "{88B195D3-97D5-40F0-83A5-68ADE5027E5A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryGameCode", "SampleGame\Game\Scripts\CryGameCode.csproj", "{11564500-9662-485F-889A-089D34FDB32E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryGameLibrary", "SampleGame\CryGameLibrary\CryGameLibrary.csproj", "{F95F543D-A167-4505-A157-AA969A60BF41}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -60,26 +60,26 @@ Global
 		{AEB958D4-45CA-478B-BA8E-D0E897CE974B}.Release|Win32.Build.0 = Release|Win32
 		{AEB958D4-45CA-478B-BA8E-D0E897CE974B}.Release|x64.ActiveCfg = Release|Win32
 		{AEB958D4-45CA-478B-BA8E-D0E897CE974B}.Release|x86.ActiveCfg = Release|x64
-		{11564500-9662-485F-889A-089D34FDB32E}.Debug|Win32.ActiveCfg = Debug|x64
-		{11564500-9662-485F-889A-089D34FDB32E}.Debug|x64.ActiveCfg = Debug|x64
-		{11564500-9662-485F-889A-089D34FDB32E}.Debug|x64.Build.0 = Debug|x64
-		{11564500-9662-485F-889A-089D34FDB32E}.Debug|x86.ActiveCfg = Debug|x86
-		{11564500-9662-485F-889A-089D34FDB32E}.Debug|x86.Build.0 = Debug|x86
-		{11564500-9662-485F-889A-089D34FDB32E}.Profile|Win32.ActiveCfg = Release|x64
-		{11564500-9662-485F-889A-089D34FDB32E}.Profile|x64.ActiveCfg = Release|x64
-		{11564500-9662-485F-889A-089D34FDB32E}.Profile|x64.Build.0 = Release|x64
-		{11564500-9662-485F-889A-089D34FDB32E}.Profile|x86.ActiveCfg = Release|x64
-		{11564500-9662-485F-889A-089D34FDB32E}.Release|Win32.ActiveCfg = Release|x64
-		{11564500-9662-485F-889A-089D34FDB32E}.Release|x64.ActiveCfg = Release|x64
-		{11564500-9662-485F-889A-089D34FDB32E}.Release|x64.Build.0 = Release|x64
-		{11564500-9662-485F-889A-089D34FDB32E}.Release|x86.ActiveCfg = Release|x86
-		{11564500-9662-485F-889A-089D34FDB32E}.Release|x86.Build.0 = Release|x86
+		{F95F543D-A167-4505-A157-AA969A60BF41}.Debug|Win32.ActiveCfg = Debug|x64
+		{F95F543D-A167-4505-A157-AA969A60BF41}.Debug|x64.ActiveCfg = Debug|x64
+		{F95F543D-A167-4505-A157-AA969A60BF41}.Debug|x64.Build.0 = Debug|x64
+		{F95F543D-A167-4505-A157-AA969A60BF41}.Debug|x86.ActiveCfg = Debug|x86
+		{F95F543D-A167-4505-A157-AA969A60BF41}.Debug|x86.Build.0 = Debug|x86
+		{F95F543D-A167-4505-A157-AA969A60BF41}.Profile|Win32.ActiveCfg = Release|x64
+		{F95F543D-A167-4505-A157-AA969A60BF41}.Profile|x64.ActiveCfg = Release|x64
+		{F95F543D-A167-4505-A157-AA969A60BF41}.Profile|x64.Build.0 = Release|x64
+		{F95F543D-A167-4505-A157-AA969A60BF41}.Profile|x86.ActiveCfg = Release|x64
+		{F95F543D-A167-4505-A157-AA969A60BF41}.Release|Win32.ActiveCfg = Release|x64
+		{F95F543D-A167-4505-A157-AA969A60BF41}.Release|x64.ActiveCfg = Release|x64
+		{F95F543D-A167-4505-A157-AA969A60BF41}.Release|x64.Build.0 = Release|x64
+		{F95F543D-A167-4505-A157-AA969A60BF41}.Release|x86.ActiveCfg = Release|x86
+		{F95F543D-A167-4505-A157-AA969A60BF41}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{11564500-9662-485F-889A-089D34FDB32E} = {88B195D3-97D5-40F0-83A5-68ADE5027E5A}
+		{F95F543D-A167-4505-A157-AA969A60BF41} = {88B195D3-97D5-40F0-83A5-68ADE5027E5A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		DPBuild = 5

@@ -114,6 +114,10 @@
     <ClInclude Include="Scriptbinds\ItemSystem.h">
       <Filter>ScriptBinds</Filter>
     </ClInclude>
+    <ClInclude Include="Headers\IMonoInput.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="MonoInput.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -187,6 +191,7 @@
     <ClCompile Include="Scriptbinds\ItemSystem.cpp">
       <Filter>ScriptBinds</Filter>
     </ClCompile>
+    <ClCompile Include="MonoInput.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Mono">

@@ -357,6 +357,7 @@
     <ClInclude Include="Headers\IMonoClass.h" />
     <ClInclude Include="Headers\IMonoConverter.h" />
     <ClInclude Include="Headers\IMonoEntityManager.h" />
+    <ClInclude Include="Headers\IMonoInput.h" />
     <ClInclude Include="Headers\IMonoObject.h" />
     <ClInclude Include="Headers\MonoAnyValue.h" />
     <ClInclude Include="Headers\MonoCommon.h" />
@@ -366,6 +367,7 @@
     <ClInclude Include="MonoConverter.h" />
     <ClInclude Include="MonoEntity.h" />
     <ClInclude Include="MonoFlowNode.h" />
+    <ClInclude Include="MonoInput.h" />
     <ClInclude Include="MonoPathUtils.h" />
     <ClInclude Include="MonoScriptSystem.h" />
     <ClInclude Include="MonoAssembly.h" />
@@ -396,6 +398,7 @@
     <ClCompile Include="MonoConverter.cpp" />
     <ClCompile Include="MonoEntity.cpp" />
     <ClCompile Include="MonoFlowNode.cpp" />
+    <ClCompile Include="MonoInput.cpp" />
     <ClCompile Include="MonoObject.cpp" />
     <ClCompile Include="MonoScriptSystem.cpp" />
     <ClCompile Include="MonoArray.cpp" />
