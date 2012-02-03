@@ -1,4 +1,4 @@
-CryMono - Mono game logic support for CryENGINE3
+CryMono (v0.3) - Mono game logic support for CryENGINE3
 	by Ink Studios Ltd. (Based on 'cemono' by Sam 'ins\' Neirinck)
 
 # Description
