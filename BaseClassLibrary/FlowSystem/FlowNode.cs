@@ -133,7 +133,7 @@ namespace CryEngine
 			else if(type == typeof(uint))
 				return NodePortType.EntityId;
 			else
-				throw new Exception("Invalid flownode port type specified!");
+				throw new ArgumentException("Invalid flownode port type specified!");
 		}
 
 		#region Callbacks
@@ -184,7 +184,7 @@ namespace CryEngine
             else if (value is Vec3)
                 FlowSystem._ActivateOutputVec3(ScriptId, port, (Vec3)value);
             else
-                throw new Exception("Attempted to activate output with invalid value!");
+                throw new ArgumentException("Attempted to activate output with invalid value!");
 		}
 
 		public int GetIntValue(Action<int> port)
@@ -220,7 +220,7 @@ namespace CryEngine
 					return i;
 			}
 
-			throw new Exception("Invalid input method specified");
+			throw new ArgumentException("Invalid input method specified");
 		}
 
 		/// <summary>

@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Linq;
 
 using System.Reflection;
-
+using System.Runtime.Serialization;
 using CryEngine.Extensions;
 
 namespace CryEngine
@@ -418,11 +418,31 @@ namespace CryEngine
 			return new EntityRegisterParams(type.Name, "Default", "", "", EntityClassFlags.Default);
 		}
 
-		public class EntityException : Exception
-		{
-			public EntityException(string message) { }
-		}
-		#endregion
+        [Serializable]
+        public class EntityException : Exception
+        {
+            public EntityException()
+            {
+            }
+
+            public EntityException(string message)
+                : base(message)
+            {
+            }
+
+            public EntityException(string message, Exception inner)
+                : base(message, inner)
+            {
+            }
+
+            protected EntityException(
+                SerializationInfo info,
+                StreamingContext context)
+                : base(info, context)
+            {
+            }
+        }
+        #endregion
 
 	}
 }
