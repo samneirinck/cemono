@@ -28,6 +28,7 @@
 
 #include "EntityManager.h"
 #include "FlowManager.h"
+#include "MonoInput.h"
 #include "CallbackHandler.h"
 
 #ifndef _RELEASE
@@ -52,7 +53,7 @@ CMonoScriptSystem::CMonoScriptSystem()
 
 	string monoCmdOptions = "";
 
-	// Commandline switch -CEMONO_DEBUG makes the process connect to the debugging server
+	// Commandline switch -DEBUG makes the process connect to the debugging server. Warning: Failure to connect to a  debugging server WILL result in a crash.
 	const ICmdLineArg* arg = gEnv->pSystem->GetICmdLine()->FindArg(eCLAT_Pre, "DEBUG");
 	if (arg != NULL)
 		monoCmdOptions.append("--debugger-agent=transport=dt_socket,address=127.0.0.1:65432 ");
@@ -180,6 +181,7 @@ void CMonoScriptSystem::RegisterDefaultBindings()
 
 	RegisterScriptBind(m_pEntityManager);
 	RegisterScriptBind(m_pFlowManager);
+	RegisterScriptBind(new CMonoInput());
 }
 
 bool CMonoScriptSystem::InitializeSystems()
@@ -348,5 +350,5 @@ IMonoClass *CMonoScriptSystem::GetScriptById(int id)
 
 IMonoAssembly *CMonoScriptSystem::LoadAssembly(const char *assemblyPath)
 {
-	return new CMonoAssembly(m_pMonoDomain, assemblyPath);
+	return new CMonoAssembly(assemblyPath);
 }

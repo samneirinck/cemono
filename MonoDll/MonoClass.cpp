@@ -16,7 +16,7 @@ CMonoClass::CMonoClass(MonoClass *pClass, IMonoArray *pConstructorArguments)
 	{
 		gEnv->pLog->LogError("Mono class object creation failed!");
 
-		//delete this;
+		delete this;
 	}
 
 	Instantiate(pConstructorArguments);
@@ -43,8 +43,11 @@ CMonoClass::CMonoClass(int scriptId, int scriptType)
 			m_instanceHandle = mono_gchandle_new((MonoObject *)m_pInstance, false);
 		}
 		else
+		{
 			gEnv->pLog->LogError("Attempted to create CMonoClass using an invalid scriptId");
-			//delete this;
+
+			delete this;
+		}
 	}
 }
 

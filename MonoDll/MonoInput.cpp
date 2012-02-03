@@ -10,6 +10,8 @@ TActionHandler<CMonoInput>	CMonoInput::s_actionHandler;
 
 CMonoInput::CMonoInput()
 {
+	REGISTER_METHOD(RegisterAction);
+
 	gEnv->pGameFramework->GetIActionMapManager()->AddExtraActionListener(this);
 
 	m_pClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("InputSystem");
@@ -28,7 +30,7 @@ void CMonoInput::OnAction(const ActionId& actionId, int activationMode, float va
 bool CMonoInput::OnActionTriggered(EntityId entityId, const ActionId& actionId, int activationMode, float value)
 {
 	IMonoArray *pParams = CreateMonoArray(3);
-	pParams->Insert(ToMonoString(actionId.c_str()));
+	pParams->Insert(actionId.c_str());
 	pParams->Insert(activationMode);
 	pParams->Insert(value);
 

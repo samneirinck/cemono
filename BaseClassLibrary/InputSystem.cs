@@ -1,15 +1,38 @@
 ﻿using System.Runtime.CompilerServices;
 
+using System.Collections.Generic;
+
 namespace CryEngine
 {
 	public class InputSystem
 	{
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void RegisterAction(string actionName);
+		extern internal static void _RegisterAction(string actionName);
+
+
+		public static void RegisterAction(string actionName, InputActionDelegate actionDelegate)
+		{
+			if (inputActionDelegates == null)
+				inputActionDelegates = new Dictionary<string, InputActionDelegate>();
+
+			if (!inputActionDelegates.ContainsKey(actionName))
+			{
+				inputActionDelegates.Add(actionName, actionDelegate);
+
+				_RegisterAction(actionName);
+			}
+			else
+				Console.LogAlways("[Warning] Attempted to register duplicate input action {0}", actionName);
+		}
+
+		public delegate void InputActionDelegate(ActionActivationMode activationMode, float value);
 
 		public static void OnActionTriggered(string action, ActionActivationMode activationMode, float value)
 		{
+			inputActionDelegates[action](activationMode, value);
 		}
+
+		private static Dictionary<string, InputActionDelegate> inputActionDelegates;
 
 		public enum ActionActivationMode
 		{

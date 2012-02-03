@@ -7,26 +7,23 @@
 #include <mono/metadata/debug-helpers.h>
 #include <mono/metadata/assembly.h>
 
-CMonoAssembly::CMonoAssembly(MonoDomain* pDomain, const char* assemblyPath)
+CMonoAssembly::CMonoAssembly(const char *assemblyPath)
 {
-	CRY_ASSERT_MESSAGE(pDomain, "CMonoAssembly::ctor Domain is NULL");
-	CRY_ASSERT_MESSAGE(assemblyPath, "CMonoAssembly::ctor assemblyPath is NULL");
-
 	m_assemblyPath = assemblyPath;
 	
-	m_pAssembly = mono_domain_assembly_open(pDomain,assemblyPath);
+	m_pAssembly = mono_domain_assembly_open(mono_domain_get(),assemblyPath);
 	if (!m_pAssembly)
 	{
 		gEnv->pLog->LogError("Failed to create assembly from %s", assemblyPath);
 		
-		//delete this;
+		delete this;
 	}
 	m_pImage = mono_assembly_get_image(m_pAssembly);
 	if (!m_pImage)
 	{
 		gEnv->pLog->LogError("Failed to get image from assembly %s", assemblyPath);
 		
-		//delete this;
+		delete this;
 	}
 }
 
