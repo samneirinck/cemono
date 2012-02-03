@@ -151,25 +151,22 @@ namespace Pdb2Mdb {
 
 			var pdb = assembly.Replace(".dll", ".pdb");
 
-			if (!File.Exists(pdb))
+			// No need to warn about a missing pdb, just skip conversion.
+			if (File.Exists(pdb))
 			{
-				Console.LogAlways("PDB to MDB conversion failed; {0} could not be found.", pdb);
-
-				return;
-			}
-
-			using (var stream = File.OpenRead(pdb))
-			{
-				try
+				using (var stream = File.OpenRead(pdb))
 				{
-					Converter.Convert(assemblyDefinition, PdbFile.LoadFunctions(stream, true), new MonoSymbolWriter(assembly));
-				}
-				catch (System.Exception e)
-				{
-					Console.LogException(e);
-				}
+					try
+					{
+						Converter.Convert(assemblyDefinition, PdbFile.LoadFunctions(stream, true), new MonoSymbolWriter(assembly));
+					}
+					catch (System.Exception e)
+					{
+						Console.LogException(e);
+					}
 
-				stream.Close();
+					stream.Close();
+				}
 			}
 
 			pdb = null;
