@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 
 using System.Collections.Specialized;
 
@@ -103,6 +104,7 @@ namespace CryEngine
 	/// <summary>
 	/// These flags control entity instance behaviour.
 	/// </summary>
+	[Flags]
     public enum EntityFlags
     {
         CastShadow = (1 << 1),
@@ -127,6 +129,7 @@ namespace CryEngine
 	/// <summary>
 	/// These flags define behaviour for entity classes.
 	/// </summary>
+	[Flags]
     public enum EntityClassFlags
     {
         /// <summary>

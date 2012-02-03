@@ -105,9 +105,6 @@ namespace CryEngine
 				return -1;
 
 
-			if(script.ScriptInstances == null)
-				script.ScriptInstances = new List<CryScriptInstance>();
-
 			m_numInstances++;
 			//ScriptId
 
@@ -825,7 +822,7 @@ namespace CryEngine
 		/// <summary>
 		/// Stores all instances of this class.
 		/// </summary>
-		public List<CryScriptInstance> ScriptInstances { get; set; }
+		public List<CryScriptInstance> ScriptInstances { get; private set; }
 	}
 
 	public struct InternalCallMethod

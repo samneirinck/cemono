@@ -268,6 +268,7 @@ namespace CryEngine
 		public FlowNodeFlags Flags { get; set; }
 	}
 
+    [Flags]
 	public enum FlowNodeFlags
 	{
 		/// <summary>
