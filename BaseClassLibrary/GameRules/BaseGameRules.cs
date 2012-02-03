@@ -97,7 +97,7 @@ namespace CryEngine
         /// <summary>
         /// type of bullet, if hit was of type bullet
         /// </summary>
-        int bulletType;
+        public int bulletType;
 
         public float damageMin;
         /// <summary>

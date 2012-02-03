@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Linq;
-
-using System.Reflection;
 using System.Runtime.Serialization;
 using CryEngine.Extensions;
 
@@ -203,7 +200,7 @@ namespace CryEngine
 		{
 			StaticEntity ent = obj as StaticEntity;
 
-			return (ent == null) ? false : this.Id == ent.Id;
+			return ent != null && this.Id == ent.Id;
 		}
 
 		public override int GetHashCode()

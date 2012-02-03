@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
 using System.Collections.Specialized;
 
@@ -75,8 +74,7 @@ namespace CryEngine
             for (int i = 0; i < entitiesByClass.Length; i++)
                 entities[i] = GetEntity((uint)entitiesByClass[i]);
 
-            entitiesByClass = null;
-            return entities;
+		    return entities;
         }
 
 		/// <summary>

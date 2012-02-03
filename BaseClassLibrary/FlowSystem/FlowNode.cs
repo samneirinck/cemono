@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Reflection;
 using CryEngine.Extensions;
 
@@ -32,7 +30,7 @@ namespace CryEngine
                 InputPortAttribute input;
                 NodePortType portType;
 
-                if (method.TryGetAttribute<InputPortAttribute>(out input))
+                if (method.TryGetAttribute(out input))
                 {
                     if (method.GetParameters().Length > 0)
                     {
@@ -90,7 +88,7 @@ namespace CryEngine
             OutputPortAttribute output;
             foreach (var property in type.GetProperties())
             {
-                if (property.TryGetAttribute<OutputPortAttribute>(out output))
+                if (property.TryGetAttribute(out output))
                 {
                     outputs.Add(new OutputPortConfig(output.Name, output.Name, output.Description, output.Type));
 
@@ -100,7 +98,7 @@ namespace CryEngine
             }
             foreach (var field in type.GetFields())
             {
-                if (field.TryGetAttribute<OutputPortAttribute>(out output))
+                if (field.TryGetAttribute(out output))
                 {
                     outputs.Add(new OutputPortConfig(output.Name, output.Name, output.Description, output.Type));
 

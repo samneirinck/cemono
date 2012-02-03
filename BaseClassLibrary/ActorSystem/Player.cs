@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace CryEngine
+﻿namespace CryEngine
 {
 	/// <summary>
 	/// WIP Player class.

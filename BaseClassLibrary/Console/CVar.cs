@@ -27,7 +27,7 @@ namespace CryEngine
 		/// <returns></returns>
         public static CVar GetCVar(string name)
         {
-            CVar cvar = m_internalCVars.Where(var => var.Name.Equals(name)).FirstOrDefault();
+            CVar cvar = m_internalCVars.FirstOrDefault(var => var.Name.Equals(name));
             if(cvar!=default(CVar))
                 return cvar;
 
@@ -180,7 +180,7 @@ namespace CryEngine
                 return false;
 
             CVar cvar = obj as CVar;
-            if ((object)cvar == null)
+            if (cvar == null)
                 return false;
 
             return Name.Equals(cvar.Name);

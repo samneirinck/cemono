@@ -17,6 +17,7 @@ namespace CryEngine
         /// <summary>
         /// Initializes variables which change, i.e. IsServer.
         /// </summary>
+        /// <param name="isMultiplayer"></param>
         /// <param name="isClient"></param>
         /// <param name="isServer"></param>
         internal static void InitializeNetwork(bool isMultiplayer, bool isClient, bool isServer)
