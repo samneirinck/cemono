@@ -110,16 +110,17 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Cecil">
-      <HintPath>Debug Database Converter\Mono.Cecil.dll</HintPath>
+      <HintPath>..\..\..\Engine\Mono\lib\mono\gac\Mono.Cecil\0.9.4.0__0738eb9f132ed756\Mono.Cecil.dll</HintPath>
+      <Private>False</Private>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="Mono.Cecil.Mdb">
-      <HintPath>Debug Database Converter\Mono.Cecil.Mdb.dll</HintPath>
+      <HintPath>..\..\..\Engine\Mono\lib\mono\gac\Mono.Cecil.Mdb\0.9.4.0__0738eb9f132ed756\Mono.Cecil.Mdb.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Mono.Cecil.Pdb">
-      <HintPath>Debug Database Converter\Mono.Cecil.Pdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Rocks">
-      <HintPath>Debug Database Converter\Mono.Cecil.Rocks.dll</HintPath>
+      <HintPath>..\..\..\Engine\Mono\lib\mono\gac\Mono.Cecil.Pdb\0.9.5.0__0738eb9f132ed756\Mono.Cecil.Pdb.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -164,6 +165,9 @@
     <Compile Include="EntitySystem\EntityPhysics.cs" />
     <Compile Include="GameRules\Network.cs" />
     <Compile Include="InputSystem.cs" />
+    <Compile Include="Sandbox\EditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Sandbox\Interface.cs" />
     <Compile Include="ScriptInstance.cs" />
     <Compile Include="Misc\CompilationAttributes.cs" />

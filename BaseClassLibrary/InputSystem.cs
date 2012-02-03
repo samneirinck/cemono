@@ -9,7 +9,6 @@ namespace CryEngine
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static void _RegisterAction(string actionName);
 
-
 		public static void RegisterAction(string actionName, InputActionDelegate actionDelegate)
 		{
 			if (inputActionDelegates == null)

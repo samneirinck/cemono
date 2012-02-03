@@ -147,10 +147,14 @@ namespace Pdb2Mdb {
 		
 		public static void Convert(string assembly)
 		{
-			// Remove the existing file to prevent annoying Win32 exceptions.
-			string mdbFile = assembly + ".mdb";
-			if (File.Exists(mdbFile))
-				File.Delete(mdbFile);
+			try
+			{
+				// Remove the existing file to prevent annoying Win32 exceptions.
+				string mdbFile = assembly + ".mdb";
+				if (File.Exists(mdbFile))
+					File.Delete(mdbFile);
+			}
+			catch (System.Exception ex) { Console.LogException(ex); }
 
 			var assemblyDefinition = AssemblyDefinition.ReadAssembly(assembly);
 

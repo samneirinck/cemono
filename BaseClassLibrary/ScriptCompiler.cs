@@ -9,7 +9,7 @@ using System.Reflection;
 
 using CryEngine.Extensions;
 
-using System.Xml;
+using System.Xml.Linq;
 using System.ComponentModel;
 using System.Threading.Tasks;
 
@@ -31,7 +31,7 @@ namespace CryEngine
 
 			m_compiledScripts = new List<CryScript>();
 			m_flowNodes = new List<StoredNode>();
-			m_referencedAssemblies = new List<string>();
+			referencedAssemblies = new List<string>();
 
 			m_numInstances = 0;
 		}
@@ -39,6 +39,8 @@ namespace CryEngine
 		public void Initialize()
 		{
 			//GenerateScriptbindAssembly(scriptBinds.ToArray());
+
+			referencedAssemblies.AddRange(AppDomain.CurrentDomain.GetAssemblies().Select(a => a.Location).ToArray());
 
 			Reload();
 		}
@@ -51,10 +53,16 @@ namespace CryEngine
 
 		public void Reload()
 		{
-			//CreateNamespaceMaps();
 			LoadPrecompiledAssemblies();
 
-			AddScripts(CompileScriptsInFolders(new string[] { PathUtils.GetScriptFolder(MonoScriptType.Entity), PathUtils.GetScriptFolder(MonoScriptType.GameRules), PathUtils.GetScriptFolder(MonoScriptType.FlowNode) }));
+			List<string> scriptFolders = new List<string>();
+			scriptFolders.Add(PathUtils.GetScriptFolder(MonoScriptType.Entity));
+			scriptFolders.Add(PathUtils.GetScriptFolder(MonoScriptType.GameRules));
+			scriptFolders.Add(PathUtils.GetScriptFolder(MonoScriptType.FlowNode));
+			// if(isEditor)
+			scriptFolders.Add(PathUtils.GetScriptFolder(MonoScriptType.EditorForm));
+
+			AddScripts(CompileScriptsInFolders(scriptFolders.ToArray()));
 		}
 
 		private void LoadPrecompiledAssemblies()
@@ -213,49 +221,6 @@ namespace CryEngine
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	public class _ScriptCompiler : MarshalByRefObject
 	{
-		static Dictionary<string, List<string>> assemblyNamespaceMapping;
-
-		public static void CreateNamespaceMaps()
-		{
-			//Start with a fresh copy each time
-			assemblyNamespaceMapping = new Dictionary<string, List<string>>();
-			string currentAssembly = string.Empty;
-
-			Console.LogAlways("Mapping .NET namespaces to libraries...");
-			using(var stream = new FileStream(Path.Combine(PathUtils.GetEngineFolder(), "Mono", "assemblylookup.xml"),
-				FileMode.Open))
-			{
-				using(var reader = new XmlTextReader(stream))
-				{
-					while(reader.Read())
-					{
-						switch(reader.NodeType)
-						{
-							case XmlNodeType.Element:
-								switch(reader.Name)
-								{
-									//In the case of assemblies, create a new mapping entry
-									case "Assembly":
-										currentAssembly = reader.GetAttribute("name");
-										assemblyNamespaceMapping.Add(currentAssembly, new List<string>());
-										Console.LogAlways("Creating entry for assembly {0}", currentAssembly);
-										break;
-
-									//When we have a namespace, add it to the currently active mapping entry
-									case "Namespace":
-										var namespaceName = reader.GetAttribute("name");
-										assemblyNamespaceMapping[currentAssembly].Add(namespaceName);
-										Console.LogAlways("Associating namespace {0} with assembly {1}",
-											namespaceName, currentAssembly);
-										break;
-								}
-								break;
-						}
-					}
-				}
-			}
-		}
-
 		public static void GenerateScriptbindAssembly(Scriptbind[] scriptBinds)
 		{
 			List<string> sourceCode = new List<string>();
@@ -417,7 +382,7 @@ namespace CryEngine
 						//Process it, in case it contains types/gamerules
 						Assembly assembly = Assembly.LoadFrom(plugin);
 
-						m_referencedAssemblies.Add(plugin);
+						referencedAssemblies.Add(plugin);
 
 						foreach(var script in LoadAssembly(assembly))
 							compiledScripts.Add(script);
@@ -493,13 +458,13 @@ namespace CryEngine
 
 			compilerParameters.GenerateExecutable = false;
 
-			compilerParameters.GenerateInMemory = false; 
+			compilerParameters.GenerateInMemory = false;
 
-			//Add additional assemblies as needed by gamecode
-			//foreach(var script in scripts)
-			//	GetScriptReferences(script);
+			//Add additional assemblies as needed by gamecode to referencedAssemblies
+			foreach(var script in scripts)
+				GetScriptReferences(script);
 
-			compilerParameters.ReferencedAssemblies.AddRange(_requestedAssemblies.ToArray());
+			compilerParameters.ReferencedAssemblies.AddRange(referencedAssemblies.ToArray());
 
 #if RELEASE
 			compilerParameters.IncludeDebugInformation = false;
@@ -508,13 +473,9 @@ namespace CryEngine
            compilerParameters.IncludeDebugInformation = true;
 #endif
 
-			//Automatically add needed assemblies
-			var assemblies = AppDomain.CurrentDomain.GetAssemblies().Select(a => a.Location);
-			foreach(var assemblyPath in assemblies)
-				compilerParameters.ReferencedAssemblies.Add(assemblyPath);
-
-			foreach(var assemblyReference in m_referencedAssemblies)
-				compilerParameters.ReferencedAssemblies.Add(assemblyReference);
+			// We've got to get that assembly reference generator working. (Slap me if I accidentally commit this);
+			compilerParameters.ReferencedAssemblies.Add(@"D:\Dev\INK\CryMono\Engine\Mono\lib\mono\gac\System.Windows.Forms\4.0.0.0__b77a5c561934e089\System.Windows.Forms.dll");
+			compilerParameters.ReferencedAssemblies.Add(@"D:\Dev\INK\CryMono\Engine\Mono\lib\mono\gac\System.Drawing\4.0.0.0__b03f5f7f11d50a3a\System.Drawing.dll");
 
 			try
 			{
@@ -540,15 +501,10 @@ namespace CryEngine
 			return null;
 		}
 
-		/// <summary>
-		/// We keep an internal list of requested assemblies from CryGameCode to avoid duplication when loading them.
-		/// </summary>
-		static List<string> _requestedAssemblies = new List<string>();
-
 		//Fugly hack for referenced assemblies
 		static void GetScriptReferences(string script)
 		{
-			if(string.IsNullOrEmpty(script))
+			if(String.IsNullOrEmpty(script))
 				return;
 
 			using(var stream = new FileStream(script, FileMode.Open))
@@ -556,41 +512,116 @@ namespace CryEngine
 				using(var reader = new StreamReader(stream))
 				{
 					string line;
+					// Just in case the file starts with an empty line.
+					bool started = false;
+
 					while((line = reader.ReadLine()) != null)
 					{
-						//Quit once we get past using statements
-						//FIXME: there's gotta be a better way.
-						if(line.Contains("namespace") || line.Contains("public class"))
-							return;
-
 						//Filter for using statements
-						if(line.StartsWith("using") && line.EndsWith(";"))
+						if (line.StartsWith("using") && line.EndsWith(";"))
 						{
-							ProcessNamespace(line.Replace("using", "").Replace(";", ""));
+							ProcessNamespace(line.Replace("using ", "").Replace(";", ""));
+
+							started = true;
 						}
+						else if(started)
+							return;
 					}
 				}
+
+				stream.Close();
 			}
 		}
 
 		static void ProcessNamespace(string name)
 		{
-			foreach(var assemblyEntry in assemblyNamespaceMapping)
+			if (name.StartsWith("CryEngine"))
+				return;
+
+			XDocument assemblyLookup = XDocument.Load(Path.Combine(PathUtils.GetEngineFolder(), "Mono", "assemblylookup.xml"));
+			foreach(var node in assemblyLookup.Descendants())
 			{
-				if(assemblyEntry.Value.Contains(name))
+				if (node.Name.LocalName == "Namespace" && node.Attribute("name").Value==name)
 				{
-					var fullname = assemblyEntry.Key + ".dll";
-					if(!_requestedAssemblies.Contains(fullname))
+					string fullName = node.Parent.Attribute("name").Value;
+
+					string[] assemblies = Directory.GetFiles(Path.Combine(PathUtils.GetEngineFolder(), "Mono", "lib", "mono", "gac"), "*.dll", SearchOption.AllDirectories);
+					foreach (var assembly in assemblies)
 					{
-						Console.LogAlways("Adding an additional assembly, {0}", fullname);
-						_requestedAssemblies.Add(fullname);
+						Console.LogAlways(assembly);
+
+						if (assembly == fullName)
+						{
+							fullName = assembly;
+							break;
+						}
+					}
+
+					if (!referencedAssemblies.Contains(fullName))
+					{
+						Console.LogAlways("Adding an additional assembly, {0}", fullName);
+						referencedAssemblies.Add(fullName);
 					}
 					else
 					{
-						Console.LogAlways("Skipping additional assembly, {0}, already queued", fullname);
+						Console.LogAlways("Skipping additional assembly, {0}, already queued", fullName);
 					}
 				}
 			}
+			/*
+			using (var reader = new XmlTextReader(stream))
+			{
+				while (reader.Read())
+				{
+					switch (reader.NodeType)
+					{
+						case XmlNodeType.Element:
+							if (reader.Name == "Namespace" && reader.GetAttribute("name") == name)
+							{
+								string[] assemblies = Directory.GetFiles(Path.Combine(PathUtils.GetEngineFolder(), "Mono", "lib", "mono", "gac"), "*.dll", SearchOption.AllDirectories);
+								foreach (var assembly in assemblies)
+								{
+									Console.LogAlways(assembly);
+
+									if (assembly == fullName)
+									{
+										fullName = assembly;
+										break;
+									}
+								}
+
+								if (!referencedAssemblies.Contains(fullName))
+								{
+									Console.LogAlways("Adding an additional assembly, {0}", fullName);
+									referencedAssemblies.Add(fullName);
+								}
+								else
+								{
+									Console.LogAlways("Skipping additional assembly, {0}, already queued", fullName);
+								}
+							}
+							break;
+							switch (reader.Name)
+							{
+								//In the case of assemblies, create a new mapping entry
+								case "Assembly":
+									currentAssembly = reader.GetAttribute("name");
+									assemblyNamespaceMapping.Add(currentAssembly, new List<string>());
+									break;
+
+								//When we have a namespace, add it to the currently active mapping entry
+								case "Namespace":
+									var namespaceName = reader.GetAttribute("name");
+									assemblyNamespaceMapping[currentAssembly].Add(namespaceName);
+									break;
+							}
+							break;
+						}
+					}
+
+					reader.Close();
+				}
+			}*/
 		}
 
 		/// <summary>
@@ -616,16 +647,26 @@ namespace CryEngine
 				{
 					var scriptType = MonoScriptType.Null;
 
-					if(type.Implements(typeof(BaseGameRules)))
+					if (type.Implements(typeof(BaseGameRules)))
 						scriptType = MonoScriptType.GameRules;
-					else if(type.Implements(typeof(BasePlayer)))
+					else if (type.Implements(typeof(BasePlayer)))
 						scriptType = MonoScriptType.Actor;
-					else if(type.Implements(typeof(Entity)))
+					else if (type.Implements(typeof(Entity)))
 						scriptType = MonoScriptType.Entity;
-					else if(type.Implements(typeof(StaticEntity)))
+					else if (type.Implements(typeof(StaticEntity)))
 						scriptType = MonoScriptType.StaticEntity;
-					else if(type.Implements(typeof(FlowNode)))
+					else if (type.Implements(typeof(FlowNode)))
 						scriptType = MonoScriptType.FlowNode;
+					else if (type.Implements(typeof(CryScriptInstance)))
+						scriptType = MonoScriptType.Other;
+					else if (type.Implements(typeof(Sandbox.EditorForm)))
+					{
+						Sandbox.EditorForm form = Activator.CreateInstance(type) as Sandbox.EditorForm;
+						form.Activate();
+						form.Show();
+
+						scriptType = MonoScriptType.EditorForm;
+					}
 
 					scripts[i] = new CryScript(type, scriptType);
 
@@ -767,7 +808,7 @@ namespace CryEngine
 		/// <summary>
 		/// All libraries passed through LoadLibrariesInFolder will be automatically added to this list.
 		/// </summary>
-		public static List<string> m_referencedAssemblies;
+		public static List<string> referencedAssemblies;
 	}
 
 	public enum MonoScriptType
@@ -793,6 +834,10 @@ namespace CryEngine
 		/// Scripts directly inheriting from Actor will utilize this script type.
 		/// </summary>
 		Actor,
+		/// <summary>
+		/// 
+		/// </summary>
+		EditorForm,
 		/// <summary>
 		/// Scripts will be linked to this type if they inherit from CryScriptInstance, but not any other script base.
 		/// </summary>

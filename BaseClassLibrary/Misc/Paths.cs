@@ -92,6 +92,9 @@ namespace CryEngine
                 case MonoScriptType.GameRules:
                     folder = "GameRules";
                     break;
+				case MonoScriptType.EditorForm:
+					folder = "EditorForms";
+					break;
             }
 
             return Path.Combine(PathUtils.GetScriptsFolder(), folder);
