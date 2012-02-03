@@ -36,7 +36,7 @@ public:
 	// ~IActionListener
 
 private:
-	ExposedMonoMethod(void, RegisterAction, mono::string);
+	MonoMethod(void, RegisterAction, mono::string);
 
 	bool OnActionTriggered(EntityId entityId, const ActionId& actionId, int activationMode, float value);
 
