@@ -1,5 +1,7 @@
 using CryEngine;
 
+using System.Linq;
+
 /// <summary>
 /// The campaign game mode is the base game mode
 /// </summary>
@@ -10,6 +12,7 @@ namespace CryGameCode
 	{
         public SinglePlayer()
         {
+			ReceiveUpdates = true;
         }
 
         public override void OnClientEnteredGame(int channelId, uint playerId, bool reset, bool loadingSaveGame)
@@ -19,9 +22,16 @@ namespace CryGameCode
             base.OnClientEnteredGame(channelId, playerId, reset, loadingSaveGame);
         }
 
+		public override void OnUpdate()
+		{
+			// TODO: Register instantiated Players with CryScriptCompiler to utilize its update functionality.
+			foreach (var player in GameRules.Players.Where(x => x.ReceiveUpdates))
+				player.OnUpdate();
+		}
+
         public override void OnClientConnect(int channelId, bool isReset = false, string playerName = "")
         {
-            Player player = GameRules.SpawnPlayer<Player>(channelId, "Dude", new Vec3(0, 0, 0), new Vec3(0, 0, 0));
+            Player player = GameRules.SpawnPlayer<Player>(channelId, "Player", new Vec3(0, 0, 0), new Vec3(0, 0, 0));
 
             if (player == null)
             {

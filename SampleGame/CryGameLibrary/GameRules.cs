@@ -35,19 +35,19 @@ namespace CryEngine
         /// <param name="angles"></param>
         public static T SpawnPlayer<T>(int channelId, string name, Vec3 pos, Vec3 angles) where T : BasePlayer, new()
         {
-            if (m_players == null)
-                m_players = new List<BasePlayer>();
+			if (Players == null)
+				Players = new List<BasePlayer>();
 
-			m_players.Add(new T());
+			Players.Add(new T());
 
-			m_players.Last().Initialize(_SpawnPlayer(channelId, name, "Player", pos, angles), channelId);
+			Players.Last().Initialize(_SpawnPlayer(channelId, name, "Actor", pos, angles), channelId);
 
-			return m_players.Last() as T;
+			return Players.Last() as T;
         }
 
         public static BasePlayer GetPlayer(uint playerId)
         {
-            return m_players.Where(player => player.Id == playerId).FirstOrDefault();
+			return Players.Where(player => player.Id == playerId).FirstOrDefault();
         }
 
         public static T GetPlayer<T>(uint playerId) where T : BasePlayer
@@ -55,6 +55,6 @@ namespace CryEngine
             return GetPlayer(playerId) as T;
         }
 
-        private static List<BasePlayer> m_players;
+		public static List<BasePlayer> Players;
     }
 }
