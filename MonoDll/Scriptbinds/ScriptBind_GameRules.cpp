@@ -3,8 +3,6 @@
 
 #include <IGameRulesSystem.h>
 
-REGISTER_SCRIPTBIND(CScriptBind_GameRules);
-
 CScriptBind_GameRules::CScriptBind_GameRules()
 {
 	REGISTER_METHOD(RegisterGameMode);

@@ -353,7 +353,6 @@
     <ClInclude Include="FlowManager.h" />
     <ClInclude Include="Headers\IMonoArray.h" />
     <ClInclude Include="Headers\IMonoAssembly.h" />
-    <ClInclude Include="Headers\IMonoAutoRegScriptbind.h" />
     <ClInclude Include="Headers\IMonoClass.h" />
     <ClInclude Include="Headers\IMonoConverter.h" />
     <ClInclude Include="Headers\IMonoEntityManager.h" />
@@ -362,7 +361,6 @@
     <ClInclude Include="Headers\MonoAnyValue.h" />
     <ClInclude Include="Headers\MonoCommon.h" />
     <ClInclude Include="Headers\MonoSerializable.h" />
-    <ClInclude Include="MonoActorClass.h" />
     <ClInclude Include="MonoArray.h" />
     <ClInclude Include="MonoConverter.h" />
     <ClInclude Include="MonoEntity.h" />
@@ -394,7 +392,6 @@
     <ClCompile Include="CallbackHandler.cpp" />
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="FlowManager.cpp" />
-    <ClCompile Include="MonoActorClass.cpp" />
     <ClCompile Include="MonoConverter.cpp" />
     <ClCompile Include="MonoEntity.cpp" />
     <ClCompile Include="MonoFlowNode.cpp" />

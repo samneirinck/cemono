@@ -6,17 +6,17 @@
 //////////////////////////////////////////////////////////////////////////
 // 23/01/2013 : Created by Filip 'i59' Lundgren
 ////////////////////////////////////////////////////////////////////////*/
-#ifndef __LOGGING_BINDING_H__
-#define __LOGGING_BINDING_H__
+#ifndef __SCRIPTBIND_STATICENTITY_H__
+#define __SCRIPTBIND_STATICENTITY_H__
 
-#include <IMonoAutoRegScriptBind.h>
+#include <IMonoScriptBind.h>
 
 #include <MonoCommon.h>
 
 struct MovementRequest;
 struct MonoPhysicalizationParams;
 
-class CScriptBind_StaticEntity : public IMonoAutoRegScriptBind
+class CScriptBind_StaticEntity : public IMonoScriptBind
 {
 public:
 	CScriptBind_StaticEntity();
@@ -24,9 +24,7 @@ public:
 
 protected:
 	// IMonoScriptBind
-	virtual void Release() { delete this; }
-
-	virtual const char* GetClassName() { return "StaticEntity"; }
+	virtual const char *GetClassName() { return "StaticEntity"; }
 	// ~IMonoScriptBind
 
 	MonoMethod(mono::string, GetPropertyValue, EntityId, mono::string);
@@ -102,4 +100,4 @@ struct MonoPhysicalizationParams
 	MonoPlayerDynamics playerDynamics;
 };
 
-#endif //__LOGGING_BINDING_H__
+#endif //__SCRIPTBIND_STATICENTITY_H__

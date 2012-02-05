@@ -25,8 +25,6 @@ History:
 CScriptBind_GameRules::CScriptBind_GameRules(ISystem *pSystem, IGameFramework *pGameFramework)
 {
 	RegisterMethods();
-
-	gEnv->pMonoScriptSystem->RegisterScriptBind(this);
 }
 
 //------------------------------------------------------------------------

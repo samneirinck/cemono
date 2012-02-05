@@ -25,18 +25,23 @@
 #include "Scriptbinds\ItemSystem.h"
 #include "Scriptbinds\Console.h"
 #include "Scriptbinds\ScriptBind_GameRules.h"
+#include "Scriptbinds\ActorSystem.h"
+#include "Scriptbinds\ScriptBind_3DEngine.h"
+#include "Scriptbinds\ScriptBind_PhysicalWorld.h"
+#include "Scriptbinds\ScriptBind_Renderer.h"
+#include "Scriptbinds\ScriptBind_StaticEntity.h"
 
 #include "EntityManager.h"
 #include "FlowManager.h"
 #include "MonoInput.h"
+#include "MonoTester.h"
+
 #include "CallbackHandler.h"
 
 #ifndef _RELEASE
 #include "MonoTester.h"
 #endif
 
-IMonoAutoRegScriptBind *IMonoAutoRegScriptBind::m_pFirst = NULL;
-IMonoAutoRegScriptBind *IMonoAutoRegScriptBind::m_pLast = NULL;
 CRYREGISTER_CLASS(CMonoScriptSystem)
 
 CMonoScriptSystem::CMonoScriptSystem() 
@@ -85,7 +90,7 @@ CMonoScriptSystem::~CMonoScriptSystem()
 		SAFE_DELETE((*it));
 
 	m_scripts.clear();
-	m_scriptBinds.clear();
+	m_methodBindings.clear();
 
 	SAFE_DELETE(m_pConverter);
 	SAFE_DELETE(m_pCallbackHandler);
@@ -94,8 +99,7 @@ CMonoScriptSystem::~CMonoScriptSystem()
 	SAFE_DELETE(m_pScriptCompiler);
 	SAFE_DELETE(m_pLibraryAssembly);
 
-	SAFE_DELETE(m_pEntityManager);
-	SAFE_DELETE(m_pFlowManager);
+	m_localScriptBinds.clear();
 
 	if (m_pMonoDomain)
 		mono_jit_cleanup(m_pMonoDomain);
@@ -155,43 +159,42 @@ bool CMonoScriptSystem::InitializeDomain()
 void CMonoScriptSystem::RegisterDefaultBindings()
 {
 	// Register what couldn't be registered earlier.
-	if(m_scriptBinds.size()>0)
+	if(m_methodBindings.size()>0)
 	{
-		for(std::vector<IMonoScriptBind *>::iterator it = m_scriptBinds.begin(); it != m_scriptBinds.end(); ++it)
-			RegisterScriptBind((*it));
-
-		m_scriptBinds.clear();
+		for(TMethodBindings::iterator it = m_methodBindings.begin(); it != m_methodBindings.end(); ++it)
+			RegisterMethodBinding((*it).second, (*it).first);
 	}
 
-	IMonoAutoRegScriptBind *pScriptBind = IMonoAutoRegScriptBind::m_pFirst;
-	while(pScriptBind)
-	{
-		RegisterScriptBind(pScriptBind);
+#define RegisterBinding(T) m_localScriptBinds.push_back((IMonoScriptBind *)new T());
+	RegisterBinding(CScriptBind_ActorSystem);
+	RegisterBinding(CScriptBind_3DEngine);
+	RegisterBinding(CScriptBind_PhysicalWorld);
+	RegisterBinding(CScriptBind_Renderer);
+	RegisterBinding(CScriptBind_Console);
+	RegisterBinding(CScriptBind_ItemSystem);
+	RegisterBinding(CScriptBind_Inventory);
+	RegisterBinding(CScriptBind_GameRules);
+	RegisterBinding(CScriptBind_StaticEntity);
+	RegisterBinding(CMonoInput);
+	RegisterBinding(CMonoTester);
 
-		pScriptBind = pScriptBind->m_pNext;
-	}
+#define RegisterBindingAndSet(var, T) RegisterBinding(T); var = (T *)m_localScriptBinds.back();
+	RegisterBindingAndSet(m_pCallbackHandler, CMonoCallbackHandler);
+	RegisterBindingAndSet(m_pEntityManager, CEntityManager);
+	RegisterBindingAndSet(m_pFlowManager, CFlowManager);
 
-	m_pCallbackHandler = new CMonoCallbackHandler();
-	m_pEntityManager = new CEntityManager();
-	m_pFlowManager = new CFlowManager();
+#ifndef _RELEASE
+	RegisterBindingAndSet(m_pTester, CMonoTester);
+#endif
 
-	// We need these later.
-	m_pEntityManager->AddRef();
-	m_pFlowManager->AddRef();
-
-	RegisterScriptBind(m_pEntityManager);
-	RegisterScriptBind(m_pFlowManager);
-	RegisterScriptBind(new CMonoInput());
+#undef RegisterBinding
 }
 
 bool CMonoScriptSystem::InitializeSystems()
 {
 #ifndef _RELEASE
-	CMonoTester *pTester = new CMonoTester();
-	pTester->AddRef();
-
-	pTester->CommenceTesting();
-	SAFE_RELEASE(pTester);
+	m_pTester->CommenceTesting();
+	SAFE_DELETE(m_pTester);
 #endif
 
 	IMonoClass *pClass = m_pLibraryAssembly->GetCustomClass("CryNetwork");
@@ -223,53 +226,39 @@ void CMonoScriptSystem::OnFileChange(const char *sFilename)
 	SAFE_DELETE(pParams);
 }
 
-void CMonoScriptSystem::RegisterScriptBind(IMonoScriptBind *pScriptBind)
+void CMonoScriptSystem::RegisterMethodBinding(IMonoMethodBinding binding, const char *classPath)
 {
-	if(!IsInitialized())
-	{
-		m_scriptBinds.push_back(pScriptBind);
+	mono_add_internal_call(classPath + (string)binding.methodName, binding.method);
+}
 
+void CMonoScriptSystem::RegisterMethodBindings(std::vector<IMonoMethodBinding> newBindings, const char *classPath)
+{
+	if(newBindings.size()<=0)
 		return;
-	}
 
-	pScriptBind->AddRef();
-
-	string namespaceName = pScriptBind->GetNamespace();
-	if (strcmp(pScriptBind->GetNamespaceExtension(), ""))
+	for each(auto newBinding in newBindings)
 	{
-		namespaceName.append(".");
-		namespaceName.append(pScriptBind->GetNamespaceExtension());
+		for each(auto storedBinding in m_methodBindings)
+		{
+			// Check if it already exists
+			if(storedBinding.second.methodName==newBinding.methodName)
+				return;
+			
+			if(!IsInitialized())
+				m_methodBindings.insert(TMethodBindings::value_type(classPath, newBinding));
+		}
 	}
 
-	string fullName = (namespaceName + ".").append(pScriptBind->GetClassName()).append("::");
+	if(!IsInitialized()) // MonoDomain not initialized yet, we'll register them later.
+		return;
 
-	std::vector<IMonoMethodBinding> methodBindings = pScriptBind->GetMethods();
-#ifdef SCRIPTBIND_GENERATION
-	IMonoArray *pMethods = CreateMonoArray(methodBindings.size());
-#endif
-
-	for(std::vector<IMonoMethodBinding>::iterator it = methodBindings.begin(); it != methodBindings.end(); ++it)
+	for each(auto binding in newBindings)
 	{
-#ifdef SCRIPTBIND_GENERATION
-		InternalCallMethod *pInternalCall = new InternalCallMethod(ToMonoString((*it).methodName), ToMonoString((*it).returnType), ToMonoString((*it).parameters));
-		IMonoObject *pConvertedInternalCall = GetConverter()->CreateObjectOfCustomType(pInternalCall, "InternalCallMethod", "CryEngine");
-		pMethods->Insert(pConvertedInternalCall);
-		SAFE_DELETE(pInternalCall);
-#endif
-
-		mono_add_internal_call(fullName + (*it).methodName, (*it).method);
+		if(!strcmp(binding.methodName, "_RevivePlayer"))
+			RegisterMethodBinding(binding, classPath);
+		else
+			RegisterMethodBinding(binding, classPath);
 	}
-
-#ifdef SCRIPTBIND_GENERATION
-	IMonoArray *pArray = CreateMonoArray(3);
-	pArray->Insert(namespaceName);
-	pArray->Insert(pScriptBind->GetClassName());
-	pArray->Insert(pMethods);
-
-	m_pScriptCompiler->CallMethod("RegisterScriptbind", pArray);
-#endif
-
-	//pScriptBind->Release();
 }
 
 int CMonoScriptSystem::InstantiateScript(EMonoScriptType scriptType, const char *scriptName, IMonoArray *pConstructorParameters)

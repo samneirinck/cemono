@@ -87,13 +87,7 @@
     <ClInclude Include="Headers\MonoAnyValue.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\IMonoAutoRegScriptbind.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
     <ClInclude Include="Scriptbinds\ActorSystem.h">
-      <Filter>ActorSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="MonoActorClass.h">
       <Filter>ActorSystem</Filter>
     </ClInclude>
     <ClInclude Include="MonoEntity.h">
@@ -170,9 +164,6 @@
       <Filter>ScriptBinds</Filter>
     </ClCompile>
     <ClCompile Include="Scriptbinds\ActorSystem.cpp">
-      <Filter>ActorSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="MonoActorClass.cpp">
       <Filter>ActorSystem</Filter>
     </ClCompile>
     <ClCompile Include="MonoEntity.cpp">

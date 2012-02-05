@@ -47,7 +47,7 @@ class CMonoScriptSystem : public IMonoScriptSystem, public IFileChangeListener
 	CRYGENERATE_SINGLETONCLASS(CMonoScriptSystem, "CryMono", 0xc37b8ad5d62f47de, 0xa8debe525ff0fc8a)
 
 	typedef std::vector<IMonoClass *> TScripts;
-	typedef std::vector<IMonoScriptBind *> TScriptBinds;
+	typedef std::map<string, IMonoMethodBinding> TMethodBindings;
 
 public:
 	// IMonoScriptSystem
@@ -59,8 +59,9 @@ public:
 
 	virtual IMonoEntityManager *GetEntityManager() const { return m_pEntityManager; }
 
-	virtual void RegisterScriptBind(IMonoScriptBind *pScriptBind) override;
-
+	virtual void RegisterMethodBinding(IMonoMethodBinding binding, const char *classPath) override;
+	virtual void RegisterMethodBindings(std::vector<IMonoMethodBinding> methodBindings, const char *classPath) override;
+	
 	virtual int InstantiateScript(EMonoScriptType scriptType, const char *scriptName, IMonoArray *pConstructorParameters = nullptr) override;
 	virtual IMonoClass *GetScriptById(int id) override;
 	virtual void RemoveScriptInstance(int id) override;
@@ -98,9 +99,13 @@ private:
 	CEntityManager *m_pEntityManager;
 	CFlowManager *m_pFlowManager;
 	CMonoCallbackHandler *m_pCallbackHandler;
+	CMonoTester *m_pTester;
 
 	TScripts m_scripts;
-	TScriptBinds m_scriptBinds;
+	TMethodBindings m_methodBindings;
+
+	// ScriptBinds declared in this project.
+	std::vector<IMonoScriptBind *> m_localScriptBinds;
 };
 
 #endif //__MONO_H__

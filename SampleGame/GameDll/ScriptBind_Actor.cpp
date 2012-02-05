@@ -156,8 +156,6 @@ CScriptBind_Actor::CScriptBind_Actor(ISystem *pSystem)
 	REGISTER_METHOD(SetPlayerMaxHealth);
 
 	REGISTER_METHOD(RegisterPlayerClass);
-
-	gEnv->pMonoScriptSystem->RegisterScriptBind(this);
 }
 
 //------------------------------------------------------------------------

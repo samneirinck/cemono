@@ -103,12 +103,9 @@ public:
 	int GetScriptId(EntityId entityId, bool returnBackIfInvalid = false) override;
 	bool IsMonoEntity(const char *entityClassName);
 
-	// IMonoScriptBind
-	virtual void Release() override { if( 0 >= --m_refs) delete this; }
-	virtual void AddRef() override { ++m_refs; }
 protected:
-
-	virtual const char* GetClassName() { return "EntitySystem"; }
+	// IMonoScriptBind
+	virtual const char *GetClassName() { return "EntitySystem"; }
 	// ~IMonoScriptBind
 
 	// ScriptBinds

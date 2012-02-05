@@ -10,10 +10,10 @@
 #ifndef __SCRIPTBIND_ITEMSYSTEM_H__
 #define __SCRIPTBIND_ITEMSYSTEM_H__
 
-#include <IMonoAutoRegScriptBind.h>
+#include <IMonoScriptBind.h>
 #include <MonoCommon.h>
 
-class CScriptBind_ItemSystem : public IMonoAutoRegScriptBind
+class CScriptBind_ItemSystem : public IMonoScriptBind
 {
 public:
 	CScriptBind_ItemSystem();
@@ -21,16 +21,14 @@ public:
 
 protected:
 	// IMonoScriptBind
-	virtual void Release() { delete this; }
-
-	virtual const char* GetClassName() { return "ItemSystem"; }
+	virtual const char *GetClassName() { return "ItemSystem"; }
 	// ~IMonoScriptBind
 
 	ExposedMonoMethod(void, CacheItemGeometry, mono::string);
 	ExposedMonoMethod(void, CacheItemSound, mono::string);
 };
 
-class CScriptBind_Inventory : public IMonoAutoRegScriptBind
+class CScriptBind_Inventory : public IMonoScriptBind
 {
 public:
 	CScriptBind_Inventory();
@@ -38,9 +36,7 @@ public:
 
 protected:
 	// IMonoScriptBind
-	virtual void Release() { delete this; }
-
-	virtual const char* GetClassName() { return "Inventory"; }
+	virtual const char *GetClassName() { return "Inventory"; }
 	// ~IMonoScriptBind
 
 	MonoMethod(void, GiveItem, EntityId, mono::string);

@@ -8,7 +8,7 @@
 ////////////////////////////////////////////////////////////////////////*/
 
 #include <IMonoInput.h>
-#include <IMonoAutoRegScriptBind.h>
+#include <IMonoScriptBind.h>
 
 #include <IActionMapManager.h>
 
@@ -26,9 +26,7 @@ public:
 	~CMonoInput();
 
 	// IMonoScriptBind
-	virtual void Release() override { delete this; }
-
-	virtual const char *GetClassName() override { return "InputSystem"; }
+	virtual const char *GetClassName() { return "InputSystem"; }
 	// ~IMonoScriptBind
 
 	// IActionListener

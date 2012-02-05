@@ -38,12 +38,11 @@ namespace CryEngine
             if (m_players == null)
                 m_players = new List<BasePlayer>();
 
-            T player = new T();
+			m_players.Add(new T());
 
-            player.Initialize(_SpawnPlayer(channelId, name, "Player", pos, angles), channelId);
+			m_players.Last().Initialize(_SpawnPlayer(channelId, name, "Player", pos, angles), channelId);
 
-            m_players.Add(player);
-            return player;
+			return m_players.Last() as T;
         }
 
         public static BasePlayer GetPlayer(uint playerId)

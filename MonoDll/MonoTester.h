@@ -8,9 +8,9 @@
 // 18/12/2011 : Created by Filip 'i59' Lundgren
 ////////////////////////////////////////////////////////////////////////*/
 #ifndef __MONO_TESTER_H__
-#define __MONO_TESTER_H
+#define __MONO_TESTER_H__
 
-#include "IMonoAutoRegScriptBind.h"
+#include <IMonoScriptBind.h>
 
 #include <MonoCommon.h>
 
@@ -19,7 +19,7 @@ struct IMonoScriptSystem;
 struct IMonoAssembly;
 struct IMonoArray;
 
-class CMonoTester : public IMonoAutoRegScriptBind
+class CMonoTester : public IMonoScriptBind
 {
 public:
 	CMonoTester();
@@ -31,13 +31,10 @@ public:
 	void TestStaticMethods(IMonoAssembly *pCryBrary);
 	void TestInstantiatedMethods(IMonoAssembly *pCryBrary);
 
-	// IMonoScriptBind
-	virtual void AddRef() override { m_refs++; }
-	virtual void Release() override { if( 0 >= --m_refs) delete this; }
-
 protected:
-	virtual const char* GetNamespace() override { return "CryEngine.Utils"; }
-	virtual const char* GetClassName() override { return "Tester"; }
+	// IMonoScriptBind
+	virtual const char *GetNamespace() override { return "CryEngine.Utils"; }
+	virtual const char *GetClassName() { return "Tester"; }
 	// ~IMonoScriptBind
 
 	// Scriptbind methods

@@ -9,11 +9,10 @@
 #ifndef __LOGGING_BINDING_H__
 #define __LOGGING_BINDING_H__
 
-#include <IMonoAutoRegScriptBind.h>
-
 #include <MonoCommon.h>
+#include <IMonoScriptBind.h>
 
-class CScriptBind_Console : public IMonoAutoRegScriptBind
+class CScriptBind_Console : public IMonoScriptBind
 {
 public:
 	CScriptBind_Console();
@@ -21,9 +20,7 @@ public:
 
 protected:
 	// IMonoScriptBind
-	virtual void Release() { delete this; }
-
-	virtual const char* GetClassName() { return "Console"; }
+	virtual const char *GetClassName() { return "Console"; }
 	// ~IMonoScriptBind
 
 	// Logging

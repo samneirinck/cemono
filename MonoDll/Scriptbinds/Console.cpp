@@ -8,8 +8,6 @@
 
 #include "MonoScriptSystem.h"
 
-REGISTER_SCRIPTBIND(CScriptBind_Console);
-
 CScriptBind_Console::CScriptBind_Console()
 {
 	// Logging

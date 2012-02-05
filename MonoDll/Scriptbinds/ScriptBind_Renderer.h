@@ -10,17 +10,15 @@
 #define __SCRIPTBIND_RENDERER__
 
 #include <MonoCommon.h>
-#include <IMonoAutoRegScriptBind.h>
+#include <IMonoScriptBind.h>
 
-class CScriptBind_Renderer : public IMonoAutoRegScriptBind
+class CScriptBind_Renderer : public IMonoScriptBind
 {
 public:
 	CScriptBind_Renderer();
 	~CScriptBind_Renderer() {}
 
 	// IMonoScriptBind
-	virtual void Release() { delete this; }
-
 	virtual const char *GetClassName() { return "Renderer"; }
 	// ~IMonoScriptBind
 };

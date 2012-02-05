@@ -11,7 +11,7 @@
 #define __SCRIPTBIND_PHYSICALWORLD__
 
 #include <MonoCommon.h>
-#include <IMonoAutoRegScriptBind.h>
+#include <IMonoScriptBind.h>
 
 struct MonoRayHit
 {
@@ -29,15 +29,13 @@ struct MonoRayHit
 	int iPrim; // hit triangle index
 };
 
-class CScriptBind_PhysicalWorld : public IMonoAutoRegScriptBind
+class CScriptBind_PhysicalWorld : public IMonoScriptBind
 {
 public:
 	CScriptBind_PhysicalWorld();
 	~CScriptBind_PhysicalWorld() {}
 
 	// IMonoScriptBind
-	virtual void Release() { delete this; }
-
 	virtual const char *GetClassName() { return "PhysicalWorld"; }
 	// ~IMonoScriptBind
 

@@ -5,9 +5,6 @@
 #include <IGameFramework.h>
 #include <IItemSystem.h>
 
-REGISTER_SCRIPTBIND(CScriptBind_ItemSystem);
-REGISTER_SCRIPTBIND(CScriptBind_Inventory);
-
 CScriptBind_ItemSystem::CScriptBind_ItemSystem()
 {
 	REGISTER_METHOD(CacheItemGeometry);

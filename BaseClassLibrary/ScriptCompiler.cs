@@ -191,11 +191,12 @@ namespace CryEngine
             if (file.Contains(".cs"))
             {
                 file = file.Split('.').First();
-
+				// TODO: Script reloading
             }
             else if (file.Contains(".dll"))
             {
                 file = file.Split('.').First();
+				// TODO: Dll reloading
             }
         }
 
@@ -548,8 +549,6 @@ namespace CryEngine
 					string[] assemblies = Directory.GetFiles(Path.Combine(PathUtils.GetEngineFolder(), "Mono", "lib", "mono", "gac"), "*.dll", SearchOption.AllDirectories);
 					foreach (var assembly in assemblies)
 					{
-						Console.LogAlways(assembly);
-
 						if (assembly == fullName)
 						{
 							fullName = assembly;
@@ -568,60 +567,6 @@ namespace CryEngine
 					}
 				}
 			}
-			/*
-			using (var reader = new XmlTextReader(stream))
-			{
-				while (reader.Read())
-				{
-					switch (reader.NodeType)
-					{
-						case XmlNodeType.Element:
-							if (reader.Name == "Namespace" && reader.GetAttribute("name") == name)
-							{
-								string[] assemblies = Directory.GetFiles(Path.Combine(PathUtils.GetEngineFolder(), "Mono", "lib", "mono", "gac"), "*.dll", SearchOption.AllDirectories);
-								foreach (var assembly in assemblies)
-								{
-									Console.LogAlways(assembly);
-
-									if (assembly == fullName)
-									{
-										fullName = assembly;
-										break;
-									}
-								}
-
-								if (!referencedAssemblies.Contains(fullName))
-								{
-									Console.LogAlways("Adding an additional assembly, {0}", fullName);
-									referencedAssemblies.Add(fullName);
-								}
-								else
-								{
-									Console.LogAlways("Skipping additional assembly, {0}, already queued", fullName);
-								}
-							}
-							break;
-							switch (reader.Name)
-							{
-								//In the case of assemblies, create a new mapping entry
-								case "Assembly":
-									currentAssembly = reader.GetAttribute("name");
-									assemblyNamespaceMapping.Add(currentAssembly, new List<string>());
-									break;
-
-								//When we have a namespace, add it to the currently active mapping entry
-								case "Namespace":
-									var namespaceName = reader.GetAttribute("name");
-									assemblyNamespaceMapping[currentAssembly].Add(namespaceName);
-									break;
-							}
-							break;
-						}
-					}
-
-					reader.Close();
-				}
-			}*/
 		}
 
 		/// <summary>

@@ -3,8 +3,6 @@
 
 #include "MonoEntity.h"
 
-REGISTER_SCRIPTBIND(CScriptBind_StaticEntity)
-
 CScriptBind_StaticEntity::CScriptBind_StaticEntity()
 {
 	REGISTER_METHOD(GetPropertyValue);

@@ -4,8 +4,6 @@
 #include <IMonoArray.h>
 #include <IMonoObject.h>
 
-REGISTER_SCRIPTBIND(CScriptBind_PhysicalWorld);
-
 CScriptBind_PhysicalWorld::CScriptBind_PhysicalWorld()
 {
 	REGISTER_METHOD(RayWorldIntersection);

@@ -9,11 +9,11 @@
 #ifndef __SCRIPTBIND_ACTORSYSTEM_H__
 #define __SCRIPTBIND_ACTORSYSTEM_H__
 
-#include <IMonoAutoRegScriptbind.h>
+#include <IMonoScriptBind.h>
 
 #include <MonoCommon.h>
 
-class CScriptBind_ActorSystem : public IMonoAutoRegScriptBind
+class CScriptBind_ActorSystem : public IMonoScriptBind
 {
 public:
 	CScriptBind_ActorSystem();
@@ -21,9 +21,7 @@ public:
 
 protected:
 	// IMonoScriptBind
-	virtual void Release() { delete this; }
-
-	virtual const char* GetClassName() { return "ActorSystem"; }
+	virtual const char *GetClassName() { return "ActorSystem"; }
 	// ~IMonoScriptBind
 
 	MonoMethod(float, GetPlayerHealth, EntityId);

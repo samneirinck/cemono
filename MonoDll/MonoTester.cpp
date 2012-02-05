@@ -20,8 +20,6 @@ void CMonoTester::CommenceTesting()
 {
 	IMonoScriptSystem *pScriptSystem = gEnv->pMonoScriptSystem;
 
-	pScriptSystem->RegisterScriptBind(this);
-
 	IMonoAssembly *pCryBraryAssembly = gEnv->pMonoScriptSystem->GetCryBraryAssembly();
 	TestStaticMethods(pCryBraryAssembly);
 	TestInstantiatedMethods(pCryBraryAssembly);

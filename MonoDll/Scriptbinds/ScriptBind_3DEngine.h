@@ -6,23 +6,21 @@
 //////////////////////////////////////////////////////////////////////////
 // 13/01/2011 : Created by Filip 'i59' Lundgren
 ////////////////////////////////////////////////////////////////////////*/
-#ifndef __SCRIPTBIND_RENDERER__
-#define __SCRIPTBIND_RENDERER__
+#ifndef __SCRIPTBIND_3DENGINE__
+#define __SCRIPTBIND_3DENGINE__
 
 #include <MonoCommon.h>
-#include <IMonoAutoRegScriptBind.h>
+#include <IMonoScriptBind.h>
 
-class CScriptBind_3DEngine : public IMonoAutoRegScriptBind
+class CScriptBind_3DEngine : public IMonoScriptBind
 {
 public:
 	CScriptBind_3DEngine();
 	~CScriptBind_3DEngine() {}
 
 	// IMonoScriptBind
-	virtual void Release() { delete this; }
-
 	virtual const char *GetClassName() { return "Engine"; }
 	// ~IMonoScriptBind
 };
 
-#endif //__SCRIPTBIND_RENDERER__
+#endif //__SCRIPTBIND_3DENGINE__

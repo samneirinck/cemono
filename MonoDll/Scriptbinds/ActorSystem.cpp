@@ -1,12 +1,8 @@
 #include "StdAfx.h"
 #include "ActorSystem.h"
 
-#include "MonoActorClass.h"
-
 #include <IGameFramework.h>
 #include <IActorSystem.h>
-
-REGISTER_SCRIPTBIND(CScriptBind_ActorSystem);
 
 CScriptBind_ActorSystem::CScriptBind_ActorSystem()
 {
