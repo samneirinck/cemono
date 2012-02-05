@@ -22,9 +22,11 @@ public:
 
 	// Used to send arrays to C#.
 	CMonoArray(int size);
-	virtual ~CMonoArray() { mono_gchandle_free(m_arrayHandle); }
+	virtual ~CMonoArray();
 
 	// IMonoArray
+	virtual void Release() { delete this; }
+
 	virtual void Clear() override { for(int i = 0; i < GetSize(); i++) mono_array_set((MonoArray *)m_pArray, void *, i, NULL);  }
 	virtual int GetSize() const override { return (int)mono_array_length((MonoArray *)m_pArray); }
 

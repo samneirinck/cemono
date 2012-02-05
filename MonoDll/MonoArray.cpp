@@ -13,6 +13,11 @@ CMonoArray::CMonoArray(int size)
 	m_pArray = (mono::array)mono_array_new(mono_domain_get(), mono_get_object_class(), size);
 }
 
+CMonoArray::~CMonoArray()
+{
+	mono_gchandle_free(m_arrayHandle); 
+}
+
 IMonoObject *CMonoArray::GetItem(int index)
 { 
 	return *(mono::object)mono_array_get((MonoArray *)m_pArray, MonoObject *, index);

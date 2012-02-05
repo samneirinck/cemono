@@ -139,7 +139,7 @@ static IMonoObject *CallMonoScript(int scriptId, const char *funcName, const P1 
 	if(IMonoClass *pClass = gEnv->pMonoScriptSystem->GetScriptById(scriptId))
 		pResult = pClass->CallMethod(funcName, pArray);
 		
-	SAFE_DELETE(pArray);
+	SAFE_RELEASE(pArray);
 
 	return pResult;
 };
@@ -154,7 +154,7 @@ static IMonoObject *CallMonoScript(int scriptId, const char *funcName, const P1 
 	if(IMonoClass *pClass = gEnv->pMonoScriptSystem->GetScriptById(scriptId))
 		pResult = pClass->CallMethod(funcName, pArray);
 
-	SAFE_DELETE(pArray);
+	SAFE_RELEASE(pArray);
 
 	return pResult;
 };
@@ -170,7 +170,7 @@ static IMonoObject *CallMonoScript(int scriptId, const char *funcName, const P1 
 	if(IMonoClass *pClass = gEnv->pMonoScriptSystem->GetScriptById(scriptId))
 		pResult = pClass->CallMethod(funcName, pArray);
 
-	SAFE_DELETE(pArray);
+	SAFE_RELEASE(pArray);
 
 	return pResult;
 };
@@ -187,7 +187,7 @@ static IMonoObject *CallMonoScript(int scriptId, const char *funcName, const P1 
 	if(IMonoClass *pClass = gEnv->pMonoScriptSystem->GetScriptById(scriptId))
 		pResult = pClass->CallMethod(funcName, pArray);
 
-	SAFE_DELETE(pArray);
+	SAFE_RELEASE(pArray);
 
 	return pResult;
 };
@@ -205,7 +205,7 @@ static IMonoObject *CallMonoScript(int scriptId, const char *funcName, const P1 
 	if(IMonoClass *pClass = gEnv->pMonoScriptSystem->GetScriptById(scriptId))
 		pResult = pClass->CallMethod(funcName, pArray);
 
-	SAFE_DELETE(pArray);
+	SAFE_RELEASE(pArray);
 
 	return pResult;
 };
@@ -224,7 +224,7 @@ static IMonoObject *CallMonoScript(int scriptId, const char *funcName, const P1 
 	if(IMonoClass *pClass = gEnv->pMonoScriptSystem->GetScriptById(scriptId))
 		pResult = pClass->CallMethod(funcName, pArray);
 
-	SAFE_DELETE(pArray);
+	SAFE_RELEASE(pArray);
 
 	return pResult;
 };
