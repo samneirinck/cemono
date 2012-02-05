@@ -253,12 +253,7 @@ void CMonoScriptSystem::RegisterMethodBindings(std::vector<IMonoMethodBinding> n
 		return;
 
 	for each(auto binding in newBindings)
-	{
-		if(!strcmp(binding.methodName, "_RevivePlayer"))
-			RegisterMethodBinding(binding, classPath);
-		else
-			RegisterMethodBinding(binding, classPath);
-	}
+		RegisterMethodBinding(binding, classPath);
 }
 
 int CMonoScriptSystem::InstantiateScript(EMonoScriptType scriptType, const char *scriptName, IMonoArray *pConstructorParameters)
