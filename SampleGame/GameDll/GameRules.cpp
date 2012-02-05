@@ -888,7 +888,11 @@ CActor *CGameRules::SpawnPlayer(int channelId, const char *name, const char *cla
 
 	CActor *pActor=GetActorByChannelId(channelId);
 	if (!pActor)
+	{
 		pActor = static_cast<CActor *>(m_pActorSystem->CreateActor(channelId, VerifyName(name).c_str(), className, pos, Quat(angles), Vec3(1, 1, 1)));
+		if(!pActor)
+			CryLogAlways("Failed to spawn player with channelId %i, name %s and className %s", channelId, name, className);
+	}
 
 	return pActor;
 }

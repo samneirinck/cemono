@@ -45,7 +45,7 @@ namespace CryEngine
 
         // Client-only
         public virtual void OnConnect() { }
-        public virtual void OnDisconnect(int cause, string desc) { }
+		public virtual void OnDisconnect(DisconnectionCause cause, string desc) { }
 
         public virtual void OnRevive(uint actorId, Vec3 pos, Vec3 rot, int teamId) { }
         public virtual void OnReviveInVehicle(uint actorId, uint vehicleId, int seatId, int teamId) { }
@@ -56,6 +56,106 @@ namespace CryEngine
         public virtual void OnVehicleDestroyed(uint vehicleId) { }
         public virtual void OnVehicleSubmerged(uint vehicleId, float ratio) { }
     }
+
+	public enum DisconnectionCause
+	{
+		/// <summary>
+		/// This cause must be first! - timeout occurred.
+		/// </summary>
+		eDC_Timeout = 0,
+		/// <summary>
+		/// Incompatible protocols.
+		/// </summary>
+		eDC_ProtocolError,
+		/// <summary>
+		/// Failed to resolve an address.
+		/// </summary>
+		eDC_ResolveFailed,
+		/// <summary>
+		/// Versions mismatch.
+		/// </summary>
+		eDC_VersionMismatch,
+		/// <summary>
+		/// Server is full.
+		/// </summary>
+		eDC_ServerFull,
+		/// <summary>
+		/// User initiated kick.
+		/// </summary>
+		eDC_Kicked,
+		/// <summary>
+		/// Teamkill ban/ admin ban.
+		/// </summary>
+		eDC_Banned,
+		/// <summary>
+		/// Context database mismatch.
+		/// </summary>
+		eDC_ContextCorruption,
+		/// <summary>
+		/// Password mismatch, cdkey bad, etc.
+		/// </summary>
+		eDC_AuthenticationFailed,
+		/// <summary>
+		/// Misc. game error.
+		/// </summary>
+		eDC_GameError,
+		/// <summary>
+		/// DX11 not found.
+		/// </summary>
+		eDC_NotDX11Capable,
+		/// <summary>
+		/// The nub has been destroyed.
+		/// </summary>
+		eDC_NubDestroyed,
+		/// <summary>
+		/// Icmp reported error.
+		/// </summary>
+		eDC_ICMPError,
+		/// <summary>
+		/// NAT negotiation error.
+		/// </summary>
+		eDC_NatNegError,
+		/// <summary>
+		/// Punk buster detected something bad.
+		/// </summary>
+		eDC_PunkDetected,
+		/// <summary>
+		/// Demo playback finished.
+		/// </summary>
+		eDC_DemoPlaybackFinished,
+		/// <summary>
+		/// Demo playback file not found.
+		/// </summary>
+		eDC_DemoPlaybackFileNotFound,
+		/// <summary>
+		/// User decided to stop playing.
+		/// </summary>
+		eDC_UserRequested,
+		/// <summary>
+		/// User should have controller connected.
+		/// </summary>
+		eDC_NoController,
+		/// <summary>
+		/// Unable to connect to server.
+		/// </summary>
+		eDC_CantConnect,
+		/// <summary>
+		/// Arbitration failed in a live arbitrated session.
+		/// </summary>
+		eDC_ArbitrationFailed,
+		/// <summary>
+		/// Failed to successfully join migrated game
+		/// </summary>
+		eDC_FailedToMigrateToNewHost,
+		/// <summary>
+		/// The session has just been deleted
+		/// </summary>
+		eDC_SessionDeleted,
+		/// <summary>
+		/// Unknown cause
+		/// </summary>
+		eDC_Unknown
+	}
 
     public struct HitInfo
     {
