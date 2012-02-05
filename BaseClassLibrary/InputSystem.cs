@@ -14,6 +14,7 @@ namespace CryEngine
 			if (inputActionDelegates == null)
 				inputActionDelegates = new Dictionary<string, InputActionDelegate>();
 
+			actionName = actionName.ToLower();
 			if (!inputActionDelegates.ContainsKey(actionName))
 			{
 				inputActionDelegates.Add(actionName, actionDelegate);
@@ -28,7 +29,10 @@ namespace CryEngine
 
 		public static void OnActionTriggered(string action, ActionActivationMode activationMode, float value)
 		{
-			inputActionDelegates[action](activationMode, value);
+			if (inputActionDelegates.ContainsKey(action))
+				inputActionDelegates[action](activationMode, value);
+			else
+				Console.LogAlways("Attempted to invoke unregistered action {0}", action);
 		}
 
 		private static Dictionary<string, InputActionDelegate> inputActionDelegates;
