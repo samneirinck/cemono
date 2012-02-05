@@ -42,7 +42,9 @@ void CMonoTester::TestStaticMethods(IMonoAssembly *pCryBrary)
 		return;
 	}
 
-	pTesterStatic->CallMethod("StaticMethodWithParameters", GetTestParameters(), true);
+	IMonoArray *pTestParams = GetTestParameters();
+	pTesterStatic->CallMethod("StaticMethodWithParameters", pTestParams, true);
+	SAFE_RELEASE(pTestParams);
 
 	SAFE_DELETE(pTesterStatic);
 }
@@ -59,7 +61,8 @@ void CMonoTester::TestInstantiatedMethods(IMonoAssembly *pCryBrary)
 
 	SAFE_DELETE(pTesterClassStandardConstructor);
 
-	IMonoClass *pTesterClassComplexConstructor = pCryBrary->InstantiateClass("CryEngine.Utils", "Tester", GetTestParameters());
+	IMonoArray *pTestParams = GetTestParameters();
+	IMonoClass *pTesterClassComplexConstructor = pCryBrary->InstantiateClass("CryEngine.Utils", "Tester", pTestParams);
 	if(!pTesterClassComplexConstructor)
 	{
 		CryLogAlways("Mono feature test failed! Failed to instantiate tester class.");
@@ -74,9 +77,11 @@ void CMonoTester::TestInstantiatedMethods(IMonoAssembly *pCryBrary)
 		return;
 	}
 
-	pTesterClassComplexConstructor->CallMethod("MethodWithParameters", GetTestParameters());
+
+	pTesterClassComplexConstructor->CallMethod("MethodWithParameters", pTestParams);
 
 	SAFE_DELETE(pTesterClassComplexConstructor);
+	SAFE_RELEASE(pTestParams);
 }
 
 void CMonoTester::TestScriptBind(mono::string testString, int testInt, mono::array testArray)

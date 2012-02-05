@@ -35,6 +35,7 @@ bool CMonoInput::OnActionTriggered(EntityId entityId, const ActionId& actionId, 
 	pParams->Insert(value);
 
 	m_pClass->CallMethod("OnActionTriggered", pParams, true);
+	SAFE_RELEASE(pParams);
 
 	return false;
 }

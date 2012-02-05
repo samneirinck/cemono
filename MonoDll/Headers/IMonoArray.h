@@ -30,6 +30,8 @@ struct MonoAnyValue;
 struct IMonoArray : public CMonoSerializable
 {
 public:
+	virtual void Release() = 0;
+
 	/// <summary>
 	/// Clears the array of all its elements.
 	/// Note that the pre-determined size set when the array was created remains.

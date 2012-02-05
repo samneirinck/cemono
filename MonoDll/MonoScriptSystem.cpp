@@ -86,9 +86,6 @@ CMonoScriptSystem::~CMonoScriptSystem()
 {
 	gEnv->pFileChangeMonitor->UnregisterListener(this);
 
-	for(TScripts::iterator it = m_scripts.begin(); it != m_scripts.end(); ++it)
-		SAFE_DELETE((*it));
-
 	m_scripts.clear();
 	m_methodBindings.clear();
 
@@ -203,7 +200,7 @@ bool CMonoScriptSystem::InitializeSystems()
 	pArray->Insert(gEnv->IsDedicated());
 	pClass->CallMethod("InitializeNetworkStatics", pArray, true);
 	SAFE_DELETE(pClass);
-	SAFE_DELETE(pArray);
+	SAFE_RELEASE(pArray);
 
 	return true;
 }
@@ -215,6 +212,7 @@ void CMonoScriptSystem::Update(float frameTime)
 	IMonoArray *pArgs = CreateMonoArray(1);
 	pArgs->Insert(frameTime);
 	m_pScriptCompiler->CallMethod("OnUpdate", pArgs);
+	SAFE_RELEASE(pArgs);
 }
 
 void CMonoScriptSystem::OnFileChange(const char *sFilename)
@@ -223,7 +221,7 @@ void CMonoScriptSystem::OnFileChange(const char *sFilename)
 	pParams->Insert(sFilename);
 
 	m_pScriptCompiler->CallMethod("OnFileChange", pParams);
-	SAFE_DELETE(pParams);
+	SAFE_RELEASE(pParams);
 }
 
 void CMonoScriptSystem::RegisterMethodBinding(IMonoMethodBinding binding, const char *classPath)
@@ -266,7 +264,7 @@ int CMonoScriptSystem::InstantiateScript(EMonoScriptType scriptType, const char 
 		pArray->Insert(gEnv->IsClient());
 		pArray->Insert(gEnv->bServer);
 		pClass->CallMethod("InitializeNetwork", pArray, true);
-		SAFE_DELETE(pArray);
+		SAFE_RELEASE(pArray);
 		SAFE_DELETE(pClass);
 	}
 	
@@ -286,7 +284,7 @@ int CMonoScriptSystem::InstantiateScript(EMonoScriptType scriptType, const char 
 	pArgs->Insert(pConstructorParameters);
 
 	int scriptId = m_pScriptCompiler->CallMethod("InstantiateScript", pArgs)->Unbox<int>();
-	SAFE_DELETE(pArgs);
+	SAFE_RELEASE(pArgs);
 
 	if(scriptId!=-1)
 		m_scripts.push_back(new CMonoClass(scriptId, scriptType));
@@ -308,7 +306,7 @@ void CMonoScriptSystem::RemoveScriptInstance(int id)
 			pArgs->Insert((*it)->GetName());
 
 			m_pScriptCompiler->CallMethod("RemoveInstance", pArgs);
-			SAFE_DELETE(pArgs);
+			SAFE_RELEASE(pArgs);
 
 			SAFE_DELETE((*it));
 			m_scripts.erase(it);
