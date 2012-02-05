@@ -54,7 +54,12 @@ CActor *CScriptBind_GameRules::GetActor(EntityId id)
 //------------------------------------------------------------------------
 EntityId CScriptBind_GameRules::SpawnPlayer(int channelId, mono::string name, mono::string className, Vec3 pos, Vec3 angles)
 {
-	return g_pGame->GetGameRules()->SpawnPlayer(channelId, *name, *className, pos, Ang3(angles))->GetEntityId();
+	IActor *pActor = NULL;
+
+	if(CGameRules *pGameRules = GetGameRules())
+		pActor = pGameRules->SpawnPlayer(channelId, *name, *className, pos, Ang3(angles));
+
+	return pActor ? pActor->GetEntityId() : 0;
 }
 
 //------------------------------------------------------------------------
