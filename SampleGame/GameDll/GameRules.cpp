@@ -884,7 +884,7 @@ void CGameRules::OnKillMessage(EntityId targetId, EntityId shooterId, const char
 CActor *CGameRules::SpawnPlayer(int channelId, const char *name, const char *className, const Vec3 &pos, const Ang3 &angles)
 { 
 	if (!gEnv->bServer)
-		return 0;
+		return NULL;
 
 	CActor *pActor=GetActorByChannelId(channelId);
 	if (!pActor)
