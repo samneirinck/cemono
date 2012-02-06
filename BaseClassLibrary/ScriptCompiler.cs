@@ -76,11 +76,7 @@ namespace CryEngine
 			if(scripts == null || scripts.Length < 1)
 				return;
 
-			foreach(var tempScript in scripts)
-			{
-				if(tempScript.Type != null)
-					m_compiledScripts.Add(tempScript);
-			}
+			m_compiledScripts.AddRange(scripts);
 		}
 
 	    /// <summary>
@@ -385,8 +381,7 @@ namespace CryEngine
 
 						referencedAssemblies.Add(plugin);
 
-						foreach(var script in LoadAssembly(assembly))
-							compiledScripts.Add(script);
+						compiledScripts.AddRange(LoadAssembly(assembly));
 					}
 					//This exception tells us that the assembly isn't a valid .NET assembly for whatever reason
 					catch(BadImageFormatException)
@@ -482,6 +477,9 @@ namespace CryEngine
 			{
 				CompilerResults results = provider.CompileAssemblyFromFile(compilerParameters, scripts);
 
+				provider = null;
+				compilerParameters = null;
+
 				if (results.CompiledAssembly != null) // success
 					return LoadAssembly(results.CompiledAssembly);
 				else if (results.Errors.HasErrors)
@@ -528,6 +526,8 @@ namespace CryEngine
 						else if(started)
 							return;
 					}
+
+					reader.Close();
 				}
 
 				stream.Close();
@@ -574,19 +574,13 @@ namespace CryEngine
 		/// </summary>
 		public static CryScript[] LoadAssembly(Assembly assembly)
 		{
-			var assemblyTypes = assembly.GetTypes().Where(type => type.Implements(typeof(CryScriptInstance))).ToArray();
+			var assemblyTypes = assembly.GetTypes().Where(type => type.Implements(typeof(CryScriptInstance)));
 
-			var scripts = new CryScript[assemblyTypes.Length];
+			List<CryScript> scripts = new List<CryScript>();
 
-			//Extract the types and load everything that implements IEntity, IGameRules and IFlowNode
-
-			System.Diagnostics.Stopwatch stopWatch = new System.Diagnostics.Stopwatch();
-			stopWatch.Start();
-
-			//for(var i = 0; i < scripts.Length; i++)
-			Parallel.For(0, scripts.Length, i =>
+			Parallel.For(0, assemblyTypes.Count(), i =>
 			{
-				var type = assemblyTypes[i];
+				var type = assemblyTypes.ElementAt(i);
 
 				if(!type.ContainsAttribute<ExcludeFromCompilationAttribute>())
 				{
@@ -613,26 +607,31 @@ namespace CryEngine
 						scriptType = MonoScriptType.EditorForm;
 					}
 
-					scripts[i] = new CryScript(type, scriptType);
-
-					// This is done after CryScript construction to avoid calling Type.name several times
-					if(scriptType == MonoScriptType.GameRules)
+					if (type != null)
 					{
-						GameRulesSystem._RegisterGameMode(scripts[i].className);
+						scripts.Add(new CryScript(type, scriptType));
 
-						if(type.ContainsAttribute<DefaultGamemodeAttribute>())
-							GameRulesSystem._SetDefaultGameMode(scripts[i].className);
+						// This is done after CryScript construction to avoid calling Type.name several times
+						if (scriptType == MonoScriptType.GameRules)
+						{
+							GameRulesSystem._RegisterGameMode(scripts.Last().className);
+
+							if (type.ContainsAttribute<DefaultGamemodeAttribute>())
+								GameRulesSystem._SetDefaultGameMode(scripts.Last().className);
+						}
+						else if (scriptType == MonoScriptType.Actor)
+							ActorSystem._RegisterActorClass(scripts.Last().className, false);
+						else if (scriptType == MonoScriptType.Entity || scriptType == MonoScriptType.StaticEntity)
+							LoadEntity(type, scripts.Last(), scriptType == MonoScriptType.StaticEntity);
+						else if (scriptType == MonoScriptType.FlowNode)
+							LoadFlowNode(type, scripts.Last().className);
 					}
-					else if(scriptType == MonoScriptType.Actor)
-						ActorSystem._RegisterActorClass(scripts[i].className, false);
-					else if(scriptType == MonoScriptType.Entity || scriptType == MonoScriptType.StaticEntity)
-						LoadEntity(type, scripts[i], scriptType == MonoScriptType.StaticEntity);
-					else if(scriptType == MonoScriptType.FlowNode)
-						LoadFlowNode(type, scripts[i].className);
 				}
 			});
 
-			return scripts;
+			assemblyTypes = null;
+
+			return scripts.ToArray();
 		}
 
 		internal struct StoredNode
