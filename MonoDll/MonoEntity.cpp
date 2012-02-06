@@ -27,6 +27,7 @@ void CMonoEntity::OnSpawn(EntityId id)
 #define ADD_EVENTLISTENER(event) gEnv->pEntitySystem->AddEntityEventListener(id, event, this);
 	ADD_EVENTLISTENER(ENTITY_EVENT_LEVEL_LOADED);
 	ADD_EVENTLISTENER(ENTITY_EVENT_RESET);
+	ADD_EVENTLISTENER(ENTITY_EVENT_COLLISION);
 	ADD_EVENTLISTENER(ENTITY_EVENT_ONHIT);
 	ADD_EVENTLISTENER(ENTITY_EVENT_START_GAME);
 	ADD_EVENTLISTENER(ENTITY_EVENT_START_LEVEL);
@@ -52,24 +53,22 @@ void CMonoEntity::OnEntityEvent(IEntity *pEntity,SEntityEvent &event)
 		}
 		break;
 	case ENTITY_EVENT_COLLISION:
-		{/*
+		{
 			EventPhysCollision *pCollision = (EventPhysCollision *)event.nParam[0];
 
-			IEntity *pTarget = pCollision->iForeignData[1]==PHYS_FOREIGN_ID_ENTITY ? (IEntity*)pCollision->pForeignData[1]:0;
-			if(pTarget)
+			IEntity *pTarget = pCollision->iForeignData[0]==PHYS_FOREIGN_ID_ENTITY ? (IEntity*)pCollision->pForeignData[0]:0;
+			if(pTarget && pTarget->GetId()!=m_entityId)
 			{
-				Vec3 dir(0, 0, 0);
-				if (pCollision->vloc[0].GetLengthSquared() > 1e-6f)
-					dir = pCollision->vloc[0].GetNormalized();
+				Vec3 dir = pCollision->vloc[0].GetNormalizedSafe();
 
 				// uint targetId, Vec3 hitPt, Vec3 dir, short materialId, Vec3 contactNormal);
-				CallMonoScript(m_scriptId, "OnCollision", pTarget->GetId(), pCollision->pt, dir, pCollision->idmat[1], pCollision->n);
-			}*/
+				CallMonoScript(m_scriptId, "OnCollision", pTarget->GetId(), pCollision->pt, dir, pCollision->idmat[0], pCollision->n);
+			}
 		}
 		break;
 	case ENTITY_EVENT_ONHIT:
 		{
-			//CallMonoScript(m_scriptId, "OnHit");
+			CallMonoScript(m_scriptId, "OnHit");
 		}
 		break;
 	case ENTITY_EVENT_START_GAME:

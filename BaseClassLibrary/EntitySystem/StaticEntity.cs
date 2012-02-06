@@ -205,6 +205,11 @@ namespace CryEngine
 		/// <param name="materialId"></param>
 		/// <param name="contactNormal"></param>
 		public virtual void OnCollision(uint targetEntityId, Vec3 hitPos, Vec3 dir, short materialId, Vec3 contactNormal) { }
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		public virtual void OnHit() { }
 		#endregion
 
 		#region Overrides
