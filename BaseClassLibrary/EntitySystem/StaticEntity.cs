@@ -96,6 +96,8 @@ namespace CryEngine
 			EntitySystem.RegisterInternalEntity(entityId, this);
 			Spawned = true;
 
+			storedProperties = new Dictionary<string[], EntityPropertyType>();
+
 			//Do this before the property overwrites
 			InitPhysics();
 
@@ -118,7 +120,7 @@ namespace CryEngine
 
 			foreach(var storedProperty in storedProperties)
 			{
-				if(string.IsNullOrEmpty(storedProperty.Key[1]))
+				if (storedProperty.Key.Length > 1 && string.IsNullOrEmpty(storedProperty.Key[1]))
 					continue;
 
 				SetPropertyValue(storedProperty.Key[0], storedProperty.Value, storedProperty.Key[1]);
@@ -244,9 +246,6 @@ namespace CryEngine
 			// Store properties so we can utilize the get set functionality after opening a saved level.
 			if(!Spawned && isProperty)
 			{
-				if(storedProperties == null)
-					storedProperties = new Dictionary<string[], EntityPropertyType>();
-
 				storedProperties.Add(new string[] { propertyName, value }, propertyType);
 
 				return;
