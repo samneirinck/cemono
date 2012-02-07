@@ -535,7 +535,7 @@ void CGameRules::OnHit(HitInfo &hitInfo)
 					}
 				}*/
 
-				if(!strcmp(GetHitType(hitInfo.type), "event"))
+				if(hitInfo.type != 0 && !strcmp(GetHitType(hitInfo.type), "event"))
 				{
 					pTargetActor->SetHealth(0);
 					pTargetActor->Kill();
