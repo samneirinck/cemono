@@ -422,7 +422,7 @@ namespace CryEngine
 				return null;
 			}
 
-			return CompileScripts(scriptsInFolder);
+			return CompileScripts(scriptsInFolder, ".cs");
 		}
 
 		public static CryScript[] CompileScriptsInFolders(string[] scriptFolders)
@@ -437,7 +437,7 @@ namespace CryEngine
 			}
 
 			if(scripts.Count > 0)
-				return CompileScripts(scripts.ToArray());
+				return CompileScripts(scripts.ToArray(), ".cs");
 			else
 				return null;
 		}
@@ -447,9 +447,26 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="scripts">A string array containing full paths to scripts to be compiled.</param>
 		/// <returns></returns>
-		public static CryScript[] CompileScripts(string[] scripts)
+		public static CryScript[] CompileScripts(string[] scripts, string scriptExtension)
 		{
-			CodeDomProvider provider = new CSharpCodeProvider();
+			if(scripts.Length < 1)
+				return null;
+
+			CodeDomProvider provider;
+			switch (scriptExtension) // TODO enum
+			{
+				case ".vb":
+					provider = CodeDomProvider.CreateProvider("VisualBasic");
+					break;
+				case ".js":
+					provider = CodeDomProvider.CreateProvider("JScript");
+					break;
+				case ".cs":
+				default:
+					provider = CodeDomProvider.CreateProvider("CSharp");
+					break;
+			}
+
 			CompilerParameters compilerParameters = new CompilerParameters();
 
 			compilerParameters.GenerateExecutable = false;
