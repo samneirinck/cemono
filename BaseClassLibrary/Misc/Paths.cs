@@ -99,5 +99,17 @@ namespace CryEngine
 
             return Path.Combine(PathUtils.GetScriptsFolder(), folder);
         }
+
+		/// <summary>
+		/// Gets the folder in which the global assembly cache is located.
+		/// </summary>
+		/// <returns>The filepath to the GAC folder as a string, ex:
+		/// <example>"C:\CryENGINE3\Engine\Mono\lib\mono\gac\"</example></returns>
+		public static string GetGacFolder()
+		{
+			return Path.Combine(GetEngineFolder(), "Mono", "lib", "mono", "gac");
+		}
     }
+
+
 }
