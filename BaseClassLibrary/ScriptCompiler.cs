@@ -474,8 +474,11 @@ namespace CryEngine
 			compilerParameters.GenerateInMemory = false;
 
 			//Add additional assemblies as needed by gamecode to referencedAssemblies
-			foreach(var script in scripts)
-				GetScriptReferences(script);
+			foreach (var assembly in GetRequiredAssembliesForScripts(scripts))
+			{
+				if(!compilerParameters.ReferencedAssemblies.Contains(assembly))
+					compilerParameters.ReferencedAssemblies.Add(assembly);
+			}
 
 			compilerParameters.ReferencedAssemblies.AddRange(referencedAssemblies.ToArray());
 
@@ -519,31 +522,65 @@ namespace CryEngine
 			return null;
 		}
 
-		//Fugly hack for referenced assemblies
-		static void GetScriptReferences(string script)
+		/// <summary>
+		/// Gets the required assemblies for the scripts passed to the method.
+		/// Note: Does NOT exclude assemblies already loaded by CryMono.
+		/// </summary>
+		/// <param name="scripts"></param>
+		/// <returns></returns>
+		static string[] GetRequiredAssembliesForScripts(string[] scripts)
 		{
-			if(String.IsNullOrEmpty(script))
-				return;
+			List<string> namespaces = new List<string>();
+			List<string> assemblyPaths = new List<string>();
 
-			using(var stream = new FileStream(script, FileMode.Open))
+			foreach (var script in scripts)
 			{
-				using(var reader = new StreamReader(stream))
+				foreach (var assembly in GetRequiredAssembliesForScript(script))
+				{
+					if(!namespaces.Contains(assembly))
+						namespaces.Add(assembly);
+				}
+			}
+
+			foreach(var Namespace in namespaces)
+				assemblyPaths.Add(ProcessNamespace(Namespace));
+
+			namespaces = null;
+
+			return assemblyPaths.ToArray();
+		}
+
+		/// <summary>
+		/// Gets the required assemblies for the script passed to the method.
+		/// Note: Does NOT exclude assemblies already loaded by CryMono.
+		/// </summary>
+		/// <param name="script"></param>
+		/// <returns></returns>
+		static string[] GetRequiredAssembliesForScript(string script)
+		{
+			if (String.IsNullOrEmpty(script))
+				return null;
+
+			List<string> namespaces = new List<string>();
+
+			using (var stream = new FileStream(script, FileMode.Open))
+			{
+				using (var reader = new StreamReader(stream))
 				{
 					string line;
-					// Just in case the file starts with an empty line.
-					bool started = false;
 
-					while((line = reader.ReadLine()) != null)
+					while ((line = reader.ReadLine()) != null)
 					{
 						//Filter for using statements
 						if (line.StartsWith("using") && line.EndsWith(";"))
 						{
-							ProcessNamespace(line.Replace("using ", "").Replace(";", ""));
-
-							started = true;
+							string Namespace = line.Replace("using ", "").Replace(";", "");
+							if (!namespaces.Contains(Namespace))
+							{
+								namespaces.Add(Namespace);
+								Namespace = null;
+							}
 						}
-						else if(started)
-							return;
 					}
 
 					reader.Close();
@@ -551,12 +588,14 @@ namespace CryEngine
 
 				stream.Close();
 			}
+
+			return namespaces.ToArray();
 		}
 
-		static void ProcessNamespace(string name)
+		static string ProcessNamespace(string name)
 		{
 			if (name.StartsWith("CryEngine"))
-				return;
+				return null;
 
 			XDocument assemblyLookup = XDocument.Load(Path.Combine(PathUtils.GetEngineFolder(), "Mono", "assemblylookup.xml"));
 			foreach(var node in assemblyLookup.Descendants())
@@ -576,16 +615,11 @@ namespace CryEngine
 					}
 
 					if (!referencedAssemblies.Contains(fullName))
-					{
-						Console.LogAlways("Adding an additional assembly, {0}", fullName);
-						referencedAssemblies.Add(fullName);
-					}
-					else
-					{
-						Console.LogAlways("Skipping additional assembly, {0}, already queued", fullName);
-					}
+						return fullName;
 				}
 			}
+
+			return null;
 		}
 
 		/// <summary>
