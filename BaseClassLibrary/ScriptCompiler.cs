@@ -60,7 +60,7 @@ namespace CryEngine
 			scriptFolders.Add(PathUtils.GetScriptFolder(MonoScriptType.GameRules));
 			scriptFolders.Add(PathUtils.GetScriptFolder(MonoScriptType.FlowNode));
 			// if(isEditor)
-			scriptFolders.Add(PathUtils.GetScriptFolder(MonoScriptType.EditorForm));
+			//scriptFolders.Add(PathUtils.GetScriptFolder(MonoScriptType.EditorForm));
 
 			AddScripts(CompileScriptsInFolders(scriptFolders.ToArray()));
 		}
@@ -489,8 +489,8 @@ namespace CryEngine
 			// We've got to get that assembly reference generator working. (Slap me if I accidentally commit this)
 			// Consider yourself slapped. Here's a mildly less fugly (read: hardcoded) solution.
 			// TODO: That ref generator.
-			compilerParameters.ReferencedAssemblies.Add(Path.Combine(PathUtils.GetGacFolder(), @"System.Windows.Forms\4.0.0.0__b77a5c561934e089\System.Windows.Forms.dll"));
-			compilerParameters.ReferencedAssemblies.Add(Path.Combine(PathUtils.GetGacFolder(), @"System.Drawing\4.0.0.0__b03f5f7f11d50a3a\System.Drawing.dll"));
+			//compilerParameters.ReferencedAssemblies.Add(Path.Combine(PathUtils.GetGacFolder(), @"System.Windows.Forms\4.0.0.0__b77a5c561934e089\System.Windows.Forms.dll"));
+			//compilerParameters.ReferencedAssemblies.Add(Path.Combine(PathUtils.GetGacFolder(), @"System.Drawing\4.0.0.0__b03f5f7f11d50a3a\System.Drawing.dll"));
 
 			try
 			{
@@ -617,14 +617,6 @@ namespace CryEngine
 						scriptType = MonoScriptType.FlowNode;
 					else if (type.Implements(typeof(CryScriptInstance)))
 						scriptType = MonoScriptType.Other;
-					else if (type.Implements(typeof(Sandbox.EditorForm)))
-					{
-						Sandbox.EditorForm form = Activator.CreateInstance(type) as Sandbox.EditorForm;
-						form.Activate();
-						form.Show();
-
-						scriptType = MonoScriptType.EditorForm;
-					}
 
 					if (type != null)
 					{
