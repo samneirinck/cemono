@@ -472,8 +472,8 @@ namespace CryEngine
 			// We've got to get that assembly reference generator working. (Slap me if I accidentally commit this)
 			// Consider yourself slapped. Here's a mildly less fugly (read: hardcoded) solution.
 			// TODO: That ref generator.
-			compilerParameters.ReferencedAssemblies.Add(PathUtils.GetGacFolder() + @"System.Windows.Forms\4.0.0.0__b77a5c561934e089\System.Windows.Forms.dll");
-			compilerParameters.ReferencedAssemblies.Add(PathUtils.GetGacFolder() + @"System.Drawing\4.0.0.0__b03f5f7f11d50a3a\System.Drawing.dll");
+			compilerParameters.ReferencedAssemblies.Add(PathUtils.GetGacFolder() + @"\System.Windows.Forms\4.0.0.0__b77a5c561934e089\System.Windows.Forms.dll");
+			compilerParameters.ReferencedAssemblies.Add(PathUtils.GetGacFolder() + @"\System.Drawing\4.0.0.0__b03f5f7f11d50a3a\System.Drawing.dll");
 
 			try
 			{
