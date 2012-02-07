@@ -687,12 +687,15 @@ namespace CryEngine
 			{
 				category = type.Namespace;
 
-				var nodeInfo = type.GetAttribute<FlowNodeAttribute>();
-				if(nodeInfo.UICategory != null)
-					category = nodeInfo.UICategory;
+				FlowNodeAttribute nodeInfo;
+				if(type.TryGetAttribute<FlowNodeAttribute>(out nodeInfo))
+				{
+					if(nodeInfo.UICategory != null)
+						category = nodeInfo.UICategory;
 
-				if(nodeInfo.Name != null)
-					nodeName = nodeInfo.Name;
+					if(nodeInfo.Name != null)
+						nodeName = nodeInfo.Name;
+				}
 			}
 			else
 				category = "entity";
