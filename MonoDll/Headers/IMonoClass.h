@@ -37,10 +37,6 @@ public:
 	/// Gets the script id, returns -1 if this is not a proper script. (i.e. if this was constructed via C++)
 	/// </summary>
 	virtual int GetScriptId() = 0;
-	/// <summary>
-	/// Gets the script type (EMonoScriptType), returns EMonoScriptType_NULL if this is not a ScriptCompiler-constructed script.
-	/// </summary>
-	virtual int GetScriptType() = 0;
 
 	/// <summary>
 	/// Instantiates the class, if not already instantiated.

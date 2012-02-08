@@ -7,9 +7,7 @@
 #include <mono/metadata/debug-helpers.h>
 
 CMonoClass::CMonoClass(MonoClass *pClass, IMonoArray *pConstructorArguments)
-	: m_scriptId(-1)
-	, m_scriptType(0)
-	, m_pClass(pClass)
+	: m_pClass(pClass)
 	, m_pInstance(NULL)
 {
 	if (!m_pClass)
@@ -22,42 +20,21 @@ CMonoClass::CMonoClass(MonoClass *pClass, IMonoArray *pConstructorArguments)
 	Instantiate(pConstructorArguments);
 }
 
-CMonoClass::CMonoClass(int scriptId, int scriptType)
-	: m_scriptId(scriptId)
-	, m_scriptType(scriptType)
-	, m_pInstance(NULL)
-{
-	IMonoClass *pScriptCompiler = static_cast<CMonoScriptSystem *>(gEnv->pMonoScriptSystem)->GetScriptCompilerClass();
-
-	if(pScriptCompiler)
-	{
-		IMonoArray *pArgs = new CMonoArray(1);
-		pArgs->Insert(scriptId);
-
-		IMonoObject *pInstanceResult = pScriptCompiler->CallMethod("GetScriptInstanceById", pArgs);
-		if(pInstanceResult)
-		{
-			m_pInstance = static_cast<CMonoObject *>(pInstanceResult)->GetMonoObject();
-			m_pClass = mono_object_get_class((MonoObject *)m_pInstance);
-
-			m_instanceHandle = mono_gchandle_new((MonoObject *)m_pInstance, false);
-		}
-		else
-		{
-			gEnv->pLog->LogError("Attempted to create CMonoClass using an invalid scriptId");
-
-			delete this;
-		}
-	}
-}
-
 CMonoClass::~CMonoClass()
 {
 	mono_gchandle_free(m_instanceHandle);
 
-	static_cast<CMonoScriptSystem *>(gEnv->pMonoScriptSystem)->RemoveScriptInstance(m_scriptId);
+	static_cast<CMonoScriptSystem *>(gEnv->pMonoScriptSystem)->RemoveScriptInstance(GetScriptId());
 
 	m_pClass = NULL;
+}
+
+int CMonoClass::GetScriptId()
+{
+	if(IMonoObject *pScriptId = GetProperty("ScriptId"))
+		return pScriptId->Unbox<int>();
+
+	return -1;
 }
 
 void CMonoClass::Instantiate(IMonoArray *pConstructorParams)

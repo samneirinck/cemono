@@ -19,18 +19,17 @@ struct IMonoArray;
 class CMonoClass : public IMonoClass
 {
 public:
-	// Instantiate
+	// Instantiate a class right away.
 	CMonoClass(MonoClass *pClass, IMonoArray *pConstructorArguments);
-	// Only use as class (for now)
-	CMonoClass(MonoClass *pClass) : m_pClass(pClass), m_pInstance(NULL), m_scriptId(-1), m_scriptType(0) {}
+	// No instance provided, can only be used to invoke / get static members. Instantiation is possible using the Instantiate method.
+	CMonoClass(MonoClass *pClass) : m_pClass(pClass), m_pInstance(NULL) {}
+	// Set up using an existing instance.
 	CMonoClass(MonoClass *pClass, MonoObject *pInstance) : m_pClass(pClass), m_pInstance((mono::object)pInstance) { m_instanceHandle = mono_gchandle_new((MonoObject *)m_pInstance, false); }
-	CMonoClass(int scriptId, int scriptType);
 	~CMonoClass();
 
 	// IMonoClass
 	virtual const char *GetName() override { return mono_class_get_name(m_pClass); }
-	virtual int GetScriptId() override { return m_scriptId; }
-	virtual int GetScriptType() override { return m_scriptType; }
+	virtual int GetScriptId() override;
 
 	virtual void Instantiate(IMonoArray *pConstructorParams = NULL) override;
 
@@ -52,9 +51,6 @@ private:
 	MonoClass *m_pClass;
 
 	int m_instanceHandle;
-
-	int m_scriptId;
-	int m_scriptType;
 };
 
 #endif //__MONO_CLASS_H__

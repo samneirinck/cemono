@@ -268,7 +268,7 @@ int CMonoScriptSystem::InstantiateScript(EMonoScriptType scriptType, const char 
 		SAFE_DELETE(pClass);
 	}
 	
-	for(TScripts::iterator it=m_scripts.begin(); it != m_scripts.end(); ++it)
+	/*for(TScripts::iterator it=m_scripts.begin(); it != m_scripts.end(); ++it)
 	{
 		if((*it)->GetScriptType()==scriptType && !strcmp((*it)->GetName(), scriptName))
 		{
@@ -277,19 +277,18 @@ int CMonoScriptSystem::InstantiateScript(EMonoScriptType scriptType, const char 
 
 			break;
 		}
-	}
+	}*/
 
 	IMonoArray *pArgs = CreateMonoArray(2);
 	pArgs->Insert(scriptName);
 	pArgs->Insert(pConstructorParameters);
 
-	int scriptId = m_pScriptCompiler->CallMethod("InstantiateScript", pArgs)->Unbox<int>();
+	if(MonoObject *pInstance = (MonoObject *)m_pScriptCompiler->CallMethod("InstantiateScript", pArgs)->GetMonoObject())
+		m_scripts.push_back(new CMonoClass(mono_object_get_class(pInstance), pInstance));
+		
 	SAFE_RELEASE(pArgs);
-
-	if(scriptId!=-1)
-		m_scripts.push_back(new CMonoClass(scriptId, scriptType));
-
-	return scriptId;
+	
+	return m_scripts.back()->GetScriptId();
 }
 
 void CMonoScriptSystem::RemoveScriptInstance(int id)

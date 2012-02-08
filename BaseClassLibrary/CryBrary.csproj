@@ -131,6 +131,7 @@
   <ItemGroup>
     <Compile Include="ActorSystem\Inventory.cs" />
     <Compile Include="ActorSystem\Player.cs" />
+    <Compile Include="CryScriptCompiler.cs" />
     <Compile Include="PdbToMdb\BitAccess.cs" />
     <Compile Include="PdbToMdb\BitSet.cs" />
     <Compile Include="PdbToMdb\CvInfo.cs" />
