@@ -117,7 +117,7 @@ bool CMonoScriptSystem::Init()
 
 	m_pCryConsole = m_pLibraryAssembly->InstantiateClass("CryEngine", "Console");
 
-	m_pScriptCompiler = m_pLibraryAssembly->InstantiateClass("CryEngine", "ScriptCompiler");
+	m_pScriptCompiler = m_pLibraryAssembly->InstantiateClass("CryEngine", "ScriptCompiler");//m_pLibraryAssembly->GetCustomClass("CryEngine", "ScriptCompiler")->CallMethod("SetupCompiler", NULL, true)->Unbox<IMonoClass *>();
 
 	CryLogAlways("    Registering default scriptbinds...");
 	RegisterDefaultBindings();
@@ -283,8 +283,8 @@ int CMonoScriptSystem::InstantiateScript(EMonoScriptType scriptType, const char 
 	pArgs->Insert(scriptName);
 	pArgs->Insert(pConstructorParameters);
 
-	if(MonoObject *pInstance = (MonoObject *)m_pScriptCompiler->CallMethod("InstantiateScript", pArgs)->GetMonoObject())
-		m_scripts.push_back(new CMonoClass(mono_object_get_class(pInstance), pInstance));
+	if(IMonoObject *pScriptInstance = m_pScriptCompiler->CallMethod("InstantiateScript", pArgs))
+		m_scripts.push_back(pScriptInstance->Unbox<IMonoClass *>());
 		
 	SAFE_RELEASE(pArgs);
 	

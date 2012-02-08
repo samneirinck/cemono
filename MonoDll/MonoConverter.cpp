@@ -40,22 +40,11 @@ IMonoObject *CMonoConverter::ToObject(mono::object obj)
 
 IMonoClass *CMonoConverter::ToClass(IMonoObject *pObject)
 {
-	MonoClass *pClass = (MonoClass *)pObject->GetMonoObject();
+	MonoObject *pMonoObject = (MonoObject *)pObject->GetMonoObject();
 
+	MonoClass *pClass = mono_object_get_class(pMonoObject);
 	if(pClass && mono_class_get_name(pClass))
-		return new CMonoClass(pClass); // We received a class (non-instantiated / constructed)
-	else
-	{
-		MonoObject *pMonoObject = (MonoObject *)pObject->GetMonoObject();
-
-		if(pMonoObject)
-		{
-			pClass = mono_object_get_class(pMonoObject);
-			// If this passes, we have a instantiated class.
-			if(pClass && mono_class_get_name(pClass))
-				return new CMonoClass(pClass, pMonoObject);
-		}
-	}
+		return new CMonoClass(pClass, pMonoObject);
 
 	return NULL;
 }
