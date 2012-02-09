@@ -114,6 +114,8 @@ bool CMonoScriptSystem::Init()
 	if(!Reload())
 		return false;
 
+	mono_add_internal_call("CryEngine.ScriptCompiler::RequestReload", &MonoRequestedReload);
+
 	CryModuleMemoryInfo memInfo;
 	CryModuleGetMemoryInfo(&memInfo);
 	CryLogAlways("    Initializing CryMono done, MemUsage=%iKb", (memInfo.allocated + m_pLibraryAssembly->GetCustomClass("CryStats", "CryEngine.Utils")->GetProperty("MemoryUsage")->Unbox<long>()) / 1024);
@@ -254,8 +256,6 @@ void CMonoScriptSystem::Update(float frameTime)
 
 void CMonoScriptSystem::OnFileChange(const char *sFilename)
 {
-	CryLogAlways("CMonoScriptSystem::OnFileChange; file change detected in %s", sFilename);
-
 	IMonoArray *pParams = CreateMonoArray(1);
 	pParams->Insert(sFilename);
 

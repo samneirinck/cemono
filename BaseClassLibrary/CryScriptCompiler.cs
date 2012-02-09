@@ -4,6 +4,7 @@ using System.IO;
 using System.Collections.Generic;
 
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 using CryEngine.Extensions;
 
@@ -17,6 +18,12 @@ namespace CryEngine
 	/// </summary>
 	public class ScriptCompiler : _ScriptCompiler
 	{
+		/// <summary>
+		/// Requests a full reload of all C# scripts and dll's, including CryBrary.
+		/// </summary>
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static void RequestReload();
+
 		public ScriptCompiler()
 		{
 #if !RELEASE
@@ -36,27 +43,19 @@ namespace CryEngine
 
 			referencedAssemblies.AddRange(AppDomain.CurrentDomain.GetAssemblies().Select(a => a.Location).ToArray());
 
-			Reload();
+			LoadPrecompiledAssemblies();
+
+			AddScripts(CompileScriptsInFolders(
+				PathUtils.GetScriptFolder(MonoScriptType.Entity),
+				PathUtils.GetScriptFolder(MonoScriptType.GameRules),
+				PathUtils.GetScriptFolder(MonoScriptType.FlowNode)
+			));
 		}
 
 		public void PostInit()
 		{
 			// These have to be registered later on due to the flow system being initialized late.
 			RegisterFlownodes();
-		}
-
-		public void Reload()
-		{
-			LoadPrecompiledAssemblies();
-
-			List<string> scriptFolders = new List<string>();
-			scriptFolders.Add(PathUtils.GetScriptFolder(MonoScriptType.Entity));
-			scriptFolders.Add(PathUtils.GetScriptFolder(MonoScriptType.GameRules));
-			scriptFolders.Add(PathUtils.GetScriptFolder(MonoScriptType.FlowNode));
-			// if(isEditor)
-			//scriptFolders.Add(PathUtils.GetScriptFolder(MonoScriptType.EditorForm));
-
-			AddScripts(CompileScriptsInFolders(scriptFolders.ToArray()));
 		}
 
 		private void LoadPrecompiledAssemblies()
@@ -181,6 +180,8 @@ namespace CryEngine
 			if (file.Contains(".cs"))
 			{
 				file = file.Split('.').First();
+
+				RequestReload();
 				// TODO: Script reloading
 			}
 			else if (file.Contains(".dll"))

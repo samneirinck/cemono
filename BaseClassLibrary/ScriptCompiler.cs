@@ -227,7 +227,7 @@ namespace CryEngine
 			return CompileScripts(scriptsInFolder, ".cs");
 		}
 
-		public static CryScript[] CompileScriptsInFolders(string[] scriptFolders)
+		public static CryScript[] CompileScriptsInFolders(params string[] scriptFolders)
 		{
 			List<string> scripts = new List<string>();
 			foreach(var directory in scriptFolders)

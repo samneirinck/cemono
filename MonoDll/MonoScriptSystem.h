@@ -91,6 +91,8 @@ private:
 	void RegisterDefaultBindings();
 	bool InitializeSystems();
 
+	static bool MonoRequestedReload() { return gEnv->pMonoScriptSystem->Reload(); }
+
 	MonoDomain *m_pMonoDomain;
 	MonoDomain *m_pScriptDomain;
 
