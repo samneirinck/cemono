@@ -4,7 +4,6 @@ using System.IO;
 using System.Collections.Generic;
 
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 using CryEngine.Extensions;
 
@@ -18,12 +17,6 @@ namespace CryEngine
 	/// </summary>
 	public class ScriptCompiler : _ScriptCompiler
 	{
-		/// <summary>
-		/// Requests a full reload of all C# scripts and dll's, including CryBrary.
-		/// </summary>
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void RequestReload();
-
 		public ScriptCompiler()
 		{
 #if !RELEASE
@@ -171,16 +164,6 @@ namespace CryEngine
 				scriptBinds = new List<Scriptbind>();
 
 			scriptBinds.Add(new Scriptbind(namespaceName, className, methods));
-		}
-
-		public void OnFileChange(string filePath)
-		{
-			string fileExtension = Path.GetExtension(filePath);
-
-			if (fileExtension.Equals(".cs"))
-				RequestReload();
-			else if (fileExtension.Equals(".dll"))
-				RequestReload();
 		}
 
 		/// <summary>

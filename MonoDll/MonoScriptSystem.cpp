@@ -117,8 +117,6 @@ bool CMonoScriptSystem::Init()
 	if(!Reload())
 		return false;
 
-	mono_add_internal_call("CryEngine.ScriptCompiler::RequestReload", &MonoRequestedReload);
-
 	CryModuleMemoryInfo memInfo;
 	CryModuleGetMemoryInfo(&memInfo);
 	CryLogAlways("    Initializing CryMono done, MemUsage=%iKb", (memInfo.allocated + m_pLibraryAssembly->GetCustomClass("CryStats", "CryEngine.Utils")->GetProperty("MemoryUsage")->Unbox<long>()) / 1024);
@@ -137,7 +135,7 @@ bool CMonoScriptSystem::Reload()
 
 		mono_domain_set(mono_get_root_domain(), false);
 
-		//mono_domain_finalize(m_pScriptDomain, -1);
+		mono_domain_finalize(m_pScriptDomain, -1);
 
 		MonoObject *pException;
 		mono_domain_try_unload(m_pScriptDomain, &pException);
@@ -151,7 +149,7 @@ bool CMonoScriptSystem::Reload()
 			CryLogAlways(ToCryString((mono::string)exceptionString));
 		}
 
-		//mono_domain_free(m_pScriptDomain, true);
+		//mono_domain_free(m_pScriptDomain, false);
 	}
 
 	m_pScriptDomain = mono_domain_create_appdomain("ScriptDomain", NULL);
@@ -261,11 +259,17 @@ void CMonoScriptSystem::Update(float frameTime)
 
 void CMonoScriptSystem::OnFileChange(const char *sFilename)
 {
-	IMonoArray *pParams = CreateMonoArray(1);
+	string fileName = sFilename;
+	const char *fileExt = fileName.substr(fileName.find_last_of(".") + 1);
+
+	if(!strcmp(fileExt, "cs") || !strcmp(fileExt, "dll"))
+		Reload();
+
+	/*IMonoArray *pParams = CreateMonoArray(1);
 	pParams->Insert(sFilename);
 
 	m_pScriptCompiler->CallMethod("OnFileChange", pParams);
-	SAFE_RELEASE(pParams);
+	SAFE_RELEASE(pParams);*/
 }
 
 void CMonoScriptSystem::RegisterMethodBinding(IMonoMethodBinding binding, const char *classPath)
