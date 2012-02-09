@@ -117,7 +117,8 @@ bool CMonoScriptSystem::Init()
 
 	m_pCryConsole = m_pLibraryAssembly->InstantiateClass("CryEngine", "Console");
 
-	m_pScriptCompiler = m_pLibraryAssembly->InstantiateClass("CryEngine", "ScriptCompiler");//m_pLibraryAssembly->GetCustomClass("CryEngine", "ScriptCompiler")->CallMethod("SetupCompiler", NULL, true)->Unbox<IMonoClass *>();
+	//We don't instantiate this directly because we need the correct AppDomain for the compiler in C#
+	m_pScriptCompiler = m_pLibraryAssembly->GetCustomClass("ScriptCompiler")->CallMethod("SetupCompiler", NULL, true)->Unbox<IMonoClass *>();
 
 	CryLogAlways("    Registering default scriptbinds...");
 	RegisterDefaultBindings();

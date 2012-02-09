@@ -254,6 +254,8 @@ namespace CryEngine
 			if(scripts.Length < 1)
 				return null;
 
+			Console.LogAlways("Started script compilation...");
+
 			CodeDomProvider provider;
 			switch (scriptExtension) // TODO enum
 			{
@@ -384,11 +386,7 @@ namespace CryEngine
 							}
 						}
 					}
-
-					reader.Close();
 				}
-
-				stream.Close();
 			}
 
 			return namespaces.ToArray();
@@ -436,6 +434,8 @@ namespace CryEngine
 			Parallel.For(0, assemblyTypes.Count(), i =>
 			{
 				var type = assemblyTypes.ElementAt(i);
+
+				Console.LogAlways("Processing type {0}", type.FullName);
 
 				if(!type.ContainsAttribute<ExcludeFromCompilationAttribute>())
 				{
