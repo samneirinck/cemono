@@ -89,9 +89,10 @@ private:
 	bool InitializeSystems();
 
 	MonoDomain *m_pMonoDomain;
+	MonoDomain *m_pScriptDomain;
+
 	IMonoAssembly *m_pLibraryAssembly;
 
-	IMonoClass *m_pCryConsole;
 	IMonoClass *m_pScriptCompiler;
 
 	IMonoConverter *m_pConverter;

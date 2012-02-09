@@ -185,7 +185,6 @@
     <Compile Include="FlowSystem\FlowSystem.cs" />
     <Compile Include="ItemSystem.cs" />
     <Compile Include="Console\Logging.cs" />
-    <Compile Include="Console\CryConsole.cs" />
     <Compile Include="GameRules\GameRulesSystem.cs" />
     <Compile Include="GameRules\BaseGameRules.cs" />
     <Compile Include="Utils\Statistics.cs" />

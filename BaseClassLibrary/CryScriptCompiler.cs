@@ -30,16 +30,6 @@ namespace CryEngine
 			m_numInstances = 0;
 		}
 
-		public static ScriptCompiler SetupCompiler()
-		{
-			Console.LogAlways("    Creating the script host...");
-			var domain = AppDomain.CreateDomain("ScriptDomain");
-			Console.LogAlways("    Script host {0} ok, creating the JIT compiler...", domain.FriendlyName);
-			var compiler = domain.CreateInstanceFromAndUnwrap(Assembly.GetExecutingAssembly().Location, typeof(ScriptCompiler).FullName) as ScriptCompiler;
-			Console.LogAlways("    Compiler created! Handing control back to the engine");
-			return compiler;
-		}
-
 		public void Initialize()
 		{
 			//GenerateScriptbindAssembly(scriptBinds.ToArray());

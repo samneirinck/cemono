@@ -46,6 +46,7 @@ CRYREGISTER_CLASS(CMonoScriptSystem)
 
 CMonoScriptSystem::CMonoScriptSystem() 
 	: m_pMonoDomain(NULL)
+	, m_pScriptDomain(NULL)
 	, m_pLibraryAssembly(NULL)
 	, m_pCallbackHandler(NULL)
 {
@@ -92,7 +93,6 @@ CMonoScriptSystem::~CMonoScriptSystem()
 	SAFE_DELETE(m_pConverter);
 	SAFE_DELETE(m_pCallbackHandler);
 
-	SAFE_DELETE(m_pCryConsole);
 	SAFE_DELETE(m_pScriptCompiler);
 	SAFE_DELETE(m_pLibraryAssembly);
 
@@ -111,17 +111,17 @@ bool CMonoScriptSystem::Init()
 	if (!InitializeDomain())
 		return false;
 
+	m_pScriptDomain = mono_domain_create_appdomain("ScriptDomain", NULL);
+	mono_domain_set(m_pScriptDomain, false);
+
 	m_pLibraryAssembly = LoadAssembly(CMonoPathUtils::GetBinaryPath() + "CryBrary.dll");
 	if (!m_pLibraryAssembly)
 		return false;
 
-	m_pCryConsole = m_pLibraryAssembly->InstantiateClass("CryEngine", "Console");
-
-	//We don't instantiate this directly because we need the correct AppDomain for the compiler in C#
-	m_pScriptCompiler = m_pLibraryAssembly->GetCustomClass("ScriptCompiler")->CallMethod("SetupCompiler", NULL, true)->Unbox<IMonoClass *>();
-
 	CryLogAlways("    Registering default scriptbinds...");
 	RegisterDefaultBindings();
+
+	m_pScriptCompiler = m_pLibraryAssembly->InstantiateClass("CryEngine", "ScriptCompiler");
 
 	CryLogAlways("    Initializing subsystems...");
 	InitializeSystems();

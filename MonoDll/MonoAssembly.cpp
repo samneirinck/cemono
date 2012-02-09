@@ -11,7 +11,7 @@ CMonoAssembly::CMonoAssembly(const char *assemblyPath)
 {
 	m_assemblyPath = assemblyPath;
 	
-	m_pAssembly = mono_domain_assembly_open(mono_domain_get(),assemblyPath);
+	m_pAssembly = mono_domain_assembly_open(mono_domain_get(), assemblyPath);
 	if (!m_pAssembly)
 	{
 		gEnv->pLog->LogError("Failed to create assembly from %s", assemblyPath);
