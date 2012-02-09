@@ -175,20 +175,10 @@ namespace CryEngine
 
 		public void OnFileChange(string filePath)
 		{
-			string file = filePath.Split('/').Last();
-
-			if (file.EndsWith(".cs"))
-			{
-				file = file.Split('.').First();
-
+			if (Path.GetExtension(filePath).Equals(".cs"))
 				RequestReload();
-			}
-			else if (file.EndsWith(".dll"))
-			{
-				file = file.Split('.').First();
-
+			else if (Path.GetExtension(filePath).Equals(".dll"))
 				RequestReload();
-			}
 		}
 
 		/// <summary>
