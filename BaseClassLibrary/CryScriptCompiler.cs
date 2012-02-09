@@ -177,13 +177,13 @@ namespace CryEngine
 		{
 			string file = filePath.Split('/').Last();
 
-			if (file.Contains(".cs"))
+			if (file.EndsWith(".cs"))
 			{
 				file = file.Split('.').First();
 
 				RequestReload();
 			}
-			else if (file.Contains(".dll"))
+			else if (file.EndsWith(".dll"))
 			{
 				file = file.Split('.').First();
 
