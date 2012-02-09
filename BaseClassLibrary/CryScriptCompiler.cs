@@ -175,9 +175,11 @@ namespace CryEngine
 
 		public void OnFileChange(string filePath)
 		{
-			if (Path.GetExtension(filePath).Equals(".cs"))
+			string fileExtension = Path.GetExtension(filePath);
+
+			if (fileExtension.Equals(".cs"))
 				RequestReload();
-			else if (Path.GetExtension(filePath).Equals(".dll"))
+			else if (fileExtension.Equals(".dll"))
 				RequestReload();
 		}
 
