@@ -111,6 +111,42 @@ bool CMonoScriptSystem::Init()
 	if (!InitializeDomain())
 		return false;
 
+	if(!Reload())
+		return false;
+
+	CryModuleMemoryInfo memInfo;
+	CryModuleGetMemoryInfo(&memInfo);
+	CryLogAlways("    Initializing CryMono done, MemUsage=%iKb", (memInfo.allocated + m_pLibraryAssembly->GetCustomClass("CryStats", "CryEngine.Utils")->GetProperty("MemoryUsage")->Unbox<long>()) / 1024);
+
+	return true;
+}
+
+bool CMonoScriptSystem::Reload()
+{
+	// Determines if this is the first time loading.
+	bool initialLoad = m_pScriptDomain==NULL;
+
+	if(!initialLoad)
+	{
+		CryLogAlways("C# modifications detected on disk, initializing CryBrary reload");
+
+		mono_domain_finalize(m_pScriptDomain, -1);
+
+		MonoObject *pException;
+		mono_domain_try_unload(m_pScriptDomain, &pException);
+
+		if(pException)
+		{
+			CryLogAlways("[MonoWarning] An exception was raised during ScriptDomain unload:");
+
+			MonoMethod *pExceptionMethod = mono_method_desc_search_in_class(mono_method_desc_new("::ToString()", false),mono_get_exception_class());
+			MonoString *exceptionString = (MonoString *)mono_runtime_invoke(pExceptionMethod, pException, NULL, NULL);
+			CryLogAlways(ToCryString((mono::string)exceptionString));
+		}
+
+		//mono_domain_free(m_pScriptDomain, true);
+	}
+
 	m_pScriptDomain = mono_domain_create_appdomain("ScriptDomain", NULL);
 	mono_domain_set(m_pScriptDomain, false);
 
@@ -129,9 +165,9 @@ bool CMonoScriptSystem::Init()
 	CryLogAlways("    Compiling scripts...");
 	m_pScriptCompiler->CallMethod("Initialize");
 
-	CryModuleMemoryInfo memInfo;
-	CryModuleGetMemoryInfo(&memInfo);
-	CryLogAlways("    Initializing CryMono done, MemUsage=%iKb", (memInfo.allocated + m_pLibraryAssembly->GetCustomClass("CryStats", "CryEngine.Utils")->GetProperty("MemoryUsage")->Unbox<long>()) / 1024);
+	// Nodes won't get recompiled if we forget this.
+	if(!initialLoad)
+		PostInit();
 
 	return true;
 }
@@ -218,6 +254,8 @@ void CMonoScriptSystem::Update(float frameTime)
 
 void CMonoScriptSystem::OnFileChange(const char *sFilename)
 {
+	CryLogAlways("CMonoScriptSystem::OnFileChange; file change detected in %s", sFilename);
+
 	IMonoArray *pParams = CreateMonoArray(1);
 	pParams->Insert(sFilename);
 

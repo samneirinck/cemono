@@ -76,6 +76,8 @@ public:
 	virtual void OnFileChange(const char* sFilename);
 	// ~IFileChangeMonitor
 
+	bool Reload();
+
 	IMonoClass *GetScriptCompilerClass() const { return m_pScriptCompiler; }
 
 	CMonoCallbackHandler *GetCallbackHandler() const { return m_pCallbackHandler; }
