@@ -16,6 +16,7 @@
 #include <mono/metadata/object.h>
 #include <mono/metadata/threads.h>
 #include <mono/metadata/environment.h>
+#include <mono/metadata/mono-gc.h>
 
 #include <ICmdLine.h>
 
@@ -85,6 +86,8 @@ CMonoScriptSystem::CMonoScriptSystem()
 
 CMonoScriptSystem::~CMonoScriptSystem()
 {
+	mono_gc_collect(mono_gc_max_generation());
+
 	gEnv->pFileChangeMonitor->UnregisterListener(this);
 
 	m_scripts.clear();
@@ -132,7 +135,9 @@ bool CMonoScriptSystem::Reload()
 	{
 		CryLogAlways("C# modifications detected on disk, initializing CryBrary reload");
 
-		mono_domain_finalize(m_pScriptDomain, -1);
+		mono_domain_set(mono_get_root_domain(), false);
+
+		//mono_domain_finalize(m_pScriptDomain, -1);
 
 		MonoObject *pException;
 		mono_domain_try_unload(m_pScriptDomain, &pException);

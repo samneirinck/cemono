@@ -182,12 +182,12 @@ namespace CryEngine
 				file = file.Split('.').First();
 
 				RequestReload();
-				// TODO: Script reloading
 			}
 			else if (file.Contains(".dll"))
 			{
 				file = file.Split('.').First();
-				// TODO: Dll reloading
+
+				RequestReload();
 			}
 		}
 
