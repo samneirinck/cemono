@@ -63,6 +63,12 @@ struct IMonoScriptSystem : public IEngineModule
 	virtual void PostInit() = 0;
 
 	/// <summary>
+	/// Reloads CryBrary.dll and initializes script complilation.
+	/// Automatically called when a script, plugin or CryBrary itself is modified.
+	/// </summary>
+	virtual bool Reload() = 0;
+
+	/// <summary>
 	/// Deletes script system instance; cleans up mono objects etc.
 	/// Called from the dll which implements CryMono on engine shutdown (CGameStartup destructor within the sample project)
 	/// </summary>

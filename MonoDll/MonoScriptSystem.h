@@ -53,6 +53,9 @@ public:
 	// IMonoScriptSystem
 	virtual bool Init() override;
 	virtual void PostInit() override;
+
+	virtual bool Reload() override;
+
 	virtual void Release() override { delete this; }
 
 	virtual void Update(float frameTime) override;
@@ -75,8 +78,6 @@ public:
 	// IFileChangeMonitor
 	virtual void OnFileChange(const char* sFilename);
 	// ~IFileChangeMonitor
-
-	bool Reload();
 
 	IMonoClass *GetScriptCompilerClass() const { return m_pScriptCompiler; }
 
