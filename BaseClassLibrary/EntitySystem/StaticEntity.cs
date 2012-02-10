@@ -267,52 +267,10 @@ namespace CryEngine
 				return;
 			}
 
-			switch(propertyType)
-			{
-				case EntityPropertyType.Bool:
-					{
-						if(isProperty)
-							GetType().GetProperty(propertyName).SetValue(this, Convert.ToBoolean(value), null);
-						else
-							GetType().GetField(propertyName).SetValue(this, Convert.ToBoolean(value));
-					}
-					break;
-				case EntityPropertyType.Int:
-					{
-						if(isProperty)
-							GetType().GetProperty(propertyName).SetValue(this, Convert.ToInt32(value), null);
-						else
-							GetType().GetField(propertyName).SetValue(this, Convert.ToInt32(value));
-					}
-					break;
-				case EntityPropertyType.Float:
-					{
-						if(isProperty)
-							GetType().GetProperty(propertyName).SetValue(this, Convert.ToSingle(value), null);
-						else
-							GetType().GetField(propertyName).SetValue(this, Convert.ToSingle(value));
-					}
-					break;
-				case EntityPropertyType.Vec3:
-					{
-						string[] split = value.Split(',');
-						var vec = new Vec3(Convert.ToSingle(split[0]), Convert.ToSingle(split[1]), Convert.ToSingle(split[2]));
-
-						if(isProperty)
-							GetType().GetProperty(propertyName).SetValue(this, vec, null);
-						else
-							GetType().GetField(propertyName).SetValue(this, vec);
-					}
-					break;
-				case EntityPropertyType.String:
-					{
-						if(isProperty)
-							GetType().GetProperty(propertyName).SetValue(this, value, null);
-						else
-							GetType().GetField(propertyName).SetValue(this, value);
-					}
-					break;
-			}
+			if (isProperty)
+				GetType().GetProperty(propertyName).SetValue(this, Convert.FromString(propertyType, value), null);
+			else
+				GetType().GetField(propertyName).SetValue(this, Convert.FromString(propertyType, value));
 		}
 
 		/// <summary>

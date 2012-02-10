@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.IO;
 using System.Collections.Generic;
 
@@ -37,7 +36,7 @@ namespace CryEngine
 		{
 			//GenerateScriptbindAssembly(scriptBinds.ToArray());
 
-			referencedAssemblies.AddRange(AppDomain.CurrentDomain.GetAssemblies().Select(a => a.Location).ToArray());
+			referencedAssemblies.AddRange(System.AppDomain.CurrentDomain.GetAssemblies().Select(a => a.Location).ToArray());
 
 			LoadPrecompiledAssemblies();
 
@@ -102,7 +101,7 @@ namespace CryEngine
 			if (script.ScriptInstances == null)
 				script.ScriptInstances = new List<CryScriptInstance>();
 
-			script.ScriptInstances.Add(Activator.CreateInstance(script.Type, constructorParams) as CryScriptInstance);
+			script.ScriptInstances.Add(System.Activator.CreateInstance(script.Type, constructorParams) as CryScriptInstance);
 			script.ScriptInstances.Last().ScriptId = nextScriptId;
 
 			compiledScripts[index] = script;
@@ -182,13 +181,13 @@ namespace CryEngine
 
 						foreach (var scriptInstance in script.ScriptInstances)
 						{
-							Type type = scriptInstance.GetType();
+							System.Type type = scriptInstance.GetType();
 
 							writer.WriteStartElement("Instance");
 
 							// Just a tiiiiiny bit hardcoded.
 							string scriptField = "<ScriptId>k__BackingField";
-							int scriptId = Convert.ToInt32(type.GetProperty("ScriptId").GetValue(scriptInstance, null));
+							int scriptId = System.Convert.ToInt32(type.GetProperty("ScriptId").GetValue(scriptInstance, null));
 							writer.WriteAttributeString("Id", scriptId.ToString());
 							
 							while (type != null)
@@ -231,21 +230,6 @@ namespace CryEngine
 			}
 		}
 
-		public object StringToValue(string type, string value)
-		{
-			switch (type)
-			{
-				case "Boolean":
-					return Convert.ToBoolean(value);
-				case "UInt32":
-					return Convert.ToUInt32(value);
-				case "Int32":
-					return Convert.ToInt32(value);
-			}
-
-			return null;
-		}
-
 		public void TrySetScriptData()
 		{
 			string filePath = Path.Combine(PathUtils.GetRootFolder(), "Temp", "MonoScriptData.xml");
@@ -265,12 +249,12 @@ namespace CryEngine
 				{
 					foreach (var instance in type.Elements("Instance"))
 					{
-						int scriptId = Convert.ToInt32(instance.Attribute("Id").Value);
+						int scriptId = System.Convert.ToInt32(instance.Attribute("Id").Value);
 
 						if (script.ScriptInstances == null)
 							script.ScriptInstances = new List<CryScriptInstance>();
 
-						script.ScriptInstances.Add(Activator.CreateInstance(script.Type) as CryScriptInstance);
+						script.ScriptInstances.Add(System.Activator.CreateInstance(script.Type) as CryScriptInstance);
 
 						if (nextScriptId < scriptId)
 							nextScriptId = scriptId;
@@ -281,14 +265,14 @@ namespace CryEngine
 						{
 							FieldInfo fieldInfo = script.Type.GetField(field.Attribute("Name").Value);
 							if (fieldInfo != null)// && !fieldInfo.FieldType.Name.Equals("Dictionary`2") && !fieldInfo.FieldType.Name.Equals("List`1"))
-								fieldInfo.SetValue(script.ScriptInstances.Last(), StringToValue(field.Attribute("Type").Value, field.Attribute("Value").Value));
+								fieldInfo.SetValue(script.ScriptInstances.Last(), Convert.FromString(field.Attribute("Type").Value, field.Attribute("Value").Value));
 						}
 
 						foreach (var property in instance.Elements("Property"))
 						{
 							PropertyInfo propertyInfo = script.Type.GetProperty(property.Attribute("Name").Value);
 							if (propertyInfo != null)
-								propertyInfo.SetValue(script.ScriptInstances.Last(), StringToValue(property.Attribute("Type").Value, property.Attribute("Value").Value), null);
+								propertyInfo.SetValue(script.ScriptInstances.Last(), Convert.FromString(property.Attribute("Type").Value, property.Attribute("Value").Value), null);
 						}
 					}
 				}

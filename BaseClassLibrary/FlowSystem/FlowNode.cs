@@ -170,15 +170,15 @@ namespace CryEngine
 		public void ActivateOutput(int port, object value)
 		{
 			if(value is int)
-				FlowSystem._ActivateOutputInt(ScriptId, port, Convert.ToInt32(value));
+				FlowSystem._ActivateOutputInt(ScriptId, port, System.Convert.ToInt32(value));
 			else if(value is float || value is double)
-				FlowSystem._ActivateOutputFloat(ScriptId, port, Convert.ToSingle(value));
+				FlowSystem._ActivateOutputFloat(ScriptId, port, System.Convert.ToSingle(value));
 			else if(value is uint)
-				FlowSystem._ActivateOutputEntityId(ScriptId, port, Convert.ToUInt32(value));
+				FlowSystem._ActivateOutputEntityId(ScriptId, port, System.Convert.ToUInt32(value));
 			else if(value is string)
-				FlowSystem._ActivateOutputString(ScriptId, port, Convert.ToString(value));
+				FlowSystem._ActivateOutputString(ScriptId, port, System.Convert.ToString(value));
 			else if(value is bool)
-				FlowSystem._ActivateOutputBool(ScriptId, port, Convert.ToBoolean(value));
+				FlowSystem._ActivateOutputBool(ScriptId, port, System.Convert.ToBoolean(value));
             else if (value is Vec3)
                 FlowSystem._ActivateOutputVec3(ScriptId, port, (Vec3)value);
             else

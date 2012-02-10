@@ -12,7 +12,7 @@ namespace CryEngine
         public virtual void PrecacheLevel() { }
         public virtual void RequestSpawnGroup(uint spawnGroupId) { }
         public virtual void SetPlayerSpawnGroup(uint playerId, uint spawnGroupId) { }
-        public virtual uint GetPlayerSpawnGroup(uint actorId) { return Convert.ToUInt32(0); }
+        public virtual uint GetPlayerSpawnGroup(uint actorId) { return System.Convert.ToUInt32(0); }
         public virtual void ShowScores(bool show) { }
 
         // Server-only

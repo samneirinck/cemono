@@ -90,7 +90,10 @@ namespace CryEngine
 
         internal static void RegisterInternalEntity(uint entityId, StaticEntity entity)
         {
-            internalEntities.Add(entityId, entity);
+			if (!internalEntities.Contains(entityId))
+				internalEntities.Add(entityId, entity);
+			else
+				throw new Exception("Attempted to register internal entity twice.");
         }
 
         
