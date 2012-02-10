@@ -154,6 +154,63 @@ namespace CryEngine
 			return null;
 		}
 
+		public object[] GetScriptData()
+		{
+			List<object> storedScripts = new List<object>();
+
+			foreach (var script in m_compiledScripts)
+			{
+				if (script.ScriptInstances != null)
+				{
+					foreach (var scriptInstance in script.ScriptInstances)
+					{
+						List<object> fields = new List<object>();
+
+						Type type = scriptInstance.GetType();
+
+						while (type != null)
+						{
+							foreach (var fieldInfo in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
+								fields.Add(new MonoScriptFieldData(fieldInfo.Name, fieldInfo.GetValue(scriptInstance)));
+
+							type = type.BaseType;
+						}
+
+						storedScripts.Add(new MonoScriptState(scriptInstance.GetType().Name, fields.ToArray()));
+					}
+				}
+			}
+
+			return storedScripts.ToArray();
+		}
+
+		public void SetScriptData(object[] scriptStates)
+		{
+			Console.LogAlways("SetScriptData");
+
+			if (scriptStates==null)
+				Console.LogAlways("oh noes.");
+			
+			foreach (MonoScriptState scriptState in scriptStates)
+			{	
+				Console.LogAlways(scriptState.typeName);
+				/*
+				CryScript script = m_compiledScripts.Where(Script => Script.className.Equals(scriptState.typeName)).FirstOrDefault();
+				if (script != null && script != default(CryScript))
+				{
+					// Can see this causing issues with complex constructors :v
+					script.ScriptInstances.Add(Activator.CreateInstance(script.Type) as CryScriptInstance);
+
+					foreach (MonoScriptFieldData field in scriptState.fields)
+					{
+						FieldInfo fieldInfo = script.GetType().GetField(field.fieldName);
+						if(fieldInfo!=null)
+							fieldInfo.SetValue(script.ScriptInstances.Last(), field.value);
+					}
+				}*/
+			}
+		}
+
 		/// <summary>
 		/// Automagically registers scriptbind methods to rid us of having to add them in both C# and C++.
 		/// </summary>
@@ -183,5 +240,33 @@ namespace CryEngine
 
 		List<CryScript> m_compiledScripts;
 		int m_numInstances;
+	}
+
+	[Serializable]
+	public struct MonoScriptFieldData
+	{
+		public MonoScriptFieldData(string name, object val)
+			: this()
+		{
+			fieldName = name;
+			value = val;
+		}
+
+		public string fieldName;
+		public object value;
+	}
+
+	[Serializable]
+	public struct MonoScriptState
+	{
+		public MonoScriptState(string TypeName, object[] Fields)
+			: this()
+		{
+			fields = Fields;
+			typeName = TypeName;
+		}
+
+		public object[] fields;
+		public string typeName;
 	}
 }

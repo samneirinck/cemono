@@ -435,8 +435,6 @@ namespace CryEngine
 			{
 				var type = assemblyTypes.ElementAt(i);
 
-				Console.LogAlways("Processing type {0}", type.FullName);
-
 				if(!type.ContainsAttribute<ExcludeFromCompilationAttribute>())
 				{
 					var scriptType = MonoScriptType.Null;
@@ -662,6 +660,27 @@ namespace CryEngine
 		/// Stores all instances of this class.
 		/// </summary>
 		public List<CryScriptInstance> ScriptInstances { get; private set; }
+
+		#region Operators
+		public static bool operator ==(CryScript lScript, CryScript rScript)
+		{
+			return lScript.Type == rScript.Type;
+		}
+
+		public static bool operator !=(CryScript lScript, CryScript rScript)
+		{
+			return lScript.Type != rScript.Type;
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (obj is CryScript)
+				return (CryScript)obj == this;
+
+			return false;
+		}
+
+		#endregion
 	}
 
 	public struct InternalCallMethod

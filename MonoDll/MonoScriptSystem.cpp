@@ -124,32 +124,49 @@ bool CMonoScriptSystem::Init()
 	return true;
 }
 
+struct MonoScriptFieldData
+{
+	mono::string fieldName;
+	mono::object value;
+};
+
+struct MonoScriptState
+{
+	mono::array fields;
+	mono::string typeName;
+};
+
+struct ScriptState
+{
+	struct Field
+	{
+		Field(mono::string field, MonoAnyValue val) : fieldName(field), value(val) {}
+
+		mono::string fieldName;
+		MonoAnyValue value;
+	};
+
+	std::vector<Field> fields;
+	mono::string typeName;
+};
+
 bool CMonoScriptSystem::Reload()
 {
 	// Determines if this is the first time loading.
 	bool initialLoad = m_pScriptDomain==NULL;
+	
+	MonoDomain *pOldScriptDomain;
 
+	// Store the state of current instances to apply them to the reloaded scripts at the end.
+	IMonoArray *pScriptData;
 	if(!initialLoad)
 	{
 		CryLogAlways("C# modifications detected on disk, initializing CryBrary reload");
 
-		mono_domain_set(mono_get_root_domain(), false);
+		pScriptData = CreateMonoArray(1);
+		pScriptData->Insert(m_pScriptCompiler->CallMethod("GetScriptData"));
 
-		mono_domain_finalize(m_pScriptDomain, -1);
-
-		MonoObject *pException;
-		mono_domain_try_unload(m_pScriptDomain, &pException);
-
-		if(pException)
-		{
-			CryLogAlways("[MonoWarning] An exception was raised during ScriptDomain unload:");
-
-			MonoMethod *pExceptionMethod = mono_method_desc_search_in_class(mono_method_desc_new("::ToString()", false),mono_get_exception_class());
-			MonoString *exceptionString = (MonoString *)mono_runtime_invoke(pExceptionMethod, pException, NULL, NULL);
-			CryLogAlways(ToCryString((mono::string)exceptionString));
-		}
-
-		//mono_domain_free(m_pScriptDomain, false);
+		pOldScriptDomain = m_pScriptDomain;
 	}
 
 	m_pScriptDomain = mono_domain_create_appdomain("ScriptDomain", NULL);
@@ -172,7 +189,29 @@ bool CMonoScriptSystem::Reload()
 
 	// Nodes won't get recompiled if we forget this.
 	if(!initialLoad)
+	{
 		PostInit();
+
+		m_pScriptCompiler->CallMethod("SetScriptData", pScriptData);
+
+		//mono_domain_set(mono_get_root_domain(), false);
+
+		mono_domain_finalize(pOldScriptDomain, -1);
+
+		MonoObject *pException;
+		mono_domain_try_unload(pOldScriptDomain, &pException);
+
+		if(pException)
+		{
+			CryLogAlways("[MonoWarning] An exception was raised during ScriptDomain unload:");
+
+			MonoMethod *pExceptionMethod = mono_method_desc_search_in_class(mono_method_desc_new("::ToString()", false),mono_get_exception_class());
+			MonoString *exceptionString = (MonoString *)mono_runtime_invoke(pExceptionMethod, pException, NULL, NULL);
+			CryLogAlways(ToCryString((mono::string)exceptionString));
+		}
+
+		//mono_domain_free(m_pScriptDomain, false);
+	}
 
 	return true;
 }
