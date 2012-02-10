@@ -217,10 +217,7 @@ bool CMonoScriptSystem::Reload()
 
 				MonoClass *pMonoClass = mono_object_get_class((MonoObject *)monoObject);
 				if(pMonoClass && mono_class_get_name(pMonoClass))
-				{
-					CryLogAlways("Updating mono class with id %i", script.second);
 					static_cast<CMonoClass *>(script.first)->OnReload(pMonoClass, monoObject);
-				}
 			}
 
 			SAFE_DELETE(pParams);
