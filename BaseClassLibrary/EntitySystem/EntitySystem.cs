@@ -41,8 +41,8 @@ namespace CryEngine
 		/// a C++ entity with the specified ID></remarks>
         public static StaticEntity GetEntity(uint entityId)
         {
-            if (m_internalEntities.Contains(entityId))
-                return m_internalEntities[entityId] as StaticEntity;
+            if (internalEntities.Contains(entityId))
+                return internalEntities[entityId] as StaticEntity;
 
             return new StaticEntity(entityId);
         }
@@ -90,7 +90,7 @@ namespace CryEngine
 
         internal static void RegisterInternalEntity(uint entityId, StaticEntity entity)
         {
-            m_internalEntities.Add(entityId, entity);
+            internalEntities.Add(entityId, entity);
         }
 
         
@@ -98,7 +98,7 @@ namespace CryEngine
         /// Contains the entities registered with mono.
         /// EntityId, Entity are stored in here. EntityId is also stored within Entity, but storing it seperately here provides for fast lookup and rids of us too many foreach loops.
         /// </summary>
-        static OrderedDictionary m_internalEntities = new OrderedDictionary();
+        static OrderedDictionary internalEntities = new OrderedDictionary();
     }
 
 	/// <summary>

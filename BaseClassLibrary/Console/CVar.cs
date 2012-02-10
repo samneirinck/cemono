@@ -8,16 +8,16 @@ namespace CryEngine
 {
 	public partial class Console
 	{
-        static List<CVar> m_internalCVars = new List<CVar>();
+        static List<CVar> internalCVars = new List<CVar>();
 
         /// <summary>
         /// Invoked by a CVar after its creation. Should <b>not</b> be visible outside this assembly.
         /// </summary>
         public static CVar RegisterCVar<T>(string name, T value, CVarFlags flags, string help)
         {
-            m_internalCVars.Add(new CVar(name, value, flags, help));
+            internalCVars.Add(new CVar(name, value, flags, help));
 
-            return m_internalCVars.Last();
+            return internalCVars.Last();
         }
 
 		/// <summary>
@@ -27,7 +27,7 @@ namespace CryEngine
 		/// <returns></returns>
         public static CVar GetCVar(string name)
         {
-            CVar cvar = m_internalCVars.FirstOrDefault(var => var.Name.Equals(name));
+            CVar cvar = internalCVars.FirstOrDefault(var => var.Name.Equals(name));
             if(cvar!=default(CVar))
                 return cvar;
 

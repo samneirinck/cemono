@@ -492,11 +492,11 @@ namespace CryEngine
 			public string category;
 		}
 
-		internal static List<StoredNode> m_flowNodes;
+		internal static List<StoredNode> flowNodes;
 
 		internal static void RegisterFlownodes()
 		{
-			foreach(var node in m_flowNodes)
+			foreach(var node in flowNodes)
 				FlowSystem.RegisterNode(node.className, node.category, node.category.Equals("entity", StringComparison.Ordinal));
 		}
 
@@ -545,7 +545,7 @@ namespace CryEngine
 			else
 				category = "entity";
 
-			m_flowNodes.Add(new StoredNode(nodeName, category));
+			flowNodes.Add(new StoredNode(nodeName, category));
 		}
 
 		public static object InvokeScriptFunction(object scriptInstance, string func, object[] args = null)

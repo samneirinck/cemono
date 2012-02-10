@@ -16,8 +16,8 @@ namespace CryEngine
 
         public NodePortConfig GetPortConfig()
         {
-            if (m_inputMethods == null)
-                m_inputMethods = new List<MethodInfo>();
+            if (inputMethods == null)
+                inputMethods = new List<MethodInfo>();
 
             Type type = GetType();
 
@@ -81,7 +81,7 @@ namespace CryEngine
 
 
                     inputs.Add(new InputPortConfig(input.Name, portType, defaultVal, input.Description));
-                    m_inputMethods.Add(method);
+                    inputMethods.Add(method);
                 }
             }
 
@@ -111,7 +111,7 @@ namespace CryEngine
         }
 
 		// Used to call OnActivate methods automatically.
-		List<MethodInfo> m_inputMethods;
+		List<MethodInfo> inputMethods;
 
 		//DON'T LOOK AT ME
 		NodePortType GetPortType(Type type)
@@ -140,12 +140,12 @@ namespace CryEngine
 		/// </summary>
 		public void OnPortActivated(int index, object value = null)
 		{
-			Console.LogAlways("Triggering port {0}", m_inputMethods[index].Name);
+			Console.LogAlways("Triggering port {0}", inputMethods[index].Name);
 
-			if(value != null && m_inputMethods[index].GetParameters().Length > 0)
-				m_inputMethods[index].Invoke(this, new object[] { value });
+			if(value != null && inputMethods[index].GetParameters().Length > 0)
+				inputMethods[index].Invoke(this, new object[] { value });
 			else
-				m_inputMethods[index].Invoke(this, null);
+				inputMethods[index].Invoke(this, null);
 		}
 
 		/// <summary>
@@ -212,9 +212,9 @@ namespace CryEngine
 
 		int GetInputPortId(MethodInfo method)
 		{
-			for(int i = 0; i < m_inputMethods.Count; i++)
+			for(int i = 0; i < inputMethods.Count; i++)
 			{
-				if(method == m_inputMethods[i])
+				if(method == inputMethods[i])
 					return i;
 			}
 

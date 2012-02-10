@@ -26,11 +26,11 @@ namespace CryEngine
 			Pdb2Mdb.Driver.Convert(Assembly.GetExecutingAssembly());
 #endif
 
-			m_compiledScripts = new List<CryScript>();
-			m_flowNodes = new List<StoredNode>();
+			compiledScripts = new List<CryScript>();
+			flowNodes = new List<StoredNode>();
 			referencedAssemblies = new List<string>();
 
-			m_nextScriptId = 0;
+			nextScriptId = 0;
 		}
 
 		public void Initialize()
@@ -65,7 +65,7 @@ namespace CryEngine
 			if (scripts == null || scripts.Length < 1)
 				return;
 
-			m_compiledScripts.AddRange(scripts);
+			compiledScripts.AddRange(scripts);
 		}
 
 		/// <summary>
@@ -85,7 +85,7 @@ namespace CryEngine
 			}
 
 			// I can play with sexy lambdas too!
-			int index = m_compiledScripts.FindIndex(x => x.className.Equals(scriptName));
+			int index = compiledScripts.FindIndex(x => x.className.Equals(scriptName));
 			if (index == -1)
 			{
 				Console.LogAlways("Failed to instantiate {0}, compiled script could not be found.", scriptName);
@@ -93,19 +93,19 @@ namespace CryEngine
 				return null;
 			}
 
-			CryScript script = m_compiledScripts.ElementAt(index);
+			CryScript script = compiledScripts.ElementAt(index);
 			if (!script.Type.Implements(typeof(CryScriptInstance)))
 				return null;
 
-			m_nextScriptId++;
+			nextScriptId++;
 
 			if (script.ScriptInstances == null)
 				script.ScriptInstances = new List<CryScriptInstance>();
 
 			script.ScriptInstances.Add(Activator.CreateInstance(script.Type, constructorParams) as CryScriptInstance);
-			script.ScriptInstances.Last().ScriptId = m_nextScriptId;
+			script.ScriptInstances.Last().ScriptId = nextScriptId;
 
-			m_compiledScripts[index] = script;
+			compiledScripts[index] = script;
 
 			return script.ScriptInstances.Last();
 		}
@@ -113,11 +113,11 @@ namespace CryEngine
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void RemoveInstance(int scriptId, string scriptName)
 		{
-			int index = m_compiledScripts.FindIndex(x => x.className.Equals(scriptName));
+			int index = compiledScripts.FindIndex(x => x.className.Equals(scriptName));
 			if (index == -1)
 				return;
 
-			CryScript script = m_compiledScripts[index];
+			CryScript script = compiledScripts[index];
 
 			if (script.ScriptInstances != null)
 			{
@@ -130,7 +130,7 @@ namespace CryEngine
 
 				script.ScriptInstances.RemoveAt(instanceIndex);
 
-				m_compiledScripts[index] = script;
+				compiledScripts[index] = script;
 			}
 		}
 
@@ -149,11 +149,11 @@ namespace CryEngine
 
 		public CryScriptInstance GetScriptInstanceById(int id)
 		{
-			for (int i = 0; i < m_compiledScripts.Count; i++)
+			for (int i = 0; i < compiledScripts.Count; i++)
 			{
-				if (m_compiledScripts[i].ScriptInstances != null)
+				if (compiledScripts[i].ScriptInstances != null)
 				{
-					CryScriptInstance tempInstance = m_compiledScripts[i].ScriptInstances.FirstOrDefault(instance => instance.ScriptId == id);
+					CryScriptInstance tempInstance = compiledScripts[i].ScriptInstances.FirstOrDefault(instance => instance.ScriptId == id);
 
 					if (tempInstance != default(CryScriptInstance))
 						return tempInstance;
@@ -173,7 +173,7 @@ namespace CryEngine
 				writer.WriteStartDocument();
 				writer.WriteStartElement("Types");
 
-				foreach (var script in m_compiledScripts)
+				foreach (var script in compiledScripts)
 				{
 					if(script.ScriptInstances!=null)
 					{
@@ -258,32 +258,35 @@ namespace CryEngine
 			XDocument scriptData = XDocument.Load(filePath);
 			foreach(var type in scriptData.Descendants("Type"))
 			{
-				CryScript script = m_compiledScripts.Where(Script => Script.className.Equals(type.Attribute("Name").Value)).FirstOrDefault();
+				CryScript script = compiledScripts.Where(Script => Script.className.Equals(type.Attribute("Name").Value)).FirstOrDefault();
 				if (script != default(CryScript))
 				{
 					foreach (var instance in type.Elements("Instance"))
 					{
-						if (script.ScriptInstances != null)
+						int scriptId = Convert.ToInt32(instance.Attribute("Id").Value);
+
+						if (script.ScriptInstances == null)
+							script.ScriptInstances = new List<CryScriptInstance>();
+
+						script.ScriptInstances.Add(Activator.CreateInstance(script.Type) as CryScriptInstance);
+
+						if (nextScriptId < scriptId)
+							nextScriptId = scriptId;
+
+						script.Type.GetProperty("ScriptId").SetValue(script.ScriptInstances.Last(), scriptId, null);
+
+						foreach (var field in instance.Elements("Field"))
 						{
-							script.ScriptInstances.Add(Activator.CreateInstance(script.Type) as CryScriptInstance);
+							FieldInfo fieldInfo = script.Type.GetField(field.Attribute("Name").Value);
+							if (fieldInfo != null)// && !fieldInfo.FieldType.Name.Equals("Dictionary`2") && !fieldInfo.FieldType.Name.Equals("List`1"))
+								fieldInfo.SetValue(script.ScriptInstances.Last(), StringToValue(field.Attribute("Type").Value, field.Attribute("Value").Value));
+						}
 
-							int scriptId = Convert.ToInt32(instance.Attribute("Id").Value);
-							if (m_nextScriptId < scriptId)
-								m_nextScriptId = scriptId;
-
-							foreach (var field in instance.Elements("Field"))
-							{
-								FieldInfo fieldInfo = script.GetType().GetField(field.Attribute("Name").Value);
-								if (fieldInfo != null)
-									fieldInfo.SetValue(script.ScriptInstances.Last(), StringToValue(field.Attribute("Type").Value, field.Attribute("Value").Value));
-							}
-
-							foreach (var property in instance.Elements("Property"))
-							{
-								PropertyInfo propertyInfo = script.GetType().GetProperty(property.Attribute("Name").Value);
-								if (propertyInfo != null)
-									propertyInfo.SetValue(script.ScriptInstances.Last(), StringToValue(property.Attribute("Type").Value, property.Attribute("Value").Value), null);
-							}
+						foreach (var property in instance.Elements("Property"))
+						{
+							PropertyInfo propertyInfo = script.Type.GetProperty(property.Attribute("Name").Value);
+							if (propertyInfo != null)
+								propertyInfo.SetValue(script.ScriptInstances.Last(), StringToValue(property.Attribute("Type").Value, property.Attribute("Value").Value), null);
 						}
 					}
 				}
@@ -309,7 +312,7 @@ namespace CryEngine
 		{
 			Time.DeltaTime = frameTime;
 
-			Parallel.ForEach(m_compiledScripts, script =>
+			Parallel.ForEach(compiledScripts, script =>
 			{
 				if(script.ScriptInstances!=null)
 					script.ScriptInstances.Where(i => i.ReceiveUpdates).ToList().ForEach(i => i.OnUpdate());
@@ -318,8 +321,8 @@ namespace CryEngine
 
 		List<Scriptbind> scriptBinds;
 
-		List<CryScript> m_compiledScripts;
-		int m_nextScriptId;
+		List<CryScript> compiledScripts;
+		int nextScriptId;
 	}
 
 	public struct ScriptState
