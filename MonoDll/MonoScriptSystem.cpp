@@ -155,19 +155,13 @@ bool CMonoScriptSystem::Reload()
 	// Determines if this is the first time loading.
 	bool initialLoad = m_pScriptDomain==NULL;
 
-	// Temporarily store script id's so we can setup the classes in the new domain.
-	std::map<IMonoClass *, int /* scriptId */> scripts;
 	// Store the state of current instances to apply them to the reloaded scripts at the end.
 	if(!initialLoad)
 	{
 		CryLogAlways("C# modifications detected on disk, initializing CryBrary reload");
 
-		for each(auto pClass in m_scripts)
-			scripts.insert(std::map<IMonoClass *, int>::value_type(pClass, pClass->GetScriptId()));
-
 		// Force dump of instance data.
 		m_pScriptCompiler->CallMethod("DumpScriptData");
-
 
 		mono_domain_set(mono_get_root_domain(), false);
 
@@ -213,7 +207,7 @@ bool CMonoScriptSystem::Reload()
 
 		m_pScriptCompiler->CallMethod("TrySetScriptData");
 
-		for each(auto script in scripts)
+		for each(auto script in m_scripts)
 		{
 			IMonoArray *pParams = CreateMonoArray(1);
 			pParams->Insert(script.second);
@@ -223,7 +217,10 @@ bool CMonoScriptSystem::Reload()
 
 				MonoClass *pMonoClass = mono_object_get_class((MonoObject *)monoObject);
 				if(pMonoClass && mono_class_get_name(pMonoClass))
+				{
+					CryLogAlways("Updating mono class with id %i", script.second);
 					static_cast<CMonoClass *>(script.first)->OnReload(pMonoClass, monoObject);
+				}
 			}
 
 			SAFE_DELETE(pParams);
@@ -319,13 +316,14 @@ void CMonoScriptSystem::OnFileChange(const char *sFilename)
 	const char *fileExt = fileName.substr(fileName.find_last_of(".") + 1);
 
 	if(!strcmp(fileExt, "cs") || !strcmp(fileExt, "dll"))
+	{
+		IMonoArray *pArray = new CMonoArray(1);
+		pArray->Insert(sFilename);
+
 		Reload();
 
-	/*IMonoArray *pParams = CreateMonoArray(1);
-	pParams->Insert(sFilename);
-
-	m_pScriptCompiler->CallMethod("OnFileChange", pParams);
-	SAFE_RELEASE(pParams);*/
+		SAFE_DELETE(pArray);
+	}
 }
 
 void CMonoScriptSystem::RegisterMethodBinding(IMonoMethodBinding binding, const char *classPath)
@@ -387,12 +385,17 @@ int CMonoScriptSystem::InstantiateScript(EMonoScriptType scriptType, const char 
 	pArgs->Insert(scriptName);
 	pArgs->Insert(pConstructorParameters);
 
+	int scriptId = -1;
 	if(IMonoObject *pScriptInstance = m_pScriptCompiler->CallMethod("InstantiateScript", pArgs))
-		m_scripts.push_back(pScriptInstance->Unbox<IMonoClass *>());
+	{
+		IMonoClass *pScript = pScriptInstance->Unbox<IMonoClass *>();
+		scriptId = pScript->GetScriptId();
+		m_scripts.insert(TScripts::value_type(pScript, scriptId));
+	}
 		
 	SAFE_RELEASE(pArgs);
 	
-	return m_scripts.back()->GetScriptId();
+	return scriptId;
 }
 
 void CMonoScriptSystem::RemoveScriptInstance(int id)
@@ -402,16 +405,15 @@ void CMonoScriptSystem::RemoveScriptInstance(int id)
 
 	for(TScripts::iterator it=m_scripts.begin(); it != m_scripts.end(); ++it)
 	{
-		if((*it)->GetScriptId()==id)
+		if((*it).second==id)
 		{
 			IMonoArray *pArgs = CreateMonoArray(2);
 			pArgs->Insert(id);
-			pArgs->Insert((*it)->GetName());
+			pArgs->Insert((*it).first->GetName());
 
 			m_pScriptCompiler->CallMethod("RemoveInstance", pArgs);
 			SAFE_RELEASE(pArgs);
 
-			SAFE_DELETE((*it));
 			m_scripts.erase(it);
 
 			break;
@@ -426,8 +428,8 @@ IMonoClass *CMonoScriptSystem::GetScriptById(int id)
 
 	for(TScripts::iterator it=m_scripts.begin(); it != m_scripts.end(); ++it)
 	{
-		if((*it)->GetScriptId()==id)
-			return (*it);
+		if((*it).second==id)
+			return (*it).first;
 	}
 
 	return NULL;

@@ -46,7 +46,7 @@ class CMonoScriptSystem : public IMonoScriptSystem, public IFileChangeListener
 	
 	CRYGENERATE_SINGLETONCLASS(CMonoScriptSystem, "CryMono", 0xc37b8ad5d62f47de, 0xa8debe525ff0fc8a)
 
-	typedef std::vector<IMonoClass *> TScripts;
+	typedef std::map<IMonoClass *, int> TScripts;
 	typedef std::map<string, IMonoMethodBinding> TMethodBindings;
 
 public:
