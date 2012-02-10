@@ -646,7 +646,6 @@ namespace CryEngine
 		{
 			Type = _type;
 			ScriptType = type;
-			ScriptInstances = new List<CryScriptInstance>();
 			className = Type.Name;
 		}
 
@@ -659,7 +658,7 @@ namespace CryEngine
 		/// <summary>
 		/// Stores all instances of this class.
 		/// </summary>
-		public List<CryScriptInstance> ScriptInstances { get; private set; }
+		public List<CryScriptInstance> ScriptInstances { get; internal set; }
 
 		#region Operators
 		public static bool operator ==(CryScript lScript, CryScript rScript)

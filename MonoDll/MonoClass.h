@@ -24,10 +24,12 @@ public:
 	// No instance provided, can only be used to invoke / get static members. Instantiation is possible using the Instantiate method.
 	CMonoClass(MonoClass *pClass) : m_pClass(pClass), m_pInstance(NULL) {}
 	// Set up using an existing instance.
-	CMonoClass(MonoClass *pClass, MonoObject *pInstance) : m_pClass(pClass), m_pInstance((mono::object)pInstance) { m_instanceHandle = mono_gchandle_new((MonoObject *)m_pInstance, false); }
+	CMonoClass(MonoClass *pClass, mono::object instance) : m_pClass(pClass), m_pInstance(instance) { m_instanceHandle = mono_gchandle_new((MonoObject *)m_pInstance, false); }
 	~CMonoClass();
 
 	// IMonoClass
+	//virtual void Release() { delete this; }
+
 	virtual const char *GetName() override { return mono_class_get_name(m_pClass); }
 	virtual int GetScriptId() override;
 
@@ -41,6 +43,8 @@ public:
 	virtual void SetField(const char *fieldName, IMonoObject *pNewValue) override;
 	// ~IMonoClass
 
+	void OnReload(MonoClass *pNewClass, mono::object pNewInstance);
+
 	MonoClass *GetMonoClass() { return m_pClass; }
 
 private:
@@ -51,6 +55,7 @@ private:
 	MonoClass *m_pClass;
 
 	int m_instanceHandle;
+	int m_scriptId;
 };
 
 #endif //__MONO_CLASS_H__

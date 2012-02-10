@@ -54,6 +54,17 @@ void CMonoClass::Instantiate(IMonoArray *pConstructorParams)
 		CallMethod(".ctor(string)", pConstructorParams);
 	else
 		mono_runtime_object_init((MonoObject *)m_pInstance);
+
+	if(IMonoObject *pScriptId = GetProperty("ScriptId"))
+		m_scriptId = pScriptId->Unbox<int>();
+}
+
+void CMonoClass::OnReload(MonoClass *pNewClass, mono::object pNewInstance)
+{
+	m_pClass = pNewClass;
+	m_pInstance = pNewInstance;
+
+	m_instanceHandle = mono_gchandle_new((MonoObject *)m_pInstance, false);
 }
 
 IMonoObject *CMonoClass::CallMethod(const char *methodName, IMonoArray *params, bool _static)
@@ -105,7 +116,7 @@ MonoMethod *CMonoClass::GetMethod(const char *methodName, bool bStatic)
 		MonoClass *pClass = m_pClass;
 
 		while (pClass != NULL && pMethod == NULL) 
-		{ 
+		{
 			pMethod = mono_method_desc_search_in_class(pMethodDesc, pClass); 
 			if (!pMethod) 
 				pClass = mono_class_get_parent(pClass);

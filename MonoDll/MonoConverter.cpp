@@ -40,9 +40,9 @@ IMonoObject *CMonoConverter::ToObject(mono::object obj)
 
 IMonoClass *CMonoConverter::ToClass(IMonoObject *pObject)
 {
-	MonoObject *pMonoObject = (MonoObject *)pObject->GetMonoObject();
+	mono::object pMonoObject = pObject->GetMonoObject();
 
-	MonoClass *pClass = mono_object_get_class(pMonoObject);
+	MonoClass *pClass = mono_object_get_class((MonoObject *)pMonoObject);
 	if(pClass && mono_class_get_name(pClass))
 		return new CMonoClass(pClass, pMonoObject);
 

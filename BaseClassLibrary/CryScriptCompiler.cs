@@ -10,6 +10,9 @@ using CryEngine.Extensions;
 using System.ComponentModel;
 using System.Threading.Tasks;
 
+using System.Xml;
+using System.Xml.Linq;
+
 namespace CryEngine
 {
 	/// <summary>
@@ -27,7 +30,7 @@ namespace CryEngine
 			m_flowNodes = new List<StoredNode>();
 			referencedAssemblies = new List<string>();
 
-			m_numInstances = 0;
+			m_nextScriptId = 0;
 		}
 
 		public void Initialize()
@@ -94,12 +97,13 @@ namespace CryEngine
 			if (!script.Type.Implements(typeof(CryScriptInstance)))
 				return null;
 
+			m_nextScriptId++;
 
-			m_numInstances++;
-			//ScriptId
+			if (script.ScriptInstances == null)
+				script.ScriptInstances = new List<CryScriptInstance>();
 
 			script.ScriptInstances.Add(Activator.CreateInstance(script.Type, constructorParams) as CryScriptInstance);
-			script.ScriptInstances.Last().ScriptId = m_numInstances;
+			script.ScriptInstances.Last().ScriptId = m_nextScriptId;
 
 			m_compiledScripts[index] = script;
 
@@ -115,14 +119,19 @@ namespace CryEngine
 
 			CryScript script = m_compiledScripts[index];
 
-			int instanceIndex = script.ScriptInstances.FindIndex(x => x.ScriptId == scriptId);
-			script.ScriptInstances.RemoveAt(instanceIndex);
+			if (script.ScriptInstances != null)
+			{
+				int instanceIndex = script.ScriptInstances.FindIndex(x => x.ScriptId == scriptId);
+				if (instanceIndex == -1)
+				{
+					Console.LogAlways("Failed to remove script of type {0} with id {1}; instance was not found.", scriptName, scriptId);
+					return;
+				}
 
-			m_compiledScripts[index] = script;
+				script.ScriptInstances.RemoveAt(instanceIndex);
 
-			// Allow re-use of Id's.
-			if (m_numInstances == scriptId)
-				m_numInstances--;
+				m_compiledScripts[index] = script;
+			}
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
@@ -154,60 +163,130 @@ namespace CryEngine
 			return null;
 		}
 
-		public object[] GetScriptData()
+		public void DumpScriptData()
 		{
-			List<object> storedScripts = new List<object>();
+			var xmlSettings = new XmlWriterSettings();
+			xmlSettings.Indent = true;
 
-			foreach (var script in m_compiledScripts)
+			using (XmlWriter writer = XmlWriter.Create(Path.Combine(PathUtils.GetRootFolder(), "Temp", "MonoScriptData.xml"), xmlSettings))
 			{
-				if (script.ScriptInstances != null)
+				writer.WriteStartDocument();
+				writer.WriteStartElement("Types");
+
+				foreach (var script in m_compiledScripts)
 				{
-					foreach (var scriptInstance in script.ScriptInstances)
+					if(script.ScriptInstances!=null)
 					{
-						List<object> fields = new List<object>();
+						writer.WriteStartElement("Type");
+						writer.WriteAttributeString("Name", script.className);
 
-						Type type = scriptInstance.GetType();
-
-						while (type != null)
+						foreach (var scriptInstance in script.ScriptInstances)
 						{
-							foreach (var fieldInfo in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
-								fields.Add(new MonoScriptFieldData(fieldInfo.Name, fieldInfo.GetValue(scriptInstance)));
+							Type type = scriptInstance.GetType();
 
-							type = type.BaseType;
+							writer.WriteStartElement("Instance");
+
+							// Just a tiiiiiny bit hardcoded.
+							string scriptField = "<ScriptId>k__BackingField";
+							int scriptId = Convert.ToInt32(type.GetProperty("ScriptId").GetValue(scriptInstance, null));
+							writer.WriteAttributeString("Id", scriptId.ToString());
+							
+							while (type != null)
+							{
+								foreach (var fieldInfo in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
+								{
+									object value = fieldInfo.GetValue(scriptInstance);
+									string fieldName = fieldInfo.Name;
+
+									if (value != null && !fieldName.Equals(scriptField))
+									{
+										if (fieldName.Contains("k__BackingField"))
+										{
+											writer.WriteStartElement("Property");
+
+											fieldName = fieldName.Replace("<", "").Replace(">", "").Replace("k__BackingField", "");
+										}
+										else
+											writer.WriteStartElement("Field");
+
+										writer.WriteAttributeString("Name", fieldName);
+										writer.WriteAttributeString("Type", fieldInfo.FieldType.Name);
+										writer.WriteAttributeString("Value", fieldInfo.GetValue(scriptInstance).ToString());
+										writer.WriteEndElement();
+									}
+								}
+
+								type = type.BaseType;
+							}
+
+							writer.WriteEndElement();
 						}
 
-						storedScripts.Add(new MonoScriptState(scriptInstance.GetType().Name, fields.ToArray()));
+						writer.WriteEndElement();
 					}
 				}
-			}
 
-			return storedScripts.ToArray();
+				writer.WriteEndElement();
+				writer.WriteEndDocument();
+			}
 		}
 
-		public void SetScriptData(object[] scriptStates)
+		public object StringToValue(string type, string value)
 		{
-			Console.LogAlways("SetScriptData");
+			switch (type)
+			{
+				case "Boolean":
+					return Convert.ToBoolean(value);
+				case "UInt32":
+					return Convert.ToUInt32(value);
+				case "Int32":
+					return Convert.ToInt32(value);
+			}
 
-			if (scriptStates==null)
-				Console.LogAlways("oh noes.");
-			
-			foreach (MonoScriptState scriptState in scriptStates)
-			{	
-				Console.LogAlways(scriptState.typeName);
-				/*
-				CryScript script = m_compiledScripts.Where(Script => Script.className.Equals(scriptState.typeName)).FirstOrDefault();
-				if (script != null && script != default(CryScript))
+			return null;
+		}
+
+		public void TrySetScriptData()
+		{
+			string filePath = Path.Combine(PathUtils.GetRootFolder(), "Temp", "MonoScriptData.xml");
+			if (!File.Exists(filePath))
+			{
+				Console.LogAlways("Failed to retrieve serialized MonoScriptData");
+				return;
+			}
+
+			XDocument scriptData = XDocument.Load(filePath);
+			foreach(var type in scriptData.Descendants("Type"))
+			{
+				CryScript script = m_compiledScripts.Where(Script => Script.className.Equals(type.Attribute("Name").Value)).FirstOrDefault();
+				if (script != default(CryScript))
 				{
-					// Can see this causing issues with complex constructors :v
-					script.ScriptInstances.Add(Activator.CreateInstance(script.Type) as CryScriptInstance);
-
-					foreach (MonoScriptFieldData field in scriptState.fields)
+					foreach (var instance in type.Elements("Instance"))
 					{
-						FieldInfo fieldInfo = script.GetType().GetField(field.fieldName);
-						if(fieldInfo!=null)
-							fieldInfo.SetValue(script.ScriptInstances.Last(), field.value);
+						if (script.ScriptInstances != null)
+						{
+							script.ScriptInstances.Add(Activator.CreateInstance(script.Type) as CryScriptInstance);
+
+							int scriptId = Convert.ToInt32(instance.Attribute("Id").Value);
+							if (m_nextScriptId < scriptId)
+								m_nextScriptId = scriptId;
+
+							foreach (var field in instance.Elements("Field"))
+							{
+								FieldInfo fieldInfo = script.GetType().GetField(field.Attribute("Name").Value);
+								if (fieldInfo != null)
+									fieldInfo.SetValue(script.ScriptInstances.Last(), StringToValue(field.Attribute("Type").Value, field.Attribute("Value").Value));
+							}
+
+							foreach (var property in instance.Elements("Property"))
+							{
+								PropertyInfo propertyInfo = script.GetType().GetProperty(property.Attribute("Name").Value);
+								if (propertyInfo != null)
+									propertyInfo.SetValue(script.ScriptInstances.Last(), StringToValue(property.Attribute("Type").Value, property.Attribute("Value").Value), null);
+							}
+						}
 					}
-				}*/
+				}
 			}
 		}
 
@@ -232,41 +311,40 @@ namespace CryEngine
 
 			Parallel.ForEach(m_compiledScripts, script =>
 			{
-				script.ScriptInstances.Where(i => i.ReceiveUpdates).ToList().ForEach(i => i.OnUpdate());
+				if(script.ScriptInstances!=null)
+					script.ScriptInstances.Where(i => i.ReceiveUpdates).ToList().ForEach(i => i.OnUpdate());
 			});
 		}
 
 		List<Scriptbind> scriptBinds;
 
 		List<CryScript> m_compiledScripts;
-		int m_numInstances;
+		int m_nextScriptId;
 	}
 
-	[Serializable]
-	public struct MonoScriptFieldData
+	public struct ScriptState
 	{
-		public MonoScriptFieldData(string name, object val)
-			: this()
-		{
-			fieldName = name;
-			value = val;
-		}
-
-		public string fieldName;
-		public object value;
-	}
-
-	[Serializable]
-	public struct MonoScriptState
-	{
-		public MonoScriptState(string TypeName, object[] Fields)
+		public ScriptState(string TypeName, FieldData[] Fields)
 			: this()
 		{
 			fields = Fields;
 			typeName = TypeName;
 		}
 
-		public object[] fields;
+		public FieldData[] fields;
 		public string typeName;
+
+		public struct FieldData
+		{
+			public FieldData(string name, object val)
+				: this()
+			{
+				fieldName = name;
+				value = val;
+			}
+
+			public string fieldName;
+			public object value;
+		}
 	}
 }
