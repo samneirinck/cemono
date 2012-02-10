@@ -127,6 +127,9 @@ EntityId CEntityManager::SpawnEntity(EntitySpawnParams &params, bool bAutoInit)
 
 bool CEntityManager::RegisterEntityClass(EntityRegisterParams params, mono::array Properties)
 {
+	if(gEnv->pEntitySystem->GetClassRegistry()->FindClass(ToCryString(params.Name)))
+		return false;
+
 	CMonoArray *propertiesArray = new CMonoArray(Properties);
 
 	int numProperties = propertiesArray->GetSize();
