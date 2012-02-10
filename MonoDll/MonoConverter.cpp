@@ -35,7 +35,7 @@ IMonoObject *CMonoConverter::ToManagedType(IMonoClass *pTo, void *object)
 
 IMonoObject *CMonoConverter::ToObject(mono::object obj)
 {
-	return new CMonoObject((MonoObject *)obj);
+	return new CMonoObject(obj);
 }
 
 IMonoClass *CMonoConverter::ToClass(IMonoObject *pObject)

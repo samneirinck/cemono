@@ -21,7 +21,7 @@
 class CMonoObject : public IMonoObject
 {
 public:
-	CMonoObject(MonoObject *pObject) { m_pObject = (mono::object)pObject; m_objectHandle = mono_gchandle_new(pObject, false); }
+	CMonoObject(mono::object pObject) { m_pObject = pObject; m_objectHandle = mono_gchandle_new((MonoObject *)pObject, false); }
 	virtual ~CMonoObject() { mono_gchandle_free(m_objectHandle); }
 
 	MonoClass *GetMonoClass() { return mono_object_get_class((MonoObject *)m_pObject); }
