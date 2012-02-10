@@ -1,5 +1,4 @@
 ﻿using System.Runtime.InteropServices;
-using System;
 
 namespace CryEngine
 {
@@ -7,7 +6,7 @@ namespace CryEngine
 	/// The Vec3 struct is used for all 3D coordinates within the engine.
 	/// TODO: Implement a Quat class for rotation in place of angles.
 	/// </summary>
-    [Serializable]
+    [System.Serializable]
     [StructLayout(LayoutKind.Sequential)]
     public struct Vec3
     {
@@ -56,7 +55,7 @@ namespace CryEngine
         {
             get
             {
-                return (float)Math.Sqrt((X * X) + (Y * Y) + (Z * Z));
+                return (float)System.Math.Sqrt((X * X) + (Y * Y) + (Z * Z));
             }
         }
 
@@ -145,7 +144,7 @@ namespace CryEngine
         #region Overrides
         public override string ToString()
         {
-            return String.Format("{0},{1},{2}", X.ToString(), Y.ToString(), Z.ToString());
+            return string.Format("{0},{1},{2}", X.ToString(), Y.ToString(), Z.ToString());
         }
 
         public override bool Equals(object obj)
