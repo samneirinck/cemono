@@ -259,6 +259,8 @@ namespace CryEngine
 			foreach(var type in scriptData.Descendants("Type"))
 			{
 				CryScript script = compiledScripts.Where(Script => Script.className.Equals(type.Attribute("Name").Value)).FirstOrDefault();
+				int scriptIndex = compiledScripts.IndexOf(script);
+
 				if (script != default(CryScript))
 				{
 					foreach (var instance in type.Elements("Instance"))
@@ -290,6 +292,8 @@ namespace CryEngine
 						}
 					}
 				}
+
+				compiledScripts[scriptIndex] = script;
 			}
 		}
 
