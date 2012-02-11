@@ -12,6 +12,14 @@
 #include <MonoCommon.h>
 #include <IMonoScriptBind.h>
 
+struct MonoCamera
+{
+	Vec3 ViewDir;
+	Vec3 Position;
+
+	float FieldOfView;
+};
+
 class CScriptBind_Renderer : public IMonoScriptBind
 {
 public:
@@ -21,6 +29,11 @@ public:
 	// IMonoScriptBind
 	virtual const char *GetClassName() { return "Renderer"; }
 	// ~IMonoScriptBind
+
+protected:
+
+	MonoMethod(MonoCamera, GetViewCamera);
+	MonoMethod(void, SetViewCamera, MonoCamera);
 };
 
 #endif //__SCRIPTBIND_RENDERER__
