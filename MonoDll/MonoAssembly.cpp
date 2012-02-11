@@ -27,6 +27,14 @@ CMonoAssembly::CMonoAssembly(const char *assemblyPath)
 	}
 }
 
+CMonoAssembly::~CMonoAssembly()
+{
+	m_assemblyPath = 0;
+
+	m_pAssembly = 0;
+	m_pImage = 0;
+}
+
 IMonoClass *CMonoAssembly::InstantiateClass(const char *nameSpace, const char *className, IMonoArray *pConstructorArguments)
 {
 	// Get class

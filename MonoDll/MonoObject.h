@@ -22,15 +22,17 @@ class CMonoObject : public IMonoObject
 {
 public:
 	CMonoObject(mono::object pObject) { m_pObject = pObject; m_objectHandle = mono_gchandle_new((MonoObject *)pObject, false); }
-	virtual ~CMonoObject() { mono_gchandle_free(m_objectHandle); }
+	virtual ~CMonoObject() { mono_gchandle_free(m_objectHandle); m_pObject = 0; }
 
 	MonoClass *GetMonoClass() { return mono_object_get_class((MonoObject *)m_pObject); }
 
 	// IMonoObject
-	virtual MonoAnyType GetType();
-	virtual MonoAnyValue GetAnyValue();
+	virtual void Release() override { delete this; }
 
-	virtual mono::object GetMonoObject() { return m_pObject; }
+	virtual MonoAnyType GetType() override;
+	virtual MonoAnyValue GetAnyValue() override;
+
+	virtual mono::object GetMonoObject() override { return m_pObject; }
 
 private:
 	virtual void *UnboxObject() override { return mono_object_unbox((MonoObject *)m_pObject); }

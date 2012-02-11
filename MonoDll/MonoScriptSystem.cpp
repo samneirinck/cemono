@@ -96,8 +96,8 @@ CMonoScriptSystem::~CMonoScriptSystem()
 	SAFE_DELETE(m_pConverter);
 	SAFE_DELETE(m_pCallbackHandler);
 
-	SAFE_DELETE(m_pScriptCompiler);
-	SAFE_DELETE(m_pLibraryAssembly);
+	SAFE_RELEASE(m_pScriptCompiler);
+	SAFE_RELEASE(m_pLibraryAssembly);
 
 	m_localScriptBinds.clear();
 
@@ -220,7 +220,7 @@ bool CMonoScriptSystem::Reload()
 					static_cast<CMonoClass *>(script.first)->OnReload(pMonoClass, monoObject);
 			}
 
-			SAFE_DELETE(pParams);
+			SAFE_RELEASE(pParams);
 		}
 	}
 
@@ -291,7 +291,7 @@ bool CMonoScriptSystem::InitializeSystems()
 	pArray->Insert(gEnv->IsEditor());
 	pArray->Insert(gEnv->IsDedicated());
 	pClass->CallMethod("InitializeNetworkStatics", pArray, true);
-	SAFE_DELETE(pClass);
+	SAFE_RELEASE(pClass);
 	SAFE_RELEASE(pArray);
 
 	return true;
@@ -319,7 +319,7 @@ void CMonoScriptSystem::OnFileChange(const char *sFilename)
 
 		Reload();
 
-		SAFE_DELETE(pArray);
+		SAFE_RELEASE(pArray);
 	}
 }
 
@@ -364,7 +364,7 @@ int CMonoScriptSystem::InstantiateScript(EMonoScriptType scriptType, const char 
 		pArray->Insert(gEnv->bServer);
 		pClass->CallMethod("InitializeNetwork", pArray, true);
 		SAFE_RELEASE(pArray);
-		SAFE_DELETE(pClass);
+		SAFE_RELEASE(pClass);
 	}
 	
 	/*for(TScripts::iterator it=m_scripts.begin(); it != m_scripts.end(); ++it)

@@ -7,14 +7,19 @@ CMonoArray::CMonoArray(int size)
 	: curIndex(0)
 {
 	if(size<1)
+	{
 		gEnv->pLog->LogError("Attempted to create array with invalid size %i", size);
-	//	delete this;
+		delete this;
+	}
 
 	m_pArray = (mono::array)mono_array_new(mono_domain_get(), mono_get_object_class(), size);
 }
 
 CMonoArray::~CMonoArray()
 {
+	curIndex = 0;
+	m_pArray = 0;
+
 	mono_gchandle_free(m_arrayHandle); 
 }
 

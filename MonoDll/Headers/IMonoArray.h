@@ -30,6 +30,10 @@ struct MonoAnyValue;
 struct IMonoArray : public CMonoSerializable
 {
 public:
+	/// <summary>
+	/// Deletes the array and everything contained within it.
+	/// Note: This also deletes the C# array.
+	/// </summary>
 	virtual void Release() = 0;
 
 	/// <summary>

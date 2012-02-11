@@ -19,9 +19,11 @@ class CMonoAssembly : public IMonoAssembly
 {
 public:
 	CMonoAssembly(const char *assemblyPath);
-	virtual ~CMonoAssembly() {}
+	virtual ~CMonoAssembly();
 
 	// IMonoAssembly
+	virtual void Release() override { delete this; }
+
 	virtual IMonoClass *InstantiateClass(const char *nameSpace, const char *className, IMonoArray *pConstructorArguments = NULL) override;
 	virtual IMonoClass *GetCustomClass(const char *className, const char *nameSpace = "CryEngine") override;
 	// ~IMonoAssembly

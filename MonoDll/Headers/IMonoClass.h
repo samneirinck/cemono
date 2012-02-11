@@ -25,6 +25,11 @@ struct IMonoClass
 {
 public:
 	/// <summary>
+	/// Deletes the class, its instance and used objects.
+	/// </summary>
+	virtual void Release() = 0;
+
+	/// <summary>
 	/// Gets the class name.
 	/// </summary>
 	virtual const char *GetName() = 0;
@@ -78,9 +83,9 @@ public:
 			{
 				result = pResult->Unbox<TResult>();
 
-				SAFE_DELETE(pResult);
+				SAFE_RELEASE(pResult);
 				if(releaseArgs)
-					SAFE_DELETE(pArgs);
+					SAFE_RELEASE(pArgs);
 			}
 		}
 
@@ -93,7 +98,7 @@ public:
 		if(IMonoClass *pClass = gEnv->pMonoScriptSystem->GetScriptById(scriptId))
 			pClass->CallMethod(funcName, pArgs);
 
-		SAFE_DELETE(pArgs);
+		SAFE_RELEASE(pArgs);
 	}
 };
 

@@ -26,7 +26,8 @@ CMonoClass::~CMonoClass()
 
 	static_cast<CMonoScriptSystem *>(gEnv->pMonoScriptSystem)->RemoveScriptInstance(GetScriptId());
 
-	m_pClass = NULL;
+	m_pInstance = 0;
+	m_pClass = 0;
 }
 
 int CMonoClass::GetScriptId()

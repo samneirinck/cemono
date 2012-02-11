@@ -28,7 +28,7 @@ public:
 	~CMonoClass();
 
 	// IMonoClass
-	//virtual void Release() { delete this; }
+	virtual void Release() override { delete this; }
 
 	virtual const char *GetName() override { return mono_class_get_name(m_pClass); }
 	virtual int GetScriptId() override;

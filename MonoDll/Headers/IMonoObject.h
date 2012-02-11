@@ -20,6 +20,11 @@ struct IMonoObject : public CMonoSerializable
 {
 public:
 	/// <summary>
+	/// Deletes the object. Warning: Also deleted in C#!
+	/// </summary>
+	virtual void Release() = 0;
+
+	/// <summary>
 	/// Gets the unboxed object and casts it to the requested type. (class T)
 	/// </summary>
 	template <class T>

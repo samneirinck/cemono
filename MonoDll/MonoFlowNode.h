@@ -176,7 +176,7 @@ ILINE SInputPortConfig MonoInputPortConfig(mono::string name, mono::object defau
 	IMonoObject *pObject = *defaultVal;
 	SInputPortConfig config = InputPortConfig<T>(ToCryString(name), pObject->Unbox<T>(), ToCryString(humanName), _HELP(ToCryString(desc)), ToCryString(UIConfig));
 
-	SAFE_DELETE(pObject);
+	SAFE_RELEASE(pObject);
 	return config;
 }
 

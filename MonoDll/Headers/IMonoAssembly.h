@@ -19,6 +19,11 @@ struct IMonoAssembly
 {
 public:
 	/// <summary>
+	/// Deletes the assembly and cleans up used objects.
+	/// </summary>
+	virtual void Release() = 0;
+
+	/// <summary>
 	/// Instantiates a class within the assembly.
 	/// </summary>
 	/// <example>

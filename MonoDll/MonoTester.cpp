@@ -46,7 +46,7 @@ void CMonoTester::TestStaticMethods(IMonoAssembly *pCryBrary)
 	pTesterStatic->CallMethod("StaticMethodWithParameters", pTestParams, true);
 	SAFE_RELEASE(pTestParams);
 
-	SAFE_DELETE(pTesterStatic);
+	SAFE_RELEASE(pTesterStatic);
 }
 
 void CMonoTester::TestInstantiatedMethods(IMonoAssembly *pCryBrary)
@@ -59,7 +59,7 @@ void CMonoTester::TestInstantiatedMethods(IMonoAssembly *pCryBrary)
 		return;
 	}
 
-	SAFE_DELETE(pTesterClassStandardConstructor);
+	SAFE_RELEASE(pTesterClassStandardConstructor);
 
 	IMonoArray *pTestParams = GetTestParameters();
 	IMonoClass *pTesterClassComplexConstructor = pCryBrary->InstantiateClass("CryEngine.Utils", "Tester", pTestParams);
@@ -80,7 +80,7 @@ void CMonoTester::TestInstantiatedMethods(IMonoAssembly *pCryBrary)
 
 	pTesterClassComplexConstructor->CallMethod("MethodWithParameters", pTestParams);
 
-	SAFE_DELETE(pTesterClassComplexConstructor);
+	SAFE_RELEASE(pTesterClassComplexConstructor);
 	SAFE_RELEASE(pTestParams);
 }
 
