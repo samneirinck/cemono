@@ -35,7 +35,7 @@ void CMonoEntity::OnSpawn(EntityId id)
 	ADD_EVENTLISTENER(ENTITY_EVENT_LEAVEAREA);
 #undef ADD_EVENTLISTENER
 
-	CallMonoScript(m_scriptId, "InternalSpawn", m_entityId);
+	CallMonoScript<void>(m_scriptId, "InternalSpawn", m_entityId);
 }
 
 void CMonoEntity::OnEntityEvent(IEntity *pEntity,SEntityEvent &event)
@@ -44,12 +44,12 @@ void CMonoEntity::OnEntityEvent(IEntity *pEntity,SEntityEvent &event)
 	{
 	case ENTITY_EVENT_LEVEL_LOADED:
 		{
-			CallMonoScript(m_scriptId, "OnInit");
+			CallMonoScript<void>(m_scriptId, "OnInit");
 		}
 		break;
 	case ENTITY_EVENT_RESET:
 		{
-			CallMonoScript(m_scriptId, "OnReset", event.nParam[0]==1);
+			CallMonoScript<void>(m_scriptId, "OnReset", event.nParam[0]==1);
 		}
 		break;
 	case ENTITY_EVENT_COLLISION:
@@ -62,33 +62,33 @@ void CMonoEntity::OnEntityEvent(IEntity *pEntity,SEntityEvent &event)
 				Vec3 dir = pCollision->vloc[0].GetNormalizedSafe();
 
 				// uint targetId, Vec3 hitPt, Vec3 dir, short materialId, Vec3 contactNormal);
-				CallMonoScript(m_scriptId, "OnCollision", pTarget->GetId(), pCollision->pt, dir, pCollision->idmat[0], pCollision->n);
+				CallMonoScript<void>(m_scriptId, "OnCollision", pTarget->GetId(), pCollision->pt, dir, pCollision->idmat[0], pCollision->n);
 			}
 		}
 		break;
 	case ENTITY_EVENT_ONHIT:
 		{
-			CallMonoScript(m_scriptId, "OnHit");
+			CallMonoScript<void>(m_scriptId, "OnHit");
 		}
 		break;
 	case ENTITY_EVENT_START_GAME:
 		{
-			CallMonoScript(m_scriptId, "OnStartGame");
+			CallMonoScript<void>(m_scriptId, "OnStartGame");
 		}
 		break;
 	case ENTITY_EVENT_START_LEVEL:
 		{
-			CallMonoScript(m_scriptId, "OnStartLevel");
+			CallMonoScript<void>(m_scriptId, "OnStartLevel");
 		}
 		break;
 	case ENTITY_EVENT_ENTERAREA:
 		{
-			CallMonoScript(m_scriptId, "OnEnterArea", (EntityId)event.nParam[0], (EntityId)event.nParam[2]);
+			CallMonoScript<void>(m_scriptId, "OnEnterArea", (EntityId)event.nParam[0], (EntityId)event.nParam[2]);
 		}
 		break;
 	case EEntityEvent::ENTITY_EVENT_LEAVEAREA:
 		{
-			CallMonoScript(m_scriptId, "OnLeaveArea", (EntityId)event.nParam[0], (EntityId)event.nParam[2]);
+			CallMonoScript<void>(m_scriptId, "OnLeaveArea", (EntityId)event.nParam[0], (EntityId)event.nParam[2]);
 		}
 		break;
 	}

@@ -5,6 +5,7 @@
 
 #include <IMonoAssembly.h>
 #include <IMonoClass.h>
+#include <IMonoArray.h> 
 
 TActionHandler<CMonoInput>	CMonoInput::s_actionHandler;
 

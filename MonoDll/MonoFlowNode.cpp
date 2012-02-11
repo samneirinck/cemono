@@ -86,37 +86,37 @@ void CMonoFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 					{
 					case eFDT_Void:
 						{
-							CallMonoScript(m_scriptId, "OnPortActivated", i);
+							CallMonoScript<void>(m_scriptId, "OnPortActivated", i);
 						}
 						break;
 					case eFDT_Int:
 						{
-							CallMonoScript(m_scriptId, "OnPortActivated", i, GetPortInt(i));
+							CallMonoScript<void>(m_scriptId, "OnPortActivated", i, GetPortInt(i));
 						}
 						break;
 					case eFDT_Float:
 						{
-							CallMonoScript(m_scriptId, "OnPortActivated", i, GetPortFloat(i));
+							CallMonoScript<void>(m_scriptId, "OnPortActivated", i, GetPortFloat(i));
 						}
 						break;
 					case eFDT_EntityId:
 						{
-							CallMonoScript(m_scriptId, "OnPortActivated", i, GetPortEntityId(i));
+							CallMonoScript<void>(m_scriptId, "OnPortActivated", i, GetPortEntityId(i));
 						}
 						break;
 					case eFDT_Vec3:
 						{
-							CallMonoScript(m_scriptId, "OnPortActivated", i, GetPortVec3(i));
+							CallMonoScript<void>(m_scriptId, "OnPortActivated", i, GetPortVec3(i));
 						}
 						break;
 					case eFDT_String:
 						{
-							CallMonoScript(m_scriptId, "OnPortActivated", i, GetPortString(i));
+							CallMonoScript<void>(m_scriptId, "OnPortActivated", i, GetPortString(i));
 						}
 						break;
 					case eFDT_Bool:
 						{
-							CallMonoScript(m_scriptId, "OnPortActivated", i, GetPortBool(i));
+							CallMonoScript<void>(m_scriptId, "OnPortActivated", i, GetPortBool(i));
 						}
 						break;
 					default:
@@ -129,7 +129,7 @@ void CMonoFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 		break;
 	case eFE_Initialize:
 		{
-			CallMonoScript(m_scriptId, "OnInitialized");
+			CallMonoScript<void>(m_scriptId, "OnInitialized");
 		}
 		break;
 	case eFE_SetEntityId:
@@ -150,11 +150,7 @@ void CMonoFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 
 void CMonoFlowNode::GetConfiguration(SFlowNodeConfig &config)
 {
-	IMonoObject *pResult = CallMonoScript(m_scriptId, "GetNodeConfig");
-	if(!pResult)
-		return;
-
-	SMonoNodeConfig monoConfig = pResult->Unbox<SMonoNodeConfig>();
+	SMonoNodeConfig monoConfig = CallMonoScript<SMonoNodeConfig>(m_scriptId, "GetNodeConfig");
 
 	SNodeData *pNodeData = static_cast<CMonoScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager()->GetNodeDataById(m_scriptId);
 
@@ -163,6 +159,4 @@ void CMonoFlowNode::GetConfiguration(SFlowNodeConfig &config)
 	config.pOutputPorts = pNodeData->pOutputs;
 	config.sDescription = _HELP(ToCryString(monoConfig.description));
 	config.SetCategory(monoConfig.category);
-
-	SAFE_DELETE(pResult);
 }

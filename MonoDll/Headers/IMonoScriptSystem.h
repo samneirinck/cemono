@@ -11,14 +11,12 @@
 
 #include <MonoAnyValue.h>
 
-#include <IMonoArray.h>
-#include <IMonoClass.h>
-
 #include <CryExtension/ICryUnknown.h>
 #include <IEngineModule.h>
 
 struct IMonoMethodBinding;
 struct IMonoObject;
+struct IMonoClass;
 struct IMonoArray;
 
 struct IMonoAssembly;
@@ -125,114 +123,6 @@ struct IMonoScriptSystem : public IEngineModule
 	/// Entry point of the dll, used to set up CryMono.
 	/// </summary>
 	typedef void *(*TEntryFunction)(ISystem* pSystem);
-};
-
-static IMonoObject *CallMonoScript(int scriptId, const char *funcName)
-{
-	IMonoObject *pResult = NULL;
-	if(IMonoClass *pClass = gEnv->pMonoScriptSystem->GetScriptById(scriptId))
-		pResult = pClass->CallMethod(funcName);
-
-	return pResult;
-};
-template<typename P1> 
-static IMonoObject *CallMonoScript(int scriptId, const char *funcName, const P1 &p1)
-{
-	IMonoArray *pArray = gEnv->pMonoScriptSystem->GetConverter()->CreateArray(1);
-	pArray->Insert(p1);
-
-	IMonoObject *pResult = NULL;
-	if(IMonoClass *pClass = gEnv->pMonoScriptSystem->GetScriptById(scriptId))
-		pResult = pClass->CallMethod(funcName, pArray);
-		
-	SAFE_RELEASE(pArray);
-
-	return pResult;
-};
-template<typename P1, typename P2> 
-static IMonoObject *CallMonoScript(int scriptId, const char *funcName, const P1 &p1, const P2 &p2)
-{
-	IMonoArray *pArray = gEnv->pMonoScriptSystem->GetConverter()->CreateArray(2);
-	pArray->Insert(p1);
-	pArray->Insert(p2);
-
-	IMonoObject *pResult = NULL;
-	if(IMonoClass *pClass = gEnv->pMonoScriptSystem->GetScriptById(scriptId))
-		pResult = pClass->CallMethod(funcName, pArray);
-
-	SAFE_RELEASE(pArray);
-
-	return pResult;
-};
-template<typename P1, typename P2, typename P3> 
-static IMonoObject *CallMonoScript(int scriptId, const char *funcName, const P1 &p1, const P2 &p2, const P3 &p3)
-{
-	IMonoArray *pArray = gEnv->pMonoScriptSystem->GetConverter()->CreateArray(3);
-	pArray->Insert(p1);
-	pArray->Insert(p2);
-	pArray->Insert(p3);
-	
-	IMonoObject *pResult = NULL;
-	if(IMonoClass *pClass = gEnv->pMonoScriptSystem->GetScriptById(scriptId))
-		pResult = pClass->CallMethod(funcName, pArray);
-
-	SAFE_RELEASE(pArray);
-
-	return pResult;
-};
-template<typename P1, typename P2, typename P3, typename P4> 
-static IMonoObject *CallMonoScript(int scriptId, const char *funcName, const P1 &p1, const P2 &p2, const P3 &p3, const P4 &p4)
-{
-	IMonoArray *pArray = gEnv->pMonoScriptSystem->GetConverter()->CreateArray(4);
-	pArray->Insert(p1);
-	pArray->Insert(p2);
-	pArray->Insert(p3);
-	pArray->Insert(p4);
-	
-	IMonoObject *pResult = NULL;
-	if(IMonoClass *pClass = gEnv->pMonoScriptSystem->GetScriptById(scriptId))
-		pResult = pClass->CallMethod(funcName, pArray);
-
-	SAFE_RELEASE(pArray);
-
-	return pResult;
-};
-template<typename P1, typename P2, typename P3, typename P4, typename P5> 
-static IMonoObject *CallMonoScript(int scriptId, const char *funcName, const P1 &p1, const P2 &p2, const P3 &p3, const P4 &p4, const P5 &p5)
-{
-	IMonoArray *pArray = gEnv->pMonoScriptSystem->GetConverter()->CreateArray(5);
-	pArray->Insert(p1);
-	pArray->Insert(p2);
-	pArray->Insert(p3);
-	pArray->Insert(p4);
-	pArray->Insert(p5);
-	
-	IMonoObject *pResult = NULL;
-	if(IMonoClass *pClass = gEnv->pMonoScriptSystem->GetScriptById(scriptId))
-		pResult = pClass->CallMethod(funcName, pArray);
-
-	SAFE_RELEASE(pArray);
-
-	return pResult;
-};
-template<typename P1, typename P2, typename P3, typename P4, typename P5, typename P6> 
-static IMonoObject *CallMonoScript(int scriptId, const char *funcName, const P1 &p1, const P2 &p2, const P3 &p3, const P4 &p4, const P5 &p5, const P6 &p6)
-{
-	IMonoArray *pArray = gEnv->pMonoScriptSystem->GetConverter()->CreateArray(6);
-	pArray->Insert(p1);
-	pArray->Insert(p2);
-	pArray->Insert(p3);
-	pArray->Insert(p4);
-	pArray->Insert(p5);
-	pArray->Insert(p6);
-	
-	IMonoObject *pResult = NULL;
-	if(IMonoClass *pClass = gEnv->pMonoScriptSystem->GetScriptById(scriptId))
-		pResult = pClass->CallMethod(funcName, pArray);
-
-	SAFE_RELEASE(pArray);
-
-	return pResult;
 };
 
 typedef boost::shared_ptr<IMonoScriptSystem> IMonoPtr;

@@ -70,17 +70,11 @@ bool CEntityManager::OnRemove(IEntity *pEntity)
 	{
 		if((*it)->GetEntityId()==pEntity->GetId())
 		{
-			int scriptId = (*it)->GetScriptId();
-			if(IMonoObject *pResult = CallMonoScript(scriptId, "OnRemove"))
-			{
-				bool result = pResult->Unbox<bool>();
+			bool doRemove = CallMonoScript<bool>((*it)->GetScriptId(), "OnRemove");
 
-				SAFE_DELETE(pResult);
-				return result;
-			}
-	
 			m_monoEntities.erase(it);
-			break;
+			
+			return doRemove;
 		}
 	}
 

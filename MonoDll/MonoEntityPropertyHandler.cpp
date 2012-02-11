@@ -29,10 +29,10 @@ bool CMonoEntityPropertyHandler::GetPropertyInfo(int index, SPropertyInfo& info 
 void CMonoEntityPropertyHandler::SetProperty(IEntity *entity, int index, const char *value)
 {
 	IEntityPropertyHandler::SPropertyInfo propertyInfo = m_properties.at(index);
-	CallMonoScript(gEnv->pMonoScriptSystem->GetEntityManager()->GetScriptId(entity->GetId(), true), "SetPropertyValue", propertyInfo.name, propertyInfo.type, value);
+	CallMonoScript<void>(gEnv->pMonoScriptSystem->GetEntityManager()->GetScriptId(entity->GetId(), true), "SetPropertyValue", propertyInfo.name, propertyInfo.type, value);
 }
 
 const char *CMonoEntityPropertyHandler::GetProperty(IEntity *entity, int index) const
 {
-	return CallMonoScript(gEnv->pMonoScriptSystem->GetEntityManager()->GetScriptId(entity->GetId()), "GetPropertyValue", m_properties.at(index).name)->Unbox<const char *>();
+	return CallMonoScript<const char *>(gEnv->pMonoScriptSystem->GetEntityManager()->GetScriptId(entity->GetId()), "GetPropertyValue", m_properties.at(index).name);
 }

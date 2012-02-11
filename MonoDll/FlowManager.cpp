@@ -165,11 +165,7 @@ static const int maxPortCount = 20;
 SNodeData::SNodeData(CMonoFlowNode *pFlowNode)
 	: pNode(pFlowNode)
 {
-	IMonoObject *pResult = CallMonoScript(pNode->GetScriptId(), "GetPortConfig");
-	if(!pResult)
-		return;
-
-	SMonoNodePortConfig monoConfig = pResult->Unbox<SMonoNodePortConfig>();
+	SMonoNodePortConfig monoConfig = CallMonoScript<SMonoNodePortConfig>(pNode->GetScriptId(), "GetPortConfig");
 
 	SInputPortConfig nullConfig = {0};
 	SOutputPortConfig nullOutputConfig = {0};
@@ -204,6 +200,4 @@ SNodeData::SNodeData(CMonoFlowNode *pFlowNode)
 		if(i >= pOutputPorts->GetSize())
 			pOutputs[i] = nullOutputConfig;
 	}
-
-	SAFE_DELETE(pResult);
 }

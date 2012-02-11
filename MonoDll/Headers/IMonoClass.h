@@ -9,15 +9,11 @@
 #ifndef __I_MONO_CLASS__
 #define __I_MONO_CLASS__
 
-struct IMonoObject;
-struct IMonoArray;
+#include <IMonoScriptSystem.h>
 
-/*#define GetSafeValue(object) \
-	if(!object) \
-		return T(); \
-	T result = object->Unbox<T>(); \
-	SAFE_DELETE(object); \
-	return result; \*/
+#include <IMonoArray.h>
+
+struct IMonoObject;
 
 /// <summary>
 /// Reference to a Mono class, used to call static methods and etc.
@@ -70,6 +66,35 @@ public:
 	/// Sets a field within the class.
 	/// </summary>
 	virtual void SetField(const char *fieldName, IMonoObject *pNewValue) = 0;
+
+	template <typename TResult>
+	static TResult CallMethod(int scriptId, const char *funcName, IMonoArray *pArgs = NULL, bool releaseArgs = false)
+	{
+		TResult result;
+
+		if(IMonoClass *pClass = gEnv->pMonoScriptSystem->GetScriptById(scriptId))
+		{
+			if(IMonoObject *pResult = pClass->CallMethod(funcName, pArgs))
+			{
+				result = pResult->Unbox<TResult>();
+
+				SAFE_DELETE(pResult);
+				if(releaseArgs)
+					SAFE_DELETE(pArgs);
+			}
+		}
+
+		return result;
+	}
+
+	template <>
+	static void CallMethod(int scriptId, const char *funcName, IMonoArray *pArgs, bool releaseArgs)
+	{
+		if(IMonoClass *pClass = gEnv->pMonoScriptSystem->GetScriptById(scriptId))
+			pClass->CallMethod(funcName, pArgs);
+
+		SAFE_DELETE(pArgs);
+	}
 };
 
 #endif //__I_MONO_CLASS__

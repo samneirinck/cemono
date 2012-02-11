@@ -557,14 +557,7 @@ void CGameRules::OnHit(HitInfo &hitInfo)
 			}
 
 			if(ISurfaceType *pHitSurface = GetHitMaterial(hitInfo.material))
-			{
-				if(IMonoObject *pResult = CallMonoScript(m_monoScriptId, "GetDamageMult", pHitSurface->GetType()))
-				{
-					hitInfo.damage *= pResult->Unbox<float>();
-
-					SAFE_DELETE(pResult);
-				}
-			}
+				hitInfo.damage *= CallMonoScript<float>(m_monoScriptId, "GetDamageMult", pHitSurface->GetType());
 		}
 	}
 	else
@@ -972,7 +965,7 @@ IMPLEMENT_RMI(CGameRules, ClSetTeam)
 			m_pRadio->SetTeam(GetTeamName(params.teamId));
 	}
 
-	CallMonoScript(m_monoScriptId, "OnSetTeam", params.entityId, params.teamId);
+	CallMonoScript<void>(m_monoScriptId, "OnSetTeam", params.entityId, params.teamId);
 
 	return true;
 }
