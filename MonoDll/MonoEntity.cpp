@@ -86,7 +86,7 @@ void CMonoEntity::OnEntityEvent(IEntity *pEntity,SEntityEvent &event)
 			CallMonoScript<void>(m_scriptId, "OnEnterArea", (EntityId)event.nParam[0], (EntityId)event.nParam[2]);
 		}
 		break;
-	case EEntityEvent::ENTITY_EVENT_LEAVEAREA:
+	case ENTITY_EVENT_LEAVEAREA:
 		{
 			CallMonoScript<void>(m_scriptId, "OnLeaveArea", (EntityId)event.nParam[0], (EntityId)event.nParam[2]);
 		}
