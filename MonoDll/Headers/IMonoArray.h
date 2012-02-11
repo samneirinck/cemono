@@ -74,17 +74,6 @@ public:
 	virtual void Insert(IMonoArray *pArray) = 0;
 
 	/// <summary>
-	/// Inserts an vector containing a specific type into the array.
-	/// Does not support strings / mono strings at the moment.
-	/// </summary>
-	template <typename T>
-	void Insert(std::vector<T> vector)
-	{
-		for(std::vector<T>::iterator it = vector.begin(); it != vector.end(); ++it)
-			Insert(*it);
-	}
-
-	/// <summary>
 	/// Inserts a mono string into the array.
 	/// </summary>
 	virtual void InsertString(mono::string string) = 0;
