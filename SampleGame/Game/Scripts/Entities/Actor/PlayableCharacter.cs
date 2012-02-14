@@ -13,7 +13,7 @@ namespace CryGameCode
 			InputSystem.RegisterAction("testAction", OnTestActionTriggered);
         }
 
-        protected override void OnSpawn()
+        public override void OnSpawn()
         {
             Console.LogAlways("Player.OnSpawn");
 

@@ -158,7 +158,7 @@ namespace CryEngine
 		/// <summary>
 		/// This callback is called when this entity has finished spawning. The entity has been created and added to the list of entities.
 		/// </summary>
-		protected virtual void OnSpawn() { }
+		public virtual void OnSpawn() { }
 
 		/// <summary>
 		/// Called when the entity is being removed.

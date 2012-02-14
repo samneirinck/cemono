@@ -5,7 +5,7 @@ namespace CryGameCode.Entities
 	[Entity(Category="TestCategory", EditorHelper="Editor/Objects/anchor.cgf", Icon="", Flags=EntityClassFlags.Default)]
     public class SampleEntity : StaticEntity
     {
-        protected override void OnSpawn()
+        public override void OnSpawn()
         {
             Console.LogAlways("OnSpawn");
         }

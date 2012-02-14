@@ -53,7 +53,6 @@ namespace CryGameCode
 
                     return;
                 }
-
             }
 
             Console.LogAlways("$1warning: No spawn points; using default spawn location!");

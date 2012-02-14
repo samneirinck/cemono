@@ -15,7 +15,7 @@ namespace CryGameCode.Entities
 			// TODO
 		}
 
-        protected override void OnSpawn()
+        public override void OnSpawn()
         {
             ReceiveUpdates = true;
 
