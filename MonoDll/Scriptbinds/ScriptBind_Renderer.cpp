@@ -11,6 +11,12 @@ MonoCamera CScriptBind_Renderer::GetViewCamera()
 {
 	MonoCamera cam;
 
+	if(!gEnv)
+		return cam;
+
+	if(!gEnv->pSystem)
+		return cam;
+
 	CCamera cryCam = gEnv->pSystem->GetViewCamera();
 
 	cam.Position = cryCam.GetPosition();
@@ -22,6 +28,12 @@ MonoCamera CScriptBind_Renderer::GetViewCamera()
 
 void CScriptBind_Renderer::SetViewCamera(MonoCamera cam)
 {
+	if(!gEnv)
+		return;
+
+	if(!gEnv->pSystem)
+		return;
+
 	CCamera cryCam;
 
 	cryCam.SetPosition(cam.Position);
