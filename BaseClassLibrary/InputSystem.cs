@@ -36,31 +36,31 @@ namespace CryEngine
 		}
 
 		private static Dictionary<string, InputActionDelegate> inputActionDelegates;
+	}
 
-		public enum ActionActivationMode
-		{
-			Invalid = 0,
-			/// <summary>
-			/// Used when the action key is pressed
-			/// </summary>
-			OnPress,
-			/// <summary>
-			/// Used when the action key is released
-			/// </summary>
-			OnRelease,
-			/// <summary>
-			/// Used when the action key is held
-			/// </summary>
-			OnHold,
-			Always,
+	public enum ActionActivationMode
+	{
+		Invalid = 0,
+		/// <summary>
+		/// Used when the action key is pressed
+		/// </summary>
+		OnPress,
+		/// <summary>
+		/// Used when the action key is released
+		/// </summary>
+		OnRelease,
+		/// <summary>
+		/// Used when the action key is held
+		/// </summary>
+		OnHold,
+		Always,
 
-			Retriggerable,
-			NoModifiers,
-			ConsoleCmd,
-			/// <summary>
-			/// Used when analog compare op succeeds
-			/// </summary>
-			AnalogCmd
-		}
+		Retriggerable,
+		NoModifiers,
+		ConsoleCmd,
+		/// <summary>
+		/// Used when analog compare op succeeds
+		/// </summary>
+		AnalogCmd
 	}
 }
