@@ -9,7 +9,7 @@ public class GenericMessage : FlowNode
 	[InputPort(Name = "Send", Description = "")]
 	public void Send()
 	{
-		ArduinoHelper.Port.WriteLine(GetStringValue(MessageSelector));
+		ArduinoHelper.Port.WriteLine(GetPortString(MessageSelector));
 	}
 
 	[InputPort(Name = "Message", Description = "")]

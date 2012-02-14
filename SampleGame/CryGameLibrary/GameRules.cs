@@ -50,6 +50,8 @@ namespace CryEngine
 
 			Players.Last().Initialize(EntityId, channelId);
 
+			Players.Last().OnSpawn();
+
 			return Players.Last() as T;
         }
 

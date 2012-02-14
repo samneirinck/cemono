@@ -12,7 +12,7 @@ public class PortController : FlowNode
 		if(ArduinoHelper.Port != null && ArduinoHelper.Port.IsOpen)
 			ArduinoHelper.Port.Close();
 
-		ArduinoHelper.Port = new SerialPort(GetStringValue(PortName), GetIntValue(BaudRate));
+		ArduinoHelper.Port = new SerialPort(GetPortString(PortName), GetPortInt(BaudRate));
 		ArduinoHelper.Port.Open();
 		ActivateOutput(createdOutput);
 	}

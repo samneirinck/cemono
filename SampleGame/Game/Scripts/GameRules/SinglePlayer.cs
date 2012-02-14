@@ -39,8 +39,6 @@ namespace CryGameCode
                 return;
             }
 
-            player.OnSpawn();
-
             StaticEntity[] spawnPoints = EntitySystem.GetEntities("SpawnPoint");
             if (spawnPoints == null)
                 return;
@@ -55,6 +53,7 @@ namespace CryGameCode
 
                     return;
                 }
+
             }
 
             Console.LogAlways("$1warning: No spawn points; using default spawn location!");

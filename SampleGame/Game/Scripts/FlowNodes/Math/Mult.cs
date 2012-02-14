@@ -8,7 +8,7 @@ namespace CryGameCode.FlowNodes.Samples
         [InputPort(Name = "Activate", Description = "Do the maths")]
         public void Activate()
         {
-            ActivateOutput(answerOutput, GetFloatValue(LeftSide) * GetFloatValue(RightSide));
+			ActivateOutput(answerOutput, GetPortFloat(LeftSide) * GetPortFloat(RightSide));
         }
 
         [InputPort(Name = "Left Side", Description = "The left side of the calculation")]

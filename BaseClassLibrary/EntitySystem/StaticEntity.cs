@@ -73,7 +73,7 @@ namespace CryEngine
 		/// Initializes the entity, not recommended to set manually.
 		/// </summary>
 		/// <param name="entityId"></param>
-		public virtual void InternalSpawn(uint entityId)
+		internal virtual void InternalSpawn(uint entityId)
 		{
 			SpawnCommon(entityId);
 			OnSpawn();
@@ -158,43 +158,43 @@ namespace CryEngine
 		/// <summary>
 		/// This callback is called when this entity has finished spawning. The entity has been created and added to the list of entities.
 		/// </summary>
-		public virtual void OnSpawn() { }
+		protected virtual void OnSpawn() { }
 
 		/// <summary>
 		/// Called when the entity is being removed.
 		/// </summary>
 		/// <returns>True to allow removal, false to deny.</returns>
-		public virtual bool OnRemove() { return true; }
+		protected virtual bool OnRemove() { return true; }
 
 		/// <summary>
 		/// Called when resetting the state of the entity in Editor.
 		/// </summary>
 		/// <param name="enteringGame">true if currently entering gamemode, false if exiting.</param>
-		public virtual void OnReset(bool enteringGame) { }
+		protected virtual void OnReset(bool enteringGame) { }
 
 		/// <summary>
 		/// Called when game is started (games may start multiple times)
 		/// </summary>
-		public virtual void OnStartGame() { }
+		protected virtual void OnStartGame() { }
 
 		/// <summary>
 		/// Called when the level is started.
 		/// </summary>
-		public virtual void OnStartLevel() { }
+		protected virtual void OnStartLevel() { }
 
 		/// <summary>
 		/// Sent when triggering entity enters to the area proximity.
 		/// </summary>
 		/// <param name="triggerEntityId"></param>
 		/// <param name="areaEntityId"></param>
-		public virtual void OnEnterArea(uint triggerEntityId, uint areaEntityId) { }
+		protected virtual void OnEnterArea(uint triggerEntityId, uint areaEntityId) { }
 
 		/// <summary>
 		/// Sent when triggering entity leaves the area proximity.
 		/// </summary>
 		/// <param name="triggerEntityId"></param>
 		/// <param name="areaEntityId"></param>
-		public virtual void OnLeaveArea(uint triggerEntityId, uint areaEntityId) { }
+		protected virtual void OnLeaveArea(uint triggerEntityId, uint areaEntityId) { }
 
 		/// <summary>
 		/// Sent on entity collision.
@@ -204,12 +204,12 @@ namespace CryEngine
 		/// <param name="dir"></param>
 		/// <param name="materialId"></param>
 		/// <param name="contactNormal"></param>
-		public virtual void OnCollision(uint targetEntityId, Vec3 hitPos, Vec3 dir, short materialId, Vec3 contactNormal) { }
+		protected virtual void OnCollision(uint targetEntityId, Vec3 hitPos, Vec3 dir, short materialId, Vec3 contactNormal) { }
 		
 		/// <summary>
 		/// 
 		/// </summary>
-		public virtual void OnHit() { }
+		protected virtual void OnHit() { }
 		#endregion
 
 		#region Overrides
@@ -239,7 +239,7 @@ namespace CryEngine
 		/// </summary>
 		Dictionary<string[], EntityPropertyType> storedProperties;
 
-		public virtual void SetPropertyValue(string propertyName, EntityPropertyType propertyType, string value)
+		internal virtual void SetPropertyValue(string propertyName, EntityPropertyType propertyType, string value)
 		{
 			if(value.Length <= 0 && propertyType != EntityPropertyType.String)
 				return;
@@ -279,7 +279,7 @@ namespace CryEngine
 		/// <param name="name"></param>
 		/// <param name="slotNumber"></param>
 		/// <returns></returns>
-		public bool LoadObject(string name, int slotNumber = 0)
+		protected bool LoadObject(string name, int slotNumber = 0)
 		{
 			if(name.EndsWith("cgf"))
 				_LoadObject(Id, name, slotNumber);
@@ -291,7 +291,7 @@ namespace CryEngine
 			return true;
 		}
 
-		public string GetObjectFilePath(int slot = 0)
+		protected string GetObjectFilePath(int slot = 0)
 		{
 			return _GetStaticObjectFilePath(Id, slot);
 		}
@@ -374,7 +374,7 @@ namespace CryEngine
 				throw new EntityException("Invalid property type specified.");
 		}
 
-		public override NodeConfig GetNodeConfig()
+		internal override NodeConfig GetNodeConfig()
 		{
 			return new NodeConfig(FlowNodeCategory.Approved, "", FlowNodeFlags.HideUI | FlowNodeFlags.TargetEntity);
 		}

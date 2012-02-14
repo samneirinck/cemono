@@ -31,7 +31,7 @@ namespace CryEngine
         /// </summary>
         /// <param name="entityId"></param>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override void InternalSpawn(uint entityId)
+        internal override void InternalSpawn(uint entityId)
         {
             SpawnCommon(entityId);
             _CreateGameObjectForEntity(Id);

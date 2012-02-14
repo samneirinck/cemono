@@ -7,14 +7,14 @@ namespace CryEngine
 {
 	public class FlowNode : CryScriptInstance
 	{
-        public virtual NodeConfig GetNodeConfig()
+        internal virtual NodeConfig GetNodeConfig()
         {
             var nodeInfo = GetType().GetAttribute<FlowNodeAttribute>();
 
             return new NodeConfig(nodeInfo.Category, nodeInfo.Description);
         }
 
-        public NodePortConfig GetPortConfig()
+		internal NodePortConfig GetPortConfig()
         {
             if (inputMethods == null)
                 inputMethods = new List<MethodInfo>();
@@ -138,10 +138,8 @@ namespace CryEngine
 		/// <summary>
 		/// Called if one or more input ports have been activated.
 		/// </summary>
-		public void OnPortActivated(int index, object value = null)
+		internal void OnPortActivated(int index, object value = null)
 		{
-			Console.LogAlways("Triggering port {0}", inputMethods[index].Name);
-
 			if(value != null && inputMethods[index].GetParameters().Length > 0)
 				inputMethods[index].Invoke(this, new object[] { value });
 			else
@@ -151,7 +149,7 @@ namespace CryEngine
 		/// <summary>
 		/// Called after level has been loaded, is not called on serialization.
 		/// </summary>
-        public virtual void OnInit()
+		protected virtual void OnInit()
 		{
 		}
 		#endregion
@@ -161,7 +159,7 @@ namespace CryEngine
 		/// Activates one of the node's output ports, without an output value. (Used for outputs of type NodePortType.Void)
 		/// </summary>
 		/// <param name="port"></param>
-		public void ActivateOutput(int port) { FlowSystem._ActivateOutput(ScriptId, port); }
+		protected void ActivateOutput(int port) { FlowSystem._ActivateOutput(ScriptId, port); }
 		/// <summary>
 		/// Activates one of the node's output ports, with the desired output value.
 		/// </summary>
@@ -185,27 +183,52 @@ namespace CryEngine
                 throw new ArgumentException("Attempted to activate output with invalid value!");
 		}
 
-		public int GetIntValue(Action<int> port)
+		/// <summary>
+		/// Gets the int value of an flownode port.
+		/// </summary>
+		/// <param name="port"></param>
+		/// <returns></returns>
+		protected int GetPortInt(Action<int> port)
 		{
 			return FlowSystem._GetPortValueInt(ScriptId, GetInputPortId(port.Method));
 		}
 
-		public float GetFloatValue(Action<float> port)
+		/// <summary>
+		/// Gets the float value of an flownode port.
+		/// </summary>
+		/// <param name="port"></param>
+		/// <returns></returns>
+		protected float GetPortFloat(Action<float> port)
 		{
 			return FlowSystem._GetPortValueFloat(ScriptId, GetInputPortId(port.Method));
 		}
 
-		public Vec3 GetVec3Value(Action<Vec3> port)
+		/// <summary>
+		/// Gets the int value of an flownode port.
+		/// </summary>
+		/// <param name="port"></param>
+		/// <returns></returns>
+		protected Vec3 GetPortVec3(Action<Vec3> port)
 		{
 			return FlowSystem._GetPortValueVec3(ScriptId, GetInputPortId(port.Method));
 		}
 
-		public string GetStringValue(Action<string> port)
+		/// <summary>
+		/// Gets the string value of an flownode port.
+		/// </summary>
+		/// <param name="port"></param>
+		/// <returns></returns>
+		protected string GetPortString(Action<string> port)
 		{
 			return FlowSystem._GetPortValueString(ScriptId, GetInputPortId(port.Method));
 		}
 
-		public bool GetBoolValue(Action<bool> port)
+		/// <summary>
+		/// Gets the bool value of an flownode port.
+		/// </summary>
+		/// <param name="port"></param>
+		/// <returns></returns>
+		protected bool GetPortBool(Action<bool> port)
 		{
 			return FlowSystem._GetPortValueBool(ScriptId, GetInputPortId(port.Method));
 		}
@@ -226,7 +249,7 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="port"></param>
 		/// <returns></returns>
-		public bool IsPortActive(int port) { return FlowSystem._IsPortActive(ScriptId, port); }
+		protected bool IsPortActive(int port) { return FlowSystem._IsPortActive(ScriptId, port); }
 		#endregion
 
 		internal bool Initialized;

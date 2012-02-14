@@ -14,11 +14,11 @@ namespace CryGameCode.FlowNodes.Testing
 		public void TestAll()
 		{
 			ActivateOutput(activatedOutput);
-			ActivateOutput(intOutput, GetIntValue(IntInput));
-			ActivateOutput(floatOutput, GetFloatValue(FloatInput));
-			ActivateOutput(stringOutput, GetStringValue(StringInput));
-			ActivateOutput(boolOutput, GetBoolValue(BoolInput));
-			ActivateOutput(vec3Output, GetVec3Value(Vec3Input));
+			ActivateOutput(intOutput, GetPortInt(IntInput));
+			ActivateOutput(floatOutput, GetPortFloat(FloatInput));
+			ActivateOutput(stringOutput, GetPortString(StringInput));
+			ActivateOutput(boolOutput, GetPortBool(BoolInput));
+			ActivateOutput(vec3Output, GetPortVec3(Vec3Input));
 		}
 
 		#region Data Inputs

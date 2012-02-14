@@ -7,7 +7,7 @@ namespace CryGameCode
     [FlowNode(UICategory = "Samples", Category = FlowNodeCategory.Approved, Description = "Does awesome CryMono things")]
     public class SampleNode : FlowNode
     {
-        public override void OnInit()
+        protected override void OnInit()
         {
         }
 

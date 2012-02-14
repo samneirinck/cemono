@@ -149,7 +149,7 @@ public class GameRulesBase : BaseGameRules
 		Console.LogAlways("OnConnect");
 	}
 
-	public override void OnDisconnect(int cause, string desc)
+	public override void OnDisconnect(DisconnectionCause cause, string desc)
 	{
 		Console.LogAlways("OnDisconnect");
 	}
