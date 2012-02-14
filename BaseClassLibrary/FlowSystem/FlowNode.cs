@@ -165,7 +165,7 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="port">The id of the port, from the order it was registered (first is 0)</param>
 		/// <param name="value"></param>
-		public void ActivateOutput(int port, object value)
+		protected void ActivateOutput(int port, object value)
 		{
 			if(value is int)
 				FlowSystem._ActivateOutputInt(ScriptId, port, System.Convert.ToInt32(value));
