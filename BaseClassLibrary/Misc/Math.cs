@@ -38,5 +38,22 @@
 		{
 			return System.Math.Sqrt(d);
 		}
+
+		public static double ISqrt(double d)
+		{
+			return 1.0 / Sqrt(d);
+		}
+
+		public static double Sin(double a)
+		{
+			return System.Math.Sin(a);
+		}
+
+		public static void SinCos(double a, out double sinVal, out double cosVal)
+		{
+			sinVal = Sin(a);
+
+			cosVal = Sqrt(1.0 - sinVal * sinVal);
+		}
 	}
 }
