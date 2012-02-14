@@ -122,6 +122,7 @@
       <HintPath>..\..\..\Engine\Mono\lib\mono\gac\Mono.Cecil.Pdb\0.9.5.0__0738eb9f132ed756\Mono.Cecil.Pdb.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -166,6 +167,7 @@
     <Compile Include="EntitySystem\EntityPhysics.cs" />
     <Compile Include="GameRules\Network.cs" />
     <Compile Include="InputSystem.cs" />
+    <Compile Include="Quat.cs" />
     <Compile Include="Sandbox\Interface.cs" />
     <Compile Include="ScriptInstance.cs" />
     <Compile Include="Misc\CompilationAttributes.cs" />
