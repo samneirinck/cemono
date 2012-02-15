@@ -13,14 +13,7 @@ namespace CryGameCode
 			InputSystem.RegisterAction("testAction", OnTestActionTriggered);
         }
 
-        public override void OnSpawn()
-        {
-            Console.LogAlways("Player.OnSpawn");
-
-            Inventory.GiveEquipmentPack("Singleplayer");
-        }
-
-		public void OnTestActionTriggered(InputSystem.ActionActivationMode activationMode, float value)
+		public void OnTestActionTriggered(ActionActivationMode activationMode, float value)
 		{
 			Console.LogAlways("TestAction triggered with mode {0} and value {1}", activationMode, value);
 		}
