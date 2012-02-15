@@ -210,7 +210,48 @@ namespace CryEngine
 
 										writer.WriteAttributeString("Name", fieldName);
 										writer.WriteAttributeString("Type", fieldInfo.FieldType.Name);
-										writer.WriteAttributeString("Value", fieldInfo.GetValue(scriptInstance).ToString());
+
+										switch(fieldInfo.FieldType.Name)
+										{
+											case "List`1":
+												{
+													writer.WriteStartElement("Elements");
+
+													System.Collections.IList list = (System.Collections.IList)value;
+													foreach (var listObject in list)
+													{
+														writer.WriteStartElement("Element");
+														writer.WriteAttributeString("Type", listObject.GetType().Name);
+														writer.WriteAttributeString("Value", listObject.ToString());
+														writer.WriteEndElement();
+													}
+
+													writer.WriteEndElement();
+												}
+												break;
+											case "Dictionary`2":
+												{
+													writer.WriteStartElement("Elements");
+
+													System.Collections.IDictionary dictionary = (System.Collections.IDictionary)value;
+													foreach (var key in dictionary.Keys)
+													{
+														writer.WriteStartElement("Element");
+														writer.WriteAttributeString("KeyType", key.GetType().Name);
+														writer.WriteAttributeString("Key", key.ToString());
+														writer.WriteAttributeString("ValueType", dictionary[key].GetType().Name);
+														writer.WriteAttributeString("Value", dictionary[key].ToString());
+														writer.WriteEndElement();
+													}
+
+													writer.WriteEndElement();
+												}
+												break;
+											default:
+												writer.WriteAttributeString("Value", value.ToString());
+												break;
+										}
+
 										writer.WriteEndElement();
 									}
 								}
@@ -265,7 +306,36 @@ namespace CryEngine
 						{
 							FieldInfo fieldInfo = script.Type.GetField(field.Attribute("Name").Value);
 							if (fieldInfo != null)// && !fieldInfo.FieldType.Name.Equals("Dictionary`2") && !fieldInfo.FieldType.Name.Equals("List`1"))
-								fieldInfo.SetValue(script.ScriptInstances.Last(), Convert.FromString(field.Attribute("Type").Value, field.Attribute("Value").Value));
+							{
+								switch(fieldInfo.FieldType.Name)
+								{
+									case "List`1":
+										{
+											foreach (var element in field.Elements("Elements").Elements("Element"))
+											{
+												System.Collections.IList list = (System.Collections.IList)fieldInfo.GetValue(script.ScriptInstances.Last());
+												list.Add(Convert.FromString(element.Attribute("Type").Value, element.Attribute("Value").Value));
+
+												fieldInfo.SetValue(script.ScriptInstances.Last(), list);
+											}
+										}
+										break;
+									case "Dictionary`2":
+										{
+											foreach (var element in field.Elements("Elements").Elements("Element"))
+											{
+												System.Collections.IDictionary dictionary = (System.Collections.IDictionary)fieldInfo.GetValue(script.ScriptInstances.Last());
+												dictionary.Add(Convert.FromString(element.Attribute("KeyType").Value, element.Attribute("Key").Value), Convert.FromString(element.Attribute("ValueType").Value, element.Attribute("Value").Value));
+
+												fieldInfo.SetValue(script.ScriptInstances.Last(), dictionary);
+											}
+										}
+										break;
+									default:
+										fieldInfo.SetValue(script.ScriptInstances.Last(), Convert.FromString(field.Attribute("Type").Value, field.Attribute("Value").Value));
+										break;
+								}
+							}
 						}
 
 						foreach (var property in instance.Elements("Property"))

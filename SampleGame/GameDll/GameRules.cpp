@@ -753,9 +753,6 @@ void CGameRules::OnChatMessage(EChatMessageType type, EntityId sourceId, EntityI
 //------------------------------------------------------------------------
 void CGameRules::OnRevive(CActor *pActor, const Vec3 &pos, const Quat &rot, int teamId)
 {
-	ScriptHandle handle(pActor->GetEntityId());
-	Vec3 rotVec = Vec3(Ang3(rot));
-	//CallScript(m_clientScript, "OnRevive", handle, pos, rotVec, teamId);
 	CallMonoScript<void>(m_monoScriptId, "OnRevive", pActor->GetEntityId(), pos, Ang3(rot), teamId);
 }
 
