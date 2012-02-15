@@ -14,7 +14,6 @@ namespace CryEngine
 			if (inputActionDelegates == null)
 				inputActionDelegates = new Dictionary<string, InputActionDelegate>();
 
-			actionName = actionName.ToLower();
 			if (!inputActionDelegates.ContainsKey(actionName))
 			{
 				inputActionDelegates.Add(actionName, actionDelegate);
