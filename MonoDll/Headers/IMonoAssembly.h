@@ -27,9 +27,9 @@ public:
 	/// Instantiates a class within the assembly.
 	/// </summary>
 	/// <example>
-	/// IMonoClass *pClass = pAssembly->InstantiateClass("CryEngine", "MyClass");
+	/// IMonoClass *pClass = pAssembly->InstantiateClass("MyClass");
 	/// </example>
-	virtual IMonoClass *InstantiateClass(const char *nameSpace, const char *className, IMonoArray *pConstructorArguments = NULL) = 0;
+	virtual IMonoClass *InstantiateClass(const char *className, const char *nameSpace = "CryEngine", IMonoArray *pConstructorArguments = NULL) = 0;
 	/// <summary>
 	/// Gets a custom C# class from within the assembly.
 	/// Note: This does not construct an new instance of the class, only returns an uninitialized IMonoClass. To instantiate a class, see IMonoAssembly::InstantiateClass

@@ -35,7 +35,7 @@ CMonoAssembly::~CMonoAssembly()
 	m_pImage = 0;
 }
 
-IMonoClass *CMonoAssembly::InstantiateClass(const char *nameSpace, const char *className, IMonoArray *pConstructorArguments)
+IMonoClass *CMonoAssembly::InstantiateClass(const char *className, const char *nameSpace, IMonoArray *pConstructorArguments)
 {
 	// Get class
 	MonoClass *pClass = GetClassFromName(nameSpace, className);

@@ -24,7 +24,7 @@ public:
 	// IMonoAssembly
 	virtual void Release() override { delete this; }
 
-	virtual IMonoClass *InstantiateClass(const char *nameSpace, const char *className, IMonoArray *pConstructorArguments = NULL) override;
+	virtual IMonoClass *InstantiateClass(const char *className, const char *nameSpace = "CryEngine", IMonoArray *pConstructorArguments = NULL) override;
 	virtual IMonoClass *GetCustomClass(const char *className, const char *nameSpace = "CryEngine") override;
 	// ~IMonoAssembly
 
