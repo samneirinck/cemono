@@ -19,8 +19,6 @@
 			MonoEntity = true;
 			Spawned = true;
 
-            Inventory = new Inventory(entityId);
-
 			InitPhysics();
 
 			OnSpawn();
@@ -32,6 +30,17 @@
 
         public bool IsDead() { return Health <= 0; }
 
-        public Inventory Inventory;
+		private Inventory inventory;
+		public Inventory Inventory
+		{
+			get
+			{
+				if (inventory == null)
+					inventory = new Inventory(Id);
+
+				return inventory;
+			}
+			private set { inventory = value; }
+		}
     }
 }

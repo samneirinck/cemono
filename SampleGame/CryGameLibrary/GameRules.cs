@@ -35,18 +35,19 @@ namespace CryEngine
         /// <param name="angles"></param>
         public static T SpawnPlayer<T>(int channelId, string name, Vec3 pos, Vec3 angles) where T : BasePlayer, new()
         {
-			if (Players == null)
-				Players = new Dictionary<uint, int>();
-
 			uint entityId = _SpawnPlayer(channelId, name, "Player", pos, angles);
 			if (entityId == 0)
+			{
+				Console.LogAlways("GameRules.SpawnPlayer failed; new entityId was invalid");
 				return null;
+			}
 
 			int scriptId = ScriptCompiler.AddScriptInstance(new T());
 			if (scriptId == -1)
+			{
+				Console.LogAlways("GameRules.SpawnPlayer failed; new scriptId was invalid");
 				return null;
-
-			Players.Add(entityId, scriptId);
+			}
 
 			T player = ScriptCompiler.GetScriptInstanceById(scriptId) as T;
 			player.InternalSpawn(entityId, channelId);
@@ -56,8 +57,9 @@ namespace CryEngine
 
         public static BasePlayer GetPlayer(uint playerId)
         {
-			if (Players.ContainsKey(playerId))
-				return ScriptCompiler.GetScriptInstanceById(Players[playerId]) as BasePlayer;
+			int scriptId = ScriptCompiler.GetEntityScriptId(playerId, typeof(BasePlayer));
+			if(scriptId != -1)
+				return ScriptCompiler.GetScriptInstanceById(scriptId) as BasePlayer;
 
 			return null;
         }
@@ -66,7 +68,5 @@ namespace CryEngine
         {
             return GetPlayer(playerId) as T;
         }
-
-		public static Dictionary<uint /* entity id*/, int> Players;
     }
 }

@@ -432,42 +432,44 @@ namespace CryEngine
 			{
 				var type = assemblyTypes.ElementAt(i);
 
-				if(!type.ContainsAttribute<ExcludeFromCompilationAttribute>())
+				if(type != null && !type.ContainsAttribute<ExcludeFromCompilationAttribute>())
 				{
-					var scriptType = MonoScriptType.Null;
+					scripts.Add(new CryScript(type));
 
 					if (type.Implements(typeof(BaseGameRules)))
-						scriptType = MonoScriptType.GameRules;
-					else if (type.Implements(typeof(BasePlayer)))
-						scriptType = MonoScriptType.Actor;
-					else if (type.Implements(typeof(Entity)))
-						scriptType = MonoScriptType.Entity;
-					else if (type.Implements(typeof(StaticEntity)))
-						scriptType = MonoScriptType.StaticEntity;
-					else if (type.Implements(typeof(FlowNode)))
-						scriptType = MonoScriptType.FlowNode;
-					else if (type.Implements(typeof(CryScriptInstance)))
-						scriptType = MonoScriptType.Other;
-
-					if (type != null)
 					{
-						scripts.Add(new CryScript(type, scriptType));
+						scripts.Last().SetScriptType(MonoScriptType.GameRules);
 
-						// This is done after CryScript construction to avoid calling Type.name several times
-						if (scriptType == MonoScriptType.GameRules)
-						{
-							GameRulesSystem._RegisterGameMode(scripts.Last().className);
+						GameRulesSystem._RegisterGameMode(scripts.Last().className);
 
-							if (type.ContainsAttribute<DefaultGamemodeAttribute>())
-								GameRulesSystem._SetDefaultGameMode(scripts.Last().className);
-						}
-						else if (scriptType == MonoScriptType.Actor)
-							ActorSystem._RegisterActorClass(scripts.Last().className, false);
-						else if (scriptType == MonoScriptType.Entity || scriptType == MonoScriptType.StaticEntity)
-							LoadEntity(type, scripts.Last(), scriptType == MonoScriptType.StaticEntity);
-						else if (scriptType == MonoScriptType.FlowNode)
-							LoadFlowNode(type, scripts.Last().className);
+						if (type.ContainsAttribute<DefaultGamemodeAttribute>())
+							GameRulesSystem._SetDefaultGameMode(scripts.Last().className);
 					}
+					else if (type.Implements(typeof(BasePlayer)))
+					{
+						scripts.Last().SetScriptType(MonoScriptType.Actor);
+
+						ActorSystem._RegisterActorClass(scripts.Last().className, false);
+					}
+					else if (type.Implements(typeof(StaticEntity)))
+					{
+						bool staticEntity = !type.Implements(typeof(Entity));
+
+						if (!staticEntity)
+							scripts.Last().SetScriptType(MonoScriptType.Entity);
+						else
+							scripts.Last().SetScriptType(MonoScriptType.StaticEntity);
+
+						LoadEntity(type, scripts.Last(), staticEntity);
+					}
+					else if (type.Implements(typeof(FlowNode)))
+					{
+						scripts.Last().SetScriptType(MonoScriptType.FlowNode);
+
+						LoadFlowNode(type, scripts.Last().className);
+					}
+					else if (type.Implements(typeof(CryScriptInstance)))
+						scripts.Last().SetScriptType(MonoScriptType.Unknown);
 				}
 			});
 
@@ -630,7 +632,7 @@ namespace CryEngine
 		/// <summary>
 		/// Scripts will be linked to this type if they inherit from CryScriptInstance, but not any other script base.
 		/// </summary>
-		Other
+		Unknown
 	}
 
 	/// <summary>
@@ -638,12 +640,16 @@ namespace CryEngine
 	/// </summary>
 	public struct CryScript
 	{
-		public CryScript(Type _type, MonoScriptType type)
+		public CryScript(Type _type)
 			: this()
 		{
 			Type = _type;
-			ScriptType = type;
 			className = Type.Name;
+		}
+
+		public void SetScriptType(MonoScriptType scriptType)
+		{
+			ScriptType = scriptType;
 		}
 
 		public Type Type { get; private set; }

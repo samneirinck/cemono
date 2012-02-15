@@ -206,18 +206,35 @@ namespace CryEngine
 
 		public static CryScriptInstance GetScriptInstanceById(int id)
 		{
-			for (int i = 0; i < compiledScripts.Count; i++)
-			{
-				if (compiledScripts[i].ScriptInstances != null)
-				{
-					CryScriptInstance tempInstance = compiledScripts[i].ScriptInstances.FirstOrDefault(instance => instance.ScriptId == id);
+			var scripts = compiledScripts.Where(script => script.ScriptInstances != null);
 
-					if (tempInstance != default(CryScriptInstance))
-						return tempInstance;
-				}
+			CryScriptInstance scriptInstance = null;
+			foreach (var script in scripts)
+			{
+				scriptInstance = script.ScriptInstances.FirstOrDefault(instance => instance.ScriptId == id);
+
+				if (scriptInstance != default(CryScriptInstance))
+					return scriptInstance;
 			}
 
 			return null;
+		}
+
+		public static int GetEntityScriptId(uint entityId, System.Type scriptType = null)
+		{
+			var scripts = compiledScripts.Where(script => (scriptType != null ? script.Type.Implements(scriptType) : true) && script.ScriptInstances != null);
+
+			foreach (var compiledScript in scripts)
+			{
+				foreach (var script in compiledScript.ScriptInstances)
+				{
+					var scriptEntity = script as StaticEntity;
+					if (scriptEntity != null && scriptEntity.Id == entityId)
+						return script.ScriptId;
+				}
+			}
+
+			return -1;
 		}
 
 		public static void DumpScriptData()
