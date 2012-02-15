@@ -51,7 +51,7 @@ void CMonoTester::TestStaticMethods(IMonoAssembly *pCryBrary)
 
 void CMonoTester::TestInstantiatedMethods(IMonoAssembly *pCryBrary)
 {
-	IMonoClass *pTesterClassStandardConstructor = pCryBrary->InstantiateClass("CryEngine.Utils", "Tester");
+	IMonoClass *pTesterClassStandardConstructor = pCryBrary->InstantiateClass("Tester", "CryEngine.Utils");
 	if(!pTesterClassStandardConstructor)
 	{
 		CryLogAlways("Mono feature test failed! Failed to obtain tester class.");
@@ -62,7 +62,7 @@ void CMonoTester::TestInstantiatedMethods(IMonoAssembly *pCryBrary)
 	SAFE_RELEASE(pTesterClassStandardConstructor);
 
 	IMonoArray *pTestParams = GetTestParameters();
-	IMonoClass *pTesterClassComplexConstructor = pCryBrary->InstantiateClass("CryEngine.Utils", "Tester", pTestParams);
+	IMonoClass *pTesterClassComplexConstructor = pCryBrary->InstantiateClass("Tester", "CryEngine.Utils", pTestParams);
 	if(!pTesterClassComplexConstructor)
 	{
 		CryLogAlways("Mono feature test failed! Failed to instantiate tester class.");

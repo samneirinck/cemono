@@ -17,12 +17,12 @@ namespace CryEngine
 	/// <summary>
 	/// The script compiler is responsible for all CryScript compilation.
 	/// </summary>
-	public class ScriptCompiler : _ScriptCompiler
+	public static partial class ScriptCompiler
 	{
-		public ScriptCompiler()
+		public static void Initialize()
 		{
 #if !RELEASE
-			Pdb2Mdb.Driver.Convert(Assembly.GetExecutingAssembly());
+			//Pdb2Mdb.Driver.Convert(Assembly.GetExecutingAssembly());
 #endif
 
 			compiledScripts = new List<CryScript>();
@@ -30,10 +30,7 @@ namespace CryEngine
 			referencedAssemblies = new List<string>();
 
 			nextScriptId = 0;
-		}
 
-		public void Initialize()
-		{
 			//GenerateScriptbindAssembly(scriptBinds.ToArray());
 
 			referencedAssemblies.AddRange(System.AppDomain.CurrentDomain.GetAssemblies().Select(a => a.Location).ToArray());
@@ -47,19 +44,19 @@ namespace CryEngine
 			));
 		}
 
-		public void PostInit()
+		public static void PostInit()
 		{
 			// These have to be registered later on due to the flow system being initialized late.
 			RegisterFlownodes();
 		}
 
-		private void LoadPrecompiledAssemblies()
+		private static void LoadPrecompiledAssemblies()
 		{
 			//Add pre-compiled assemblies / plugins
 			AddScripts(ScriptCompiler.LoadLibrariesInFolder(Path.Combine(PathUtils.GetScriptsFolder(), "Plugins")));
 		}
 
-		private void AddScripts(CryScript[] scripts)
+		private static void AddScripts(CryScript[] scripts)
 		{
 			if (scripts == null || scripts.Length < 1)
 				return;
@@ -74,7 +71,7 @@ namespace CryEngine
 		/// <param name="constructorParams"></param>
 		/// <returns>New instance scriptId or -1 if instantiation failed.</returns>
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public CryScriptInstance InstantiateScript(string scriptName, object[] constructorParams = null)
+		public static CryScriptInstance InstantiateScript(string scriptName, object[] constructorParams = null)
 		{
 			if (scriptName.Length < 1)
 			{
@@ -93,8 +90,8 @@ namespace CryEngine
 			}
 
 			CryScript script = compiledScripts.ElementAt(index);
-			if (!script.Type.Implements(typeof(CryScriptInstance)))
-				return null;
+			//if (!script.Type.Implements(typeof(CryScriptInstance)))
+			//	return null;
 
 			nextScriptId++;
 
@@ -109,32 +106,93 @@ namespace CryEngine
 			return script.ScriptInstances.Last();
 		}
 
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void RemoveInstance(int scriptId, string scriptName)
+		/// <summary>
+		/// Adds an script instance to the script collection and returns its new id.
+		/// </summary>
+		/// <param name="instance"></param>
+		public static int AddScriptInstance(CryScriptInstance instance)
 		{
-			int index = compiledScripts.FindIndex(x => x.className.Equals(scriptName));
-			if (index == -1)
-				return;
-
-			CryScript script = compiledScripts[index];
-
-			if (script.ScriptInstances != null)
+			int scriptIndex = compiledScripts.FindIndex(x => x.className == instance.GetType().Name);
+			if (scriptIndex != -1)
 			{
-				int instanceIndex = script.ScriptInstances.FindIndex(x => x.ScriptId == scriptId);
-				if (instanceIndex == -1)
-				{
-					Console.LogAlways("Failed to remove script of type {0} with id {1}; instance was not found.", scriptName, scriptId);
+				CryScript script = compiledScripts.ElementAt(scriptIndex);
+
+				if (script.ScriptInstances == null)
+					script.ScriptInstances = new List<CryScriptInstance>();
+				else if (script.ScriptInstances.Contains(instance))
+					return -1;
+
+				nextScriptId++;
+
+				instance.ScriptId = nextScriptId;
+				script.ScriptInstances.Add(instance);
+
+				compiledScripts[scriptIndex] = script;
+
+				return nextScriptId;
+			}
+
+			Console.LogAlways("Couldn't add script {0}", instance.GetType().Name);
+			return -1;
+		}
+
+		/// <summary>
+		/// Locates and destructs the script with the assigned scriptId.
+		/// 
+		/// Warning: Not supplying the scriptName will make the method execute slower.
+		/// </summary>
+		/// <param name="scriptId"></param>
+		/// <param name="scriptName"></param>
+		public static void RemoveInstance(int scriptId, string scriptName = "")
+		{
+			Console.LogAlways("RemoveInstance {0}", scriptId);
+
+			if (scriptName.Length > 0)
+			{
+				int index = compiledScripts.FindIndex(x => x.className.Equals(scriptName));
+				if (index == -1)
 					return;
+
+				CryScript script = compiledScripts[index];
+
+				if (script.ScriptInstances != null)
+				{
+					int instanceIndex = script.ScriptInstances.FindIndex(x => x.ScriptId == scriptId);
+					if (instanceIndex == -1)
+					{
+						Console.LogAlways("Failed to remove script of type {0} with id {1}; instance was not found.", scriptName, scriptId);
+						return;
+					}
+
+					script.ScriptInstances.RemoveAt(instanceIndex);
+
+					compiledScripts[index] = script;
 				}
+			}
+			else
+			{
+				for (int i = 0; i < compiledScripts.Count; i++)
+				{
+					CryScript script = compiledScripts[i];
 
-				script.ScriptInstances.RemoveAt(instanceIndex);
+					if (script.ScriptInstances != null)
+					{
+						int scriptIndex = script.ScriptInstances.FindIndex(x => x.ScriptId == scriptId);
+						if (scriptIndex != -1)
+						{
+							script.ScriptInstances.RemoveAt(scriptIndex);
 
-				compiledScripts[index] = script;
+							compiledScripts[i] = script;
+
+							break;
+						}
+					}
+				}
 			}
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public object InvokeScriptFunctionById(int id, string func, object[] args = null)
+		public static object InvokeScriptFunctionById(int id, string func, object[] args = null)
 		{
 			CryScriptInstance scriptInstance = GetScriptInstanceById(id);
 			if (scriptInstance == default(CryScriptInstance))
@@ -146,7 +204,7 @@ namespace CryEngine
 			return InvokeScriptFunction(scriptInstance, func, args);
 		}
 
-		public CryScriptInstance GetScriptInstanceById(int id)
+		public static CryScriptInstance GetScriptInstanceById(int id)
 		{
 			for (int i = 0; i < compiledScripts.Count; i++)
 			{
@@ -162,7 +220,7 @@ namespace CryEngine
 			return null;
 		}
 
-		public void DumpScriptData()
+		public static void DumpScriptData()
 		{
 			var xmlSettings = new XmlWriterSettings();
 			xmlSettings.Indent = true;
@@ -271,7 +329,7 @@ namespace CryEngine
 			}
 		}
 
-		public void TrySetScriptData()
+		public static void TrySetScriptData()
 		{
 			string filePath = Path.Combine(PathUtils.GetRootFolder(), "Temp", "MonoScriptData.xml");
 			if (!File.Exists(filePath))
@@ -355,7 +413,7 @@ namespace CryEngine
 		/// Automagically registers scriptbind methods to rid us of having to add them in both C# and C++.
 		/// </summary>
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void RegisterScriptbind(string namespaceName, string className, object[] methods)
+		public static void RegisterScriptbind(string namespaceName, string className, object[] methods)
 		{
 			if (scriptBinds == null)
 				scriptBinds = new List<Scriptbind>();
@@ -366,7 +424,7 @@ namespace CryEngine
 		/// <summary>
 		/// Called once per frame.
 		/// </summary>
-		public void OnUpdate(float frameTime)
+		public static void OnUpdate(float frameTime)
 		{
 			Time.DeltaTime = frameTime;
 
@@ -377,10 +435,10 @@ namespace CryEngine
 			});
 		}
 
-		List<Scriptbind> scriptBinds;
+		static List<Scriptbind> scriptBinds;
 
-		List<CryScript> compiledScripts;
-		int nextScriptId;
+		static List<CryScript> compiledScripts;
+		static int nextScriptId;
 	}
 
 	public struct ScriptState

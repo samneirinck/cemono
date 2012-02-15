@@ -36,28 +36,30 @@ namespace CryEngine
         public static T SpawnPlayer<T>(int channelId, string name, Vec3 pos, Vec3 angles) where T : BasePlayer, new()
         {
 			if (Players == null)
-				Players = new List<BasePlayer>();
+				Players = new Dictionary<uint, int>();
 
-			Players.Add(new T());
-
-			uint EntityId = _SpawnPlayer(channelId, name, "Player", pos, angles);
-			if (EntityId == 0)
-			{
-				Players.Remove(Players.Last());
-
+			uint entityId = _SpawnPlayer(channelId, name, "Player", pos, angles);
+			if (entityId == 0)
 				return null;
-			}
 
-			Players.Last().Initialize(EntityId, channelId);
+			int scriptId = ScriptCompiler.AddScriptInstance(new T());
+			if (scriptId == -1)
+				return null;
 
-			Players.Last().OnSpawn();
+			Players.Add(entityId, scriptId);
 
-			return Players.Last() as T;
+			T player = ScriptCompiler.GetScriptInstanceById(scriptId) as T;
+			player.InternalSpawn(entityId, channelId);
+
+			return player;
         }
 
         public static BasePlayer GetPlayer(uint playerId)
         {
-			return Players.Where(player => player.Id == playerId).FirstOrDefault();
+			if (Players.ContainsKey(playerId))
+				return ScriptCompiler.GetScriptInstanceById(Players[playerId]) as BasePlayer;
+
+			return null;
         }
 
         public static T GetPlayer<T>(uint playerId) where T : BasePlayer
@@ -65,6 +67,6 @@ namespace CryEngine
             return GetPlayer(playerId) as T;
         }
 
-		public static List<BasePlayer> Players;
+		public static Dictionary<uint /* entity id*/, int> Players;
     }
 }

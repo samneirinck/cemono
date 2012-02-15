@@ -17,8 +17,7 @@ using System.Threading.Tasks;
 /// </summary>
 namespace CryEngine
 {
-	[EditorBrowsable(EditorBrowsableState.Never)]
-	public class _ScriptCompiler : MarshalByRefObject
+	public static partial class ScriptCompiler
 	{
 		public static void GenerateScriptbindAssembly(Scriptbind[] scriptBinds)
 		{
@@ -253,8 +252,6 @@ namespace CryEngine
 		{
 			if(scripts.Length < 1)
 				return null;
-
-			Console.LogAlways("Started script compilation...");
 
 			CodeDomProvider provider;
 			switch (scriptExtension) // TODO enum

@@ -124,32 +124,6 @@ bool CMonoScriptSystem::Init()
 	return true;
 }
 
-struct MonoScriptFieldData
-{
-	mono::string fieldName;
-	mono::object value;
-};
-
-struct MonoScriptState
-{
-	mono::array fields;
-	mono::string typeName;
-};
-
-struct ScriptState
-{
-	struct Field
-	{
-		Field(mono::string field, MonoAnyValue val) : fieldName(field), value(val) {}
-
-		mono::string fieldName;
-		MonoAnyValue value;
-	};
-
-	std::vector<Field> fields;
-	mono::string typeName;
-};
-
 bool CMonoScriptSystem::Reload()
 {
 	// Determines if this is the first time loading.
@@ -192,12 +166,11 @@ bool CMonoScriptSystem::Reload()
 	CryLogAlways("    Registering default scriptbinds...");
 	RegisterDefaultBindings();
 
-	m_pScriptCompiler = m_pLibraryAssembly->InstantiateClass("CryEngine", "ScriptCompiler");
-
 	CryLogAlways("    Initializing subsystems...");
 	InitializeSystems();
 
 	CryLogAlways("    Compiling scripts...");
+	m_pScriptCompiler = m_pLibraryAssembly->GetCustomClass("ScriptCompiler");
 	m_pScriptCompiler->CallMethod("Initialize");
 
 	// Nodes won't get recompiled if we forget this.
