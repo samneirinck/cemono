@@ -17,15 +17,12 @@ namespace CryGameCode
 
         public override void OnClientConnect(int channelId, bool isReset = false, string playerName = "")
         {
-            Player player = GameRules.SpawnPlayer<Player>(channelId, "Player", new Vec3(0, 0, 0), new Vec3(0, 0, 0));
-
-			if (player == null)
-				Console.Log("OnClientConnect: Failed to spawn the player!");
+			GameRules.SpawnPlayer<Player>(channelId, "Player", new Vec3(0, 0, 0), new Vec3(0, 0, 0));
         }
 
 		public override void OnRevive(uint actorId, Vec3 pos, Vec3 rot, int teamId)
 		{
-			BasePlayer player = GameRules.GetPlayer(actorId);
+			Player player = GameRules.GetPlayer(actorId) as Player;
 			if (player == null)
 			{
 				Console.LogAlways("[SinglePlayer.OnRevive] Failed to get player");
@@ -40,7 +37,7 @@ namespace CryGameCode
 				StaticEntity spawnPoint = spawnPoints[0];
 				if (spawnPoint != null)
 				{
-					Console.LogAlways("Found spawnpoint", spawnPoint.Name);
+					Console.LogAlways("Found spawnpoint {0}", spawnPoint.Name);
 
 					player.Position = spawnPoint.Position;
 					player.Rotation = spawnPoint.Rotation;
