@@ -135,7 +135,7 @@ bool CMonoScriptSystem::Reload()
 		CryLogAlways("C# modifications detected on disk, initializing CryBrary reload");
 
 		// Force dump of instance data.
-		m_pScriptCompiler->CallMethod("DumpScriptData");
+		m_pLibraryAssembly->GetCustomClass("AppDomainSerializer", "CryEngine.Utils")->CallMethod("DumpScriptData");
 
 		mono_domain_set(mono_get_root_domain(), false);
 
@@ -178,7 +178,7 @@ bool CMonoScriptSystem::Reload()
 	{
 		PostInit();
 
-		m_pScriptCompiler->CallMethod("TrySetScriptData");
+		m_pLibraryAssembly->GetCustomClass("AppDomainSerializer", "CryEngine.Utils")->CallMethod("TrySetScriptData");
 
 		for each(auto script in m_scripts)
 		{

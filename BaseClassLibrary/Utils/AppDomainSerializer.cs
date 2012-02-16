@@ -25,7 +25,7 @@ namespace CryEngine.Utils
 			{
 				writer.WriteStartDocument();
 				writer.WriteStartElement("Types");
-
+				
 				foreach (var script in ScriptCompiler.CompiledScripts)
 				{
 					if (script.ScriptInstances != null)
@@ -43,7 +43,7 @@ namespace CryEngine.Utils
 							int scriptId = System.Convert.ToInt32(type.GetProperty("ScriptId").GetValue(scriptInstance, null));
 							writer.WriteAttributeString("Id", scriptId.ToString());
 
-							AppDomainSerializer.SerializeTypeToXml(scriptInstance, writer);
+							SerializeTypeToXml(scriptInstance, writer);
 
 							writer.WriteEndElement();
 						}
@@ -146,21 +146,24 @@ namespace CryEngine.Utils
 				foreach (var fieldInfo in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
 				{
 					object value = fieldInfo.GetValue(typeInstance);
+
 					string fieldName = fieldInfo.Name;
 
-					if (value != null && !fieldName.Equals("<ScriptId>k__BackingField"))
+					if (value != null && !fieldName.Equals("<ScriptId>k__BackingField") && !fieldName.Equals("m_value"))
 					{
+						string startElement = "Field";
 						if (fieldName.Contains("k__BackingField"))
 						{
-							writer.WriteStartElement("Property");
+							startElement = "Property";
 
 							fieldName = fieldName.Replace("<", "").Replace(">", "").Replace("k__BackingField", "");
 						}
 						else
-							writer.WriteStartElement("Field");
+							startElement = "Field";
+
+						writer.WriteStartElement(startElement);
 
 						writer.WriteAttributeString("Name", fieldName);
-
 						writer.WriteAttributeString("Type", fieldInfo.FieldType.Name);
 
 						switch (fieldInfo.FieldType.Name)
@@ -201,9 +204,15 @@ namespace CryEngine.Utils
 								break;
 							default:
 								{
-									//SerializeTypeToXml(value, writer);
+									System.Type valueType = value.GetType();
 
-									writer.WriteAttributeString("Value", value.ToString());
+									bool isString = (valueType == typeof(string));
+
+									if (!valueType.IsEnum && !isString)
+										SerializeTypeToXml(value, writer);
+
+									if (valueType.IsPrimitive || isString || valueType.IsEnum)
+										writer.WriteAttributeString("Value", value.ToString());
 								}
 								break;
 						}
