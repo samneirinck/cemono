@@ -57,6 +57,63 @@ namespace CryEngine.Utils
 			}
 		}
 
+		public static void ProcessFields(object instance, IEnumerable<XElement> fields)
+		{
+			if (fields == null || fields.Count() < 1)
+				return;
+
+			foreach (var field in fields)
+			{
+				FieldInfo fieldInfo = instance.GetType().GetField(field.Attribute("Name").Value);
+				if (fieldInfo != null)// && !fieldInfo.FieldType.Name.Equals("Dictionary`2") && !fieldInfo.FieldType.Name.Equals("List`1"))
+				{
+					switch (fieldInfo.FieldType.Name)
+					{
+						case "List`1":
+							{
+								foreach (var element in field.Elements("Elements").Elements("Element"))
+								{
+									System.Collections.IList list = (System.Collections.IList)fieldInfo.GetValue(instance);
+									list.Add(Convert.FromString(element.Attribute("Type").Value, element.Attribute("Value").Value));
+
+									fieldInfo.SetValue(instance, list);
+								}
+							}
+							break;
+						case "Dictionary`2":
+							{
+								foreach (var element in field.Elements("Elements").Elements("Element"))
+								{
+									System.Collections.IDictionary dictionary = (System.Collections.IDictionary)fieldInfo.GetValue(instance);
+									dictionary.Add(Convert.FromString(element.Attribute("KeyType").Value, element.Attribute("Key").Value), Convert.FromString(element.Attribute("ValueType").Value, element.Attribute("Value").Value));
+
+									fieldInfo.SetValue(instance, dictionary);
+								}
+							}
+							break;
+						default:
+							{
+								/*
+								bool isString = (valueType == typeof(string));
+
+								if (!valueType.IsEnum && !isString)
+									SerializeTypeToXml(value, writer);
+
+								if (valueType.IsPrimitive || isString || valueType.IsEnum)
+									writer.WriteAttributeString("Value", value.ToString());*/
+
+								var subFields = field.Elements("Field");
+								if (subFields.Count() > 0)
+									ProcessFields(fieldInfo.GetValue(instance), subFields);
+								else
+									fieldInfo.SetValue(instance, Convert.FromString(field.Attribute("Type").Value, field.Attribute("Value").Value));
+							}
+							break;
+					}
+				}
+			}
+		}
+
 		public static void TrySetScriptData()
 		{
 			string filePath = Path.Combine(PathUtils.GetRootFolder(), "Temp", "MonoScriptData.xml");
@@ -88,41 +145,7 @@ namespace CryEngine.Utils
 
 						script.Type.GetProperty("ScriptId").SetValue(script.ScriptInstances.Last(), scriptId, null);
 
-						foreach (var field in instance.Elements("Field"))
-						{
-							FieldInfo fieldInfo = script.Type.GetField(field.Attribute("Name").Value);
-							if (fieldInfo != null)// && !fieldInfo.FieldType.Name.Equals("Dictionary`2") && !fieldInfo.FieldType.Name.Equals("List`1"))
-							{
-								switch (fieldInfo.FieldType.Name)
-								{
-									case "List`1":
-										{
-											foreach (var element in field.Elements("Elements").Elements("Element"))
-											{
-												System.Collections.IList list = (System.Collections.IList)fieldInfo.GetValue(script.ScriptInstances.Last());
-												list.Add(Convert.FromString(element.Attribute("Type").Value, element.Attribute("Value").Value));
-
-												fieldInfo.SetValue(script.ScriptInstances.Last(), list);
-											}
-										}
-										break;
-									case "Dictionary`2":
-										{
-											foreach (var element in field.Elements("Elements").Elements("Element"))
-											{
-												System.Collections.IDictionary dictionary = (System.Collections.IDictionary)fieldInfo.GetValue(script.ScriptInstances.Last());
-												dictionary.Add(Convert.FromString(element.Attribute("KeyType").Value, element.Attribute("Key").Value), Convert.FromString(element.Attribute("ValueType").Value, element.Attribute("Value").Value));
-
-												fieldInfo.SetValue(script.ScriptInstances.Last(), dictionary);
-											}
-										}
-										break;
-									default:
-										fieldInfo.SetValue(script.ScriptInstances.Last(), Convert.FromString(field.Attribute("Type").Value, field.Attribute("Value").Value));
-										break;
-								}
-							}
-						}
+						ProcessFields(instance, instance.Elements("Field"));
 
 						foreach (var property in instance.Elements("Property"))
 						{
