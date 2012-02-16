@@ -7,6 +7,7 @@ using System.CodeDom.Compiler;
 using System.Reflection;
 
 using CryEngine.Extensions;
+using CryEngine.Utils;
 
 using System.Xml.Linq;
 using System.ComponentModel;
@@ -19,137 +20,6 @@ namespace CryEngine
 {
 	public static partial class ScriptCompiler
 	{
-		public static void GenerateScriptbindAssembly(Scriptbind[] scriptBinds)
-		{
-			List<string> sourceCode = new List<string>();
-			sourceCode.Add("using System.Runtime.CompilerServices;");
-
-			foreach(var scriptBind in scriptBinds)
-			{
-				sourceCode.Add(String.Format("namespace {0}", scriptBind.namespaceName) + "{");
-
-				sourceCode.Add(String.Format("    public partial class {0}", scriptBind.className) + "    {");
-
-				foreach(InternalCallMethod method in scriptBind.methods)
-				{
-					string parameters = method.parameters;
-					string returnType = method.returnType;
-
-					ConvertToCSharp(ref returnType);
-
-					// Convert C++ types to C# ones
-					string fixedParams = "";
-					string[] splitParams = parameters.Split(',');
-					for(int i = 0; i < splitParams.Length; i++)
-					{
-						string param = splitParams[i];
-						ConvertToCSharp(ref param);
-						fixedParams += param;
-						if(param.Last() != ' ')
-							fixedParams += ' ';
-
-						string varName = param;
-
-						if(varName.First() == ' ')
-							varName = varName.Remove(0, 1);
-						if(varName.Last() == ' ')
-							varName = varName.Remove(varName.Count() - 1, 1);
-
-						varName = varName.Replace("ref ", "").Replace("[]", "");
-
-						varName += i.ToString();
-
-						fixedParams += varName;
-						fixedParams += ",";
-					}
-					// Remove the extra ','.
-					fixedParams = fixedParams.Remove(fixedParams.Count() - 1);
-
-					sourceCode.Add("        [MethodImplAttribute(MethodImplOptions.InternalCall)]");
-					sourceCode.Add("        extern public static " + returnType + " " + method.name + "(" + fixedParams + ");");
-				}
-
-				sourceCode.Add("    }");
-
-				sourceCode.Add("}");
-			}
-
-			string generatedFile = Path.Combine(PathUtils.GetScriptsFolder(), "GeneratedScriptbinds.cs");
-			File.WriteAllLines(generatedFile, sourceCode);
-
-			/*
-			CodeDomProvider provider = new CSharpCodeProvider();
-			CompilerParameters compilerParameters = new CompilerParameters();
-
-			compilerParameters.OutputAssembly = Path.Combine(CryPath.GetScriptsFolder(), "Plugins", "CryScriptbinds.dll");
-
-			compilerParameters.CompilerOptions = "/target:library /optimize";
-			compilerParameters.GenerateExecutable = false;
-			compilerParameters.GenerateInMemory = false;
-
-#if DEBUG
-			compilerParameters.IncludeDebugInformation = true;
-#else
-			compilerParameters.IncludeDebugInformation = false;
-#endif
-
-			var assemblies = AppDomain.CurrentDomain.GetAssemblies().Select(a => a.Location);
-			foreach (var assemblyPath in assemblies)
-				compilerParameters.ReferencedAssemblies.Add(assemblyPath);
-
-			try
-			{
-				CompilerResults results = provider.CompileAssemblyFromSource(compilerParameters, sourceCode.ToArray());
-				if (results.Errors.HasErrors)
-				{
-					CryConsole.LogAlways("CryScriptBinds.dll compilation failed; {0} errors:", results.Errors.Count);
-
-					foreach (CompilerError error in results.Errors)
-						CryConsole.LogAlways(error.ErrorText);
-				}
-			}
-			catch (Exception ex)
-			{
-				CryConsole.LogException(ex);
-			}*/
-		}
-
-		/// <summary>
-		/// Finds C++-specific types in the provided string and substitutes them for C# types.
-		/// </summary>
-		/// <param name="cplusplusTypes"></param>
-		private static void ConvertToCSharp(ref string cplusplusTypes)
-		{
-			cplusplusTypes = cplusplusTypes.Replace("mono::string", "string");
-			cplusplusTypes = cplusplusTypes.Replace("mono::array", "object[]");
-			cplusplusTypes = cplusplusTypes.Replace("MonoObject *", "object");
-			cplusplusTypes = cplusplusTypes.Replace("EntityId", "uint");
-
-			cplusplusTypes = cplusplusTypes.Replace(" &", "&");
-			if(cplusplusTypes.EndsWith("&"))
-			{
-				cplusplusTypes = cplusplusTypes.Replace("&", "");
-
-				cplusplusTypes = cplusplusTypes.Insert(0, "ref ");
-				// Remove annoying extra space.
-				if(cplusplusTypes.ElementAt(4) == ' ')
-					cplusplusTypes = cplusplusTypes.Remove(4, 1);
-			}
-
-			// Fugly workaround; Replace types not known to this assembly with 'object'.
-			// TODO: Generate <summary> stuff and add the original type to the description?
-			/*if (!cplusplusTypes.Contains("int") && !cplusplusTypes.Contains("string")
-				&& !cplusplusTypes.Contains("float") && !cplusplusTypes.Contains("uint")
-				&& !cplusplusTypes.Contains("object") && !cplusplusTypes.Contains("bool")
-				&& !cplusplusTypes.Contains("Vec3"))
-			{
-				if (cplusplusTypes.Contains("ref"))
-					cplusplusTypes = "ref object";
-				else
-					cplusplusTypes = "object";
-			}*/
-		}
-
 		/// <summary>
 		/// This function will automatically scan for C# dll (*.dll) files and load the types contained within them.
 		/// </summary>
@@ -180,7 +50,7 @@ namespace CryEngine
 						//Process it, in case it contains types/gamerules
 						Assembly assembly = Assembly.LoadFrom(plugin);
 
-						referencedAssemblies.Add(plugin);
+						AssemblyReferenceHandler.ReferencedAssemblies.Add(plugin);
 
 						compiledScripts.AddRange(LoadAssembly(assembly));
 					}
@@ -275,13 +145,13 @@ namespace CryEngine
 			compilerParameters.GenerateInMemory = false;
 
 			//Add additional assemblies as needed by gamecode to referencedAssemblies
-			foreach (var assembly in GetRequiredAssembliesForScripts(scripts))
+			foreach (var assembly in AssemblyReferenceHandler.GetRequiredAssembliesForScripts(scripts))
 			{
 				if(!compilerParameters.ReferencedAssemblies.Contains(assembly))
 					compilerParameters.ReferencedAssemblies.Add(assembly);
 			}
 
-			compilerParameters.ReferencedAssemblies.AddRange(referencedAssemblies.ToArray());
+			compilerParameters.ReferencedAssemblies.AddRange(AssemblyReferenceHandler.ReferencedAssemblies.ToArray());
 
 #if RELEASE
 			compilerParameters.IncludeDebugInformation = false;
@@ -323,101 +193,6 @@ namespace CryEngine
 			return null;
 		}
 
-		/// <summary>
-		/// Gets the required assemblies for the scripts passed to the method.
-		/// Note: Does NOT exclude assemblies already loaded by CryMono.
-		/// </summary>
-		/// <param name="scripts"></param>
-		/// <returns></returns>
-		static string[] GetRequiredAssembliesForScripts(string[] scripts)
-		{
-			List<string> namespaces = new List<string>();
-			List<string> assemblyPaths = new List<string>();
-
-			foreach (var script in scripts)
-			{
-				foreach (var assembly in GetRequiredAssembliesForScript(script))
-				{
-					if(!namespaces.Contains(assembly))
-						namespaces.Add(assembly);
-				}
-			}
-
-			foreach(var Namespace in namespaces)
-				assemblyPaths.Add(ProcessNamespace(Namespace));
-
-			namespaces = null;
-
-			return assemblyPaths.ToArray();
-		}
-
-		/// <summary>
-		/// Gets the required assemblies for the script passed to the method.
-		/// Note: Does NOT exclude assemblies already loaded by CryMono.
-		/// </summary>
-		/// <param name="script"></param>
-		/// <returns></returns>
-		static string[] GetRequiredAssembliesForScript(string script)
-		{
-			if (String.IsNullOrEmpty(script))
-				return null;
-
-			List<string> namespaces = new List<string>();
-
-			using (var stream = new FileStream(script, FileMode.Open))
-			{
-				using (var reader = new StreamReader(stream))
-				{
-					string line;
-
-					while ((line = reader.ReadLine()) != null)
-					{
-						//Filter for using statements
-						if (line.StartsWith("using") && line.EndsWith(";"))
-						{
-							string Namespace = line.Replace("using ", "").Replace(";", "");
-							if (!namespaces.Contains(Namespace))
-							{
-								namespaces.Add(Namespace);
-								Namespace = null;
-							}
-						}
-					}
-				}
-			}
-
-			return namespaces.ToArray();
-		}
-
-		static string ProcessNamespace(string name)
-		{
-			if (name.StartsWith("CryEngine"))
-				return null;
-
-			XDocument assemblyLookup = XDocument.Load(Path.Combine(PathUtils.GetEngineFolder(), "Mono", "assemblylookup.xml"));
-			foreach(var node in assemblyLookup.Descendants())
-			{
-				if (node.Name.LocalName == "Namespace" && node.Attribute("name").Value==name)
-				{
-					string fullName = node.Parent.Attribute("name").Value;
-
-					string[] assemblies = Directory.GetFiles(Path.Combine(PathUtils.GetEngineFolder(), "Mono", "lib", "mono", "gac"), "*.dll", SearchOption.AllDirectories);
-					foreach (var assembly in assemblies)
-					{
-						if (assembly == fullName)
-						{
-							fullName = assembly;
-							break;
-						}
-					}
-
-					if (!referencedAssemblies.Contains(fullName))
-						return fullName;
-				}
-			}
-
-			return null;
-		}
 
 		/// <summary>
 		/// Loads an C# assembly and return encapulsated script Type.
@@ -491,11 +266,9 @@ namespace CryEngine
 			public string category;
 		}
 
-		internal static List<StoredNode> flowNodes;
-
 		internal static void RegisterFlownodes()
 		{
-			foreach(var node in flowNodes)
+			foreach(var node in FlowNodes)
 				FlowSystem.RegisterNode(node.className, node.category, node.category.Equals("entity", StringComparison.Ordinal));
 		}
 
@@ -544,7 +317,7 @@ namespace CryEngine
 			else
 				category = "entity";
 
-			flowNodes.Add(new StoredNode(nodeName, category));
+			FlowNodes.Add(new StoredNode(nodeName, category));
 		}
 
 		public static object InvokeScriptFunction(object scriptInstance, string func, object[] args = null)
@@ -596,10 +369,7 @@ namespace CryEngine
 			return result;
 		}
 
-		/// <summary>
-		/// All libraries passed through LoadLibrariesInFolder will be automatically added to this list.
-		/// </summary>
-		public static List<string> referencedAssemblies;
+		internal static List<StoredNode> FlowNodes;
 	}
 
 	public enum MonoScriptType

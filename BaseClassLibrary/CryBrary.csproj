@@ -132,6 +132,7 @@
   <ItemGroup>
     <Compile Include="ActorSystem\Inventory.cs" />
     <Compile Include="ActorSystem\Player.cs" />
+    <Compile Include="Utils\AppDomainSerializer.cs" />
     <Compile Include="CryScriptCompiler.cs" />
     <Compile Include="Misc\Convert.cs" />
     <Compile Include="Misc\Math.cs" />
@@ -167,8 +168,10 @@
     <Compile Include="EntitySystem\EntityPhysics.cs" />
     <Compile Include="GameRules\Network.cs" />
     <Compile Include="InputSystem.cs" />
-    <Compile Include="Quat.cs" />
-    <Compile Include="Sandbox\Interface.cs" />
+    <Compile Include="Utils\AssemblyReferenceHandler.cs" />
+    <Compile Include="Utils\ScriptBindAssemblyGenerator.cs" />
+    <Compile Include="Types\Quat.cs" />
+    <Compile Include="EntitySystem\Interface.cs" />
     <Compile Include="ScriptInstance.cs" />
     <Compile Include="Misc\CompilationAttributes.cs" />
     <Compile Include="CallbackHandler.cs" />
@@ -180,31 +183,27 @@
     <Compile Include="Misc\Time.cs" />
     <Compile Include="ThirdParty\Arduino.cs" />
     <Compile Include="Utils\Tester.cs" />
-    <Compile Include="Misc\TypeExtensions.cs" />
+    <Compile Include="Types\TypeExtensions.cs" />
     <Compile Include="EntitySystem\EntitySystem.cs" />
     <Compile Include="EntitySystem\StaticEntity.cs" />
     <Compile Include="FlowSystem\FlowNode.cs" />
     <Compile Include="ActorSystem\ActorSystem.cs" />
     <Compile Include="Console\CVars.cs" />
     <Compile Include="FlowSystem\FlowSystem.cs" />
-    <Compile Include="ItemSystem.cs" />
+    <Compile Include="ActorSystem\ItemSystem.cs" />
     <Compile Include="Console\Logging.cs" />
     <Compile Include="GameRules\GameRulesSystem.cs" />
     <Compile Include="GameRules\BaseGameRules.cs" />
     <Compile Include="Utils\Statistics.cs" />
-    <Compile Include="Vec3.cs" />
+    <Compile Include="Types\Vec3.cs" />
     <Compile Include="Misc\Paths.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScriptCompiler.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\..\..\..\ProjectInk\Engine\Mono\assemblylookup.xml">
-      <Link>DataShortcuts\assemblylookup.xml</Link>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
