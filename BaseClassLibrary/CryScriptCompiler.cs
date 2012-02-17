@@ -147,8 +147,6 @@ namespace CryEngine
 		/// <param name="scriptName"></param>
 		public static void RemoveInstance(int scriptId, string scriptName = "")
 		{
-			Console.LogAlways("RemoveInstance {0}", scriptId);
-
 			if (scriptName.Length > 0)
 			{
 				int index = CompiledScripts.FindIndex(x => x.className.Equals(scriptName));
