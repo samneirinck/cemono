@@ -27,7 +27,7 @@ namespace CryEngine
             //CryConsole.LogAlways("Registering node {0}, category {1}", GetType().Name, nodeInfo.Category);
             foreach (var method in type.GetMethods())
             {
-                InputPortAttribute input;
+                PortAttribute input;
                 NodePortType portType;
 
                 if (method.TryGetAttribute(out input))
@@ -85,25 +85,39 @@ namespace CryEngine
                 }
             }
 
-            OutputPortAttribute output;
+			PortAttribute output;
             foreach (var property in type.GetProperties())
             {
-                if (property.TryGetAttribute(out output))
+				if (property.PropertyType.Name.Contains("OutputPort") && property.TryGetAttribute(out output))
                 {
-                    outputs.Add(new OutputPortConfig(output.Name, output.Name, output.Description, output.Type));
+					bool isGenericType = property.PropertyType.IsGenericType;
+					Type genericType = isGenericType ? property.PropertyType.GetGenericArguments()[0] : typeof(void);
 
-                    // outputId, used together with ActivateOutput.
-                    property.SetValue(this, (outputs.Count - 1), null);
+					NodePortType portType = GetPortType(genericType);
+					outputs.Add(new OutputPortConfig(output.Name, output.Name, output.Description, portType));
+
+					object[] outputPortConstructorArgs = { ScriptId, (outputs.Count - 1) };
+					Type genericOutputPort = typeof(OutputPort<>);
+					object outputPort = Activator.CreateInstance(isGenericType ? genericOutputPort.MakeGenericType(genericType) : property.PropertyType, outputPortConstructorArgs);
+
+					property.SetValue(this, outputPort, null);
                 }
             }
             foreach (var field in type.GetFields())
             {
-                if (field.TryGetAttribute(out output))
+				if (field.FieldType.Name.Contains("OutputPort") && field.TryGetAttribute(out output))
                 {
-                    outputs.Add(new OutputPortConfig(output.Name, output.Name, output.Description, output.Type));
+					bool isGenericType = field.FieldType.IsGenericType;
+					Type genericType = isGenericType ? field.FieldType.GetGenericArguments()[0] : typeof(void);
 
-                    // outputId, used together with ActivateOutput.
-                    field.SetValue(this, (outputs.Count - 1));
+					NodePortType portType = GetPortType(genericType);
+					outputs.Add(new OutputPortConfig(output.Name, output.Name, output.Description, portType));
+
+					object[] outputPortConstructorArgs = { ScriptId, (outputs.Count - 1) };
+					Type genericOutputPort = typeof(OutputPort<>);
+					object outputPort = Activator.CreateInstance(isGenericType ? genericOutputPort.MakeGenericType(genericType) : field.FieldType, outputPortConstructorArgs);
+
+					field.SetValue(this, outputPort);
                 }
             }
 
@@ -155,34 +169,6 @@ namespace CryEngine
 		#endregion
 
 		#region External methods
-		/// <summary>
-		/// Activates one of the node's output ports, without an output value. (Used for outputs of type NodePortType.Void)
-		/// </summary>
-		/// <param name="port"></param>
-		protected void ActivateOutput(int port) { FlowSystem._ActivateOutput(ScriptId, port); }
-		/// <summary>
-		/// Activates one of the node's output ports, with the desired output value.
-		/// </summary>
-		/// <param name="port">The id of the port, from the order it was registered (first is 0)</param>
-		/// <param name="value"></param>
-		protected void ActivateOutput(int port, object value)
-		{
-			if(value is int)
-				FlowSystem._ActivateOutputInt(ScriptId, port, System.Convert.ToInt32(value));
-			else if(value is float || value is double)
-				FlowSystem._ActivateOutputFloat(ScriptId, port, System.Convert.ToSingle(value));
-			else if(value is uint)
-				FlowSystem._ActivateOutputEntityId(ScriptId, port, System.Convert.ToUInt32(value));
-			else if(value is string)
-				FlowSystem._ActivateOutputString(ScriptId, port, System.Convert.ToString(value));
-			else if(value is bool)
-				FlowSystem._ActivateOutputBool(ScriptId, port, System.Convert.ToBoolean(value));
-            else if (value is Vec3)
-                FlowSystem._ActivateOutputVec3(ScriptId, port, (Vec3)value);
-            else
-                throw new ArgumentException("Attempted to activate output with invalid value!");
-		}
-
 		/// <summary>
 		/// Gets the int value of an flownode port.
 		/// </summary>
@@ -274,21 +260,59 @@ namespace CryEngine
 		public FlowNodeFlags Flags { get; set; }
 	}
 
-	[AttributeUsage(AttributeTargets.Method)]
-	public class InputPortAttribute : Attribute
+	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field)]
+	public class PortAttribute : Attribute
 	{
 		public string Name { get; set; }
 		public string Description { get; set; }
 		public FlowNodeFlags Flags { get; set; }
 	}
 
-	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
-	public class OutputPortAttribute : Attribute
+	public sealed class OutputPort
 	{
-		public string Name { get; set; }
-		public string Description { get; set; }
-		public NodePortType Type { get; set; }
-		public FlowNodeFlags Flags { get; set; }
+		public OutputPort(int scriptId, int portId)
+		{
+			ParentScriptId = scriptId;
+			PortId = portId;
+		}
+
+		public void Activate()
+		{
+			FlowSystem._ActivateOutput(ParentScriptId, PortId);
+		}
+
+		int ParentScriptId;
+		int PortId;
+	}
+
+	public sealed class OutputPort<T>
+	{
+		public OutputPort(int scriptId, int portId)
+		{
+			ParentScriptId = scriptId;
+			PortId = portId;
+		}
+
+		public void Activate(T value)
+		{
+			if (value is int)
+				FlowSystem._ActivateOutputInt(ParentScriptId, PortId, System.Convert.ToInt32(value));
+			else if (value is float || value is double)
+				FlowSystem._ActivateOutputFloat(ParentScriptId, PortId, System.Convert.ToSingle(value));
+			else if (value is uint)
+				FlowSystem._ActivateOutputEntityId(ParentScriptId, PortId, System.Convert.ToUInt32(value));
+			else if (value is string)
+				FlowSystem._ActivateOutputString(ParentScriptId, PortId, System.Convert.ToString(value));
+			else if (value is bool)
+				FlowSystem._ActivateOutputBool(ParentScriptId, PortId, System.Convert.ToBoolean(value));
+			else if (value is Vec3)
+				FlowSystem._ActivateOutputVec3(ParentScriptId, PortId, (Vec3)(object)value);
+			else
+				throw new ArgumentException("Attempted to activate output with invalid value!");
+		}
+
+		int ParentScriptId;
+		int PortId;
 	}
 
     [Flags]
