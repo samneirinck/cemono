@@ -213,7 +213,7 @@ struct SMonoInputPortConfig
 			break;
 		case eFDT_String:
 			{
-				return InputPortConfig<string>(ToCryString(name), ToCryString((mono::string)defaultValue), ToCryString(humanName), _HELP(ToCryString(description)), ToCryString(uiConfig));
+				return InputPortConfig<string>(ToCryString(name), ToCryString((mono::string)defaultValue), _HELP(ToCryString(description)), ToCryString(humanName), ToCryString(uiConfig));
 			}
 			break;
 		case eFDT_Bool:
