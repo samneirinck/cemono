@@ -10,12 +10,11 @@ In order to use CryMono, you'll need to download the latest core directory struc
 ### Using CryMono in an existing CryENGINE project
 See the article on our Wiki here; https://github.com/inkdev/CryMono/wiki/Integrating-CryMono-into-an-existing-CryENGINE-project
 
-### Using the included CryMono Game sample
+### Samples
 
-// TODO
-
-#### Visual Studio 2010
-Open MonoGameSample.sln and build all projects.
+At the moment we have two publicly available samples powered by CryMono, they can be downloaded here:
+* MiniGameSample - https://github.com/inkdev/CryMono-Mini-Game-Sample | A C# CryENGINE minigame sample built using a skeleton game dll
+* GameSample - https://github.com/inkdev/CryMono-Game-Sample | The default CryENGINE project with CryMono built-in.
 
 #### Source directory structure 
 Our Visual Studio projects have been set up to expect all contents to be placed inside a folder within the Code folder shipped with the CryENGINE Free SDK.
