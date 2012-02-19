@@ -90,6 +90,8 @@ private:
 	void RegisterDefaultBindings();
 	bool InitializeSystems();
 
+	static void CmdDumpMonoState(IConsoleCmdArgs *cmdArgs);
+
 	MonoDomain *m_pMonoDomain;
 	MonoDomain *m_pScriptDomain;
 

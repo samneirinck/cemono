@@ -107,6 +107,7 @@ CMonoScriptSystem::~CMonoScriptSystem()
 	gEnv->pMonoScriptSystem = NULL;
 }
 
+#include <ISystem.h>
 bool CMonoScriptSystem::Init()
 {
 	CryLogAlways("    Initializing CryMono...");
@@ -114,6 +115,7 @@ bool CMonoScriptSystem::Init()
 	if (!InitializeDomain())
 		return false;
 
+	REGISTER_COMMAND("mono_dump_state", CmdDumpMonoState, VF_NULL, "");
 	if(!Reload())
 		return false;
 
@@ -388,4 +390,9 @@ IMonoClass *CMonoScriptSystem::GetScriptById(int id)
 IMonoAssembly *CMonoScriptSystem::LoadAssembly(const char *assemblyPath)
 {
 	return new CMonoAssembly(assemblyPath);
+}
+
+void CMonoScriptSystem::CmdDumpMonoState(IConsoleCmdArgs *cmdArgs)
+{
+	gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("AppDomainSerializer", "CryEngine.Utils")->CallMethod("DumpScriptData");
 }
