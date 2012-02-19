@@ -15,6 +15,8 @@
 /// </summary>
 #define REGISTER_METHOD(method) gEnv->pMonoScriptSystem->RegisterMethodBinding(method, (GetNamespace() + (string)".").append(GetClassName()).append("::").append("_" #method))
 
+#define REGISTER_EXPOSED_METHOD(method) gEnv->pMonoScriptSystem->RegisterMethodBinding(method, (GetNamespace() + (string)".").append(GetClassName()).append("::").append(#method))
+
 /// <summary>
 /// </summary>
 struct IMonoScriptBind
