@@ -169,7 +169,6 @@
     <Compile Include="GameRules\Network.cs" />
     <Compile Include="InputSystem.cs" />
     <Compile Include="Utils\AssemblyReferenceHandler.cs" />
-    <Compile Include="Utils\ScriptBindAssemblyGenerator.cs" />
     <Compile Include="Types\Quat.cs" />
     <Compile Include="EntitySystem\Interface.cs" />
     <Compile Include="ScriptInstance.cs" />
