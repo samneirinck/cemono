@@ -21,7 +21,7 @@ std::vector<const char *> CEntityManager::m_monoEntityClasses = std::vector<cons
 CEntityManager::CEntityManager()
 	: m_refs(0)
 {
-	REGISTER_METHOD(SpawnEntity);
+	REGISTER_EXPOSED_METHOD(SpawnEntity);
 	REGISTER_METHOD(RegisterEntityClass);
 	
 	REGISTER_METHOD(FindEntity);

@@ -7,8 +7,8 @@
 
 CScriptBind_ItemSystem::CScriptBind_ItemSystem()
 {
-	REGISTER_METHOD(CacheItemGeometry);
-	REGISTER_METHOD(CacheItemSound);
+	REGISTER_EXPOSED_METHOD(CacheItemGeometry);
+	REGISTER_EXPOSED_METHOD(CacheItemSound);
 }
 
 void CScriptBind_ItemSystem::CacheItemGeometry(mono::string itemClass)
