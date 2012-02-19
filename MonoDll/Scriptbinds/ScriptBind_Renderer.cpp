@@ -5,7 +5,37 @@ CScriptBind_Renderer::CScriptBind_Renderer()
 {
 	REGISTER_METHOD(GetViewCamera);
 	REGISTER_METHOD(SetViewCamera);
+
+	REGISTER_METHOD(LoadTexture);
+	REGISTER_METHOD(DrawTextureToScreen);
+
+	REGISTER_METHOD(CreateRenderTarget);
+	REGISTER_METHOD(DestroyRenderTarget);
+	REGISTER_METHOD(SetRenderTarget);
 }
+
+CCamera CScriptBind_Renderer::ToCryCamera(MonoCamera cam)
+{
+	CCamera cryCam;
+
+	cryCam.SetPosition(cam.Position);
+	cryCam.SetAngles((Ang3)cam.ViewDir);
+
+	return cryCam;
+}
+
+MonoCamera CScriptBind_Renderer::ToMonoCamera(CCamera cryCam)
+{
+	MonoCamera cam;
+
+	cam.Position = cryCam.GetPosition();
+	cam.ViewDir = (Vec3)cryCam.GetAngles();
+	cam.FieldOfView = cryCam.GetFov();
+
+	return cam;
+}
+
+// Externals below
 
 MonoCamera CScriptBind_Renderer::GetViewCamera()
 {
@@ -17,13 +47,7 @@ MonoCamera CScriptBind_Renderer::GetViewCamera()
 	if(!gEnv->pSystem)
 		return cam;
 
-	CCamera cryCam = gEnv->pSystem->GetViewCamera();
-
-	cam.Position = cryCam.GetPosition();
-	cam.ViewDir = (Vec3)cryCam.GetAngles();
-	cam.FieldOfView = cryCam.GetFov();
-
-	return cam;
+	return ToMonoCamera(gEnv->pSystem->GetViewCamera());;
 }
 
 void CScriptBind_Renderer::SetViewCamera(MonoCamera cam)
@@ -34,12 +58,7 @@ void CScriptBind_Renderer::SetViewCamera(MonoCamera cam)
 	if(!gEnv->pSystem)
 		return;
 
-	CCamera cryCam;
-
-	cryCam.SetPosition(cam.Position);
-	cryCam.SetAngles((Ang3)cam.ViewDir);
-
-	gEnv->pSystem->SetViewCamera(cryCam);
+	gEnv->pSystem->SetViewCamera(ToCryCamera(cam));
 }
 
 int CScriptBind_Renderer::GetWidth()
@@ -50,4 +69,33 @@ int CScriptBind_Renderer::GetWidth()
 int CScriptBind_Renderer::GetHeight()
 {
 	return gEnv->pRenderer->GetHeight();
+}
+
+int CScriptBind_Renderer::LoadTexture(mono::string texturePath)
+{
+	if(ITexture *pTexture = gEnv->pRenderer->EF_LoadTexture(ToCryString(texturePath)))
+		return pTexture->GetTextureID();
+
+	return -1;
+}
+
+void CScriptBind_Renderer::DrawTextureToScreen(float xpos, float ypos, float width, float height, int textureId)
+{
+	// Could expose the optional args later.
+	gEnv->pRenderer->Draw2dImage(xpos, ypos, width, height, textureId);
+}
+
+int CScriptBind_Renderer::CreateRenderTarget(int width, int height, ETEX_Format texFormat)
+{
+	return gEnv->pRenderer->CreateRenderTarget(width, height, texFormat);
+}
+
+void CScriptBind_Renderer::DestroyRenderTarget(int textureId)
+{
+	gEnv->pRenderer->DestroyRenderTarget(textureId);
+}
+
+void CScriptBind_Renderer::SetRenderTarget(int textureId)
+{
+	gEnv->pRenderer->SetRenderTarget(textureId);
 }

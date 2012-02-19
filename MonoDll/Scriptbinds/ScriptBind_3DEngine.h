@@ -12,6 +12,8 @@
 #include <MonoCommon.h>
 #include <IMonoScriptBind.h>
 
+#include "ScriptBind_Renderer.h"
+
 class CScriptBind_3DEngine : public IMonoScriptBind
 {
 public:
@@ -21,6 +23,8 @@ public:
 	// IMonoScriptBind
 	virtual const char *GetClassName() { return "Engine"; }
 	// ~IMonoScriptBind
+
+	static void RenderWorld(int renderFlags, MonoCamera camera);
 };
 
 #endif //__SCRIPTBIND_3DENGINE__
