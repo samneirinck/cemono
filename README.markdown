@@ -7,8 +7,8 @@ CryMono brings the power of C# into the world of CryENGINE3, allowing game logic
 ## Using CryMono 
 In order to use CryMono, you'll need to download the latest core directory structure from our Downloads page; https://github.com/inkdev/CryMono/downloads.
 
-### Using CryMono in an existing CryENGINE project
-See the article on our Wiki here; https://github.com/inkdev/CryMono/wiki/Integrating-CryMono-into-an-existing-CryENGINE-project
+### Documentation
+For instructions on all things CryMono, see our Confluence setup here; http://docs.inkdev.net/display/CryMono/Home
 
 ### Samples
 
