@@ -203,6 +203,38 @@ namespace CryEngine
 		}
 
 		/// <summary>
+		/// Gets the value of a given flownode input port.
+		/// </summary>
+		/// <typeparam name="T">The port type.</typeparam>
+		/// <param name="port">The port function, representing the input which the value should be retrieved.</param>
+		/// <returns>The value of the port.</returns>
+		protected T GetPortValue<T>(Action<T> port)
+		{
+			var type = port.Method.GetParameters()[0].ParameterType;
+
+			if(type != typeof(T))
+				throw new ArgumentException("Attempted to call GetPortValue<T> but the type parameter and port type were not equal.");
+
+			var portId = GetInputPortId(port.Method);
+			object obj = new object();
+
+			if(type == typeof(int))
+				obj = FlowSystem._GetPortValueInt(ScriptId, portId);
+			else if(type == typeof(float))
+				obj = FlowSystem._GetPortValueFloat(ScriptId, portId);
+			else if(type == typeof(bool))
+				obj = FlowSystem._GetPortValueBool(ScriptId, portId);
+			else if(type == typeof(string))
+				obj = FlowSystem._GetPortValueString(ScriptId, portId);
+			else if(type == typeof(Vec3))
+				obj = FlowSystem._GetPortValueVec3(ScriptId, portId);
+			else
+				throw new ArgumentException("Attempted to call GetPortValue<T> with an invalid type parameter.");
+
+			return (T)obj;
+		}
+
+		/// <summary>
 		/// Gets the int value of an flownode port.
 		/// </summary>
 		/// <param name="port"></param>
