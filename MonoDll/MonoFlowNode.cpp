@@ -157,6 +157,7 @@ void CMonoFlowNode::GetConfiguration(SFlowNodeConfig &config)
 	config.nFlags |= monoConfig.flags;
 	config.pInputPorts = pNodeData->pInputs;
 	config.pOutputPorts = pNodeData->pOutputs;
+
 	config.sDescription = _HELP(ToCryString(monoConfig.description));
 	config.SetCategory(monoConfig.category);
 }

@@ -29,23 +29,23 @@ protected:
 	//static void Warning(mono::string msg);
 
 	// Console commands
-	MonoMethod(void, OnMonoCmd, IConsoleCmdArgs *);
-	MonoMethod(void, RegisterCommand, mono::string, mono::string, EVarFlags);
+	static void OnMonoCmd(IConsoleCmdArgs *);
+	static void RegisterCommand(mono::string, mono::string, EVarFlags);
 
 	// CVars
-	MonoMethod(void, RegisterCVarFloat, mono::string, float&, float, EVarFlags, mono::string);
-	MonoMethod(void, RegisterCVarInt, mono::string, int&, int, EVarFlags, mono::string);
-	MonoMethod(void, RegisterCVarString, mono::string, mono::string &, mono::string , EVarFlags, mono::string);
+	static void RegisterCVarFloat(mono::string, float&, float, EVarFlags, mono::string);
+	static void RegisterCVarInt(mono::string, int&, int, EVarFlags, mono::string);
+	static void RegisterCVarString(mono::string, mono::string &, mono::string , EVarFlags, mono::string);
 
-	MonoMethod(bool, HasCVar, mono::string);
+	static bool HasCVar(mono::string);
 
-	MonoMethod(float, GetCVarFloat, mono::string);
-	MonoMethod(int, GetCVarInt, mono::string);
-	MonoMethod(mono::string, GetCVarString, mono::string);
+	static float GetCVarFloat(mono::string);
+	static int GetCVarInt(mono::string);
+	static mono::string GetCVarString(mono::string);
 
-	MonoMethod(void, SetCVarFloat, mono::string, float);
-	MonoMethod(void, SetCVarInt, mono::string, int);
-	MonoMethod(void, SetCVarString, mono::string, mono::string);
+	static void SetCVarFloat(mono::string, float);
+	static void SetCVarInt(mono::string, int);
+	static void SetCVarString(mono::string, mono::string);
 };
 
 #endif //__LOGGING_BINDING_H__

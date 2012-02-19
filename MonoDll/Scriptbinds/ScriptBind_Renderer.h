@@ -32,8 +32,11 @@ public:
 
 protected:
 
-	MonoMethod(MonoCamera, GetViewCamera);
-	MonoMethod(void, SetViewCamera, MonoCamera);
+	static MonoCamera GetViewCamera();
+	static void SetViewCamera(MonoCamera);
+
+	static int GetWidth();
+	static int GetHeight();
 };
 
 #endif //__SCRIPTBIND_RENDERER__

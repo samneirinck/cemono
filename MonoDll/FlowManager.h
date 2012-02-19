@@ -19,7 +19,9 @@ class CMonoFlowNode;
 
 struct SNodeData
 {
-	SNodeData(CMonoFlowNode *pFlowNode);
+	SNodeData(CMonoFlowNode *pFlowNode) : pNode(pFlowNode) { ReloadPorts(); };
+
+	void ReloadPorts();
 
 	CMonoFlowNode *pNode;
 
@@ -69,7 +71,7 @@ public:
 		SIZER_SUBCOMPONENT_NAME(s, "CFlowManager");
 		s->Add(*this); 
 	}
-	virtual void Reset() override {}
+	virtual void Reset() override;
 	// ~IFlowNodeFactory
 
 	static void RegisterFlowNode(CMonoFlowNode *pNode, int scriptId) { m_nodes.insert(TFlowNodes::value_type(scriptId, new SNodeData(pNode))); }
@@ -85,27 +87,27 @@ protected:
 	virtual const char *GetClassName() { return "FlowSystem"; }
 	// ~IMonoScriptBind
 
-	ExposedMonoMethod(void, RegisterNode, mono::string, mono::string, bool);
+	static void RegisterNode(mono::string, mono::string, bool);
 
-	MonoMethod(bool, IsPortActive, int, int);
+	static bool IsPortActive(int, int);
 
 	template <class T>
 	static void ActivateOutputOnNode(int scriptId, int index, const T &value);
 	
-	MonoMethod(int, GetPortValueInt, int, int);
-	MonoMethod(float, GetPortValueFloat, int, int);
-	MonoMethod(EntityId, GetPortValueEntityId, int, int);
-	MonoMethod(mono::string, GetPortValueString, int, int);
-	MonoMethod(bool, GetPortValueBool, int, int);
-	MonoMethod(mono::object, GetPortValueVec3, int, int);
+	static int GetPortValueInt(int, int);
+	static float GetPortValueFloat(int, int);
+	static EntityId GetPortValueEntityId(int, int);
+	static mono::string GetPortValueString(int, int);
+	static bool GetPortValueBool(int, int);
+	static mono::object GetPortValueVec3(int, int);
 
-	MonoMethod(void, ActivateOutput, int, int);
-	MonoMethod(void, ActivateOutputInt, int, int, int);
-	MonoMethod(void, ActivateOutputFloat, int, int, float);
-	MonoMethod(void, ActivateOutputEntityId, int, int, EntityId);
-	MonoMethod(void, ActivateOutputString, int, int, mono::string);
-	MonoMethod(void, ActivateOutputBool, int, int, bool);
-	MonoMethod(void, ActivateOutputVec3, int, int, Vec3);
+	static void ActivateOutput(int, int);
+	static void ActivateOutputInt(int, int, int);
+	static void ActivateOutputFloat(int, int, float);
+	static void ActivateOutputEntityId(int, int, EntityId);
+	static void ActivateOutputString(int, int, mono::string);
+	static void ActivateOutputBool(int, int, bool);
+	static void ActivateOutputVec3(int, int, Vec3);
 
 	static TFlowNodes m_nodes;
 

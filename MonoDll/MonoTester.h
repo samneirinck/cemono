@@ -38,7 +38,7 @@ protected:
 	// ~IMonoScriptBind
 
 	// Scriptbind methods
-	MonoMethod(void, TestScriptBind, mono::string, int, mono::array);
+	static void TestScriptBind(mono::string, int, mono::array);
 	// ~Scriptbind methods
 
 	static IMonoArray *GetTestParameters();

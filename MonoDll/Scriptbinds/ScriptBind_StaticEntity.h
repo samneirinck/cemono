@@ -27,26 +27,26 @@ protected:
 	virtual const char *GetClassName() { return "StaticEntity"; }
 	// ~IMonoScriptBind
 
-	MonoMethod(mono::string, GetPropertyValue, EntityId, mono::string);
-	MonoMethod(void, SetPropertyValue, EntityId, mono::string, mono::string);
+	static mono::string GetPropertyValue(EntityId, mono::string);
+	static void SetPropertyValue(EntityId, mono::string, mono::string);
 
-	MonoMethod(void, SetWorldPos, EntityId, Vec3);
-	MonoMethod(Vec3, GetWorldPos, EntityId);
-	MonoMethod(void, SetWorldAngles, EntityId, Vec3);
-	MonoMethod(Vec3, GetWorldAngles, EntityId);
+	static void SetWorldPos(EntityId, Vec3);
+	static Vec3 GetWorldPos(EntityId);
+	static void SetWorldAngles(EntityId, Vec3);
+	static Vec3 GetWorldAngles(EntityId);
 
-	MonoMethod(void, LoadObject, EntityId, mono::string, int);
-	MonoMethod(void, LoadCharacter, EntityId, mono::string, int);
+	static void LoadObject(EntityId, mono::string, int);
+	static void LoadCharacter(EntityId, mono::string, int);
 
-	MonoMethod(void, Physicalize, EntityId, MonoPhysicalizationParams);
+	static void Physicalize(EntityId, MonoPhysicalizationParams);
 
-	MonoMethod(void, CreateGameObjectForEntity, EntityId);
-	MonoMethod(void, BindGameObjectToNetwork, EntityId);
+	static void CreateGameObjectForEntity(EntityId);
+	static void BindGameObjectToNetwork(EntityId);
 
-	MonoMethod(mono::string, GetStaticObjectFilePath, EntityId, int);
+	static mono::string GetStaticObjectFilePath(EntityId, int);
 
-	MonoMethod(void, AddMovement, EntityId, MovementRequest&);
-	MonoMethod(Vec3, GetVelocity, EntityId);
+	static void AddMovement(EntityId, MovementRequest&);
+	static Vec3 GetVelocity(EntityId);
 };
 
 struct MonoPhysicalizationParams

@@ -109,11 +109,11 @@ protected:
 	// ~IMonoScriptBind
 
 	// ScriptBinds
-	ExposedMonoMethod(EntityId, SpawnEntity, EntitySpawnParams &, bool);
-	MonoMethod(bool, RegisterEntityClass, EntityRegisterParams, mono::array);
+	static EntityId SpawnEntity(EntitySpawnParams &, bool);
+	static bool RegisterEntityClass(EntityRegisterParams, mono::array);
 
-	MonoMethod(EntityId, FindEntity, mono::string);
-	MonoMethod(mono::array, GetEntitiesByClass, mono::string);
+	static EntityId FindEntity(mono::string);
+	static mono::array GetEntitiesByClass(mono::string);
 	/// End direct entity calls
 
 	// ~ScriptBinds

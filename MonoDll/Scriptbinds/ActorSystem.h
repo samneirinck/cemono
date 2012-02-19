@@ -24,12 +24,12 @@ protected:
 	virtual const char *GetClassName() { return "ActorSystem"; }
 	// ~IMonoScriptBind
 
-	MonoMethod(float, GetPlayerHealth, EntityId);
-	MonoMethod(void, SetPlayerHealth, EntityId, float);
-	MonoMethod(float, GetPlayerMaxHealth, EntityId);
-	MonoMethod(void, SetPlayerMaxHealth, EntityId, float);
+	static float GetPlayerHealth(EntityId);
+	static void SetPlayerHealth(EntityId, float);
+	static float GetPlayerMaxHealth(EntityId);
+	static void SetPlayerMaxHealth(EntityId, float);
 
-	MonoMethod(void, RegisterActorClass, mono::string, bool);
+	static void RegisterActorClass(mono::string, bool);
 };
 
 #endif //__SCRIPTBIND_ACTORSYSTEM_H__

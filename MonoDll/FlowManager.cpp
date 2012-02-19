@@ -36,6 +36,12 @@ CFlowManager::CFlowManager()
 	m_pEntityFlowManager = new CEntityFlowManager();
 }
 
+void CFlowManager::Reset()
+{
+	for each(auto node in m_nodes)
+		node.second->ReloadPorts();
+}
+
 void CFlowManager::RegisterNode(mono::string name, mono::string category, bool isEntity)
 {
 	if(IFlowSystem *pFlowSystem = gEnv->pFlowSystem)
@@ -67,10 +73,10 @@ IFlowNodePtr CFlowManager::Create(IFlowNode::SActivationInfo *pActInfo)
 
 SNodeData *CFlowManager::GetNodeDataById(int scriptId)
 {
-	for(TFlowNodes::iterator it = m_nodes.begin(); it != m_nodes.end(); ++it)
+	for each(auto node in m_nodes)
 	{
-		if((*it).first==scriptId)
-			return (*it).second;
+		if(node.first==scriptId)
+			return node.second;
 	}
 
 	return NULL;
@@ -162,8 +168,7 @@ static const int maxPortCount = 20;
 
 #define GetInput(index) ((pInputPorts->GetSize() > index) ? pInputPorts->GetItem(index)->Unbox<SMonoInputPortConfig>().Convert() : nullConfig)
 #define GetOutput(index) ((pOutputPorts->GetSize() > index) ? pOutputPorts->GetItem(index)->Unbox<SMonoOutputPortConfig>().Convert() : nullOutputConfig)
-SNodeData::SNodeData(CMonoFlowNode *pFlowNode)
-	: pNode(pFlowNode)
+void SNodeData::ReloadPorts()
 {
 	SMonoNodePortConfig monoConfig = CallMonoScript<SMonoNodePortConfig>(pNode->GetScriptId(), "GetPortConfig");
 

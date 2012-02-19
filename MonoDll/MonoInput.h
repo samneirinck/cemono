@@ -34,7 +34,7 @@ public:
 	// ~IActionListener
 
 private:
-	MonoMethod(void, RegisterAction, mono::string);
+	static void RegisterAction(mono::string);
 
 	bool OnActionTriggered(EntityId entityId, const ActionId& actionId, int activationMode, float value);
 

@@ -39,7 +39,7 @@ public:
 	virtual const char *GetClassName() { return "PhysicalWorld"; }
 	// ~IMonoScriptBind
 
-	MonoMethod(int, RayWorldIntersection, Vec3, Vec3, int, unsigned int, MonoRayHit &, int, mono::array);
+	static int RayWorldIntersection(Vec3, Vec3, int, unsigned int, MonoRayHit &, int, mono::array);
 };
 
 #endif //__SCRIPTBIND_PHYSICALWORLD__

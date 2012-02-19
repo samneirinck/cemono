@@ -27,12 +27,15 @@ struct IMonoConverter;
 
 enum EMonoScriptType
 {
-	EMonoScriptType_NULL = 0,
+	EMonoScriptType_NULL = -1,
 
 	EMonoScriptType_GameRules,
 	EMonoScriptType_FlowNode,
+	EMonoScriptType_StaticEntity,
 	EMonoScriptType_Entity,
-	EMonoScriptType_Actor
+	EMonoScriptType_Actor,
+	EMonoScriptType_EditorForm,
+	EMonoScriptType_Unknown,
 };
 
 /// <summary>
@@ -82,14 +85,8 @@ struct IMonoScriptSystem : public IEngineModule
 	/// <summary>
 	/// Registers a method binding, called from IMonoScriptBind.
 	/// </summary>
-	/// <param name="classPath">i.e. "CryEngine.GameRulesSystem::"</param>
-	virtual void RegisterMethodBinding(IMonoMethodBinding binding, const char *classPath) = 0;
-	/// <summary>
-	/// Registers method bindings contained within a vector, called from IMonoScriptBind.
-	/// Note that binded methods also have to be declared as externals within your C# assembly.
-	/// </summary>
-	/// <param name="classPath">i.e. "CryEngine.GameRulesSystem::"</param>
-	virtual void RegisterMethodBindings(std::vector<IMonoMethodBinding> methodBindings, const char *classPath) = 0;
+	/// <param name="fullMethodName">i.e. "CryEngine.GameRulesSystem::GetPlayerId"</param>
+	virtual void RegisterMethodBinding(const void *method, const char *fullMethodName) = 0;
 
 	/// <summary>
 	/// Instantiates a script (with constructor parameters if supplied) of type and name

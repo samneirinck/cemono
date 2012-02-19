@@ -23,10 +23,10 @@ public:
 	virtual const char *GetClassName() { return "GameRulesSystem"; }
 	// ~IMonoScriptBind
 
-	MonoMethod(void, RegisterGameMode, mono::string);
-	MonoMethod(void, AddGameModeAlias, mono::string, mono::string);
-	MonoMethod(void, AddGameModeLevelLocation, mono::string, mono::string);
-	MonoMethod(void, SetDefaultGameMode, mono::string);
+	static void RegisterGameMode(mono::string);
+	static void AddGameModeAlias(mono::string, mono::string);
+	static void AddGameModeLevelLocation(mono::string, mono::string);
+	static void SetDefaultGameMode(mono::string);
 };
 
 #endif //__SCRIPTBIND_GAMERULES_SYSTEM__

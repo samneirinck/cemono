@@ -41,3 +41,13 @@ void CScriptBind_Renderer::SetViewCamera(MonoCamera cam)
 
 	gEnv->pSystem->SetViewCamera(cryCam);
 }
+
+int CScriptBind_Renderer::GetWidth()
+{
+	return gEnv->pRenderer->GetWidth();
+}
+
+int CScriptBind_Renderer::GetHeight()
+{
+	return gEnv->pRenderer->GetHeight();
+}

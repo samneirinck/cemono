@@ -47,7 +47,7 @@ class CMonoScriptSystem : public IMonoScriptSystem, public IFileChangeListener
 	CRYGENERATE_SINGLETONCLASS(CMonoScriptSystem, "CryMono", 0xc37b8ad5d62f47de, 0xa8debe525ff0fc8a)
 
 	typedef std::map<IMonoClass *, int> TScripts;
-	typedef std::map<string, IMonoMethodBinding> TMethodBindings;
+	typedef std::map<const void *, const char *> TMethodBindings;
 
 public:
 	// IMonoScriptSystem
@@ -62,8 +62,7 @@ public:
 
 	virtual IMonoEntityManager *GetEntityManager() const { return m_pEntityManager; }
 
-	virtual void RegisterMethodBinding(IMonoMethodBinding binding, const char *classPath) override;
-	virtual void RegisterMethodBindings(std::vector<IMonoMethodBinding> methodBindings, const char *classPath) override;
+	virtual void RegisterMethodBinding(const void *method, const char *fullMethodName) override;
 	
 	virtual int InstantiateScript(EMonoScriptType scriptType, const char *scriptName, IMonoArray *pConstructorParameters = nullptr) override;
 	virtual IMonoClass *GetScriptById(int id) override;

@@ -177,6 +177,7 @@ bool CMonoScriptSystem::Reload()
 	if(!initialLoad)
 	{
 		PostInit();
+		GetFlowManager()->Reset();
 
 		m_pLibraryAssembly->GetCustomClass("AppDomainSerializer", "CryEngine.Utils")->CallMethod("TrySetScriptData");
 
@@ -224,7 +225,7 @@ void CMonoScriptSystem::RegisterDefaultBindings()
 	if(m_methodBindings.size()>0)
 	{
 		for(TMethodBindings::iterator it = m_methodBindings.begin(); it != m_methodBindings.end(); ++it)
-			RegisterMethodBinding((*it).second, (*it).first);
+			RegisterMethodBinding((*it).first, (*it).second);
 	}
 
 #define RegisterBinding(T) m_localScriptBinds.push_back((IMonoScriptBind *)new T());
@@ -249,6 +250,7 @@ void CMonoScriptSystem::RegisterDefaultBindings()
 	RegisterBindingAndSet(m_pTester, CMonoTester);
 #endif
 
+#undef RegisterBindingAndSet
 #undef RegisterBinding
 }
 
@@ -296,34 +298,12 @@ void CMonoScriptSystem::OnFileChange(const char *sFilename)
 	}
 }
 
-void CMonoScriptSystem::RegisterMethodBinding(IMonoMethodBinding binding, const char *classPath)
+void CMonoScriptSystem::RegisterMethodBinding(const void *method, const char *fullMethodName)
 {
-	mono_add_internal_call(classPath + (string)binding.methodName, binding.method);
-}
-
-void CMonoScriptSystem::RegisterMethodBindings(std::vector<IMonoMethodBinding> newBindings, const char *classPath)
-{
-	if(newBindings.size()<=0)
-		return;
-
-	for each(auto newBinding in newBindings)
-	{
-		for each(auto storedBinding in m_methodBindings)
-		{
-			// Check if it already exists
-			if(storedBinding.second.methodName==newBinding.methodName)
-				return;
-			
-			if(!IsInitialized())
-				m_methodBindings.insert(TMethodBindings::value_type(classPath, newBinding));
-		}
-	}
-
-	if(!IsInitialized()) // MonoDomain not initialized yet, we'll register them later.
-		return;
-
-	for each(auto binding in newBindings)
-		RegisterMethodBinding(binding, classPath);
+	if(!IsInitialized())
+		m_methodBindings.insert(TMethodBindings::value_type(method, fullMethodName));
+	else
+		mono_add_internal_call(fullMethodName, method);
 }
 
 int CMonoScriptSystem::InstantiateScript(EMonoScriptType scriptType, const char *scriptName, IMonoArray *pConstructorParameters)
