@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-
-using System.Xml;
 using System.Xml.Linq;
 
 using System.IO;
@@ -85,28 +83,25 @@ namespace CryEngine.Utils
 
 		static string ProcessNamespace(string name)
 		{
-			if (name.StartsWith("CryEngine"))
-				return null;
-
 			XDocument assemblyLookup = XDocument.Load(Path.Combine(PathUtils.GetEngineFolder(), "Mono", "assemblylookup.xml"));
 			foreach (var node in assemblyLookup.Descendants())
 			{
 				if (node.Name.LocalName == "Namespace" && node.Attribute("name").Value == name)
 				{
-					string fullName = node.Parent.Attribute("name").Value;
+					string assemblyName = node.Parent.Attribute("name").Value;
 
 					string[] assemblies = Directory.GetFiles(Path.Combine(PathUtils.GetEngineFolder(), "Mono", "lib", "mono", "gac"), "*.dll", SearchOption.AllDirectories);
 					foreach (var assembly in assemblies)
 					{
-						if (assembly == fullName)
+						if (assembly.Contains(assemblyName))
 						{
-							fullName = assembly;
+							assemblyName = assembly;
 							break;
 						}
 					}
 
-					if (!ReferencedAssemblies.Contains(fullName))
-						return fullName;
+					if (!ReferencedAssemblies.Contains(assemblyName))
+						return assemblyName;
 				}
 			}
 
