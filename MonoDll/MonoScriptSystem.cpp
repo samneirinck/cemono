@@ -19,6 +19,7 @@
 #include <mono/metadata/mono-gc.h>
 
 #include <ICmdLine.h>
+#include <ISystem.h>
 
 #include "MonoConverter.h"
 
@@ -107,7 +108,6 @@ CMonoScriptSystem::~CMonoScriptSystem()
 	gEnv->pMonoScriptSystem = NULL;
 }
 
-#include <ISystem.h>
 bool CMonoScriptSystem::Init()
 {
 	CryLogAlways("    Initializing CryMono...");
