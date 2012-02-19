@@ -1,7 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
+
+using System.ComponentModel;
+using System.Reflection;
+
 using CryEngine.Extensions;
 
 namespace CryEngine
@@ -73,10 +78,30 @@ namespace CryEngine
 		/// Initializes the entity, not recommended to set manually.
 		/// </summary>
 		/// <param name="entityId"></param>
-		internal virtual void InternalSpawn(uint entityId)
+		/// <returns>IsEntityFlowNode</returns>
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		internal virtual bool InternalSpawn(uint entityId)
 		{
 			SpawnCommon(entityId);
 			OnSpawn();
+
+			return IsEntityFlowNode();
+		}
+
+		/// <summary>
+		/// Returns true if this entity contains input or output ports.
+		/// </summary>
+		/// <returns></returns>
+		public bool IsEntityFlowNode()
+		{
+			PortAttribute portAttribute;
+			foreach(var member in GetType().GetMembers(BindingFlags.Instance))
+			{
+				if (member.TryGetAttribute(out portAttribute))
+					return true;
+			}
+
+			return false;
 		}
 
 		internal void InitPhysics()

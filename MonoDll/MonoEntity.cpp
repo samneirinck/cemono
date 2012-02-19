@@ -35,7 +35,7 @@ void CMonoEntity::OnSpawn(EntityId id)
 	ADD_EVENTLISTENER(ENTITY_EVENT_LEAVEAREA);
 #undef ADD_EVENTLISTENER
 
-	CallMonoScript<void>(m_scriptId, "InternalSpawn", m_entityId);
+	CallMonoScript<bool>(m_scriptId, "InternalSpawn", m_entityId);
 }
 
 void CMonoEntity::OnEntityEvent(IEntity *pEntity,SEntityEvent &event)

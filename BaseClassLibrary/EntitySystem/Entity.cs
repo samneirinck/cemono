@@ -31,11 +31,13 @@ namespace CryEngine
         /// </summary>
         /// <param name="entityId"></param>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        internal override void InternalSpawn(uint entityId)
+        internal override bool InternalSpawn(uint entityId)
         {
             SpawnCommon(entityId);
             _CreateGameObjectForEntity(Id);
             OnSpawn();
+
+			return IsEntityFlowNode();
         }
 
         public Vec3 Velocity 
