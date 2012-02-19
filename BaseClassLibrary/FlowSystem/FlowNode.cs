@@ -23,106 +23,107 @@ namespace CryEngine
 
             var inputs = new List<object>();
             var outputs = new List<object>();
-            object defaultVal = null;
-            //CryConsole.LogAlways("Registering node {0}, category {1}", GetType().Name, nodeInfo.Category);
-            foreach (var method in type.GetMethods())
-            {
-                PortAttribute input;
-                NodePortType portType;
 
-                if (method.TryGetAttribute(out input))
-                {
-                    if (method.GetParameters().Length > 0)
-                    {
-                        ParameterInfo parameter = method.GetParameters()[0];
-                        portType = GetPortType(parameter.ParameterType);
-
-                        if (parameter.IsOptional)
-                            defaultVal = parameter.DefaultValue;
-                        else
-                        {
-                            switch (portType)
-                            {
-                                case NodePortType.Bool:
-                                    {
-                                        defaultVal = false;
-                                    }
-                                    break;
-                                case NodePortType.EntityId:
-                                    {
-                                        defaultVal = -1;
-                                    }
-                                    break;
-                                case NodePortType.Float:
-                                    {
-                                        defaultVal = 0.0f;
-                                    }
-                                    break;
-                                case NodePortType.Int:
-                                    {
-                                        defaultVal = 0;
-                                    }
-                                    break;
-                                case NodePortType.String:
-                                    {
-                                        defaultVal = "";
-                                    }
-                                    break;
-                                case NodePortType.Vec3:
-                                    {
-                                        defaultVal = new Vec3(0, 0, 0);
-                                    }
-                                    break;
-                            }
-                        }
-                    }
-                    else
-                        portType = NodePortType.Void;
-
-
-                    inputs.Add(new InputPortConfig(input.Name, portType, defaultVal, input.Description));
-                    inputMethods.Add(method);
-                }
-            }
-
-			PortAttribute output;
-            foreach (var property in type.GetProperties())
-            {
-				if (property.PropertyType.Name.Contains("OutputPort") && property.TryGetAttribute(out output))
-                {
-					bool isGenericType = property.PropertyType.IsGenericType;
-					Type genericType = isGenericType ? property.PropertyType.GetGenericArguments()[0] : typeof(void);
-
-					NodePortType portType = GetPortType(genericType);
-					outputs.Add(new OutputPortConfig(output.Name, output.Name, output.Description, portType));
-
-					object[] outputPortConstructorArgs = { ScriptId, (outputs.Count - 1) };
-					Type genericOutputPort = typeof(OutputPort<>);
-					object outputPort = Activator.CreateInstance(isGenericType ? genericOutputPort.MakeGenericType(genericType) : property.PropertyType, outputPortConstructorArgs);
-
-					property.SetValue(this, outputPort, null);
-                }
-            }
-            foreach (var field in type.GetFields())
-            {
-				if (field.FieldType.Name.Contains("OutputPort") && field.TryGetAttribute(out output))
-                {
-					bool isGenericType = field.FieldType.IsGenericType;
-					Type genericType = isGenericType ? field.FieldType.GetGenericArguments()[0] : typeof(void);
-
-					NodePortType portType = GetPortType(genericType);
-					outputs.Add(new OutputPortConfig(output.Name, output.Name, output.Description, portType));
-
-					object[] outputPortConstructorArgs = { ScriptId, (outputs.Count - 1) };
-					Type genericOutputPort = typeof(OutputPort<>);
-					object outputPort = Activator.CreateInstance(isGenericType ? genericOutputPort.MakeGenericType(genericType) : field.FieldType, outputPortConstructorArgs);
-
-					field.SetValue(this, outputPort);
-                }
-            }
+			foreach (var member in type.GetMembers())
+				ProcessMemberForPort(member, ref inputs, ref outputs);
 
             return new NodePortConfig(inputs.ToArray(), outputs.ToArray());
         }
+
+		public void ProcessMemberForPort(MemberInfo member, ref List<object> inputs, ref List<object> outputs)
+		{
+			PortAttribute portAttribute;
+			if (member.TryGetAttribute(out portAttribute))
+			{
+				MethodInfo method = member as MethodInfo;
+				if (method != null)
+				{
+					NodePortType portType;
+					object defaultVal = null;
+
+					if (method.GetParameters().Length > 0)
+					{
+						ParameterInfo parameter = method.GetParameters()[0];
+						portType = GetPortType(parameter.ParameterType);
+
+						if (parameter.IsOptional)
+							defaultVal = parameter.DefaultValue;
+						else
+						{
+							switch (portType)
+							{
+								case NodePortType.Bool:
+									defaultVal = false;
+									break;
+								case NodePortType.EntityId:
+									defaultVal = 0;
+									break;
+								case NodePortType.Float:
+									defaultVal = 0.0f;
+									break;
+								case NodePortType.Int:
+									defaultVal = 0;
+									break;
+								case NodePortType.String:
+									defaultVal = "";
+									break;
+								case NodePortType.Vec3:
+									defaultVal = new Vec3(0, 0, 0);
+									break;
+							}
+						}
+					}
+					else
+						portType = NodePortType.Void;
+
+					inputs.Add(new InputPortConfig(portAttribute.Name, portType, defaultVal, portAttribute.Description));
+					inputMethods.Add(method);
+				}
+
+				FieldInfo field = member as FieldInfo;
+				PropertyInfo property = member as PropertyInfo;
+				if (field != null || property != null)
+				{
+					NodePortType portType = 0;
+
+					if (field != null)
+					{
+						if (field.FieldType.Name.StartsWith("OutputPort"))
+						{
+							bool isGenericType = field.FieldType.IsGenericType;
+							Type genericType = isGenericType ? field.FieldType.GetGenericArguments()[0] : typeof(void);
+
+							portType = GetPortType(genericType);
+
+							object[] outputPortConstructorArgs = { ScriptId, (outputs.Count - 1) };
+							Type genericOutputPort = typeof(OutputPort<>);
+							object outputPort = Activator.CreateInstance(isGenericType ? genericOutputPort.MakeGenericType(genericType) : field.FieldType, outputPortConstructorArgs);
+
+							field.SetValue(this, outputPort);
+						}
+					}
+					else
+					{
+						if (property.PropertyType.Name.StartsWith("OutputPort"))
+						{
+							bool isGenericType = property.PropertyType.IsGenericType;
+							Type genericType = isGenericType ? property.PropertyType.GetGenericArguments()[0] : typeof(void);
+
+							portType = GetPortType(genericType);
+							outputs.Add(new OutputPortConfig(portAttribute.Name, portAttribute.Name, portAttribute.Description, portType));
+
+							object[] outputPortConstructorArgs = { ScriptId, (outputs.Count - 1) };
+							Type genericOutputPort = typeof(OutputPort<>);
+							object outputPort = Activator.CreateInstance(isGenericType ? genericOutputPort.MakeGenericType(genericType) : property.PropertyType, outputPortConstructorArgs);
+
+							property.SetValue(this, outputPort, null);
+						}
+					}
+
+					outputs.Add(new OutputPortConfig(portAttribute.Name, portAttribute.Name, portAttribute.Description, portType));
+				}
+			}
+		}
 
 		// Used to call OnActivate methods automatically.
 		List<MethodInfo> inputMethods;
