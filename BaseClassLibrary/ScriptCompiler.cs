@@ -41,16 +41,17 @@ namespace CryEngine
 				{
 					try
 					{
+						string newPath = Path.Combine(Path.GetTempPath(), Path.GetFileName(plugin));
+
+						File.Copy(plugin, newPath, true);
 #if !RELEASE
-						Pdb2Mdb.Driver.Convert(plugin);
+						Pdb2Mdb.Driver.Convert(newPath);
 #endif
 
-						AssemblyName assemblyName = AssemblyName.GetAssemblyName(plugin);
-
 						//Process it, in case it contains types/gamerules
-						Assembly assembly = Assembly.LoadFrom(plugin);
+						Assembly assembly = Assembly.LoadFrom(newPath);
 
-						AssemblyReferenceHandler.ReferencedAssemblies.Add(plugin);
+						AssemblyReferenceHandler.ReferencedAssemblies.Add(newPath);
 
 						compiledScripts.AddRange(LoadAssembly(assembly));
 					}
