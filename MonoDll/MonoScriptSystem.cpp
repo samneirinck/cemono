@@ -51,6 +51,7 @@ CMonoScriptSystem::CMonoScriptSystem()
 	, m_pScriptDomain(NULL)
 	, m_pLibraryAssembly(NULL)
 	, m_pCallbackHandler(NULL)
+	, m_pMonoDebugDatabaseCreator(NULL)
 {
 	CryLogAlways("Initializing Mono Script System");
 
@@ -114,6 +115,10 @@ bool CMonoScriptSystem::Init()
 	
 	if (!InitializeDomain())
 		return false;
+
+#ifndef _RELEASE
+	m_pMonoDebugDatabaseCreator = new CMonoAssembly(CMonoPathUtils::GetMonoPath() + "bin\\pdb2mdb.dll");
+#endif
 
 	REGISTER_COMMAND("mono_dump_state", CmdDumpMonoState, VF_NULL, "");
 	if(!Reload())
