@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D125B812-68BC-4926-9DE9-45491137785D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>MonoDevelop.Debugger.Soft.CryENGINE</RootNamespace>
+    <AssemblyName>MonoDevelop.Debugger.Soft.CryENGINE</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="Mono.TextEditor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files %28x86%29\MonoDevelop\bin\Mono.TextEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.Core, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files %28x86%29\MonoDevelop\bin\MonoDevelop.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.Ide, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files %28x86%29\MonoDevelop\bin\MonoDevelop.Ide.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=5e9ce85b0923c84f">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files %28x86%29\MonoDevelop\bin\Mono.Debugging.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Debugger.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files %28x86%29\MonoDevelop\AddIns\MonoDevelop.Debugger.Soft\Mono.Debugger.Soft.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.Debugger.Soft, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files %28x86%29\MonoDevelop\AddIns\MonoDevelop.Debugger.Soft\MonoDevelop.Debugger.Soft.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.Debugger, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files %28x86%29\MonoDevelop\AddIns\MonoDevelop.Debugger\MonoDevelop.Debugger.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Debugging.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=5e9ce85b0923c84f">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files %28x86%29\MonoDevelop\AddIns\MonoDevelop.Debugger.Soft\Mono.Debugging.Soft.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.Debugger.Soft.AspNet, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files %28x86%29\MonoDevelop\AddIns\MonoDevelop.Debugger.Soft\MonoDevelop.Debugger.Soft.AspNet.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.Debugger.Soft.Moonlight, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files %28x86%29\MonoDevelop\AddIns\MonoDevelop.Debugger.Soft\MonoDevelop.Debugger.Soft.Moonlight.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="DebuggerStartInfo.cs" />
+    <Compile Include="ProjectServiceExtension.cs" />
+    <Compile Include="SoftDebuggerEngine.cs" />
+    <Compile Include="SoftDebuggerSession.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>Microsoft.Net.Framework.3.5.SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="MonoDevelop.Debugger.Soft.CryENGINE.addin.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>
