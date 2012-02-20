@@ -75,11 +75,6 @@ struct IMonoScriptSystem : public IEngineModule
 	/// </summary>
 	virtual void Release() = 0;
 
-	/// <summary>
-	/// Updates the system, once per frame.
-	/// </summary>
-	virtual void Update(float frameTime) = 0;
-
 	virtual IMonoEntityManager *GetEntityManager() const = 0;
 	
 	/// <summary>

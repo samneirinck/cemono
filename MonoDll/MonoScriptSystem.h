@@ -17,8 +17,8 @@
 #include <MonoCommon.h>
 
 #include <CryExtension/Impl/ClassWeaver.h>
-
 #include <IFileChangeMonitor.h>
+#include <IGameFramework.h>
 
 struct IMonoClass;
 struct IMonoMethodBinding;
@@ -40,7 +40,10 @@ struct InternalCallMethod
 	mono::string parameters;
 };
 
-class CMonoScriptSystem : public IMonoScriptSystem, public IFileChangeListener
+class CMonoScriptSystem 
+	: public IMonoScriptSystem
+	, public IFileChangeListener
+	, public IGameFrameworkListener
 {
 	CRYINTERFACE_SIMPLE(IMonoScriptSystem);
 	
@@ -57,8 +60,6 @@ public:
 	virtual bool Reload() override;
 
 	virtual void Release() override { delete this; }
-
-	virtual void Update(float frameTime) override;
 
 	virtual IMonoEntityManager *GetEntityManager() const { return m_pEntityManager; }
 
@@ -77,6 +78,14 @@ public:
 	// IFileChangeMonitor
 	virtual void OnFileChange(const char* sFilename);
 	// ~IFileChangeMonitor
+
+	// ~IGameFrameworkListener
+	virtual void OnPostUpdate(float fDeltaTime);
+	virtual void OnSaveGame(ISaveGame* pSaveGame) {}
+	virtual void OnLoadGame(ILoadGame* pLoadGame) {}
+	virtual void OnLevelEnd(const char* nextLevel) {}
+	virtual void OnActionEvent(const SActionEvent& event) {}
+	// ~IGameFrameworkListener
 
 	IMonoClass *GetScriptCompilerClass() const { return m_pScriptCompiler; }
 	

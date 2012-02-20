@@ -211,6 +211,8 @@ bool CMonoScriptSystem::Reload()
 void CMonoScriptSystem::PostInit()
 {
 	m_pScriptCompiler->CallMethod("PostInit");
+
+	gEnv->pGameFramework->RegisterListener(this, "CryMono", FRAMEWORKLISTENERPRIORITY_GAME);
 }
 
 bool CMonoScriptSystem::InitializeDomain()
@@ -279,12 +281,12 @@ bool CMonoScriptSystem::InitializeSystems()
 	return true;
 }
 
-void CMonoScriptSystem::Update(float frameTime)
+void CMonoScriptSystem::OnPostUpdate(float fDeltaTime)
 {
 	//m_pCallbackHandler->InvokeCallback("Update", "Manager");
 
 	IMonoArray *pArgs = CreateMonoArray(1);
-	pArgs->Insert(frameTime);
+	pArgs->Insert(fDeltaTime);
 	m_pScriptCompiler->CallMethod("OnUpdate", pArgs);
 	SAFE_RELEASE(pArgs);
 }
