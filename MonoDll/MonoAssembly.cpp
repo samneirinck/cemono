@@ -7,11 +7,21 @@
 #include <mono/metadata/debug-helpers.h>
 #include <mono/metadata/assembly.h>
 
+#include <Windows.h>
+
 CMonoAssembly::CMonoAssembly(const char *assemblyPath)
 {
-	m_assemblyPath = assemblyPath;
+	string path = assemblyPath;
+
+	TCHAR tempPath[MAX_PATH];
+	GetTempPath(MAX_PATH, tempPath);
+
+	string newAssemblyPath = tempPath + path.substr(path.find_last_of("\\") + 1);
+	CopyFile(assemblyPath, newAssemblyPath, false);
+
+	m_assemblyPath = newAssemblyPath;
 	
-	m_pAssembly = mono_domain_assembly_open(mono_domain_get(), assemblyPath);
+	m_pAssembly = mono_domain_assembly_open(mono_domain_get(), newAssemblyPath);
 	if (!m_pAssembly)
 	{
 		gEnv->pLog->LogError("Failed to create assembly from %s", assemblyPath);
