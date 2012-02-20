@@ -171,38 +171,6 @@ namespace CryEngine
 
 		#region External methods
 		/// <summary>
-		/// Gets the value of a given flownode input port.
-		/// </summary>
-		/// <typeparam name="T">The port type.</typeparam>
-		/// <param name="port">The port function, representing the input which the value should be retrieved.</param>
-		/// <returns>The value of the port.</returns>
-		protected T GetPortValue<T>(Action<T> port)
-		{
-			var type = port.Method.GetParameters()[0].ParameterType;
-
-			if(type != typeof(T))
-				throw new ArgumentException("Attempted to call GetPortValue<T> but the type parameter and port type were not equal.");
-
-			var portId = GetInputPortId(port.Method);
-			object obj = new object();
-
-			if(type == typeof(int))
-				obj = FlowSystem._GetPortValueInt(ScriptId, portId);
-			else if(type == typeof(float))
-				obj = FlowSystem._GetPortValueFloat(ScriptId, portId);
-			else if(type == typeof(bool))
-				obj = FlowSystem._GetPortValueBool(ScriptId, portId);
-			else if(type == typeof(string))
-				obj = FlowSystem._GetPortValueString(ScriptId, portId);
-			else if(type == typeof(Vec3))
-				obj = FlowSystem._GetPortValueVec3(ScriptId, portId);
-			else
-				throw new ArgumentException("Attempted to call GetPortValue<T> with an invalid type parameter.");
-
-			return (T)obj;
-		}
-
-		/// <summary>
 		/// Gets the int value of an flownode port.
 		/// </summary>
 		/// <param name="port"></param>
@@ -329,6 +297,33 @@ namespace CryEngine
 		{
 			ParentScriptId = scriptId;
 			PortId = portId;
+		}
+
+		// TODO: Rename
+		public void ActivateWithInputValue(Action<T> port)
+		{
+			var type = port.Method.GetParameters()[0].ParameterType;
+
+			if (type != typeof(T))
+				throw new ArgumentException("Attempted to call GetPortValue<T> but the type parameter and port type were not equal.");
+
+			var inputPortId = 0;//GetInputPortId(port.Method);
+			object obj = new object();
+
+			if (type == typeof(int))
+				FlowSystem._ActivateOutputInt(ParentScriptId, inputPortId, FlowSystem._GetPortValueInt(ParentScriptId, inputPortId));
+			else if (type == typeof(float) || type == typeof(double))
+				FlowSystem._ActivateOutputFloat(ParentScriptId, inputPortId, FlowSystem._GetPortValueFloat(ParentScriptId, inputPortId));
+			else if(type == typeof(uint))
+				FlowSystem._ActivateOutputEntityId(ParentScriptId, inputPortId, FlowSystem._GetPortValueEntityId(ParentScriptId, inputPortId));
+			else if (type == typeof(string))
+				FlowSystem._ActivateOutputString(ParentScriptId, inputPortId, FlowSystem._GetPortValueString(ParentScriptId, inputPortId));
+			else if (type == typeof(bool))
+				FlowSystem._ActivateOutputBool(ParentScriptId, inputPortId, FlowSystem._GetPortValueBool(ParentScriptId, inputPortId));
+			else if (type == typeof(Vec3))
+				FlowSystem._ActivateOutputVec3(ParentScriptId, inputPortId, FlowSystem._GetPortValueVec3(ParentScriptId, inputPortId));
+			else
+				throw new ArgumentException("Attempted to call GetPortValue<T> with an invalid type parameter.");
 		}
 
 		public void Activate(T value)
