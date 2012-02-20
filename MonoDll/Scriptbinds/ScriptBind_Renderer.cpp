@@ -6,6 +6,9 @@ CScriptBind_Renderer::CScriptBind_Renderer()
 	REGISTER_METHOD(GetViewCamera);
 	REGISTER_METHOD(SetViewCamera);
 
+	REGISTER_METHOD(GetWidth);
+	REGISTER_METHOD(GetHeight);
+
 	REGISTER_METHOD(LoadTexture);
 	REGISTER_METHOD(DrawTextureToScreen);
 

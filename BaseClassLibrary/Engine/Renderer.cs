@@ -13,16 +13,21 @@ namespace CryEngine
 		extern internal static void _SetViewCamera(Camera cam);
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static int _LoadTexture(string path);
+		extern public static int _GetWidth();
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _DrawTextureToScreen(float xpos, float ypos, float width, float height, int textureId);
+		extern public static int _GetHeight();
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static int _CreateRenderTarget(int width, int height, int flags);
+		extern public static int _LoadTexture(string path);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _DestroyRenderTarget(int id);
+		extern public static void _DrawTextureToScreen(float xpos, float ypos, float width, float height, int textureId);
+
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _SetRenderTarget(int id);
+		extern public static int _CreateRenderTarget(int width, int height, int flags);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern public static void _DestroyRenderTarget(int id);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern public static void _SetRenderTarget(int id);
 
 		public static Camera Camera { get { return _GetViewCamera(); } set { _SetViewCamera(value); } }
 	}
