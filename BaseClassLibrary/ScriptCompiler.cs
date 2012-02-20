@@ -45,7 +45,7 @@ namespace CryEngine
 
 						File.Copy(plugin, newPath, true);
 #if !RELEASE
-						Pdb2Mdb.Driver.Convert(newPath);
+						//Pdb2Mdb.Driver.Convert(newPath);
 #endif
 
 						//Process it, in case it contains types/gamerules
