@@ -11,7 +11,9 @@ using CryEngine.Utils;
 
 using System.Xml.Linq;
 using System.ComponentModel;
+
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 /// <summary>
 /// The main engine namespace, otherwise known as the CryENGINE3 Base Class Library.
@@ -45,7 +47,11 @@ namespace CryEngine
 
 						File.Copy(plugin, newPath, true);
 #if !RELEASE
-						//Pdb2Mdb.Driver.Convert(newPath);
+						GenerateDebugDatabaseForAssembly(plugin);
+
+						string mdbFile = plugin + ".mdb";
+						if (File.Exists(mdbFile)) // success
+							File.Copy(mdbFile, Path.Combine(Path.GetTempPath(), Path.GetFileName(mdbFile)));
 #endif
 
 						//Process it, in case it contains types/gamerules
@@ -142,8 +148,7 @@ namespace CryEngine
 			CompilerParameters compilerParameters = new CompilerParameters();
 
 			compilerParameters.GenerateExecutable = false;
-
-			compilerParameters.GenerateInMemory = false;
+			compilerParameters.GenerateInMemory = true;
 
 			//Add additional assemblies as needed by gamecode to referencedAssemblies
 			foreach (var assembly in AssemblyReferenceHandler.GetRequiredAssembliesForScripts(scripts))
@@ -160,13 +165,6 @@ namespace CryEngine
 			// Necessary for stack trace line numbers etc
            compilerParameters.IncludeDebugInformation = true;
 #endif
-
-			// We've got to get that assembly reference generator working. (Slap me if I accidentally commit this)
-			// Consider yourself slapped. Here's a mildly less fugly (read: hardcoded) solution.
-			// TODO: That ref generator.
-			//compilerParameters.ReferencedAssemblies.Add(Path.Combine(PathUtils.GetGacFolder(), @"System.Windows.Forms\4.0.0.0__b77a5c561934e089\System.Windows.Forms.dll"));
-			//compilerParameters.ReferencedAssemblies.Add(Path.Combine(PathUtils.GetGacFolder(), @"System.Drawing\4.0.0.0__b03f5f7f11d50a3a\System.Drawing.dll"));
-
 			try
 			{
 				CompilerResults results = provider.CompileAssemblyFromFile(compilerParameters, scripts);
@@ -368,6 +366,19 @@ namespace CryEngine
 			info = null;
 
 			return result;
+		}
+
+		public static void GenerateDebugDatabaseForAssembly(string assemblyPath)
+		{
+			if (File.Exists(Path.ChangeExtension(assemblyPath, "pdb")))
+			{
+				Assembly assembly = Assembly.LoadFrom(Path.Combine(PathUtils.GetEngineFolder(), "Mono", "bin", "pdb2mdb.dll"));
+				Type driver = assembly.GetType("Driver");
+				MethodInfo convertMethod = driver.GetMethod("Convert", BindingFlags.Static | BindingFlags.Public);
+
+				object[] args = { assemblyPath };
+				convertMethod.Invoke(null, args);
+			}
 		}
 
 		internal static List<StoredNode> FlowNodes;

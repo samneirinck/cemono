@@ -79,6 +79,8 @@ public:
 	// ~IFileChangeMonitor
 
 	IMonoClass *GetScriptCompilerClass() const { return m_pScriptCompiler; }
+	
+	IMonoAssembly *GetDebugDatabaseCreator() { return m_pMonoDebugDatabaseCreator; }
 
 	CMonoCallbackHandler *GetCallbackHandler() const { return m_pCallbackHandler; }
 	CFlowManager *GetFlowManager() const { return m_pFlowManager; }
@@ -96,6 +98,7 @@ private:
 	MonoDomain *m_pScriptDomain;
 
 	IMonoAssembly *m_pLibraryAssembly;
+	IMonoAssembly *m_pMonoDebugDatabaseCreator;
 
 	IMonoClass *m_pScriptCompiler;
 

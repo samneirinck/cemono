@@ -1,27 +1,55 @@
 #include "StdAfx.h"
 #include "MonoAssembly.h"
 
-#include "MonoClass.h"
-
 #include <mono/mini/jit.h>
 #include <mono/metadata/debug-helpers.h>
 #include <mono/metadata/assembly.h>
 
 #include <Windows.h>
 
+#include "MonoPathUtils.h"
+#include "MonoScriptSystem.h"
+
+#include <IMonoClass.h>
+
 CMonoAssembly::CMonoAssembly(const char *assemblyPath)
 {
+#ifndef _RELEASE
 	string path = assemblyPath;
+	if(path.find("pdb2mdb")==-1)
+	{
+		TCHAR tempPath[MAX_PATH];
+		GetTempPath(MAX_PATH, tempPath);
 
-	TCHAR tempPath[MAX_PATH];
-	GetTempPath(MAX_PATH, tempPath);
+		int lastDirectoryIndex = path.find_last_of("\\");
+		if(path.find_last_of("//") < lastDirectoryIndex)
+			lastDirectoryIndex = path.find_last_of("//");
 
-	string newAssemblyPath = tempPath + path.substr(path.find_last_of("\\") + 1);
-	CopyFile(assemblyPath, newAssemblyPath, false);
+		string newAssemblyPath = tempPath + path.substr(lastDirectoryIndex + 1);
+		CopyFile(assemblyPath, newAssemblyPath, false);
 
-	m_assemblyPath = newAssemblyPath;
-	
-	m_pAssembly = mono_domain_assembly_open(mono_domain_get(), newAssemblyPath);
+		IMonoAssembly *pDebugDatabaseCreator = static_cast<CMonoScriptSystem *>(gEnv->pMonoScriptSystem)->GetDebugDatabaseCreator();
+
+		if(pDebugDatabaseCreator)
+		{
+			if(IMonoClass *pDriverClass = pDebugDatabaseCreator->GetCustomClass("Driver", "Pdb2Mdb"))
+			{
+				IMonoArray *pArgs = CreateMonoArray(1);
+				pArgs->Insert(assemblyPath);
+				pDriverClass->CallMethod("Convert", pArgs, true);
+				SAFE_DELETE(pArgs);
+			}
+		}
+
+		CopyFile(path.append(".mdb"), newAssemblyPath + ".mdb", false);
+
+		assemblyPath = newAssemblyPath;
+	}
+#endif
+
+	m_assemblyPath = assemblyPath;
+
+	m_pAssembly = mono_domain_assembly_open(mono_domain_get(), m_assemblyPath);
 	if (!m_pAssembly)
 	{
 		gEnv->pLog->LogError("Failed to create assembly from %s", assemblyPath);
