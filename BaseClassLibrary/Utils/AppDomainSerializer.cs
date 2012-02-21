@@ -65,6 +65,7 @@ namespace CryEngine.Utils
 			foreach (var field in fields)
 			{
 				FieldInfo fieldInfo = instance.GetType().GetField(field.Attribute("Name").Value);
+
 				if (fieldInfo != null)// && !fieldInfo.FieldType.Name.Equals("Dictionary`2") && !fieldInfo.FieldType.Name.Equals("List`1"))
 				{
 					switch (fieldInfo.FieldType.Name)
@@ -106,7 +107,12 @@ namespace CryEngine.Utils
 								if (subFields.Count() > 0)
 									ProcessFields(fieldInfo.GetValue(instance), subFields);
 								else
-									fieldInfo.SetValue(instance, Convert.FromString(field.Attribute("Type").Value, field.Attribute("Value").Value));
+								{
+									if (fieldInfo.FieldType.IsEnum)
+										fieldInfo.SetValue(instance, System.Enum.Parse(fieldInfo.FieldType, field.Attribute("Value").Value));
+									else
+										fieldInfo.SetValue(instance, Convert.FromString(field.Attribute("Type").Value, field.Attribute("Value").Value));
+								}
 							}
 							break;
 					}
