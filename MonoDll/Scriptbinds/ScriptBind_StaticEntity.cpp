@@ -15,7 +15,9 @@ CScriptBind_StaticEntity::CScriptBind_StaticEntity()
 
 	REGISTER_METHOD(LoadObject);
 	REGISTER_METHOD(LoadCharacter);
+
 	REGISTER_METHOD(Physicalize);
+	REGISTER_METHOD(BreakIntoPieces);
 
 	REGISTER_METHOD(CreateGameObjectForEntity);
 	REGISTER_METHOD(GetStaticObjectFilePath);
@@ -122,6 +124,12 @@ void CScriptBind_StaticEntity::Physicalize(EntityId id, MonoPhysicalizationParam
 	pp.fStiffnessScale = params.stiffnessScale;
 
 	pEntity->Physicalize(pp);
+}
+
+void CScriptBind_StaticEntity::BreakIntoPieces(EntityId entityId, int slot, int piecesSlot, IBreakableManager::BreakageParams breakageParams)
+{
+	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(entityId))
+		gEnv->pEntitySystem->GetBreakableManager()->BreakIntoPieces(pEntity, slot, piecesSlot, breakageParams);
 }
 
 void CScriptBind_StaticEntity::CreateGameObjectForEntity(EntityId id)

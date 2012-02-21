@@ -13,6 +13,8 @@
 
 #include <MonoCommon.h>
 
+#include <IEntitySystem.h>
+
 struct MovementRequest;
 struct MonoPhysicalizationParams;
 
@@ -39,6 +41,8 @@ protected:
 	static void LoadCharacter(EntityId, mono::string, int);
 
 	static void Physicalize(EntityId, MonoPhysicalizationParams);
+
+	static void BreakIntoPieces(EntityId, int, int, IBreakableManager::BreakageParams);
 
 	static void CreateGameObjectForEntity(EntityId);
 	static void BindGameObjectToNetwork(EntityId);

@@ -1,5 +1,25 @@
-﻿namespace CryEngine
+﻿using System.Runtime.CompilerServices;
+
+namespace CryEngine
 {
+	public partial class StaticEntity
+	{
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static void _Physicalize(uint entityId, PhysicalizationParams physicalizationParams);
+
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static void _BreakIntoPieces(uint entityId, int slot, int piecesSlot, BreakageParams breakageParams);
+
+		internal void InitPhysics()
+		{
+			_physics = new PhysicsParams(Id);
+			_physics.Slot = 0;
+		}
+
+		PhysicsParams _physics;
+		public PhysicsParams Physics { get { return _physics; } set { _physics = value; _physics._entity = this; } }
+	}
+
 	/// <summary>
 	/// Wrapper class to make physics parameters more intuitive.
 	/// </summary>
@@ -79,6 +99,27 @@
 		}
 
 		#endregion
+	}
+
+	internal struct BreakageParams
+	{
+		enum BreakageType
+		{
+			Destroy = 0,
+			Freeze_Shatter
+		}
+
+		BreakageType type;					// Type of the breakage.
+		float fParticleLifeTime;		// Average lifetime of particle pieces.
+		int nGenericCount;				// If not 0, force particle pieces to spawn generically, this many times.
+		bool bForceEntity;					// Force pieces to spawn as entities.
+		bool bMaterialEffects;			// Automatically create "destroy" and "breakage" material effects on pieces.
+		bool bOnlyHelperPieces;		// Only spawn helper pieces.
+
+		// Impulse params.
+		float fExplodeImpulse;			// Outward impulse to apply.
+		Vec3 vHitImpulse;					// Hit impulse and center to apply.
+		Vec3 vHitPoint;
 	}
 
 	internal struct PhysicalizationParams

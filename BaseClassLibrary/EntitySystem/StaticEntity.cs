@@ -15,7 +15,7 @@ namespace CryEngine
 	/// Static entities must inherit this in order to be registered.
 	/// It is no longer an interface, due to basic functionality each entity <b>must</b> have.
 	/// </summary>
-	public class StaticEntity : FlowNode
+	public partial class StaticEntity : FlowNode
 	{
 		#region Externals
 		[MethodImpl(MethodImplOptions.InternalCall)]
@@ -52,9 +52,6 @@ namespace CryEngine
 		/// <param name="slot"></param>
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static void _LoadCharacter(uint entityId, string fileName, int slot);
-
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _Physicalize(uint entityId, PhysicalizationParams physicalizationParams);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static void _CreateGameObjectForEntity(uint entityId);
@@ -102,12 +99,6 @@ namespace CryEngine
 			}
 
 			return false;
-		}
-
-		internal void InitPhysics()
-		{
-			_physics = new PhysicsParams(Id);
-			_physics.Slot = 0;
 		}
 
 		internal void SpawnCommon(uint entityId)
@@ -167,9 +158,6 @@ namespace CryEngine
 		#region Methods & Fields
 		public Vec3 Position { get { return _GetWorldPos(Id); } set { _SetWorldPos(Id, value); } }
 		public Vec3 Rotation { get { return _GetWorldAngles(Id); } set { _SetWorldAngles(Id, value); } }
-
-		PhysicsParams _physics;
-		public PhysicsParams Physics { get { return _physics; } set { _physics = value; _physics._entity = this; } }
 
 		public uint Id { get; set; }
 		public string Name { get; set; }
