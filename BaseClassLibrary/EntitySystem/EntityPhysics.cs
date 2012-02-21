@@ -11,6 +11,9 @@ namespace CryEngine
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern public static void _BreakIntoPieces(uint entityId, int slot, int piecesSlot, BreakageParams breakageParams);
 
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern public static void _AddImpulse(uint entityId, ActionImpulse actionImpulse);
+
 		internal void InitPhysics()
 		{
 			_physics = new PhysicsParams(Id);
@@ -104,6 +107,17 @@ namespace CryEngine
 		}
 
 		#endregion
+	}
+
+	public struct ActionImpulse
+	{
+		public Vec3 impulse;
+		public Vec3 angImpulse;	// optional
+		public Vec3 point; // point of application, in world CS, optional 
+		public int partid;	// receiver part identifier
+		public int ipart; // alternatively, part index can be used
+		public int iApplyTime; // 0-apply immediately, 1-apply before the next time step, 2-apply after the next time step
+		public int iSource; // reserved for internal use
 	}
 
 	public struct BreakageParams

@@ -17,6 +17,7 @@
 
 struct MovementRequest;
 struct MonoPhysicalizationParams;
+struct ActionImpulse;
 
 class CScriptBind_StaticEntity : public IMonoScriptBind
 {
@@ -52,8 +53,20 @@ protected:
 
 	static mono::string GetStaticObjectFilePath(EntityId, int);
 
+	static void AddImpulse(EntityId, ActionImpulse);
 	static void AddMovement(EntityId, MovementRequest&);
 	static Vec3 GetVelocity(EntityId);
+};
+
+struct ActionImpulse
+{
+	Vec3 impulse;
+	Vec3 angImpulse;	// optional
+	Vec3 point; // point of application, in world CS, optional 
+	int partid;	// receiver part identifier
+	int ipart; // alternatively, part index can be used
+	int iApplyTime; // 0-apply immediately, 1-apply before the next time step, 2-apply after the next time step
+	int iSource; // reserved for internal use
 };
 
 struct MonoPhysicalizationParams

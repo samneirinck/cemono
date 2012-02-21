@@ -16,7 +16,7 @@ namespace CryEngine
         public virtual void ShowScores(bool show) { }
 
         // Server-only
-        public virtual float GetDamageMult(string materialName) { return 1.0f; }
+		protected virtual void OnHit(HitInfo hitInfo) { }
 
         public virtual void OnSpawn() { }
 

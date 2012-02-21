@@ -28,7 +28,7 @@ void CMonoEntity::OnSpawn(EntityId id)
 	ADD_EVENTLISTENER(ENTITY_EVENT_LEVEL_LOADED);
 	ADD_EVENTLISTENER(ENTITY_EVENT_RESET);
 	ADD_EVENTLISTENER(ENTITY_EVENT_COLLISION);
-	ADD_EVENTLISTENER(ENTITY_EVENT_ONHIT);
+	//ADD_EVENTLISTENER(ENTITY_EVENT_ONHIT);
 	ADD_EVENTLISTENER(ENTITY_EVENT_START_GAME);
 	ADD_EVENTLISTENER(ENTITY_EVENT_START_LEVEL);
 	ADD_EVENTLISTENER(ENTITY_EVENT_ENTERAREA);
@@ -65,12 +65,12 @@ void CMonoEntity::OnEntityEvent(IEntity *pEntity,SEntityEvent &event)
 				CallMonoScript<void>(m_scriptId, "OnCollision", pTarget->GetId(), pCollision->pt, dir, pCollision->idmat[0], pCollision->n);
 			}
 		}
-		break;
+		break;/*
 	case ENTITY_EVENT_ONHIT:
 		{
 			CallMonoScript<void>(m_scriptId, "OnHit");
 		}
-		break;
+		break;*/
 	case ENTITY_EVENT_START_GAME:
 		{
 			CallMonoScript<void>(m_scriptId, "OnStartGame");

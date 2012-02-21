@@ -25,6 +25,7 @@ CScriptBind_StaticEntity::CScriptBind_StaticEntity()
 	REGISTER_METHOD(CreateGameObjectForEntity);
 	REGISTER_METHOD(GetStaticObjectFilePath);
 
+	REGISTER_METHOD(AddImpulse);
 	REGISTER_METHOD(AddMovement);
 	REGISTER_METHOD(GetVelocity);
 }
@@ -175,6 +176,24 @@ mono::string CScriptBind_StaticEntity::GetStaticObjectFilePath(EntityId id, int 
 	}
 
 	return ToMonoString("");
+}
+
+void CScriptBind_StaticEntity::AddImpulse(EntityId id, ActionImpulse actionImpulse)
+{
+	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id))
+	{
+		pe_action_impulse impulse;
+
+		impulse.angImpulse = actionImpulse.angImpulse;
+		impulse.iApplyTime = actionImpulse.iApplyTime;
+		impulse.impulse = actionImpulse.impulse;
+		impulse.ipart = actionImpulse.ipart;
+		impulse.iSource = actionImpulse.iSource;
+		impulse.partid = actionImpulse.partid;
+		impulse.point = actionImpulse.point;
+
+		pEntity->GetPhysics()->Action(&impulse);
+	}
 }
 
 void CScriptBind_StaticEntity::AddMovement(EntityId id, MovementRequest &movementRequest)
