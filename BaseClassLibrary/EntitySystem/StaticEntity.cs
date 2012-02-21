@@ -44,6 +44,11 @@ namespace CryEngine
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static string _GetStaticObjectFilePath(uint entityId, int slot);
 
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern public static EntitySlotFlags _GetSlotFlags(uint entityId, int slot);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern public static void _SetSlotFlags(uint entityId, int slot, EntitySlotFlags slotFlags);
+
 		/// <summary>
 		/// Loads an non-static model on the object (.chr, .cdf, .cga)
 		/// </summary>
@@ -429,6 +434,17 @@ namespace CryEngine
             }
         }
         #endregion
+	}
 
+	public enum EntitySlotFlags
+	{
+		Render = 0x0001,  // Draw this slot.
+		RenderNearest = 0x0002,  // Draw this slot as nearest.
+		RenderWithCustomCamera = 0x0004,  // Draw this slot using custom camera passed as a Public ShaderParameter to the entity.
+		IgnorePhysics = 0x0010,  // This slot will ignore physics events sent to it.
+		BreakAsEntity = 0x020,
+		RenderInCameraSpace = 0x0040, // This slot position is in camera space 
+		RenderAfterPostProcessing = 0x0080, // This slot position is in camera space 
+		BreakAsEntityMP = 0x0100, // In MP this an entity that shouldn't fade or participate in network breakage
 	}
 }

@@ -16,6 +16,9 @@ CScriptBind_StaticEntity::CScriptBind_StaticEntity()
 	REGISTER_METHOD(LoadObject);
 	REGISTER_METHOD(LoadCharacter);
 
+	REGISTER_METHOD(GetSlotFlags);
+	REGISTER_METHOD(SetSlotFlags);
+
 	REGISTER_METHOD(Physicalize);
 	REGISTER_METHOD(BreakIntoPieces);
 
@@ -95,6 +98,20 @@ void CScriptBind_StaticEntity::LoadCharacter(EntityId entityId, mono::string fil
 		return;
 
 	pEntity->LoadCharacter(slot, ToCryString(fileName));
+}
+
+EEntitySlotFlags CScriptBind_StaticEntity::GetSlotFlags(EntityId id, int slot)
+{
+	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id))
+		return (EEntitySlotFlags)pEntity->GetSlotFlags(slot);
+
+	return (EEntitySlotFlags)0;
+}
+
+void CScriptBind_StaticEntity::SetSlotFlags(EntityId id, int slot, EEntitySlotFlags slotFlags)
+{
+	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id))
+		pEntity->SetSlotFlags(slot, slotFlags);
 }
 
 void CScriptBind_StaticEntity::Physicalize(EntityId id, MonoPhysicalizationParams params)

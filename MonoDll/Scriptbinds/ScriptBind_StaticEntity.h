@@ -40,6 +40,9 @@ protected:
 	static void LoadObject(EntityId, mono::string, int);
 	static void LoadCharacter(EntityId, mono::string, int);
 
+	static EEntitySlotFlags GetSlotFlags(EntityId, int);
+	static void SetSlotFlags(EntityId, int, EEntitySlotFlags);
+
 	static void Physicalize(EntityId, MonoPhysicalizationParams);
 
 	static void BreakIntoPieces(EntityId, int, int, IBreakableManager::BreakageParams);
