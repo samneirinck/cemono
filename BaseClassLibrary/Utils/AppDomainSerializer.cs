@@ -43,6 +43,9 @@ namespace CryEngine.Utils
 							int scriptId = System.Convert.ToInt32(type.GetProperty("ScriptId").GetValue(scriptInstance, null));
 							writer.WriteAttributeString("Id", scriptId.ToString());
 
+							writer.WriteAttributeString("ReferenceId", ObjectReferences.Count.ToString());
+							ObjectReferences.Add(scriptInstance);
+
 							SerializeTypeToXml(scriptInstance, writer);
 
 							writer.WriteEndElement();
@@ -57,114 +60,11 @@ namespace CryEngine.Utils
 			}
 		}
 
-		public static void ProcessFields(object instance, IEnumerable<XElement> fields)
-		{
-			if (fields == null || fields.Count() < 1)
-				return;
-
-			foreach (var field in fields)
-			{
-				FieldInfo fieldInfo = instance.GetType().GetField(field.Attribute("Name").Value);
-
-				if (fieldInfo != null)// && !fieldInfo.FieldType.Name.Equals("Dictionary`2") && !fieldInfo.FieldType.Name.Equals("List`1"))
-				{
-					switch (fieldInfo.FieldType.Name)
-					{
-						case "List`1":
-							{
-								foreach (var element in field.Elements("Elements").Elements("Element"))
-								{
-									System.Collections.IList list = (System.Collections.IList)fieldInfo.GetValue(instance);
-									list.Add(Convert.FromString(element.Attribute("Type").Value, element.Attribute("Value").Value));
-
-									fieldInfo.SetValue(instance, list);
-								}
-							}
-							break;
-						case "Dictionary`2":
-							{
-								foreach (var element in field.Elements("Elements").Elements("Element"))
-								{
-									System.Collections.IDictionary dictionary = (System.Collections.IDictionary)fieldInfo.GetValue(instance);
-									dictionary.Add(Convert.FromString(element.Attribute("KeyType").Value, element.Attribute("Key").Value), Convert.FromString(element.Attribute("ValueType").Value, element.Attribute("Value").Value));
-
-									fieldInfo.SetValue(instance, dictionary);
-								}
-							}
-							break;
-						default:
-							{
-								/*
-								bool isString = (valueType == typeof(string));
-
-								if (!valueType.IsEnum && !isString)
-									SerializeTypeToXml(value, writer);
-
-								if (valueType.IsPrimitive || isString || valueType.IsEnum)
-									writer.WriteAttributeString("Value", value.ToString());*/
-
-								var subFields = field.Elements("Field");
-								if (subFields.Count() > 0)
-									ProcessFields(fieldInfo.GetValue(instance), subFields);
-								else
-								{
-									if (fieldInfo.FieldType.IsEnum)
-										fieldInfo.SetValue(instance, System.Enum.Parse(fieldInfo.FieldType, field.Attribute("Value").Value));
-									else
-										fieldInfo.SetValue(instance, Convert.FromString(field.Attribute("Type").Value, field.Attribute("Value").Value));
-								}
-							}
-							break;
-					}
-				}
-			}
-		}
-
-		public static void TrySetScriptData()
-		{
-			string filePath = Path.Combine(PathUtils.GetRootFolder(), "Temp", "MonoScriptData.xml");
-			if (!File.Exists(filePath))
-			{
-				Console.LogAlways("Failed to retrieve serialized MonoScriptData");
-				return;
-			}
-
-			XDocument scriptData = XDocument.Load(filePath);
-			foreach (var type in scriptData.Descendants("Type"))
-			{
-				CryScript script = ScriptCompiler.CompiledScripts.Where(Script => Script.className.Equals(type.Attribute("Name").Value)).FirstOrDefault();
-				int scriptIndex = ScriptCompiler.CompiledScripts.IndexOf(script);
-
-				if (script != default(CryScript))
-				{
-					foreach (var instance in type.Elements("Instance"))
-					{
-						int scriptId = System.Convert.ToInt32(instance.Attribute("Id").Value);
-
-						if (script.ScriptInstances == null)
-							script.ScriptInstances = new List<CryScriptInstance>();
-
-						script.ScriptInstances.Add(System.Activator.CreateInstance(script.Type) as CryScriptInstance);
-
-						if (ScriptCompiler.NextScriptId < scriptId)
-							ScriptCompiler.NextScriptId = scriptId;
-
-						script.Type.GetProperty("ScriptId").SetValue(script.ScriptInstances.Last(), scriptId, null);
-
-						ProcessFields(instance, instance.Elements("Field"));
-
-						foreach (var property in instance.Elements("Property"))
-						{
-							PropertyInfo propertyInfo = script.Type.GetProperty(property.Attribute("Name").Value);
-							if (propertyInfo != null)
-								propertyInfo.SetValue(script.ScriptInstances.Last(), Convert.FromString(property.Attribute("Type").Value, property.Attribute("Value").Value), null);
-						}
-					}
-				}
-
-				ScriptCompiler.CompiledScripts[scriptIndex] = script;
-			}
-		}
+		/// <summary>
+		/// Used to keep track of duplicate instances of structs and classes of various kinds.
+		/// Saves space in MonoScriptData.xml + solves possible loop issues. - i59
+		/// </summary>
+		static List<object> ObjectReferences = new List<object>();
 
 		public static void SerializeTypeToXml(object typeInstance, XmlWriter writer)
 		{
@@ -178,22 +78,33 @@ namespace CryEngine.Utils
 
 					string fieldName = fieldInfo.Name;
 
-					if (value != null && !fieldName.Equals("<ScriptId>k__BackingField") && !fieldName.Equals("m_value"))
+					if (ObjectReferences.Contains(value))
+					{
+						writer.WriteStartElement("Field");
+						writer.WriteAttributeString("Name", fieldInfo.Name);
+						writer.WriteAttributeString("ReferencesId", ObjectReferences.IndexOf(value).ToString());
+						writer.WriteEndElement();
+					}
+					else if (value != null && !fieldName.Equals("<ScriptId>k__BackingField") && !fieldName.Equals("m_value"))
 					{
 						string startElement = "Field";
-						if (fieldName.Contains("k__BackingField"))
+						/*if (fieldName.Contains("k__BackingField"))
 						{
 							startElement = "Property";
 
 							fieldName = fieldName.Replace("<", "").Replace(">", "").Replace("k__BackingField", "");
-						}
-						else
-							startElement = "Field";
+						}*/
 
 						writer.WriteStartElement(startElement);
 
 						writer.WriteAttributeString("Name", fieldName);
 						writer.WriteAttributeString("Type", fieldInfo.FieldType.Name);
+						if (!fieldInfo.FieldType.IsPrimitive && !fieldInfo.FieldType.IsEnum && fieldInfo.FieldType != typeof(string))
+						{
+							writer.WriteAttributeString("ReferenceId", ObjectReferences.Count.ToString());
+
+							ObjectReferences.Add(value);
+						}
 
 						switch (fieldInfo.FieldType.Name)
 						{
@@ -240,7 +151,7 @@ namespace CryEngine.Utils
 									if (!valueType.IsEnum && !isString)
 										SerializeTypeToXml(value, writer);
 
-									if (valueType.IsPrimitive || isString || valueType.IsEnum)
+									if ((valueType.IsPrimitive || isString || valueType.IsEnum))
 										writer.WriteAttributeString("Value", value.ToString());
 								}
 								break;
@@ -251,6 +162,160 @@ namespace CryEngine.Utils
 				}
 
 				type = type.BaseType;
+			}
+		}
+
+		static void AddObjectReference(int desiredIndex, object obj)
+		{
+			while (ObjectReferences.Count < desiredIndex)
+				ObjectReferences.Add(null);
+
+			Console.LogAlways("Adding object reference to index {0}", desiredIndex);
+
+			ObjectReferences.Add(obj);
+		}
+
+		public static void TrySetScriptData()
+		{
+			string filePath = Path.Combine(PathUtils.GetRootFolder(), "Temp", "MonoScriptData.xml");
+			if (!File.Exists(filePath))
+			{
+				Console.LogAlways("Failed to retrieve serialized MonoScriptData");
+				return;
+			}
+
+			XDocument scriptData = XDocument.Load(filePath);
+			foreach (var type in scriptData.Descendants("Type"))
+			{
+				CryScript script = ScriptCompiler.CompiledScripts.Where(Script => Script.className.Equals(type.Attribute("Name").Value)).FirstOrDefault();
+				int scriptIndex = ScriptCompiler.CompiledScripts.IndexOf(script);
+
+				if (script != default(CryScript))
+				{
+					foreach (var instance in type.Elements("Instance"))
+					{
+						int scriptId = System.Convert.ToInt32(instance.Attribute("Id").Value);
+
+						AddObjectReference(System.Convert.ToInt32(instance.Attribute("ReferenceId").Value), instance);
+
+						if (script.ScriptInstances == null)
+							script.ScriptInstances = new List<CryScriptInstance>();
+
+						script.ScriptInstances.Add(System.Activator.CreateInstance(script.Type) as CryScriptInstance);
+
+						if (ScriptCompiler.NextScriptId < scriptId)
+							ScriptCompiler.NextScriptId = scriptId;
+
+						script.Type.GetProperty("ScriptId").SetValue(script.ScriptInstances.Last(), scriptId, null);
+
+						ProcessFields(script.ScriptInstances.Last(), instance.Elements("Field"));
+
+						foreach (var property in instance.Elements("Property"))
+						{
+							PropertyInfo propertyInfo = script.Type.GetProperty(property.Attribute("Name").Value);
+							if (propertyInfo != null)
+								propertyInfo.SetValue(script.ScriptInstances.Last(), Convert.FromString(property.Attribute("Type").Value, property.Attribute("Value").Value), null);
+						}
+					}
+				}
+
+				ScriptCompiler.CompiledScripts[scriptIndex] = script;
+			}
+		}
+
+		public static void ProcessFields(object instance, IEnumerable<XElement> fields)
+		{
+			if (fields == null || fields.Count() < 1)
+				return;
+
+			foreach (var field in fields)
+			{
+				var fieldReferenceAttribute = field.Attribute("ReferencesId");
+				if (fieldReferenceAttribute != null)
+				{
+					FieldInfo fieldInfo = null;
+					var baseType = instance.GetType();
+					while (fieldInfo == null && baseType != null)
+					{
+						fieldInfo = baseType.GetField(field.Attribute("Name").Value, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+
+						baseType = baseType.BaseType;
+					}
+
+					fieldInfo.SetValue(instance, ObjectReferences.ElementAtOrDefault(System.Convert.ToInt32(fieldReferenceAttribute.Value)));
+				}
+				else
+				{
+					FieldInfo fieldInfo = null;
+					var baseType = instance.GetType();
+					while (fieldInfo == null && baseType != null)
+					{
+						fieldInfo = baseType.GetField(field.Attribute("Name").Value, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+
+						baseType = baseType.BaseType;
+					}
+
+					bool fieldOk = fieldInfo != null;
+
+					var referenceIdAttribute = field.Attribute("ReferenceId");
+					if (referenceIdAttribute != null && fieldOk)
+						AddObjectReference(System.Convert.ToInt32(referenceIdAttribute.Value), fieldInfo.GetValue(instance));
+
+					if (fieldOk)
+					{
+						switch (fieldInfo.FieldType.Name)
+						{
+							case "List`1":
+								{
+									foreach (var element in field.Elements("Elements").Elements("Element"))
+									{
+										System.Collections.IList list = (System.Collections.IList)fieldInfo.GetValue(instance);
+										list.Add(Convert.FromString(element.Attribute("Type").Value, element.Attribute("Value").Value));
+
+										fieldInfo.SetValue(instance, list);
+									}
+								}
+								break;
+							case "Dictionary`2":
+								{
+									foreach (var element in field.Elements("Elements").Elements("Element"))
+									{
+										System.Collections.IDictionary dictionary = (System.Collections.IDictionary)fieldInfo.GetValue(instance);
+										dictionary.Add(Convert.FromString(element.Attribute("KeyType").Value, element.Attribute("Key").Value), Convert.FromString(element.Attribute("ValueType").Value, element.Attribute("Value").Value));
+
+										fieldInfo.SetValue(instance, dictionary);
+									}
+								}
+								break;
+							default:
+								{
+									var subFields = field.Elements("Field");
+									if (subFields.Count() > 0)
+									{
+										// Limitation; we can only instantiate types with parameterless constructors
+										if (fieldInfo.FieldType.GetConstructor(System.Type.EmptyTypes) != null || fieldInfo.FieldType.IsValueType)
+										{
+											Console.LogAlways("Instantiating {0}", fieldInfo.Name);
+											object subFieldInstance = System.Activator.CreateInstance(fieldInfo.FieldType);
+											ProcessFields(subFieldInstance, subFields);
+
+											fieldInfo.SetValue(instance, subFieldInstance);
+										}
+										else
+											Console.Log("[Warning] Could not serialize {0} since it did not contain an parameterless constructor", fieldInfo.FieldType.Name);
+									}
+									else
+									{
+										if (fieldInfo.FieldType.IsEnum)
+											fieldInfo.SetValue(instance, System.Enum.Parse(fieldInfo.FieldType, field.Attribute("Value").Value));
+										else
+											fieldInfo.SetValue(instance, Convert.FromString(field.Attribute("Type").Value, field.Attribute("Value").Value));
+									}
+								}
+								break;
+						}
+					}
+				}
 			}
 		}
 	}

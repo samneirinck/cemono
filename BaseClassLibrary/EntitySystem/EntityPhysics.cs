@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using System;
 
 namespace CryEngine
 {
@@ -8,7 +9,7 @@ namespace CryEngine
 		extern internal static void _Physicalize(uint entityId, PhysicalizationParams physicalizationParams);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _BreakIntoPieces(uint entityId, int slot, int piecesSlot, BreakageParams breakageParams);
+		extern public static void _BreakIntoPieces(uint entityId, int slot, int piecesSlot, BreakageParams breakageParams);
 
 		internal void InitPhysics()
 		{
@@ -17,7 +18,7 @@ namespace CryEngine
 		}
 
 		PhysicsParams _physics;
-		public PhysicsParams Physics { get { return _physics; } set { _physics = value; _physics._entity = this; } }
+		public PhysicsParams Physics { get { return _physics; } set { _physics = value; _physics._entityId = Id; } }
 	}
 
 	/// <summary>
@@ -26,13 +27,17 @@ namespace CryEngine
 	public class PhysicsParams
 	{
 		//These are the params that are actually sent to the engine
-		internal PhysicalizationParams _params = new PhysicalizationParams();
-		internal StaticEntity _entity;
+		internal PhysicalizationParams _params;
+		internal uint _entityId;
+
+		public PhysicsParams() { }
 
 		internal PhysicsParams(uint id)
 		{
-			_entity = EntitySystem.GetEntity(id);
+			_entityId = id;
 			AutoUpdate = true;
+
+			_params = new PhysicalizationParams();
 		}
 
 		#region Basics
@@ -46,7 +51,7 @@ namespace CryEngine
 		/// </summary>
 		public void Save()
 		{
-			StaticEntity._Physicalize(_entity.Id, _params);
+			StaticEntity._Physicalize(_entityId, _params);
 		}
 
 		/// <summary>
@@ -101,28 +106,28 @@ namespace CryEngine
 		#endregion
 	}
 
-	internal struct BreakageParams
+	public struct BreakageParams
 	{
-		enum BreakageType
+		public enum BreakageType
 		{
 			Destroy = 0,
 			Freeze_Shatter
 		}
 
-		BreakageType type;					// Type of the breakage.
-		float fParticleLifeTime;		// Average lifetime of particle pieces.
-		int nGenericCount;				// If not 0, force particle pieces to spawn generically, this many times.
-		bool bForceEntity;					// Force pieces to spawn as entities.
-		bool bMaterialEffects;			// Automatically create "destroy" and "breakage" material effects on pieces.
-		bool bOnlyHelperPieces;		// Only spawn helper pieces.
+		public BreakageType type;					// Type of the breakage.
+		public float fParticleLifeTime;		// Average lifetime of particle pieces.
+		public int nGenericCount;				// If not 0, force particle pieces to spawn generically, this many times.
+		public bool bForceEntity;					// Force pieces to spawn as entities.
+		public bool bMaterialEffects;			// Automatically create "destroy" and "breakage" material effects on pieces.
+		public bool bOnlyHelperPieces;		// Only spawn helper pieces.
 
 		// Impulse params.
-		float fExplodeImpulse;			// Outward impulse to apply.
-		Vec3 vHitImpulse;					// Hit impulse and center to apply.
-		Vec3 vHitPoint;
+		public float fExplodeImpulse;			// Outward impulse to apply.
+		public Vec3 vHitImpulse;					// Hit impulse and center to apply.
+		public Vec3 vHitPoint;
 	}
 
-	internal struct PhysicalizationParams
+	public struct PhysicalizationParams
 	{
 		public PhysicalizationType type;
 
