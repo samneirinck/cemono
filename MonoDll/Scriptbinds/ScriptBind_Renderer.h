@@ -42,7 +42,7 @@ protected:
 
 	// Texture handling
 	static int LoadTexture(mono::string path);
-	static void DrawTextureToScreen(float xpos, float ypos, float width, float height, int textureId);
+	static void DrawTextureToScreen(float xpos, float ypos, float width, float height, int textureId, float s0, float t0, float s1, float t1, float angle, float r, float g, float b, float a, float z);
 
 	static int CreateRenderTarget(int width, int height, ETEX_Format texFormat = eTF_A8R8G8B8);
 	static void DestroyRenderTarget(int textureId);

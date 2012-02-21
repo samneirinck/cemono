@@ -82,10 +82,10 @@ int CScriptBind_Renderer::LoadTexture(mono::string texturePath)
 	return -1;
 }
 
-void CScriptBind_Renderer::DrawTextureToScreen(float xpos, float ypos, float width, float height, int textureId)
+void CScriptBind_Renderer::DrawTextureToScreen(float xpos, float ypos, float width, float height, int textureId, float s0, float t0, float s1, float t1, float angle, float r, float g, float b, float a, float z)
 {
 	// Could expose the optional args later.
-	gEnv->pRenderer->Draw2dImage(xpos, ypos, width, height, textureId);
+	gEnv->pRenderer->Draw2dImage(xpos, ypos, width, height, textureId, s0, t0, s1, t1, angle, r, g, b, a, z);
 }
 
 int CScriptBind_Renderer::CreateRenderTarget(int width, int height, ETEX_Format texFormat)

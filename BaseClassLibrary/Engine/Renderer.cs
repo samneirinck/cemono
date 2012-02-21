@@ -20,7 +20,7 @@ namespace CryEngine
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern public static int _LoadTexture(string path);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern public static void _DrawTextureToScreen(float xpos, float ypos, float width, float height, int textureId);
+		extern public static void _DrawTextureToScreen(float xpos, float ypos, float width, float height, int textureId, float s0=0, float t0=0, float s1=1, float t1=1, float angle=0, float r=1, float g=1, float b=1, float a=1, float z=1);
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern public static int _CreateRenderTarget(int width, int height, int flags);
