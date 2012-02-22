@@ -1,7 +1,7 @@
 ﻿
 namespace CryEngine
 {
-	public static class Physics
+	public static class GlobalPhysics
 	{
 		const string gravityCVar = "p_gravity_z";
 		public static float GravityZ
