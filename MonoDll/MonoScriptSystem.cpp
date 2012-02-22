@@ -82,7 +82,8 @@ CMonoScriptSystem::CMonoScriptSystem()
 	if(gEnv->IsEditor())
 		gEnv->pFileChangeMonitor->RegisterListener(this, "scripts\\");
 
-	if(!Init())
+	SSystemInitParams initParams;
+	if(!Initialize(*gEnv, initParams))
 		CryFatalError("Failed to initialize CryMono, aborting..");
 }
 
@@ -109,7 +110,7 @@ CMonoScriptSystem::~CMonoScriptSystem()
 	gEnv->pMonoScriptSystem = NULL;
 }
 
-bool CMonoScriptSystem::Init()
+bool CMonoScriptSystem::Initialize( SSystemGlobalEnvironment &env,const SSystemInitParams &initParams)
 {
 	CryLogAlways("    Initializing CryMono...");
 	

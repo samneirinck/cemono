@@ -49,14 +49,13 @@ struct IMonoScriptSystem : public IEngineModule
 	virtual const char *GetName() { return "CryMono"; }
 	virtual const char *GetCategory() { return "CryEngine"; }
 
-	virtual bool Initialize( SSystemGlobalEnvironment &env,const SSystemInitParams &initParams ) { return true; }
-	// ~IEngineModule
-
 	/// <summary>
 	/// Initializes the Mono runtime.
 	/// Called prior to CryGame initialization; resides within CGameStartup::Init in the sample project.
 	/// </summary>
-	virtual bool Init() = 0 ;
+	virtual bool Initialize( SSystemGlobalEnvironment &env,const SSystemInitParams &initParams ) = 0;
+	// ~IEngineModule
+
 	/// <summary>
 	/// Registers default Mono bindings and initializes CryBrary.dll. (Scripts are compiled after this is called)
 	/// Called post-CryGame initialization; resides within CGameStartup::Init in the sample project.

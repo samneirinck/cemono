@@ -29,24 +29,13 @@ class CMonoScript;
 class CFlowManager;
 class CMonoCallbackHandler;
 
-struct InternalCallMethod
-{
-	InternalCallMethod(mono::string Name, mono::string RetType, mono::string params)
-		: name(Name), returnType(RetType), parameters(params) {}
-
-	mono::string name;
-	mono::string returnType;
-
-	mono::string parameters;
-};
-
-class CMonoScriptSystem 
+class CMonoScriptSystem
 	: public IMonoScriptSystem
 	, public IFileChangeListener
 	, public IGameFrameworkListener
 {
 	CRYINTERFACE_SIMPLE(IMonoScriptSystem);
-	
+
 	CRYGENERATE_SINGLETONCLASS(CMonoScriptSystem, "CryMono", 0xc37b8ad5d62f47de, 0xa8debe525ff0fc8a)
 
 	typedef std::map<IMonoClass *, int> TScripts;
@@ -54,7 +43,7 @@ class CMonoScriptSystem
 
 public:
 	// IMonoScriptSystem
-	virtual bool Init() override;
+	virtual bool Initialize( SSystemGlobalEnvironment &env,const SSystemInitParams &initParams );
 	virtual void PostInit() override;
 
 	virtual bool Reload() override;
