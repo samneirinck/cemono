@@ -12,7 +12,7 @@ namespace CryEngine
 		extern public static void _BreakIntoPieces(uint entityId, int slot, int piecesSlot, BreakageParams breakageParams);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern public static void _AddImpulse(uint entityId, ActionImpulse actionImpulse);
+		extern internal static void _AddImpulse(uint entityId, ActionImpulse actionImpulse);
 
 		internal void InitPhysics()
 		{
@@ -39,7 +39,7 @@ namespace CryEngine
 		{
 			_entityId = id;
 			AutoUpdate = true;
-
+			
 			_params = new PhysicalizationParams();
 		}
 
@@ -63,6 +63,17 @@ namespace CryEngine
 		public void Clear()
 		{
 			_params = new PhysicalizationParams();
+		}
+
+		public void AddImpulse(Vec3 impulse, Vec3 angImpulse = default(Vec3), Vec3 point = default(Vec3))
+		{
+			var actionImpulse = new ActionImpulse();
+
+			actionImpulse.impulse = impulse;
+			actionImpulse.angImpulse = angImpulse;
+			actionImpulse.point = point;
+
+			StaticEntity._AddImpulse(_entityId, actionImpulse);
 		}
 
 		/// <summary>
@@ -109,7 +120,7 @@ namespace CryEngine
 		#endregion
 	}
 
-	public struct ActionImpulse
+	internal struct ActionImpulse
 	{
 		public Vec3 impulse;
 		public Vec3 angImpulse;	// optional
