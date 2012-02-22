@@ -41,6 +41,9 @@ namespace CryEngine
 		/// a C++ entity with the specified ID></remarks>
         public static StaticEntity GetEntity(uint entityId)
         {
+			if (entityId == 0)
+				return null;
+
             if (internalEntities.Contains(entityId))
                 return internalEntities[entityId] as StaticEntity;
 
