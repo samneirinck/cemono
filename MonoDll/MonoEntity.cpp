@@ -56,14 +56,16 @@ void CMonoEntity::OnEntityEvent(IEntity *pEntity,SEntityEvent &event)
 		{
 			EventPhysCollision *pCollision = (EventPhysCollision *)event.nParam[0];
 
+			EntityId targetId = 0;
+
 			IEntity *pTarget = pCollision->iForeignData[0]==PHYS_FOREIGN_ID_ENTITY ? (IEntity*)pCollision->pForeignData[0]:0;
 			if(pTarget && pTarget->GetId()!=m_entityId)
-			{
-				Vec3 dir = pCollision->vloc[0].GetNormalizedSafe();
+				targetId = pTarget->GetId();
 
-				// uint targetId, Vec3 hitPt, Vec3 dir, short materialId, Vec3 contactNormal);
-				CallMonoScript<void>(m_scriptId, "OnCollision", pTarget->GetId(), pCollision->pt, dir, pCollision->idmat[0], pCollision->n);
-			}
+			Vec3 dir = pCollision->vloc[0].GetNormalizedSafe();
+
+			// uint targetId, Vec3 hitPt, Vec3 dir, short materialId, Vec3 contactNormal);
+			CallMonoScript<void>(m_scriptId, "OnCollision", targetId, pCollision->pt, dir, pCollision->idmat[0], pCollision->n);
 		}
 		break;/*
 	case ENTITY_EVENT_ONHIT:
