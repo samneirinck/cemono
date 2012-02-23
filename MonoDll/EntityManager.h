@@ -35,9 +35,9 @@ struct EntitySpawnParams
 	mono::string sName;
 	mono::string sClass;
 
-	MonoObject *pos;
-	MonoObject *rot;
-	MonoObject *scale;
+	Vec3 pos;
+	Vec3 rot;
+	Vec3 scale;
 
 	EEntityFlags flags;
 
@@ -48,9 +48,9 @@ struct EntitySpawnParams
 		params.sName = ToCryString(sName);
 		params.pClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass(ToCryString(sClass));
 
-		//params.vPosition = (Vec3)mono_object_unbox(pos);
-		//params.qRotation = Quat((Ang3)mono_object_unbox(rot));
-		//params.vScale = (Vec3)mono_object_unbox(scale);
+		params.vPosition = pos;
+		params.qRotation = Quat((Ang3)rot);
+		params.vScale = scale;
 
 		params.nFlags = flags;
 
