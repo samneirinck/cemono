@@ -14,7 +14,7 @@ namespace CryEngine
 		/// <param name="autoInit">Should the entity automatically be initialised?</param>
 		/// <returns></returns>
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern public static uint SpawnEntity(EntitySpawnParams spawnParams, bool autoInit = true);
+        extern public static uint _SpawnEntity(EntitySpawnParams spawnParams, bool autoInit = true);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern public static bool _RegisterEntityClass(EntityRegisterParams registerParams, object[] properties);
 		/// <summary>
@@ -26,6 +26,21 @@ namespace CryEngine
         {
             return _RegisterEntityClass(config.registerParams, config.properties);
         }
+
+		/// <summary>
+		/// Spawn a new instance of entity type T.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="name"></param>
+		/// <param name="pos"></param>
+		/// <param name="rot"></param>
+		/// <param name="scale"></param>
+		/// <param name="autoInit"></param>
+		/// <returns></returns>
+		public static T SpawnEntity<T>(string name, Vec3 pos = default(Vec3), Vec3 rot = default(Vec3), Vec3 scale = default(Vec3), bool autoInit = true) where T : StaticEntity
+		{
+			return GetEntity(_SpawnEntity(new EntitySpawnParams { Name = name, Class = typeof(T).Name, Pos = pos, Rot = rot, Scale = scale }, autoInit)) as T;
+		}
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern protected static uint _FindEntity(string name);

@@ -23,7 +23,7 @@ CEntityManager::CEntityManager()
 {
 	REGISTER_EXPOSED_METHOD(SpawnEntity);
 	REGISTER_METHOD(RegisterEntityClass);
-	
+	REGISTER_METHOD(SpawnEntity);
 	REGISTER_METHOD(FindEntity);
 	REGISTER_METHOD(GetEntitiesByClass);
 
