@@ -30,16 +30,17 @@ namespace CryEngine
 		/// <summary>
 		/// Spawn a new instance of entity type T.
 		/// </summary>
-		/// <typeparam name="T"></typeparam>
+		/// <typeparam name="T">The entity type</typeparam>
 		/// <param name="name"></param>
 		/// <param name="pos"></param>
 		/// <param name="rot"></param>
 		/// <param name="scale"></param>
 		/// <param name="autoInit"></param>
 		/// <returns></returns>
-		public static T SpawnEntity<T>(string name, Vec3 pos = default(Vec3), Vec3 rot = default(Vec3), Vec3 scale = default(Vec3), bool autoInit = true) where T : StaticEntity
+		public static T SpawnEntity<T>(string name, Vec3 pos, Vec3 rot, Vec3 scale, bool autoInit = true) where T : StaticEntity
 		{
-			return GetEntity(_SpawnEntity(new EntitySpawnParams { Name = name, Class = typeof(T).Name, Pos = pos, Rot = rot, Scale = scale }, autoInit)) as T;
+			Console.LogAlways("Spawning {0} (\"{1}\") at {2}, rotation = {3}, scale = {4}; autoinit is {5}", typeof(T).Name, name, pos, rot, scale, autoInit);
+			return GetEntity(_SpawnEntity(new EntitySpawnParams { Name = name, Class = typeof(T).Name, Pos = pos, Rot = rot, Scale = scale, Flags = 0 }, autoInit)) as T;
 		}
 
         [MethodImpl(MethodImplOptions.InternalCall)]
