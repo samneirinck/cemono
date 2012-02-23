@@ -27,6 +27,7 @@ public:
 	static void AddGameModeAlias(mono::string, mono::string);
 	static void AddGameModeLevelLocation(mono::string, mono::string);
 	static void SetDefaultGameMode(mono::string);
+	static EntityId GetPlayer();
 };
 
 #endif //__SCRIPTBIND_GAMERULES_SYSTEM__
