@@ -109,7 +109,7 @@ protected:
 	// ~IMonoScriptBind
 
 	// ScriptBinds
-	static EntityId SpawnEntity(EntitySpawnParams &, bool);
+	static EntityId SpawnEntity(EntitySpawnParams, bool);
 	static bool RegisterEntityClass(EntityRegisterParams, mono::array);
 
 	static EntityId FindEntity(mono::string);

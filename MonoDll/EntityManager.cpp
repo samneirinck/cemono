@@ -113,9 +113,12 @@ int CEntityManager::GetScriptId(EntityId entityId, bool returnBackIfInvalid)
 	return -1;
 }
 
-EntityId CEntityManager::SpawnEntity(EntitySpawnParams &params, bool bAutoInit)
+EntityId CEntityManager::SpawnEntity(EntitySpawnParams params, bool bAutoInit)
 {
-	return gEnv->pEntitySystem->SpawnEntity(params.Convert(), bAutoInit)->GetId();
+	if(IEntity *pEntity = gEnv->pEntitySystem->SpawnEntity(params.Convert(), bAutoInit))
+		return pEntity->GetId();
+
+	return 0;
 }
 
 bool CEntityManager::RegisterEntityClass(EntityRegisterParams params, mono::array Properties)
