@@ -8,12 +8,14 @@ namespace CryEngine
 	/// <remarks>For most use cases, deriving from CryGameCode's BaseGameRules is a more efficient solution.</remarks>
     public abstract class BaseGameRules : CryScriptInstance
     {
-        // Unsure
+        // Shared
         public virtual void PrecacheLevel() { }
         public virtual void RequestSpawnGroup(uint spawnGroupId) { }
         public virtual void SetPlayerSpawnGroup(uint playerId, uint spawnGroupId) { }
         public virtual uint GetPlayerSpawnGroup(uint actorId) { return System.Convert.ToUInt32(0); }
         public virtual void ShowScores(bool show) { }
+
+		public virtual void OnSetTeam(uint actorId, int teamId) { }
 
         // Server-only
 		protected virtual void OnHit(HitInfo hitInfo) { }
@@ -37,7 +39,6 @@ namespace CryEngine
         public virtual void RequestSpectatorTarget(uint playerId, int change) { }
 
         public virtual void OnChangeTeam(uint actorId, int teamId) { }
-        public virtual void OnClientSetTeam(uint actorId, int teamId) { }
 
         public virtual void OnSpawnGroupInvalid(uint playerId, uint spawnGroupId) { }
 
@@ -50,8 +51,6 @@ namespace CryEngine
         public virtual void OnRevive(uint actorId, Vec3 pos, Vec3 rot, int teamId) { }
         public virtual void OnReviveInVehicle(uint actorId, uint vehicleId, int seatId, int teamId) { }
         public virtual void OnKill(uint actorId, uint shooterId, string weaponClassName, int damage, int material, int hit_type) { }
-
-        public virtual void OnSetTeam(uint actorId, int teamId) { }
 
         public virtual void OnVehicleDestroyed(uint vehicleId) { }
         public virtual void OnVehicleSubmerged(uint vehicleId, float ratio) { }

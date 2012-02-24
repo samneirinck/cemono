@@ -153,7 +153,7 @@ bool CMonoScriptSystem::Reload()
 		mono_domain_try_unload(m_pScriptDomain, &pException);
 
 		if(pException)
-		{
+		{	
 			CryLogAlways("[MonoWarning] An exception was raised during ScriptDomain unload:");
 
 			MonoMethod *pExceptionMethod = mono_method_desc_search_in_class(mono_method_desc_new("::ToString()", false),mono_get_exception_class());
@@ -213,7 +213,7 @@ void CMonoScriptSystem::PostInit()
 {
 	m_pScriptCompiler->CallMethod("PostInit");
 
-	gEnv->pGameFramework->RegisterListener(this, "CryMono", FRAMEWORKLISTENERPRIORITY_GAME);
+	gEnv->pGameFramework->RegisterListener(this, "CryMono", eFLPriority_Game);
 }
 
 bool CMonoScriptSystem::InitializeDomain()

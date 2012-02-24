@@ -24,7 +24,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 
 extern "C"
 {
-	MONO_API void InitCryMono(ISystem* pSystem)
+	MONO_API void InitCryMono(ISystem *pSystem)
 	{
 		ModuleInitISystem(pSystem, "CryMono");
 	}

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="UserDebugSettings"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		PreprocessorDefinitions="USER_$(USERNAME)"
+	/>
+	<Tool
+		Name="VCCLX360CompilerTool"
+		PreprocessorDefinitions="USER_$(USERNAME)"
+	/>
+	<Tool
+		Name="VCNMakeTool"
+		PreprocessorDefinitions="USER_$(USERNAME)"
+	/>
+</VisualStudioPropertySheet>

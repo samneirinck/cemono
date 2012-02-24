@@ -12,7 +12,6 @@
   <ItemGroup>
     <BuildMacro Include="STLPortIncluse">
       <Value>$(STLPortIncluse)</Value>
-      <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
   </ItemGroup>
 </Project>

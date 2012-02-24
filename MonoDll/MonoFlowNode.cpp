@@ -136,8 +136,15 @@ void CMonoFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 		{
 			if(m_bEntityNode)
 			{
-				int entityScriptId = gEnv->pMonoScriptSystem->GetEntityManager()->GetScriptId(m_pActInfo->pEntity->GetId());
-				if(entityScriptId!=m_scriptId)
+				int entityScriptId = 0;
+
+				if(IMonoEntityManager *pEntityManager = gEnv->pMonoScriptSystem->GetEntityManager())
+				{
+					if(pActInfo && pActInfo->pGraph->GetEntityId(pActInfo->myID))
+						entityScriptId = pEntityManager->GetScriptId(pActInfo->pGraph->GetEntityId(pActInfo->myID));
+				}
+
+				if(entityScriptId!=m_scriptId && entityScriptId!=0)
 				{
 					gEnv->pMonoScriptSystem->RemoveScriptInstance(m_scriptId);
 					m_scriptId = entityScriptId;

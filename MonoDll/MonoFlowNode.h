@@ -40,7 +40,7 @@ public:
 
 	CMonoFlowNode(SActivationInfo *pActInfo, bool isEntityClass);
 	~CMonoFlowNode();
-	//////////////////////////////////////////////////////////////////////////
+
 	// IFlowNode
 	virtual void AddRef() { ++m_refs; };
 	virtual void Release() { if (0 >= --m_refs)	delete this; };
@@ -48,19 +48,20 @@ public:
 	virtual IFlowNodePtr Clone( SActivationInfo *pActInfo ) { return new CMonoFlowNode(pActInfo, m_bEntityNode); }
 	virtual bool SerializeXML( SActivationInfo *, const XmlNodeRef&, bool ) { return true; }
 	virtual void Serialize(SActivationInfo *, TSerialize ser) {}
+	virtual void PostSerialize( SActivationInfo * ) {}
 	virtual void ProcessEvent( EFlowEvent event, SActivationInfo *pActInfo );
 
 	virtual void GetMemoryUsage(ICrySizer * s) const { s->Add(*this); }
-	//////////////////////////////////////////////////////////////////////////
+	virtual void GetConfiguration( SFlowNodeConfig& );
+	// ~IFlowNode
 
 	// IFlowGraphHook
 	virtual IFlowNodePtr CreateNode( IFlowNode::SActivationInfo*, TFlowNodeTypeId typeId ) { return NULL; }
 	virtual bool CreatedNode( TFlowNodeId id, const char * name, TFlowNodeTypeId typeId, IFlowNodePtr pNode );
 	virtual void CancelCreatedNode( TFlowNodeId id, const char * name, TFlowNodeTypeId typeId, IFlowNodePtr pNode ) {}
-	// ~IFlowGraphHook
 
-	virtual void GetConfiguration( SFlowNodeConfig& );
-	// ~IFlowNode
+	virtual IFlowGraphHook::EActivation PerformActivation( IFlowGraphPtr pFlowgraph, TFlowNodeId srcNode, TFlowPortId srcPort, TFlowNodeId toNode, TFlowPortId toPort, const TFlowInputData* value) { return eFGH_Pass; }
+	// ~IFlowGraphHook
 
 	bool IsPortActive(int nPort) const
 	{
