@@ -30,7 +30,7 @@ namespace CryEngine
 		/// <param name="angles"></param>
 		public static T SpawnPlayer<T>(int channelId, string name, Vec3 pos, Vec3 angles) where T : BasePlayer, new()
 		{
-			uint entityId = _SpawnPlayer(channelId, name, "Actor", pos, angles);
+			uint entityId = _SpawnPlayer(channelId, name, "Player", pos, angles);
 			if(entityId == 0)
 			{
 				Console.LogAlways("GameRules.SpawnPlayer failed; new entityId was invalid");
