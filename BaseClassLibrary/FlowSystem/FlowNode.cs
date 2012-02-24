@@ -271,6 +271,8 @@ namespace CryEngine
 
 	public sealed class OutputPort
 	{
+		public OutputPort() { }
+
 		public OutputPort(int scriptId, int portId)
 		{
 			ParentScriptId = scriptId;
@@ -288,6 +290,8 @@ namespace CryEngine
 
 	public sealed class OutputPort<T>
 	{
+		public OutputPort() { }
+
 		public OutputPort(int scriptId, int portId)
 		{
 			ParentScriptId = scriptId;
