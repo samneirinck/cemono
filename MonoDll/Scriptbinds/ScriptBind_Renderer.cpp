@@ -23,8 +23,6 @@ CScriptBind_Renderer::CScriptBind_Renderer()
 // Externals below
 SViewParams CScriptBind_Renderer::GetViewParams()
 {
-	MonoCamera cam;
-
 	if (IViewSystem *pViewSystem = gEnv->pGameFramework->GetIViewSystem())
 	{
 		if(IView *pView = pViewSystem->GetActiveView())

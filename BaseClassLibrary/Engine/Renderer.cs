@@ -30,9 +30,9 @@ namespace CryEngine
 		extern internal static void _SetRenderTarget(int id);
 
 		/// <summary>
-		/// The camera that the engine is currently using.
+		/// The currently active vuiew params
 		/// </summary>
-		public static ViewParams Camera { get { return _GetViewParams(); } set { _SetViewParams(value); } }
+		public static ViewParams ViewParams { get { return _GetViewParams(); } set { _SetViewParams(value); } }
 
 		/// <summary>
 		/// The width of the screen in pixels.
