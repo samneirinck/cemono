@@ -83,11 +83,9 @@ namespace CryEngine
 		}
 	}
 
-	public class Camera
+	public struct Camera
 	{
-		public Camera() { }
-
-		public Vec3 ViewDir;
+		public Vec3 Angles;
 		public Vec3 Position;
 
 		public float FieldOfView;

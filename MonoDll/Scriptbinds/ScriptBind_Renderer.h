@@ -14,7 +14,7 @@
 
 struct MonoCamera
 {
-	Vec3 ViewDir;
+	Vec3 Angles;
 	Vec3 Position;
 
 	float FieldOfView;

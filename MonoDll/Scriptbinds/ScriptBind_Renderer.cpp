@@ -1,6 +1,9 @@
 #include "StdAfx.h"
 #include "ScriptBind_Renderer.h"
 
+#include <IViewSystem.h>
+#include <IGameFramework.h>
+
 CScriptBind_Renderer::CScriptBind_Renderer()
 {
 	REGISTER_METHOD(GetViewCamera);
@@ -19,10 +22,11 @@ CScriptBind_Renderer::CScriptBind_Renderer()
 
 CCamera CScriptBind_Renderer::ToCryCamera(MonoCamera cam)
 {
-	CCamera cryCam;
+	CCamera cryCam = gEnv->pSystem->GetViewCamera();
 
 	cryCam.SetPosition(cam.Position);
-	cryCam.SetAngles((Ang3)cam.ViewDir);
+	cryCam.SetAngles((Ang3)cam.Angles);
+	cryCam.SetFrustum(GetWidth(), GetHeight(), DEG2RAD(cam.FieldOfView));
 
 	return cryCam;
 }
@@ -32,36 +36,47 @@ MonoCamera CScriptBind_Renderer::ToMonoCamera(CCamera cryCam)
 	MonoCamera cam;
 
 	cam.Position = cryCam.GetPosition();
-	cam.ViewDir = (Vec3)cryCam.GetAngles();
+	cam.Angles = (Vec3)cryCam.GetAngles();
 	cam.FieldOfView = cryCam.GetFov();
 
 	return cam;
 }
 
 // Externals below
-
 MonoCamera CScriptBind_Renderer::GetViewCamera()
 {
 	MonoCamera cam;
 
-	if(!gEnv)
-		return cam;
+	if (IViewSystem *pViewSystem = gEnv->pGameFramework->GetIViewSystem())
+	{
+		if(IView *pView = pViewSystem->GetActiveView())
+		{
+			auto viewParams = *pView->GetCurrentParams();
 
-	if(!gEnv->pSystem)
-		return cam;
+			cam.Angles = Vec3(Ang3(viewParams.rotation));
+			cam.Position = viewParams.position;
+			cam.FieldOfView = viewParams.fov;
+		}
+	}
 
-	return ToMonoCamera(gEnv->pSystem->GetViewCamera());;
+	return cam;
 }
 
 void CScriptBind_Renderer::SetViewCamera(MonoCamera cam)
 {
-	if(!gEnv)
-		return;
+	if (IViewSystem *pViewSystem = gEnv->pGameFramework->GetIViewSystem())
+	{
+		if(IView *pView = pViewSystem->GetActiveView())
+		{
+			auto viewParams = *pView->GetCurrentParams();
 
-	if(!gEnv->pSystem)
-		return;
+			viewParams.fov = DEG2RAD(cam.FieldOfView);
+			viewParams.rotation = Quat(Ang3(cam.Angles));
+			viewParams.position = cam.Position;
 
-	gEnv->pSystem->SetViewCamera(ToCryCamera(cam));
+			pView->SetCurrentParams(viewParams);
+		}
+	}
 }
 
 int CScriptBind_Renderer::GetWidth()
