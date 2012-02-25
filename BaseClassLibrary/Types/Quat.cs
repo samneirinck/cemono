@@ -3,6 +3,12 @@
 	public struct Quat
 	{
 		#region Methods
+		public Quat(Vec3 axis)
+			: this()
+		{
+			Axis = axis;
+		}
+
 		public void Normalize()
 		{
 			float f = System.Convert.ToSingle(Math.ISqrt(Angle * Angle + Axis.X * Axis.X + Axis.Y * Axis.Y + Axis.Z * Axis.Z));
@@ -56,7 +62,5 @@
 		}
 
 		public float Angle;
-
-
 	}
 }
