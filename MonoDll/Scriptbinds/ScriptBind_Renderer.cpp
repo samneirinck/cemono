@@ -6,8 +6,8 @@
 
 CScriptBind_Renderer::CScriptBind_Renderer()
 {
-	REGISTER_METHOD(GetViewCamera);
-	REGISTER_METHOD(SetViewCamera);
+	REGISTER_METHOD(GetViewParams);
+	REGISTER_METHOD(SetViewParams);
 
 	REGISTER_METHOD(GetWidth);
 	REGISTER_METHOD(GetHeight);
@@ -20,30 +20,8 @@ CScriptBind_Renderer::CScriptBind_Renderer()
 	REGISTER_METHOD(SetRenderTarget);
 }
 
-CCamera CScriptBind_Renderer::ToCryCamera(MonoCamera cam)
-{
-	CCamera cryCam = gEnv->pSystem->GetViewCamera();
-
-	cryCam.SetPosition(cam.Position);
-	cryCam.SetAngles((Ang3)cam.Angles);
-	cryCam.SetFrustum(GetWidth(), GetHeight(), DEG2RAD(cam.FieldOfView));
-
-	return cryCam;
-}
-
-MonoCamera CScriptBind_Renderer::ToMonoCamera(CCamera cryCam)
-{
-	MonoCamera cam;
-
-	cam.Position = cryCam.GetPosition();
-	cam.Angles = (Vec3)cryCam.GetAngles();
-	cam.FieldOfView = cryCam.GetFov();
-
-	return cam;
-}
-
 // Externals below
-MonoCamera CScriptBind_Renderer::GetViewCamera()
+SViewParams CScriptBind_Renderer::GetViewParams()
 {
 	MonoCamera cam;
 
@@ -51,30 +29,20 @@ MonoCamera CScriptBind_Renderer::GetViewCamera()
 	{
 		if(IView *pView = pViewSystem->GetActiveView())
 		{
-			auto viewParams = *pView->GetCurrentParams();
-
-			cam.Angles = Vec3(Ang3(viewParams.rotation));
-			cam.Position = viewParams.position;
-			cam.FieldOfView = viewParams.fov;
+			return *pView->GetCurrentParams();
 		}
 	}
 
-	return cam;
+	return SViewParams();
 }
 
-void CScriptBind_Renderer::SetViewCamera(MonoCamera cam)
+void CScriptBind_Renderer::SetViewParams(SViewParams cam)
 {
 	if (IViewSystem *pViewSystem = gEnv->pGameFramework->GetIViewSystem())
 	{
 		if(IView *pView = pViewSystem->GetActiveView())
 		{
-			auto viewParams = *pView->GetCurrentParams();
-
-			viewParams.fov = DEG2RAD(cam.FieldOfView);
-			viewParams.rotation = Quat(Ang3(cam.Angles));
-			viewParams.position = cam.Position;
-
-			pView->SetCurrentParams(viewParams);
+			pView->SetCurrentParams(cam);
 		}
 	}
 }

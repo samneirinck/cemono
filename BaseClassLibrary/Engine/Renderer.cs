@@ -8,9 +8,9 @@ namespace CryEngine
 	public class Renderer
 	{
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static Camera _GetViewCamera();
+		extern internal static ViewParams _GetViewParams();
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _SetViewCamera(Camera cam);
+		extern internal static void _SetViewParams(ViewParams cam);
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static int _GetWidth();
@@ -32,7 +32,7 @@ namespace CryEngine
 		/// <summary>
 		/// The camera that the engine is currently using.
 		/// </summary>
-		public static Camera Camera { get { return _GetViewCamera(); } set { _SetViewCamera(value); } }
+		public static ViewParams Camera { get { return _GetViewParams(); } set { _SetViewParams(value); } }
 
 		/// <summary>
 		/// The width of the screen in pixels.
@@ -83,11 +83,82 @@ namespace CryEngine
 		}
 	}
 
-	public struct Camera
+	public struct ViewParams
 	{
-		public Vec3 Angles;
-		public Vec3 Position;
+		/// <summary>
+		/// view position
+		/// </summary>
+		public Vec3 position;
+		/// <summary>
+		/// view orientation
+		/// </summary>
+		public Quat rotation;
+		public Quat localRotationLAST;
 
-		public float FieldOfView;
+		/// <summary>
+		/// custom near clipping plane, 0 means use engine defaults
+		/// </summary>
+		public float nearplane;
+		public float fov;
+
+		public byte viewID;
+
+		/// <summary>
+		/// view shake status
+		/// </summary>
+		public bool groundOnly;
+		/// <summary>
+		/// whats the amount of shake, from 0.0 to 1.0
+		/// </summary>
+		public float shakingRatio;
+		/// <summary>
+		/// what the current angular shake
+		/// </summary>
+		public Quat currentShakeQuat;
+		/// <summary>
+		/// what is the current translational shake
+		/// </summary>
+		public Vec3 currentShakeShift;
+
+		// For damping camera movement.
+		/// <summary>
+		/// Who we're watching. 0 == nobody.
+		/// </summary>
+		public uint idTarget;
+		/// <summary>
+		/// Where the target was.
+		/// </summary>
+		public Vec3 targetPos;
+		/// <summary>
+		/// current dt.
+		/// </summary>
+		public float frameTime;
+		/// <summary>
+		/// previous rate of change of angle.
+		/// </summary>
+		public float angleVel;
+		/// <summary>
+		/// previous rate of change of dist between target and camera.
+		/// </summary>
+		public float vel;
+		/// <summary>
+		/// previous dist of cam from target
+		/// </summary>
+		public float dist;
+
+		// blending
+		public bool blend;
+		public float blendPosSpeed;
+		public float blendRotSpeed;
+		public float blendFOVSpeed;
+		public Vec3 blendPosOffset;
+		public Quat blendRotOffset;
+		public float blendFOVOffset;
+		public bool	justActivated;
+
+		private byte viewIDLast;
+		private Vec3 positionLast;
+		private Quat rotationLast;
+		private float FOVLast;
 	}
 }

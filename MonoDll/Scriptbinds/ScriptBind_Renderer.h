@@ -12,6 +12,8 @@
 #include <MonoCommon.h>
 #include <IMonoScriptBind.h>
 
+struct SViewParams;
+
 struct MonoCamera
 {
 	Vec3 Angles;
@@ -30,12 +32,10 @@ public:
 	virtual const char *GetClassName() { return "Renderer"; }
 	// ~IMonoScriptBind
 
-	static CCamera ToCryCamera(MonoCamera camera);
-	static MonoCamera ToMonoCamera(CCamera camera);
 protected:
 	// External methods
-	static MonoCamera GetViewCamera();
-	static void SetViewCamera(MonoCamera);
+	static SViewParams GetViewParams();
+	static void SetViewParams(SViewParams);
 
 	static int GetWidth();
 	static int GetHeight();
