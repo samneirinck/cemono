@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-using System.Collections.Specialized;
+using System.Collections.Generic;
 
 namespace CryEngine
 {
@@ -60,7 +60,7 @@ namespace CryEngine
 			if (entityId == 0)
 				return null;
 
-            if (internalEntities.Contains(entityId))
+            if (internalEntities.ContainsKey(entityId))
                 return internalEntities[entityId] as StaticEntity;
 
             return new StaticEntity(entityId);
@@ -109,18 +109,30 @@ namespace CryEngine
 
         internal static void RegisterInternalEntity(uint entityId, StaticEntity entity)
         {
-			if (!internalEntities.Contains(entityId))
+			if (!internalEntities.ContainsKey(entityId))
 				internalEntities.Add(entityId, entity);
 			else
 				throw new Exception("Attempted to register internal entity twice.");
         }
 
+		internal static void OnUpdate()
+		{
+			foreach (var entityId in internalEntities.Keys)
+			{
+				if (entityId != 0)
+				{
+					var entity = internalEntities[entityId];
+					if(entity != null && entity.ReceiveUpdates==true)
+						entity.OnUpdate();
+				}
+			}
+		}
         
         /// <summary>
         /// Contains the entities registered with mono.
         /// EntityId, Entity are stored in here. EntityId is also stored within Entity, but storing it seperately here provides for fast lookup and rids of us too many foreach loops.
         /// </summary>
-        static OrderedDictionary internalEntities = new OrderedDictionary();
+        internal static Dictionary<uint, StaticEntity> internalEntities = new Dictionary<uint,StaticEntity>();
     }
 
 	/// <summary>

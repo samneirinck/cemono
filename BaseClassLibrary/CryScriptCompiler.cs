@@ -261,6 +261,8 @@ namespace CryEngine
 				if(script.ScriptInstances!=null)
 					script.ScriptInstances.Where(i => i.ReceiveUpdates).ToList().ForEach(i => i.OnUpdate());
 			});
+
+			EntitySystem.OnUpdate();
 		}
 
 		static List<Scriptbind> ScriptBinds;
