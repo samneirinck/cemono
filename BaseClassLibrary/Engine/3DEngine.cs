@@ -8,7 +8,5 @@ namespace CryEngine
 	/// </summary>
     public class Engine
     {
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _RenderWorld(int renderFlags, Camera camera);
     }
 }

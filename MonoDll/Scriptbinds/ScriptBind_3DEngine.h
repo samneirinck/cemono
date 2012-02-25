@@ -23,8 +23,6 @@ public:
 	// IMonoScriptBind
 	virtual const char *GetClassName() { return "Engine"; }
 	// ~IMonoScriptBind
-
-	static void RenderWorld(int renderFlags, MonoCamera camera);
 };
 
 #endif //__SCRIPTBIND_3DENGINE__
