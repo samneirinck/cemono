@@ -26,6 +26,8 @@ CEntityManager::CEntityManager()
 	REGISTER_METHOD(FindEntity);
 	REGISTER_METHOD(GetEntitiesByClass);
 
+	REGISTER_METHOD(EntityExists);
+
 	gEnv->pEntitySystem->AddSink(this, IEntitySystem::OnBeforeSpawn | IEntitySystem::OnSpawn | IEntitySystem::OnRemove, 0);
 }
 
@@ -53,7 +55,14 @@ void CEntityManager::OnSpawn(IEntity *pEntity,SEntitySpawnParams &params)
 	if(!IsMonoEntity(className))
 		return;
 
-	m_monoEntities.back()->OnSpawn(pEntity->GetId());
+	EntityId id = pEntity->GetId();
+	if(id == 0)
+	{
+		CryLogAlways("Failed to spawn entity %s of class %s", params.sName, params.pClass ? params.pClass->GetName() : "[Invalid Class]");
+		m_monoEntities.erase(std::remove(m_monoEntities.begin(), m_monoEntities.end(), m_monoEntities.back()), m_monoEntities.end());
+	}
+
+	m_monoEntities.back()->OnSpawn(id);
 }
 
 bool CEntityManager::OnRemove(IEntity *pEntity)
@@ -165,6 +174,11 @@ EntityId CEntityManager::FindEntity(mono::string name)
 		return pEntity->GetId();
 
 	return -1;
+}
+
+bool CEntityManager::EntityExists(EntityId entityId)
+{
+	return gEnv->pEntitySystem->GetEntity(entityId);
 }
 
 mono::array CEntityManager::GetEntitiesByClass(mono::string _class)

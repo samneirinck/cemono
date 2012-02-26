@@ -48,8 +48,11 @@ namespace CryEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern protected static uint _FindEntity(string name);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern protected static object[] _GetEntitiesByClass(string className);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern protected static object[] _GetEntitiesByClass(string className);
+
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern protected static bool _EntityExists(uint entityId);
 
 		/// <summary>
 		/// Get an entity by its unique ID.
@@ -63,10 +66,13 @@ namespace CryEngine
 			if (entityId == 0)
 				return null;
 
-            if (internalEntities.ContainsKey(entityId))
-                return internalEntities[entityId] as StaticEntity;
+			StaticEntity ent = internalEntities.Find(entity => entity.Id == entityId);
+			if (ent == default(StaticEntity) && _EntityExists(entityId))
+				return new StaticEntity(entityId);
+			else
+				ent = null;
 
-            return new StaticEntity(entityId);
+            return ent;
         }
 
 		/// <summary>
@@ -110,10 +116,10 @@ namespace CryEngine
 			return GetEntities(typeof(T).Name) as T[];
 		}
 
-        internal static void RegisterInternalEntity(uint entityId, StaticEntity entity)
+        internal static void RegisterInternalEntity(StaticEntity entity)
         {
-			if (!internalEntities.ContainsKey(entityId))
-				internalEntities.Add(entityId, entity);
+			if (!internalEntities.Contains(entity))
+				internalEntities.Add(entity);
 			else
 				throw new Exception("Attempted to register internal entity twice.");
         }
@@ -131,7 +137,7 @@ namespace CryEngine
         /// Contains the entities registered with mono.
         /// EntityId, Entity are stored in here. EntityId is also stored within Entity, but storing it seperately here provides for fast lookup and rids of us too many foreach loops.
         /// </summary>
-        internal static Dictionary<uint, StaticEntity> internalEntities = new Dictionary<uint,StaticEntity>();
+		internal static List<StaticEntity> internalEntities = new List<StaticEntity>();
 
 		/// <summary>
 		/// Contains entities spawned using EntitySystem.SpawnEntity.

@@ -114,7 +114,7 @@ namespace CryEngine
 			Id = entityId;
 
 			MonoEntity = true;
-			EntitySystem.RegisterInternalEntity(entityId, this);
+			EntitySystem.RegisterInternalEntity(this);
 			Spawned = true;
 
 			//Do this before the property overwrites

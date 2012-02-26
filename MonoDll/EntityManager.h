@@ -114,6 +114,8 @@ protected:
 
 	static EntityId FindEntity(mono::string);
 	static mono::array GetEntitiesByClass(mono::string);
+
+	static bool EntityExists(EntityId);
 	/// End direct entity calls
 
 	// ~ScriptBinds

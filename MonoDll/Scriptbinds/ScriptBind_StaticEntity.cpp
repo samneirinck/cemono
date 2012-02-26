@@ -38,9 +38,11 @@ mono::string CScriptBind_StaticEntity::GetPropertyValue(EntityId entityId, mono:
 	{
 		IEntityPropertyHandler *pPropertyHandler = pEntity->GetClass()->GetPropertyHandler();
 
-		return (mono::string)ToMonoString(pPropertyHandler->GetProperty(pEntity, 0));
+		return ToMonoString(pPropertyHandler->GetProperty(pEntity, 0));
 		//return pPropertyHandler->GetProperty(pEntity, propertyName);
 	}
+
+	return ToMonoString("");
 }
 
 void CScriptBind_StaticEntity::SetPropertyValue(EntityId entityId, mono::string propertyName, mono::string value)
