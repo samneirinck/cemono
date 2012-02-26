@@ -5,6 +5,7 @@ namespace CryEngine.Utils
 {
     public class Tester
     {
+		[System.CLSCompliant(false)]
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern protected static void _TestScriptBind(string testString, int testInt, object[] array);
 

@@ -8,20 +8,35 @@ namespace CryEngine
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static void _RayWorldIntersection(string gamemode);
 
-        public struct RayHit
+		public struct RaycastHit
+		{
+			RayHit _info;
+
+			internal RaycastHit(RayHit hit)
+			{
+				_info = hit;
+			}
+
+			public float Distance { get { return _info.dist; } }
+			public EntityId Collider { get { return _info.colliderId; } }
+			public Vec3 Point { get { return _info.pt; } }
+			public Vec3 Normal { get { return _info.n; } }
+		}
+
+        internal struct RayHit
         {
-            float dist;
-	        uint colliderId;
-	        int ipart;
-	        int partid;
-	        short surface_idx;
-	        short idmatOrg;	// original material index, not mapped with material mapping
-	        int foreignIdx;
-	        int iNode; // BV tree node that had the intersection; can be used for "warm start" next time
-	        Vec3 pt;
-	        Vec3 n;	// surface normal
-	        int bTerrain;	// global terrain hit
-	        int iPrim; // hit triangle index
+            internal float dist;
+	        internal uint colliderId;
+	        internal int ipart;
+	        internal int partid;
+	        internal  short surface_idx;
+	        internal  short idmatOrg;	// original material index, not mapped with material mapping
+	        internal int foreignIdx;
+	        internal int iNode; // BV tree node that had the intersection; can be used for "warm start" next time
+	        internal Vec3 pt;
+	        internal Vec3 n;	// surface normal
+	        internal int bTerrain;	// global terrain hit
+	        internal int iPrim; // hit triangle index
         };
 
         [Flags]
@@ -56,9 +71,9 @@ namespace CryEngine
 		/// <param name="maxHits"></param>
 		/// <param name="skipEntities"></param>
 		/// <returns>The total amount of hits detected (solid and pierceable)</returns>
-        public static int RayWorldIntersection(Vec3 origin, Vec3 dir, int objectTypes, RayWorldIntersectionFlag flags, out RayHit hits, int maxHits, uint[] skipEntities)
+		public static int RayWorldIntersection(Vec3 origin, Vec3 dir, int objectTypes, RayWorldIntersectionFlag flags, out RaycastHit hits, int maxHits, EntityId[] skipEntities)
         {
-			hits = new RayHit();
+			hits = new RaycastHit();
 
             return -1;
         }

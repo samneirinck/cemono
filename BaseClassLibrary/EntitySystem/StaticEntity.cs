@@ -19,9 +19,9 @@ namespace CryEngine
 	{
 		#region Externals
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern protected static string _GetPropertyValue(uint entityId, string propertyName);
+		extern internal static string _GetPropertyValue(uint entityId, string propertyName);
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern protected static void _SetPropertyValue(uint entityId, string property, string value);
+		extern internal static void _SetPropertyValue(uint entityId, string property, string value);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static void _SetWorldPos(uint entityId, Vec3 newPos);
@@ -45,9 +45,19 @@ namespace CryEngine
 		extern internal static string _GetStaticObjectFilePath(uint entityId, int slot);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern public static EntitySlotFlags _GetSlotFlags(uint entityId, int slot);
+		extern internal static EntitySlotFlags _GetSlotFlags(uint entityId, int slot);
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern public static void _SetSlotFlags(uint entityId, int slot, EntitySlotFlags slotFlags);
+		extern internal static void _SetSlotFlags(uint entityId, int slot, EntitySlotFlags slotFlags);
+
+		public EntitySlotFlags GetSlotFlags(int slot = 0)
+		{
+			return _GetSlotFlags(Id, slot);
+		}
+
+		public void SetSlotFlags(EntitySlotFlags flags, int slot = 0)
+		{
+			_SetSlotFlags(Id, slot, flags);
+		}
 
 		/// <summary>
 		/// Loads an non-static model on the object (.chr, .cdf, .cga)
@@ -153,7 +163,7 @@ namespace CryEngine
 			storedProperties = null;
 		}
 
-		public static implicit operator StaticEntity(uint id)
+		public static implicit operator StaticEntity(EntityId id)
 		{
 			return EntitySystem.GetEntity(id);
 		}
@@ -167,7 +177,7 @@ namespace CryEngine
 		public Vec3 Position { get { return _GetWorldPos(Id); } set { _SetWorldPos(Id, value); } }
 		public Vec3 Rotation { get { return _GetWorldAngles(Id); } set { _SetWorldAngles(Id, value); } }
 
-		public uint Id { get; set; }
+		public EntityId Id { get; set; }
 		public string Name { get; set; }
 		public EntityFlags Flags { get; set; }
 		internal bool Spawned;
@@ -208,14 +218,14 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="triggerEntityId"></param>
 		/// <param name="areaEntityId"></param>
-		protected virtual void OnEnterArea(uint triggerEntityId, uint areaEntityId) { }
+		protected virtual void OnEnterArea(EntityId triggerEntityId, EntityId areaEntityId) { }
 
 		/// <summary>
 		/// Sent when triggering entity leaves the area proximity.
 		/// </summary>
 		/// <param name="triggerEntityId"></param>
 		/// <param name="areaEntityId"></param>
-		protected virtual void OnLeaveArea(uint triggerEntityId, uint areaEntityId) { }
+		protected virtual void OnLeaveArea(EntityId triggerEntityId, EntityId areaEntityId) { }
 
 		/// <summary>
 		/// Sent on entity collision.
@@ -225,12 +235,12 @@ namespace CryEngine
 		/// <param name="dir"></param>
 		/// <param name="materialId"></param>
 		/// <param name="contactNormal"></param>
-		protected virtual void OnCollision(uint targetEntityId, Vec3 hitPos, Vec3 dir, short materialId, Vec3 contactNormal) { }
+		protected virtual void OnCollision(EntityId targetEntityId, Vec3 hitPos, Vec3 dir, short materialId, Vec3 contactNormal) { }
 		
 		/// <summary>
 		/// 
 		/// </summary>
-		public virtual void OnHit(HitInfo hitInfo) { }
+		public virtual void OnHit(DamageInfo hitInfo) { }
 		#endregion
 
 		#region Overrides

@@ -10,37 +10,37 @@ namespace CryEngine
     {
         // Shared
         public virtual void PrecacheLevel() { }
-        public virtual void RequestSpawnGroup(uint spawnGroupId) { }
-        public virtual void SetPlayerSpawnGroup(uint playerId, uint spawnGroupId) { }
-        public virtual uint GetPlayerSpawnGroup(uint actorId) { return System.Convert.ToUInt32(0); }
+        public virtual void RequestSpawnGroup(EntityId spawnGroupId) { }
+		public virtual void SetPlayerSpawnGroup(EntityId playerId, EntityId spawnGroupId) { }
+		public virtual EntityId GetPlayerSpawnGroup(EntityId actorId) { return System.Convert.ToUInt32(0); }
         public virtual void ShowScores(bool show) { }
 
-		public virtual void OnSetTeam(uint actorId, int teamId) { }
+		public virtual void OnSetTeam(EntityId actorId, EntityId teamId) { }
 
         // Server-only
-		protected virtual void OnHit(HitInfo hitInfo) { }
+		protected virtual void OnHit(DamageInfo hitInfo) { }
 
         public virtual void OnSpawn() { }
 
         public virtual void OnClientConnect(int channelId, bool isReset = false, string playerName = "") { }
         public virtual void OnClientDisconnect(int channelId) { }
 
-        public virtual void OnClientEnteredGame(int channelId, uint playerId, bool reset, bool loadingSaveGame) { }
+		public virtual void OnClientEnteredGame(int channelId, EntityId playerId, bool reset, bool loadingSaveGame) { }
 
-        public virtual void OnItemDropped(uint itemId, uint actorId) { }
-        public virtual void OnItemPickedUp(uint itemId, uint actorId) { }
+		public virtual void OnItemDropped(EntityId itemId, EntityId actorId) { }
+		public virtual void OnItemPickedUp(EntityId itemId, EntityId actorId) { }
 
-        public virtual void SvOnVehicleDestroyed(uint vehicleId) { }
-        public virtual void SvOnVehicleSubmerged(uint vehicleId, float ratio) { }
+		public virtual void SvOnVehicleDestroyed(EntityId vehicleId) { }
+		public virtual void SvOnVehicleSubmerged(EntityId vehicleId, float ratio) { }
 
-        public virtual void OnAddTaggedEntity(uint shooterId, uint targetId) { }
+		public virtual void OnAddTaggedEntity(EntityId shooterId, EntityId targetId) { }
 
-        public virtual void OnChangeSpectatorMode(uint actorId, byte mode, uint targetId, bool resetAll) { }
-        public virtual void RequestSpectatorTarget(uint playerId, int change) { }
+		public virtual void OnChangeSpectatorMode(EntityId actorId, byte mode, EntityId targetId, bool resetAll) { }
+		public virtual void RequestSpectatorTarget(EntityId playerId, int change) { }
 
-        public virtual void OnChangeTeam(uint actorId, int teamId) { }
+		public virtual void OnChangeTeam(EntityId actorId, int teamId) { }
 
-        public virtual void OnSpawnGroupInvalid(uint playerId, uint spawnGroupId) { }
+		public virtual void OnSpawnGroupInvalid(EntityId playerId, EntityId spawnGroupId) { }
 
         public virtual void RestartGame(bool forceInGame) { }
 
@@ -48,12 +48,12 @@ namespace CryEngine
         public virtual void OnConnect() { }
 		public virtual void OnDisconnect(DisconnectionCause cause, string desc) { }
 
-        public virtual void OnRevive(uint actorId, Vec3 pos, Vec3 rot, int teamId) { }
-        public virtual void OnReviveInVehicle(uint actorId, uint vehicleId, int seatId, int teamId) { }
-        public virtual void OnKill(uint actorId, uint shooterId, string weaponClassName, int damage, int material, int hit_type) { }
+		public virtual void OnRevive(EntityId actorId, Vec3 pos, Vec3 rot, int teamId) { }
+		public virtual void OnReviveInVehicle(EntityId actorId, EntityId vehicleId, int seatId, int teamId) { }
+		public virtual void OnKill(EntityId actorId, EntityId shooterId, string weaponClassName, int damage, int material, int hit_type) { }
 
-        public virtual void OnVehicleDestroyed(uint vehicleId) { }
-        public virtual void OnVehicleSubmerged(uint vehicleId, float ratio) { }
+		public virtual void OnVehicleDestroyed(EntityId vehicleId) { }
+		public virtual void OnVehicleSubmerged(EntityId vehicleId, float ratio) { }
     }
 
 	public enum DisconnectionCause
@@ -156,7 +156,20 @@ namespace CryEngine
 		eDC_Unknown
 	}
 
-    public struct HitInfo
+	public struct DamageInfo
+	{
+		internal HitInfo _info;
+
+		internal DamageInfo(HitInfo info)
+		{
+			_info = info;
+		}
+
+		public EntityId Shooter { get { return _info.shooterId; } }
+		public EntityId Target { get { return _info.targetId; } }
+	}
+
+    internal struct HitInfo
     {
         /// <summary>
         /// EntityId of the shooter

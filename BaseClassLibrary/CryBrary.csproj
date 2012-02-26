@@ -128,6 +128,7 @@
   <ItemGroup>
     <Compile Include="ActorSystem\Inventory.cs" />
     <Compile Include="ActorSystem\Player.cs" />
+    <Compile Include="EntitySystem\EntityId.cs" />
     <Compile Include="EntitySystem\Physics.cs" />
     <Compile Include="GameRules\GameRules.cs" />
     <Compile Include="Utils\AppDomainSerializer.cs" />

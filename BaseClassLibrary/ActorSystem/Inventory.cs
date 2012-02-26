@@ -6,11 +6,11 @@ namespace CryEngine
     public class Inventory
     {
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern protected static void _GiveItem(UInt32 entityId, string itemClass);
+        extern internal static void _GiveItem(UInt32 entityId, string itemClass);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern protected static void _GiveEquipmentPack(UInt32 entityId, string equipmentPack);
+		extern internal static void _GiveEquipmentPack(UInt32 entityId, string equipmentPack);
 
-        public Inventory(UInt32 ownerId)
+        public Inventory(EntityId ownerId)
         {
             OwnerId = ownerId;
         }

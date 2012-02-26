@@ -51,7 +51,7 @@ namespace CryEngine
 		/// Should be used for special types such as files.
 		/// </summary>
 		public EntityPropertyType Type { get; set; }
-		public uint Flags { get; set; }
+		public int Flags { get; set; }
 		/// <summary>
 		/// The description to display when the user hovers over this property inside Sandbox.
 		/// </summary>
@@ -94,7 +94,7 @@ namespace CryEngine
 
     public struct EntityProperty
     {
-        public EntityProperty(string Name, string Desc, EntityPropertyType Type, EntityPropertyLimits Limits, uint Flags = 0)
+        public EntityProperty(string Name, string Desc, EntityPropertyType Type, EntityPropertyLimits Limits, int Flags = 0)
             : this(Name, Desc, Type)
         {
 			if(Limits.max == 0 && Limits.min == 0)
@@ -210,7 +210,7 @@ namespace CryEngine
         }
 
         private EntityPropertyType _type;
-        public uint flags;
+        public int flags;
 
         public EntityPropertyLimits limits;
     }

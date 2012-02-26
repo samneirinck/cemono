@@ -12,7 +12,7 @@
         /// </summary>
         /// <param name="entityId"></param>
         /// <param name="channelId"></param>
-		public void InternalSpawn(uint entityId, int channelId)
+		public void InternalSpawn(EntityId entityId, int channelId)
         {
             Id = entityId;
             ChannelId = channelId;

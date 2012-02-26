@@ -200,6 +200,7 @@ namespace CryEngine
 		String
 	}
 
+	[Flags]
     public enum CVarFlags
     {
         /// <summary>
