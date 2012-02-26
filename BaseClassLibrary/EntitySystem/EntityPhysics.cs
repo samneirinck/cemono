@@ -65,13 +65,13 @@ namespace CryEngine
 			_params = new PhysicalizationParams();
 		}
 
-		public void AddImpulse(Vec3 impulse, Vec3 angImpulse = default(Vec3), Vec3 point = default(Vec3))
+		public void AddImpulse(Vec3 impulse, Vec3 angImpulse = default(Vec3), Vec3? point = null)
 		{
 			var actionImpulse = new ActionImpulse();
 
 			actionImpulse.impulse = impulse;
 			actionImpulse.angImpulse = angImpulse;
-			actionImpulse.point = point;
+			actionImpulse.point = point ?? EntitySystem.GetEntity(_entityId).Position;
 
 			StaticEntity._AddImpulse(_entityId, actionImpulse);
 		}
