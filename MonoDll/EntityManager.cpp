@@ -31,12 +31,35 @@ CEntityManager::CEntityManager()
 
 	REGISTER_METHOD(EntityExists);
 
+	REGISTER_METHOD(EnableUpdates);
+
 	gEnv->pEntitySystem->AddSink(this, IEntitySystem::OnBeforeSpawn | IEntitySystem::OnSpawn | IEntitySystem::OnRemove, 0);
 }
 
 CEntityManager::~CEntityManager()
 {
 	gEnv->pEntitySystem->RemoveSink(this);
+}
+
+void CEntityManager::EnableUpdates()
+{
+	CryLogAlways("Setting updates on the unmanaged side");
+	auto scriptManager = gEnv->pMonoScriptSystem->GetScriptManager();
+
+	if(scriptManager)
+		CryLogAlways("Got the script manager");
+	else
+		CryLogAlways("Failed to get the script manager");
+
+	if(auto gameObject = scriptManager->GetGameObject())
+	{
+		CryLogAlways("Got the game object");
+		gameObject->EnablePostUpdates(scriptManager);
+	}
+	else
+		CryLogAlways("Failed to get the gameobject");
+
+	CryLogAlways("Updates have been set, returning to managed code");
 }
 
 bool CEntityManager::OnBeforeSpawn(SEntitySpawnParams &params)

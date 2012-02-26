@@ -138,6 +138,13 @@ namespace CryEngine
 		public int iSource; // reserved for internal use
 	}
 
+	public enum PhysicsApplyTime
+	{
+		Immediate = 0,
+		PreStep = 1,
+		PostStep = 2
+	}
+
 	public struct BreakageParams
 	{
 		public enum BreakageType

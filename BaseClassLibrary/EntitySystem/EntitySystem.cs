@@ -9,6 +9,9 @@ namespace CryEngine
 {
     public partial class EntitySystem
     {
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern public static void _EnableUpdates();
+
 		/// <summary>
 		/// Spawns an entity with the specified parameters.
 		/// </summary>
@@ -42,9 +45,9 @@ namespace CryEngine
 		/// <param name="scale"></param>
 		/// <param name="autoInit"></param>
 		/// <returns></returns>
-		public static T SpawnEntity<T>(string name, Vec3 pos, Vec3 rot, Vec3 scale, bool autoInit = true) where T : StaticEntity
+		public static T SpawnEntity<T>(string name, Vec3 pos, Vec3? rot = null, Vec3? scale = null, bool autoInit = true, EntityFlags flags = EntityFlags.CastShadow) where T : StaticEntity
 		{
-			spawnedEntities.Add(GetEntity(_SpawnEntity(new EntitySpawnParams { Name = name, Class = typeof(T).Name, Pos = pos, Rot = rot, Scale = scale, Flags = 0 }, autoInit)));
+			spawnedEntities.Add(GetEntity(_SpawnEntity(new EntitySpawnParams { Name = name, Class = typeof(T).Name, Pos = pos, Rot = rot ?? new Vec3(0, 0, 0), Scale = scale ?? new Vec3(1, 1, 1), Flags = flags }, autoInit)));
 
 			return spawnedEntities.Last() as T;
 		}
