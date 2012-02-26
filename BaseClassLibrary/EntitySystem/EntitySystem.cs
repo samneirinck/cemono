@@ -15,8 +15,11 @@ namespace CryEngine
 		/// <param name="spawnParams">The <see cref="EntitySpawnParams"/></param>
 		/// <param name="autoInit">Should the entity automatically be initialised?</param>
 		/// <returns></returns>
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern public static uint _SpawnEntity(EntitySpawnParams spawnParams, bool autoInit = true);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern public static uint _SpawnEntity(EntitySpawnParams spawnParams, bool autoInit = true);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern public static void _RemoveEntity(uint entityId);
+
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern public static bool _RegisterEntityClass(EntityRegisterParams registerParams, object[] properties);
 		/// <summary>

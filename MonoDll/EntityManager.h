@@ -110,6 +110,8 @@ protected:
 
 	// ScriptBinds
 	static EntityId SpawnEntity(EntitySpawnParams, bool);
+	static void RemoveEntity(EntityId);
+
 	static bool RegisterEntityClass(EntityRegisterParams, mono::array);
 
 	static EntityId FindEntity(mono::string);

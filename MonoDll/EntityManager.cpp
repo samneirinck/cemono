@@ -21,8 +21,11 @@ std::vector<const char *> CEntityManager::m_monoEntityClasses = std::vector<cons
 CEntityManager::CEntityManager()
 	: m_refs(0)
 {
-	REGISTER_METHOD(RegisterEntityClass);
 	REGISTER_METHOD(SpawnEntity);
+	REGISTER_METHOD(RemoveEntity);
+
+	REGISTER_METHOD(RegisterEntityClass);
+
 	REGISTER_METHOD(FindEntity);
 	REGISTER_METHOD(GetEntitiesByClass);
 
@@ -128,6 +131,11 @@ EntityId CEntityManager::SpawnEntity(EntitySpawnParams params, bool bAutoInit)
 		return pEntity->GetId();
 
 	return 0;
+}
+
+void CEntityManager::RemoveEntity(EntityId id)
+{
+	gEnv->pEntitySystem->RemoveEntity(id);
 }
 
 bool CEntityManager::RegisterEntityClass(EntityRegisterParams params, mono::array Properties)
