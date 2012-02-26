@@ -137,13 +137,14 @@ bool CScriptSystem::Reload(bool initialLoad)
 	{
 		CryLogAlways("C# modifications detected on disk, initializing CryBrary reload");
 
-		m_pScriptManager->Release();
+		EntityId id = m_pScriptManager->GetEntityId();
+		SAFE_RELEASE(m_pScriptManager);
+		gEnv->pEntitySystem->RemoveEntity(id, true);
 	}
 
 	SEntitySpawnParams params;
 	params.pClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass("Default");
 	params.nFlags = ENTITY_FLAG_SERVER_ONLY;
-	params.id = 1337;
 
 	if(auto pEntity = gEnv->pEntitySystem->SpawnEntity(params))
 	{
