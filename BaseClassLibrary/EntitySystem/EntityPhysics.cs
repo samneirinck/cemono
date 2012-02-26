@@ -20,6 +20,13 @@ namespace CryEngine
 			_physics.Slot = 0;
 		}
 
+		public Vec3 Velocity
+		{
+			get { return _GetVelocity(Id); }
+
+			set { _SetVelocity(Id, value); }
+		}
+
 		PhysicsParams _physics;
 		public PhysicsParams Physics { get { return _physics; } set { _physics = value; _physics._entityId = Id; } }
 	}

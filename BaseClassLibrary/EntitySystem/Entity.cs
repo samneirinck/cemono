@@ -39,20 +39,5 @@ namespace CryEngine
 
 			return IsEntityFlowNode();
         }
-
-        public Vec3 Velocity 
-        { 
-            get { return _GetVelocity(Id);  }
-                
-            set 
-            {
-                EntityMovementRequest request = new EntityMovementRequest();
-
-                request.type = EntityMoveType.Normal;
-                request.velocity = value;
-
-                _AddMovement(Id, ref request);
-            }
-        }
     }
 }
