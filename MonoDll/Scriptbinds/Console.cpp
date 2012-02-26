@@ -59,7 +59,7 @@ void CScriptBind_Console::OnMonoCmd(IConsoleCmdArgs *cmdArgs)
 	int start = 0;
 	string cmdName = cmdLine.Tokenize(" ", start);
 
-	CMonoArray args(1);
+	CScriptArray args(1);
 	args.Insert(cmdName);
 
 	gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("CryConsole")->CallMethod("OnMonoCmd", &args, true);

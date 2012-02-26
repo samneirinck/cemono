@@ -15,11 +15,11 @@
 struct IMonoClass;
 struct IMonoArray;
 
-class CMonoAssembly : public IMonoAssembly
+class CScriptAssembly : public IMonoAssembly
 {
 public:
-	CMonoAssembly(const char *assemblyPath);
-	virtual ~CMonoAssembly();
+	CScriptAssembly(const char *assemblyPath);
+	virtual ~CScriptAssembly();
 
 	// IMonoAssembly
 	virtual void Release() override { delete this; }

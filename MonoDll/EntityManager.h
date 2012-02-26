@@ -21,7 +21,7 @@
 #include <IEntitySystem.h>
 
 struct IMonoScript;
-class CMonoEntity;
+class CEntity;
 
 struct MovementRequest
 {
@@ -99,7 +99,7 @@ public:
 	virtual void OnEvent( IEntity *pEntity, SEntityEvent &event ) {}
 	// ~IEntitySystemSink
 
-	CMonoEntity *GetEntity(EntityId entityId);
+	CEntity *GetEntity(EntityId entityId);
 	int GetScriptId(EntityId entityId, bool returnBackIfInvalid = false) override;
 	bool IsMonoEntity(const char *entityClassName);
 
@@ -118,7 +118,7 @@ protected:
 
 	// ~ScriptBinds
 	
-	typedef std::vector<CMonoEntity *> TMonoEntities;
+	typedef std::vector<CEntity *> TMonoEntities;
 	TMonoEntities m_monoEntities;
 
 	static std::vector<const char *> m_monoEntityClasses;

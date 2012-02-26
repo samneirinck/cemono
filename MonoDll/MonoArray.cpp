@@ -3,7 +3,7 @@
 
 #include "MonoObject.h"
 
-CMonoArray::CMonoArray(int size)
+CScriptArray::CScriptArray(int size)
 	: curIndex(0)
 {
 	if(size<1)
@@ -15,7 +15,7 @@ CMonoArray::CMonoArray(int size)
 	m_pArray = (mono::array)mono_array_new(mono_domain_get(), mono_get_object_class(), size);
 }
 
-CMonoArray::~CMonoArray()
+CScriptArray::~CScriptArray()
 {
 	curIndex = 0;
 	m_pArray = 0;
@@ -23,38 +23,38 @@ CMonoArray::~CMonoArray()
 	mono_gchandle_free(m_arrayHandle); 
 }
 
-IMonoObject *CMonoArray::GetItem(int index)
+IMonoObject *CScriptArray::GetItem(int index)
 { 
 	return *(mono::object)mono_array_get((MonoArray *)m_pArray, MonoObject *, index);
 }
 
-void CMonoArray::InsertObject(mono::object object)
+void CScriptArray::InsertObject(mono::object object)
 {
 	mono_array_set((MonoArray *)m_pArray, MonoObject *, curIndex, (MonoObject *)object);
 
 	curIndex++;
 }
 
-void CMonoArray::InsertString(mono::string pString)
+void CScriptArray::InsertString(mono::string pString)
 {
 	mono_array_set((MonoArray *)m_pArray, MonoString *, curIndex, (MonoString *)pString);
 
 	curIndex++;
 }
 
-void CMonoArray::InsertArray(mono::array arr)
+void CScriptArray::InsertArray(mono::array arr)
 {
 	mono_array_set((MonoArray *)m_pArray, MonoArray *, curIndex, (MonoArray *)arr);
 
 	curIndex++;
 }
 
-void CMonoArray::Insert(IMonoObject *pObject) 
+void CScriptArray::Insert(IMonoObject *pObject) 
 { 
-	InsertObject(static_cast<CMonoObject *>(pObject)->GetMonoObject()); 
+	InsertObject(static_cast<CScriptObject *>(pObject)->GetMonoObject()); 
 }
 
-void CMonoArray::Insert(MonoAnyValue value)
+void CScriptArray::Insert(MonoAnyValue value)
 { 
 	if(value.type==MONOTYPE_STRING)
 		InsertString(ToMonoString(value.str));

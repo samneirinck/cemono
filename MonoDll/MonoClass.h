@@ -16,16 +16,16 @@
 struct IMonoObject;
 struct IMonoArray;
 
-class CMonoClass : public IMonoClass
+class CScriptClass : public IMonoClass
 {
 public:
 	// Instantiate a class right away.
-	CMonoClass(MonoClass *pClass, IMonoArray *pConstructorArguments);
+	CScriptClass(MonoClass *pClass, IMonoArray *pConstructorArguments);
 	// No instance provided, can only be used to invoke / get static members. Instantiation is possible using the Instantiate method.
-	CMonoClass(MonoClass *pClass) : m_pClass(pClass), m_pInstance(NULL) {}
+	CScriptClass(MonoClass *pClass) : m_pClass(pClass), m_pInstance(NULL) {}
 	// Set up using an existing instance.
-	CMonoClass(MonoClass *pClass, mono::object instance) : m_pClass(pClass), m_pInstance(instance) { m_instanceHandle = mono_gchandle_new((MonoObject *)m_pInstance, false); }
-	~CMonoClass();
+	CScriptClass(MonoClass *pClass, mono::object instance) : m_pClass(pClass), m_pInstance(instance) { m_instanceHandle = mono_gchandle_new((MonoObject *)m_pInstance, false); }
+	~CScriptClass();
 
 	// IMonoClass
 	virtual void Release() override { delete this; }

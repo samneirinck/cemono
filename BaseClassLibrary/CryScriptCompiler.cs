@@ -252,7 +252,14 @@ namespace CryEngine
 		/// <summary>
 		/// Called once per frame.
 		/// </summary>
-		public static void OnUpdate(float frameTime)
+		public static void Update()
+		{
+		}
+
+		/// <summary>
+		/// Called once per frame.
+		/// </summary>
+		public static void PostUpdate(float frameTime)
 		{
 			Time.DeltaTime = frameTime;
 

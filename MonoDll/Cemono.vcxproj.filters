@@ -114,6 +114,12 @@
     <ClInclude Include="MonoInput.h">
       <Filter>Mono</Filter>
     </ClInclude>
+    <ClInclude Include="ScriptManager.h">
+      <Filter>Mono</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\IMonoScriptManager.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -185,6 +191,9 @@
       <Filter>ScriptBinds</Filter>
     </ClCompile>
     <ClCompile Include="MonoInput.cpp">
+      <Filter>Mono</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptManager.cpp">
       <Filter>Mono</Filter>
     </ClCompile>
   </ItemGroup>

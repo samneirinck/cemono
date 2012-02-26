@@ -5,22 +5,22 @@
 #include <IMonoConverter.h>
 #include <IMonoObject.h>
 
-CMonoEntity::CMonoEntity(int scriptId)
+CEntity::CEntity(int scriptId)
 	: m_scriptId(scriptId)
 	, m_pGameObject(NULL)
 	, m_pAnimatedCharacter(NULL)
 {
 }
 
-CMonoEntity::~CMonoEntity()
+CEntity::~CEntity()
 {
 	if(m_pAnimatedCharacter != NULL)
 		m_pGameObject->ReleaseExtension("AnimatedCharacter");
 
-	gEnv->pMonoScriptSystem->RemoveScriptInstance(m_scriptId);
+	gEnv->pMonoScriptSystem->GetScriptManager()->RemoveScriptInstance(m_scriptId);
 }
 
-void CMonoEntity::OnSpawn(EntityId id)
+void CEntity::OnSpawn(EntityId id)
 {
 	m_entityId = id;
 
@@ -38,7 +38,7 @@ void CMonoEntity::OnSpawn(EntityId id)
 	CallMonoScript<bool>(m_scriptId, "InternalSpawn", m_entityId);
 }
 
-void CMonoEntity::OnEntityEvent(IEntity *pEntity,SEntityEvent &event)
+void CEntity::OnEntityEvent(IEntity *pEntity,SEntityEvent &event)
 {
 	switch(event.event)
 	{
@@ -96,7 +96,7 @@ void CMonoEntity::OnEntityEvent(IEntity *pEntity,SEntityEvent &event)
 	}
 }
 
-void CMonoEntity::AddMovement(const MovementRequest &request)
+void CEntity::AddMovement(const MovementRequest &request)
 {
 	SCharacterMoveRequest moveRequest;
 	moveRequest.type = request.type;

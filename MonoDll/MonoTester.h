@@ -19,11 +19,11 @@ struct IMonoScriptSystem;
 struct IMonoAssembly;
 struct IMonoArray;
 
-class CMonoTester : public IMonoScriptBind
+class CTester : public IMonoScriptBind
 {
 public:
-	CMonoTester();
-	~CMonoTester() {}
+	CTester();
+	~CTester() {}
 
 	void Benchmark();
 	void CommenceTesting();

@@ -16,7 +16,7 @@
 /// The IMonoObject class is used to wrap native mono objects of any type, and to
 /// convert C++ types to the Mono equivalent.
 /// </summary>
-struct IMonoObject : public CMonoSerializable
+struct IMonoObject : public CSerializable
 {
 public:
 	/// <summary>
@@ -35,7 +35,7 @@ public:
 	template <>
 	IMonoClass *Unbox() { return gEnv->pMonoScriptSystem->GetConverter()->ToClass(this); }
 
-	// CMonoSerializable
+	// CSerializable
 	/// <summary>
 	/// Allows serialization of mono objects.
 	/// </summary>
@@ -43,9 +43,9 @@ public:
 	{
 		value = GetAnyValue();
 
-		CMonoSerializable::Serialize(ser);
+		CSerializable::Serialize(ser);
 	}
-	// ~CMonoSerializable
+	// ~CSerializable
 
 	/// <summary>
 	/// Gets the type of this Mono object.

@@ -46,7 +46,7 @@ void CFlowManager::RegisterNode(mono::string name, mono::string category, bool i
 {
 	if(IFlowSystem *pFlowSystem = gEnv->pFlowSystem)
 	{
-		CFlowManager *pFlowManager = static_cast<CMonoScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager();
+		CFlowManager *pFlowManager = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager();
 
 		pFlowSystem->RegisterType(ToCryString(category) + (string)":" + ToCryString(name), isEntity ? pFlowManager->GetEntityFlowManager() : (IFlowNodeFactoryPtr)pFlowManager);
 	}
@@ -63,12 +63,12 @@ void CFlowManager::UnregisterFlowNode(int id)
 
 IFlowNodePtr CEntityFlowManager::Create(IFlowNode::SActivationInfo *pActInfo)
 {
-	return new CMonoFlowNode(pActInfo, true);
+	return new CFlowNode(pActInfo, true);
 }
 
 IFlowNodePtr CFlowManager::Create(IFlowNode::SActivationInfo *pActInfo)
 {
-	return new CMonoFlowNode(pActInfo, false);
+	return new CFlowNode(pActInfo, false);
 }
 
 SNodeData *CFlowManager::GetNodeDataById(int scriptId)
@@ -82,7 +82,7 @@ SNodeData *CFlowManager::GetNodeDataById(int scriptId)
 	return NULL;
 }
 
-CMonoFlowNode *CFlowManager::GetNodeById(int scriptId)
+CFlowNode *CFlowManager::GetNodeById(int scriptId)
 {
 	if(SNodeData *pData = GetNodeDataById(scriptId))
 		return pData->pNode;
@@ -101,13 +101,13 @@ void CFlowManager::ActivateOutputVec3(int scriptId, int index, Vec3 value) { Act
 template <class T>
 void CFlowManager::ActivateOutputOnNode(int scriptId, int index, const T &value)
 {
-	if(CMonoFlowNode *pFlowNode = GetNodeById(scriptId))
+	if(CFlowNode *pFlowNode = GetNodeById(scriptId))
 		pFlowNode->ActivateOutput(index, value);
 }
 
 bool CFlowManager::IsPortActive(int scriptId, int port)
 {
-	if(CMonoFlowNode *pFlowNode = GetNodeById(scriptId))
+	if(CFlowNode *pFlowNode = GetNodeById(scriptId))
 		return pFlowNode->IsPortActive(port);
 
 	return false;
@@ -115,7 +115,7 @@ bool CFlowManager::IsPortActive(int scriptId, int port)
 
 int CFlowManager::GetPortValueInt(int scriptId, int index)
 {
-	if(CMonoFlowNode *pFlowNode = GetNodeById(scriptId))
+	if(CFlowNode *pFlowNode = GetNodeById(scriptId))
 		return pFlowNode->GetPortInt(index);
 
 	return -1;
@@ -123,7 +123,7 @@ int CFlowManager::GetPortValueInt(int scriptId, int index)
 
 float CFlowManager::GetPortValueFloat(int scriptId, int index)
 {
-	if(CMonoFlowNode *pFlowNode = GetNodeById(scriptId))
+	if(CFlowNode *pFlowNode = GetNodeById(scriptId))
 		return pFlowNode->GetPortFloat(index);
 
 	return -1;
@@ -131,7 +131,7 @@ float CFlowManager::GetPortValueFloat(int scriptId, int index)
 
 EntityId CFlowManager::GetPortValueEntityId(int scriptId, int index)
 {
-	if(CMonoFlowNode *pFlowNode = GetNodeById(scriptId))
+	if(CFlowNode *pFlowNode = GetNodeById(scriptId))
 		return pFlowNode->GetPortEntityId(index);
 
 	return -1;
@@ -139,7 +139,7 @@ EntityId CFlowManager::GetPortValueEntityId(int scriptId, int index)
 
 mono::string CFlowManager::GetPortValueString(int scriptId, int index)
 {
-	if(CMonoFlowNode *pFlowNode = GetNodeById(scriptId))
+	if(CFlowNode *pFlowNode = GetNodeById(scriptId))
 		return (mono::string)ToMonoString(pFlowNode->GetPortString(index));
 
 	return NULL;
@@ -147,7 +147,7 @@ mono::string CFlowManager::GetPortValueString(int scriptId, int index)
 
 bool CFlowManager::GetPortValueBool(int scriptId, int index)
 {
-	if(CMonoFlowNode *pFlowNode = GetNodeById(scriptId))
+	if(CFlowNode *pFlowNode = GetNodeById(scriptId))
 		return pFlowNode->GetPortBool(index);
 
 	return false;
@@ -155,7 +155,7 @@ bool CFlowManager::GetPortValueBool(int scriptId, int index)
 
 mono::object CFlowManager::GetPortValueVec3(int scriptId, int index)
 {
-	if(CMonoFlowNode *pFlowNode = GetNodeById(scriptId))
+	if(CFlowNode *pFlowNode = GetNodeById(scriptId))
 		return *gEnv->pMonoScriptSystem->GetConverter()->ToManagedType(gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("Vec3"), pFlowNode->GetPortVec3(index));
 
 	return NULL;
@@ -175,7 +175,7 @@ void SNodeData::ReloadPorts()
 	SInputPortConfig nullConfig = {0};
 	SOutputPortConfig nullOutputConfig = {0};
 
-	CMonoArray *pInputPorts = new CMonoArray(monoConfig.inputs);
+	CScriptArray *pInputPorts = new CScriptArray(monoConfig.inputs);
 
 	static SInputPortConfig inputs[maxPortCount];
 
@@ -190,8 +190,8 @@ void SNodeData::ReloadPorts()
 			pInputs[i] = nullConfig;
 	}
 
-	// Convert MonoArray type to our custom CMonoArray for easier handling.
-	CMonoArray *pOutputPorts = new CMonoArray(monoConfig.outputs);
+	// Convert MonoArray type to our custom CScriptArray for easier handling.
+	CScriptArray *pOutputPorts = new CScriptArray(monoConfig.outputs);
 
 	static SOutputPortConfig outputs[maxPortCount];
 

@@ -27,13 +27,13 @@ public:
 	MonoCallback *callback;
 };
 
-class CMonoCallbackHandler
+class CCallbackHandler
 {
 public:
 	typedef std::deque<SCallbackIdent> TCallbacks;
 
-	CMonoCallbackHandler();
-	~CMonoCallbackHandler();
+	CCallbackHandler();
+	~CCallbackHandler();
 
 	void InvokeCallback(const char *func, const char *className);
 	void RegisterCallback(const char *funcName, const char *className, MonoCallback cb);

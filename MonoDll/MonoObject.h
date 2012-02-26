@@ -18,11 +18,11 @@
 #include <IMonoObject.h>
 #include <mono/mini/jit.h>
 
-class CMonoObject : public IMonoObject
+class CScriptObject : public IMonoObject
 {
 public:
-	CMonoObject(mono::object pObject) { m_pObject = pObject; m_objectHandle = mono_gchandle_new((MonoObject *)pObject, false); }
-	virtual ~CMonoObject() { mono_gchandle_free(m_objectHandle); m_pObject = 0; }
+	CScriptObject(mono::object pObject) { m_pObject = pObject; m_objectHandle = mono_gchandle_new((MonoObject *)pObject, false); }
+	virtual ~CScriptObject() { mono_gchandle_free(m_objectHandle); m_pObject = 0; }
 
 	MonoClass *GetMonoClass() { return mono_object_get_class((MonoObject *)m_pObject); }
 

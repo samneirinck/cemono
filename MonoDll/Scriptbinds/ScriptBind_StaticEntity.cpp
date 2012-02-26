@@ -42,7 +42,7 @@ mono::string CScriptBind_StaticEntity::GetPropertyValue(EntityId entityId, mono:
 void CScriptBind_StaticEntity::SetPropertyValue(EntityId entityId, mono::string propertyName, mono::string value)
 {
 	IEntity *pEntity = gEnv->pEntitySystem->GetEntity(entityId);
-	//CMonoEntityPropertyHandler *pPropertyHandler = static_cast<CMonoEntityPropertyHandler *>(pEntity->GetClass()->GetPropertyHandler());
+	//CEntityPropertyHandler *pPropertyHandler = static_cast<CEntityPropertyHandler *>(pEntity->GetClass()->GetPropertyHandler());
 
 	//pPropertyHandler->SetProperty(pEntity, propertyName, value);
 }
@@ -156,13 +156,13 @@ void CScriptBind_StaticEntity::CreateGameObjectForEntity(EntityId id)
 	if(!pGameObject)
 		return;
 
-	if(CMonoEntity *pEntity = static_cast<CEntityManager *>(gEnv->pMonoScriptSystem->GetEntityManager())->GetEntity(id))
+	if(CEntity *pEntity = static_cast<CEntityManager *>(gEnv->pMonoScriptSystem->GetEntityManager())->GetEntity(id))
 		pEntity->RegisterGameObject(pGameObject);
 }
 
 void CScriptBind_StaticEntity::BindGameObjectToNetwork(EntityId id)
 {
-	if(CMonoEntity *pEntity = static_cast<CEntityManager *>(gEnv->pMonoScriptSystem->GetEntityManager())->GetEntity(id))
+	if(CEntity *pEntity = static_cast<CEntityManager *>(gEnv->pMonoScriptSystem->GetEntityManager())->GetEntity(id))
 		pEntity->GetGameObject()->BindToNetwork();
 }
 
@@ -198,7 +198,7 @@ void CScriptBind_StaticEntity::AddImpulse(EntityId id, ActionImpulse actionImpul
 
 void CScriptBind_StaticEntity::AddMovement(EntityId id, MovementRequest &movementRequest)
 {
-	if(CMonoEntity *pEntity = static_cast<CEntityManager *>(gEnv->pMonoScriptSystem->GetEntityManager())->GetEntity(id))
+	if(CEntity *pEntity = static_cast<CEntityManager *>(gEnv->pMonoScriptSystem->GetEntityManager())->GetEntity(id))
 		pEntity->AddMovement(movementRequest);
 }
 

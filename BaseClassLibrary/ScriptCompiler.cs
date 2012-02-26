@@ -70,8 +70,6 @@ namespace CryEngine
 
 				return compiledScripts.ToArray();
 			}
-			else
-				Console.LogAlways("No plugins detected.");
 
 			return null;
 		}

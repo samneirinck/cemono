@@ -7,9 +7,9 @@
 #include <IMonoClass.h>
 #include <IMonoArray.h> 
 
-TActionHandler<CMonoInput>	CMonoInput::s_actionHandler;
+TActionHandler<CInput>	CInput::s_actionHandler;
 
-CMonoInput::CMonoInput()
+CInput::CInput()
 {
 	REGISTER_METHOD(RegisterAction);
 
@@ -18,17 +18,17 @@ CMonoInput::CMonoInput()
 	m_pClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("InputSystem");
 }
 
-CMonoInput::~CMonoInput()
+CInput::~CInput()
 {
 	gEnv->pGameFramework->GetIActionMapManager()->RemoveExtraActionListener(this);
 }
 
-void CMonoInput::OnAction(const ActionId& actionId, int activationMode, float value)
+void CInput::OnAction(const ActionId& actionId, int activationMode, float value)
 {
 	s_actionHandler.Dispatch(this, 0, actionId, activationMode, value);
 }
 
-bool CMonoInput::OnActionTriggered(EntityId entityId, const ActionId& actionId, int activationMode, float value)
+bool CInput::OnActionTriggered(EntityId entityId, const ActionId& actionId, int activationMode, float value)
 {
 	IMonoArray *pParams = CreateMonoArray(3);
 	pParams->Insert(actionId.c_str());
@@ -42,7 +42,7 @@ bool CMonoInput::OnActionTriggered(EntityId entityId, const ActionId& actionId, 
 }
 
 // Scriptbinds
-void CMonoInput::RegisterAction(mono::string actionName)
+void CInput::RegisterAction(mono::string actionName)
 {
-	s_actionHandler.AddHandler(ToCryString(actionName), &CMonoInput::OnActionTriggered);
+	s_actionHandler.AddHandler(ToCryString(actionName), &CInput::OnActionTriggered);
 }

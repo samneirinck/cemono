@@ -7,11 +7,11 @@
 
 #include "EntityManager.h"
 
-class CMonoEntity : public IEntityEventListener
+class CEntity : public IEntityEventListener
 {
 public:
-	CMonoEntity(int scriptId);
-	~CMonoEntity();
+	CEntity(int scriptId);
+	~CEntity();
 
 	void OnSpawn(EntityId id);
 

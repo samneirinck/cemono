@@ -21,7 +21,7 @@
 struct IMonoArray;
 struct IMonoScript;
 
-class CMonoFlowNode : public IFlowNode, public IFlowGraphHook
+class CFlowNode : public IFlowNode, public IFlowGraphHook
 {
 public:
 	enum EInputPorts
@@ -36,16 +36,16 @@ public:
 		EOP_Cancelled
 	};
 
-	CMonoFlowNode() {}
+	CFlowNode() {}
 
-	CMonoFlowNode(SActivationInfo *pActInfo, bool isEntityClass);
-	~CMonoFlowNode();
+	CFlowNode(SActivationInfo *pActInfo, bool isEntityClass);
+	~CFlowNode();
 
 	// IFlowNode
 	virtual void AddRef() { ++m_refs; };
 	virtual void Release() { if (0 >= --m_refs)	delete this; };
 
-	virtual IFlowNodePtr Clone( SActivationInfo *pActInfo ) { return new CMonoFlowNode(pActInfo, m_bEntityNode); }
+	virtual IFlowNodePtr Clone( SActivationInfo *pActInfo ) { return new CFlowNode(pActInfo, m_bEntityNode); }
 	virtual bool SerializeXML( SActivationInfo *, const XmlNodeRef&, bool ) { return true; }
 	virtual void Serialize(SActivationInfo *, TSerialize ser) {}
 	virtual void PostSerialize( SActivationInfo * ) {}
@@ -89,7 +89,7 @@ public:
 		bool* p_x = (m_pActInfo->pInputPorts[nPort].GetPtr<bool>());
 		if (p_x != 0) return *p_x;
 		SFlowNodeConfig config;
-		const_cast<CMonoFlowNode *> (this)->GetConfiguration(config);
+		const_cast<CFlowNode *> (this)->GetConfiguration(config);
 		GameWarning("CFlowBaseNode::GetPortBool: Node=%p Port=%d '%s' Tag=%d -> Not a bool tag!", this, nPort,
 			config.pInputPorts[nPort].name,
 			m_pActInfo->pInputPorts[nPort].GetTag());
@@ -126,8 +126,8 @@ public:
 		if (p_x != 0) return *p_x;
 		const static string empty ("");
 		SFlowNodeConfig config;
-		const_cast<CMonoFlowNode*> (this)->GetConfiguration(config);
-		GameWarning("CMonoFlowNode::GetPortString: Node=%p Port=%d '%s' Tag=%d -> Not a string tag!", this, nPort,
+		const_cast<CFlowNode*> (this)->GetConfiguration(config);
+		GameWarning("CFlowNode::GetPortString: Node=%p Port=%d '%s' Tag=%d -> Not a string tag!", this, nPort,
 			config.pInputPorts[nPort].name,
 			m_pActInfo->pInputPorts[nPort].GetTag());
 		return empty;

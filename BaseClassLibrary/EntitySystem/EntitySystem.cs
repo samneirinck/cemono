@@ -3,6 +3,8 @@ using System.Runtime.CompilerServices;
 
 using System.Collections.Generic;
 
+using System.Linq;
+
 namespace CryEngine
 {
     public partial class EntitySystem
@@ -39,8 +41,9 @@ namespace CryEngine
 		/// <returns></returns>
 		public static T SpawnEntity<T>(string name, Vec3 pos, Vec3 rot, Vec3 scale, bool autoInit = true) where T : StaticEntity
 		{
-			Console.LogAlways("Spawning {0} (\"{1}\") at {2}, rotation = {3}, scale = {4}; autoinit is {5}", typeof(T).Name, name, pos, rot, scale, autoInit);
-			return GetEntity(_SpawnEntity(new EntitySpawnParams { Name = name, Class = typeof(T).Name, Pos = pos, Rot = rot, Scale = scale, Flags = 0 }, autoInit)) as T;
+			spawnedEntities.Add(GetEntity(_SpawnEntity(new EntitySpawnParams { Name = name, Class = typeof(T).Name, Pos = pos, Rot = rot, Scale = scale, Flags = 0 }, autoInit)));
+
+			return spawnedEntities.Last() as T;
 		}
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -117,14 +120,10 @@ namespace CryEngine
 
 		internal static void OnUpdate()
 		{
-			foreach (var entityId in internalEntities.Keys)
+			foreach (var entity in spawnedEntities)
 			{
-				if (entityId != 0)
-				{
-					var entity = internalEntities[entityId];
-					if(entity != null && entity.ReceiveUpdates==true)
-						entity.OnUpdate();
-				}
+				if (entity != null && entity.ReceiveUpdates==true)
+					entity.OnUpdate();
 			}
 		}
         
@@ -133,6 +132,12 @@ namespace CryEngine
         /// EntityId, Entity are stored in here. EntityId is also stored within Entity, but storing it seperately here provides for fast lookup and rids of us too many foreach loops.
         /// </summary>
         internal static Dictionary<uint, StaticEntity> internalEntities = new Dictionary<uint,StaticEntity>();
+
+		/// <summary>
+		/// Contains entities spawned using EntitySystem.SpawnEntity.
+		/// Necessary to update scripts.
+		/// </summary>
+		static List<StaticEntity> spawnedEntities = new List<StaticEntity>();
     }
 
 	/// <summary>

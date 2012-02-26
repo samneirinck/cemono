@@ -11,11 +11,11 @@
 
 #include <IEntityClass.h>
 
-class CMonoEntityPropertyHandler : public IEntityPropertyHandler
+class CEntityPropertyHandler : public IEntityPropertyHandler
 {
 public:
-	CMonoEntityPropertyHandler(std::vector<IEntityPropertyHandler::SPropertyInfo> properties);
-	virtual ~CMonoEntityPropertyHandler() {} 
+	CEntityPropertyHandler(std::vector<IEntityPropertyHandler::SPropertyInfo> properties);
+	virtual ~CEntityPropertyHandler() {} 
 
 	// IEntityPropertyHandler interface
 	virtual void GetMemoryUsage( ICrySizer *pSizer ) const { pSizer->Add(m_properties); }

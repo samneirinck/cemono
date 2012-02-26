@@ -9,6 +9,8 @@
 #undef NULL
 #define NULL nullptr
 
+#define _FORCEDLL
+
 // Insert your headers here
 #include <platform.h>
 #include <algorithm>

@@ -11,11 +11,11 @@
 
 #include <IMonoConverter.h>
 
-class CMonoConverter : public IMonoConverter
+class CConverter : public IMonoConverter
 {
 public:
-	CMonoConverter();
-	~CMonoConverter();
+	CConverter();
+	~CConverter();
 
 	// IMonoConverter
 	virtual const char *ToString(mono::string monoString) override { if(!monoString) return ""; return mono_string_to_utf8((MonoString *)monoString); }

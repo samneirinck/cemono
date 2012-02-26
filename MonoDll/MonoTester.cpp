@@ -8,7 +8,7 @@
 #include "MonoObject.h"
 #include "MonoArray.h"
 
-CMonoTester::CMonoTester()
+CTester::CTester()
 	: m_refs(0)
 {
 	IMonoScriptSystem *pScriptSystem = gEnv->pMonoScriptSystem;
@@ -16,7 +16,7 @@ CMonoTester::CMonoTester()
 	REGISTER_METHOD(TestScriptBind);
 }
 
-void CMonoTester::CommenceTesting()
+void CTester::CommenceTesting()
 {
 	IMonoScriptSystem *pScriptSystem = gEnv->pMonoScriptSystem;
 
@@ -25,7 +25,7 @@ void CMonoTester::CommenceTesting()
 	TestInstantiatedMethods(pCryBraryAssembly);
 }
 
-void CMonoTester::TestStaticMethods(IMonoAssembly *pCryBrary)
+void CTester::TestStaticMethods(IMonoAssembly *pCryBrary)
 {
 	IMonoClass *pTesterStatic = pCryBrary->GetCustomClass("Tester", "CryEngine.Utils");
 	if(!pTesterStatic)
@@ -49,7 +49,7 @@ void CMonoTester::TestStaticMethods(IMonoAssembly *pCryBrary)
 	SAFE_RELEASE(pTesterStatic);
 }
 
-void CMonoTester::TestInstantiatedMethods(IMonoAssembly *pCryBrary)
+void CTester::TestInstantiatedMethods(IMonoAssembly *pCryBrary)
 {
 	IMonoClass *pTesterClassStandardConstructor = pCryBrary->InstantiateClass("Tester", "CryEngine.Utils");
 	if(!pTesterClassStandardConstructor)
@@ -84,9 +84,9 @@ void CMonoTester::TestInstantiatedMethods(IMonoAssembly *pCryBrary)
 	SAFE_RELEASE(pTestParams);
 }
 
-void CMonoTester::TestScriptBind(mono::string testString, int testInt, mono::array testArray)
+void CTester::TestScriptBind(mono::string testString, int testInt, mono::array testArray)
 {
-	CMonoArray *pTestArray = new CMonoArray(testArray);
+	CScriptArray *pTestArray = new CScriptArray(testArray);
 
 	if(!strcmp(ToCryString(testString), "TestStringContents") && testInt == 1337 && pTestArray->GetSize()==2)
 	{
@@ -108,7 +108,7 @@ void CMonoTester::TestScriptBind(mono::string testString, int testInt, mono::arr
 	}
 }
 
-IMonoArray *CMonoTester::GetTestParameters()
+IMonoArray *CTester::GetTestParameters()
 {
 	const char *testString = "TestStringContents";
 	int testInt = 1337;
@@ -125,7 +125,7 @@ IMonoArray *CMonoTester::GetTestParameters()
 	return pParameters;
 }
 
-void CMonoTester::Benchmark()
+void CTester::Benchmark()
 {
 	/*
 	// Lua

@@ -3,7 +3,7 @@
 
 #include <IMonoAssembly.h>
 
-MonoAnyType CMonoObject::GetType()
+MonoAnyType CScriptObject::GetType()
 {
 	MonoAnyType type = MONOTYPE_NULL;
 
@@ -19,7 +19,7 @@ MonoAnyType CMonoObject::GetType()
 		type = MONOTYPE_USHORT;
 	else if(pClass==mono_get_uint32_class())
 		type = MONOTYPE_UINT;
-	else if(pClass==static_cast<CMonoClass *>(gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("Vec3"))->GetMonoClass())
+	else if(pClass==static_cast<CScriptClass *>(gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("Vec3"))->GetMonoClass())
 		type = MONOTYPE_VEC3;
 	else if(pClass==mono_get_string_class())
 		type = MONOTYPE_STRING;
@@ -27,7 +27,7 @@ MonoAnyType CMonoObject::GetType()
 	return type;
 }
 
-MonoAnyValue CMonoObject::GetAnyValue()
+MonoAnyValue CScriptObject::GetAnyValue()
 {
 	switch(GetType())
 	{

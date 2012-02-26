@@ -14,15 +14,15 @@
 
 #include <IMonoArray.h>
 
-class CMonoArray : public IMonoArray
+class CScriptArray : public IMonoArray
 {
 public:
 	// Used on MonoArray's returned from C#.
-	CMonoArray(mono::array monoArray) : m_pArray(monoArray) { m_arrayHandle = mono_gchandle_new((MonoObject *)m_pArray, false); }
+	CScriptArray(mono::array monoArray) : m_pArray(monoArray) { m_arrayHandle = mono_gchandle_new((MonoObject *)m_pArray, false); }
 
 	// Used to send arrays to C#.
-	CMonoArray(int size);
-	virtual ~CMonoArray();
+	CScriptArray(int size);
+	virtual ~CScriptArray();
 
 	// IMonoArray
 	virtual void Release() override { delete this; }
@@ -32,7 +32,7 @@ public:
 
 	virtual IMonoObject *GetItem(int index) override;
 	virtual const char *GetItemString(int index) override { return ToCryString(mono_array_get((MonoArray *)m_pArray, mono::string , index)); }
-	virtual IMonoArray *GetItemArray(int index) override { return new CMonoArray((mono::array)mono_array_get((MonoArray *)m_pArray, MonoArray *, index)); }
+	virtual IMonoArray *GetItemArray(int index) override { return new CScriptArray((mono::array)mono_array_get((MonoArray *)m_pArray, MonoArray *, index)); }
 
 	virtual void Insert(IMonoObject *pObject) override;
 	virtual void Insert(IMonoArray *pArray) override { pArray ? InsertArray(*pArray) : InsertArray(0); }

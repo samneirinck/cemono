@@ -41,7 +41,7 @@ bool CEntityManager::OnBeforeSpawn(SEntitySpawnParams &params)
 	if(!IsMonoEntity(className))
 		return true;
 
-	m_monoEntities.push_back(new CMonoEntity(gEnv->pMonoScriptSystem->InstantiateScript(EMonoScriptType_Entity, className)));
+	m_monoEntities.push_back(new CEntity(gEnv->pMonoScriptSystem->GetScriptManager()->InstantiateScript(EMonoScriptType_Entity, className)));
 
 	return true;
 }
@@ -91,7 +91,7 @@ bool CEntityManager::IsMonoEntity(const char *entityClassName)
 	return false;
 }
 
-CMonoEntity *CEntityManager::GetEntity(EntityId entityId)
+CEntity *CEntityManager::GetEntity(EntityId entityId)
 {
 	for (TMonoEntities::const_iterator it=m_monoEntities.begin(); it!=m_monoEntities.end(); ++it)
 	{
@@ -104,7 +104,7 @@ CMonoEntity *CEntityManager::GetEntity(EntityId entityId)
 
 int CEntityManager::GetScriptId(EntityId entityId, bool returnBackIfInvalid)
 {
-	if(CMonoEntity *pEntity = GetEntity(entityId))
+	if(CEntity *pEntity = GetEntity(entityId))
 		return pEntity->GetScriptId();
 
 	if(returnBackIfInvalid)
@@ -126,7 +126,7 @@ bool CEntityManager::RegisterEntityClass(EntityRegisterParams params, mono::arra
 	if(gEnv->pEntitySystem->GetClassRegistry()->FindClass(ToCryString(params.Name)))
 		return false;
 
-	CMonoArray *propertiesArray = new CMonoArray(Properties);
+	CScriptArray *propertiesArray = new CScriptArray(Properties);
 
 	int numProperties = propertiesArray->GetSize();
 	std::vector<IEntityPropertyHandler::SPropertyInfo> properties;
@@ -153,7 +153,7 @@ bool CEntityManager::RegisterEntityClass(EntityRegisterParams params, mono::arra
 	entityClassDesc.sEditorHelper = ToCryString(params.EditorHelper);
 	entityClassDesc.sEditorIcon = ToCryString(params.EditorIcon);
 	
-	CMonoEntityClass *entityClass = new CMonoEntityClass(entityClassDesc, ToCryString(params.Category), properties);
+	CEntityClass *entityClass = new CEntityClass(entityClassDesc, ToCryString(params.Category), properties);
 
 	m_monoEntityClasses.push_back(entityClassDesc.sName);
 	return gEnv->pEntitySystem->GetClassRegistry()->RegisterClass(entityClass);
