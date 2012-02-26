@@ -27,6 +27,8 @@ CScriptManager::~CScriptManager()
 	// Force dump of instance data.
 	m_AppDomainSerializer->CallMethod("DumpScriptData");
 
+	SAFE_RELEASE(m_pScriptManager);
+
 	mono_domain_set(mono_get_root_domain(), false);
 
 	mono_domain_finalize(m_pScriptDomain, -1);
@@ -44,10 +46,6 @@ CScriptManager::~CScriptManager()
 	}
 
 	m_scripts.clear();
-
-	SAFE_RELEASE(m_pScriptManager);
-
-	mono_gc_collect(mono_gc_max_generation());
 }
 
 bool CScriptManager::Init(IGameObject *pGameObject)
@@ -92,10 +90,6 @@ void CScriptManager::CompileScripts()
 	m_pScriptManager->CallMethod("PostInit");
 }
 
-void CScriptManager::PostInit(IGameObject *pGameObject)
-{
-}
-
 void CScriptManager::Update(SEntityUpdateContext& ctx, int updateSlot)
 {
 	m_pScriptManager->CallMethod("Update");
@@ -123,18 +117,18 @@ int CScriptManager::InstantiateScript(EMonoScriptType scriptType, const char *sc
 		pClass->CallMethod("InitializeNetwork", pArray, true);
 		SAFE_RELEASE(pArray);
 		SAFE_RELEASE(pClass);
-	}
-	
-	/*for(TScripts::iterator it=m_scripts.begin(); it != m_scripts.end(); ++it)
-	{
-		if((*it)->GetScriptType()==scriptType && !strcmp((*it)->GetName(), scriptName))
+		/*
+		for(TScripts::iterator it=m_scripts.begin(); it != m_scripts.end(); ++it)
 		{
-			if(scriptType==EMonoScriptType_GameRules)
-				m_scripts.erase(it);
+			if((*it).first->IsGameRules()==EMonoScriptType_GameRules && !strcmp((*it)->GetName(), scriptName))
+			{
+				if(scriptType==EMonoScriptType_GameRules)
+					m_scripts.erase(it);
 
-			break;
-		}
-	}*/
+				break;
+			}
+		}*/
+	}
 
 	IMonoArray *pArgs = CreateMonoArray(2);
 	pArgs->Insert(scriptName);

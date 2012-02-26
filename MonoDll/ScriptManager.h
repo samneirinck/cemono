@@ -28,7 +28,7 @@ public:
 
 	// IGameObjectExtension
 	virtual bool Init(IGameObject * pGameObject);
-	virtual void PostInit( IGameObject * pGameObject );
+	virtual void PostInit( IGameObject * pGameObject ) {}
 	virtual void InitClient(int channelId) {}
 	virtual void PostInitClient(int channelId) {}
 	
