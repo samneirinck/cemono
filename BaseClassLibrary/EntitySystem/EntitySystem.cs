@@ -66,11 +66,7 @@ namespace CryEngine
 			if (entityId == 0)
 				return null;
 
-			StaticEntity ent = internalEntities.Find(entity => entity.Id == entityId);
-			if (ent != default(StaticEntity))
-				return ent;
-
-			ent = spawnedEntities.Find(entity => entity.Id == entityId);
+			StaticEntity ent = spawnedEntities.Find(entity => entity.Id == entityId);
 			if (ent != default(StaticEntity))
 				return ent;
 
@@ -123,8 +119,8 @@ namespace CryEngine
 
         internal static void RegisterInternalEntity(StaticEntity entity)
         {
-			if (!internalEntities.Contains(entity))
-				internalEntities.Add(entity);
+			if (!spawnedEntities.Contains(entity))
+				spawnedEntities.Add(entity);
 			else
 				throw new Exception("Attempted to register internal entity twice.");
         }
@@ -138,12 +134,6 @@ namespace CryEngine
 			}
 		}
         
-        /// <summary>
-        /// Contains the entities registered with mono.
-        /// EntityId, Entity are stored in here. EntityId is also stored within Entity, but storing it seperately here provides for fast lookup and rids of us too many foreach loops.
-        /// </summary>
-		internal static List<StaticEntity> internalEntities = new List<StaticEntity>();
-
 		/// <summary>
 		/// Contains entities spawned using EntitySystem.SpawnEntity.
 		/// Necessary to update scripts.
