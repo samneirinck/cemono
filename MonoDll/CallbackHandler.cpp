@@ -4,12 +4,12 @@
 #include "MonoScriptSystem.h"
 #include "MonoCommon.h"
 
-CMonoCallbackHandler::CMonoCallbackHandler()
+CCallbackHandler::CCallbackHandler()
 {
 }
 
 
-CMonoCallbackHandler::~CMonoCallbackHandler()
+CCallbackHandler::~CCallbackHandler()
 {
 }
 
@@ -17,19 +17,19 @@ extern "C"
 {
 	_declspec(dllexport) void __cdecl _RegisterCallback(const char *func, const char *className, MonoCallback callback)
 	{
-		CMonoCallbackHandler *pCallbackHandler = static_cast<CMonoScriptSystem *>(gEnv->pMonoScriptSystem)->GetCallbackHandler();
+		CCallbackHandler *pCallbackHandler = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetCallbackHandler();
 		pCallbackHandler->RegisterCallback(func, className, callback);
 
 		//pCallbackHandler->InvokeCallback(func, className);Z
 	}
 }
 
-void CMonoCallbackHandler::RegisterCallback(const char *funcName, const char *className, MonoCallback callback)
+void CCallbackHandler::RegisterCallback(const char *funcName, const char *className, MonoCallback callback)
 {
 	m_callBacks.push_back(SCallbackIdent(funcName, className, callback));
 }
 
-void CMonoCallbackHandler::InvokeCallback(const char *func, const char *className)
+void CCallbackHandler::InvokeCallback(const char *func, const char *className)
 {
 	CryLogAlways("Attempting to invoke callback %s in class %s", func, className);
 

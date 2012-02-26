@@ -12,7 +12,7 @@
 
 #include <IMonoClass.h>
 
-CMonoAssembly::CMonoAssembly(const char *assemblyPath)
+CScriptAssembly::CScriptAssembly(const char *assemblyPath)
 {
 #ifndef _RELEASE
 	string path = assemblyPath;
@@ -28,7 +28,7 @@ CMonoAssembly::CMonoAssembly(const char *assemblyPath)
 		string newAssemblyPath = tempPath + path.substr(lastDirectoryIndex + 1);
 		CopyFile(assemblyPath, newAssemblyPath, false);
 
-		IMonoAssembly *pDebugDatabaseCreator = static_cast<CMonoScriptSystem *>(gEnv->pMonoScriptSystem)->GetDebugDatabaseCreator();
+		IMonoAssembly *pDebugDatabaseCreator = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetDebugDatabaseCreator();
 
 		if(pDebugDatabaseCreator)
 		{
@@ -65,7 +65,7 @@ CMonoAssembly::CMonoAssembly(const char *assemblyPath)
 	}
 }
 
-CMonoAssembly::~CMonoAssembly()
+CScriptAssembly::~CScriptAssembly()
 {
 	m_assemblyPath = 0;
 
@@ -73,7 +73,7 @@ CMonoAssembly::~CMonoAssembly()
 	m_pImage = 0;
 }
 
-IMonoClass *CMonoAssembly::InstantiateClass(const char *className, const char *nameSpace, IMonoArray *pConstructorArguments)
+IMonoClass *CScriptAssembly::InstantiateClass(const char *className, const char *nameSpace, IMonoArray *pConstructorArguments)
 {
 	// Get class
 	MonoClass *pClass = GetClassFromName(nameSpace, className);
@@ -83,18 +83,18 @@ IMonoClass *CMonoAssembly::InstantiateClass(const char *className, const char *n
 		return NULL;
 	}
 
-	return new CMonoClass(pClass, pConstructorArguments);
+	return new CScriptClass(pClass, pConstructorArguments);
 }
 
-IMonoClass *CMonoAssembly::GetCustomClass(const char *className, const char *nameSpace)
+IMonoClass *CScriptAssembly::GetCustomClass(const char *className, const char *nameSpace)
 { 
 	if(MonoClass *monoClass = mono_class_from_name(GetImage(), nameSpace, className))
-		return new CMonoClass(monoClass);
+		return new CScriptClass(monoClass);
 
 	return NULL;
 }
 
-MonoClass *CMonoAssembly::GetClassFromName(const char* nameSpace, const char* className)
+MonoClass *CScriptAssembly::GetClassFromName(const char* nameSpace, const char* className)
 {
 	return mono_class_from_name(m_pImage, nameSpace, className);
 }

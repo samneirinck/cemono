@@ -60,6 +60,7 @@ namespace CryEngine.Utils
 				writer.WriteEndElement();
 				writer.WriteEndDocument();
 			}
+
 		}
 
 		/// <summary>
@@ -198,10 +199,7 @@ namespace CryEngine.Utils
 		{
 			string filePath = Path.Combine(PathUtils.GetRootFolder(), "Temp", "MonoScriptData.xml");
 			if (!File.Exists(filePath))
-			{
-				Console.LogAlways("Failed to retrieve serialized MonoScriptData");
 				return;
-			}
 
 			XDocument scriptData = XDocument.Load(filePath);
 			foreach (var type in scriptData.Descendants("Type"))
@@ -233,6 +231,8 @@ namespace CryEngine.Utils
 				int scriptIndex = ScriptCompiler.CompiledScripts.IndexOf(script);
 				ScriptCompiler.CompiledScripts[scriptIndex] = script;
 			}
+
+			File.Delete(filePath);
 		}
 
 		public static void ProcessFields(object instance, IEnumerable<XElement> fields)

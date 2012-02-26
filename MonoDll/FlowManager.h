@@ -15,15 +15,15 @@
 #include <IFlowSystem.h>
 
 struct IMonoArray;
-class CMonoFlowNode;
+class CFlowNode;
 
 struct SNodeData
 {
-	SNodeData(CMonoFlowNode *pFlowNode) : pNode(pFlowNode) { ReloadPorts(); };
+	SNodeData(CFlowNode *pFlowNode) : pNode(pFlowNode) { ReloadPorts(); };
 
 	void ReloadPorts();
 
-	CMonoFlowNode *pNode;
+	CFlowNode *pNode;
 
 	static SOutputPortConfig *pOutputs;
 	static SInputPortConfig *pInputs;
@@ -74,11 +74,11 @@ public:
 	virtual void Reset() override;
 	// ~IFlowNodeFactory
 
-	static void RegisterFlowNode(CMonoFlowNode *pNode, int scriptId) { m_nodes.insert(TFlowNodes::value_type(scriptId, new SNodeData(pNode))); }
+	static void RegisterFlowNode(CFlowNode *pNode, int scriptId) { m_nodes.insert(TFlowNodes::value_type(scriptId, new SNodeData(pNode))); }
 	static void UnregisterFlowNode(int id);
 
 	static SNodeData *GetNodeDataById(int scriptId);
-	static CMonoFlowNode *GetNodeById(int scriptId);
+	static CFlowNode *GetNodeById(int scriptId);
 
 	CEntityFlowManager *GetEntityFlowManager() const { return m_pEntityFlowManager; }
 

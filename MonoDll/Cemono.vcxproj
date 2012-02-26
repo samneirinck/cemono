@@ -357,6 +357,7 @@
     <ClInclude Include="Headers\IMonoEntityManager.h" />
     <ClInclude Include="Headers\IMonoInput.h" />
     <ClInclude Include="Headers\IMonoObject.h" />
+    <ClInclude Include="Headers\IMonoScriptManager.h" />
     <ClInclude Include="Headers\MonoAnyValue.h" />
     <ClInclude Include="Headers\MonoCommon.h" />
     <ClInclude Include="Headers\MonoSerializable.h" />
@@ -385,6 +386,7 @@
     <ClInclude Include="Scriptbinds\ScriptBind_PhysicalWorld.h" />
     <ClInclude Include="Scriptbinds\ScriptBind_Renderer.h" />
     <ClInclude Include="ScriptBinds\ScriptBind_StaticEntity.h" />
+    <ClInclude Include="ScriptManager.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
@@ -412,6 +414,7 @@
     <ClCompile Include="Scriptbinds\ScriptBind_PhysicalWorld.cpp" />
     <ClCompile Include="Scriptbinds\ScriptBind_Renderer.cpp" />
     <ClCompile Include="ScriptBinds\ScriptBind_StaticEntity.cpp" />
+    <ClCompile Include="ScriptManager.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

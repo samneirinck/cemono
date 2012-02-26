@@ -12,7 +12,7 @@
 #define MONO_CONFIG_PATH "etc"
 #define MONO_LIB_PATH "lib"
 
-class CMonoPathUtils
+class PathUtils
 {
 public:
 	static string GetBinaryPath()

@@ -6,50 +6,50 @@
 
 #include <MonoAnyValue.h>
 
-CMonoConverter::CMonoConverter()
+CConverter::CConverter()
 {
 }
 
 
-CMonoConverter::~CMonoConverter()
+CConverter::~CConverter()
 {
 }
 
-IMonoArray *CMonoConverter::CreateArray(int numArgs)
+IMonoArray *CConverter::CreateArray(int numArgs)
 {
-	return new CMonoArray(numArgs); 
+	return new CScriptArray(numArgs); 
 }
 
-IMonoArray *CMonoConverter::ToArray(mono::array arr)
+IMonoArray *CConverter::ToArray(mono::array arr)
 {
-	return new CMonoArray(arr);
+	return new CScriptArray(arr);
 }
 
-IMonoObject *CMonoConverter::ToManagedType(IMonoClass *pTo, void *object)
+IMonoObject *CConverter::ToManagedType(IMonoClass *pTo, void *object)
 {
 	if(pTo)
-		return *(mono::object)mono_value_box(mono_domain_get(), static_cast<CMonoClass *>(pTo)->GetMonoClass(), object);
+		return *(mono::object)mono_value_box(mono_domain_get(), static_cast<CScriptClass *>(pTo)->GetMonoClass(), object);
 
 	return NULL;
 }
 
-IMonoObject *CMonoConverter::ToObject(mono::object obj)
+IMonoObject *CConverter::ToObject(mono::object obj)
 {
-	return new CMonoObject(obj);
+	return new CScriptObject(obj);
 }
 
-IMonoClass *CMonoConverter::ToClass(IMonoObject *pObject)
+IMonoClass *CConverter::ToClass(IMonoObject *pObject)
 {
 	mono::object pMonoObject = pObject->GetMonoObject();
 
 	MonoClass *pClass = mono_object_get_class((MonoObject *)pMonoObject);
 	if(pClass && mono_class_get_name(pClass))
-		return new CMonoClass(pClass, pMonoObject);
+		return new CScriptClass(pClass, pMonoObject);
 
 	return NULL;
 }
 
-IMonoObject *CMonoConverter::CreateObject(MonoAnyValue &any)
+IMonoObject *CConverter::CreateObject(MonoAnyValue &any)
 {
 	IMonoObject *pObject = NULL;
 

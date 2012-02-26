@@ -16,14 +16,14 @@
 
 struct IMonoClass;
 
-class CMonoInput 
+class CInput 
 	: public IMonoInput
 	, public IActionListener
 	, public IMonoScriptBind
 {
 public:
-	CMonoInput();
-	~CMonoInput();
+	CInput();
+	~CInput();
 
 	// IMonoScriptBind
 	virtual const char *GetClassName() { return "InputSystem"; }
@@ -40,5 +40,5 @@ private:
 
 	IMonoClass *m_pClass;
 	
-	static TActionHandler<CMonoInput>	s_actionHandler;
+	static TActionHandler<CInput>	s_actionHandler;
 };

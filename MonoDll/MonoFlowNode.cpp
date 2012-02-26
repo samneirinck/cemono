@@ -8,10 +8,11 @@
 
 #include "MonoScriptSystem.h"
 #include "FlowManager.h"
+#include <IMonoEntityManager.h>
 
 #include <IGameFramework.h>
 
-CMonoFlowNode::CMonoFlowNode(SActivationInfo *pActInfo, bool isEntityClass)
+CFlowNode::CFlowNode(SActivationInfo *pActInfo, bool isEntityClass)
 	: m_scriptId(-1)
 	, m_refs(0)
 	, m_pActInfo(pActInfo)
@@ -24,14 +25,14 @@ CMonoFlowNode::CMonoFlowNode(SActivationInfo *pActInfo, bool isEntityClass)
 	m_pHookedGraph = pActInfo->pGraph;
 }
 
-CMonoFlowNode::~CMonoFlowNode()
+CFlowNode::~CFlowNode()
 {
-	 gEnv->pMonoScriptSystem->RemoveScriptInstance(m_scriptId);
+	gEnv->pMonoScriptSystem->GetScriptManager()->RemoveScriptInstance(m_scriptId);
 
-	 static_cast<CMonoScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager()->UnregisterFlowNode(m_scriptId);
+	 static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager()->UnregisterFlowNode(m_scriptId);
 }
 
-bool CMonoFlowNode::CreatedNode(TFlowNodeId id, const char *name, TFlowNodeTypeId typeId, IFlowNodePtr pNode) 
+bool CFlowNode::CreatedNode(TFlowNodeId id, const char *name, TFlowNodeTypeId typeId, IFlowNodePtr pNode) 
 { 
 	if(pNode==this)
 		InstantiateScript(gEnv->pFlowSystem->GetTypeName(typeId));
@@ -39,7 +40,7 @@ bool CMonoFlowNode::CreatedNode(TFlowNodeId id, const char *name, TFlowNodeTypeI
 	return true; 
 }
 
-bool CMonoFlowNode::InstantiateScript(const char *nodeName)
+bool CFlowNode::InstantiateScript(const char *nodeName)
 {
 	string fullTypeName = nodeName;
 
@@ -53,14 +54,14 @@ bool CMonoFlowNode::InstantiateScript(const char *nodeName)
 		next = fullTypeName.Tokenize(":", curPos);
 	}
 
-	m_scriptId = gEnv->pMonoScriptSystem->InstantiateScript(EMonoScriptType_FlowNode, typeName);
+	m_scriptId = gEnv->pMonoScriptSystem->GetScriptManager()->InstantiateScript(EMonoScriptType_FlowNode, typeName);
 	if(m_scriptId!=-1)
-		static_cast<CMonoScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager()->RegisterFlowNode(this, m_scriptId);
+		static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager()->RegisterFlowNode(this, m_scriptId);
 
 	return m_scriptId!=-1;
 }
 
-void CMonoFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
+void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 {	
 	if(m_pHookedGraph && m_scriptId!=-1)
 	{
@@ -146,7 +147,7 @@ void CMonoFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 
 				if(entityScriptId!=m_scriptId && entityScriptId!=0)
 				{
-					gEnv->pMonoScriptSystem->RemoveScriptInstance(m_scriptId);
+					gEnv->pMonoScriptSystem->GetScriptManager()->RemoveScriptInstance(m_scriptId);
 					m_scriptId = entityScriptId;
 				}
 			}
@@ -155,11 +156,11 @@ void CMonoFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 	}
 }
 
-void CMonoFlowNode::GetConfiguration(SFlowNodeConfig &config)
+void CFlowNode::GetConfiguration(SFlowNodeConfig &config)
 {
 	SMonoNodeConfig monoConfig = CallMonoScript<SMonoNodeConfig>(m_scriptId, "GetNodeConfig");
 
-	SNodeData *pNodeData = static_cast<CMonoScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager()->GetNodeDataById(m_scriptId);
+	SNodeData *pNodeData = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager()->GetNodeDataById(m_scriptId);
 
 	config.nFlags |= monoConfig.flags;
 	config.pInputPorts = pNodeData->pInputs;

@@ -7,10 +7,23 @@ namespace CryEngine
 	/// </summary>
 	public class Renderer
 	{
+		// Change to protected once we've implemented properties etc.
+		#region ViewSystem
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static ViewParams _GetViewParams();
+		extern public static uint _CreateView();
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _SetViewParams(ViewParams cam);
+		extern public static void _RemoveView(uint viewId);
+
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern public static uint _GetActiveView();
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern public static void _SetActiveView(uint viewId);
+
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern public static ViewParams _GetViewParams(uint viewId);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern public static void _SetViewParams(uint viewId, ViewParams cam);
+		#endregion
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static int _GetWidth();
@@ -28,11 +41,6 @@ namespace CryEngine
 		extern internal static void _DestroyRenderTarget(int id);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static void _SetRenderTarget(int id);
-
-		/// <summary>
-		/// The currently active vuiew params
-		/// </summary>
-		public static ViewParams ViewParams { get { return _GetViewParams(); } set { _SetViewParams(value); } }
 
 		/// <summary>
 		/// The width of the screen in pixels.

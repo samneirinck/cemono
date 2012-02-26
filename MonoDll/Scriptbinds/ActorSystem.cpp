@@ -17,7 +17,7 @@ CScriptBind_ActorSystem::CScriptBind_ActorSystem()
 
 void CScriptBind_ActorSystem::RegisterActorClass(mono::string className, bool isAI)
 {
-	//gEnv->pGameFramework->RegisterFactory(ToCryString(className), (CMonoActorClass *)0, isAI, (CMonoActorClass *)0);
+	//gEnv->pGameFramework->RegisterFactory(ToCryString(className), (CActorClass *)0, isAI, (CActorClass *)0);
 }
 
 float CScriptBind_ActorSystem::GetPlayerHealth(EntityId playerId)

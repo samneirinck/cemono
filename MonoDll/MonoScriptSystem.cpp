@@ -21,6 +21,8 @@
 #include <ICmdLine.h>
 #include <ISystem.h>
 
+#include "ScriptManager.h"
+
 #include "MonoConverter.h"
 
 // Bindings
@@ -44,21 +46,19 @@
 #include "MonoTester.h"
 #endif
 
-CRYREGISTER_CLASS(CMonoScriptSystem)
+CRYREGISTER_CLASS(CScriptSystem)
 
-CMonoScriptSystem::CMonoScriptSystem() 
+CScriptSystem::CScriptSystem() 
 	: m_pMonoDomain(NULL)
-	, m_pScriptDomain(NULL)
-	, m_pLibraryAssembly(NULL)
+	, m_pCryBraryAssembly(NULL)
 	, m_pCallbackHandler(NULL)
-	, m_pMonoDebugDatabaseCreator(NULL)
+	, m_pPdb2MdbAssembly(NULL)
+	, m_pScriptManager(NULL)
 {
 	CryLogAlways("Initializing Mono Script System");
 
-	//system(CMonoPathUtils::GetMonoPath() + "bin\\pdb2mdb.exe" + " " + CMonoPathUtils::GetBinaryPath() + "CryBrary.dll");
-
 	// We should look into CryPak for this (as well as c# scripts), in case it's possible to read them while they're pak'd.
-	mono_set_dirs(CMonoPathUtils::GetLibPath(), CMonoPathUtils::GetConfigPath());
+	mono_set_dirs(PathUtils::GetLibPath(), PathUtils::GetConfigPath());
 
 	string monoCmdOptions = "";
 
@@ -75,32 +75,29 @@ CMonoScriptSystem::CMonoScriptSystem()
 	mono_debug_init(MONO_DEBUG_FORMAT_MONO);
 #endif
 
-	m_pConverter = new CMonoConverter();
+	m_pConverter = new CConverter();
 
 	gEnv->pMonoScriptSystem = this;
 
 	if(gEnv->IsEditor())
 		gEnv->pFileChangeMonitor->RegisterListener(this, "scripts\\");
 
-	SSystemInitParams initParams;
-	if(!Initialize(*gEnv, initParams))
+	if(!CompleteInit())
 		CryFatalError("Failed to initialize CryMono, aborting..");
 }
 
-CMonoScriptSystem::~CMonoScriptSystem()
+CScriptSystem::~CScriptSystem()
 {
 	mono_gc_collect(mono_gc_max_generation());
 
 	gEnv->pFileChangeMonitor->UnregisterListener(this);
 
-	m_scripts.clear();
 	m_methodBindings.clear();
 
 	SAFE_DELETE(m_pConverter);
 	SAFE_DELETE(m_pCallbackHandler);
 
-	SAFE_RELEASE(m_pScriptCompiler);
-	SAFE_RELEASE(m_pLibraryAssembly);
+	SAFE_RELEASE(m_pCryBraryAssembly);
 
 	m_localScriptBinds.clear();
 
@@ -110,7 +107,7 @@ CMonoScriptSystem::~CMonoScriptSystem()
 	gEnv->pMonoScriptSystem = NULL;
 }
 
-bool CMonoScriptSystem::Initialize( SSystemGlobalEnvironment &env,const SSystemInitParams &initParams)
+bool CScriptSystem::CompleteInit()
 {
 	CryLogAlways("    Initializing CryMono...");
 	
@@ -118,57 +115,45 @@ bool CMonoScriptSystem::Initialize( SSystemGlobalEnvironment &env,const SSystemI
 		return false;
 
 #ifndef _RELEASE
-	m_pMonoDebugDatabaseCreator = new CMonoAssembly(CMonoPathUtils::GetMonoPath() + "bin\\pdb2mdb.dll");
+	m_pPdb2MdbAssembly = new CScriptAssembly(PathUtils::GetMonoPath() + "bin\\pdb2mdb.dll");
 #endif
 
-	REGISTER_COMMAND("mono_dump_state", CmdDumpMonoState, VF_NULL, "");
-	if(!Reload())
+	REGISTER_FACTORY(gEnv->pGameFramework, "ScriptManager", CScriptManager, false);
+
+	if(!Reload(true))
 		return false;
 
 	CryModuleMemoryInfo memInfo;
 	CryModuleGetMemoryInfo(&memInfo);
-	CryLogAlways("    Initializing CryMono done, MemUsage=%iKb", (memInfo.allocated + m_pLibraryAssembly->GetCustomClass("CryStats", "CryEngine.Utils")->GetProperty("MemoryUsage")->Unbox<long>()) / 1024);
+	CryLogAlways("    Initializing CryMono done, MemUsage=%iKb", (memInfo.allocated + m_pCryBraryAssembly->GetCustomClass("CryStats", "CryEngine.Utils")->GetProperty("MemoryUsage")->Unbox<long>()) / 1024);
 
 	return true;
 }
 
-bool CMonoScriptSystem::Reload()
+bool CScriptSystem::Reload(bool initialLoad)
 {
-	// Determines if this is the first time loading.
-	bool initialLoad = m_pScriptDomain==NULL;
-
 	// Store the state of current instances to apply them to the reloaded scripts at the end.
 	if(!initialLoad)
 	{
 		CryLogAlways("C# modifications detected on disk, initializing CryBrary reload");
 
-		// Force dump of instance data.
-		m_pLibraryAssembly->GetCustomClass("AppDomainSerializer", "CryEngine.Utils")->CallMethod("DumpScriptData");
-
-		mono_domain_set(mono_get_root_domain(), false);
-
-		mono_domain_finalize(m_pScriptDomain, -1);
-
-		MonoObject *pException;
-		mono_domain_try_unload(m_pScriptDomain, &pException);
-
-		if(pException)
-		{	
-			CryLogAlways("[MonoWarning] An exception was raised during ScriptDomain unload:");
-
-			MonoMethod *pExceptionMethod = mono_method_desc_search_in_class(mono_method_desc_new("::ToString()", false),mono_get_exception_class());
-			MonoString *exceptionString = (MonoString *)mono_runtime_invoke(pExceptionMethod, pException, NULL, NULL);
-			CryLogAlways(ToCryString((mono::string)exceptionString));
-		}
-
-		//mono_domain_free(m_pScriptDomain, false);
+		m_pScriptManager->Release();
 	}
 
-	m_pScriptDomain = mono_domain_create_appdomain("ScriptDomain", NULL);
-	mono_domain_set(m_pScriptDomain, false);
+	SEntitySpawnParams params;
+	params.pClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass("Default");
+	params.nFlags = ENTITY_FLAG_SERVER_ONLY;
+	params.id = 1337;
 
-	m_pLibraryAssembly = LoadAssembly(CMonoPathUtils::GetBinaryPath() + "CryBrary.dll");
-	if (!m_pLibraryAssembly)
+	if(auto pEntity = gEnv->pEntitySystem->SpawnEntity(params))
+	{
+		IGameObject *pGameObject = gEnv->pGameFramework->GetIGameObjectSystem()->CreateGameObjectForEntity(pEntity->GetId());
+
+		m_pScriptManager = static_cast<IMonoScriptManager *>(pGameObject->AcquireExtension("ScriptManager"));
+	}
+
+	m_pCryBraryAssembly = LoadAssembly(PathUtils::GetBinaryPath() + "CryBrary.dll");
+	if (!m_pCryBraryAssembly)
 		return false;
 
 	CryLogAlways("    Registering default scriptbinds...");
@@ -177,46 +162,16 @@ bool CMonoScriptSystem::Reload()
 	CryLogAlways("    Initializing subsystems...");
 	InitializeSystems();
 
-	CryLogAlways("    Compiling scripts...");
-	m_pScriptCompiler = m_pLibraryAssembly->GetCustomClass("ScriptCompiler");
-	m_pScriptCompiler->CallMethod("Initialize");
+	static_cast<CScriptManager *>(m_pScriptManager)->CompileScripts();
 
 	// Nodes won't get recompiled if we forget this.
 	if(!initialLoad)
-	{
-		PostInit();
 		GetFlowManager()->Reset();
-
-		m_pLibraryAssembly->GetCustomClass("AppDomainSerializer", "CryEngine.Utils")->CallMethod("TrySetScriptData");
-
-		for each(auto script in m_scripts)
-		{
-			IMonoArray *pParams = CreateMonoArray(1);
-			pParams->Insert(script.second);
-			if(IMonoObject *pScriptInstance = m_pScriptCompiler->CallMethod("GetScriptInstanceById", pParams))
-			{
-				mono::object monoObject = pScriptInstance->GetMonoObject();
-
-				MonoClass *pMonoClass = mono_object_get_class((MonoObject *)monoObject);
-				if(pMonoClass && mono_class_get_name(pMonoClass))
-					static_cast<CMonoClass *>(script.first)->OnReload(pMonoClass, monoObject);
-			}
-
-			SAFE_RELEASE(pParams);
-		}
-	}
 
 	return true;
 }
 
-void CMonoScriptSystem::PostInit()
-{
-	m_pScriptCompiler->CallMethod("PostInit");
-
-	gEnv->pGameFramework->RegisterListener(this, "CryMono", eFLPriority_Game);
-}
-
-bool CMonoScriptSystem::InitializeDomain()
+bool CScriptSystem::InitializeDomain()
 {
 	// Create root domain
 	m_pMonoDomain = mono_jit_init_version("CryMono", "v4.0.30319");
@@ -229,7 +184,7 @@ bool CMonoScriptSystem::InitializeDomain()
 	return m_pMonoDomain != NULL;
 }
 
-void CMonoScriptSystem::RegisterDefaultBindings()
+void CScriptSystem::RegisterDefaultBindings()
 {
 	// Register what couldn't be registered earlier.
 	if(m_methodBindings.size()>0)
@@ -248,30 +203,30 @@ void CMonoScriptSystem::RegisterDefaultBindings()
 	RegisterBinding(CScriptBind_Inventory);
 	RegisterBinding(CScriptBind_GameRules);
 	RegisterBinding(CScriptBind_StaticEntity);
-	RegisterBinding(CMonoInput);
-	RegisterBinding(CMonoTester);
+	RegisterBinding(CInput);
+	RegisterBinding(CTester);
 
 #define RegisterBindingAndSet(var, T) RegisterBinding(T); var = (T *)m_localScriptBinds.back();
-	RegisterBindingAndSet(m_pCallbackHandler, CMonoCallbackHandler);
+	RegisterBindingAndSet(m_pCallbackHandler, CCallbackHandler);
 	RegisterBindingAndSet(m_pEntityManager, CEntityManager);
 	RegisterBindingAndSet(m_pFlowManager, CFlowManager);
 
 #ifndef _RELEASE
-	RegisterBindingAndSet(m_pTester, CMonoTester);
+	RegisterBindingAndSet(m_pTester, CTester);
 #endif
 
 #undef RegisterBindingAndSet
 #undef RegisterBinding
 }
 
-bool CMonoScriptSystem::InitializeSystems()
+bool CScriptSystem::InitializeSystems()
 {
 #ifndef _RELEASE
-	m_pTester->CommenceTesting();
-	SAFE_DELETE(m_pTester);
+	//m_pTester->CommenceTesting();
+	//SAFE_DELETE(m_pTester);
 #endif
 
-	IMonoClass *pClass = m_pLibraryAssembly->GetCustomClass("CryNetwork");
+	IMonoClass *pClass = m_pCryBraryAssembly->GetCustomClass("CryNetwork");
 	IMonoArray *pArray = GetConverter()->CreateArray(2);
 	pArray->Insert(gEnv->IsEditor());
 	pArray->Insert(gEnv->IsDedicated());
@@ -282,33 +237,16 @@ bool CMonoScriptSystem::InitializeSystems()
 	return true;
 }
 
-void CMonoScriptSystem::OnPostUpdate(float fDeltaTime)
-{
-	//m_pCallbackHandler->InvokeCallback("Update", "Manager");
-
-	IMonoArray *pArgs = CreateMonoArray(1);
-	pArgs->Insert(fDeltaTime);
-	m_pScriptCompiler->CallMethod("OnUpdate", pArgs);
-	SAFE_RELEASE(pArgs);
-}
-
-void CMonoScriptSystem::OnFileChange(const char *sFilename)
+void CScriptSystem::OnFileChange(const char *sFilename)
 {
 	string fileName = sFilename;
 	const char *fileExt = fileName.substr(fileName.find_last_of(".") + 1);
 
 	if(!strcmp(fileExt, "cs") || !strcmp(fileExt, "dll"))
-	{
-		IMonoArray *pArray = new CMonoArray(1);
-		pArray->Insert(sFilename);
-
 		Reload();
-
-		SAFE_RELEASE(pArray);
-	}
 }
 
-void CMonoScriptSystem::RegisterMethodBinding(const void *method, const char *fullMethodName)
+void CScriptSystem::RegisterMethodBinding(const void *method, const char *fullMethodName)
 {
 	if(!IsInitialized())
 		m_methodBindings.insert(TMethodBindings::value_type(method, fullMethodName));
@@ -316,91 +254,7 @@ void CMonoScriptSystem::RegisterMethodBinding(const void *method, const char *fu
 		mono_add_internal_call(fullMethodName, method);
 }
 
-int CMonoScriptSystem::InstantiateScript(EMonoScriptType scriptType, const char *scriptName, IMonoArray *pConstructorParameters)
+IMonoAssembly *CScriptSystem::LoadAssembly(const char *assemblyPath)
 {
-	if(scriptType==EMonoScriptType_GameRules)
-	{
-		IMonoClass *pClass = m_pLibraryAssembly->GetCustomClass("CryNetwork");
-		IMonoArray *pArray = GetConverter()->CreateArray(3);
-		pArray->Insert(gEnv->bMultiplayer);
-		pArray->Insert(gEnv->IsClient());
-		pArray->Insert(gEnv->bServer);
-		pClass->CallMethod("InitializeNetwork", pArray, true);
-		SAFE_RELEASE(pArray);
-		SAFE_RELEASE(pClass);
-	}
-	
-	/*for(TScripts::iterator it=m_scripts.begin(); it != m_scripts.end(); ++it)
-	{
-		if((*it)->GetScriptType()==scriptType && !strcmp((*it)->GetName(), scriptName))
-		{
-			if(scriptType==EMonoScriptType_GameRules)
-				m_scripts.erase(it);
-
-			break;
-		}
-	}*/
-
-	IMonoArray *pArgs = CreateMonoArray(2);
-	pArgs->Insert(scriptName);
-	pArgs->Insert(pConstructorParameters);
-
-	int scriptId = -1;
-	if(IMonoObject *pScriptInstance = m_pScriptCompiler->CallMethod("InstantiateScript", pArgs))
-	{
-		IMonoClass *pScript = pScriptInstance->Unbox<IMonoClass *>();
-		scriptId = pScript->GetScriptId();
-		m_scripts.insert(TScripts::value_type(pScript, scriptId));
-	}
-		
-	SAFE_RELEASE(pArgs);
-	
-	return scriptId;
-}
-
-void CMonoScriptSystem::RemoveScriptInstance(int id)
-{
-	if(id==-1)
-		return;
-
-	for(TScripts::iterator it=m_scripts.begin(); it != m_scripts.end(); ++it)
-	{
-		if((*it).second==id)
-		{
-			IMonoArray *pArgs = CreateMonoArray(2);
-			pArgs->Insert(id);
-			pArgs->Insert((*it).first->GetName());
-
-			m_pScriptCompiler->CallMethod("RemoveInstance", pArgs);
-			SAFE_RELEASE(pArgs);
-
-			m_scripts.erase(it);
-
-			break;
-		}
-	}
-}
-
-IMonoClass *CMonoScriptSystem::GetScriptById(int id)
-{
-	if(id==-1)
-		return NULL;
-
-	for(TScripts::iterator it=m_scripts.begin(); it != m_scripts.end(); ++it)
-	{
-		if((*it).second==id)
-			return (*it).first;
-	}
-
-	return NULL;
-}
-
-IMonoAssembly *CMonoScriptSystem::LoadAssembly(const char *assemblyPath)
-{
-	return new CMonoAssembly(assemblyPath);
-}
-
-void CMonoScriptSystem::CmdDumpMonoState(IConsoleCmdArgs *cmdArgs)
-{
-	gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("AppDomainSerializer", "CryEngine.Utils")->CallMethod("DumpScriptData");
+	return new CScriptAssembly(assemblyPath);
 }

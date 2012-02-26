@@ -15,10 +15,10 @@
 /// Serializable mono value, used within IMonoObject and IMonoArray.
 /// This functionality is highly experimental and should be avoided.
 /// </summary>
-class CMonoSerializable
+class CSerializable
 {
 public:
-	CMonoSerializable() : value(0) {}
+	CSerializable() : value(0) {}
 
 	/// <summary>
 	/// </summary>
@@ -26,7 +26,7 @@ public:
 	{
 		// the value of value is set in the parent, i.e. IMonoObject::Serialize.
 
-		ser.BeginGroup("CMonoSerializable");
+		ser.BeginGroup("CSerializable");
 		ser.Value("monoAnyValue", value);
 		ser.EndGroup();
 	}

@@ -4,7 +4,7 @@
 #include "MonoEntityPropertyHandler.h"
 #include "MonoEntityEventHandler.h"
 
-CMonoEntityClass::CMonoEntityClass(IEntityClassRegistry::SEntityClassDesc desc, const char* category, std::vector<IEntityPropertyHandler::SPropertyInfo> properties)
+CEntityClass::CEntityClass(IEntityClassRegistry::SEntityClassDesc desc, const char* category, std::vector<IEntityPropertyHandler::SPropertyInfo> properties)
 	: m_pPropertyHandler(NULL)
 {
 	m_flags = desc.flags;
@@ -14,17 +14,17 @@ CMonoEntityClass::CMonoEntityClass(IEntityClassRegistry::SEntityClassDesc desc, 
 	m_category = category;
 	m_properties = properties;
 
-	m_pPropertyHandler = new CMonoEntityPropertyHandler(properties);
-	m_pEventHandler = new CMonoEntityEventHandler();
+	m_pPropertyHandler = new CEntityPropertyHandler(properties);
+	m_pEventHandler = new CEntityEventHandler();
 }
 
-CMonoEntityClass::~CMonoEntityClass()
+CEntityClass::~CEntityClass()
 {
 	SAFE_DELETE(m_pPropertyHandler);
 	SAFE_DELETE(m_pEventHandler);
 }
 
-int CMonoEntityClass::GetEventCount()
+int CEntityClass::GetEventCount()
 {
 	return m_pEventHandler->GetEventCount();
 }

@@ -10,7 +10,6 @@
 #define __MONO_H__
 
 #include "MonoArray.h"
-#include "EntityManager.h"
 
 #include <IMonoScriptSystem.h>
 
@@ -20,45 +19,38 @@
 #include <IFileChangeMonitor.h>
 #include <IGameFramework.h>
 
-struct IMonoClass;
 struct IMonoMethodBinding;
+struct IMonoScriptBind;
 
-class CMonoTester;
-class CMonoScript;
+struct IMonoScriptManager;
+struct IMonoEntityManager;
 
+class CTester;
 class CFlowManager;
-class CMonoCallbackHandler;
+class CCallbackHandler;
 
-class CMonoScriptSystem
+class CScriptSystem
 	: public IMonoScriptSystem
 	, public IFileChangeListener
-	, public IGameFrameworkListener
 {
 	CRYINTERFACE_SIMPLE(IMonoScriptSystem);
 
-	CRYGENERATE_SINGLETONCLASS(CMonoScriptSystem, "CryMono", 0xc37b8ad5d62f47de, 0xa8debe525ff0fc8a)
+	CRYGENERATE_SINGLETONCLASS(CScriptSystem, "CryMono", 0xc37b8ad5d62f47de, 0xa8debe525ff0fc8a)
 
-	typedef std::map<IMonoClass *, int> TScripts;
 	typedef std::map<const void *, const char *> TMethodBindings;
 
 public:
 	// IMonoScriptSystem
-	virtual bool Initialize( SSystemGlobalEnvironment &env,const SSystemInitParams &initParams );
-	virtual void PostInit() override;
-
-	virtual bool Reload() override;
+	virtual bool Reload(bool initialLoad = false) override;
 
 	virtual void Release() override { delete this; }
 
-	virtual IMonoEntityManager *GetEntityManager() const { return m_pEntityManager; }
+	virtual IMonoScriptManager *GetScriptManager() override { return m_pScriptManager; }
+	virtual IMonoEntityManager *GetEntityManager() const override { return m_pEntityManager; }
 
 	virtual void RegisterMethodBinding(const void *method, const char *fullMethodName) override;
 	
-	virtual int InstantiateScript(EMonoScriptType scriptType, const char *scriptName, IMonoArray *pConstructorParameters = nullptr) override;
-	virtual IMonoClass *GetScriptById(int id) override;
-	virtual void RemoveScriptInstance(int id) override;
-	
-	virtual IMonoAssembly *GetCryBraryAssembly() override { return m_pLibraryAssembly; }
+	virtual IMonoAssembly *GetCryBraryAssembly() override { return m_pCryBraryAssembly; }
 	virtual IMonoAssembly *LoadAssembly(const char *assemblyPath) override;
 
 	virtual IMonoConverter *GetConverter() override { return m_pConverter; }
@@ -68,46 +60,33 @@ public:
 	virtual void OnFileChange(const char* sFilename);
 	// ~IFileChangeMonitor
 
-	// ~IGameFrameworkListener
-	virtual void OnPostUpdate(float fDeltaTime);
-	virtual void OnSaveGame(ISaveGame* pSaveGame) {}
-	virtual void OnLoadGame(ILoadGame* pLoadGame) {}
-	virtual void OnLevelEnd(const char* nextLevel) {}
-	virtual void OnActionEvent(const SActionEvent& event) {}
-	// ~IGameFrameworkListener
+	IMonoAssembly *GetDebugDatabaseCreator() { return m_pPdb2MdbAssembly; }
 
-	IMonoClass *GetScriptCompilerClass() const { return m_pScriptCompiler; }
-	
-	IMonoAssembly *GetDebugDatabaseCreator() { return m_pMonoDebugDatabaseCreator; }
-
-	CMonoCallbackHandler *GetCallbackHandler() const { return m_pCallbackHandler; }
+	CCallbackHandler *GetCallbackHandler() const { return m_pCallbackHandler; }
 	CFlowManager *GetFlowManager() const { return m_pFlowManager; }
 
 	bool IsInitialized() { return m_pMonoDomain != NULL; }
 
-private:
+protected:
+	bool CompleteInit();
 	bool InitializeDomain();
 	void RegisterDefaultBindings();
 	bool InitializeSystems();
 
-	static void CmdDumpMonoState(IConsoleCmdArgs *cmdArgs);
-
 	MonoDomain *m_pMonoDomain;
-	MonoDomain *m_pScriptDomain;
 
-	IMonoAssembly *m_pLibraryAssembly;
-	IMonoAssembly *m_pMonoDebugDatabaseCreator;
-
-	IMonoClass *m_pScriptCompiler;
+	IMonoScriptManager *m_pScriptManager;
+	IMonoEntityManager *m_pEntityManager;
 
 	IMonoConverter *m_pConverter;
 
-	CEntityManager *m_pEntityManager;
 	CFlowManager *m_pFlowManager;
-	CMonoCallbackHandler *m_pCallbackHandler;
-	CMonoTester *m_pTester;
+	CCallbackHandler *m_pCallbackHandler;
+	CTester *m_pTester;
 
-	TScripts m_scripts;
+	IMonoAssembly *m_pCryBraryAssembly;
+	IMonoAssembly *m_pPdb2MdbAssembly;
+
 	TMethodBindings m_methodBindings;
 
 	// ScriptBinds declared in this project.

@@ -6,7 +6,7 @@
 
 #include <mono/metadata/debug-helpers.h>
 
-CMonoClass::CMonoClass(MonoClass *pClass, IMonoArray *pConstructorArguments)
+CScriptClass::CScriptClass(MonoClass *pClass, IMonoArray *pConstructorArguments)
 	: m_pClass(pClass)
 	, m_pInstance(NULL)
 {
@@ -20,17 +20,18 @@ CMonoClass::CMonoClass(MonoClass *pClass, IMonoArray *pConstructorArguments)
 	Instantiate(pConstructorArguments);
 }
 
-CMonoClass::~CMonoClass()
+CScriptClass::~CScriptClass()
 {
 	mono_gchandle_free(m_instanceHandle);
 
-	static_cast<CMonoScriptSystem *>(gEnv->pMonoScriptSystem)->RemoveScriptInstance(GetScriptId());
+	if(IMonoScriptManager *pScriptManager = gEnv->pMonoScriptSystem->GetScriptManager())
+		pScriptManager->RemoveScriptInstance(GetScriptId());
 
 	m_pInstance = 0;
 	m_pClass = 0;
 }
 
-int CMonoClass::GetScriptId()
+int CScriptClass::GetScriptId()
 {
 	if(IMonoObject *pScriptId = GetProperty("ScriptId"))
 		return pScriptId->Unbox<int>();
@@ -38,7 +39,7 @@ int CMonoClass::GetScriptId()
 	return -1;
 }
 
-void CMonoClass::Instantiate(IMonoArray *pConstructorParams)
+void CScriptClass::Instantiate(IMonoArray *pConstructorParams)
 {
 	if(m_pInstance)
 	{
@@ -60,7 +61,7 @@ void CMonoClass::Instantiate(IMonoArray *pConstructorParams)
 		m_scriptId = pScriptId->Unbox<int>();
 }
 
-void CMonoClass::OnReload(MonoClass *pNewClass, mono::object pNewInstance)
+void CScriptClass::OnReload(MonoClass *pNewClass, mono::object pNewInstance)
 {
 	m_pClass = pNewClass;
 	m_pInstance = pNewInstance;
@@ -68,7 +69,7 @@ void CMonoClass::OnReload(MonoClass *pNewClass, mono::object pNewInstance)
 	m_instanceHandle = mono_gchandle_new((MonoObject *)m_pInstance, false);
 }
 
-IMonoObject *CMonoClass::CallMethod(const char *methodName, IMonoArray *params, bool _static)
+IMonoObject *CScriptClass::CallMethod(const char *methodName, IMonoArray *params, bool _static)
 {
 	if(MonoMethod *pMethod = GetMethod(methodName, _static))
 	{
@@ -107,7 +108,7 @@ IMonoObject *CMonoClass::CallMethod(const char *methodName, IMonoArray *params, 
 	return NULL;
 }
 
-MonoMethod *CMonoClass::GetMethod(const char *methodName, bool bStatic)
+MonoMethod *CScriptClass::GetMethod(const char *methodName, bool bStatic)
 {
 	MonoMethod *pMethod = NULL;
 	
@@ -133,7 +134,7 @@ MonoMethod *CMonoClass::GetMethod(const char *methodName, bool bStatic)
 	return pMethod;
 }
 
-IMonoObject *CMonoClass::GetProperty(const char *propertyName)
+IMonoObject *CScriptClass::GetProperty(const char *propertyName)
 {
 	if(MonoProperty *pProperty = mono_class_get_property_from_name(m_pClass, propertyName))
 	{
@@ -150,18 +151,18 @@ IMonoObject *CMonoClass::GetProperty(const char *propertyName)
 	return NULL;
 }
 
-void CMonoClass::SetProperty(const char *propertyName, IMonoObject *pNewValue)
+void CScriptClass::SetProperty(const char *propertyName, IMonoObject *pNewValue)
 {
 	if(MonoProperty *pProperty = mono_class_get_property_from_name(m_pClass, propertyName))
 	{
 		void *args[1];
-		args[0] = static_cast<CMonoObject *>(pNewValue)->GetMonoObject();
+		args[0] = static_cast<CScriptObject *>(pNewValue)->GetMonoObject();
 
 		return mono_property_set_value(pProperty, m_pInstance, args, NULL);
 	}
 }
 
-IMonoObject *CMonoClass::GetField(const char *fieldName)
+IMonoObject *CScriptClass::GetField(const char *fieldName)
 {
 	if(MonoClassField *pField = mono_class_get_field_from_name(m_pClass, fieldName))
 	{
@@ -174,13 +175,13 @@ IMonoObject *CMonoClass::GetField(const char *fieldName)
 	return NULL;
 }
 
-void CMonoClass::SetField(const char *fieldName, IMonoObject *pNewValue)
+void CScriptClass::SetField(const char *fieldName, IMonoObject *pNewValue)
 {
 	if(MonoClassField *pField = mono_class_get_field_from_name(m_pClass, fieldName))
-		return mono_field_set_value((MonoObject *)m_pInstance, pField, static_cast<CMonoObject *>(pNewValue)->GetMonoObject());
+		return mono_field_set_value((MonoObject *)m_pInstance, pField, static_cast<CScriptObject *>(pNewValue)->GetMonoObject());
 }
 
-void CMonoClass::HandleException(MonoObject *pException)
+void CScriptClass::HandleException(MonoObject *pException)
 {
 	CryLogAlways("[MonoWarning] Class %s raised an exception:", mono_class_get_name(m_pClass));
 

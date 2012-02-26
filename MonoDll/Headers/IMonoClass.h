@@ -10,6 +10,7 @@
 #define __I_MONO_CLASS__
 
 #include <IMonoScriptSystem.h>
+#include <IMonoScriptManager.h>
 
 #include <IMonoArray.h>
 
@@ -77,7 +78,7 @@ public:
 	{
 		TResult result;
 
-		if(IMonoClass *pClass = gEnv->pMonoScriptSystem->GetScriptById(scriptId))
+		if(IMonoClass *pClass = gEnv->pMonoScriptSystem->GetScriptManager()->GetScriptById(scriptId))
 		{
 			if(IMonoObject *pResult = pClass->CallMethod(funcName, pArgs))
 			{
@@ -95,7 +96,7 @@ public:
 	template <>
 	static void CallMethod(int scriptId, const char *funcName, IMonoArray *pArgs, bool releaseArgs)
 	{
-		if(IMonoClass *pClass = gEnv->pMonoScriptSystem->GetScriptById(scriptId))
+		if(IMonoClass *pClass = gEnv->pMonoScriptSystem->GetScriptManager()->GetScriptById(scriptId))
 			pClass->CallMethod(funcName, pArgs);
 
 		SAFE_RELEASE(pArgs);

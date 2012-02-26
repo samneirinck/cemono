@@ -34,8 +34,15 @@ public:
 
 protected:
 	// External methods
-	static SViewParams GetViewParams();
-	static void SetViewParams(SViewParams);
+
+	static unsigned int CreateView();
+	static void RemoveView(unsigned int viewId);
+
+	static unsigned int GetActiveView();
+	static void SetActiveView(unsigned int viewId);
+
+	static SViewParams GetViewParams(unsigned int viewId);
+	static void SetViewParams(unsigned int viewId, SViewParams);
 
 	static int GetWidth();
 	static int GetHeight();

@@ -11,11 +11,11 @@
 
 #include <IEntityClass.h>
 
-class CMonoEntityEventHandler : public IEntityEventHandler
+class CEntityEventHandler : public IEntityEventHandler
 {
 public:
-	CMonoEntityEventHandler() {}
-	virtual ~CMonoEntityEventHandler() {}
+	CEntityEventHandler() {}
+	virtual ~CEntityEventHandler() {}
 
 	// IEntityEventHandler interface
 	virtual void GetMemoryUsage( ICrySizer *pSizer ) const {}

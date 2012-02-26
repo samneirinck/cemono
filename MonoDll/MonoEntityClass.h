@@ -11,11 +11,11 @@
 
 #include <IEntityClass.h>
 
-class CMonoEntityClass : public IEntityClass
+class CEntityClass : public IEntityClass
 {
 public:
-	CMonoEntityClass(IEntityClassRegistry::SEntityClassDesc desc, const char* category, std::vector<IEntityPropertyHandler::SPropertyInfo> properties);
-	virtual ~CMonoEntityClass();
+	CEntityClass(IEntityClassRegistry::SEntityClassDesc desc, const char* category, std::vector<IEntityPropertyHandler::SPropertyInfo> properties);
+	virtual ~CEntityClass();
 
 	// IEntityClass interface
 	virtual void Release() { delete this; }
