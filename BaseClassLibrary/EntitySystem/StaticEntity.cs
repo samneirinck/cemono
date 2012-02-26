@@ -63,8 +63,11 @@ namespace CryEngine
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static void _AddMovement(uint entityId, ref EntityMovementRequest request);
+
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static Vec3 _GetVelocity(uint entityId);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static void _SetVelocity(uint entityId, Vec3 velocity);
 		#endregion
 
 		public StaticEntity() { }

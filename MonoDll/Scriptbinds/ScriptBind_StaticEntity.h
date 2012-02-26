@@ -55,7 +55,9 @@ protected:
 
 	static void AddImpulse(EntityId, ActionImpulse);
 	static void AddMovement(EntityId, MovementRequest&);
+
 	static Vec3 GetVelocity(EntityId);
+	static void SetVelocity(EntityId, Vec3);
 };
 
 struct ActionImpulse

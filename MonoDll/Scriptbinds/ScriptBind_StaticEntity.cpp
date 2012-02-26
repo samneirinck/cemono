@@ -27,16 +27,20 @@ CScriptBind_StaticEntity::CScriptBind_StaticEntity()
 
 	REGISTER_METHOD(AddImpulse);
 	REGISTER_METHOD(AddMovement);
+
 	REGISTER_METHOD(GetVelocity);
+	REGISTER_METHOD(SetVelocity);
 }
 
 mono::string CScriptBind_StaticEntity::GetPropertyValue(EntityId entityId, mono::string propertyName)
 {
-	IEntity *pEntity = gEnv->pEntitySystem->GetEntity(entityId);
-	IEntityPropertyHandler *pPropertyHandler = pEntity->GetClass()->GetPropertyHandler();
+	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(entityId))
+	{
+		IEntityPropertyHandler *pPropertyHandler = pEntity->GetClass()->GetPropertyHandler();
 
-	return (mono::string)ToMonoString(pPropertyHandler->GetProperty(pEntity, 0));
-	//return pPropertyHandler->GetProperty(pEntity, propertyName);
+		return (mono::string)ToMonoString(pPropertyHandler->GetProperty(pEntity, 0));
+		//return pPropertyHandler->GetProperty(pEntity, propertyName);
+	}
 }
 
 void CScriptBind_StaticEntity::SetPropertyValue(EntityId entityId, mono::string propertyName, mono::string value)
@@ -215,4 +219,18 @@ Vec3 CScriptBind_StaticEntity::GetVelocity(EntityId id)
 	}
 
 	return Vec3(0,0,0);
+}
+
+void CScriptBind_StaticEntity::SetVelocity(EntityId id, Vec3 vel)
+{
+	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id))
+	{
+		if(IPhysicalEntity *pPhysEnt = pEntity->GetPhysics())
+		{
+			pe_action_set_velocity asv;
+			asv.v = vel;
+
+			pPhysEnt->Action(&asv);
+		}
+	}
 }
