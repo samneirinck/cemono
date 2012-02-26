@@ -67,12 +67,17 @@ namespace CryEngine
 				return null;
 
 			StaticEntity ent = internalEntities.Find(entity => entity.Id == entityId);
-			if (ent == default(StaticEntity) && _EntityExists(entityId))
-				return new StaticEntity(entityId);
-			else
-				ent = null;
+			if (ent != default(StaticEntity))
+				return ent;
 
-            return ent;
+			ent = spawnedEntities.Find(entity => entity.Id == entityId);
+			if (ent != default(StaticEntity))
+				return ent;
+
+			if(_EntityExists(entityId))
+				return new StaticEntity(entityId);
+
+            return null;
         }
 
 		/// <summary>
