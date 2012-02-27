@@ -200,8 +200,6 @@ namespace CryEngine.Utils
 			while (ObjectReferences.Count < desiredIndex)
 				ObjectReferences.Add(null);
 
-			Console.LogAlways("Adding object reference of type {0} to index {1}", obj.GetType().Name, desiredIndex);
-
 			ObjectReferences.Add(obj);
 		}
 
@@ -214,7 +212,6 @@ namespace CryEngine.Utils
 			XDocument scriptData = XDocument.Load(filePath);
 			foreach (var type in scriptData.Descendants("Type"))
 			{
-				Console.LogAlways("Processing type {0}", type.Attribute("Name").Value);
 				CryScript script = ScriptCompiler.CompiledScripts.Where(Script => Script.className.Equals(type.Attribute("Name").Value)).FirstOrDefault();
 
 				if (script != default(CryScript))
@@ -253,8 +250,6 @@ namespace CryEngine.Utils
 
 			foreach (var field in fields)
 			{
-				Console.LogAlways(field.Attribute("Name").Value);
-
 				var fieldReferenceAttribute = field.Attribute("ReferencesId");
 				if (fieldReferenceAttribute != null)
 				{
@@ -327,7 +322,6 @@ namespace CryEngine.Utils
 								// Limitation; we can only instantiate types with parameterless constructors
 								if (fieldInfo.FieldType.GetConstructor(System.Type.EmptyTypes) != null || fieldInfo.FieldType.IsValueType)
 								{
-									Console.LogAlways("Instantiating {0}", fieldInfo.Name);
 									object subFieldInstance = System.Activator.CreateInstance(fieldInfo.FieldType);
 									ProcessFields(subFieldInstance, subFields);
 
