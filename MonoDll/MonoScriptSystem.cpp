@@ -155,8 +155,7 @@ bool CScriptSystem::Reload(bool initialLoad)
 	{
 		CryLogAlways("C# modifications detected on disk, initializing CryBrary reload");
 
-		 // Force dump of instance data. 	
-		m_AppDomainSerializer = m_pCryBraryAssembly->GetCustomClass("AppDomainSerializer", "CryEngine.Utils");
+		 // Force dump of instance data. 
 		m_AppDomainSerializer->CallMethod("DumpScriptData");
  	
 		mono_domain_set(mono_get_root_domain(), false);
@@ -184,6 +183,8 @@ bool CScriptSystem::Reload(bool initialLoad)
 	if (!m_pCryBraryAssembly)
 		return false;
 
+	m_AppDomainSerializer = m_pCryBraryAssembly->GetCustomClass("AppDomainSerializer", "CryEngine.Utils");
+
 	CryLogAlways("		Registering default scriptbinds...");
 	RegisterDefaultBindings();
 
@@ -194,19 +195,13 @@ bool CScriptSystem::Reload(bool initialLoad)
 	m_pScriptManager = m_pCryBraryAssembly->GetCustomClass("ScriptCompiler");
 	m_pScriptManager->CallMethod("Initialize");
 
-	if(m_AppDomainSerializer)
-	{
-		CryLogAlways("		Checking for dumped script data...");
-		m_AppDomainSerializer->CallMethod("TrySetScriptData");
-	}
-
 	// Nodes won't get recompiled if we forget this.
 	if(!initialLoad)
 	{
 		//PostInit();
 		GetFlowManager()->Reset();
 
-		m_pCryBraryAssembly->GetCustomClass("AppDomainSerializer", "CryEngine.Utils")->CallMethod("TrySetScriptData");
+		m_AppDomainSerializer->CallMethod("TrySetScriptData");
 
 		for each(auto script in m_scripts)
 		{
@@ -215,11 +210,11 @@ bool CScriptSystem::Reload(bool initialLoad)
 			if(IMonoObject *pScriptInstance = m_pScriptManager->CallMethod("GetScriptInstanceById", pParams))
 			{
 
-			mono::object monoObject = pScriptInstance->GetMonoObject();
+				mono::object monoObject = pScriptInstance->GetMonoObject();
 
-			MonoClass *pMonoClass = mono_object_get_class((MonoObject *)monoObject);
-			if(pMonoClass && mono_class_get_name(pMonoClass))
-				static_cast<CScriptClass *>(script.first)->OnReload(pMonoClass, monoObject);
+				MonoClass *pMonoClass = mono_object_get_class((MonoObject *)monoObject);
+				if(pMonoClass && mono_class_get_name(pMonoClass))
+					static_cast<CScriptClass *>(script.first)->OnReload(pMonoClass, monoObject);
 			}
 
 			SAFE_RELEASE(pParams);

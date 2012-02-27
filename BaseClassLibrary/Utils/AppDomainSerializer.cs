@@ -76,95 +76,105 @@ namespace CryEngine.Utils
 			while (type != null)
 			{
 				foreach (var fieldInfo in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
-				{
-					object value = fieldInfo.GetValue(typeInstance);
-
-					string fieldName = fieldInfo.Name;
-
-					if (ObjectReferences.Contains(value))
-					{
-						writer.WriteStartElement("Field");
-						writer.WriteAttributeString("Name", fieldInfo.Name);
-						writer.WriteAttributeString("ReferencesId", ObjectReferences.IndexOf(value).ToString());
-						writer.WriteEndElement();
-					}
-					else if (value != null && !fieldName.Equals("<ScriptId>k__BackingField") && !fieldName.Equals("m_value"))
-					{
-						writer.WriteStartElement("Field");
-
-						writer.WriteAttributeString("Name", fieldName);
-
-						if(fieldInfo.FieldType.Implements(typeof(IList)))
-						{
-							var valueType = value.GetType();
-
-							writer.WriteAttributeString("Type", valueType.Name);
-							if (!valueType.IsPrimitive && !valueType.IsEnum && valueType != typeof(string))
-							{
-								writer.WriteAttributeString("ReferenceId", ObjectReferences.Count.ToString());
-
-								ObjectReferences.Add(value);
-							}
-
-							IList list = (IList)value;
-							if (list.Count > 0)
-							{
-								writer.WriteStartElement("Elements");
-
-								foreach (var listObject in list)
-								{
-									writer.WriteStartElement("Element");
-									WriteValue(listObject, writer);// writer.WriteAttributeString("Value", listObject.ToString());
-									writer.WriteEndElement();
-								}
-
-								writer.WriteEndElement();
-							}
-						}
-						else if (fieldInfo.FieldType.Implements(typeof(IDictionary)))
-						{
-							var valueType = value.GetType();
-
-							writer.WriteAttributeString("Type", valueType.Name);
-							if (!valueType.IsPrimitive && !valueType.IsEnum && valueType != typeof(string))
-							{
-								writer.WriteAttributeString("ReferenceId", ObjectReferences.Count.ToString());
-
-								ObjectReferences.Add(value);
-							}
-
-							IDictionary dictionary = (IDictionary)value;
-							if (dictionary.Count > 0)
-							{
-								writer.WriteStartElement("Elements");
-
-								foreach (var key in dictionary.Keys)
-								{
-									writer.WriteStartElement("Element");
-									writer.WriteStartElement("Key");
-									WriteValue(key, writer);
-									writer.WriteEndElement();
-									writer.WriteStartElement("Value");
-									WriteValue(dictionary[key], writer);
-									writer.WriteEndElement();
-								}
-
-								writer.WriteEndElement();
-							}
-						}
-						else
-							WriteValue(value, writer);
-
-						writer.WriteEndElement();
-					}
-				}
+					WriteField(fieldInfo.GetValue(typeInstance), fieldInfo, writer);
 
 				type = type.BaseType;
 			}
 		}
 
-		static void WriteValue(object value, XmlWriter writer)
+		static void WriteField(object value, FieldInfo fieldInfo, XmlWriter writer)
 		{
+			string fieldName = fieldInfo.Name;
+
+			if (ObjectReferences.Contains(value))
+			{
+				writer.WriteStartElement("Field");
+				writer.WriteAttributeString("Name", fieldInfo.Name);
+				writer.WriteAttributeString("ReferencesId", ObjectReferences.IndexOf(value).ToString());
+				writer.WriteEndElement();
+			}
+			else if (value != null && !fieldName.Equals("<ScriptId>k__BackingField") && !fieldName.Equals("m_value"))
+			{
+				if (fieldInfo.FieldType.Implements(typeof(IList)))
+				{
+					IList list = (IList)value;
+					if (list.Count <= 0)
+						return;
+
+					writer.WriteStartElement("Field");
+					var valueType = value.GetType();
+
+					writer.WriteAttributeString("Name", fieldInfo.Name);
+					writer.WriteAttributeString("Type", valueType.Name);
+
+					if (!valueType.IsPrimitive && !valueType.IsEnum && valueType != typeof(string))
+					{
+						writer.WriteAttributeString("ReferenceId", ObjectReferences.Count.ToString());
+
+						ObjectReferences.Add(value);
+					}
+
+					writer.WriteStartElement("Elements");
+
+					foreach (var listObject in list)
+					{
+						writer.WriteStartElement("Element");
+						WriteValue(listObject, writer);// writer.WriteAttributeString("Value", listObject.ToString());
+						writer.WriteEndElement();
+					}
+
+					writer.WriteEndElement();
+				}
+				else if (fieldInfo.FieldType.Implements(typeof(IDictionary)))
+				{
+					IDictionary dictionary = (IDictionary)value;
+					if (dictionary.Count <= 0)
+						return;
+
+					writer.WriteStartElement("Field");
+					var valueType = value.GetType();
+
+					writer.WriteAttributeString("Name", fieldInfo.Name);
+					writer.WriteAttributeString("Type", valueType.Name);
+
+					if (!valueType.IsPrimitive && !valueType.IsEnum && valueType != typeof(string))
+					{
+						writer.WriteAttributeString("ReferenceId", ObjectReferences.Count.ToString());
+
+						ObjectReferences.Add(value);
+					}
+
+					writer.WriteStartElement("Elements");
+
+					foreach (var key in dictionary.Keys)
+					{
+						writer.WriteStartElement("Element");
+						writer.WriteStartElement("Key");
+						WriteValue(key, writer);
+						writer.WriteEndElement();
+						writer.WriteStartElement("Value");
+						WriteValue(dictionary[key], writer);
+						writer.WriteEndElement();
+						writer.WriteEndElement();
+					}
+
+					writer.WriteEndElement();
+				}
+				else
+				{
+					writer.WriteStartElement("Field");
+					WriteValue(value, writer, fieldName);
+				}
+
+				writer.WriteEndElement(); // "Field"
+			}
+		}
+
+		static void WriteValue(object value, XmlWriter writer, string name = null)
+		{
+			if(!string.IsNullOrEmpty(name))
+				writer.WriteAttributeString("Name", name);
+
 			var valueType = value.GetType();
 
 			bool isString = (valueType == typeof(string));
@@ -204,27 +214,28 @@ namespace CryEngine.Utils
 			XDocument scriptData = XDocument.Load(filePath);
 			foreach (var type in scriptData.Descendants("Type"))
 			{
+				Console.LogAlways("Processing type {0}", type.Attribute("Name").Value);
 				CryScript script = ScriptCompiler.CompiledScripts.Where(Script => Script.className.Equals(type.Attribute("Name").Value)).FirstOrDefault();
 
 				if (script != default(CryScript))
 				{
-					foreach (var instance in type.Elements("Instance"))
+					foreach (var instanceElement in type.Elements("Instance"))
 					{
-						int scriptId = System.Convert.ToInt32(instance.Attribute("Id").Value);
+						int scriptId = System.Convert.ToInt32(instanceElement.Attribute("Id").Value);
 
 						if (script.ScriptInstances == null)
 							script.ScriptInstances = new List<CryScriptInstance>();
 
 						script.ScriptInstances.Add(System.Activator.CreateInstance(script.Type) as CryScriptInstance);
 
-						AddObjectReference(System.Convert.ToInt32(instance.Attribute("ReferenceId").Value), script.ScriptInstances.Last());
+						AddObjectReference(System.Convert.ToInt32(instanceElement.Attribute("ReferenceId").Value), script.ScriptInstances.Last());
 
 						if (ScriptCompiler.NextScriptId < scriptId)
 							ScriptCompiler.NextScriptId = scriptId;
 
 						script.Type.GetProperty("ScriptId").SetValue(script.ScriptInstances.Last(), scriptId, null);
 
-						ProcessFields(script.ScriptInstances.Last(), instance.Elements("Field"));
+						ProcessFields(script.ScriptInstances.Last(), instanceElement.Elements("Field"));
 					}
 				}
 
@@ -242,6 +253,8 @@ namespace CryEngine.Utils
 
 			foreach (var field in fields)
 			{
+				Console.LogAlways(field.Attribute("Name").Value);
+
 				var fieldReferenceAttribute = field.Attribute("ReferencesId");
 				if (fieldReferenceAttribute != null)
 				{
