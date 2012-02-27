@@ -108,8 +108,6 @@ protected:
 	virtual const char *GetClassName() { return "EntitySystem"; }
 	// ~IMonoScriptBind
 
-	static void EnableUpdates();
-
 	// ScriptBinds
 	static EntityId SpawnEntity(EntitySpawnParams, bool);
 	static void RemoveEntity(EntityId);

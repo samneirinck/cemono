@@ -17,7 +17,7 @@ CEntity::~CEntity()
 	if(m_pAnimatedCharacter != NULL)
 		m_pGameObject->ReleaseExtension("AnimatedCharacter");
 
-	gEnv->pMonoScriptSystem->GetScriptManager()->RemoveScriptInstance(m_scriptId);
+	gEnv->pMonoScriptSystem->RemoveScriptInstance(m_scriptId);
 }
 
 void CEntity::OnSpawn(EntityId id)

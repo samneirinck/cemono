@@ -117,9 +117,6 @@
     <ClInclude Include="ScriptManager.h">
       <Filter>Mono</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\IMonoScriptManager.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />

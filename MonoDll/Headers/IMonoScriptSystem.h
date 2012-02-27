@@ -27,6 +27,19 @@ struct IMonoEntityManager;
 
 struct IMonoConverter;
 
+enum EMonoScriptType
+{
+	EMonoScriptType_NULL = -1,
+
+	EMonoScriptType_GameRules,
+	EMonoScriptType_FlowNode,
+	EMonoScriptType_StaticEntity,
+	EMonoScriptType_Entity,
+	EMonoScriptType_Actor,
+	EMonoScriptType_EditorForm,
+	EMonoScriptType_Unknown,
+};
+
 /// <summary>
 /// The main module in CryMono; initializes mono domain and handles calls to C# scripts.
 /// </summary>
@@ -46,8 +59,6 @@ struct IMonoScriptSystem : ICryUnknown
 	/// </summary>
 	virtual void Release() = 0;
 
-	virtual IMonoScriptManager *GetScriptManager() = 0;
-
 	virtual IMonoEntityManager *GetEntityManager() const = 0;
 	
 	/// <summary>
@@ -55,6 +66,20 @@ struct IMonoScriptSystem : ICryUnknown
 	/// </summary>
 	/// <param name="fullMethodName">i.e. "CryEngine.GameRulesSystem::GetPlayerId"</param>
 	virtual void RegisterMethodBinding(const void *method, const char *fullMethodName) = 0;
+
+	/// <summary>
+	/// Instantiates a script (with constructor parameters if supplied) of type and name
+	/// This assumes that the script was present in a .dll in Plugins or within a .cs file when PostInit was called.
+	/// </summary>
+	virtual int InstantiateScript(EMonoScriptType scriptType, const char *scriptName, IMonoArray *pConstructorParameters = nullptr) = 0;
+	/// <summary>
+	/// Gets the instantied script with the supplied id.
+	/// </summary>
+	virtual IMonoClass *GetScriptById(int id) = 0;
+	/// <summary>
+	/// Removes and destructs an instantiated script with the supplied id if found.
+	/// </summary>
+	virtual void RemoveScriptInstance(int id) = 0;
 
 	/// <summary>
 	/// Gets a pointer to the CryBrary assembly containing all default CryMono types.

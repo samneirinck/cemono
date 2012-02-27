@@ -8,15 +8,7 @@ using System.Linq;
 namespace CryEngine
 {
     public partial class EntitySystem
-    {
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _EnableUpdates();
-
-		public static void EnableUpdates()
-		{
-			_EnableUpdates();
-		}
-
+	{
 		/// <summary>
 		/// Spawns an entity with the specified parameters.
 		/// </summary>

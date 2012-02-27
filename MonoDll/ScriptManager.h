@@ -8,23 +8,18 @@
 // 25/02/2012 : Created by Filip 'i59' Lundgren
 ////////////////////////////////////////////////////////////////////////*/
 
-
-#include <IMonoScriptManager.h>
 #include <MonoCommon.h>
+#include <IGameObject.h>
 
 struct IMonoClass;
 struct IMonoArray;
 
 class CScriptManager
-	: public CGameObjectExtensionHelper <CScriptManager, IMonoScriptManager>
+	: public CGameObjectExtensionHelper <CScriptManager, IGameObjectExtension>
 {
-
-	typedef std::map<IMonoClass *, int> TScripts;
 public:
 	CScriptManager();
 	~CScriptManager();
-
-	void CompileScripts();
 
 	// IGameObjectExtension
 	virtual bool Init(IGameObject * pGameObject);
@@ -32,7 +27,7 @@ public:
 	virtual void InitClient(int channelId) {}
 	virtual void PostInitClient(int channelId) {}
 	
-	virtual bool ReloadExtension( IGameObject * pGameObject, const SEntitySpawnParams &params ) { return true; }
+	virtual bool ReloadExtension( IGameObject * pGameObject, const SEntitySpawnParams &params );
 	virtual void PostReloadExtension( IGameObject * pGameObject, const SEntitySpawnParams &params ) {}
 
 	virtual bool GetEntityPoolSignature( TSerialize signature ) { return false; }
@@ -64,23 +59,7 @@ public:
 	}
 	// ~IGameObjectExtension
 
-	// IMonoScriptManager
-	virtual int InstantiateScript(EMonoScriptType scriptType, const char *scriptName, IMonoArray *pConstructorParameters = nullptr) override;
-	virtual IMonoClass *GetScriptById(int id) override;
-	virtual void RemoveScriptInstance(int id) override;
-	// ~IMonoScriptManager
-
-	IMonoClass *GetManagedManager() const { return m_pScriptManager; }
-
 protected:
 	static void CmdDumpMonoState(IConsoleCmdArgs *cmdArgs);
-
-	// The app domain in which we load scripts into. Killed and reloaded on script reload.
-	MonoDomain *m_pScriptDomain;
-
-	IMonoClass *m_pScriptManager;
-	IMonoClass *m_AppDomainSerializer;
-
-	TScripts m_scripts;
 };
 
