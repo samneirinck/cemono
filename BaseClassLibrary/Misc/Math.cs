@@ -22,18 +22,11 @@
 			return angle * (180.0 / System.Math.PI);
 		}
 
-		//
-		// Summary:
-		//     Returns the square root of a specified number.
-		//
-		// Parameters:
-		//   d:
-		//     A number.
-		//
-		// Returns:
-		//     One of the values in the following table. d parameter Return value Zero,
-		//     or positive The positive square root of d. Negative System.Double.NaNEquals
-		//     System.Double.NaNSystem.Double.NaNEquals System.Double.PositiveInfinitySystem.Double.PositiveInfinity
+		/// <summary>
+		/// Returns the square root of a specified number.
+		/// </summary>
+		/// <param name="d"></param>
+		/// <returns></returns>
 		public static double Sqrt(double d)
 		{
 			return System.Math.Sqrt(d);
@@ -54,6 +47,13 @@
 			sinVal = Sin(a);
 
 			cosVal = Sqrt(1.0 - sinVal * sinVal);
+		}
+
+		public static T Clamp<T>(T value, T min, T max) where T : System.IComparable<T>
+		{
+			if(value.CompareTo(min) < 0) return min;
+			else if(value.CompareTo(max) > 0) return max;
+			else return value;
 		}
 	}
 }

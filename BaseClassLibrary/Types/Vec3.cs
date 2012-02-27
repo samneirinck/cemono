@@ -37,19 +37,21 @@ namespace CryEngine
         #region Methods
         public void Normalize()
         {
-            float length = Length;
-
-            if (length > 0)
-            {
-                X = X / length;
-                Y = Y / length;
-                Z = Z / length;
-            }
-            else
-                Zero();
+			this = this.Normalized;
         }
 
         public void Zero() { X = 0f; Y = 0f; Z = 0f; }
+
+		public Vec3 Normalized
+		{
+			get
+			{
+				if(Length > 0)
+					return new Vec3(X / Length, Y / Length, Z / Length);
+
+				return new Vec3();
+			}
+		}
 
         public float Length
         {
@@ -139,6 +141,20 @@ namespace CryEngine
         {
             return new Vec3(a.Y * b.Z - a.Z * b.Y, a.Z * b.X - a.X * b.Z, a.X * b.Y - a.Y * b.X);
         }
+
+		/// <summary>
+		/// Linearly interpolates from vector a to b using the value of control.
+		/// </summary>
+		/// <param name="a">The "from" vector.</param>
+		/// <param name="b">The "to" vector.</param>
+		/// <param name="control">The position between a and b that the function should return.</param>
+		/// <returns></returns>
+		public static Vec3 Lerp(Vec3 a, Vec3 b, float control)
+		{
+			control = Math.Clamp(control, 0, 1);
+			var leftControl = 1 - control;
+			return new Vec3(a.X * leftControl + b.X * control, a.Y * leftControl + b.Y * control, a.Z * leftControl + b.Z * control);
+		}
         #endregion
 
         #region Overrides
