@@ -32,6 +32,7 @@ class CCallbackHandler;
 class CScriptSystem
 	: public IMonoScriptSystem
 	, public IFileChangeListener
+	, public IGameFrameworkListener
 {
 	CRYINTERFACE_SIMPLE(IMonoScriptSystem);
 
@@ -63,6 +64,14 @@ public:
 	// IFileChangeMonitor
 	virtual void OnFileChange(const char* sFilename);
 	// ~IFileChangeMonitor
+
+	// ~IGameFrameworkListener	  	
+	virtual void OnPostUpdate(float fDeltaTime);  	
+	virtual void OnSaveGame(ISaveGame* pSaveGame) {} 	
+	virtual void OnLoadGame(ILoadGame* pLoadGame) {}  	
+	virtual void OnLevelEnd(const char* nextLevel) {}  	
+	virtual void OnActionEvent(const SActionEvent& event) {} 	
+	// ~IGameFrameworkListener
 
 	IMonoAssembly *GetDebugDatabaseCreator() { return m_pPdb2MdbAssembly; }
 

@@ -63,7 +63,7 @@ CScriptSystem::CScriptSystem()
 
 	string monoCmdOptions = "";
 
-	// Commandline switch -DEBUG makes the process connect to the debugging server. Warning: Failure to connect to a  debugging server WILL result in a crash.
+	// Commandline switch -DEBUG makes the process connect to the debugging server. Warning: Failure to connect to a	debugging server WILL result in a crash.
 	const ICmdLineArg* arg = gEnv->pSystem->GetICmdLine()->FindArg(eCLAT_Pre, "DEBUG");
 	if (arg != NULL)
 		monoCmdOptions.append("--debugger-agent=transport=dt_socket,address=127.0.0.1:65432 ");
@@ -127,7 +127,7 @@ CScriptSystem::~CScriptSystem()
 
 bool CScriptSystem::CompleteInit()
 {
-	CryLogAlways("    Initializing CryMono...");
+	CryLogAlways("		Initializing CryMono...");
 	
 	if (!InitializeDomain())
 		return false;
@@ -143,7 +143,7 @@ bool CScriptSystem::CompleteInit()
 
 	CryModuleMemoryInfo memInfo;
 	CryModuleGetMemoryInfo(&memInfo);
-	CryLogAlways("    Initializing CryMono done, MemUsage=%iKb", (memInfo.allocated + m_pCryBraryAssembly->GetCustomClass("CryStats", "CryEngine.Utils")->GetProperty("MemoryUsage")->Unbox<long>()) / 1024);
+	CryLogAlways("		Initializing CryMono done, MemUsage=%iKb", (memInfo.allocated + m_pCryBraryAssembly->GetCustomClass("CryStats", "CryEngine.Utils")->GetProperty("MemoryUsage")->Unbox<long>()) / 1024);
 
 	return true;
 }
@@ -166,11 +166,11 @@ bool CScriptSystem::Reload(bool initialLoad)
 		MonoObject *pException;
 		mono_domain_try_unload(m_pScriptDomain, &pException);
 
-		if(pException)  
-		{    	
+		if(pException)	
+		{			
 			CryLogAlways("[MonoWarning] An exception was raised during ScriptDomain unload:");
-			MonoMethod *pExceptionMethod = mono_method_desc_search_in_class(mono_method_desc_new("::ToString()", false),mono_get_exception_class());  	
-			MonoString *exceptionString = (MonoString *)mono_runtime_invoke(pExceptionMethod, pException, NULL, NULL);  	
+			MonoMethod *pExceptionMethod = mono_method_desc_search_in_class(mono_method_desc_new("::ToString()", false),mono_get_exception_class());		
+			MonoString *exceptionString = (MonoString *)mono_runtime_invoke(pExceptionMethod, pException, NULL, NULL);		
 			CryLogAlways(ToCryString((mono::string)exceptionString));
 		}
 
@@ -184,19 +184,19 @@ bool CScriptSystem::Reload(bool initialLoad)
 	if (!m_pCryBraryAssembly)
 		return false;
 
-	CryLogAlways("    Registering default scriptbinds...");
+	CryLogAlways("		Registering default scriptbinds...");
 	RegisterDefaultBindings();
 
-	CryLogAlways("    Initializing subsystems...");
+	CryLogAlways("		Initializing subsystems...");
 	InitializeSystems();
 
-	CryLogAlways("    Compiling scripts...");
+	CryLogAlways("		Compiling scripts...");
 	m_pScriptManager = m_pCryBraryAssembly->GetCustomClass("ScriptCompiler");
 	m_pScriptManager->CallMethod("Initialize");
 
 	if(m_AppDomainSerializer)
 	{
-		CryLogAlways("    Checking for dumped script data...");
+		CryLogAlways("		Checking for dumped script data...");
 		m_AppDomainSerializer->CallMethod("TrySetScriptData");
 	}
 
@@ -210,22 +210,24 @@ bool CScriptSystem::Reload(bool initialLoad)
 
 		for each(auto script in m_scripts)
 		{
-		  IMonoArray *pParams = CreateMonoArray(1);	  	
-		  pParams->Insert(script.second);
-		  if(IMonoObject *pScriptInstance = m_pScriptManager->CallMethod("GetScriptInstanceById", pParams))
-		  {
+			IMonoArray *pParams = CreateMonoArray(1);			
+			pParams->Insert(script.second);
+			if(IMonoObject *pScriptInstance = m_pScriptManager->CallMethod("GetScriptInstanceById", pParams))
+			{
 
 			mono::object monoObject = pScriptInstance->GetMonoObject();
 
 			MonoClass *pMonoClass = mono_object_get_class((MonoObject *)monoObject);
 			if(pMonoClass && mono_class_get_name(pMonoClass))
-			  static_cast<CScriptClass *>(script.first)->OnReload(pMonoClass, monoObject);
-		  }
+				static_cast<CScriptClass *>(script.first)->OnReload(pMonoClass, monoObject);
+			}
 
-		  SAFE_RELEASE(pParams);
+			SAFE_RELEASE(pParams);
 		}
 	
 	}
+
+	gEnv->pGameFramework->RegisterListener(this, "CryMono", eFLPriority_Game);
 
 	return true;
 }
@@ -294,6 +296,14 @@ bool CScriptSystem::InitializeSystems()
 	SAFE_RELEASE(pArray);
 
 	return true;
+}
+
+void CScriptSystem::OnPostUpdate(float fDeltaTime)
+{
+	IMonoArray *pArgs = CreateMonoArray(1);
+	pArgs->Insert(fDeltaTime);
+	m_pScriptManager->CallMethod("OnUpdate", pArgs);
+	SAFE_RELEASE(pArgs);
 }
 
 void CScriptSystem::OnFileChange(const char *sFilename)
