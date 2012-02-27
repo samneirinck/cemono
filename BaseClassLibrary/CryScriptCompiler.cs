@@ -92,10 +92,11 @@ namespace CryEngine
 			}
 
 			CryScript script = CompiledScripts.ElementAt(index);
-			//if (!script.Type.Implements(typeof(CryScriptInstance)))
-			//	return null;
 
 			NextScriptId++;
+
+			if (script.ScriptType == MonoScriptType.GameRules)
+				script.ScriptInstances = null;
 
 			if (script.ScriptInstances == null)
 				script.ScriptInstances = new List<CryScriptInstance>();
