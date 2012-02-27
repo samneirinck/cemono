@@ -120,7 +120,10 @@ namespace CryEngine
 
         public string name;
         public string description;
-        private string editType;
+
+#pragma warning disable 414
+		private string editType;
+#pragma warning restore 414
 
         public EntityPropertyType type 
         {

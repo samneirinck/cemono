@@ -459,6 +459,11 @@ namespace CryEngine
 			return false;
 		}
 
+		public override int GetHashCode()
+		{
+			return Type.GetHashCode();
+		}
+
 		#endregion
 	}
 
