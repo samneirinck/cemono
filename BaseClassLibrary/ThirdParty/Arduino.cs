@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.IO.Ports;
 
-/// <summary>
-/// CryENGINE/Arduino communication via C# serial ports.
-/// </summary>
 namespace CryEngine.Arduino
 {
 	/// <summary>

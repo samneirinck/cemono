@@ -15,9 +15,6 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Diagnostics;
 
-/// <summary>
-/// The main engine namespace, otherwise known as the CryENGINE3 Base Class Library.
-/// </summary>
 namespace CryEngine
 {
 	public static partial class ScriptCompiler
@@ -460,6 +457,11 @@ namespace CryEngine
 				return (CryScript)obj == this;
 
 			return false;
+		}
+
+		public override int GetHashCode()
+		{
+			return Type.GetHashCode();
 		}
 
 		#endregion

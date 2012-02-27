@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Reflection;
 
-/// <summary>
-/// Contains useful extension methods used within the BCL.
-/// </summary>
 namespace CryEngine.Extensions
 {
     public static class TypeExtensions

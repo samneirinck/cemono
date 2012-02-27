@@ -220,7 +220,7 @@ namespace CryEngine
 			return null;
 		}
 
-		public static int GetEntityScriptId(uint entityId, System.Type scriptType = null)
+		public static int GetEntityScriptId(EntityId entityId, System.Type scriptType = null)
 		{
 			var scripts = CompiledScripts.Where(script => (scriptType != null ? script.Type.Implements(scriptType) : true) && script.ScriptInstances != null);
 

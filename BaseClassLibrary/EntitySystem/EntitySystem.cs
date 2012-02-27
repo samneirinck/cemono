@@ -8,7 +8,7 @@ using System.Linq;
 namespace CryEngine
 {
     public partial class EntitySystem
-    {
+	{
 		/// <summary>
 		/// Spawns an entity with the specified parameters.
 		/// </summary>
@@ -16,12 +16,13 @@ namespace CryEngine
 		/// <param name="autoInit">Should the entity automatically be initialised?</param>
 		/// <returns></returns>
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern public static uint _SpawnEntity(EntitySpawnParams spawnParams, bool autoInit = true);
+		extern internal static uint _SpawnEntity(EntitySpawnParams spawnParams, bool autoInit = true);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern public static void _RemoveEntity(uint entityId);
+		extern internal static void _RemoveEntity(uint entityId);
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern public static bool _RegisterEntityClass(EntityRegisterParams registerParams, object[] properties);
+		extern internal static bool _RegisterEntityClass(EntityRegisterParams registerParams, object[] properties);
+
 		/// <summary>
 		/// Register a new entity type.
 		/// </summary>
@@ -50,12 +51,12 @@ namespace CryEngine
 		}
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern protected static uint _FindEntity(string name);
+        extern internal static uint _FindEntity(string name);
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern protected static object[] _GetEntitiesByClass(string className);
+		extern internal static object[] _GetEntitiesByClass(string className);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern protected static bool _EntityExists(uint entityId);
+		extern internal static bool _EntityExists(uint entityId);
 
 		/// <summary>
 		/// Get an entity by its unique ID.
@@ -64,7 +65,7 @@ namespace CryEngine
 		/// <returns>A reference to the entity.</returns>
 		/// <remarks>If the entity does not exist in the managed space, this function will attempt to find
 		/// a C++ entity with the specified ID></remarks>
-        public static StaticEntity GetEntity(uint entityId)
+		public static StaticEntity GetEntity(EntityId entityId)
         {
 			if (entityId == 0)
 				return null;

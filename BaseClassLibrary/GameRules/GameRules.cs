@@ -10,13 +10,13 @@ namespace CryEngine
 	public partial class GameRules
 	{
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern protected static uint _RevivePlayer(UInt32 playerId, Vec3 pos, Vec3 rot, int teamId, bool clearInventory);
+		extern internal static uint _RevivePlayer(UInt32 playerId, Vec3 pos, Vec3 rot, int teamId, bool clearInventory);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern protected static uint _SpawnPlayer(int channelId, string name, string className, Vec3 pos, Vec3 angles);
+		extern internal static uint _SpawnPlayer(int channelId, string name, string className, Vec3 pos, Vec3 angles);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static uint _GetPlayer();
 
-		public static void RevivePlayer(UInt32 playerId, Vec3 pos, Vec3 rot, int teamId = 0, bool clearInventory = true)
+		public static void RevivePlayer(EntityId playerId, Vec3 pos, Vec3 rot, int teamId = 0, bool clearInventory = true)
 		{
 			_RevivePlayer(playerId, pos, rot, teamId, clearInventory);
 		}
@@ -55,7 +55,7 @@ namespace CryEngine
 			return EntitySystem.GetEntity(_GetPlayer()) as T;
 		}
 
-		public static BasePlayer GetPlayer(uint playerId)
+		public static BasePlayer GetPlayer(EntityId playerId)
 		{
 			int scriptId = ScriptCompiler.GetEntityScriptId(playerId, typeof(BasePlayer));
 			if(scriptId != -1)
@@ -64,7 +64,7 @@ namespace CryEngine
 			return null;
 		}
 
-		public static T GetPlayer<T>(uint playerId) where T : BasePlayer
+		public static T GetPlayer<T>(EntityId playerId) where T : BasePlayer
 		{
 			return GetPlayer(playerId) as T;
 		}

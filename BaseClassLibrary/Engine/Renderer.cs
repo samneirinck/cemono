@@ -10,19 +10,49 @@ namespace CryEngine
 		// Change to protected once we've implemented properties etc.
 		#region ViewSystem
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern public static uint _CreateView();
+		extern internal static uint _CreateView();
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern public static void _RemoveView(uint viewId);
+		extern internal static void _RemoveView(uint viewId);
+
+		/*public static ViewId CreateView()
+		{
+			return _CreateView();
+		}
+
+		public static void RemoveView(ViewId viewId)
+		{
+			_RemoveView(viewId);
+		}*/
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern public static uint _GetActiveView();
+		extern internal static uint _GetActiveView();
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern public static void _SetActiveView(uint viewId);
+		extern internal static void _SetActiveView(uint viewId);
+
+		/*public static ViewId GetActiveView()
+		{
+			return _GetActiveView();
+		}
+
+		public static void SetActiveView(ViewId viewId)
+		{
+			_SetActiveView(viewId);
+		}*/
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern public static ViewParams _GetViewParams(uint viewId);
+		extern internal static ViewParams _GetViewParams(uint viewId);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern public static void _SetViewParams(uint viewId, ViewParams cam);
+		extern internal static void _SetViewParams(uint viewId, ViewParams cam);
+
+		/*public static ViewSettings GetViewParams(ViewId viewId)
+		{
+			return new ViewSettings(_GetViewParams(viewId));
+		}
+
+		public static void SetViewParams(ViewId viewId, ViewSettings viewParams)
+		{
+			_SetViewParams(viewId, viewParams._params);
+		}*/
 		#endregion
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
@@ -41,6 +71,21 @@ namespace CryEngine
 		extern internal static void _DestroyRenderTarget(int id);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static void _SetRenderTarget(int id);
+
+		public static float FieldOfView
+		{
+			get
+			{
+				return _GetViewParams(_GetActiveView()).fov;
+			}
+			set
+			{
+				var view = _GetActiveView();
+				var viewParams = _GetViewParams(view);
+				viewParams.fov = (float)Math.DegToRad(value);
+				_SetViewParams(view, viewParams);
+			}
+		}
 
 		/// <summary>
 		/// The width of the screen in pixels.
@@ -91,7 +136,52 @@ namespace CryEngine
 		}
 	}
 
-	public struct ViewParams
+	/*public struct ViewId
+	{
+		internal uint _value;
+
+		public ViewId(int id)
+		{
+			if(id >= 0)
+				_value = (uint)id;
+			else
+				throw new System.ArgumentException("Tried to set a negative view ID");
+		}
+
+		public static implicit operator int(ViewId id)
+		{
+			return (int)id._value;
+		}
+
+		public static implicit operator ViewId(int value)
+		{
+			return new ViewId(value);
+		}
+
+		[System.CLSCompliant(false)]
+		public static implicit operator uint(ViewId id)
+		{
+			return id._value;
+		}
+
+		[System.CLSCompliant(false)]
+		public static implicit operator ViewId(uint value)
+		{
+			return new ViewId { _value = value };
+		}
+	}
+
+	public class ViewSettings
+	{
+		internal ViewParams _params;
+
+		internal ViewSettings(ViewParams viewParams)
+		{
+			_params = viewParams;
+		}
+	}*/
+
+	internal struct ViewParams
 	{
 		/// <summary>
 		/// view position
@@ -162,7 +252,7 @@ namespace CryEngine
 		public Vec3 blendPosOffset;
 		public Quat blendRotOffset;
 		public float blendFOVOffset;
-		public bool	justActivated;
+		public bool justActivated;
 
 		private byte viewIDLast;
 		private Vec3 positionLast;
