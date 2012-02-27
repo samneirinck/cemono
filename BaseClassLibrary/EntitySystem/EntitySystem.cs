@@ -9,9 +9,6 @@ namespace CryEngine
 {
     public partial class EntitySystem
     {
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern public static void _EnableUpdates();
-
 		/// <summary>
 		/// Spawns an entity with the specified parameters.
 		/// </summary>

@@ -38,6 +38,7 @@ class CScriptSystem
 	CRYGENERATE_SINGLETONCLASS(CScriptSystem, "CryMono", 0xc37b8ad5d62f47de, 0xa8debe525ff0fc8a)
 
 	typedef std::map<const void *, const char *> TMethodBindings;
+	typedef std::map<IMonoClass *, int> TScripts;
 
 public:
 	// IMonoScriptSystem
@@ -45,10 +46,13 @@ public:
 
 	virtual void Release() override { delete this; }
 
-	virtual IMonoScriptManager *GetScriptManager() override { return m_pScriptManager; }
 	virtual IMonoEntityManager *GetEntityManager() const override { return m_pEntityManager; }
 
 	virtual void RegisterMethodBinding(const void *method, const char *fullMethodName) override;
+
+	virtual int InstantiateScript(EMonoScriptType scriptType, const char *scriptName, IMonoArray *pConstructorParameters = nullptr) override;  	
+	virtual IMonoClass *GetScriptById(int id) override;
+	virtual void RemoveScriptInstance(int id) override;
 	
 	virtual IMonoAssembly *GetCryBraryAssembly() override { return m_pCryBraryAssembly; }
 	virtual IMonoAssembly *LoadAssembly(const char *assemblyPath) override;
@@ -75,7 +79,14 @@ protected:
 
 	MonoDomain *m_pMonoDomain;
 
-	IMonoScriptManager *m_pScriptManager;
+	// The app domain in which we load scripts into. Killed and reloaded on script reload.
+	MonoDomain *m_pScriptDomain;
+
+	IMonoClass *m_pScriptManager;
+	IMonoClass *m_AppDomainSerializer;
+
+	TScripts m_scripts;
+
 	IMonoEntityManager *m_pEntityManager;
 
 	IMonoConverter *m_pConverter;

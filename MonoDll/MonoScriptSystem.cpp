@@ -54,6 +54,7 @@ CScriptSystem::CScriptSystem()
 	, m_pCallbackHandler(NULL)
 	, m_pPdb2MdbAssembly(NULL)
 	, m_pScriptManager(NULL)
+	, m_AppDomainSerializer(NULL)
 {
 	CryLogAlways("Initializing Mono Script System");
 
@@ -107,6 +108,23 @@ CScriptSystem::~CScriptSystem()
 	gEnv->pMonoScriptSystem = NULL;
 }
 
+#define REGISTER_GAME_OBJECT_EXTENSION(framework, name)\
+	{\
+		struct C##name##Creator : public IGameObjectExtensionCreatorBase\
+		{\
+		C##name *Create()\
+			{\
+			return new C##name();\
+			}\
+			void GetGameObjectExtensionRMIData( void ** ppRMI, size_t * nCount )\
+			{\
+			C##name::GetGameObjectExtensionRMIData( ppRMI, nCount );\
+			}\
+		};\
+		static C##name##Creator _creator;\
+		framework->GetIGameObjectSystem()->RegisterExtension(#name, &_creator, NULL);\
+	}
+
 bool CScriptSystem::CompleteInit()
 {
 	CryLogAlways("    Initializing CryMono...");
@@ -117,8 +135,8 @@ bool CScriptSystem::CompleteInit()
 #ifndef _RELEASE
 	m_pPdb2MdbAssembly = new CScriptAssembly(PathUtils::GetMonoPath() + "bin\\pdb2mdb.dll");
 #endif
-
-	REGISTER_FACTORY(gEnv->pGameFramework, "ScriptManager", CScriptManager, false);
+	
+	REGISTER_GAME_OBJECT_EXTENSION(gEnv->pGameFramework, ScriptManager);
 
 	if(!Reload(true))
 		return false;
@@ -137,21 +155,30 @@ bool CScriptSystem::Reload(bool initialLoad)
 	{
 		CryLogAlways("C# modifications detected on disk, initializing CryBrary reload");
 
-		EntityId id = m_pScriptManager->GetEntityId();
-		SAFE_RELEASE(m_pScriptManager);
-		gEnv->pEntitySystem->RemoveEntity(id, true);
+		 // Force dump of instance data. 	
+		m_AppDomainSerializer = m_pCryBraryAssembly->GetCustomClass("AppDomainSerializer", "CryEngine.Utils");
+		m_AppDomainSerializer->CallMethod("DumpScriptData");
+ 	
+		mono_domain_set(mono_get_root_domain(), false);
+
+		mono_domain_finalize(m_pScriptDomain, -1);
+
+		MonoObject *pException;
+		mono_domain_try_unload(m_pScriptDomain, &pException);
+
+		if(pException)  
+		{    	
+			CryLogAlways("[MonoWarning] An exception was raised during ScriptDomain unload:");
+			MonoMethod *pExceptionMethod = mono_method_desc_search_in_class(mono_method_desc_new("::ToString()", false),mono_get_exception_class());  	
+			MonoString *exceptionString = (MonoString *)mono_runtime_invoke(pExceptionMethod, pException, NULL, NULL);  	
+			CryLogAlways(ToCryString((mono::string)exceptionString));
+		}
+
+		m_scripts.clear();
 	}
 
-	SEntitySpawnParams params;
-	params.pClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass("Default");
-	params.nFlags = ENTITY_FLAG_SERVER_ONLY;
-
-	if(auto pEntity = gEnv->pEntitySystem->SpawnEntity(params))
-	{
-		IGameObject *pGameObject = gEnv->pGameFramework->GetIGameObjectSystem()->CreateGameObjectForEntity(pEntity->GetId());
-
-		m_pScriptManager = static_cast<IMonoScriptManager *>(pGameObject->AcquireExtension("ScriptManager"));
-	}
+	m_pScriptDomain = mono_domain_create_appdomain("ScriptDomain", NULL);
+	mono_domain_set(m_pScriptDomain, false);
 
 	m_pCryBraryAssembly = LoadAssembly(PathUtils::GetBinaryPath() + "CryBrary.dll");
 	if (!m_pCryBraryAssembly)
@@ -163,11 +190,42 @@ bool CScriptSystem::Reload(bool initialLoad)
 	CryLogAlways("    Initializing subsystems...");
 	InitializeSystems();
 
-	static_cast<CScriptManager *>(m_pScriptManager)->CompileScripts();
+	CryLogAlways("    Compiling scripts...");
+	m_pScriptManager = m_pCryBraryAssembly->GetCustomClass("ScriptCompiler");
+	m_pScriptManager->CallMethod("Initialize");
+
+	if(m_AppDomainSerializer)
+	{
+		CryLogAlways("    Checking for dumped script data...");
+		m_AppDomainSerializer->CallMethod("TrySetScriptData");
+	}
 
 	// Nodes won't get recompiled if we forget this.
 	if(!initialLoad)
+	{
+		//PostInit();
 		GetFlowManager()->Reset();
+
+		m_pCryBraryAssembly->GetCustomClass("AppDomainSerializer", "CryEngine.Utils")->CallMethod("TrySetScriptData");
+
+		for each(auto script in m_scripts)
+		{
+		  IMonoArray *pParams = CreateMonoArray(1);	  	
+		  pParams->Insert(script.second);
+		  if(IMonoObject *pScriptInstance = m_pScriptManager->CallMethod("GetScriptInstanceById", pParams))
+		  {
+
+			mono::object monoObject = pScriptInstance->GetMonoObject();
+
+			MonoClass *pMonoClass = mono_object_get_class((MonoObject *)monoObject);
+			if(pMonoClass && mono_class_get_name(pMonoClass))
+			  static_cast<CScriptClass *>(script.first)->OnReload(pMonoClass, monoObject);
+		  }
+
+		  SAFE_RELEASE(pParams);
+		}
+	
+	}
 
 	return true;
 }
@@ -253,6 +311,74 @@ void CScriptSystem::RegisterMethodBinding(const void *method, const char *fullMe
 		m_methodBindings.insert(TMethodBindings::value_type(method, fullMethodName));
 	else
 		mono_add_internal_call(fullMethodName, method);
+}
+
+int CScriptSystem::InstantiateScript(EMonoScriptType scriptType, const char *scriptName, IMonoArray *pConstructorParameters)
+{
+	if(scriptType==EMonoScriptType_GameRules)
+	{
+		IMonoClass *pClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("CryNetwork");
+		IMonoArray *pArray = CreateMonoArray(3);
+		pArray->Insert(gEnv->bMultiplayer);
+		pArray->Insert(gEnv->IsClient());
+		pArray->Insert(gEnv->bServer);
+		pClass->CallMethod("InitializeNetwork", pArray, true);
+		SAFE_RELEASE(pArray);
+		SAFE_RELEASE(pClass);
+	}
+
+	IMonoArray *pArgs = CreateMonoArray(2);
+	pArgs->Insert(scriptName);
+	pArgs->Insert(pConstructorParameters);
+
+	int scriptId = -1;
+	if(IMonoObject *pScriptInstance = m_pScriptManager->CallMethod("InstantiateScript", pArgs))
+	{
+		IMonoClass *pScript = pScriptInstance->Unbox<IMonoClass *>();
+		scriptId = pScript->GetScriptId();
+		m_scripts.insert(TScripts::value_type(pScript, scriptId));
+	}
+		
+	SAFE_RELEASE(pArgs);
+	
+	return scriptId;
+}
+
+void CScriptSystem::RemoveScriptInstance(int id)
+{
+	if(id==-1)
+		return;
+
+	for(TScripts::iterator it=m_scripts.begin(); it != m_scripts.end(); ++it)
+	{
+		if((*it).second==id)
+		{
+			IMonoArray *pArgs = CreateMonoArray(2);
+			pArgs->Insert(id);
+			pArgs->Insert((*it).first->GetName());
+
+			m_pScriptManager->CallMethod("RemoveInstance", pArgs);
+			SAFE_RELEASE(pArgs);
+
+			m_scripts.erase(it);
+
+			break;
+		}
+	}
+}
+
+IMonoClass *CScriptSystem::GetScriptById(int id)
+{
+	if(id==-1)
+		return NULL;
+
+	for(TScripts::iterator it=m_scripts.begin(); it != m_scripts.end(); ++it)
+	{
+		if((*it).second==id)
+			return (*it).first;
+	}
+
+	return NULL;
 }
 
 IMonoAssembly *CScriptSystem::LoadAssembly(const char *assemblyPath)

@@ -27,7 +27,7 @@ CFlowNode::CFlowNode(SActivationInfo *pActInfo, bool isEntityClass)
 
 CFlowNode::~CFlowNode()
 {
-	gEnv->pMonoScriptSystem->GetScriptManager()->RemoveScriptInstance(m_scriptId);
+	gEnv->pMonoScriptSystem->RemoveScriptInstance(m_scriptId);
 
 	 static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager()->UnregisterFlowNode(m_scriptId);
 }
@@ -54,7 +54,7 @@ bool CFlowNode::InstantiateScript(const char *nodeName)
 		next = fullTypeName.Tokenize(":", curPos);
 	}
 
-	m_scriptId = gEnv->pMonoScriptSystem->GetScriptManager()->InstantiateScript(EMonoScriptType_FlowNode, typeName);
+	m_scriptId = gEnv->pMonoScriptSystem->InstantiateScript(EMonoScriptType_FlowNode, typeName);
 	if(m_scriptId!=-1)
 		static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager()->RegisterFlowNode(this, m_scriptId);
 
@@ -147,7 +147,7 @@ void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 
 				if(entityScriptId!=m_scriptId && entityScriptId!=0)
 				{
-					gEnv->pMonoScriptSystem->GetScriptManager()->RemoveScriptInstance(m_scriptId);
+					gEnv->pMonoScriptSystem->RemoveScriptInstance(m_scriptId);
 					m_scriptId = entityScriptId;
 				}
 			}
