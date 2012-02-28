@@ -139,6 +139,9 @@ bool CScriptSystem::CompleteInit()
 	
 	REGISTER_GAME_OBJECT_EXTENSION(gEnv->pGameFramework, ScriptManager);
 
+	CryLogAlways("		Registering default scriptbinds...");
+	RegisterDefaultBindings();
+
 	if(!Reload(true))
 		return false;
 
@@ -186,15 +189,15 @@ bool CScriptSystem::Reload(bool initialLoad)
 
 	m_AppDomainSerializer = m_pCryBraryAssembly->GetCustomClass("AppDomainSerializer", "CryEngine.Utils");
 
-	CryLogAlways("		Registering default scriptbinds...");
-	RegisterDefaultBindings();
-
 	CryLogAlways("		Initializing subsystems...");
 	InitializeSystems();
 
 	CryLogAlways("		Compiling scripts...");
 	m_pScriptManager = m_pCryBraryAssembly->GetCustomClass("ScriptCompiler");
 	m_pScriptManager->CallMethod("Initialize");
+
+
+	m_pInput->Reset();
 
 	// Nodes won't get recompiled if we forget this.
 	if(!initialLoad)

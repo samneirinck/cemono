@@ -33,6 +33,8 @@ public:
 	virtual void OnAction( const ActionId& action, int activationMode, float value );
 	// ~IActionListener
 
+	void Reset();
+
 private:
 	static void RegisterAction(mono::string);
 
