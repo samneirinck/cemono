@@ -123,7 +123,7 @@ namespace CryEngine.Utils
 			if (value == null)
 				return;
 
-			if (ObjectReferences.Contains(value))
+			if (ObjectReferences.Contains(value) && ObjectReferences.IndexOf(value).GetType()==value.GetType())
 			{
 				writer.WriteStartElement("Field");
 				writer.WriteAttributeString("Name", fieldInfo.Name);
