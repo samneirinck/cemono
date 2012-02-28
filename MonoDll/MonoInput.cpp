@@ -14,8 +14,6 @@ CInput::CInput()
 	REGISTER_METHOD(RegisterAction);
 
 	gEnv->pGameFramework->GetIActionMapManager()->AddExtraActionListener(this);
-
-	m_pClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("InputSystem");
 }
 
 CInput::~CInput()
@@ -35,7 +33,7 @@ bool CInput::OnActionTriggered(EntityId entityId, const ActionId& actionId, int 
 	pParams->Insert(activationMode);
 	pParams->Insert(value);
 
-	m_pClass->CallMethod("OnActionTriggered", pParams, true);
+	gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("InputSystem")->CallMethod("OnActionTriggered", pParams, true);
 	SAFE_RELEASE(pParams);
 
 	return false;

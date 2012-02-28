@@ -26,41 +26,75 @@ namespace CryEngine.Utils
 			using (XmlWriter writer = XmlWriter.Create(Path.Combine(PathUtils.GetRootFolder(), "Temp", "MonoScriptData.xml"), xmlSettings))
 			{
 				writer.WriteStartDocument();
-				writer.WriteStartElement("Types");
-				
-				foreach (var script in ScriptCompiler.CompiledScripts)
+
+				writer.WriteStartElement("ScriptData");
+
 				{
-					if (script.ScriptInstances != null)
+					writer.WriteStartElement("Types");
+
+					foreach (var script in ScriptCompiler.CompiledScripts)
 					{
-						writer.WriteStartElement("Type");
-						writer.WriteAttributeString("Name", script.className);
-
-						foreach (var scriptInstance in script.ScriptInstances)
+						if (script.ScriptInstances != null)
 						{
-							System.Type type = scriptInstance.GetType();
+							writer.WriteStartElement("Type");
+							writer.WriteAttributeString("Name", script.className);
 
-							writer.WriteStartElement("Instance");
+							foreach (var scriptInstance in script.ScriptInstances)
+							{
+								System.Type type = scriptInstance.GetType();
 
-							// Just a tiiiiiny bit hardcoded.
-							int scriptId = System.Convert.ToInt32(type.GetProperty("ScriptId").GetValue(scriptInstance, null));
-							writer.WriteAttributeString("Id", scriptId.ToString());
+								writer.WriteStartElement("Instance");
 
-							writer.WriteAttributeString("ReferenceId", ObjectReferences.Count.ToString());
-							ObjectReferences.Add(scriptInstance);
+								// Just a tiiiiiny bit hardcoded.
+								int scriptId = System.Convert.ToInt32(type.GetProperty("ScriptId").GetValue(scriptInstance, null));
+								writer.WriteAttributeString("Id", scriptId.ToString());
 
-							SerializeTypeToXml(scriptInstance, writer);
+								writer.WriteAttributeString("ReferenceId", ObjectReferences.Count.ToString());
+								ObjectReferences.Add(scriptInstance);
+
+								SerializeTypeToXml(scriptInstance, writer);
+
+								writer.WriteEndElement();
+							}
 
 							writer.WriteEndElement();
 						}
-
-						writer.WriteEndElement();
 					}
+
+					writer.WriteEndElement();
+				}
+
+				{
+					writer.WriteStartElement("Subsystems");
+
+					WriteSubsystem(typeof(EntitySystem), writer);
+					WriteSubsystem(typeof(InputSystem), writer);
+					WriteSubsystem(typeof(GameRules), writer);
+					WriteSubsystem(typeof(Console), writer);
+
+					writer.WriteEndElement();
 				}
 
 				writer.WriteEndElement();
+
 				writer.WriteEndDocument();
 			}
 
+		}
+
+		static void WriteSubsystem(System.Type type, XmlWriter writer)
+		{
+			var fields = type.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+			if (fields.Length > 0)
+			{
+				writer.WriteStartElement("System");
+				writer.WriteAttributeString("Name", type.FullName);
+
+				foreach (var fieldInfo in fields)
+					WriteField(fieldInfo.GetValue(null), fieldInfo, writer);
+
+				writer.WriteEndElement();
+			}
 		}
 
 		/// <summary>
@@ -210,7 +244,9 @@ namespace CryEngine.Utils
 				return;
 
 			XDocument scriptData = XDocument.Load(filePath);
-			foreach (var type in scriptData.Descendants("Type"))
+
+			var scriptDataElement = scriptData.Element("ScriptData");
+			foreach (var type in scriptDataElement.Element("Types").Elements("Type"))
 			{
 				CryScript script = ScriptCompiler.CompiledScripts.Where(Script => Script.className.Equals(type.Attribute("Name").Value)).FirstOrDefault();
 
@@ -240,13 +276,26 @@ namespace CryEngine.Utils
 				ScriptCompiler.CompiledScripts[scriptIndex] = script;
 			}
 
+			foreach (var subSystem in scriptDataElement.Elements("Subsystems").Elements("System"))
+			{
+				Console.LogAlways(subSystem.Attribute("Name").Value);
+				var type = System.Type.GetType(subSystem.Attribute("Name").Value);
+				if (type == null)
+					Console.LogAlways("eek");
+
+
+				ProcessFields(null, subSystem.Elements("Field"), type); 
+			}
+
 			File.Delete(filePath);
 		}
 
-		public static void ProcessFields(object instance, IEnumerable<XElement> fields)
+		public static void ProcessFields(object instance, IEnumerable<XElement> fields, System.Type type = null /* used for static types */)
 		{
 			if (fields == null || fields.Count() < 1)
 				return;
+
+			var instanceType = type!=null ? type : instance.GetType();
 
 			foreach (var field in fields)
 			{
@@ -254,7 +303,7 @@ namespace CryEngine.Utils
 				if (fieldReferenceAttribute != null)
 				{
 					FieldInfo fieldInfo = null;
-					var baseType = instance.GetType();
+					var baseType = instanceType;
 					while (fieldInfo == null && baseType != null)
 					{
 						fieldInfo = baseType.GetField(field.Attribute("Name").Value, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
@@ -267,7 +316,7 @@ namespace CryEngine.Utils
 				else if(!field.Attribute("Name").Value.Equals("inputMethods")) // this needs to be solved asap
 				{
 					FieldInfo fieldInfo = null;
-					var baseType = instance.GetType();
+					var baseType = instanceType;
 					while (fieldInfo == null && baseType != null)
 					{
 						fieldInfo = baseType.GetField(field.Attribute("Name").Value, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);

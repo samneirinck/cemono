@@ -28,6 +28,7 @@ struct IMonoEntityManager;
 class CTester;
 class CFlowManager;
 class CCallbackHandler;
+class CInput;
 
 class CScriptSystem
 	: public IMonoScriptSystem
@@ -97,12 +98,12 @@ protected:
 	TScripts m_scripts;
 
 	IMonoEntityManager *m_pEntityManager;
+	CFlowManager *m_pFlowManager;
+	CInput *m_pInput;
+	CTester *m_pTester;
+	CCallbackHandler *m_pCallbackHandler;
 
 	IMonoConverter *m_pConverter;
-
-	CFlowManager *m_pFlowManager;
-	CCallbackHandler *m_pCallbackHandler;
-	CTester *m_pTester;
 
 	IMonoAssembly *m_pCryBraryAssembly;
 	IMonoAssembly *m_pPdb2MdbAssembly;

@@ -55,6 +55,7 @@ CScriptSystem::CScriptSystem()
 	, m_pPdb2MdbAssembly(NULL)
 	, m_pScriptManager(NULL)
 	, m_AppDomainSerializer(NULL)
+	, m_pInput(NULL)
 {
 	CryLogAlways("Initializing Mono Script System");
 
@@ -259,13 +260,13 @@ void CScriptSystem::RegisterDefaultBindings()
 	RegisterBinding(CScriptBind_Inventory);
 	RegisterBinding(CScriptBind_GameRules);
 	RegisterBinding(CScriptBind_StaticEntity);
-	RegisterBinding(CInput);
 	RegisterBinding(CTester);
 
 #define RegisterBindingAndSet(var, T) RegisterBinding(T); var = (T *)m_localScriptBinds.back();
 	RegisterBindingAndSet(m_pCallbackHandler, CCallbackHandler);
 	RegisterBindingAndSet(m_pEntityManager, CEntityManager);
 	RegisterBindingAndSet(m_pFlowManager, CFlowManager);
+	RegisterBindingAndSet(m_pInput, CInput);
 
 #ifndef _RELEASE
 	RegisterBindingAndSet(m_pTester, CTester);
