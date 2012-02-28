@@ -306,8 +306,6 @@ namespace CryEngine.Utils
 
 			foreach (var field in fields)
 			{
-				Console.LogAlways(field.Attribute("Name").Value);
-
 				var fieldReferenceAttribute = field.Attribute("ReferencesId");
 				if (fieldReferenceAttribute != null)
 				{
