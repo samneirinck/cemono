@@ -28,6 +28,9 @@ namespace CryEngine
 
 		public static void OnActionTriggered(string action, ActionActivationMode activationMode, float value)
 		{
+			if (inputActionDelegates == null)
+				inputActionDelegates = new Dictionary<string, InputActionDelegate>();
+
 			if (inputActionDelegates.ContainsKey(action))
 				inputActionDelegates[action](activationMode, value);
 			else
