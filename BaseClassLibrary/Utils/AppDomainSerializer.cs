@@ -120,6 +120,9 @@ namespace CryEngine.Utils
 		{
 			string fieldName = fieldInfo.Name;
 
+			if (value == null)
+				return;
+
 			if (ObjectReferences.Contains(value))
 			{
 				writer.WriteStartElement("Field");
@@ -127,7 +130,7 @@ namespace CryEngine.Utils
 				writer.WriteAttributeString("ReferencesId", ObjectReferences.IndexOf(value).ToString());
 				writer.WriteEndElement();
 			}
-			else if (value != null && !fieldName.Equals("<ScriptId>k__BackingField") && !fieldName.Equals("m_value"))
+			else if (!fieldName.Equals("<ScriptId>k__BackingField") && !fieldName.Equals("m_value"))
 			{
 				if (fieldInfo.FieldType.Implements(typeof(IList)))
 				{
@@ -278,11 +281,7 @@ namespace CryEngine.Utils
 
 			foreach (var subSystem in scriptDataElement.Elements("Subsystems").Elements("System"))
 			{
-				Console.LogAlways(subSystem.Attribute("Name").Value);
 				var type = System.Type.GetType(subSystem.Attribute("Name").Value);
-				if (type == null)
-					Console.LogAlways("eek");
-
 
 				ProcessFields(null, subSystem.Elements("Field"), type); 
 			}
@@ -307,6 +306,8 @@ namespace CryEngine.Utils
 
 			foreach (var field in fields)
 			{
+				Console.LogAlways(field.Attribute("Name").Value);
+
 				var fieldReferenceAttribute = field.Attribute("ReferencesId");
 				if (fieldReferenceAttribute != null)
 				{
@@ -314,7 +315,7 @@ namespace CryEngine.Utils
 					var baseType = instanceType;
 					while (fieldInfo == null && baseType != null)
 					{
-						fieldInfo = baseType.GetField(field.Attribute("Name").Value, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+						fieldInfo = baseType.GetField(field.Attribute("Name").Value, instance == null && type != null ? BindingFlags.Static : BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 
 						baseType = baseType.BaseType;
 					}
@@ -327,7 +328,7 @@ namespace CryEngine.Utils
 					var baseType = instanceType;
 					while (fieldInfo == null && baseType != null)
 					{
-						fieldInfo = baseType.GetField(field.Attribute("Name").Value, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+						fieldInfo = baseType.GetField(field.Attribute("Name").Value, instance == null && type != null ? BindingFlags.Static : BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 
 						baseType = baseType.BaseType;
 					}
