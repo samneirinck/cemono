@@ -44,6 +44,8 @@ class CScriptSystem
 
 public:
 	// IMonoScriptSystem
+	virtual void PostInit() override;
+
 	virtual bool Reload(bool initialLoad = false) override;
 
 	virtual void Release() override { delete this; }

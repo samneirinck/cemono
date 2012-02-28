@@ -152,6 +152,13 @@ bool CScriptSystem::CompleteInit()
 	return true;
 }
 
+void CScriptSystem::PostInit()
+{
+	GetFlowManager()->Reset();
+
+	m_pScriptManager->CallMethod("PostInit");
+}
+
 bool CScriptSystem::Reload(bool initialLoad)
 {
 	// Store the state of current instances to apply them to the reloaded scripts at the end.
@@ -202,8 +209,7 @@ bool CScriptSystem::Reload(bool initialLoad)
 	// Nodes won't get recompiled if we forget this.
 	if(!initialLoad)
 	{
-		//PostInit();
-		GetFlowManager()->Reset();
+		PostInit();
 
 		m_AppDomainSerializer->CallMethod("TrySetScriptData");
 
