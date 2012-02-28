@@ -287,6 +287,11 @@ namespace CryEngine.Utils
 				ProcessFields(null, subSystem.Elements("Field"), type); 
 			}
 
+			foreach (var scriptInstance in ReloadedScriptInstances)
+				scriptInstance.OnPostScriptReload();
+
+			ReloadedScriptInstances = null;
+
 			File.Delete(filePath);
 		}
 
@@ -294,6 +299,9 @@ namespace CryEngine.Utils
 		{
 			if (fields == null || fields.Count() < 1)
 				return;
+
+			if (instance as CryScriptInstance != null)
+				ReloadedScriptInstances.Add(instance as CryScriptInstance);
 
 			var instanceType = type!=null ? type : instance.GetType();
 
@@ -372,6 +380,7 @@ namespace CryEngine.Utils
 								if (fieldInfo.FieldType.GetConstructor(System.Type.EmptyTypes) != null || fieldInfo.FieldType.IsValueType)
 								{
 									object subFieldInstance = System.Activator.CreateInstance(fieldInfo.FieldType);
+
 									ProcessFields(subFieldInstance, subFields);
 
 									fieldInfo.SetValue(instance, subFieldInstance);
@@ -391,6 +400,8 @@ namespace CryEngine.Utils
 				}
 			}
 		}
+
+		static List<CryScriptInstance> ReloadedScriptInstances = new List<CryScriptInstance>();
 
 		static object ConvertTypeValue(string type, string value, object parent)
 		{
