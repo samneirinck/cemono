@@ -37,6 +37,27 @@ namespace CryEngine
 				Console.LogAlways("Attempted to invoke unregistered action {0}", action);
 		}
 
+		public enum MouseEvent
+		{
+			Move,
+
+			LeftButtonDown,
+			LeftButtonUp,
+			LeftButtonDoubleClick,
+			RightButtonDown,
+			RightButtonUp,
+			RightButtonDoubleClick,
+			MiddleButtonDown,
+			MiddleButtonUp,
+			MiddleButtonDoubleClick,
+
+			Wheel,
+		}
+
+		public static void OnMouseEvent(int X, int Y, MouseEvent mouseEvent, int wheelDelta)
+		{
+		}
+
 		private static Dictionary<string, InputActionDelegate> inputActionDelegates;
 	}
 

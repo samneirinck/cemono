@@ -15,11 +15,13 @@ CInput::CInput()
 	REGISTER_METHOD(RegisterAction);
 
 	gEnv->pGameFramework->GetIActionMapManager()->AddExtraActionListener(this);
+	gEnv->pHardwareMouse->AddListener(this);
 }
 
 CInput::~CInput()
 {
 	gEnv->pGameFramework->GetIActionMapManager()->RemoveExtraActionListener(this);
+	gEnv->pHardwareMouse->RemoveListener(this);
 }
 
 void CInput::Reset()
@@ -43,6 +45,18 @@ bool CInput::OnActionTriggered(EntityId entityId, const ActionId& actionId, int 
 	SAFE_RELEASE(pParams);
 
 	return false;
+}
+
+void CInput::OnHardwareMouseEvent(int iX,int iY,EHARDWAREMOUSEEVENT eHardwareMouseEvent, int wheelDelta)
+{
+	IMonoArray *pParams = CreateMonoArray(4);
+	pParams->Insert(iX);
+	pParams->Insert(iY);
+	pParams->Insert(eHardwareMouseEvent);
+	pParams->Insert(wheelDelta);
+
+	m_pClass->CallMethod("OnMouseEvent", pParams, true);
+	SAFE_RELEASE(pParams);
 }
 
 // Scriptbinds

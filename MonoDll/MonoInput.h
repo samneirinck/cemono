@@ -11,6 +11,7 @@
 #include <IMonoScriptBind.h>
 
 #include <IActionMapManager.h>
+#include <IHardwareMouse.h>
 
 #include "MonoCommon.h"
 
@@ -18,8 +19,9 @@ struct IMonoClass;
 
 class CInput 
 	: public IMonoInput
-	, public IActionListener
 	, public IMonoScriptBind
+	, public IActionListener
+	, public IHardwareMouseEventListener
 {
 public:
 	CInput();
@@ -32,6 +34,10 @@ public:
 	// IActionListener
 	virtual void OnAction( const ActionId& action, int activationMode, float value );
 	// ~IActionListener
+	
+	// IHardwareMouseEventListener
+	virtual void OnHardwareMouseEvent(int iX,int iY,EHARDWAREMOUSEEVENT eHardwareMouseEvent, int wheelDelta = 0);
+	// ~IHardwareMouseEventListener
 
 	void Reset();
 
