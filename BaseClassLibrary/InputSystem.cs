@@ -24,44 +24,52 @@ namespace CryEngine
 				Console.LogAlways("[Warning] Attempted to register duplicate input action {0}", actionName);
 		}
 
-		public delegate void InputActionDelegate(ActionActivationMode activationMode, float value);
+		public delegate void InputActionDelegate(KeyEvent keyEvent, float value);
 
-		public static void OnActionTriggered(string action, ActionActivationMode activationMode, float value)
+		public static void OnActionTriggered(string action, KeyEvent keyEvent, float value)
 		{
-			if (inputActionDelegates == null)
-				inputActionDelegates = new Dictionary<string, InputActionDelegate>();
-
 			if (inputActionDelegates.ContainsKey(action))
-				inputActionDelegates[action](activationMode, value);
+				inputActionDelegates[action](keyEvent, value);
 			else
 				Console.LogAlways("Attempted to invoke unregistered action {0}", action);
 		}
 
-		public enum MouseEvent
+		private static Dictionary<string, InputActionDelegate> inputActionDelegates = new Dictionary<string, InputActionDelegate>();
+
+		public static void RegisterMouseListener(MouseEventDelegate eventDelegate)
 		{
-			Move,
-
-			LeftButtonDown,
-			LeftButtonUp,
-			LeftButtonDoubleClick,
-			RightButtonDown,
-			RightButtonUp,
-			RightButtonDoubleClick,
-			MiddleButtonDown,
-			MiddleButtonUp,
-			MiddleButtonDoubleClick,
-
-			Wheel,
+			mouseEventDelegates.Add(eventDelegate);
 		}
+
+		public delegate void MouseEventDelegate(int X, int Y, MouseEvent mouseEvent, int wheelDelta);
 
 		public static void OnMouseEvent(int X, int Y, MouseEvent mouseEvent, int wheelDelta)
 		{
+			foreach (var mouseDelegate in mouseEventDelegates)
+				mouseDelegate(X, Y, mouseEvent, wheelDelta);
 		}
 
-		private static Dictionary<string, InputActionDelegate> inputActionDelegates;
+		private static List<MouseEventDelegate> mouseEventDelegates = new List<MouseEventDelegate>();
 	}
 
-	public enum ActionActivationMode
+	public enum MouseEvent
+	{
+		Move,
+
+		LeftButtonDown,
+		LeftButtonUp,
+		LeftButtonDoubleClick,
+		RightButtonDown,
+		RightButtonUp,
+		RightButtonDoubleClick,
+		MiddleButtonDown,
+		MiddleButtonUp,
+		MiddleButtonDoubleClick,
+
+		Wheel,
+	}
+
+	public enum KeyEvent
 	{
 		Invalid = 0,
 		/// <summary>
