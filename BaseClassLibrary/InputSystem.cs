@@ -36,20 +36,14 @@ namespace CryEngine
 
 		private static Dictionary<string, InputActionDelegate> inputActionDelegates = new Dictionary<string, InputActionDelegate>();
 
-		public static void RegisterMouseListener(MouseEventDelegate eventDelegate)
-		{
-			mouseEventDelegates.Add(eventDelegate);
-		}
-
 		public delegate void MouseEventDelegate(int X, int Y, MouseEvent mouseEvent, int wheelDelta);
 
 		public static void OnMouseEvent(int X, int Y, MouseEvent mouseEvent, int wheelDelta)
 		{
-			foreach (var mouseDelegate in mouseEventDelegates)
-				mouseDelegate(X, Y, mouseEvent, wheelDelta);
+			MouseEvents(X, Y, mouseEvent, wheelDelta);
 		}
 
-		private static List<MouseEventDelegate> mouseEventDelegates = new List<MouseEventDelegate>();
+		public static event MouseEventDelegate MouseEvents;
 	}
 
 	public enum MouseEvent
