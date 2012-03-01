@@ -61,6 +61,12 @@ namespace CryEngine
 		extern internal static int _GetHeight();
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern public static Vec3 _ScreenToWorld(int x, int y);
+
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern public static void _DrawTextToScreen(float x, float y, float fontSize, object[] color, bool center, string text);
+
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static int _LoadTexture(string path);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static void _DrawTextureToScreen(float xpos, float ypos, float width, float height, int textureId, float s0 = 0, float t0 = 0, float s1 = 1, float t1 = 1, float angle = 0, float r = 1, float g = 1, float b = 1, float a = 1, float z = 1);

@@ -18,6 +18,10 @@ CScriptBind_Renderer::CScriptBind_Renderer()
 	REGISTER_METHOD(GetWidth);
 	REGISTER_METHOD(GetHeight);
 
+	REGISTER_METHOD(ScreenToWorld);
+
+	REGISTER_METHOD(DrawTextToScreen);
+
 	REGISTER_METHOD(LoadTexture);
 	REGISTER_METHOD(DrawTextureToScreen);
 
@@ -33,6 +37,22 @@ unsigned int CScriptBind_Renderer::CreateView()
 		return pViewSystem->GetViewId(pViewSystem->CreateView());
 
 	return 0;
+}
+
+void CScriptBind_Renderer::DrawTextToScreen(float xpos, float ypos, float fontSize, mono::array color, bool center, mono::string text)
+{
+	IMonoArray *pArray = *color;
+	if(pArray->GetSize() != 4)
+		return;
+
+	float actualColor[] = { 
+		pArray->GetItemUnboxed<float>(0), 
+		pArray->GetItemUnboxed<float>(1),
+		pArray->GetItemUnboxed<float>(2),
+		pArray->GetItemUnboxed<float>(3),
+	};
+
+	gEnv->pRenderer->Draw2dLabel(xpos, ypos, fontSize, actualColor, center, ToCryString(text));
 }
 
 void CScriptBind_Renderer::RemoveView(unsigned int viewId)
@@ -93,6 +113,25 @@ int CScriptBind_Renderer::GetWidth()
 int CScriptBind_Renderer::GetHeight()
 {
 	return gEnv->pRenderer->GetHeight();
+}
+
+Vec3 CScriptBind_Renderer::ScreenToWorld(int x, int y)
+{
+	auto camMatrix = gEnv->pRenderer->GetCamera().GetMatrix();
+
+	auto aspectRatio = GetWidth() / GetHeight();
+
+	auto dx = (x / (GetWidth() * 0.5f) - 1) / aspectRatio;
+	auto dy = 1 - y / (GetHeight() * 0.5f);
+
+	auto xr = camMatrix * Vec3(1,0,0);
+	auto yr = camMatrix * Vec3(0,1,0);
+	auto zr = camMatrix * Vec3(0,0,1);
+
+	xr *= (float)aspectRatio;
+	zr *= -(0.5 * aspectRatio * tan(0.5 * gEnv->pRenderer->GetCamera().GetFov()));
+
+	return (camMatrix.GetTranslation(), dx * xr + dy * yr + zr);
 }
 
 int CScriptBind_Renderer::LoadTexture(mono::string texturePath)

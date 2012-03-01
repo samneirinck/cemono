@@ -47,6 +47,10 @@ protected:
 	static int GetWidth();
 	static int GetHeight();
 
+	static Vec3 ScreenToWorld(int x, int y);
+
+	static void DrawTextToScreen(float xpos, float ypos, float fontSize, mono::array color, bool center, mono::string text);
+
 	// Texture handling
 	static int LoadTexture(mono::string path);
 	static void DrawTextureToScreen(float xpos, float ypos, float width, float height, int textureId, float s0, float t0, float s1, float t1, float angle, float r, float g, float b, float a, float z);

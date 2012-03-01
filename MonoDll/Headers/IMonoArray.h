@@ -11,6 +11,8 @@
 
 #include <MonoSerializable.h>
 
+#include <IMonoObject.h>
+
 namespace mono 
 {
 	class _string; typedef _string* string; 
