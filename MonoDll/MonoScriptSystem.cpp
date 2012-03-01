@@ -34,6 +34,7 @@
 #include "Scriptbinds\ScriptBind_PhysicalWorld.h"
 #include "Scriptbinds\ScriptBind_Renderer.h"
 #include "Scriptbinds\ScriptBind_StaticEntity.h"
+#include "Scriptbinds\ScriptBind_Debug.h"
 
 #include "EntityManager.h"
 #include "FlowManager.h"
@@ -269,6 +270,7 @@ void CScriptSystem::RegisterDefaultBindings()
 	RegisterBinding(CScriptBind_Inventory);
 	RegisterBinding(CScriptBind_GameRules);
 	RegisterBinding(CScriptBind_StaticEntity);
+	RegisterBinding(CScriptBind_Debug);
 	RegisterBinding(CTester);
 
 #define RegisterBindingAndSet(var, T) RegisterBinding(T); var = (T *)m_localScriptBinds.back();

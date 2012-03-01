@@ -64,7 +64,7 @@ namespace CryEngine
 		extern internal static Vec3 _ScreenToWorld(int x, int y);
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _DrawTextToScreen(float x, float y, float fontSize, object[] color, bool center, string text);
+		extern internal static void _DrawTextToScreen(float x, float y, float fontSize, Color color, bool center, string text);
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static int _LoadTexture(string path);
@@ -83,18 +83,14 @@ namespace CryEngine
 			return _ScreenToWorld(x, y);
 		}
 
-		public static void DrawTextToScreen(float x, float y, float fontSize, float[] color, string text, params object[] args)
+		public static void DrawTextToScreen(float x, float y, float fontSize, Color color, string text, params object[] args)
 		{
 			DrawTextToScreen(x, y, fontSize, color, false, text, args);
 		}
 
-		public static void DrawTextToScreen(float x, float y, float fontSize, float[] color, bool centered, string text, params object[] args)
+		public static void DrawTextToScreen(float x, float y, float fontSize, Color color, bool centered, string text, params object[] args)
 		{
-			object[] actualColor = new object[color.Length];
-			for (int i = 0; i < color.Length; i++)
-				actualColor[i] = color[i];
-
-			_DrawTextToScreen(x, y, fontSize, actualColor, centered, string.Format(text, args));
+			_DrawTextToScreen(x, y, fontSize, color, centered, string.Format(text, args));
 		}
 
 		public static float FieldOfView

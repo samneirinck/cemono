@@ -39,18 +39,9 @@ unsigned int CScriptBind_Renderer::CreateView()
 	return 0;
 }
 
-void CScriptBind_Renderer::DrawTextToScreen(float xpos, float ypos, float fontSize, mono::array color, bool center, mono::string text)
+void CScriptBind_Renderer::DrawTextToScreen(float xpos, float ypos, float fontSize, ColorF color, bool center, mono::string text)
 {
-	IMonoArray *pArray = *color;
-	if(pArray->GetSize() != 4)
-		return;
-
-	float actualColor[] = { 
-		pArray->GetItemUnboxed<float>(0), 
-		pArray->GetItemUnboxed<float>(1),
-		pArray->GetItemUnboxed<float>(2),
-		pArray->GetItemUnboxed<float>(3),
-	};
+	float actualColor[] = { color.r, color.g, color.b, color.a };
 
 	gEnv->pRenderer->Draw2dLabel(xpos, ypos, fontSize, actualColor, center, ToCryString(text));
 }

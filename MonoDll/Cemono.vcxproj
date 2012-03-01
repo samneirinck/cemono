@@ -381,6 +381,7 @@
     <ClInclude Include="Scriptbinds\ItemSystem.h" />
     <ClInclude Include="Scriptbinds\Console.h" />
     <ClInclude Include="Scriptbinds\ScriptBind_3DEngine.h" />
+    <ClInclude Include="Scriptbinds\ScriptBind_Debug.h" />
     <ClInclude Include="Scriptbinds\ScriptBind_GameRules.h" />
     <ClInclude Include="Scriptbinds\ScriptBind_PhysicalWorld.h" />
     <ClInclude Include="Scriptbinds\ScriptBind_Renderer.h" />
@@ -409,6 +410,7 @@
     <ClCompile Include="Scriptbinds\ItemSystem.cpp" />
     <ClCompile Include="Scriptbinds\Console.cpp" />
     <ClCompile Include="Scriptbinds\ScriptBind_3DEngine.cpp" />
+    <ClCompile Include="Scriptbinds\ScriptBind_Debug.cpp" />
     <ClCompile Include="Scriptbinds\ScriptBind_GameRules.cpp" />
     <ClCompile Include="Scriptbinds\ScriptBind_PhysicalWorld.cpp" />
     <ClCompile Include="Scriptbinds\ScriptBind_Renderer.cpp" />

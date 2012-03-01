@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////*
+///////////////////////////////////////////////////////////////////////////*
 //Ink Studios Source File.
 //Copyright (C), Ink Studios, 2011.
 //////////////////////////////////////////////////////////////////////////
@@ -26,15 +26,13 @@ class CScriptBind_Renderer : public IMonoScriptBind
 {
 public:
 	CScriptBind_Renderer();
-	~CScriptBind_Renderer() {}
-
-	// IMonoScriptBind
-	virtual const char *GetClassName() { return "Renderer"; }
-	// ~IMonoScriptBind
 
 protected:
-	// External methods
+	// IMonoScriptBind
+	virtual const char *GetClassName() override { return "Renderer"; }
+	// ~IMonoScriptBind
 
+	// External methods
 	static unsigned int CreateView();
 	static void RemoveView(unsigned int viewId);
 
@@ -49,7 +47,7 @@ protected:
 
 	static Vec3 ScreenToWorld(int x, int y);
 
-	static void DrawTextToScreen(float xpos, float ypos, float fontSize, mono::array color, bool center, mono::string text);
+	static void DrawTextToScreen(float xpos, float ypos, float fontSize, ColorF color, bool center, mono::string text);
 
 	// Texture handling
 	static int LoadTexture(mono::string path);
