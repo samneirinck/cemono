@@ -16,6 +16,8 @@ CScriptBind_StaticEntity::CScriptBind_StaticEntity()
 	REGISTER_METHOD(LoadObject);
 	REGISTER_METHOD(LoadCharacter);
 
+	REGISTER_METHOD(GetBoundingBox);
+
 	REGISTER_METHOD(GetSlotFlags);
 	REGISTER_METHOD(SetSlotFlags);
 
@@ -43,6 +45,16 @@ mono::string CScriptBind_StaticEntity::GetPropertyValue(EntityId entityId, mono:
 	}
 
 	return ToMonoString("");
+}
+
+AABB CScriptBind_StaticEntity::GetBoundingBox(EntityId entityId, int slot)
+{
+	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(entityId))
+	{
+		return pEntity->GetStatObj(slot)->GetAABB();
+	}
+
+	return AABB(ZERO);
 }
 
 void CScriptBind_StaticEntity::SetPropertyValue(EntityId entityId, mono::string propertyName, mono::string value)

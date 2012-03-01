@@ -40,9 +40,11 @@ namespace CryEngine
 		/// <param name="slot"></param>
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static void _LoadObject(uint entityId, string fileName, int slot);
-
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static string _GetStaticObjectFilePath(uint entityId, int slot);
+
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static BoundingBox _GetBoundingBox(uint entityId, int slot);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static EntitySlotFlags _GetSlotFlags(uint entityId, int slot);
@@ -58,6 +60,8 @@ namespace CryEngine
 		{
 			_SetSlotFlags(Id, slot, flags);
 		}
+
+		public BoundingBox BoundingBox { get { return _GetBoundingBox(Id, 0); } }
 
 		/// <summary>
 		/// Loads an non-static model on the object (.chr, .cdf, .cga)
@@ -447,6 +451,24 @@ namespace CryEngine
             }
         }
         #endregion
+	}
+
+	public struct BoundingBox
+	{
+		public BoundingBox(Vec3 min, Vec3 max)
+			: this()
+		{
+			this.min = min;
+			this.max = max;
+		}
+
+		public override string ToString()
+		{
+			return String.Format("min: {0} max: {1}", min.ToString(), max.ToString());
+		}
+
+		public Vec3 min;
+		public Vec3 max;
 	}
 
 	public enum EntitySlotFlags

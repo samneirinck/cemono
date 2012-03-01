@@ -38,6 +38,8 @@ protected:
 	static void SetWorldAngles(EntityId, Vec3);
 	static Vec3 GetWorldAngles(EntityId);
 
+	static AABB GetBoundingBox(EntityId, int slot);
+
 	static void LoadObject(EntityId, mono::string, int);
 	static void LoadCharacter(EntityId, mono::string, int);
 
