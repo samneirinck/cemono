@@ -25,15 +25,15 @@ protected:
 
 	// Externals
 
-	// IPersistantDebug
-	static void AddPersistantSphere(Vec3 pos, float radius, ColorF color, float timeout);
+	// IPersistentDebug
+	static void AddPersistentSphere(Vec3 pos, float radius, ColorF color, float timeout);
 	static void AddDirection(Vec3 pos, float radius, Vec3 dir, ColorF color, float timeout);
-	static void AddPersistantText2D(mono::string text, float size, ColorF color, float timeout);
-	// ~IPersistantDebug
+	static void AddPersistentText2D(mono::string text, float size, ColorF color, float timeout);
+	// ~IPersistentDebug
 
 	// ~Externals
 
-	static IPersistantDebug *GetIPersistantDebug();
+	static IPersistantDebug *GetIPersistentDebug();
 
 	// IMonoScriptBind
 	virtual const char *GetNamespace() override { return "CryEngine.Utils"; }

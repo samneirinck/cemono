@@ -5,30 +5,30 @@
 
 CScriptBind_Debug::CScriptBind_Debug()
 {
-	REGISTER_METHOD(AddPersistantSphere);
+	REGISTER_METHOD(AddPersistentSphere);
 	REGISTER_METHOD(AddDirection);
-	REGISTER_METHOD(AddPersistantText2D);
+	REGISTER_METHOD(AddPersistentText2D);
 }
 
-void CScriptBind_Debug::AddPersistantSphere(Vec3 pos, float radius, ColorF color, float timeout)
+void CScriptBind_Debug::AddPersistentSphere(Vec3 pos, float radius, ColorF color, float timeout)
 {
 	// TODO: Find a pretty way to do Begin in C#.
-	GetIPersistantDebug()->Begin("TestAddPersistantSphere", false);
-	GetIPersistantDebug()->AddSphere(pos, radius, color, timeout);
+	GetIPersistentDebug()->Begin("TestAddPersistentSphere", false);
+	GetIPersistentDebug()->AddSphere(pos, radius, color, timeout);
 }
 
 void CScriptBind_Debug::AddDirection(Vec3 pos, float radius, Vec3 dir, ColorF color, float timeout)
 {
-	GetIPersistantDebug()->AddDirection(pos, radius, dir, color, timeout);
+	GetIPersistentDebug()->AddDirection(pos, radius, dir, color, timeout);
 }
 
-void CScriptBind_Debug::AddPersistantText2D(mono::string text, float size, ColorF color, float timeout)
+void CScriptBind_Debug::AddPersistentText2D(mono::string text, float size, ColorF color, float timeout)
 {
-	GetIPersistantDebug()->Begin("TestAddPersistantText2D", false);
-	GetIPersistantDebug()->Add2DText(ToCryString(text), size, color, timeout);
+	GetIPersistentDebug()->Begin("TestAddPersistentText2D", false);
+	GetIPersistentDebug()->Add2DText(ToCryString(text), size, color, timeout);
 }
 
-IPersistantDebug *CScriptBind_Debug::GetIPersistantDebug()
+IPersistantDebug *CScriptBind_Debug::GetIPersistentDebug()
 {
 	return gEnv->pGameFramework->GetIPersistantDebug();
 }
