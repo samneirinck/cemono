@@ -123,6 +123,26 @@ namespace CryEngine
             return (v1.X != v2.X || v1.Y != v2.Y || v1.Z == v2.Z);
         }
 
+		public static bool operator >(Vec3 v1, Vec3 v2)
+		{
+			return v1.Length > v2.Length;
+		}
+
+		public static bool operator <(Vec3 v1, Vec3 v2)
+		{
+			return v1.Length < v2.Length;
+		}
+
+		public static bool operator >=(Vec3 v1, Vec3 v2)
+		{
+			return v1.Length >= v2.Length;
+		}
+
+		public static bool operator <=(Vec3 v1, Vec3 v2)
+		{
+			return v1.Length <= v2.Length;
+		}
+
         #endregion
 
         #region Statics
