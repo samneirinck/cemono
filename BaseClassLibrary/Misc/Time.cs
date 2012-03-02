@@ -1,4 +1,5 @@
-﻿
+﻿using System.Runtime.CompilerServices;
+
 namespace CryEngine
 {
 	/// <summary>
@@ -6,6 +7,14 @@ namespace CryEngine
 	/// </summary>
 	public static class Time
 	{
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static float _GetFrameStartTime();
+
+		/// <summary>
+		/// Returns the absolute time of the last frame start in milliseconds.
+		/// </summary>
+		public static float FrameStartTime { get { return _GetFrameStartTime(); } }
+
 		/// <summary>
 		/// The time used to render the current frame. Useful for creating framerate independent operations.
 		/// </summary>

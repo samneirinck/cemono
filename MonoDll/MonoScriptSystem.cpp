@@ -271,6 +271,7 @@ void CScriptSystem::RegisterDefaultBindings()
 	RegisterBinding(CScriptBind_GameRules);
 	RegisterBinding(CScriptBind_StaticEntity);
 	RegisterBinding(CScriptBind_Debug);
+	RegisterBinding(CScriptBind_Time);
 	RegisterBinding(CTester);
 
 #define RegisterBindingAndSet(var, T) RegisterBinding(T); var = (T *)m_localScriptBinds.back();

@@ -48,4 +48,25 @@ protected:
 	static void SetCVarString(mono::string, mono::string);
 };
 
+class CScriptBind_Time : public IMonoScriptBind
+{
+public:
+	CScriptBind_Time()
+	{
+		REGISTER_METHOD(GetFrameStartTime);
+	}
+
+	~CScriptBind_Time() {}
+
+protected:
+	// IMonoScriptBind
+	virtual const char *GetClassName() { return "Time"; }
+	// ~IMonoScriptBind
+
+	static float GetFrameStartTime()
+	{
+		return gEnv->pTimer->GetFrameStartTime().GetMilliSeconds();
+	}
+};
+
 #endif //__LOGGING_BINDING_H__
