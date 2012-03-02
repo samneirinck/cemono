@@ -3,7 +3,7 @@ using System;
 
 namespace CryEngine
 {
-    partial class Console
+    partial class Debug
     {
         class CryRedirector : StringWriter
         {
@@ -81,7 +81,7 @@ namespace CryEngine
 
             public override void Write(string value)
             {
-                Console.Log(value);
+                Debug.Log(value);
             }
 
             public override void Write(uint value)

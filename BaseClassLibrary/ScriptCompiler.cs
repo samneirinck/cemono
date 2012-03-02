@@ -26,7 +26,7 @@ namespace CryEngine
 		{
 			if(!Directory.Exists(directory))
 			{
-				Console.LogAlways("Libraries failed to load; Folder {0} does not exist.", directory);
+				Debug.LogAlways("Libraries failed to load; Folder {0} does not exist.", directory);
 				return null;
 			}
 
@@ -61,7 +61,7 @@ namespace CryEngine
 					//This exception tells us that the assembly isn't a valid .NET assembly for whatever reason
 					catch(BadImageFormatException)
 					{
-						Console.LogAlways("Plugin loading failed for {0}; dll is not valid.", plugin);
+						Debug.LogAlways("Plugin loading failed for {0}; dll is not valid.", plugin);
 					}
 				}
 
@@ -78,20 +78,20 @@ namespace CryEngine
 		{
 			if(!Directory.GetParent(directory).Exists)
 			{
-				Console.LogAlways("Aborting script compilation; script directory parent could not be located.");
+				Debug.LogAlways("Aborting script compilation; script directory parent could not be located.");
 				return null;
 			}
 
 			if(!Directory.Exists(directory))
 			{
-				Console.LogAlways("Script compilation failed; Folder {0} does not exist.", directory);
+				Debug.LogAlways("Script compilation failed; Folder {0} does not exist.", directory);
 				return null;
 			}
 
 			string[] scriptsInFolder = Directory.GetFiles(directory, "*.cs", SearchOption.AllDirectories);
 			if(scriptsInFolder == null || scriptsInFolder.Length < 1)
 			{
-				Console.LogAlways("No scripts were found in {0}.", directory);
+				Debug.LogAlways("No scripts were found in {0}.", directory);
 				return null;
 			}
 
@@ -106,7 +106,7 @@ namespace CryEngine
 				if(Directory.Exists(directory))
 					scripts.AddRange(Directory.GetFiles(directory, "*.cs", SearchOption.AllDirectories));
 				else
-					Console.LogAlways("Could not compile scripts in {0}; directory not found", directory);
+					Debug.LogAlways("Could not compile scripts in {0}; directory not found", directory);
 			}
 
 			if(scripts.Count > 0)
@@ -171,17 +171,17 @@ namespace CryEngine
 					return LoadAssembly(results.CompiledAssembly);
 				else if (results.Errors.HasErrors)
 				{
-					Console.LogAlways("Compilation failed; {0} errors:", results.Errors.Count);
+					Debug.LogAlways("Compilation failed; {0} errors:", results.Errors.Count);
 
 					foreach (CompilerError error in results.Errors)
-						Console.LogAlways(error.ErrorText);
+						Debug.LogAlways(error.ErrorText);
 				}
 				else
 					throw new ArgumentNullException("Tried loading a NULL assembly");
 			}
 			catch(Exception ex)
 			{
-				Console.LogException(ex);
+				Debug.LogException(ex);
 			}
 
 			return null;
@@ -322,7 +322,7 @@ namespace CryEngine
 		{
 			if(scriptInstance == null)
 			{
-				Console.LogAlways("Attempted to invoke method {0} with an invalid instance.", func);
+				Debug.LogAlways("Attempted to invoke method {0} with an invalid instance.", func);
 				return null;
 			}
 
@@ -330,7 +330,7 @@ namespace CryEngine
 			MethodInfo methodInfo = scriptInstance.GetType().GetMethod(func);
 			if(methodInfo == null)
 			{
-				Console.LogAlways("Could not find method {0} in type {1}", func, scriptInstance.GetType().ToString());
+				Debug.LogAlways("Could not find method {0} in type {1}", func, scriptInstance.GetType().ToString());
 				return null;
 			}
 

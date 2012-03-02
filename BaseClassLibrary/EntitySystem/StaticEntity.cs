@@ -160,7 +160,7 @@ namespace CryEngine
 					continue;
 
 				SetPropertyValue(storedProperty.Key[0], storedProperty.Value, storedProperty.Key[1]);
-				Console.LogAlways("Applying serialised property {0}, value is {1}", storedProperty.Key[0], storedProperty.Key[1]);
+				Debug.LogAlways("Applying serialised property {0}, value is {1}", storedProperty.Key[0], storedProperty.Key[1]);
 			}
 
 			storedProperties.Clear();

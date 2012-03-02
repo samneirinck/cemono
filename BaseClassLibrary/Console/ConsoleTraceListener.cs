@@ -2,7 +2,7 @@
 
 namespace CryEngine
 {
-    partial class Console
+    partial class Debug
     {
         class CryTraceListener : TraceListener
         {
@@ -13,7 +13,7 @@ namespace CryEngine
 
             public override void WriteLine(string message)
             {
-                Console.Log(message);
+                Debug.Log(message);
             }
 
             public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message)
@@ -21,7 +21,7 @@ namespace CryEngine
                 switch (eventType)
                 {
                     default:
-                        Console.Log(message);
+                        Debug.Log(message);
                         break;
                 }
             }

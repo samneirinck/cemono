@@ -5,44 +5,65 @@ using System.Text;
 
 namespace CryEngine
 {
+	/// <summary>
+	/// Defines a colour in terms of its red, green, blue and alpha values.
+	/// </summary>
 	public struct Color
 	{
-		public Color(float r, float g, float b)
-			: this()
-		{
-			this.r = r;
-			this.g = g;
-			this.b = b;
-			this.a = 1.0f;
-		}
+		/// <summary>
+		/// The red value of the colour.
+		/// </summary>
+		public float R { get { return r; } }
 
+		/// <summary>
+		/// The blue value of the colour.
+		/// </summary>
+		public float B { get { return b; } }
+
+		/// <summary>
+		/// The green value of the colour.
+		/// </summary>
+		public float G { get { return g; } }
+
+		/// <summary>
+		/// The alpha value of the colour.
+		/// </summary>
+		public float A { get { return a; } }
+
+		/// <summary>
+		/// Constructs a new colour object specifying the red, green, blue and alpha values.
+		/// </summary>
+		/// <param name="r"></param>
+		/// <param name="g"></param>
+		/// <param name="b"></param>
+		/// <param name="alpha"></param>
 		public Color(float r, float g, float b, float alpha)
 			: this()
 		{
+			if(!Math.IsInRange(r, 0, 1) || !Math.IsInRange(g, 0, 1) || !Math.IsInRange(b, 0, 1) || !Math.IsInRange(a, 0, 1))
+			{
+				throw new ArgumentException("Color and alpha values must be between 0 and 1.");
+			}
+
 			this.r = r;
 			this.g = g;
 			this.b = b;
 			this.a = alpha;
 		}
 
-		public Color(EColor clr)
-			: this()
-		{
-			this.a = 1.0f;
+		/// <summary>
+		/// Constructs a new colour object specifying the red, green, and blue values.
+		/// </summary>
+		/// <param name="r"></param>
+		/// <param name="g"></param>
+		/// <param name="b"></param>
+		public Color(float r, float g, float b) : this(r, g, b, 1) { }
 
-			switch (clr)
-			{
-				case EColor.Red:
-					this.r = 1;
-					break;
-				case EColor.Green:
-					this.g = 1;
-					break;
-				case EColor.Blue:
-					this.b = 1;
-					break;
-			}
-		}
+		/// <summary>
+		/// Constructs a new greyscale colour object.
+		/// </summary>
+		/// <param name="brightness">The brightness of the object, where 0 is black, and 1 is white.</param>
+		public Color(float brightness) : this(brightness, brightness, brightness) { }
 
 		public override string ToString()
 		{
@@ -51,12 +72,12 @@ namespace CryEngine
 
 		// [0.0, 1.0]
 		float r, g, b, a;
-	}
 
-	public enum EColor
-	{
-		Red,
-		Blue,
-		Green
+		public static Color Red { get { return new Color(1, 0, 0); } }
+		public static Color Blue { get { return new Color(0, 0, 1); } }
+		public static Color Green { get { return new Color(0, 1, 0); } }
+
+		public static Color Black { get { return new Color(0); } }
+		public static Color White { get { return new Color(1); } }
 	}
 }

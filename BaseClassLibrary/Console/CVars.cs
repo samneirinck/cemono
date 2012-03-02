@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace CryEngine
 {
-    partial class Console
+    partial class Debug
     {
         // Console commands
 		[System.CLSCompliant(false)]

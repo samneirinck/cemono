@@ -29,6 +29,7 @@ protected:
 	static void AddPersistentSphere(Vec3 pos, float radius, ColorF color, float timeout);
 	static void AddDirection(Vec3 pos, float radius, Vec3 dir, ColorF color, float timeout);
 	static void AddPersistentText2D(mono::string text, float size, ColorF color, float timeout);
+	static void AddPersistentLine(Vec3 pos, Vec3 end, ColorF clr, float timeout);
 	// ~IPersistentDebug
 
 	// ~Externals
@@ -36,7 +37,7 @@ protected:
 	static IPersistantDebug *GetIPersistentDebug();
 
 	// IMonoScriptBind
-	virtual const char *GetNamespace() override { return "CryEngine.Utils"; }
+	virtual const char *GetNamespace() override { return "CryEngine"; }
 	virtual const char *GetClassName() override { return "Debug"; }
 	// ~IMonoScriptBind
 };

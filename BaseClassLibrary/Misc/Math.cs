@@ -1,4 +1,6 @@
-﻿namespace CryEngine
+﻿using System;
+
+namespace CryEngine
 {
 	public static class Math
 	{
@@ -49,11 +51,38 @@
 			cosVal = Sqrt(1.0 - sinVal * sinVal);
 		}
 
-		public static T Clamp<T>(T value, T min, T max) where T : System.IComparable<T>
+		/// <summary>
+		/// Determines whether a value is inside the specified range.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="value"></param>
+		/// <param name="min"></param>
+		/// <param name="max"></param>
+		/// <returns></returns>
+		public static bool IsInRange<T>(T value, T min, T max) where T : IComparable<T>
 		{
-			if(value.CompareTo(min) < 0) return min;
-			else if(value.CompareTo(max) > 0) return max;
-			else return value;
+			if(value.CompareTo(min) >= 0 && value.CompareTo(max) <= 0)
+				return true;
+			else
+				return false;
+		}
+
+		/// <summary>
+		/// Clamps a value given a specified range.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="value"></param>
+		/// <param name="min"></param>
+		/// <param name="max"></param>
+		/// <returns></returns>
+		public static T Clamp<T>(T value, T min, T max) where T : IComparable<T>
+		{
+			if(value.CompareTo(min) < 0)
+				return min;
+			else if(value.CompareTo(max) > 0)
+				return max;
+			else
+				return value;
 		}
 	}
 }

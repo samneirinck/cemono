@@ -1,7 +1,7 @@
 ﻿
 namespace CryEngine
 {
-	public partial class Console
+	public partial class Debug
 	{
         /// <summary>
         /// Called from C++ when a console command registered via Mono is invoked.

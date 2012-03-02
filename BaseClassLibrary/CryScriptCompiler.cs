@@ -77,7 +77,7 @@ namespace CryEngine
 		{
 			if (scriptName.Length < 1)
 			{
-				Console.LogAlways("Empty script passed to InstantiateClass");
+				Debug.LogAlways("Empty script passed to InstantiateClass");
 
 				return null;
 			}
@@ -86,7 +86,7 @@ namespace CryEngine
 			int index = CompiledScripts.FindIndex(x => x.className.Equals(scriptName));
 			if (index == -1)
 			{
-				Console.LogAlways("Failed to instantiate {0}, compiled script could not be found.", scriptName);
+				Debug.LogAlways("Failed to instantiate {0}, compiled script could not be found.", scriptName);
 
 				return null;
 			}
@@ -135,7 +135,7 @@ namespace CryEngine
 				return NextScriptId;
 			}
 
-			Console.LogAlways("Couldn't add script {0}", instance.GetType().Name);
+			Debug.LogAlways("Couldn't add script {0}", instance.GetType().Name);
 			return -1;
 		}
 
@@ -161,7 +161,7 @@ namespace CryEngine
 					int instanceIndex = script.ScriptInstances.FindIndex(x => x.ScriptId == scriptId);
 					if (instanceIndex == -1)
 					{
-						Console.LogAlways("Failed to remove script of type {0} with id {1}; instance was not found.", scriptName, scriptId);
+						Debug.LogAlways("Failed to remove script of type {0} with id {1}; instance was not found.", scriptName, scriptId);
 						return;
 					}
 
@@ -198,7 +198,7 @@ namespace CryEngine
 			CryScriptInstance scriptInstance = GetScriptInstanceById(id);
 			if (scriptInstance == default(CryScriptInstance))
 			{
-				Console.LogAlways("Failed to invoke method, script instance was invalid");
+				Debug.LogAlways("Failed to invoke method, script instance was invalid");
 				return null;
 			}
 

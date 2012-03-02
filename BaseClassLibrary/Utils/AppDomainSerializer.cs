@@ -70,7 +70,7 @@ namespace CryEngine.Utils
 					WriteSubsystem(typeof(EntitySystem), writer);
 					WriteSubsystem(typeof(InputSystem), writer);
 					WriteSubsystem(typeof(GameRules), writer);
-					WriteSubsystem(typeof(Console), writer);
+					WriteSubsystem(typeof(Debug), writer);
 
 					writer.WriteEndElement();
 				}
@@ -385,7 +385,7 @@ namespace CryEngine.Utils
 									fieldInfo.SetValue(instance, subFieldInstance);
 								}
 								else
-									Console.Log("[Warning] Could not serialize {0} since it did not contain an parameterless constructor", fieldInfo.FieldType.Name);
+									Debug.Log("[Warning] Could not serialize {0} since it did not contain an parameterless constructor", fieldInfo.FieldType.Name);
 							}
 							else
 							{

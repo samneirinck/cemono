@@ -48,14 +48,14 @@ namespace CryEngine
 			uint entityId = _SpawnPlayer(channelId, name, "Player", pos, angles);
 			if(entityId == 0)
 			{
-				Console.LogAlways("GameRules.SpawnPlayer failed; new entityId was invalid");
+				Debug.LogAlways("GameRules.SpawnPlayer failed; new entityId was invalid");
 				return null;
 			}
 
 			int scriptId = ScriptCompiler.AddScriptInstance(new T());
 			if(scriptId == -1)
 			{
-				Console.LogAlways("GameRules.SpawnPlayer failed; new scriptId was invalid");
+				Debug.LogAlways("GameRules.SpawnPlayer failed; new scriptId was invalid");
 				return null;
 			}
 

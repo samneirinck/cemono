@@ -21,7 +21,7 @@ namespace CryEngine
 				_RegisterAction(actionName);
 			}
 			else
-				Console.LogAlways("[Warning] Attempted to register duplicate input action {0}", actionName);
+				Debug.LogAlways("[Warning] Attempted to register duplicate input action {0}", actionName);
 		}
 
 		public delegate void InputActionDelegate(KeyEvent keyEvent, float value);
@@ -31,7 +31,7 @@ namespace CryEngine
 			if (inputActionDelegates.ContainsKey(action))
 				inputActionDelegates[action](keyEvent, value);
 			else
-				Console.LogAlways("Attempted to invoke unregistered action {0}", action);
+				Debug.LogAlways("Attempted to invoke unregistered action {0}", action);
 		}
 
 		private static Dictionary<string, InputActionDelegate> inputActionDelegates = new Dictionary<string, InputActionDelegate>();

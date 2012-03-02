@@ -8,6 +8,7 @@ CScriptBind_Debug::CScriptBind_Debug()
 	REGISTER_METHOD(AddPersistentSphere);
 	REGISTER_METHOD(AddDirection);
 	REGISTER_METHOD(AddPersistentText2D);
+	REGISTER_METHOD(AddPersistentLine);
 }
 
 void CScriptBind_Debug::AddPersistentSphere(Vec3 pos, float radius, ColorF color, float timeout)
@@ -26,6 +27,11 @@ void CScriptBind_Debug::AddPersistentText2D(mono::string text, float size, Color
 {
 	GetIPersistentDebug()->Begin("TestAddPersistentText2D", false);
 	GetIPersistentDebug()->Add2DText(ToCryString(text), size, color, timeout);
+}
+
+void CScriptBind_Debug::AddPersistentLine(Vec3 pos, Vec3 end, ColorF clr, float timeout)
+{
+	GetIPersistentDebug()->AddLine(pos, end, clr, timeout);
 }
 
 IPersistantDebug *CScriptBind_Debug::GetIPersistentDebug()
