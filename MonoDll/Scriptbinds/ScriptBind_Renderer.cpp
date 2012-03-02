@@ -107,22 +107,23 @@ int CScriptBind_Renderer::GetHeight()
 }
 
 Vec3 CScriptBind_Renderer::ScreenToWorld(int x, int y)
-{
-	auto camMatrix = gEnv->pRenderer->GetCamera().GetMatrix();
+{	
+	if(gEnv->pPhysicalWorld)
+	{
+		float mouseX, mouseY, mouseZ;
+		Vec3  camPos = gEnv->pSystem->GetViewCamera().GetPosition();
 
-	auto aspectRatio = GetWidth() / GetHeight();
+		gEnv->pRenderer->UnProjectFromScreen((float)x, GetHeight() - y, 0.0f, &mouseX, &mouseY, &mouseZ);
+		Vec3 dir = (Vec3(mouseX, mouseY, mouseZ) - camPos).GetNormalizedSafe();
 
-	auto dx = (x / (GetWidth() * 0.5f) - 1) / aspectRatio;
-	auto dy = 1 - y / (GetHeight() * 0.5f);
+		static ray_hit hit;
+		IPhysicalEntity *pPhysEnt = NULL;
 
-	auto xr = camMatrix * Vec3(1,0,0);
-	auto yr = camMatrix * Vec3(0,1,0);
-	auto zr = camMatrix * Vec3(0,0,1);
+		if (gEnv->pPhysicalWorld->RayWorldIntersection(camPos, dir * gEnv->p3DEngine->GetMaxViewDistance(), ent_all, rwi_stop_at_pierceable | rwi_colltype_any, &hit, 1, pPhysEnt))
+			return hit.pt;
+	}
 
-	xr *= (float)aspectRatio;
-	zr *= -(0.5 * aspectRatio * tan(0.5 * gEnv->pRenderer->GetCamera().GetFov()));
-
-	return (camMatrix.GetTranslation(), dx * xr + dy * yr + zr);
+	return Vec3(ZERO);
 }
 
 int CScriptBind_Renderer::LoadTexture(mono::string texturePath)
