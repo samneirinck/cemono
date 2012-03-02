@@ -268,6 +268,10 @@ namespace CryEngine
 
 		private static void LoadEntity(Type type, CryScript script, bool staticEntity)
 		{
+			// Shoulda thought of this before. Abstract classes brutally murder the engine otherwise.
+			if(type.IsAbstract)
+				return;
+
 			EntityConfig config = default(EntityConfig);
 			StaticEntity entity = null;
 
