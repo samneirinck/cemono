@@ -20,6 +20,7 @@ void CScriptBind_Debug::AddPersistentSphere(Vec3 pos, float radius, ColorF color
 
 void CScriptBind_Debug::AddDirection(Vec3 pos, float radius, Vec3 dir, ColorF color, float timeout)
 {
+	GetIPersistentDebug()->Begin("TestAddDirection", false);
 	GetIPersistentDebug()->AddDirection(pos, radius, dir, color, timeout);
 }
 
@@ -31,6 +32,7 @@ void CScriptBind_Debug::AddPersistentText2D(mono::string text, float size, Color
 
 void CScriptBind_Debug::AddPersistentLine(Vec3 pos, Vec3 end, ColorF clr, float timeout)
 {
+	GetIPersistentDebug()->Begin("TestAddPersistentLine", false);
 	GetIPersistentDebug()->AddLine(pos, end, clr, timeout);
 }
 
