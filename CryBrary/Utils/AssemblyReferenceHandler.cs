@@ -76,7 +76,7 @@ namespace CryEngine.Utils
 				}
 			}
 
-			return namespaces.ToArray();
+			return namespaces;
 		}
 
 		protected string ProcessNamespace(string name)
