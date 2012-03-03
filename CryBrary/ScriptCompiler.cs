@@ -30,13 +30,13 @@ namespace CryEngine
 			CompiledScripts = new List<CryScript>();
 			FlowNodes = new List<StoredNode>();
 
-			AssemblyReferenceHandler.Initialize();
+            assemblyReferenceHandler = new AssemblyReferenceHandler();
 
 			NextScriptId = 0;
 
 			//GenerateScriptbindAssembly(scriptBinds.ToArray());
 
-			AssemblyReferenceHandler.ReferencedAssemblies.AddRange(System.AppDomain.CurrentDomain.GetAssemblies().Select(a => a.Location).ToArray());
+            assemblyReferenceHandler.ReferencedAssemblies.AddRange(System.AppDomain.CurrentDomain.GetAssemblies().Select(a => a.Location));
 
 			LoadPrecompiledAssemblies();
 
@@ -310,7 +310,7 @@ namespace CryEngine
 						//Process it, in case it contains types/gamerules
 						Assembly assembly = Assembly.LoadFrom(newPath);
 
-						AssemblyReferenceHandler.ReferencedAssemblies.Add(newPath);
+                        assemblyReferenceHandler.ReferencedAssemblies.Add(newPath);
 
 						compiledScripts.AddRange(LoadAssembly(assembly));
 					}
@@ -402,13 +402,13 @@ namespace CryEngine
 			compilerParameters.GenerateInMemory = true;
 
 			//Add additional assemblies as needed by gamecode to referencedAssemblies
-			foreach (var assembly in AssemblyReferenceHandler.GetRequiredAssembliesForScripts(scripts))
+            foreach (var assembly in assemblyReferenceHandler.GetRequiredAssembliesForScripts(scripts))
 			{
 				if (!compilerParameters.ReferencedAssemblies.Contains(assembly))
 					compilerParameters.ReferencedAssemblies.Add(assembly);
 			}
 
-			compilerParameters.ReferencedAssemblies.AddRange(AssemblyReferenceHandler.ReferencedAssemblies.ToArray());
+            compilerParameters.ReferencedAssemblies.AddRange(assemblyReferenceHandler.ReferencedAssemblies.ToArray());
 
 #if RELEASE
 			compilerParameters.IncludeDebugInformation = false;
@@ -657,6 +657,7 @@ namespace CryEngine
 		}
 
 		internal static List<StoredNode> FlowNodes;
+        private static AssemblyReferenceHandler assemblyReferenceHandler;
 
 		static List<Scriptbind> ScriptBinds;
 

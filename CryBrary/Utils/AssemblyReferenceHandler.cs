@@ -8,12 +8,12 @@ namespace CryEngine.Utils
 	/// <summary>
 	/// Handles retrieval of required assemblies for compiled scripts etc.
 	/// </summary>
-	public static class AssemblyReferenceHandler
+	public class AssemblyReferenceHandler
 	{
-		public static void Initialize()
-		{
-			ReferencedAssemblies = new List<string>();
-		}
+        public AssemblyReferenceHandler()
+        {
+            ReferencedAssemblies = new List<string>();
+        }
 
 		/// <summary>
 		/// Gets the required assemblies for the scripts passed to the method.
@@ -21,7 +21,7 @@ namespace CryEngine.Utils
 		/// </summary>
 		/// <param name="scripts"></param>
 		/// <returns></returns>
-		public static string[] GetRequiredAssembliesForScripts(string[] scripts)
+		public IEnumerable<string> GetRequiredAssembliesForScripts(IEnumerable<string> scripts)
 		{
 			List<string> namespaces = new List<string>();
 			List<string> assemblyPaths = new List<string>();
@@ -40,7 +40,7 @@ namespace CryEngine.Utils
 
 			namespaces = null;
 
-			return assemblyPaths.ToArray();
+			return assemblyPaths;
 		}
 
 		/// <summary>
@@ -49,7 +49,7 @@ namespace CryEngine.Utils
 		/// </summary>
 		/// <param name="script"></param>
 		/// <returns></returns>
-		static string[] GetRequiredAssembliesForScript(string script)
+		protected IEnumerable<string> GetRequiredAssembliesForScript(string script)
 		{
 			if (string.IsNullOrEmpty(script))
 				return null;
@@ -81,7 +81,7 @@ namespace CryEngine.Utils
 			return namespaces.ToArray();
 		}
 
-		static string ProcessNamespace(string name)
+		protected string ProcessNamespace(string name)
 		{
 			XDocument assemblyLookup = XDocument.Load(Path.Combine(PathUtils.GetEngineFolder(), "Mono", "assemblylookup.xml"));
 			foreach (var node in assemblyLookup.Descendants())
@@ -111,6 +111,6 @@ namespace CryEngine.Utils
 		/// <summary>
 		/// All libraries passed through ScriptCompiler.LoadLibrariesInFolder will be automatically added to this list.
 		/// </summary>
-		public static List<string> ReferencedAssemblies;
+		public List<string> ReferencedAssemblies {get; protected set;}
 	}
 }
