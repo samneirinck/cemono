@@ -3,7 +3,9 @@
 using System.IO;
 
 using System.Collections;
+using System.Collections.ObjectModel;
 using System.Collections.Generic;
+
 using System.Linq;
 
 using System.Xml;
@@ -37,7 +39,7 @@ namespace CryEngine.Utils
 						if (script.ScriptInstances != null)
 						{
 							writer.WriteStartElement("Type");
-							writer.WriteAttributeString("Name", script.className);
+							writer.WriteAttributeString("Name", script.ClassName);
 
 							foreach (var scriptInstance in script.ScriptInstances)
 							{
@@ -68,7 +70,7 @@ namespace CryEngine.Utils
 					writer.WriteStartElement("Subsystems");
 
 					WriteSubsystem(typeof(EntitySystem), writer);
-					WriteSubsystem(typeof(InputSystem), writer);
+					//WriteSubsystem(typeof(InputSystem), writer);
 					WriteSubsystem(typeof(GameRules), writer);
 					WriteSubsystem(typeof(Debug), writer);
 
@@ -79,7 +81,6 @@ namespace CryEngine.Utils
 
 				writer.WriteEndDocument();
 			}
-
 		}
 
 		static void WriteSubsystem(System.Type type, XmlWriter writer)
@@ -123,14 +124,17 @@ namespace CryEngine.Utils
 			if (value == null)
 				return;
 
-			if (ObjectReferences.Contains(value) && ObjectReferences.IndexOf(value).GetType()==value.GetType())
+			var valueType = value.GetType();
+
+			bool referenceExists = ObjectReferences.Contains(value);
+			if (referenceExists)
 			{
 				writer.WriteStartElement("Field");
 				writer.WriteAttributeString("Name", fieldInfo.Name);
 				writer.WriteAttributeString("ReferencesId", ObjectReferences.IndexOf(value).ToString());
 				writer.WriteEndElement();
 			}
-			else if (!fieldName.Equals("<ScriptId>k__BackingField") && !fieldName.Equals("m_value"))
+			else if (!fieldName.Equals("<ScriptId>k__BackingField"))
 			{
 				if (fieldInfo.FieldType.Implements(typeof(IList)))
 				{
@@ -139,12 +143,11 @@ namespace CryEngine.Utils
 						return;
 
 					writer.WriteStartElement("Field");
-					var valueType = value.GetType();
 
 					writer.WriteAttributeString("Name", fieldInfo.Name);
 					writer.WriteAttributeString("Type", valueType.Name);
 
-					if (!valueType.IsPrimitive && !valueType.IsEnum && valueType != typeof(string))
+					if (!referenceExists && !valueType.IsPrimitive && !valueType.IsEnum && valueType != typeof(string))
 					{
 						writer.WriteAttributeString("ReferenceId", ObjectReferences.Count.ToString());
 
@@ -169,12 +172,11 @@ namespace CryEngine.Utils
 						return;
 
 					writer.WriteStartElement("Field");
-					var valueType = value.GetType();
 
 					writer.WriteAttributeString("Name", fieldInfo.Name);
 					writer.WriteAttributeString("Type", valueType.Name);
 
-					if (!valueType.IsPrimitive && !valueType.IsEnum && valueType != typeof(string))
+					if (!referenceExists && !valueType.IsPrimitive && !valueType.IsEnum && valueType != typeof(string))
 					{
 						writer.WriteAttributeString("ReferenceId", ObjectReferences.Count.ToString());
 
@@ -209,18 +211,18 @@ namespace CryEngine.Utils
 
 		static void WriteValue(object value, XmlWriter writer, string name = null)
 		{
-			if(!string.IsNullOrEmpty(name))
+			if (!string.IsNullOrEmpty(name))
 				writer.WriteAttributeString("Name", name);
 
 			var valueType = value.GetType();
 
+			writer.WriteAttributeString("Type", valueType.Name);
+
 			bool isString = (valueType == typeof(string));
 
-			writer.WriteAttributeString("Type", valueType.Name);
 			if (!valueType.IsPrimitive && !valueType.IsEnum && !isString)
 			{
 				writer.WriteAttributeString("ReferenceId", ObjectReferences.Count.ToString());
-
 				ObjectReferences.Add(value);
 
 				SerializeTypeToXml(value, writer);
@@ -231,9 +233,6 @@ namespace CryEngine.Utils
 
 		static void AddObjectReference(int desiredIndex, object obj)
 		{
-			if (obj == null)
-				return;
-
 			while (ObjectReferences.Count < desiredIndex)
 				ObjectReferences.Add(null);
 
@@ -251,7 +250,7 @@ namespace CryEngine.Utils
 			var scriptDataElement = scriptData.Element("ScriptData");
 			foreach (var type in scriptDataElement.Element("Types").Elements("Type"))
 			{
-				CryScript script = ScriptCompiler.CompiledScripts.Where(Script => Script.className.Equals(type.Attribute("Name").Value)).FirstOrDefault();
+				CryScript script = ScriptCompiler.CompiledScripts.Where(Script => Script.ClassName.Equals(type.Attribute("Name").Value)).FirstOrDefault();
 
 				if (script != default(CryScript))
 				{
@@ -259,17 +258,17 @@ namespace CryEngine.Utils
 					{
 						int scriptId = System.Convert.ToInt32(instanceElement.Attribute("Id").Value);
 
-						if (script.ScriptInstances == null)
-							script.ScriptInstances = new List<CryScriptInstance>();
+						if(script.ScriptInstances == null)
+							script.ScriptInstances = new Collection<CryScriptInstance>();
 
-						script.ScriptInstances.Add(System.Activator.CreateInstance(script.Type) as CryScriptInstance);
+						script.ScriptInstances.Add(System.Activator.CreateInstance(script.ClassType) as CryScriptInstance);
 
 						AddObjectReference(System.Convert.ToInt32(instanceElement.Attribute("ReferenceId").Value), script.ScriptInstances.Last());
 
 						if (ScriptCompiler.NextScriptId < scriptId)
 							ScriptCompiler.NextScriptId = scriptId;
 
-						script.Type.GetProperty("ScriptId").SetValue(script.ScriptInstances.Last(), scriptId, null);
+						script.ClassType.GetProperty("ScriptId").SetValue(script.ScriptInstances.Last(), scriptId, null);
 
 						ProcessFields(script.ScriptInstances.Last(), instanceElement.Elements("Field"));
 					}
@@ -283,7 +282,7 @@ namespace CryEngine.Utils
 			{
 				var type = System.Type.GetType(subSystem.Attribute("Name").Value);
 
-				ProcessFields(null, subSystem.Elements("Field"), type); 
+				ProcessFields(null, subSystem.Elements("Field"), type);
 			}
 
 			foreach (var scriptInstance in ReloadedScriptInstances)
@@ -302,7 +301,7 @@ namespace CryEngine.Utils
 			if (instance as CryScriptInstance != null)
 				ReloadedScriptInstances.Add(instance as CryScriptInstance);
 
-			var instanceType = type!=null ? type : instance.GetType();
+			var instanceType = type != null ? type : instance.GetType();
 
 			foreach (var field in fields)
 			{
@@ -320,7 +319,7 @@ namespace CryEngine.Utils
 
 					fieldInfo.SetValue(instance, ObjectReferences.ElementAtOrDefault(System.Convert.ToInt32(fieldReferenceAttribute.Value)));
 				}
-				else if(!field.Attribute("Name").Value.Equals("inputMethods")) // this needs to be solved asap
+				else// if(!field.Attribute("Name").Value.Equals("inputMethods")) // this needs to be solved asap
 				{
 					FieldInfo fieldInfo = null;
 					var baseType = instanceType;
@@ -332,10 +331,6 @@ namespace CryEngine.Utils
 					}
 
 					bool fieldOk = fieldInfo != null;
-
-					var referenceIdAttribute = field.Attribute("ReferenceId");
-					if (referenceIdAttribute != null && fieldOk)
-						AddObjectReference(System.Convert.ToInt32(referenceIdAttribute.Value), fieldInfo.GetValue(instance));
 
 					if (fieldOk)
 					{
@@ -396,6 +391,10 @@ namespace CryEngine.Utils
 							}
 						}
 					}
+
+					var referenceIdAttribute = field.Attribute("ReferenceId");
+					if (referenceIdAttribute != null && fieldOk)
+						AddObjectReference(System.Convert.ToInt32(referenceIdAttribute.Value), fieldInfo.GetValue(instance));
 				}
 			}
 		}

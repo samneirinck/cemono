@@ -19,9 +19,11 @@
     <OutputPath>..\..\..\Bin32\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <WarningLevel>0</WarningLevel>
     <DocumentationFile>..\..\..\Bin32\CryBrary.XML</DocumentationFile>
     <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisIgnoreGeneratedCode>true</CodeAnalysisIgnoreGeneratedCode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -108,6 +110,9 @@
     <DocumentationFile>..\..\..\Bin64\CryBrary.XML</DocumentationFile>
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Cecil">
       <HintPath>..\..\..\Engine\Mono\lib\mono\gac\Mono.Cecil\0.9.4.0__0738eb9f132ed756\Mono.Cecil.dll</HintPath>
@@ -131,9 +136,9 @@
     <Compile Include="EntitySystem\EntityId.cs" />
     <Compile Include="EntitySystem\Physics.cs" />
     <Compile Include="GameRules\GameRules.cs" />
+    <Compile Include="Types\BoundingBox.cs" />
     <Compile Include="Types\Color.cs" />
     <Compile Include="Utils\AppDomainSerializer.cs" />
-    <Compile Include="CryScriptCompiler.cs" />
     <Compile Include="Misc\Convert.cs" />
     <Compile Include="Misc\Math.cs" />
     <Compile Include="Engine\3DEngine.cs" />

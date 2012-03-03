@@ -46,11 +46,11 @@ namespace CryEngine
 
         // Client-only
         public virtual void OnConnect() { }
-		public virtual void OnDisconnect(DisconnectionCause cause, string desc) { }
+		public virtual void OnDisconnect(DisconnectionCause cause, string description) { }
 
 		public virtual void OnRevive(EntityId actorId, Vec3 pos, Vec3 rot, int teamId) { }
 		public virtual void OnReviveInVehicle(EntityId actorId, EntityId vehicleId, int seatId, int teamId) { }
-		public virtual void OnKill(EntityId actorId, EntityId shooterId, string weaponClassName, int damage, int material, int hit_type) { }
+		public virtual void OnKill(EntityId actorId, EntityId shooterId, string weaponClassName, int damage, int material, int hitType) { }
 
 		public virtual void OnVehicleDestroyed(EntityId vehicleId) { }
 		public virtual void OnVehicleSubmerged(EntityId vehicleId, float ratio) { }
@@ -61,99 +61,99 @@ namespace CryEngine
 		/// <summary>
 		/// This cause must be first! - timeout occurred.
 		/// </summary>
-		eDC_Timeout = 0,
+		Timeout = 0,
 		/// <summary>
 		/// Incompatible protocols.
 		/// </summary>
-		eDC_ProtocolError,
+		ProtocolError,
 		/// <summary>
 		/// Failed to resolve an address.
 		/// </summary>
-		eDC_ResolveFailed,
+		ResolveFailed,
 		/// <summary>
 		/// Versions mismatch.
 		/// </summary>
-		eDC_VersionMismatch,
+		VersionMismatch,
 		/// <summary>
 		/// Server is full.
 		/// </summary>
-		eDC_ServerFull,
+		ServerFull,
 		/// <summary>
 		/// User initiated kick.
 		/// </summary>
-		eDC_Kicked,
+		Kicked,
 		/// <summary>
 		/// Teamkill ban/ admin ban.
 		/// </summary>
-		eDC_Banned,
+		Banned,
 		/// <summary>
 		/// Context database mismatch.
 		/// </summary>
-		eDC_ContextCorruption,
+		ContextCorruption,
 		/// <summary>
 		/// Password mismatch, cdkey bad, etc.
 		/// </summary>
-		eDC_AuthenticationFailed,
+		AuthenticationFailed,
 		/// <summary>
 		/// Misc. game error.
 		/// </summary>
-		eDC_GameError,
+		GameError,
 		/// <summary>
 		/// DX11 not found.
 		/// </summary>
-		eDC_NotDX11Capable,
+		NotDX11Capable,
 		/// <summary>
 		/// The nub has been destroyed.
 		/// </summary>
-		eDC_NubDestroyed,
+		NubDestroyed,
 		/// <summary>
 		/// Icmp reported error.
 		/// </summary>
-		eDC_ICMPError,
+		ICMPError,
 		/// <summary>
 		/// NAT negotiation error.
 		/// </summary>
-		eDC_NatNegError,
+		NatNegError,
 		/// <summary>
 		/// Punk buster detected something bad.
 		/// </summary>
-		eDC_PunkDetected,
+		PunkDetected,
 		/// <summary>
 		/// Demo playback finished.
 		/// </summary>
-		eDC_DemoPlaybackFinished,
+		DemoPlaybackFinished,
 		/// <summary>
 		/// Demo playback file not found.
 		/// </summary>
-		eDC_DemoPlaybackFileNotFound,
+		DemoPlaybackFileNotFound,
 		/// <summary>
 		/// User decided to stop playing.
 		/// </summary>
-		eDC_UserRequested,
+		UserRequested,
 		/// <summary>
 		/// User should have controller connected.
 		/// </summary>
-		eDC_NoController,
+		NoController,
 		/// <summary>
 		/// Unable to connect to server.
 		/// </summary>
-		eDC_CantConnect,
+		CantConnect,
 		/// <summary>
 		/// Arbitration failed in a live arbitrated session.
 		/// </summary>
-		eDC_ArbitrationFailed,
+		ArbitrationFailed,
 		/// <summary>
 		/// Failed to successfully join migrated game
 		/// </summary>
-		eDC_FailedToMigrateToNewHost,
+		FailedToMigrateToNewHost,
 		/// <summary>
 		/// The session has just been deleted
 		/// </summary>
-		eDC_SessionDeleted,
+		SessionDeleted,
 		/// <summary>
 		/// Unknown cause
 		/// </summary>
-		eDC_Unknown
+		Unknown
 	}
 
 	public struct DamageInfo

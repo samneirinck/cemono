@@ -72,27 +72,27 @@ namespace CryEngine
         /// <param name="scriptType"></param>
         /// <returns>The folder in which scripts of this type are located; i.e. Game\Scripts\Entities</returns>
         /// <example>GetScriptFolder(MonoScriptType.Entity)</example>
-        public static string GetScriptFolder(MonoScriptType scriptType)
+        public static string GetScriptFolder(ScriptType scriptType)
         {
             string folder = "";
             switch (scriptType)
             {
-                case MonoScriptType.Actor:
+                case ScriptType.Actor:
                     folder = @"Entities/Actor";
                     break;
-                case MonoScriptType.Entity:
+                case ScriptType.Entity:
                     folder = "Entities";
                     break;
-                case MonoScriptType.StaticEntity:
+                case ScriptType.StaticEntity:
                     folder = "Entities";
                     break;
-                case MonoScriptType.FlowNode:
+                case ScriptType.FlowNode:
                     folder = "FlowNodes";
                     break;
-                case MonoScriptType.GameRules:
+                case ScriptType.GameRules:
                     folder = "GameRules";
                     break;
-				case MonoScriptType.EditorForm:
+				case ScriptType.EditorForm:
 					folder = "EditorForms";
 					break;
             }

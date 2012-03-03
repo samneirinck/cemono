@@ -36,15 +36,32 @@ namespace CryEngine
 
 		private static Dictionary<string, InputActionDelegate> inputActionDelegates = new Dictionary<string, InputActionDelegate>();
 
-		public delegate void MouseEventDelegate(int x, int y, MouseEvent mouseEvent, int wheelDelta);
+		public delegate void MouseEventDelegate(object sender, MouseEventArgs e);
 
 		public static void OnMouseEvent(int x, int y, MouseEvent mouseEvent, int wheelDelta)
 		{
 			if(MouseEvents != null)
-				MouseEvents(x, y, mouseEvent, wheelDelta);
+				MouseEvents(null, new MouseEventArgs(x, y, wheelDelta, mouseEvent));
 		}
 
 		public static event MouseEventDelegate MouseEvents;
+	}
+
+	public class MouseEventArgs : System.EventArgs
+	{
+		public MouseEventArgs(int x, int y, int wheelDelta, MouseEvent mouseEvent)
+		{
+			X = x;
+			Y = y;
+			WheelDelta = wheelDelta;
+			MouseEvent = mouseEvent;
+		}
+
+		public int X { get; private set; }
+		public int Y { get; private set; }
+		public int WheelDelta { get; private set; }
+
+		public MouseEvent MouseEvent { get; private set; }
 	}
 
 	public enum MouseEvent

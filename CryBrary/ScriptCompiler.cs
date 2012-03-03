@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.IO;
+
+using System.Collections.ObjectModel;
 using System.Collections.Generic;
 
 using System.CodeDom.Compiler;
@@ -19,6 +21,260 @@ namespace CryEngine
 {
 	public static partial class ScriptCompiler
 	{
+		public static void Initialize()
+		{
+#if !RELEASE
+			//Pdb2Mdb.Driver.Convert(Assembly.GetExecutingAssembly());
+#endif
+
+			CompiledScripts = new List<CryScript>();
+			FlowNodes = new List<StoredNode>();
+
+			AssemblyReferenceHandler.Initialize();
+
+			NextScriptId = 0;
+
+			//GenerateScriptbindAssembly(scriptBinds.ToArray());
+
+			AssemblyReferenceHandler.ReferencedAssemblies.AddRange(System.AppDomain.CurrentDomain.GetAssemblies().Select(a => a.Location).ToArray());
+
+			LoadPrecompiledAssemblies();
+
+			AddScripts(CompileScriptsInFolders(
+				PathUtils.GetScriptFolder(ScriptType.Entity),
+				PathUtils.GetScriptFolder(ScriptType.GameRules),
+				PathUtils.GetScriptFolder(ScriptType.FlowNode)
+			));
+		}
+
+		public static void PostInit()
+		{
+			// These have to be registered later on due to the flow system being initialized late.
+			RegisterFlownodes();
+		}
+
+		private static void LoadPrecompiledAssemblies()
+		{
+			//Add pre-compiled assemblies / plugins
+			AddScripts(ScriptCompiler.LoadLibrariesInFolder(Path.Combine(PathUtils.GetScriptsFolder(), "Plugins")));
+		}
+
+		private static void AddScripts(IEnumerable<CryScript> scripts)
+		{
+			if(scripts == null || scripts.Count() < 1)
+				return;
+
+			CompiledScripts.AddRange(scripts);
+		}
+
+		/// <summary>
+		/// Instantiates a script using its name and interface.
+		/// </summary>
+		/// <param name="scriptName"></param>
+		/// <param name="constructorParams"></param>
+		/// <returns>New instance scriptId or -1 if instantiation failed.</returns>
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static CryScriptInstance InstantiateScript(string scriptName, object[] constructorParams = null)
+		{
+			if(scriptName.Length < 1)
+			{
+				Debug.LogAlways("Empty script passed to InstantiateClass");
+
+				return null;
+			}
+
+			// I can play with sexy lambdas too!
+			int index = CompiledScripts.FindIndex(x => x.ClassName.Equals(scriptName));
+			if(index == -1)
+			{
+				Debug.LogAlways("Failed to instantiate {0}, compiled script could not be found.", scriptName);
+
+				return null;
+			}
+
+			CryScript script = CompiledScripts.ElementAt(index);
+
+			NextScriptId++;
+
+			if(script.ScriptType == ScriptType.GameRules)
+				script.ScriptInstances = null;
+
+			if(script.ScriptInstances == null)
+				script.ScriptInstances = new Collection<CryScriptInstance>();
+
+			script.ScriptInstances.Add(System.Activator.CreateInstance(script.ClassType, constructorParams) as CryScriptInstance);
+			script.ScriptInstances.Last().ScriptId = NextScriptId;
+
+			CompiledScripts[index] = script;
+
+			return script.ScriptInstances.Last();
+		}
+
+		/// <summary>
+		/// Adds an script instance to the script collection and returns its new id.
+		/// </summary>
+		/// <param name="instance"></param>
+		public static int AddScriptInstance(CryScriptInstance instance)
+		{
+			int scriptIndex = CompiledScripts.FindIndex(x => x.ClassName == instance.GetType().Name);
+			if(scriptIndex != -1)
+			{
+				CryScript script = CompiledScripts.ElementAt(scriptIndex);
+
+				if(script.ScriptInstances == null)
+					script.ScriptInstances = new Collection<CryScriptInstance>();
+				else if(script.ScriptInstances.Contains(instance))
+					return -1;
+
+				NextScriptId++;
+
+				instance.ScriptId = NextScriptId;
+				script.ScriptInstances.Add(instance);
+
+				CompiledScripts[scriptIndex] = script;
+
+				return NextScriptId;
+			}
+
+			Debug.LogAlways("Couldn't add script {0}", instance.GetType().Name);
+			return -1;
+		}
+
+		/// <summary>
+		/// Locates and destructs the script with the assigned scriptId.
+		/// 
+		/// Warning: Not supplying the scriptName will make the method execute slower.
+		/// </summary>
+		/// <param name="scriptId"></param>
+		/// <param name="scriptName"></param>
+		public static void RemoveInstance(int scriptId, string scriptName = "")
+		{
+			if(scriptName.Length > 0)
+			{
+				int index = CompiledScripts.FindIndex(x => x.ClassName.Equals(scriptName));
+				if(index == -1)
+					return;
+
+				CryScript script = CompiledScripts[index];
+
+				if(script.ScriptInstances != null)
+				{
+					var scriptInstance = script.ScriptInstances.First(x => x.ScriptId == scriptId);
+					if(scriptInstance == null)
+						return;
+
+					int instanceIndex = script.ScriptInstances.IndexOf(scriptInstance);
+					if(instanceIndex == -1)
+					{
+						Debug.LogAlways("Failed to remove script of type {0} with id {1}; instance was not found.", scriptName, scriptId);
+						return;
+					}
+
+					script.ScriptInstances.RemoveAt(instanceIndex);
+
+					CompiledScripts[index] = script;
+				}
+			}
+			else
+			{
+				for(int i = 0; i < CompiledScripts.Count; i++)
+				{
+					CryScript script = CompiledScripts[i];
+
+					if(script.ScriptInstances != null)
+					{
+						var scriptInstance = script.ScriptInstances.First(x => x.ScriptId == scriptId);
+						if(scriptInstance == null)
+							return;
+
+						int scriptIndex = script.ScriptInstances.IndexOf(scriptInstance);
+						if(scriptIndex != -1)
+						{
+							script.ScriptInstances.RemoveAt(scriptIndex);
+
+							CompiledScripts[i] = script;
+
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static object InvokeScriptFunctionById(int id, string func, object[] args = null)
+		{
+			CryScriptInstance scriptInstance = GetScriptInstanceById(id);
+			if(scriptInstance == default(CryScriptInstance))
+			{
+				Debug.LogAlways("Failed to invoke method, script instance was invalid");
+				return null;
+			}
+
+			return InvokeScriptFunction(scriptInstance, func, args);
+		}
+
+		public static CryScriptInstance GetScriptInstanceById(int id)
+		{
+			var scripts = CompiledScripts.Where(script => script.ScriptInstances != null);
+
+			CryScriptInstance scriptInstance = null;
+			foreach(var script in scripts)
+			{
+				scriptInstance = script.ScriptInstances.FirstOrDefault(instance => instance.ScriptId == id);
+
+				if(scriptInstance != default(CryScriptInstance))
+					return scriptInstance;
+			}
+
+			return null;
+		}
+
+		public static int GetEntityScriptId(EntityId entityId, System.Type scriptType = null)
+		{
+			var scripts = CompiledScripts.Where(script => (scriptType != null ? script.ClassType.Implements(scriptType) : true) && script.ScriptInstances != null);
+
+			foreach(var compiledScript in scripts)
+			{
+				foreach(var script in compiledScript.ScriptInstances)
+				{
+					var scriptEntity = script as StaticEntity;
+					if(scriptEntity != null && scriptEntity.Id == entityId)
+						return script.ScriptId;
+				}
+			}
+
+			return -1;
+		}
+
+		/// <summary>
+		/// Automagically registers scriptbind methods to rid us of having to add them in both C# and C++.
+		/// </summary>
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static void RegisterScriptbind(string namespaceName, string className, object[] methods)
+		{
+			if(ScriptBinds == null)
+				ScriptBinds = new List<Scriptbind>();
+
+			ScriptBinds.Add(new Scriptbind(namespaceName, className, methods));
+		}
+
+		/// <summary>
+		/// Called once per frame.
+		/// </summary>
+		public static void OnUpdate(float frameTime)
+		{
+			Time.DeltaTime = frameTime;
+
+			Parallel.ForEach(CompiledScripts, script =>
+			{
+				if(script.ScriptInstances != null)
+					script.ScriptInstances.Where(i => i.ReceiveUpdates).ToList().ForEach(i => i.OnUpdate());
+			});
+
+			EntitySystem.OnUpdate();
+		}
+
 		/// <summary>
 		/// This function will automatically scan for C# dll (*.dll) files and load the types contained within them.
 		/// </summary>
@@ -132,20 +388,13 @@ namespace CryEngine
 			if (scripts.Length < 1)
 				return null;
 
-			CodeDomProvider provider;
-			switch(language)
-			{
-				case ScriptLanguage.VisualBasic:
-					provider = CodeDomProvider.CreateProvider("VisualBasic");
-					break;
-				case ScriptLanguage.JScript:
-					provider = CodeDomProvider.CreateProvider("JScript");
-					break;
-				case ScriptLanguage.CSharp:
-				default:
-					provider = CodeDomProvider.CreateProvider("CSharp");
-					break;
-			}
+			CodeDomProvider provider = null;
+			if(language == ScriptLanguage.VisualBasic)
+				provider = CodeDomProvider.CreateProvider("VisualBasic");
+			else if(language == ScriptLanguage.JScript)
+				provider = CodeDomProvider.CreateProvider("JScript");
+			else if(language == ScriptLanguage.CSharp)
+				provider = CodeDomProvider.CreateProvider("CSharp");
 
 			CompilerParameters compilerParameters = new CompilerParameters();
 
@@ -171,6 +420,7 @@ namespace CryEngine
 			{
 				CompilerResults results = provider.CompileAssemblyFromFile(compilerParameters, scripts);
 
+				provider.Dispose();
 				provider = null;
 				compilerParameters = null;
 
@@ -214,38 +464,38 @@ namespace CryEngine
 
 					if (type.Implements(typeof(BaseGameRules)))
 					{
-						scripts.Last().SetScriptType(MonoScriptType.GameRules);
+						scripts.Last().SetScriptType(ScriptType.GameRules);
 
-						GameRulesSystem._RegisterGameMode(scripts.Last().className);
+						GameRulesSystem._RegisterGameMode(scripts.Last().ClassName);
 
 						if (type.ContainsAttribute<DefaultGamemodeAttribute>())
-							GameRulesSystem._SetDefaultGameMode(scripts.Last().className);
+							GameRulesSystem._SetDefaultGameMode(scripts.Last().ClassName);
 					}
 					else if (type.Implements(typeof(BasePlayer)))
 					{
-						scripts.Last().SetScriptType(MonoScriptType.Actor);
+						scripts.Last().SetScriptType(ScriptType.Actor);
 
-						ActorSystem._RegisterActorClass(scripts.Last().className, false);
+						ActorSystem._RegisterActorClass(scripts.Last().ClassName, false);
 					}
 					else if (type.Implements(typeof(StaticEntity)))
 					{
 						bool staticEntity = !type.Implements(typeof(Entity));
 
 						if (!staticEntity)
-							scripts.Last().SetScriptType(MonoScriptType.Entity);
+							scripts.Last().SetScriptType(ScriptType.Entity);
 						else
-							scripts.Last().SetScriptType(MonoScriptType.StaticEntity);
+							scripts.Last().SetScriptType(ScriptType.StaticEntity);
 
 						LoadEntity(type, scripts.Last(), staticEntity);
 					}
 					else if (type.Implements(typeof(FlowNode)))
 					{
-						scripts.Last().SetScriptType(MonoScriptType.FlowNode);
+						scripts.Last().SetScriptType(ScriptType.FlowNode);
 
-						LoadFlowNode(type, scripts.Last().className);
+						LoadFlowNode(type, scripts.Last().ClassName);
 					}
 					else if (type.Implements(typeof(CryScriptInstance)))
-						scripts.Last().SetScriptType(MonoScriptType.Unknown);
+						scripts.Last().SetScriptType(ScriptType.Unknown);
 				}
 			});
 
@@ -292,7 +542,7 @@ namespace CryEngine
 			entity = null;
 
 			if (config.registerParams.Name.Length <= 0)
-				config.registerParams.Name = script.className;
+				config.registerParams.Name = script.ClassName;
 			if (config.registerParams.Category.Length <= 0)
 				config.registerParams.Category = ""; // TODO: Use the folder structure in Scripts/Entities. (For example if the entity is in Scripts/Entities/Multiplayer, the category should become "Multiplayer")
 
@@ -407,9 +657,14 @@ namespace CryEngine
 		}
 
 		internal static List<StoredNode> FlowNodes;
+
+		static List<Scriptbind> ScriptBinds;
+
+		public static List<CryScript> CompiledScripts;
+		public static int NextScriptId;
 	}
 
-	public enum MonoScriptType
+	public enum ScriptType
 	{
 		Null = -1,
 		/// <summary>
@@ -447,38 +702,38 @@ namespace CryEngine
 	/// </summary>
 	public struct CryScript
 	{
-		public CryScript(Type _type)
+		public CryScript(Type type)
 			: this()
 		{
-			Type = _type;
-			className = Type.Name;
+			ClassType = type;
+			ClassName = ClassType.Name;
 		}
 
-		public void SetScriptType(MonoScriptType scriptType)
+		public void SetScriptType(ScriptType scriptType)
 		{
 			ScriptType = scriptType;
 		}
 
-		public Type Type { get; private set; }
-		public MonoScriptType ScriptType { get; private set; }
+		public Type ClassType { get; private set; }
+		public ScriptType ScriptType { get; private set; }
 
 		// Type.Name is costly to call
-		public string className { get; private set; }
+		public string ClassName { get; private set; }
 
 		/// <summary>
 		/// Stores all instances of this class.
 		/// </summary>
-		public List<CryScriptInstance> ScriptInstances { get; internal set; }
+		public Collection<CryScriptInstance> ScriptInstances { get; internal set; }
 
 		#region Operators
-		public static bool operator ==(CryScript lScript, CryScript rScript)
+		public static bool operator ==(CryScript script1, CryScript script2)
 		{
-			return lScript.Type == rScript.Type;
+			return script1.ClassType == script2.ClassType;
 		}
 
-		public static bool operator !=(CryScript lScript, CryScript rScript)
+		public static bool operator !=(CryScript script1, CryScript script2)
 		{
-			return lScript.Type != rScript.Type;
+			return script1.ClassType != script2.ClassType;
 		}
 
 		public override bool Equals(object obj)
@@ -491,7 +746,7 @@ namespace CryEngine
 
 		public override int GetHashCode()
 		{
-			return Type.GetHashCode();
+			return ClassType.GetHashCode();
 		}
 
 		#endregion

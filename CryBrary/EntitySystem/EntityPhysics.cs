@@ -12,7 +12,7 @@ namespace CryEngine
 		extern internal static void _Sleep(uint entityId, bool sleep);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _BreakIntoPieces(uint entityId, int slot, int piecesSlot, BreakageParams breakageParams);
+		extern internal static void _BreakIntoPieces(uint entityId, int slot, int piecesSlot, BreakageParameters breakageParams);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static void _AddImpulse(uint entityId, ActionImpulse actionImpulse);
@@ -155,7 +155,7 @@ namespace CryEngine
 		PostStep = 2
 	}
 
-	public struct BreakageParams
+	public struct BreakageParameters
 	{
 		public enum BreakageType
 		{

@@ -1,9 +1,12 @@
 ﻿namespace CryEngine
 {
-	public class Convert
+	public static class Convert
 	{
 		public static object FromString(string type, string value)
 		{
+			if(string.IsNullOrEmpty(value) || string.IsNullOrEmpty(type))
+				return null;
+
 			switch (type)
 			{
 				case "Boolean":

@@ -5,7 +5,7 @@ namespace CryEngine
     /// <summary>
     /// Used internally by this assembly for the Player base class.
     /// </summary>
-    public class ActorSystem
+    public static class ActorSystem
     {
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static void _RegisterActorClass(string className, bool isAI);

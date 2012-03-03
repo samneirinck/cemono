@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace CryEngine
+﻿namespace CryEngine
 {
 	/// <summary>
 	/// Entity ID's store references to game entities as unsigned integers. This class wraps that functionality for CLS compliance.
@@ -14,9 +12,30 @@ namespace CryEngine
 			if(id >= 0)
 				_value = (uint)id;
 			else
-				throw new ArgumentException("Tried to set a negative entity ID");
+				throw new System.ArgumentException("Tried to set a negative entity ID");
 		}
 
+		#region Overrides
+		public override bool Equals(object obj)
+		{
+			if(obj is EntityId || obj is int)
+				return (EntityId)obj == this;
+
+			return false;
+		}
+
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
+
+		public override string ToString()
+		{
+			return string.Format("EntityId {0}", _value);
+		}
+		#endregion
+
+		#region Operators
 		public static implicit operator int(EntityId id)
 		{
 			return (int)id._value;
@@ -38,5 +57,6 @@ namespace CryEngine
 		{
 			return new EntityId { _value = value };
 		}
+		#endregion
 	}
 }

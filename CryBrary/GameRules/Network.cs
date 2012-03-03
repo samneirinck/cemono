@@ -1,7 +1,7 @@
 ﻿
 namespace CryEngine
 {
-    public partial class CryNetwork
+    public static partial class CryNetwork
     {
         /// <summary>
         /// Initializes static variables which never change, i.e. IsEditor.
@@ -30,7 +30,7 @@ namespace CryEngine
         public static bool IsMultiplayer { private set; get; }
         public static bool IsServer { private set; get; }
         public static bool IsClient { private set; get; }
-        // This is not quite so networky.
+        // TODO: Find another place for this? - not quite so networky.
         public static bool IsEditor { private set; get; }
         public static bool IsDedicated { private set; get; }
     }

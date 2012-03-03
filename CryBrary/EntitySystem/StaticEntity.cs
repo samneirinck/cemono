@@ -140,8 +140,15 @@ namespace CryEngine
 			foreach(var property in GetType().GetProperties())
 			{
 				EditorPropertyAttribute attr;
-				if(property.TryGetAttribute(out attr) && attr.DefaultValue != null)// && !storedPropertyNames.Contains(property.Name))
-					property.SetValue(this, attr.DefaultValue, null);
+				try
+				{
+					if(property.TryGetAttribute(out attr) && attr.DefaultValue != null)// && !storedPropertyNames.Contains(property.Name))
+						property.SetValue(this, attr.DefaultValue, null);
+				}
+				catch(Exception ex)
+				{
+					Debug.LogException(ex);
+				}
 			}
 
 			foreach(var field in GetType().GetFields())
@@ -451,24 +458,6 @@ namespace CryEngine
             }
         }
         #endregion
-	}
-
-	public struct BoundingBox
-	{
-		public BoundingBox(Vec3 min, Vec3 max)
-			: this()
-		{
-			this.min = min;
-			this.max = max;
-		}
-
-		public override string ToString()
-		{
-			return String.Format("min: {0} max: {1}", min.ToString(), max.ToString());
-		}
-
-		public Vec3 min;
-		public Vec3 max;
 	}
 
 	public enum EntitySlotFlags
