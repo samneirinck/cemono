@@ -22,9 +22,9 @@ namespace CryEngine
 		/// <summary>
 		/// This function will automatically scan for C# dll (*.dll) files and load the types contained within them.
 		/// </summary>
-		public static CryScript[] LoadLibrariesInFolder(string directory)
+		public static IEnumerable<CryScript> LoadLibrariesInFolder(string directory)
 		{
-			if(!Directory.Exists(directory))
+			if (!Directory.Exists(directory))
 			{
 				Debug.LogAlways("Libraries failed to load; Folder {0} does not exist.", directory);
 				return null;
@@ -32,11 +32,11 @@ namespace CryEngine
 
 			var plugins = Directory.GetFiles(directory, "*.dll", SearchOption.AllDirectories);
 
-			if(plugins != null && plugins.Length != 0)
+			if (plugins != null && plugins.Length != 0)
 			{
 				List<CryScript> compiledScripts = new List<CryScript>();
 
-				foreach(var plugin in plugins)
+				foreach (var plugin in plugins)
 				{
 					try
 					{
@@ -59,7 +59,7 @@ namespace CryEngine
 						compiledScripts.AddRange(LoadAssembly(assembly));
 					}
 					//This exception tells us that the assembly isn't a valid .NET assembly for whatever reason
-					catch(BadImageFormatException)
+					catch (BadImageFormatException)
 					{
 						Debug.LogAlways("Plugin loading failed for {0}; dll is not valid.", plugin);
 					}
@@ -74,22 +74,22 @@ namespace CryEngine
 		/// <summary>
 		/// This function will automatically scan for C# (*.cs) files and compile them using CompileScripts.
 		/// </summary>
-		public static CryScript[] CompileScriptsInFolder(string directory)
+		public static IEnumerable<CryScript> CompileScriptsInFolder(string directory)
 		{
-			if(!Directory.GetParent(directory).Exists)
+			if (!Directory.GetParent(directory).Exists)
 			{
 				Debug.LogAlways("Aborting script compilation; script directory parent could not be located.");
 				return null;
 			}
 
-			if(!Directory.Exists(directory))
+			if (!Directory.Exists(directory))
 			{
 				Debug.LogAlways("Script compilation failed; Folder {0} does not exist.", directory);
 				return null;
 			}
 
 			string[] scriptsInFolder = Directory.GetFiles(directory, "*.cs", SearchOption.AllDirectories);
-			if(scriptsInFolder == null || scriptsInFolder.Length < 1)
+			if (scriptsInFolder == null || scriptsInFolder.Length < 1)
 			{
 				Debug.LogAlways("No scripts were found in {0}.", directory);
 				return null;
@@ -98,18 +98,18 @@ namespace CryEngine
 			return CompileScripts(scriptsInFolder, ".cs");
 		}
 
-		public static CryScript[] CompileScriptsInFolders(params string[] scriptFolders)
+		public static IEnumerable<CryScript> CompileScriptsInFolders(params string[] scriptFolders)
 		{
 			List<string> scripts = new List<string>();
-			foreach(var directory in scriptFolders)
+			foreach (var directory in scriptFolders)
 			{
-				if(Directory.Exists(directory))
+				if (Directory.Exists(directory))
 					scripts.AddRange(Directory.GetFiles(directory, "*.cs", SearchOption.AllDirectories));
 				else
 					Debug.LogAlways("Could not compile scripts in {0}; directory not found", directory);
 			}
 
-			if(scripts.Count > 0)
+			if (scripts.Count > 0)
 				return CompileScripts(scripts.ToArray(), ".cs");
 			else
 				return null;
@@ -120,9 +120,9 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="scripts">A string array containing full paths to scripts to be compiled.</param>
 		/// <returns></returns>
-		public static CryScript[] CompileScripts(string[] scripts, string scriptExtension)
+		public static IEnumerable<CryScript> CompileScripts(string[] scripts, string scriptExtension)
 		{
-			if(scripts.Length < 1)
+			if (scripts.Length < 1)
 				return null;
 
 			CodeDomProvider provider;
@@ -148,7 +148,7 @@ namespace CryEngine
 			//Add additional assemblies as needed by gamecode to referencedAssemblies
 			foreach (var assembly in AssemblyReferenceHandler.GetRequiredAssembliesForScripts(scripts))
 			{
-				if(!compilerParameters.ReferencedAssemblies.Contains(assembly))
+				if (!compilerParameters.ReferencedAssemblies.Contains(assembly))
 					compilerParameters.ReferencedAssemblies.Add(assembly);
 			}
 
@@ -158,7 +158,7 @@ namespace CryEngine
 			compilerParameters.IncludeDebugInformation = false;
 #else
 			// Necessary for stack trace line numbers etc
-           compilerParameters.IncludeDebugInformation = true;
+			compilerParameters.IncludeDebugInformation = true;
 #endif
 			try
 			{
@@ -179,7 +179,7 @@ namespace CryEngine
 				else
 					throw new ArgumentNullException("Tried loading a NULL assembly");
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				Debug.LogException(ex);
 			}
@@ -191,7 +191,7 @@ namespace CryEngine
 		/// <summary>
 		/// Loads an C# assembly and return encapulsated script Type.
 		/// </summary>
-		public static CryScript[] LoadAssembly(Assembly assembly)
+		public static IEnumerable<CryScript> LoadAssembly(Assembly assembly)
 		{
 			var assemblyTypes = assembly.GetTypes().Where(type => type.Implements(typeof(CryScriptInstance)));
 
@@ -201,7 +201,7 @@ namespace CryEngine
 			{
 				var type = assemblyTypes.ElementAt(i);
 
-				if(type != null && !type.ContainsAttribute<ExcludeFromCompilationAttribute>())
+				if (type != null && !type.ContainsAttribute<ExcludeFromCompilationAttribute>())
 				{
 					scripts.Add(new CryScript(type));
 
@@ -262,20 +262,20 @@ namespace CryEngine
 
 		internal static void RegisterFlownodes()
 		{
-			foreach(var node in FlowNodes)
+			foreach (var node in FlowNodes)
 				FlowSystem.RegisterNode(node.className, node.category, node.category.Equals("entity", StringComparison.Ordinal));
 		}
 
 		private static void LoadEntity(Type type, CryScript script, bool staticEntity)
 		{
 			// Shoulda thought of this before. Abstract classes brutally murder the engine otherwise.
-			if(type.IsAbstract)
+			if (type.IsAbstract)
 				return;
 
 			EntityConfig config = default(EntityConfig);
 			StaticEntity entity = null;
 
-			if(staticEntity)
+			if (staticEntity)
 				entity = Activator.CreateInstance(type) as StaticEntity;
 			else
 				entity = Activator.CreateInstance(type) as Entity;
@@ -284,9 +284,9 @@ namespace CryEngine
 
 			entity = null;
 
-			if(config.registerParams.Name.Length <= 0)
+			if (config.registerParams.Name.Length <= 0)
 				config.registerParams.Name = script.className;
-			if(config.registerParams.Category.Length <= 0)
+			if (config.registerParams.Category.Length <= 0)
 				config.registerParams.Category = ""; // TODO: Use the folder structure in Scripts/Entities. (For example if the entity is in Scripts/Entities/Multiplayer, the category should become "Multiplayer")
 
 			EntitySystem.RegisterEntityClass(config);
@@ -298,17 +298,17 @@ namespace CryEngine
 		{
 			string category = null;
 
-			if(!entityNode)
+			if (!entityNode)
 			{
 				category = type.Namespace;
 
 				FlowNodeAttribute nodeInfo;
-				if(type.TryGetAttribute<FlowNodeAttribute>(out nodeInfo))
+				if (type.TryGetAttribute<FlowNodeAttribute>(out nodeInfo))
 				{
-					if(nodeInfo.UICategory != null)
+					if (nodeInfo.UICategory != null)
 						category = nodeInfo.UICategory;
 
-					if(nodeInfo.Name != null)
+					if (nodeInfo.Name != null)
 						nodeName = nodeInfo.Name;
 				}
 			}
@@ -320,15 +320,34 @@ namespace CryEngine
 
 		public static object InvokeScriptFunction(object scriptInstance, string func, object[] args = null)
 		{
-			if(scriptInstance == null)
+			if (scriptInstance == null)
 			{
 				Debug.LogAlways("Attempted to invoke method {0} with an invalid instance.", func);
 				return null;
 			}
 
-			// TODO: Solve the problem with multiple function definitions.
-			MethodInfo methodInfo = scriptInstance.GetType().GetMethod(func);
-			if(methodInfo == null)
+			var methodInfo = scriptInstance.GetType().GetMethods().First(method =>
+			{
+				var parameters = method.GetParameters();
+
+				if (method.Name == func)
+				{
+					if ((parameters == null || parameters.Length == 0) && args == null)
+						return true;
+					else if (parameters.Length == args.Length)
+					{
+						for (int i = 0; i < args.Length; i++)
+						{
+							if (parameters[i].ParameterType == args[i].GetType())
+								return true;
+						}
+					}
+				}
+
+				return false;
+			});
+
+			if (methodInfo == null)
 			{
 				Debug.LogAlways("Could not find method {0} in type {1}", func, scriptInstance.GetType().ToString());
 				return null;
@@ -337,17 +356,17 @@ namespace CryEngine
 			// Sort out optional parameters
 			ParameterInfo[] info = methodInfo.GetParameters();
 
-			if(info.Length > 0)
+			if (info.Length > 0)
 			{
 				object[] tempArgs;
 				tempArgs = new object[info.Length];
 				int argIndexLength = args.Length - 1;
 
-				for(int i = 0; i < info.Length; i++)
+				for (int i = 0; i < info.Length; i++)
 				{
-					if(i <= argIndexLength)
+					if (i <= argIndexLength)
 						tempArgs.SetValue(args[i], i);
-					else if(i > argIndexLength && info[i].IsOptional)
+					else if (i > argIndexLength && info[i].IsOptional)
 						tempArgs[i] = info[i].DefaultValue;
 				}
 

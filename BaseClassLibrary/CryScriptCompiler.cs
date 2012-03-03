@@ -58,9 +58,9 @@ namespace CryEngine
 			AddScripts(ScriptCompiler.LoadLibrariesInFolder(Path.Combine(PathUtils.GetScriptsFolder(), "Plugins")));
 		}
 
-		private static void AddScripts(CryScript[] scripts)
+		private static void AddScripts(IEnumerable<CryScript> scripts)
 		{
-			if (scripts == null || scripts.Length < 1)
+			if (scripts == null || scripts.Count() < 1)
 				return;
 
 			CompiledScripts.AddRange(scripts);
