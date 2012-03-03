@@ -4,7 +4,6 @@ namespace CryEngine
 {
 	/// <summary>
 	/// The Vec3 struct is used for all 3D coordinates within the engine.
-	/// TODO: Implement a Quat class for rotation in place of angles.
 	/// </summary>
     [System.Serializable]
     [StructLayout(LayoutKind.Sequential)]
