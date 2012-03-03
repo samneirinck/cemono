@@ -23,8 +23,8 @@ namespace CryEngine.Utils
 		/// <returns></returns>
 		public IEnumerable<string> GetRequiredAssembliesForScripts(IEnumerable<string> scripts)
 		{
-			List<string> namespaces = new List<string>();
-			List<string> assemblyPaths = new List<string>();
+			var namespaces = new List<string>();
+			var assemblyPaths = new List<string>();
 
 			foreach (var script in scripts)
 			{
@@ -35,10 +35,8 @@ namespace CryEngine.Utils
 				}
 			}
 
-			foreach (var Namespace in namespaces)
-				assemblyPaths.Add(ProcessNamespace(Namespace));
-
-			namespaces = null;
+			foreach (var nameSpace in namespaces)
+				assemblyPaths.Add(ProcessNamespace(nameSpace));
 
 			return assemblyPaths;
 		}
@@ -54,7 +52,7 @@ namespace CryEngine.Utils
 			if (string.IsNullOrEmpty(script))
 				return null;
 
-			List<string> namespaces = new List<string>();
+			var namespaces = new List<string>();
 
 			using (var stream = new FileStream(script, FileMode.Open))
 			{
