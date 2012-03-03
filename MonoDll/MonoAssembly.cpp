@@ -28,11 +28,9 @@ CScriptAssembly::CScriptAssembly(const char *assemblyPath)
 		string newAssemblyPath = tempPath + path.substr(lastDirectoryIndex + 1);
 		CopyFile(assemblyPath, newAssemblyPath, false);
 
-		IMonoAssembly *pDebugDatabaseCreator = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetDebugDatabaseCreator();
-
-		if(pDebugDatabaseCreator)
+		if(IMonoAssembly *pDebugDatabaseCreator = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetDebugDatabaseCreator())
 		{
-			if(IMonoClass *pDriverClass = pDebugDatabaseCreator->GetCustomClass("Driver", "Pdb2Mdb"))
+			if(IMonoClass *pDriverClass = pDebugDatabaseCreator->GetCustomClass("Driver", ""))
 			{
 				IMonoArray *pArgs = CreateMonoArray(1);
 				pArgs->Insert(assemblyPath);
