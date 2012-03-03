@@ -211,6 +211,9 @@ namespace CryEngine.Utils
 
 		static void WriteValue(object value, XmlWriter writer, string name = null)
 		{
+			if(value == null)
+				return;
+
 			if (!string.IsNullOrEmpty(name))
 				writer.WriteAttributeString("Name", name);
 
