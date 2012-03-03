@@ -95,7 +95,7 @@ namespace CryEngine
 				return null;
 			}
 
-			return CompileScripts(scriptsInFolder, ".cs");
+			return CompileScripts(scriptsInFolder, ScriptLanguage.CSharp);
 		}
 
 		public static IEnumerable<CryScript> CompileScriptsInFolders(params string[] scriptFolders)
@@ -110,9 +110,16 @@ namespace CryEngine
 			}
 
 			if (scripts.Count > 0)
-				return CompileScripts(scripts.ToArray(), ".cs");
+				return CompileScripts(scripts.ToArray(), ScriptLanguage.CSharp);
 			else
 				return null;
+		}
+
+		public enum ScriptLanguage
+		{
+			CSharp,
+			VisualBasic,
+			JScript
 		}
 
 		/// <summary>
@@ -120,21 +127,21 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="scripts">A string array containing full paths to scripts to be compiled.</param>
 		/// <returns></returns>
-		public static IEnumerable<CryScript> CompileScripts(string[] scripts, string scriptExtension)
+		public static IEnumerable<CryScript> CompileScripts(string[] scripts, ScriptLanguage language)
 		{
 			if (scripts.Length < 1)
 				return null;
 
 			CodeDomProvider provider;
-			switch (scriptExtension) // TODO enum
+			switch(language)
 			{
-				case ".vb":
+				case ScriptLanguage.VisualBasic:
 					provider = CodeDomProvider.CreateProvider("VisualBasic");
 					break;
-				case ".js":
+				case ScriptLanguage.JScript:
 					provider = CodeDomProvider.CreateProvider("JScript");
 					break;
-				case ".cs":
+				case ScriptLanguage.CSharp:
 				default:
 					provider = CodeDomProvider.CreateProvider("CSharp");
 					break;

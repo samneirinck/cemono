@@ -9,6 +9,9 @@ namespace CryEngine
 		extern internal static void _Physicalize(uint entityId, PhysicalizationParams physicalizationParams);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static void _Sleep(uint entityId, bool sleep);
+
+		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static void _BreakIntoPieces(uint entityId, int slot, int piecesSlot, BreakageParams breakageParams);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
@@ -55,6 +58,13 @@ namespace CryEngine
 		/// If true, physics value updates will be automatically applied. Otherwise, Save() must be called manually.
 		/// </summary>
 		public bool AutoUpdate { get; set; }
+
+		internal bool resting;
+		/// <summary>
+		/// Determines if this physical entity is in a sleeping state or not. (Will not be affected by gravity)
+		/// Autoamtically wakes upon collision.
+		/// </summary>
+		public bool Resting { get { return resting; } set { resting = value; StaticEntity._Sleep(_entityId, value); } }
 
 		/// <summary>
 		/// Save the current physics settings.

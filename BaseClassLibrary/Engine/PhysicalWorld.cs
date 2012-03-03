@@ -29,8 +29,8 @@ namespace CryEngine
 	        internal uint colliderId;
 	        internal int ipart;
 	        internal int partid;
-	        internal  short surface_idx;
-	        internal  short idmatOrg;	// original material index, not mapped with material mapping
+	        internal short surface_idx;
+	        internal short idmatOrg;	// original material index, not mapped with material mapping
 	        internal int foreignIdx;
 	        internal int iNode; // BV tree node that had the intersection; can be used for "warm start" next time
 	        internal Vec3 pt;

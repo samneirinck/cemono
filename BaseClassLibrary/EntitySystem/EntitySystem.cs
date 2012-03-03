@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using System.Reflection;
 
 using System.Collections.Generic;
 
@@ -104,13 +105,13 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="className">The entity class to search for.</param>
 		/// <returns>An array of entities.</returns>
-        public static StaticEntity[] GetEntities(string className)
+        public static IEnumerable<StaticEntity> GetEntities(string className)
         {
-            object[] entitiesByClass = _GetEntitiesByClass(className);
+            var entitiesByClass = _GetEntitiesByClass(className);
             if (entitiesByClass == null)
                 return null;
 
-            StaticEntity[] entities = new StaticEntity[entitiesByClass.Length];
+            var entities = new StaticEntity[entitiesByClass.Length];
 
             for (int i = 0; i < entitiesByClass.Length; i++)
                 entities[i] = GetEntity((uint)entitiesByClass[i]);
@@ -123,9 +124,14 @@ namespace CryEngine
 		/// </summary>
 		/// <typeparam name="T">The entity class to search for.</typeparam>
 		/// <returns>An array of entities of type T.</returns>
-		public static T[] GetEntities<T>()
+		public static IEnumerable<T> GetEntities<T>() where T : StaticEntity
 		{
-			return GetEntities(typeof(T).Name) as T[];
+			var results = GetEntities(typeof(T).Name);
+
+			if(results != null && results.Count() > 0)
+				return results.Cast<T>();
+
+			return null;
 		}
 
         internal static void RegisterInternalEntity(StaticEntity entity)
