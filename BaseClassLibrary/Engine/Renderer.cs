@@ -2,9 +2,6 @@
 
 namespace CryEngine
 {
-	/// <summary>
-	/// Renderer functionality; TODO
-	/// </summary>
 	public class Renderer
 	{
 		// Change to protected once we've implemented properties etc.
