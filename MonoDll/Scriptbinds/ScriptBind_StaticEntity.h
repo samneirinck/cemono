@@ -47,6 +47,8 @@ protected:
 	static void SetSlotFlags(EntityId, int, EEntitySlotFlags);
 
 	static void Physicalize(EntityId, MonoPhysicalizationParams);
+	
+	static void Sleep(EntityId, bool);
 
 	static void BreakIntoPieces(EntityId, int, int, IBreakableManager::BreakageParams);
 
