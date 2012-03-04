@@ -62,5 +62,6 @@ void CInput::OnHardwareMouseEvent(int iX,int iY,EHARDWAREMOUSEEVENT eHardwareMou
 // Scriptbinds
 void CInput::RegisterAction(mono::string actionName)
 {
-	s_actionHandler.AddHandler(ToCryString(actionName), &CInput::OnActionTriggered);
+	if(!s_actionHandler.GetHandler(ToCryString(actionName)))
+		s_actionHandler.AddHandler(ToCryString(actionName), &CInput::OnActionTriggered);
 }

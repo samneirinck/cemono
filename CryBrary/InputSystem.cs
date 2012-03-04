@@ -9,32 +9,24 @@ namespace CryEngine
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static void _RegisterAction(string actionName);
 
-		public static void RegisterAction(string actionName, InputActionDelegate actionDelegate)
+		/// <summary>
+		/// Registers an event declared in the players actionmap. Without invoking this, Your KeyEventDelegate will never be invoked with the new action.
+		/// </summary>
+		/// <param name="actionName"></param>
+		public static void RegisterAction(string actionName)
 		{
-			if (inputActionDelegates == null)
-				inputActionDelegates = new Dictionary<string, InputActionDelegate>();
-
-			if (!inputActionDelegates.ContainsKey(actionName))
-			{
-				inputActionDelegates.Add(actionName, actionDelegate);
-
-				_RegisterAction(actionName);
-			}
-			else
-				Debug.LogAlways("[Warning] Attempted to register duplicate input action {0}", actionName);
+			_RegisterAction(actionName);
 		}
 
-		public delegate void InputActionDelegate(KeyEvent keyEvent, float value);
+		public delegate void KeyEventDelegate(object sender, KeyEventArgs e);
 
 		public static void OnActionTriggered(string action, KeyEvent keyEvent, float value)
 		{
-			if (inputActionDelegates.ContainsKey(action))
-				inputActionDelegates[action](keyEvent, value);
-			else
-				Debug.LogAlways("Attempted to invoke unregistered action {0}", action);
+			if(KeyEvents != null)
+				KeyEvents(null, new KeyEventArgs(keyEvent, action, value));
 		}
 
-		private static Dictionary<string, InputActionDelegate> inputActionDelegates = new Dictionary<string, InputActionDelegate>();
+		public static event KeyEventDelegate KeyEvents;
 
 		public delegate void MouseEventDelegate(object sender, MouseEventArgs e);
 
@@ -45,6 +37,20 @@ namespace CryEngine
 		}
 
 		public static event MouseEventDelegate MouseEvents;
+	}
+
+	public class KeyEventArgs : System.EventArgs
+	{
+		public KeyEventArgs(KeyEvent keyEvent, string actionName, float value)
+		{
+			KeyEvent = keyEvent;
+			ActionName = actionName;
+			Value = value;
+		}
+
+		public string ActionName { get; set; }
+		public KeyEvent KeyEvent { get; set; }
+		public float Value { get; set; }
 	}
 
 	public class MouseEventArgs : System.EventArgs
