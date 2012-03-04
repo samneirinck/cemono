@@ -70,6 +70,9 @@ void CScriptClass::OnReload(MonoClass *pNewClass, mono::object pNewInstance)
 
 IMonoObject *CScriptClass::CallMethod(const char *methodName, IMonoArray *pParams, bool _static)
 {
+	if(!_static && !m_pInstance)
+		CryLogAlways("[Warning] Attempting to invoke non-static method %s on non-instantiated class %s!", methodName, GetName());
+
 	if(MonoMethod *pMethod = GetMethod(methodName, _static))
 	{
 		MonoObject *pException = NULL;
@@ -98,7 +101,7 @@ IMonoObject *CScriptClass::CallMethod(const char *methodName, IMonoArray *pParam
 MonoMethod *CScriptClass::GetMethod(const char *methodName, bool bStatic)
 {
 	MonoMethod *pMethod = NULL;
-	
+
 	if(m_pClass)
 	{
 		MonoMethodDesc *pMethodDesc = mono_method_desc_new(":" + (string)methodName, false);
