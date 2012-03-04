@@ -53,6 +53,11 @@ namespace CryEngine
 			_params = new PhysicalizationParams();
 		}
 
+		public void Break(BreakageParameters breakageParams)
+		{
+			StaticEntity._BreakIntoPieces(_entityId, 0, 0, breakageParams);
+		}
+
 		#region Basics
 		/// <summary>
 		/// If true, physics value updates will be automatically applied. Otherwise, Save() must be called manually.
@@ -155,14 +160,14 @@ namespace CryEngine
 		PostStep = 2
 	}
 
+	public enum BreakageType
+	{
+		Destroy = 0,
+		Freeze_Shatter
+	}
+
 	public struct BreakageParameters
 	{
-		public enum BreakageType
-		{
-			Destroy = 0,
-			Freeze_Shatter
-		}
-
 		public BreakageType type;					// Type of the breakage.
 		public float fParticleLifeTime;		// Average lifetime of particle pieces.
 		public int nGenericCount;				// If not 0, force particle pieces to spawn generically, this many times.
