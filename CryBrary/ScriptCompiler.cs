@@ -397,7 +397,14 @@ namespace CryEngine
 			CompilerParameters compilerParameters = new CompilerParameters();
 
 			compilerParameters.GenerateExecutable = false;
+#if RELEASE
+			compilerParameters.IncludeDebugInformation = false;
 			compilerParameters.GenerateInMemory = true;
+#else
+			// Necessary for stack trace line numbers etc
+			compilerParameters.IncludeDebugInformation = true;
+			compilerParameters.GenerateInMemory = false;
+#endif
 
 			//Add additional assemblies as needed by gamecode to referencedAssemblies
             foreach (var assembly in assemblyReferenceHandler.GetRequiredAssembliesForScriptFiles(scripts))
@@ -408,12 +415,6 @@ namespace CryEngine
 
             compilerParameters.ReferencedAssemblies.AddRange(assemblyReferenceHandler.ReferencedAssemblies.ToArray());
 
-#if RELEASE
-			compilerParameters.IncludeDebugInformation = false;
-#else
-			// Necessary for stack trace line numbers etc
-			compilerParameters.IncludeDebugInformation = true;
-#endif
 			try
 			{
 				CompilerResults results = provider.CompileAssemblyFromFile(compilerParameters, scripts);
