@@ -52,6 +52,14 @@ public:
 	/// </example>
 	virtual IMonoObject *CallMethod(const char *methodName, IMonoArray *params = NULL, bool _static = false) = 0;
 	/// <summary>
+	/// Invokes a method on the class without parameters.
+	/// </summary>
+	/// <example>
+	/// CallMethod("InitializeNetwork", pParameters, true");
+	/// </example>
+	virtual IMonoObject *CallMethod(const char *methodName, bool _static) = 0;
+
+	/// <summary>
 	/// Gets a property within the class as an IMonoObject.
 	/// </summary>
 	/// <example>

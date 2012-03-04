@@ -36,6 +36,7 @@ public:
 	virtual void Instantiate(IMonoArray *pConstructorParams = NULL) override;
 
 	virtual IMonoObject *CallMethod(const char *methodName, IMonoArray *params = NULL, bool _static = false) override;
+	virtual IMonoObject *CallMethod(const char *methodName, bool _static) override { return CallMethod(methodName, NULL, _static); }
 
 	virtual IMonoObject *GetProperty(const char *propertyName) override;
 	virtual void SetProperty(const char *propertyName, IMonoObject *pNewValue) override;

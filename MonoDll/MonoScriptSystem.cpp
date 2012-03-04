@@ -157,7 +157,7 @@ void CScriptSystem::PostInit()
 {
 	GetFlowManager()->Reset();
 
-	m_pScriptManager->CallMethod("PostInit");
+	m_pScriptManager->CallMethod("PostInit", true);
 }
 
 bool CScriptSystem::Reload(bool initialLoad)
@@ -202,7 +202,7 @@ bool CScriptSystem::Reload(bool initialLoad)
 
 	CryLogAlways("		Compiling scripts...");
 	m_pScriptManager = m_pCryBraryAssembly->GetCustomClass("ScriptCompiler");
-	m_pScriptManager->CallMethod("Initialize");
+	m_pScriptManager->CallMethod("Initialize", true);
 
 
 	m_pInput->Reset();
@@ -310,7 +310,7 @@ void CScriptSystem::OnPostUpdate(float fDeltaTime)
 {
 	IMonoArray *pArgs = CreateMonoArray(1);
 	pArgs->Insert(fDeltaTime);
-	m_pScriptManager->CallMethod("OnUpdate", pArgs);
+	m_pScriptManager->CallMethod("OnUpdate", pArgs, true);
 	SAFE_RELEASE(pArgs);
 }
 
@@ -350,7 +350,7 @@ int CScriptSystem::InstantiateScript(EMonoScriptType scriptType, const char *scr
 	pArgs->Insert(pConstructorParameters);
 
 	int scriptId = -1;
-	if(IMonoObject *pScriptInstance = m_pScriptManager->CallMethod("InstantiateScript", pArgs))
+	if(IMonoObject *pScriptInstance = m_pScriptManager->CallMethod("InstantiateScript", pArgs, true))
 	{
 		IMonoClass *pScript = pScriptInstance->Unbox<IMonoClass *>();
 		scriptId = pScript->GetScriptId();
@@ -375,7 +375,7 @@ void CScriptSystem::RemoveScriptInstance(int id)
 			pArgs->Insert(id);
 			pArgs->Insert((*it).first->GetName());
 
-			m_pScriptManager->CallMethod("RemoveInstance", pArgs);
+			m_pScriptManager->CallMethod("RemoveInstance", pArgs, true);
 			SAFE_RELEASE(pArgs);
 
 			m_scripts.erase(it);
