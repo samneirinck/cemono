@@ -3,6 +3,8 @@
 //Copyright (C), Ink Studios, 2011.
 //////////////////////////////////////////////////////////////////////////
 // Common CryMono types and methods.
+//
+// DO NOT INCLUDE IN CRYMONO INTERFACES!
 //////////////////////////////////////////////////////////////////////////
 // 11/01/2012 : Created by Filip 'i59' Lundgren
 ////////////////////////////////////////////////////////////////////////*/
@@ -16,11 +18,12 @@ namespace mono
 	class _object; typedef _object* object;
 };
 
+#include <IMonoArray.h>
+
 #include <IMonoScriptSystem.h>
 #include <IMonoConverter.h>
 
 #include <IMonoClass.h>
-#include <IMonoArray.h>
 
 /// <summary>
 /// Converts a C++ string to the C# equivalent.
@@ -101,7 +104,7 @@ namespace mono
 	typedef _string* string;
 	typedef _array* array;
 	typedef _object* object;
-};
+}; 
 
 template <typename TResult>
 static TResult CallMonoScript(int scriptId, const char *funcName) { return IMonoClass::CallMethod<TResult>(scriptId, funcName); }

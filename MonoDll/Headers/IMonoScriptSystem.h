@@ -16,9 +16,6 @@
 
 struct IMonoScriptManager;
 
-struct IMonoMethodBinding;
-
-struct IMonoObject;
 struct IMonoClass;
 struct IMonoArray;
 struct IMonoAssembly;

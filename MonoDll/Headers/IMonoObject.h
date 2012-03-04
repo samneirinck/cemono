@@ -9,8 +9,14 @@
 #ifndef __I_MONO_OBJECT_H__
 #define __I_MONO_OBJECT_H__
 
-#include <MonoCommon.h>
+#include <IMonoScriptSystem.h>
+#include <IMonoConverter.h>
+
 #include <MonoSerializable.h>
+
+struct IMonoClass;
+
+namespace mono { class _object; typedef _object* object; }
 
 /// <summary>
 /// The IMonoObject class is used to wrap native mono objects of any type, and to
