@@ -59,12 +59,11 @@ void CEntity::OnEntityEvent(IEntity *pEntity,SEntityEvent &event)
 			EntityId targetId = 0;
 
 			IEntity *pTarget = pCollision->iForeignData[0]==PHYS_FOREIGN_ID_ENTITY ? (IEntity*)pCollision->pForeignData[0]:0;
-			if(pTarget && pTarget->GetId()!=m_entityId)
+			if(pTarget)
 				targetId = pTarget->GetId();
 
 			Vec3 dir = pCollision->vloc[0].GetNormalizedSafe();
 
-			// uint targetId, Vec3 hitPt, Vec3 dir, short materialId, Vec3 contactNormal);
 			CallMonoScript<void>(m_scriptId, "OnCollision", targetId, pCollision->pt, dir, pCollision->idmat[0], pCollision->n);
 		}
 		break;/*

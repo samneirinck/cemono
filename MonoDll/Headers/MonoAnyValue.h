@@ -20,11 +20,11 @@ enum MonoAnyType
 	MONOTYPE_BOOL,
 
 	MONOTYPE_INT,
-	MONOTYPE_USHORT,
 	MONOTYPE_UINT,
+	MONOTYPE_SHORT,
+	MONOTYPE_USHORT,
 	MONOTYPE_FLOAT,
 	MONOTYPE_VEC3,
-	MONOTYPE_ANG3,
 
 	MONOTYPE_STRING,
 
@@ -39,13 +39,14 @@ struct MonoAnyValue
 {
 	MonoAnyValue(bool value) : type(MONOTYPE_BOOL) { b = value; }
 	MonoAnyValue(int value) : type(MONOTYPE_INT) { number = (float)value; }
-	MonoAnyValue(unsigned short value) : type(MONOTYPE_USHORT) { number = (float)value; }
 	MonoAnyValue(unsigned int value) : type(MONOTYPE_UINT) { number = (float)value; }
+	MonoAnyValue(short value) : type(MONOTYPE_SHORT) { number = (float)value; }
+	MonoAnyValue(unsigned short value) : type(MONOTYPE_USHORT) { number = (float)value; }
 	MonoAnyValue(float value) : type(MONOTYPE_FLOAT) { number = value; }
 	MonoAnyValue(const char *value) : type(MONOTYPE_STRING) { str = value; }
 	MonoAnyValue(string value) : type(MONOTYPE_STRING) { str = value.c_str(); }
 	MonoAnyValue(Vec3 value) : type(MONOTYPE_VEC3) { vec3.x = value.x; vec3.y = value.y; vec3.z = value.z; }
-	MonoAnyValue(Ang3 value) : type(MONOTYPE_ANG3) { vec3.x = value.x; vec3.y = value.y; vec3.z = value.z; }
+	MonoAnyValue(Ang3 value) : type(MONOTYPE_VEC3) { vec3.x = value.x; vec3.y = value.y; vec3.z = value.z; }
 
 	void Serialize(TSerialize ser)
 	{
@@ -56,14 +57,14 @@ struct MonoAnyValue
 			ser.Value("monoValueBool", b);
 			break;
 
+		case MONOTYPE_UINT:
 		case MONOTYPE_INT:
 		case MONOTYPE_FLOAT:
+		case MONOTYPE_SHORT:
 		case MONOTYPE_USHORT:
-		case MONOTYPE_UINT:
 			ser.Value("monoValueNum", number);
 			break;
 		case MONOTYPE_VEC3:
-		case MONOTYPE_ANG3:
 			{
 				ser.Value("monoValueVec3x", vec3.x);
 				ser.Value("monoValueVec3y", vec3.y);

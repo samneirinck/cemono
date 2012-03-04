@@ -65,6 +65,10 @@ IMonoObject *CConverter::CreateObject(MonoAnyValue &any)
 			return CreateMonoObject<int>((int)any.number);
 		}
 		break;
+	case MONOTYPE_SHORT:
+		{
+			return CreateMonoObject<short>((short)any.number);
+		}
 	case MONOTYPE_USHORT:
 		{
 			return CreateMonoObject<unsigned short>((unsigned short)any.number);
@@ -81,9 +85,8 @@ IMonoObject *CConverter::CreateObject(MonoAnyValue &any)
 		}
 		break;
 	case MONOTYPE_VEC3:
-	case MONOTYPE_ANG3:
 		{
-			return gEnv->pMonoScriptSystem->GetConverter()->ToManagedType(gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("Vec3"), Vec3(any.vec3.x, any.vec3.y, any.vec3.z));
+			return ToManagedType(gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("Vec3"), Vec3(any.vec3.x, any.vec3.y, any.vec3.z));
 		}
 		break;
 	}

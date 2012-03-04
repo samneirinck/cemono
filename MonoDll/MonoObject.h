@@ -49,14 +49,16 @@ static MonoClass *GetMonoClassOfType(T t)
 {
 	if(std::is_same<T, int>::value)
 		return mono_get_int32_class();
+	else if(std::is_same<T, uint32>::value)
+		return mono_get_uint32_class();
+	else if(std::is_same<T, short>::value)
+		return mono_get_int16_class();
+	else if(std::is_same<T, uint16>::value)
+		return mono_get_uint16_class();
 	else if(std::is_same<T, float>::value)
 		return mono_get_single_class();
 	else if(std::is_same<T, bool>::value)
 		return mono_get_boolean_class();
-	else if(std::is_same<T, uint16>::value)
-		return mono_get_uint16_class();
-	else if(std::is_same<T, uint32>::value)
-		return mono_get_uint32_class();
 
 	return NULL;
 }
