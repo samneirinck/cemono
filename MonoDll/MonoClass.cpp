@@ -68,34 +68,22 @@ void CScriptClass::OnReload(MonoClass *pNewClass, mono::object pNewInstance)
 	m_instanceHandle = mono_gchandle_new((MonoObject *)m_pInstance, false);
 }
 
-IMonoObject *CScriptClass::CallMethod(const char *methodName, IMonoArray *params, bool _static)
+IMonoObject *CScriptClass::CallMethod(const char *methodName, IMonoArray *pParams, bool _static)
 {
 	if(MonoMethod *pMethod = GetMethod(methodName, _static))
 	{
 		MonoObject *pException = NULL;
 		MonoObject *pResult = NULL;
 
-		if(params)
+		MonoArray *params = pParams ? (MonoArray *)(mono::array)*pParams : NULL;
+
+		try
 		{
-			try
-			{
-				pResult = mono_runtime_invoke_array(pMethod, _static ? NULL : m_pInstance, (MonoArray *)(mono::array)*params, &pException);
-			}
-			catch(char *str)
-			{
-				CryLogAlways("Exception was raised when invoking method %s: %s", methodName, str);
-			}
+			pResult = mono_runtime_invoke_array(pMethod, _static ? NULL : m_pInstance, params, &pException);
 		}
-		else
+		catch(char *str)
 		{
-			try
-			{
-				pResult = mono_runtime_invoke(pMethod, _static ? NULL : m_pInstance, NULL, &pException);
-			}
-			catch(char *str)
-			{
-				CryLogAlways("Exception was raised when invoking method %s: %s", methodName, str);
-			}
+			CryLogAlways("Exception was raised when invoking method %s: %s", methodName, str);
 		}
 
 		if(pException)
