@@ -158,9 +158,12 @@ namespace CryEngine.Utils
 
 					foreach (var listObject in list)
 					{
-						writer.WriteStartElement("Element");
-						WriteValue(listObject, writer);// writer.WriteAttributeString("Value", listObject.ToString());
-						writer.WriteEndElement();
+						if(listObject != null)
+						{
+							writer.WriteStartElement("Element");
+							WriteValue(listObject, writer);// writer.WriteAttributeString("Value", listObject.ToString());
+							writer.WriteEndElement();
+						}
 					}
 
 					writer.WriteEndElement();
@@ -187,14 +190,17 @@ namespace CryEngine.Utils
 
 					foreach (var key in dictionary.Keys)
 					{
-						writer.WriteStartElement("Element");
-						writer.WriteStartElement("Key");
-						WriteValue(key, writer);
-						writer.WriteEndElement();
-						writer.WriteStartElement("Value");
-						WriteValue(dictionary[key], writer);
-						writer.WriteEndElement();
-						writer.WriteEndElement();
+						if(key != null && dictionary[key] != null)
+						{
+							writer.WriteStartElement("Element");
+							writer.WriteStartElement("Key");
+							WriteValue(key, writer);
+							writer.WriteEndElement();
+							writer.WriteStartElement("Value");
+							WriteValue(dictionary[key], writer);
+							writer.WriteEndElement();
+							writer.WriteEndElement();
+						}
 					}
 
 					writer.WriteEndElement();
