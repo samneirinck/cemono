@@ -36,8 +36,6 @@ namespace CryEngine
 
 			//GenerateScriptbindAssembly(scriptBinds.ToArray());
 
-            assemblyReferenceHandler.ReferencedAssemblies.AddRange(System.AppDomain.CurrentDomain.GetAssemblies().Select(a => a.Location));
-
 			LoadPrecompiledAssemblies();
 
 			AddScripts(CompileScriptsInFolders(
@@ -402,7 +400,7 @@ namespace CryEngine
 			compilerParameters.GenerateInMemory = true;
 
 			//Add additional assemblies as needed by gamecode to referencedAssemblies
-            foreach (var assembly in assemblyReferenceHandler.GetRequiredAssembliesForScripts(scripts))
+            foreach (var assembly in assemblyReferenceHandler.GetRequiredAssembliesForScriptFiles(scripts))
 			{
 				if (!compilerParameters.ReferencedAssemblies.Contains(assembly))
 					compilerParameters.ReferencedAssemblies.Add(assembly);

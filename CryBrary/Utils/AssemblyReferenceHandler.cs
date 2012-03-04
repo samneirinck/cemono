@@ -1,114 +1,132 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Linq;
+using System.Linq;
 
 using System.IO;
+using System;
+using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace CryEngine.Utils
 {
-	/// <summary>
-	/// Handles retrieval of required assemblies for compiled scripts etc.
-	/// </summary>
-	public class AssemblyReferenceHandler
-	{
+    /// <summary>
+    /// Handles retrieval of required assemblies for compiled scripts etc.
+    /// </summary>
+    public class AssemblyReferenceHandler
+    {
         public AssemblyReferenceHandler()
         {
-            ReferencedAssemblies = new List<string>();
+            Assembly[] loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+            ReferencedAssemblies = new List<string>(loadedAssemblies.Length);
+            ReferencedAssemblies.AddRange(loadedAssemblies.Select(a => a.Location));
         }
 
-		/// <summary>
-		/// Gets the required assemblies for the scripts passed to the method.
-		/// Note: Does NOT exclude assemblies already loaded by CryMono.
-		/// </summary>
-		/// <param name="scripts"></param>
-		/// <returns></returns>
-		public IEnumerable<string> GetRequiredAssembliesForScripts(IEnumerable<string> scripts)
-		{
-			var namespaces = new List<string>();
-			var assemblyPaths = new List<string>();
+        /// <summary>
+        /// Gets the required assemblies for the scripts passed to the method.
+        /// Note: Does NOT exclude assemblies already loaded by CryMono.
+        /// </summary>
+        /// <param name="scriptFilePaths"></param>
+        /// <returns></returns>
+        public IEnumerable<string> GetRequiredAssembliesForScriptFiles(IEnumerable<string> scriptFilePaths)
+        {
+            var namespaces = new List<string>();
+            var assemblyPaths = new List<string>();
 
-			foreach (var script in scripts)
-			{
-				foreach (var assembly in GetRequiredAssembliesForScript(script))
-				{
-					if (!namespaces.Contains(assembly))
-						namespaces.Add(assembly);
-				}
-			}
+            foreach (var scriptFilePath in scriptFilePaths)
+            {
+                foreach (var foundNamespace in GetNamespacesFromScriptFile(scriptFilePath))
+                {
+                    if (!namespaces.Contains(foundNamespace))
+                        namespaces.Add(foundNamespace);
+                }
+            }
 
-			foreach (var nameSpace in namespaces)
-				assemblyPaths.Add(ProcessNamespace(nameSpace));
+            foreach (var foundNamespace in namespaces)
+                assemblyPaths.Add(GetAssemblyPathFromNamespace(foundNamespace));
 
-			return assemblyPaths;
-		}
+            return assemblyPaths;
+        }
 
-		/// <summary>
-		/// Gets the required assemblies for the script passed to the method.
-		/// Note: Does NOT exclude assemblies already loaded by CryMono.
-		/// </summary>
-		/// <param name="script"></param>
-		/// <returns></returns>
-		protected IEnumerable<string> GetRequiredAssembliesForScript(string script)
-		{
-			if (string.IsNullOrEmpty(script))
-				return null;
 
-			var namespaces = new List<string>();
+        /// <summary>
+        /// Gets the required assemblies for the script passed to the method.
+        /// Note: Does NOT exclude assemblies already loaded by CryMono.
+        /// </summary>
+        /// <param name="scriptFilePath"></param>
+        /// <returns></returns>
+        private IEnumerable<string> GetNamespacesFromScriptFile(string scriptFilePath)
+        {
+            if (string.IsNullOrEmpty(scriptFilePath))
+                return null;
 
-			using (var stream = new FileStream(script, FileMode.Open))
-			{
-				using (var reader = new StreamReader(stream))
-				{
-					string line;
+            using (var stream = new FileStream(scriptFilePath, FileMode.Open))
+            {
+                return GetNamespacesFromStream(stream);
+            }
+        }
 
-					while ((line = reader.ReadLine()) != null)
-					{
-						//Filter for using statements
-						if (line.StartsWith("using") && line.EndsWith(";"))
-						{
-							string Namespace = line.Replace("using ", "").Replace(";", "");
-							if (!namespaces.Contains(Namespace))
-							{
-								namespaces.Add(Namespace);
-								Namespace = null;
-							}
-						}
-					}
-				}
-			}
+        protected IEnumerable<string> GetNamespacesFromStream(Stream stream)
+        {
+            var namespaces = new List<string>();
 
-			return namespaces;
-		}
+            using (var streamReader = new StreamReader(stream))
+            {
+                string line;
 
-		protected string ProcessNamespace(string name)
-		{
-			XDocument assemblyLookup = XDocument.Load(Path.Combine(PathUtils.GetEngineFolder(), "Mono", "assemblylookup.xml"));
-			foreach (var node in assemblyLookup.Descendants())
-			{
-				if (node.Name.LocalName == "Namespace" && node.Attribute("name").Value == name)
-				{
-					string assemblyName = node.Parent.Attribute("name").Value;
+                while ((line = streamReader.ReadLine()) != null)
+                {
+                    //Filter for using statements
+                    var matches = Regex.Matches(line, @"using ([^;]+);");
+                    foreach (Match match in matches)
+                    {
+                        string foundNamespace = match.Groups[1].Value;
+                        if (!namespaces.Contains(foundNamespace))
+                        {
+                            namespaces.Add(foundNamespace);
+                        }
+                    }
+                }
+            }
 
-					string[] assemblies = Directory.GetFiles(Path.Combine(PathUtils.GetEngineFolder(), "Mono", "lib", "mono", "gac"), "*.dll", SearchOption.AllDirectories);
-					foreach (var assembly in assemblies)
-					{
-						if (assembly.Contains(assemblyName))
-						{
-							assemblyName = assembly;
-							break;
-						}
-					}
+            return namespaces;
+        }
 
-					if (!ReferencedAssemblies.Contains(assemblyName))
-						return assemblyName;
-				}
-			}
+        private string GetAssemblyPathFromNamespace(string name)
+        {
+            // Avoid reloading the xml file for every call
+            if (assemblyLookupDocument == null)
+            {
+                assemblyLookupDocument = XDocument.Load(Path.Combine(PathUtils.GetEngineFolder(), "Mono", "assemblylookup.xml"));
+            }
 
-			return null;
-		}
+            string[] assemblies = Directory.GetFiles(Path.Combine(PathUtils.GetEngineFolder(), "Mono", "lib", "mono", "gac"), "*.dll", SearchOption.AllDirectories);
+            foreach (var node in assemblyLookupDocument.Descendants().Where(e => e.Name.LocalName == "Namespace" && e.Attribute("name").Value == name))
+            {
+                string assemblyName = node.Parent.Attribute("name").Value;
 
-		/// <summary>
-		/// All libraries passed through ScriptCompiler.LoadLibrariesInFolder will be automatically added to this list.
-		/// </summary>
-		public List<string> ReferencedAssemblies {get; protected set;}
-	}
+
+                foreach (var assembly in assemblies)
+                {
+                    if (assembly.Contains(assemblyName))
+                    {
+                        assemblyName = assembly;
+                        break;
+                    }
+                }
+
+                if (!ReferencedAssemblies.Contains(assemblyName))
+                    return assemblyName;
+            }
+
+            return null;
+        }
+
+        private XDocument assemblyLookupDocument;
+
+        /// <summary>
+        /// All libraries passed through ScriptCompiler.LoadLibrariesInFolder will be automatically added to this list.
+        /// </summary>
+        public List<string> ReferencedAssemblies { get; protected set; }
+    }
 }
