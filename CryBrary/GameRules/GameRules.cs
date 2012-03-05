@@ -18,7 +18,7 @@ namespace CryEngine
 
 		public static void RevivePlayer(EntityId playerId, Vec3 pos, Vec3 rot, int teamId = 0, bool clearInventory = true)
 		{
-			_RevivePlayer(playerId, pos, rot, teamId, clearInventory);
+			_RevivePlayer(playerId._value, pos, rot, teamId, clearInventory);
 		}
 
 		/// <summary>
@@ -60,14 +60,14 @@ namespace CryEngine
 			}
 
 			Players.Add(ScriptCompiler.GetScriptInstanceById(scriptId) as BasePlayer);
-			Players.Last().InternalSpawn(entityId, channelId);
+			Players.Last().InternalSpawn(new EntityId(entityId), channelId);
 
 			return Players.Last() as T;
 		}
 
 		public static T GetLocalPlayer<T>() where T : BasePlayer
 		{
-			return GetPlayer<T>(_GetPlayer());
+			return GetPlayer<T>(new EntityId(_GetPlayer()));
 		}
 
 		public static BasePlayer GetPlayer(EntityId playerId)

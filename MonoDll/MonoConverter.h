@@ -18,6 +18,8 @@ public:
 	~CConverter();
 
 	// IMonoConverter
+	virtual void Reset() override;
+
 	virtual const char *ToString(mono::string monoString) override { if(!monoString) return ""; return mono_string_to_utf8((MonoString *)monoString); }
 	virtual mono::string ToMonoString(const char *string) override { return (mono::string)mono_string_new(mono_domain_get(), string); }
 
@@ -27,9 +29,15 @@ public:
 	virtual IMonoObject *CreateObject(MonoAnyValue &value) override;
 
 	virtual IMonoObject *ToObject(mono::object obj) override;
+
+	virtual IMonoObject *ToManagedType(ECommonManagedTypes commonType, void *object) override;
 	virtual IMonoObject *ToManagedType(IMonoClass *pTo, void *object) override;
+
 	virtual IMonoClass *ToClass(IMonoObject *pObject) override;
 	// ~IMonoConverter
+
+	IMonoClass *m_pVec3Type;
+	IMonoClass *m_pEntityIdType;
 };
 
 #endif //__MONO_CONVERTER_H__

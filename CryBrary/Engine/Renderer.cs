@@ -2,7 +2,7 @@
 
 namespace CryEngine
 {
-	public class Renderer
+	public static class Renderer
 	{
 		// Change to protected once we've implemented properties etc.
 		#region ViewSystem
@@ -11,45 +11,45 @@ namespace CryEngine
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static void _RemoveView(uint viewId);
 
-		/*public static ViewId CreateView()
+		public static EntityId CreateView()
 		{
-			return _CreateView();
+			return new EntityId(_CreateView());
 		}
 
-		public static void RemoveView(ViewId viewId)
+		public static void RemoveView(EntityId viewId)
 		{
-			_RemoveView(viewId);
-		}*/
+			_RemoveView(viewId._value);
+		}
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static uint _GetActiveView();
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static void _SetActiveView(uint viewId);
 
-		/*public static ViewId GetActiveView()
+		public static EntityId GetActiveView()
 		{
-			return _GetActiveView();
+			return GetActiveView();
 		}
 
-		public static void SetActiveView(ViewId viewId)
+		public static void SetActiveView(EntityId viewId)
 		{
-			_SetActiveView(viewId);
-		}*/
+			_SetActiveView(viewId._value);
+		}
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static ViewParams _GetViewParams(uint viewId);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static void _SetViewParams(uint viewId, ViewParams cam);
 
-		/*public static ViewSettings GetViewParams(ViewId viewId)
+		public static ViewParams GetViewParams(EntityId viewId)
 		{
-			return new ViewSettings(_GetViewParams(viewId));
+			return _GetViewParams(viewId._value);
 		}
 
-		public static void SetViewParams(ViewId viewId, ViewSettings viewParams)
+		public static void SetViewParams(EntityId viewId, ViewParams viewParams)
 		{
-			_SetViewParams(viewId, viewParams._params);
-		}*/
+			_SetViewParams(viewId._value, viewParams);
+		}
 		#endregion
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
@@ -199,7 +199,7 @@ namespace CryEngine
 		}
 	}*/
 
-	internal struct ViewParams
+	public struct ViewParams
 	{
 		/// <summary>
 		/// view position

@@ -31,7 +31,7 @@ CScriptBind_Renderer::CScriptBind_Renderer()
 }
 
 // Externals below
-unsigned int CScriptBind_Renderer::CreateView()
+EntityId CScriptBind_Renderer::CreateView()
 {
 	if (IViewSystem *pViewSystem = gEnv->pGameFramework->GetIViewSystem())
 		return pViewSystem->GetViewId(pViewSystem->CreateView());
@@ -46,7 +46,7 @@ void CScriptBind_Renderer::DrawTextToScreen(float xpos, float ypos, float fontSi
 	gEnv->pRenderer->Draw2dLabel(xpos, ypos, fontSize, actualColor, center, ToCryString(text));
 }
 
-void CScriptBind_Renderer::RemoveView(unsigned int viewId)
+void CScriptBind_Renderer::RemoveView(EntityId viewId)
 {
 	if (IViewSystem *pViewSystem = gEnv->pGameFramework->GetIViewSystem())
 	{
@@ -55,7 +55,7 @@ void CScriptBind_Renderer::RemoveView(unsigned int viewId)
 	}
 }
 
-unsigned int CScriptBind_Renderer::GetActiveView()
+EntityId CScriptBind_Renderer::GetActiveView()
 {
 	if (IViewSystem *pViewSystem = gEnv->pGameFramework->GetIViewSystem())
 		return pViewSystem->GetActiveViewId();
@@ -63,7 +63,7 @@ unsigned int CScriptBind_Renderer::GetActiveView()
 	return 0;
 }
 
-void CScriptBind_Renderer::SetActiveView(unsigned int viewId)
+void CScriptBind_Renderer::SetActiveView(EntityId viewId)
 {
 	if (IViewSystem *pViewSystem = gEnv->pGameFramework->GetIViewSystem())
 	{
@@ -72,22 +72,22 @@ void CScriptBind_Renderer::SetActiveView(unsigned int viewId)
 	}
 }
 
-SViewParams CScriptBind_Renderer::GetViewParams(unsigned int viewId)
+SViewParams CScriptBind_Renderer::GetViewParams(EntityId viewId)
 {
 	if (IViewSystem *pViewSystem = gEnv->pGameFramework->GetIViewSystem())
 	{
-		if(IView *pView = pViewSystem->GetActiveView())
+		if(IView *pView = pViewSystem->GetView(viewId))
 			return *pView->GetCurrentParams();
 	}
 
 	return SViewParams();
 }
 
-void CScriptBind_Renderer::SetViewParams(unsigned int viewId, SViewParams viewParams)
+void CScriptBind_Renderer::SetViewParams(EntityId viewId, SViewParams viewParams)
 {
 	if (IViewSystem *pViewSystem = gEnv->pGameFramework->GetIViewSystem())
 	{
-		if(IView *pView = pViewSystem->GetActiveView())
+		if(IView *pView = pViewSystem->GetView(viewId))
 		{
 			viewParams.SaveLast();
 

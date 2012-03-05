@@ -7,7 +7,7 @@
 	{
 		internal uint _value;
 
-		public EntityId(int id)
+		public EntityId(uint id)
 		{
 			if(id >= 0)
 				_value = (uint)id;
@@ -40,26 +40,14 @@
 		#endregion
 
 		#region Operators
-		public static implicit operator int(EntityId id)
+		public static bool operator ==(EntityId entId1, EntityId entId2)
 		{
-			return (int)id._value;
+			return entId1._value == entId2._value;
 		}
 
-		public static implicit operator EntityId(int value)
+		public static bool operator !=(EntityId entId1, EntityId entId2)
 		{
-			return new EntityId(value);
-		}
-
-		[System.CLSCompliant(false)]
-		public static implicit operator uint(EntityId id)
-		{
-			return id._value;
-		}
-
-		[System.CLSCompliant(false)]
-		public static implicit operator EntityId(uint value)
-		{
-			return new EntityId { _value = value };
+			return entId1._value != entId2._value;
 		}
 		#endregion
 	}

@@ -206,6 +206,7 @@ bool CScriptSystem::Reload(bool initialLoad)
 
 
 	m_pInput->Reset();
+	m_pConverter->Reset();
 
 	// Nodes won't get recompiled if we forget this.
 	if(!initialLoad)

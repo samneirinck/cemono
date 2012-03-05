@@ -31,10 +31,10 @@ namespace CryEngine
         /// </summary>
         /// <param name="entityId"></param>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        internal override bool InternalSpawn(uint entityId)
+        internal override bool InternalSpawn(EntityId entityId)
         {
             SpawnCommon(entityId);
-            _CreateGameObjectForEntity(Id);
+            _CreateGameObjectForEntity(Id._value);
             OnSpawn();
 
 			return IsEntityFlowNode();

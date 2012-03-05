@@ -156,7 +156,7 @@ bool CFlowManager::GetPortValueBool(int scriptId, int index)
 mono::object CFlowManager::GetPortValueVec3(int scriptId, int index)
 {
 	if(CFlowNode *pFlowNode = GetNodeById(scriptId))
-		return *gEnv->pMonoScriptSystem->GetConverter()->ToManagedType(gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("Vec3"), pFlowNode->GetPortVec3(index));
+		return *gEnv->pMonoScriptSystem->GetConverter()->ToManagedType(eCMT_Vec3, pFlowNode->GetPortVec3(index));
 
 	return NULL;
 }

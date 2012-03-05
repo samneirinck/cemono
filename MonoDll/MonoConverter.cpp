@@ -10,9 +10,14 @@ CConverter::CConverter()
 {
 }
 
-
 CConverter::~CConverter()
 {
+}
+
+void CConverter::Reset()
+{
+	m_pVec3Type = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("Vec3");
+	m_pEntityIdType = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("EntityId");
 }
 
 IMonoArray *CConverter::CreateArray(int numArgs)
@@ -23,6 +28,19 @@ IMonoArray *CConverter::CreateArray(int numArgs)
 IMonoArray *CConverter::ToArray(mono::array arr)
 {
 	return new CScriptArray(arr);
+}
+
+IMonoObject *CConverter::ToManagedType(ECommonManagedTypes commonType, void *object)
+{
+	switch(commonType)
+	{
+	case eCMT_Vec3:
+		return ToManagedType(m_pVec3Type, object);
+	case eCMT_EntityId:
+		return ToManagedType(m_pEntityIdType, object);
+	}
+
+	return NULL;
 }
 
 IMonoObject *CConverter::ToManagedType(IMonoClass *pTo, void *object)
@@ -48,6 +66,13 @@ IMonoClass *CConverter::ToClass(IMonoObject *pObject)
 
 	return NULL;
 }
+
+struct SMonoEntityId
+{
+	SMonoEntityId(EntityId id) : value(id) {}
+
+	EntityId value;
+};
 
 IMonoObject *CConverter::CreateObject(MonoAnyValue &any)
 {
@@ -76,7 +101,7 @@ IMonoObject *CConverter::CreateObject(MonoAnyValue &any)
 		break;
 	case MONOTYPE_UINT:
 		{
-			return CreateMonoObject<unsigned int>((unsigned int)any.number);
+			return ToManagedType(eCMT_EntityId, new SMonoEntityId(any.number));
 		}
 		break;
 	case MONOTYPE_FLOAT:
@@ -86,7 +111,7 @@ IMonoObject *CConverter::CreateObject(MonoAnyValue &any)
 		break;
 	case MONOTYPE_VEC3:
 		{
-			return ToManagedType(gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("Vec3"), Vec3(any.vec3.x, any.vec3.y, any.vec3.z));
+			return ToManagedType(eCMT_Vec3, Vec3(any.vec3.x, any.vec3.y, any.vec3.z));
 		}
 		break;
 	}

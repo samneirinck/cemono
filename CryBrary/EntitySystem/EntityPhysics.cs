@@ -25,9 +25,9 @@ namespace CryEngine
 
 		public Vec3 Velocity
 		{
-			get { return _GetVelocity(Id); }
+			get { return _GetVelocity(Id._value); }
 
-			set { _SetVelocity(Id, value); }
+			set { _SetVelocity(Id._value, value); }
 		}
 
 		PhysicsParams _physics;
@@ -41,11 +41,11 @@ namespace CryEngine
 	{
 		//These are the params that are actually sent to the engine
 		internal PhysicalizationParams _params;
-		internal uint _entityId;
+		internal EntityId _entityId;
 
 		public PhysicsParams() { }
 
-		internal PhysicsParams(uint id)
+		internal PhysicsParams(EntityId id)
 		{
 			_entityId = id;
 			AutoUpdate = true;
@@ -55,7 +55,7 @@ namespace CryEngine
 
 		public void Break(BreakageParameters breakageParams)
 		{
-			StaticEntity._BreakIntoPieces(_entityId, 0, 0, breakageParams);
+			StaticEntity._BreakIntoPieces(_entityId._value, 0, 0, breakageParams);
 		}
 
 		#region Basics
@@ -69,14 +69,14 @@ namespace CryEngine
 		/// Determines if this physical entity is in a sleeping state or not. (Will not be affected by gravity)
 		/// Autoamtically wakes upon collision.
 		/// </summary>
-		public bool Resting { get { return resting; } set { resting = value; StaticEntity._Sleep(_entityId, value); } }
+		public bool Resting { get { return resting; } set { resting = value; StaticEntity._Sleep(_entityId._value, value); } }
 
 		/// <summary>
 		/// Save the current physics settings.
 		/// </summary>
 		public void Save()
 		{
-			StaticEntity._Physicalize(_entityId, _params);
+			StaticEntity._Physicalize(_entityId._value, _params);
 		}
 
 		/// <summary>
@@ -95,7 +95,7 @@ namespace CryEngine
 			actionImpulse.angImpulse = angImpulse;
 			actionImpulse.point = point ?? EntitySystem.GetEntity(_entityId).Position;
 
-			StaticEntity._AddImpulse(_entityId, actionImpulse);
+			StaticEntity._AddImpulse(_entityId._value, actionImpulse);
 		}
 
 		/// <summary>

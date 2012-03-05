@@ -17,14 +17,14 @@ namespace CryEngine
 
         public void GiveItem(string itemClass)
         {
-            _GiveItem(OwnerId, itemClass);
+            _GiveItem(OwnerId._value, itemClass);
         }
 
         public void GiveEquipmentPack(string equipmentPack)
         {
-            _GiveEquipmentPack(OwnerId, equipmentPack);
+			_GiveEquipmentPack(OwnerId._value, equipmentPack);
         }
 
-        UInt32 OwnerId;
+        EntityId OwnerId;
     }
 }

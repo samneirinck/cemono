@@ -18,7 +18,7 @@ namespace CryEngine
 			}
 
 			public float Distance { get { return _info.dist; } }
-			public EntityId Collider { get { return _info.colliderId; } }
+			public EntityId Collider { get { return new EntityId(_info.colliderId); } }
 			public Vec3 Point { get { return _info.pt; } }
 			public Vec3 Normal { get { return _info.n; } }
 		}

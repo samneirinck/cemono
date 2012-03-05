@@ -12,7 +12,7 @@ namespace CryEngine
         public virtual void PrecacheLevel() { }
         public virtual void RequestSpawnGroup(EntityId spawnGroupId) { }
 		public virtual void SetPlayerSpawnGroup(EntityId playerId, EntityId spawnGroupId) { }
-		public virtual EntityId GetPlayerSpawnGroup(EntityId actorId) { return System.Convert.ToUInt32(0); }
+		public virtual EntityId GetPlayerSpawnGroup(EntityId actorId) { return new EntityId(System.Convert.ToUInt32(0)); }
         public virtual void ShowScores(bool show) { }
 
 		public virtual void OnSetTeam(EntityId actorId, EntityId teamId) { }
@@ -165,8 +165,8 @@ namespace CryEngine
 			_info = info;
 		}
 
-		public EntityId Shooter { get { return _info.shooterId; } }
-		public EntityId Target { get { return _info.targetId; } }
+		public EntityId Shooter { get { return new EntityId(_info.shooterId); } }
+		public EntityId Target { get { return new EntityId(_info.targetId); } }
 
 		public Vec3 Position { get { return _info.pos; } }
 		public Vec3 Direction { get { return _info.dir; } }

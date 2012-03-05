@@ -181,7 +181,7 @@ EntityId CEntityManager::FindEntity(mono::string name)
 	if(IEntity *pEntity = gEnv->pEntitySystem->FindEntityByName(ToCryString(name)))
 		return pEntity->GetId();
 
-	return -1;
+	return 0;
 }
 
 bool CEntityManager::EntityExists(EntityId entityId)

@@ -86,7 +86,7 @@ IMonoClass *CScriptAssembly::InstantiateClass(const char *className, const char 
 
 IMonoClass *CScriptAssembly::GetCustomClass(const char *className, const char *nameSpace)
 { 
-	if(MonoClass *monoClass = mono_class_from_name(GetImage(), nameSpace, className))
+	if(MonoClass *monoClass = GetClassFromName(nameSpace, className))
 		return new CScriptClass(monoClass);
 
 	return NULL;

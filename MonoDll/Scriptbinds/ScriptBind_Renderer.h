@@ -33,14 +33,14 @@ protected:
 	// ~IMonoScriptBind
 
 	// External methods
-	static unsigned int CreateView();
-	static void RemoveView(unsigned int viewId);
+	static EntityId CreateView();
+	static void RemoveView(EntityId viewId);
 
-	static unsigned int GetActiveView();
-	static void SetActiveView(unsigned int viewId);
+	static EntityId GetActiveView();
+	static void SetActiveView(EntityId viewId);
 
-	static SViewParams GetViewParams(unsigned int viewId);
-	static void SetViewParams(unsigned int viewId, SViewParams);
+	static SViewParams GetViewParams(EntityId viewId);
+	static void SetViewParams(EntityId viewId, SViewParams);
 
 	static int GetWidth();
 	static int GetHeight();

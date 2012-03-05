@@ -53,15 +53,15 @@ namespace CryEngine
 
 		public EntitySlotFlags GetSlotFlags(int slot = 0)
 		{
-			return _GetSlotFlags(Id, slot);
+			return _GetSlotFlags(Id._value, slot);
 		}
 
 		public void SetSlotFlags(EntitySlotFlags flags, int slot = 0)
 		{
-			_SetSlotFlags(Id, slot, flags);
+			_SetSlotFlags(Id._value, slot, flags);
 		}
 
-		public BoundingBox BoundingBox { get { return _GetBoundingBox(Id, 0); } }
+		public BoundingBox BoundingBox { get { return _GetBoundingBox(Id._value, 0); } }
 
 		/// <summary>
 		/// Loads an non-static model on the object (.chr, .cdf, .cga)
@@ -86,7 +86,7 @@ namespace CryEngine
 
 		public StaticEntity() { }
 
-		internal StaticEntity(uint entityId)
+		internal StaticEntity(EntityId entityId)
 		{
 			Id = entityId;
 
@@ -99,7 +99,7 @@ namespace CryEngine
 		/// <param name="entityId"></param>
 		/// <returns>IsEntityFlowNode</returns>
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		internal virtual bool InternalSpawn(uint entityId)
+		internal virtual bool InternalSpawn(EntityId entityId)
 		{
 			SpawnCommon(entityId);
 			OnSpawn();
@@ -123,7 +123,7 @@ namespace CryEngine
 			return false;
 		}
 
-		internal void SpawnCommon(uint entityId)
+		internal void SpawnCommon(EntityId entityId)
 		{
 			Id = entityId;
 
@@ -179,14 +179,9 @@ namespace CryEngine
 			return EntitySystem.GetEntity(id);
 		}
 
-		public static implicit operator StaticEntity(int id)
-		{
-			return EntitySystem.GetEntity((uint)id);
-		}
-
 		#region Methods & Fields
-		public Vec3 Position { get { return _GetWorldPos(Id); } set { _SetWorldPos(Id, value); } }
-		public Vec3 Rotation { get { return _GetWorldAngles(Id); } set { _SetWorldAngles(Id, value); } }
+		public Vec3 Position { get { return _GetWorldPos(Id._value); } set { _SetWorldPos(Id._value, value); } }
+		public Vec3 Rotation { get { return _GetWorldAngles(Id._value); } set { _SetWorldAngles(Id._value, value); } }
 
 		public EntityId Id { get; set; }
 		public string Name { get; set; }
@@ -273,7 +268,7 @@ namespace CryEngine
 
 		protected virtual string GetPropertyValue(string propertyName)
 		{
-			return _GetPropertyValue(Id, propertyName);
+			return _GetPropertyValue(Id._value, propertyName);
 		}
 
 		/// <summary>
@@ -324,9 +319,9 @@ namespace CryEngine
 		protected bool LoadObject(string name, int slotNumber = 0)
 		{
 			if(name.EndsWith("cgf"))
-				_LoadObject(Id, name, slotNumber);
+				_LoadObject(Id._value, name, slotNumber);
 			else if(name.EndsWith("cdf") || name.EndsWith("cga") || name.EndsWith("cga"))
-				_LoadCharacter(Id, name, slotNumber);
+				_LoadCharacter(Id._value, name, slotNumber);
 			else
 				return false;
 
@@ -335,7 +330,7 @@ namespace CryEngine
 
 		protected string GetObjectFilePath(int slot = 0)
 		{
-			return _GetStaticObjectFilePath(Id, slot);
+			return _GetStaticObjectFilePath(Id._value, slot);
 		}
 
 		Dictionary<string, bool> memberIsProperty = new Dictionary<string, bool>();

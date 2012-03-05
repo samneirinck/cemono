@@ -22,11 +22,19 @@ struct IMonoClass;
 
 struct MonoAnyValue;
 
+enum ECommonManagedTypes
+{
+	eCMT_Vec3 = 0,
+	eCMT_EntityId
+};
+
 /// <summary>
 /// Used to create and convert C++ / C# values.
 /// </summary>
 struct IMonoConverter
 {
+	virtual void Reset() = 0;
+
 	/// <summary>
 	/// Converts a mono string to a const char *.
 	/// </summary>
@@ -58,6 +66,8 @@ struct IMonoConverter
 	/// Allows for invoking methods, properties etc.
 	/// </summary>
 	virtual IMonoClass *ToClass(IMonoObject *pObject) = 0;
+
+	virtual IMonoObject *ToManagedType(ECommonManagedTypes commonType, void *object) = 0;
 
 	/// <summary>
 	/// Converts an object into the specified managed type.
