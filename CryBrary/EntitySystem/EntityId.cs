@@ -9,10 +9,7 @@
 
 		public EntityId(uint id)
 		{
-			if(id >= 0)
-				_value = (uint)id;
-			else
-				throw new System.ArgumentException("Tried to set a negative entity ID");
+			_value = id;
 		}
 
 		#region Overrides
@@ -35,7 +32,7 @@
 
 		public override string ToString()
 		{
-			return string.Format("EntityId {0}", _value);
+			return _value.ToString();
 		}
 		#endregion
 

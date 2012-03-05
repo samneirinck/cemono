@@ -69,7 +69,13 @@ void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 		m_pHookedGraph = NULL;
 	}
 
-	m_pActInfo = pActInfo;
+	if(!m_pActInfo && !pActInfo)
+		return;
+
+	if(pActInfo)
+		m_pActInfo = pActInfo;
+
+
 
 	switch(event)
 	{

@@ -18,7 +18,7 @@ namespace CryEngine
 		public virtual void OnSetTeam(EntityId actorId, EntityId teamId) { }
 
         // Server-only
-		protected virtual void OnHit(DamageInfo hitInfo) { }
+		protected virtual void OnHit(HitInfo hitInfo) { }
 
         public virtual void OnSpawn() { }
 
@@ -155,7 +155,7 @@ namespace CryEngine
 		/// </summary>
 		Unknown
 	}
-
+	/*
 	public struct DamageInfo
 	{
 		internal HitInfo _info;
@@ -173,26 +173,26 @@ namespace CryEngine
 		public float Impulse { get { return _info.impulse; } }
 
 		public float Damage { get { return _info.damage; } }
-	}
+	}*/
 
-    internal struct HitInfo
+    public struct HitInfo
     {
         /// <summary>
         /// EntityId of the shooter
         /// </summary>
-        public uint shooterId;
+        public EntityId shooterId;
         /// <summary>
         /// EntityId of the target which got shot
         /// </summary>
-        public uint targetId;
+		public EntityId targetId;
         /// <summary>
         /// EntityId of the weapon
         /// </summary>
-        public uint weaponId;
+		public EntityId weaponId;
         /// <summary>
         /// 0 if hit was not caused by a projectile
         /// </summary>
-        public uint projectileId;
+		public EntityId projectileId;
 
         /// <summary>
         /// damage count of the hit
