@@ -79,8 +79,6 @@ namespace CryEngine
 			if (entityId._value == 0)
 				return null;
 
-			Debug.LogAlways(entityId.ToString());
-
 			StaticEntity ent = spawnedEntities.Find(entity => entity.Id == entityId);
 			if (ent != default(StaticEntity))
 				return ent;
