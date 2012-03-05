@@ -16,6 +16,13 @@ namespace mono
 	class _string; typedef _string* string; 
 	class _array; typedef _array* array;
 	class _object; typedef _object* object;
+
+	struct entityId
+	{
+		entityId(EntityId Id) : id(Id) {}
+
+		EntityId id;
+	};
 };
 
 #include <IMonoArray.h>
