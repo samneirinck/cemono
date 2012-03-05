@@ -246,7 +246,7 @@ namespace CryEngine
 		/// <summary>
 		/// 
 		/// </summary>
-		public virtual void OnHit(DamageInfo hitInfo) { }
+		public virtual void OnHit(HitInfo hitInfo) { }
 		#endregion
 
 		#region Overrides
