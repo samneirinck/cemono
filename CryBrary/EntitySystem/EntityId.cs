@@ -35,7 +35,7 @@
 
 		public override string ToString()
 		{
-			return string.Format("EntityId {0}", _value);
+			return _value.ToString();
 		}
 		#endregion
 
