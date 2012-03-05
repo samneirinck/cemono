@@ -71,7 +71,6 @@ namespace CryEngine.Utils
 
 					WriteSubsystem(typeof(EntitySystem), writer);
 					//WriteSubsystem(typeof(InputSystem), writer);
-					WriteSubsystem(typeof(GameRules), writer);
 					WriteSubsystem(typeof(Debug), writer);
 
 					writer.WriteEndElement();
