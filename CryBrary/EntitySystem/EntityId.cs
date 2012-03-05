@@ -49,6 +49,11 @@
 		{
 			return entId1._value != entId2._value;
 		}
+
+		public static implicit operator EntityId(int value)
+		{
+			return new EntityId((uint)value);
+		}
 		#endregion
 	}
 }
