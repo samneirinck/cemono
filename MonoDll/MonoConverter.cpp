@@ -16,8 +16,13 @@ CConverter::~CConverter()
 
 void CConverter::Reset()
 {
-	m_pVec3Type = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("Vec3");
-	m_pEntityIdType = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("EntityId");
+	m_preStoredTypes.clear();
+
+	IMonoAssembly *pCryBraryAssembly = gEnv->pMonoScriptSystem->GetCryBraryAssembly();
+
+	m_preStoredTypes.insert(TPreStoredTypes::value_type(eCMT_Vec3, pCryBraryAssembly->GetCustomClass("Vec3")));
+	m_preStoredTypes.insert(TPreStoredTypes::value_type(eCMT_EntityId, pCryBraryAssembly->GetCustomClass("EntityId")));
+	m_preStoredTypes.insert(TPreStoredTypes::value_type(eCMT_HitInfo, pCryBraryAssembly->GetCustomClass("HitInfo")));
 }
 
 IMonoArray *CConverter::CreateArray(int numArgs)
@@ -32,12 +37,10 @@ IMonoArray *CConverter::ToArray(mono::array arr)
 
 IMonoObject *CConverter::ToManagedType(ECommonManagedTypes commonType, void *object)
 {
-	switch(commonType)
+	for each(auto storedType in m_preStoredTypes)
 	{
-	case eCMT_Vec3:
-		return ToManagedType(m_pVec3Type, object);
-	case eCMT_EntityId:
-		return ToManagedType(m_pEntityIdType, object);
+		if(storedType.first==commonType)
+			return ToManagedType(storedType.second, object);
 	}
 
 	return NULL;
