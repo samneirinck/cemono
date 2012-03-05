@@ -107,6 +107,14 @@ namespace CryEngine
 			return IsEntityFlowNode();
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		internal virtual void InternalRemove()
+		{
+			OnRemove();
+
+			EntitySystem.RemoveInternalEntity(Id);
+		}
+
 		/// <summary>
 		/// Returns true if this entity contains input or output ports.
 		/// </summary>

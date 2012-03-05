@@ -59,6 +59,11 @@ namespace CryEngine
 			spawnedEntities.RemoveAll(entity => entity.Id == id);
 		}
 
+		internal static void RemoveInternalEntity(EntityId id)
+		{
+			spawnedEntities.RemoveAll(entity => entity.Id == id);
+		}
+
         [MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static uint _FindEntity(string name);
 		[MethodImpl(MethodImplOptions.InternalCall)]

@@ -81,7 +81,7 @@ bool CEntityManager::OnRemove(IEntity *pEntity)
 	{
 		if((*it)->GetEntityId()==pEntity->GetId())
 		{
-			bool doRemove = CallMonoScript<bool>((*it)->GetScriptId(), "OnRemove");
+			bool doRemove = CallMonoScript<bool>((*it)->GetScriptId(), "InternalRemove");
 
 			m_monoEntities.erase(it);
 			
