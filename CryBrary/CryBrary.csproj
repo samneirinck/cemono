@@ -135,7 +135,6 @@
     <Compile Include="ActorSystem\Player.cs" />
     <Compile Include="EntitySystem\EntityId.cs" />
     <Compile Include="EntitySystem\Physics.cs" />
-    <Compile Include="GameRules\GameRules.cs" />
     <Compile Include="Types\BoundingBox.cs" />
     <Compile Include="Types\Color.cs" />
     <Compile Include="Utils\AppDomainSerializer.cs" />

@@ -13,6 +13,7 @@
 
 class CConverter : public IMonoConverter
 {
+	typedef std::map<ECommonManagedTypes, IMonoClass *> TPreStoredTypes;
 public:
 	CConverter();
 	~CConverter();
@@ -36,8 +37,8 @@ public:
 	virtual IMonoClass *ToClass(IMonoObject *pObject) override;
 	// ~IMonoConverter
 
-	IMonoClass *m_pVec3Type;
-	IMonoClass *m_pEntityIdType;
+	// Store commonly accessed types for quick access.
+	TPreStoredTypes m_preStoredTypes;
 };
 
 #endif //__MONO_CONVERTER_H__
