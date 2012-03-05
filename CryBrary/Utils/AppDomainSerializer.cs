@@ -71,7 +71,6 @@ namespace CryEngine.Utils
 
 					WriteSubsystem(typeof(EntitySystem), writer);
 					//WriteSubsystem(typeof(InputSystem), writer);
-					WriteSubsystem(typeof(GameRules), writer);
 					WriteSubsystem(typeof(Debug), writer);
 
 					writer.WriteEndElement();
@@ -117,6 +116,19 @@ namespace CryEngine.Utils
 			}
 		}
 
+		class ObjectReferenceComparer : IEqualityComparer<object>
+		{
+			public bool Equals(object obj1, object obj2)
+			{
+				return obj1 == obj2 && obj1.GetType() == obj2.GetType();
+			}
+
+			public int GetHashCode(object obj)
+			{
+				return base.GetHashCode();
+			}
+		}
+
 		static void WriteField(object value, FieldInfo fieldInfo, XmlWriter writer)
 		{
 			string fieldName = fieldInfo.Name;
@@ -126,8 +138,7 @@ namespace CryEngine.Utils
 
 			var valueType = value.GetType();
 
-			bool referenceExists = ObjectReferences.Contains(value);
-			if (referenceExists)
+			if(ObjectReferences.Contains(value, new ObjectReferenceComparer()))
 			{
 				writer.WriteStartElement("Field");
 				writer.WriteAttributeString("Name", fieldInfo.Name);
@@ -147,7 +158,7 @@ namespace CryEngine.Utils
 					writer.WriteAttributeString("Name", fieldInfo.Name);
 					writer.WriteAttributeString("Type", valueType.Name);
 
-					if (!referenceExists && !valueType.IsPrimitive && !valueType.IsEnum && valueType != typeof(string))
+					if(!valueType.IsPrimitive && !valueType.IsEnum && valueType != typeof(string))
 					{
 						writer.WriteAttributeString("ReferenceId", ObjectReferences.Count.ToString());
 
@@ -179,7 +190,7 @@ namespace CryEngine.Utils
 					writer.WriteAttributeString("Name", fieldInfo.Name);
 					writer.WriteAttributeString("Type", valueType.Name);
 
-					if (!referenceExists && !valueType.IsPrimitive && !valueType.IsEnum && valueType != typeof(string))
+					if (!valueType.IsPrimitive && !valueType.IsEnum && valueType != typeof(string))
 					{
 						writer.WriteAttributeString("ReferenceId", ObjectReferences.Count.ToString());
 
@@ -299,7 +310,7 @@ namespace CryEngine.Utils
 
 			ReloadedScriptInstances = null;
 
-			File.Delete(filePath);
+			//File.Delete(filePath);
 		}
 
 		public static void ProcessFields(object instance, IEnumerable<XElement> fields, System.Type type = null /* used for static types */)
@@ -326,7 +337,7 @@ namespace CryEngine.Utils
 						baseType = baseType.BaseType;
 					}
 
-					fieldInfo.SetValue(instance, ObjectReferences.ElementAtOrDefault(System.Convert.ToInt32(fieldReferenceAttribute.Value)));
+					fieldInfo.SetValue(instance, ObjectReferences.ElementAt(System.Convert.ToInt32(fieldReferenceAttribute.Value)));
 				}
 				else// if(!field.Attribute("Name").Value.Equals("inputMethods")) // this needs to be solved asap
 				{
@@ -343,12 +354,12 @@ namespace CryEngine.Utils
 
 					if (fieldOk)
 					{
-						if (fieldInfo.FieldType.Implements(typeof(IList)))
+						if (fieldInfo.FieldType.Implements(typeof(IList)) || fieldInfo.FieldType.Implements(typeof(IList<>)))
 						{
 							var elements = field.Element("Elements");
 							if (elements != null)
 							{
-								System.Collections.IList list = (System.Collections.IList)fieldInfo.GetValue(instance);
+								IList list = (IList)fieldInfo.GetValue(instance);
 
 								foreach (var element in elements.Elements("Element"))
 									list.Add(ConvertTypeValue(element.Attribute("Type").Value, element.Attribute("Value").Value, null));
@@ -361,7 +372,7 @@ namespace CryEngine.Utils
 							var elements = field.Element("Elements");
 							if (elements != null)
 							{
-								System.Collections.IDictionary dictionary = (System.Collections.IDictionary)fieldInfo.GetValue(instance);
+								IDictionary dictionary = (IDictionary)fieldInfo.GetValue(instance);
 
 								foreach (var element in elements.Elements("Element"))
 								{
@@ -389,7 +400,7 @@ namespace CryEngine.Utils
 									fieldInfo.SetValue(instance, subFieldInstance);
 								}
 								else
-									Debug.Log("[Warning] Could not serialize {0} since it did not contain an parameterless constructor", fieldInfo.FieldType.Name);
+									Debug.Log("[Warning] Could not serialize field {0} of type {1} since it did not contain an parameterless constructor", fieldInfo.Name,fieldInfo.FieldType.Name);
 							}
 							else
 							{
