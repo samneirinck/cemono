@@ -70,13 +70,6 @@ IMonoClass *CConverter::ToClass(IMonoObject *pObject)
 	return NULL;
 }
 
-struct SMonoEntityId
-{
-	SMonoEntityId(EntityId id) : value(id) {}
-
-	EntityId value;
-};
-
 IMonoObject *CConverter::CreateObject(MonoAnyValue &any)
 {
 	IMonoObject *pObject = NULL;
@@ -104,7 +97,7 @@ IMonoObject *CConverter::CreateObject(MonoAnyValue &any)
 		break;
 	case MONOTYPE_UINT:
 		{
-			return ToManagedType(eCMT_EntityId, new SMonoEntityId(any.number));
+			return ToManagedType(eCMT_EntityId, new mono::entityId((EntityId)any.number));
 		}
 		break;
 	case MONOTYPE_FLOAT:
