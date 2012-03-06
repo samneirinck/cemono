@@ -135,6 +135,9 @@ namespace CryEngine.Utils
 									script.ScriptInstances = new Collection<CryScriptInstance>();
 
 								script.ScriptInstances.Add(xmlSerializer.Deserialize(reader) as CryScriptInstance);
+
+								if(ScriptCompiler.NextScriptId <= script.ScriptInstances.Last().ScriptId)
+									ScriptCompiler.NextScriptId = script.ScriptInstances.Last().ScriptId + 1;
 							}
 						}
 					}
@@ -146,7 +149,13 @@ namespace CryEngine.Utils
 			string subSystemDirectory = Path.Combine(tempDirectory, "CryBrary.EntitySystem");
 			foreach(var directory in Directory.GetDirectories(subSystemDirectory))
 			{
-				var type = System.Type.GetType(new DirectoryInfo(directory).Name);
+				string typeDirectory = new DirectoryInfo(directory).Name;
+
+				System.Type type = null;
+				var scriptMatch = ScriptCompiler.CompiledScripts.Find(script => script.ClassType.FullName.Equals(typeDirectory));
+				if(scriptMatch != default(CryScript))
+					type = scriptMatch.ClassType;
+
 				if(type != null)
 				{
 					XmlSerializer xmlSerializer = new XmlSerializer(type);
@@ -156,9 +165,7 @@ namespace CryEngine.Utils
 						using(XmlReader reader = XmlReader.Create(fileName))
 						{
 							if(xmlSerializer.CanDeserialize(reader))
-							{
 								EntitySystem.SpawnedEntities.Add(xmlSerializer.Deserialize(reader) as StaticEntity);
-							}
 						}
 					}
 				}
