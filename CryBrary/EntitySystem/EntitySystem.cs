@@ -47,21 +47,21 @@ namespace CryEngine
 		public static T SpawnEntity<T>(string name, Vec3 pos, Vec3? rot = null, Vec3? scale = null, bool autoInit = true, EntityFlags flags = EntityFlags.CastShadow) where T : StaticEntity
 		{
 			var entId = new EntityId(_SpawnEntity(new EntitySpawnParams { Name = name, Class = typeof(T).Name, Pos = pos, Rot = rot ?? new Vec3(0, 0, 0), Scale = scale ?? new Vec3(1, 1, 1), Flags = flags }, autoInit));
-			spawnedEntities.Add(GetEntity(entId));
+			SpawnedEntities.Add(GetEntity(entId));
 
-			return spawnedEntities.Last() as T;
+			return SpawnedEntities.Last() as T;
 		}
 
 		public static void RemoveEntity(EntityId id)
 		{
 			_RemoveEntity(id._value);
 
-			spawnedEntities.RemoveAll(entity => entity.Id == id);
+			RemoveInternalEntity(id);
 		}
 
 		internal static void RemoveInternalEntity(EntityId id)
 		{
-			spawnedEntities.RemoveAll(entity => entity.Id == id);
+			SpawnedEntities.RemoveAll(entity => entity.Id == id);
 		}
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -84,7 +84,7 @@ namespace CryEngine
 			if (entityId._value == 0)
 				return null;
 
-			StaticEntity ent = spawnedEntities.Find(entity => entity.Id == entityId);
+			StaticEntity ent = SpawnedEntities.Find(entity => entity.Id == entityId);
 			if (ent != default(StaticEntity))
 				return ent;
 
@@ -142,15 +142,15 @@ namespace CryEngine
 
         internal static void RegisterInternalEntity(StaticEntity entity)
         {
-			if (!spawnedEntities.Contains(entity))
-				spawnedEntities.Add(entity);
+			if (!SpawnedEntities.Contains(entity))
+				SpawnedEntities.Add(entity);
 			else
 				throw new Exception("Attempted to register internal entity twice.");
         }
 
 		internal static void OnUpdate()
 		{
-			foreach (var entity in spawnedEntities)
+			foreach (var entity in SpawnedEntities)
 			{
 				if (entity != null && entity.ReceiveUpdates==true)
 					entity.OnUpdate();
@@ -161,7 +161,7 @@ namespace CryEngine
 		/// Contains entities spawned using EntitySystem.SpawnEntity.
 		/// Necessary to update scripts.
 		/// </summary>
-		static List<StaticEntity> spawnedEntities = new List<StaticEntity>();
+		internal static List<StaticEntity> SpawnedEntities = new List<StaticEntity>();
     }
 
 	/// <summary>

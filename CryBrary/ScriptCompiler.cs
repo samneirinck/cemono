@@ -149,29 +149,15 @@ namespace CryEngine
 		{
 			if(scriptName.Length > 0)
 			{
-				int index = CompiledScripts.FindIndex(x => x.ClassName.Equals(scriptName));
-				if(index == -1)
+				int i = CompiledScripts.FindIndex(x => x.ClassName.Equals(scriptName));
+				if(i == -1)
 					return;
 
-				CryScript script = CompiledScripts[index];
+				CryScript script = CompiledScripts[i];
 
-				if(script.ScriptInstances != null)
-				{
-					var scriptInstance = script.ScriptInstances.First(x => x.ScriptId == scriptId);
-					if(scriptInstance == null)
-						return;
+				RemoveScriptIdFromCryScript(ref script, scriptId);
 
-					int instanceIndex = script.ScriptInstances.IndexOf(scriptInstance);
-					if(instanceIndex == -1)
-					{
-						Debug.LogAlways("Failed to remove script of type {0} with id {1}; instance was not found.", scriptName, scriptId);
-						return;
-					}
-
-					script.ScriptInstances.RemoveAt(instanceIndex);
-
-					CompiledScripts[index] = script;
-				}
+				CompiledScripts[i] = script;
 			}
 			else
 			{
@@ -179,23 +165,29 @@ namespace CryEngine
 				{
 					CryScript script = CompiledScripts[i];
 
-					if(script.ScriptInstances != null)
-					{
-						var scriptInstance = script.ScriptInstances.First(x => x.ScriptId == scriptId);
-						if(scriptInstance == null)
-							return;
+					RemoveScriptIdFromCryScript(ref script, scriptId);
 
-						int scriptIndex = script.ScriptInstances.IndexOf(scriptInstance);
-						if(scriptIndex != -1)
-						{
-							script.ScriptInstances.RemoveAt(scriptIndex);
-
-							CompiledScripts[i] = script;
-
-							break;
-						}
-					}
+					CompiledScripts[i] = script;
 				}
+			}
+		}
+
+		static void RemoveScriptIdFromCryScript(ref CryScript script, int scriptId)
+		{
+			if(script.ScriptInstances != null && script.ScriptInstances.Count > 0)
+			{
+				var scriptInstance = script.ScriptInstances.First(x => x.ScriptId == scriptId);
+				if(scriptInstance == null)
+					return;
+
+				int instanceIndex = script.ScriptInstances.IndexOf(scriptInstance);
+				if(instanceIndex == -1)
+				{
+					Debug.LogAlways("Failed to remove script with id {0}; instance was not found.", scriptId);
+					return;
+				}
+
+				script.ScriptInstances.RemoveAt(instanceIndex);
 			}
 		}
 
@@ -546,6 +538,8 @@ namespace CryEngine
 				config.registerParams.Category = ""; // TODO: Use the folder structure in Scripts/Entities. (For example if the entity is in Scripts/Entities/Multiplayer, the category should become "Multiplayer")
 
 			EntitySystem.RegisterEntityClass(config);
+
+			entity = null;
 
 			LoadFlowNode(type, config.registerParams.Name, true);
 		}

@@ -14,12 +14,13 @@
         /// <param name="channelId"></param>
 		public void InternalSpawn(EntityId entityId, int channelId)
         {
-            Id = entityId;
+			SpawnCommon(entityId);
+           // Id = entityId;
             ChannelId = channelId;
-			MonoEntity = true;
-			Spawned = true;
+			//MonoEntity = true;
+			//Spawned = true;
 
-			InitPhysics();
+			//InitPhysics();
 
 			OnSpawn();
         }
@@ -29,18 +30,5 @@
 		public float MaxHealth { get { return ActorSystem._GetPlayerMaxHealth(Id._value); } set { ActorSystem._SetPlayerMaxHealth(Id._value, value); } }
 
         public bool IsDead() { return Health <= 0; }
-
-		private Inventory inventory;
-		public Inventory Inventory
-		{
-			get
-			{
-				if (inventory == null)
-					inventory = new Inventory(Id);
-
-				return inventory;
-			}
-			private set { inventory = value; }
-		}
     }
 }

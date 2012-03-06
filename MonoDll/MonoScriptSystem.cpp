@@ -155,7 +155,7 @@ bool CScriptSystem::CompleteInit()
 
 void CScriptSystem::PostInit()
 {
-	GetFlowManager()->Reset();
+	//GetFlowManager()->Reset();
 
 	m_pScriptManager->CallMethod("PostInit", true);
 }
@@ -168,7 +168,7 @@ bool CScriptSystem::Reload(bool initialLoad)
 		CryLogAlways("C# modifications detected on disk, initializing CryBrary reload");
 
 		 // Force dump of instance data. 
-		m_AppDomainSerializer->CallMethod("DumpScriptData");
+		m_AppDomainSerializer->CallMethod("DumpScriptData", true);
  	
 		mono_domain_set(mono_get_root_domain(), false);
 
@@ -213,7 +213,7 @@ bool CScriptSystem::Reload(bool initialLoad)
 	{
 		PostInit();
 
-		m_AppDomainSerializer->CallMethod("TrySetScriptData");
+		m_AppDomainSerializer->CallMethod("TrySetScriptData", true);
 
 		for each(auto script in m_scripts)
 		{
@@ -268,7 +268,6 @@ void CScriptSystem::RegisterDefaultBindings()
 	RegisterBinding(CScriptBind_Renderer);
 	RegisterBinding(CScriptBind_Console);
 	RegisterBinding(CScriptBind_ItemSystem);
-	RegisterBinding(CScriptBind_Inventory);
 	RegisterBinding(CScriptBind_GameRules);
 	RegisterBinding(CScriptBind_StaticEntity);
 	RegisterBinding(CScriptBind_Debug);

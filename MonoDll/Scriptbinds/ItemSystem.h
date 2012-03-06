@@ -26,18 +26,6 @@ protected:
 
 	static void CacheItemGeometry(mono::string);
 	static void CacheItemSound(mono::string);
-};
-
-class CScriptBind_Inventory : public IMonoScriptBind
-{
-public:
-	CScriptBind_Inventory();
-	~CScriptBind_Inventory() {}
-
-protected:
-	// IMonoScriptBind
-	virtual const char *GetClassName() { return "Inventory"; }
-	// ~IMonoScriptBind
 
 	static void GiveItem(EntityId, mono::string);
 	static void GiveEquipmentPack(EntityId, mono::string);
