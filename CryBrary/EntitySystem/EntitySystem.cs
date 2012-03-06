@@ -54,7 +54,7 @@ namespace CryEngine
 
 		public static void RemoveEntity(EntityId id)
 		{
-			_RemoveEntity(id._value);
+			_RemoveEntity(id);
 
 			RemoveInternalEntity(id);
 		}
@@ -81,14 +81,14 @@ namespace CryEngine
 		/// a C++ entity with the specified ID></remarks>
 		public static StaticEntity GetEntity(EntityId entityId)
         {
-			if (entityId._value == 0)
+			if (entityId == 0)
 				return null;
 
 			StaticEntity ent = SpawnedEntities.Find(entity => entity.Id == entityId);
 			if (ent != default(StaticEntity))
 				return ent;
 
-			if(_EntityExists(entityId._value))
+			if(_EntityExists(entityId))
 				return new StaticEntity(entityId);
 
             return null;

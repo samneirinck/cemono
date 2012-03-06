@@ -34,7 +34,7 @@ namespace CryEngine
         internal override bool InternalSpawn(EntityId entityId)
         {
             SpawnCommon(entityId);
-            _CreateGameObjectForEntity(Id._value);
+            _CreateGameObjectForEntity(Id);
             OnSpawn();
 
 			return IsEntityFlowNode();

@@ -18,7 +18,7 @@ namespace CryEngine
 
 		public static void RemoveView(EntityId viewId)
 		{
-			_RemoveView(viewId._value);
+			_RemoveView(viewId);
 		}
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
@@ -33,7 +33,7 @@ namespace CryEngine
 
 		public static void SetActiveView(EntityId viewId)
 		{
-			_SetActiveView(viewId._value);
+			_SetActiveView(viewId);
 		}
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
@@ -43,12 +43,12 @@ namespace CryEngine
 
 		public static ViewParams GetViewParams(EntityId viewId)
 		{
-			return _GetViewParams(viewId._value);
+			return _GetViewParams(viewId);
 		}
 
 		public static void SetViewParams(EntityId viewId, ViewParams viewParams)
 		{
-			_SetViewParams(viewId._value, viewParams);
+			_SetViewParams(viewId, viewParams);
 		}
 		#endregion
 
@@ -168,7 +168,7 @@ namespace CryEngine
 
 		public static implicit operator int(ViewId id)
 		{
-			return (int)id._value;
+			return (int)id;
 		}
 
 		public static implicit operator ViewId(int value)
@@ -179,7 +179,7 @@ namespace CryEngine
 		[System.CLSCompliant(false)]
 		public static implicit operator uint(ViewId id)
 		{
-			return id._value;
+			return id;
 		}
 
 		[System.CLSCompliant(false)]

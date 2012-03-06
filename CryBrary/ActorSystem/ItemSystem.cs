@@ -19,12 +19,12 @@ namespace CryEngine
 
 		public static void GiveItem(EntityId actorId, string itemClass)
 		{
-			_GiveItem(actorId._value, itemClass);
+			_GiveItem(actorId, itemClass);
 		}
 
 		public static void GiveEquipmentPack(EntityId actorId, string equipmentPack)
 		{
-			_GiveEquipmentPack(actorId._value, equipmentPack);
+			_GiveEquipmentPack(actorId, equipmentPack);
 		}
     }
 }

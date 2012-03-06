@@ -26,8 +26,8 @@
         }
 
         public int ChannelId { get; set; }
-		public float Health { get { return ActorSystem._GetPlayerHealth(Id._value); } set { ActorSystem._SetPlayerHealth(Id._value, value); } }
-		public float MaxHealth { get { return ActorSystem._GetPlayerMaxHealth(Id._value); } set { ActorSystem._SetPlayerMaxHealth(Id._value, value); } }
+		public float Health { get { return ActorSystem._GetPlayerHealth(Id); } set { ActorSystem._SetPlayerHealth(Id, value); } }
+		public float MaxHealth { get { return ActorSystem._GetPlayerMaxHealth(Id); } set { ActorSystem._SetPlayerMaxHealth(Id, value); } }
 
         public bool IsDead() { return Health <= 0; }
     }

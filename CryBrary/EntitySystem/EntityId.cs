@@ -5,11 +5,12 @@
 	/// </summary>
 	public struct EntityId
 	{
-		internal uint _value;
+		internal int _value;
 
+		[System.CLSCompliant(false)]
 		public EntityId(uint id)
 		{
-			_value = id;
+			_value = System.Convert.ToInt32(id);
 		}
 
 		#region Overrides
@@ -50,6 +51,17 @@
 		public static implicit operator EntityId(int value)
 		{
 			return new EntityId((uint)value);
+		}
+
+		public static implicit operator int(EntityId value)
+		{
+			return value._value;
+		}
+
+		[System.CLSCompliant(false)]
+		public static implicit operator uint(EntityId value)
+		{
+			return System.Convert.ToUInt32(value._value);
 		}
 		#endregion
 	}

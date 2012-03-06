@@ -31,7 +31,7 @@ namespace CryEngine
 
 		public static void RemoveActor(EntityId id)
 		{
-			_RemoveActor(id._value);
+			_RemoveActor(id);
 		}
 
 		public static void RemoveActor(int channelId)
