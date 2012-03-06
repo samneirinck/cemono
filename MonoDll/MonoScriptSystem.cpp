@@ -184,8 +184,6 @@ bool CScriptSystem::Reload(bool initialLoad)
 			MonoString *exceptionString = (MonoString *)mono_runtime_invoke(pExceptionMethod, pException, NULL, NULL);		
 			CryLogAlways(ToCryString((mono::string)exceptionString));
 		}
-
-		m_scripts.clear();
 	}
 
 	m_pScriptDomain = mono_domain_create_appdomain("ScriptDomain", NULL);
@@ -219,9 +217,8 @@ bool CScriptSystem::Reload(bool initialLoad)
 		{
 			IMonoArray *pParams = CreateMonoArray(1);
 			pParams->Insert(script.second);
-			if(IMonoObject *pScriptInstance = m_pScriptManager->CallMethod("GetScriptInstanceById", pParams))
+			if(IMonoObject *pScriptInstance = m_pScriptManager->CallMethod("GetScriptInstanceById", pParams, true))
 			{
-
 				mono::object monoObject = pScriptInstance->GetMonoObject();
 
 				MonoClass *pMonoClass = mono_object_get_class((MonoObject *)monoObject);
