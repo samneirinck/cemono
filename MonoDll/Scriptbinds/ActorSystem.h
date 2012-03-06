@@ -29,6 +29,9 @@ protected:
 	static float GetPlayerMaxHealth(EntityId);
 	static void SetPlayerMaxHealth(EntityId, float);
 
+	static EntityId GetEntityIdForChannelId(uint16 channelId);
+	static void RemoveActor(EntityId id);
+
 	static void RegisterActorClass(mono::string, bool);
 };
 

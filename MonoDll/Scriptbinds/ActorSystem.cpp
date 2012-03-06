@@ -12,7 +12,23 @@ CScriptBind_ActorSystem::CScriptBind_ActorSystem()
 	REGISTER_METHOD(GetPlayerMaxHealth);
 	REGISTER_METHOD(SetPlayerMaxHealth);
 
+	REGISTER_METHOD(GetEntityIdForChannelId);
+	REGISTER_METHOD(RemoveActor);
+
 	REGISTER_METHOD(RegisterActorClass);
+}
+
+EntityId CScriptBind_ActorSystem::GetEntityIdForChannelId(uint16 channelId)
+{
+	if(IActor *pActor = gEnv->pGameFramework->GetIActorSystem()->GetActorByChannelId(channelId))
+		return pActor->GetEntityId();
+
+	return 0;
+}
+
+void CScriptBind_ActorSystem::RemoveActor(EntityId id)
+{
+	gEnv->pGameFramework->GetIActorSystem()->RemoveActor(id);
 }
 
 void CScriptBind_ActorSystem::RegisterActorClass(mono::string className, bool isAI)

@@ -18,5 +18,25 @@ namespace CryEngine
         extern internal static float _GetPlayerMaxHealth(uint playerId);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static void _SetPlayerMaxHealth(uint playerId, float newMaxHealth);
+
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static uint _GetEntityIdForChannelId(ushort channelId);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static void _RemoveActor(uint id);
+
+		public static EntityId GetEntityIdForChannelId(int channelId)
+		{
+			return new EntityId(_GetEntityIdForChannelId((ushort)channelId));
+		}
+
+		public static void RemoveActor(EntityId id)
+		{
+			_RemoveActor(id._value);
+		}
+
+		public static void RemoveActor(int channelId)
+		{
+			RemoveActor(GetEntityIdForChannelId(channelId));
+		}
     }
 }
