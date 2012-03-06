@@ -155,7 +155,7 @@ namespace CryEngine
 
 				CryScript script = CompiledScripts[i];
 
-				RemoveScriptIdFromCryScript(ref script, scriptId);
+				RemoveInstanceFromScriptById(ref script, scriptId);
 
 				CompiledScripts[i] = script;
 			}
@@ -165,14 +165,14 @@ namespace CryEngine
 				{
 					CryScript script = CompiledScripts[i];
 
-					RemoveScriptIdFromCryScript(ref script, scriptId);
+					RemoveInstanceFromScriptById(ref script, scriptId);
 
 					CompiledScripts[i] = script;
 				}
 			}
 		}
 
-		static void RemoveScriptIdFromCryScript(ref CryScript script, int scriptId)
+		static void RemoveInstanceFromScriptById(ref CryScript script, int scriptId)
 		{
 			if(script.ScriptInstances != null && script.ScriptInstances.Count > 0)
 			{
@@ -191,34 +191,26 @@ namespace CryEngine
 			}
 		}
 
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public static object InvokeScriptFunctionById(int id, string func, object[] args = null)
-		{
-			CryScriptInstance scriptInstance = GetScriptInstanceById(id);
-			if(scriptInstance == default(CryScriptInstance))
-			{
-				Debug.LogAlways("Failed to invoke method, script instance was invalid");
-				return null;
-			}
-
-			return InvokeScriptFunction(scriptInstance, func, args);
-		}
-
 		public static CryScriptInstance GetScriptInstanceById(int id)
 		{
-			var scripts = CompiledScripts.Where(script => script.ScriptInstances != null);
+			var scripts = CompiledScripts.Where(script => script.ScriptInstances != null && script.ScriptInstances.Count > 0);
 
 			CryScriptInstance scriptInstance = null;
 			foreach(var script in scripts)
 			{
 				scriptInstance = script.ScriptInstances.FirstOrDefault(instance => instance.ScriptId == id);
 
-				if(scriptInstance != default(CryScriptInstance))
+				if(scriptInstance != InvalidScriptInstance)
 					return scriptInstance;
 			}
 
 			return null;
 		}
+
+		/// <summary>
+		/// Avoid creating a new empty CryScriptInstance each time we need to check
+		/// </summary>
+		static CryScriptInstance InvalidScriptInstance = default(CryScriptInstance);
 
 		public static int GetEntityScriptId(EntityId entityId, System.Type scriptType = null)
 		{
@@ -235,18 +227,6 @@ namespace CryEngine
 			}
 
 			return -1;
-		}
-
-		/// <summary>
-		/// Automagically registers scriptbind methods to rid us of having to add them in both C# and C++.
-		/// </summary>
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public static void RegisterScriptbind(string namespaceName, string className, object[] methods)
-		{
-			if(ScriptBinds == null)
-				ScriptBinds = new List<Scriptbind>();
-
-			ScriptBinds.Add(new Scriptbind(namespaceName, className, methods));
 		}
 
 		/// <summary>
@@ -495,19 +475,6 @@ namespace CryEngine
 			return scripts.ToArray();
 		}
 
-		internal struct StoredNode
-		{
-			public StoredNode(string Class, string Category)
-				: this()
-			{
-				className = Class;
-				category = Category;
-			}
-
-			public string className;
-			public string category;
-		}
-
 		internal static void RegisterFlownodes()
 		{
 			foreach (var node in FlowNodes)
@@ -568,74 +535,6 @@ namespace CryEngine
 			FlowNodes.Add(new StoredNode(nodeName, category));
 		}
 
-		public static object InvokeScriptFunction(object scriptInstance, string func, object[] args = null)
-		{
-			if (scriptInstance == null)
-			{
-				Debug.LogAlways("Attempted to invoke method {0} with an invalid instance.", func);
-				return null;
-			}
-
-			var methodInfo = scriptInstance.GetType().GetMethods().First(method =>
-			{
-				var parameters = method.GetParameters();
-
-				if (method.Name == func)
-				{
-					if ((parameters == null || parameters.Length == 0) && args == null)
-						return true;
-					else if (parameters.Length == args.Length)
-					{
-						for (int i = 0; i < args.Length; i++)
-						{
-							if (parameters[i].ParameterType == args[i].GetType())
-								return true;
-						}
-					}
-				}
-
-				return false;
-			});
-
-			if (methodInfo == null)
-			{
-				Debug.LogAlways("Could not find method {0} in type {1}", func, scriptInstance.GetType().ToString());
-				return null;
-			}
-
-			// Sort out optional parameters
-			ParameterInfo[] info = methodInfo.GetParameters();
-
-			if (info.Length > 0)
-			{
-				object[] tempArgs;
-				tempArgs = new object[info.Length];
-				int argIndexLength = args.Length - 1;
-
-				for (int i = 0; i < info.Length; i++)
-				{
-					if (i <= argIndexLength)
-						tempArgs.SetValue(args[i], i);
-					else if (i > argIndexLength && info[i].IsOptional)
-						tempArgs[i] = info[i].DefaultValue;
-				}
-
-				args = null;
-				args = tempArgs;
-				tempArgs = null;
-			}
-			else
-				args = null;
-
-			object result = methodInfo.Invoke(scriptInstance, args);
-
-			args = null;
-			methodInfo = null;
-			info = null;
-
-			return result;
-		}
-
 		public static void GenerateDebugDatabaseForAssembly(string assemblyPath)
 		{
 			if (File.Exists(Path.ChangeExtension(assemblyPath, "pdb")))
@@ -649,10 +548,21 @@ namespace CryEngine
 			}
 		}
 
+		internal struct StoredNode
+		{
+			public StoredNode(string Class, string Category)
+				: this()
+			{
+				className = Class;
+				category = Category;
+			}
+
+			public string className;
+			public string category;
+		}
+
 		internal static List<StoredNode> FlowNodes;
         private static AssemblyReferenceHandler assemblyReferenceHandler;
-
-		static List<Scriptbind> ScriptBinds;
 
 		public static List<CryScript> CompiledScripts;
 		public static int NextScriptId;
