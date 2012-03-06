@@ -217,7 +217,7 @@ bool CScriptSystem::Reload(bool initialLoad)
 
 		for each(auto script in m_scripts)
 		{
-			IMonoArray *pParams = CreateMonoArray(1);			
+			IMonoArray *pParams = CreateMonoArray(1);
 			pParams->Insert(script.second);
 			if(IMonoObject *pScriptInstance = m_pScriptManager->CallMethod("GetScriptInstanceById", pParams))
 			{

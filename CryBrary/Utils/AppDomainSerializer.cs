@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 
 using System.IO;
+using System.Security.AccessControl;
 
 using System.Collections;
 using System.Collections.ObjectModel;
@@ -10,6 +11,10 @@ using System.Linq;
 
 using System.Xml;
 using System.Xml.Linq;
+
+using System.Xml.Serialization;
+
+using System.Text;
 
 using CryEngine.Extensions;
 
@@ -22,408 +27,142 @@ namespace CryEngine.Utils
 	{
 		public static void DumpScriptData()
 		{
+			string tempDirectory = Path.Combine(PathUtils.GetRootFolder(), "Temp");
+
+			string compiledScriptsDirectory = Path.Combine(tempDirectory, "ScriptCompiler.CompiledScripts");
+			if(Directory.Exists(compiledScriptsDirectory))
+				Directory.Delete(compiledScriptsDirectory, true);
+
+			Directory.CreateDirectory(compiledScriptsDirectory);
+
+			foreach(var script in ScriptCompiler.CompiledScripts)
+			{
+				if(script.ScriptInstances != null)
+					SerializeTypesToXml(script.ScriptInstances, script.ClassType, compiledScriptsDirectory);
+			}
+
+			string subSystemDirectory = Path.Combine(tempDirectory, "CryBrary.EntitySystem");
+			if(Directory.Exists(subSystemDirectory))
+				Directory.Delete(subSystemDirectory, true);
+
+			Directory.CreateDirectory(subSystemDirectory);
+
 			var xmlSettings = new XmlWriterSettings();
 			xmlSettings.Indent = true;
 
-			using (XmlWriter writer = XmlWriter.Create(Path.Combine(PathUtils.GetRootFolder(), "Temp", "MonoScriptData.xml"), xmlSettings))
+			Dictionary<System.Type, List<object>> types = new Dictionary<System.Type,List<object>>();
+
+			foreach(var entity in EntitySystem.SpawnedEntities)
 			{
-				writer.WriteStartDocument();
+				var type = entity.GetType();
 
-				writer.WriteStartElement("ScriptData");
+				if(!types.ContainsKey(type))
+					types.Add(type, new List<object>());
 
+				types[type].Add(entity);
+			}
+
+			foreach(var type in types)
+			{
+				string directory = Path.Combine(subSystemDirectory, type.Key.FullName);
+				Directory.CreateDirectory(directory);
+
+				XmlSerializer xmlSerializer = new XmlSerializer(type.Key);
+
+				for(int i = 0; i < type.Value.Count; i++)
 				{
-					writer.WriteStartElement("Types");
-
-					foreach (var script in ScriptCompiler.CompiledScripts)
-					{
-						if (script.ScriptInstances != null)
-						{
-							writer.WriteStartElement("Type");
-							writer.WriteAttributeString("Name", script.ClassName);
-
-							foreach (var scriptInstance in script.ScriptInstances)
-							{
-								System.Type type = scriptInstance.GetType();
-
-								writer.WriteStartElement("Instance");
-
-								// Just a tiiiiiny bit hardcoded.
-								int scriptId = System.Convert.ToInt32(type.GetProperty("ScriptId").GetValue(scriptInstance, null));
-								writer.WriteAttributeString("Id", scriptId.ToString());
-
-								writer.WriteAttributeString("ReferenceId", ObjectReferences.Count.ToString());
-								ObjectReferences.Add(scriptInstance);
-
-								SerializeTypeToXml(scriptInstance, writer);
-
-								writer.WriteEndElement();
-							}
-
-							writer.WriteEndElement();
-						}
-					}
-
-					writer.WriteEndElement();
+					using(XmlWriter writer = XmlWriter.Create(Path.Combine(directory, i.ToString()), xmlSettings))
+						xmlSerializer.Serialize(writer, type.Value.ElementAt(i));
 				}
-
-				{
-					writer.WriteStartElement("Subsystems");
-
-					WriteSubsystem(typeof(EntitySystem), writer);
-					//WriteSubsystem(typeof(InputSystem), writer);
-					WriteSubsystem(typeof(Debug), writer);
-
-					writer.WriteEndElement();
-				}
-
-				writer.WriteEndElement();
-
-				writer.WriteEndDocument();
 			}
 		}
 
-		static void WriteSubsystem(System.Type type, XmlWriter writer)
+		public static void SerializeSubsystemToXml(System.Type subSystem, string directory)
 		{
-			var fields = type.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-			if (fields.Length > 0)
-			{
-				writer.WriteStartElement("System");
-				writer.WriteAttributeString("Name", type.FullName);
+			directory = Path.Combine(directory, subSystem.Name);
+			Directory.CreateDirectory(directory);
 
-				foreach (var fieldInfo in fields)
-					WriteField(fieldInfo.GetValue(null), fieldInfo, writer);
+			var xmlSettings = new XmlWriterSettings();
+			xmlSettings.Indent = true;
 
-				writer.WriteEndElement();
-			}
+			XmlSerializer xmlSerializer = new XmlSerializer(subSystem);
+
+			using(XmlWriter writer = XmlWriter.Create(Path.Combine(directory, subSystem.Name), xmlSettings))
+				xmlSerializer.Serialize(writer, null);
 		}
 
-		/// <summary>
-		/// Used to keep track of duplicate instances of structs and classes of various kinds.
-		/// Saves space in MonoScriptData.xml + solves possible loop issues. - i59
-		/// </summary>
-		static List<object> ObjectReferences = new List<object>();
-
-		public static void SerializeTypeToXml(object typeInstance, XmlWriter writer)
+		public static void SerializeTypesToXml(IEnumerable<object> typeInstances, System.Type type, string targetDir)
 		{
-			System.Type type = typeInstance.GetType();
-
-			while (type != null)
-			{
-				foreach (var fieldInfo in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
-					WriteField(fieldInfo.GetValue(typeInstance), fieldInfo, writer);
-
-				type = type.BaseType;
-			}
-		}
-
-		class ObjectReferenceComparer : IEqualityComparer<object>
-		{
-			public bool Equals(object obj1, object obj2)
-			{
-				return obj1 == obj2 && obj1.GetType() == obj2.GetType();
-			}
-
-			public int GetHashCode(object obj)
-			{
-				return base.GetHashCode();
-			}
-		}
-
-		static void WriteField(object value, FieldInfo fieldInfo, XmlWriter writer)
-		{
-			string fieldName = fieldInfo.Name;
-
-			if (value == null)
+			if(typeInstances.Count() <= 0)
 				return;
 
-			var valueType = value.GetType();
+			var xmlSettings = new XmlWriterSettings();
+			xmlSettings.Indent = true;
 
-			if(ObjectReferences.Contains(value, new ObjectReferenceComparer()))
+			targetDir = Directory.CreateDirectory(Path.Combine(targetDir, type.Name)).FullName;
+
+			XmlSerializer xmlSerializer = new XmlSerializer(type);
+
+			for(int i = 0; i < typeInstances.Count(); i++)
 			{
-				writer.WriteStartElement("Field");
-				writer.WriteAttributeString("Name", fieldInfo.Name);
-				writer.WriteAttributeString("ReferencesId", ObjectReferences.IndexOf(value).ToString());
-				writer.WriteEndElement();
-			}
-			else if (!fieldName.Equals("<ScriptId>k__BackingField"))
-			{
-				if (fieldInfo.FieldType.Implements(typeof(IList)))
-				{
-					IList list = (IList)value;
-					if (list.Count <= 0)
-						return;
-
-					writer.WriteStartElement("Field");
-
-					writer.WriteAttributeString("Name", fieldInfo.Name);
-					writer.WriteAttributeString("Type", valueType.Name);
-
-					if(!valueType.IsPrimitive && !valueType.IsEnum && valueType != typeof(string))
-					{
-						writer.WriteAttributeString("ReferenceId", ObjectReferences.Count.ToString());
-
-						ObjectReferences.Add(value);
-					}
-
-					writer.WriteStartElement("Elements");
-
-					foreach (var listObject in list)
-					{
-						if(listObject != null)
-						{
-							writer.WriteStartElement("Element");
-							WriteValue(listObject, writer);// writer.WriteAttributeString("Value", listObject.ToString());
-							writer.WriteEndElement();
-						}
-					}
-
-					writer.WriteEndElement();
-				}
-				else if (fieldInfo.FieldType.Implements(typeof(IDictionary)))
-				{
-					IDictionary dictionary = (IDictionary)value;
-					if (dictionary.Count <= 0)
-						return;
-
-					writer.WriteStartElement("Field");
-
-					writer.WriteAttributeString("Name", fieldInfo.Name);
-					writer.WriteAttributeString("Type", valueType.Name);
-
-					if (!valueType.IsPrimitive && !valueType.IsEnum && valueType != typeof(string))
-					{
-						writer.WriteAttributeString("ReferenceId", ObjectReferences.Count.ToString());
-
-						ObjectReferences.Add(value);
-					}
-
-					writer.WriteStartElement("Elements");
-
-					foreach (var key in dictionary.Keys)
-					{
-						if(key != null && dictionary[key] != null)
-						{
-							writer.WriteStartElement("Element");
-							writer.WriteStartElement("Key");
-							WriteValue(key, writer);
-							writer.WriteEndElement();
-							writer.WriteStartElement("Value");
-							WriteValue(dictionary[key], writer);
-							writer.WriteEndElement();
-							writer.WriteEndElement();
-						}
-					}
-
-					writer.WriteEndElement();
-				}
-				else
-				{
-					writer.WriteStartElement("Field");
-					WriteValue(value, writer, fieldName);
-				}
-
-				writer.WriteEndElement(); // "Field"
+				using(XmlWriter writer = XmlWriter.Create(Path.Combine(targetDir, i.ToString()), xmlSettings))
+					xmlSerializer.Serialize(writer, typeInstances.ElementAt(i));
 			}
 		}
 
-		static void WriteValue(object value, XmlWriter writer, string name = null)
-		{
-			if(value == null)
-				return;
-
-			if (!string.IsNullOrEmpty(name))
-				writer.WriteAttributeString("Name", name);
-
-			var valueType = value.GetType();
-
-			writer.WriteAttributeString("Type", valueType.Name);
-
-			bool isString = (valueType == typeof(string));
-
-			if (!valueType.IsPrimitive && !valueType.IsEnum && !isString)
-			{
-				writer.WriteAttributeString("ReferenceId", ObjectReferences.Count.ToString());
-				ObjectReferences.Add(value);
-
-				SerializeTypeToXml(value, writer);
-			}
-			else
-				writer.WriteAttributeString("Value", value.ToString());
-		}
-
-		static void AddObjectReference(int desiredIndex, object obj)
-		{
-			while (ObjectReferences.Count < desiredIndex)
-				ObjectReferences.Add(null);
-
-			ObjectReferences.Add(obj);
-		}
 
 		public static void TrySetScriptData()
 		{
-			string filePath = Path.Combine(PathUtils.GetRootFolder(), "Temp", "MonoScriptData.xml");
-			if (!File.Exists(filePath))
-				return;
+			string tempDirectory = Path.Combine(PathUtils.GetRootFolder(), "Temp");
 
-			XDocument scriptData = XDocument.Load(filePath);
+			string compiledScriptsDirectory = Path.Combine(tempDirectory, "ScriptCompiler.CompiledScripts");
 
-			var scriptDataElement = scriptData.Element("ScriptData");
-			foreach (var type in scriptDataElement.Element("Types").Elements("Type"))
+			for(int i = 0; i < ScriptCompiler.CompiledScripts.Count; i++)
 			{
-				CryScript script = ScriptCompiler.CompiledScripts.Where(Script => Script.ClassName.Equals(type.Attribute("Name").Value)).FirstOrDefault();
+				var script = ScriptCompiler.CompiledScripts[i];
+				XmlSerializer xmlSerializer = new XmlSerializer(script.ClassType);
 
-				if (script != default(CryScript))
+				string directoryName = Path.Combine(compiledScriptsDirectory, script.ClassName);
+				if(Directory.Exists(directoryName))
 				{
-					foreach (var instanceElement in type.Elements("Instance"))
+					foreach(var fileName in Directory.GetFiles(directoryName))
 					{
-						int scriptId = System.Convert.ToInt32(instanceElement.Attribute("Id").Value);
-
-						if(script.ScriptInstances == null)
-							script.ScriptInstances = new Collection<CryScriptInstance>();
-
-						script.ScriptInstances.Add(System.Activator.CreateInstance(script.ClassType) as CryScriptInstance);
-
-						AddObjectReference(System.Convert.ToInt32(instanceElement.Attribute("ReferenceId").Value), script.ScriptInstances.Last());
-
-						if (ScriptCompiler.NextScriptId < scriptId)
-							ScriptCompiler.NextScriptId = scriptId;
-
-						script.ClassType.GetProperty("ScriptId").SetValue(script.ScriptInstances.Last(), scriptId, null);
-
-						ProcessFields(script.ScriptInstances.Last(), instanceElement.Elements("Field"));
-					}
-				}
-
-				int scriptIndex = ScriptCompiler.CompiledScripts.IndexOf(script);
-				ScriptCompiler.CompiledScripts[scriptIndex] = script;
-			}
-
-			foreach (var subSystem in scriptDataElement.Elements("Subsystems").Elements("System"))
-			{
-				var type = System.Type.GetType(subSystem.Attribute("Name").Value);
-
-				ProcessFields(null, subSystem.Elements("Field"), type);
-			}
-
-			foreach (var scriptInstance in ReloadedScriptInstances)
-				scriptInstance.OnPostScriptReload();
-
-			ReloadedScriptInstances = null;
-
-			//File.Delete(filePath);
-		}
-
-		public static void ProcessFields(object instance, IEnumerable<XElement> fields, System.Type type = null /* used for static types */)
-		{
-			if (fields == null || fields.Count() < 1)
-				return;
-
-			if (instance as CryScriptInstance != null)
-				ReloadedScriptInstances.Add(instance as CryScriptInstance);
-
-			var instanceType = type != null ? type : instance.GetType();
-
-			foreach (var field in fields)
-			{
-				var fieldReferenceAttribute = field.Attribute("ReferencesId");
-				if (fieldReferenceAttribute != null)
-				{
-					FieldInfo fieldInfo = null;
-					var baseType = instanceType;
-					while (fieldInfo == null && baseType != null)
-					{
-						fieldInfo = baseType.GetField(field.Attribute("Name").Value, instance == null && type != null ? BindingFlags.Static : BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-
-						baseType = baseType.BaseType;
-					}
-
-					fieldInfo.SetValue(instance, ObjectReferences.ElementAt(System.Convert.ToInt32(fieldReferenceAttribute.Value)));
-				}
-				else// if(!field.Attribute("Name").Value.Equals("inputMethods")) // this needs to be solved asap
-				{
-					FieldInfo fieldInfo = null;
-					var baseType = instanceType;
-					while (fieldInfo == null && baseType != null)
-					{
-						fieldInfo = baseType.GetField(field.Attribute("Name").Value, instance == null && type != null ? BindingFlags.Static : BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-
-						baseType = baseType.BaseType;
-					}
-
-					bool fieldOk = fieldInfo != null;
-
-					if (fieldOk)
-					{
-						if (fieldInfo.FieldType.Implements(typeof(IList)) || fieldInfo.FieldType.Implements(typeof(IList<>)))
+						using(XmlReader reader = XmlReader.Create(fileName))
 						{
-							var elements = field.Element("Elements");
-							if (elements != null)
+							if(xmlSerializer.CanDeserialize(reader))
 							{
-								IList list = (IList)fieldInfo.GetValue(instance);
+								if(script.ScriptInstances == null)
+									script.ScriptInstances = new Collection<CryScriptInstance>();
 
-								foreach (var element in elements.Elements("Element"))
-									list.Add(ConvertTypeValue(element.Attribute("Type").Value, element.Attribute("Value").Value, null));
-
-								fieldInfo.SetValue(instance, list);
-							}
-						}
-						else if (fieldInfo.FieldType.Implements(typeof(IDictionary)))
-						{
-							var elements = field.Element("Elements");
-							if (elements != null)
-							{
-								IDictionary dictionary = (IDictionary)fieldInfo.GetValue(instance);
-
-								foreach (var element in elements.Elements("Element"))
-								{
-									var key = element.Element("Key");
-									var value = element.Element("Value");
-
-									dictionary.Add(ConvertTypeValue(key.Attribute("Type").Value, key.Attribute("Value").Value, null), ConvertTypeValue(value.Attribute("Type").Value, value.Attribute("Value").Value, null));
-								}
-
-								fieldInfo.SetValue(instance, dictionary);
-							}
-						}
-						else
-						{
-							var subFields = field.Elements("Field");
-							if (subFields.Count() > 0)
-							{
-								// Limitation; we can only instantiate types with parameterless constructors
-								if (fieldInfo.FieldType.GetConstructor(System.Type.EmptyTypes) != null || fieldInfo.FieldType.IsValueType)
-								{
-									object subFieldInstance = System.Activator.CreateInstance(fieldInfo.FieldType);
-
-									ProcessFields(subFieldInstance, subFields);
-
-									fieldInfo.SetValue(instance, subFieldInstance);
-								}
-								else
-									Debug.Log("[Warning] Could not serialize field {0} of type {1} since it did not contain an parameterless constructor", fieldInfo.Name,fieldInfo.FieldType.Name);
-							}
-							else
-							{
-								if (fieldInfo.FieldType.IsEnum)
-									fieldInfo.SetValue(instance, System.Enum.Parse(fieldInfo.FieldType, field.Attribute("Value").Value));
-								else
-									fieldInfo.SetValue(instance, Convert.FromString(field.Attribute("Type").Value, field.Attribute("Value").Value));
+								script.ScriptInstances.Add(xmlSerializer.Deserialize(reader) as CryScriptInstance);
 							}
 						}
 					}
+				}
 
-					var referenceIdAttribute = field.Attribute("ReferenceId");
-					if (referenceIdAttribute != null && fieldOk)
-						AddObjectReference(System.Convert.ToInt32(referenceIdAttribute.Value), fieldInfo.GetValue(instance));
+				ScriptCompiler.CompiledScripts[i] = script;
+			}
+
+			string subSystemDirectory = Path.Combine(tempDirectory, "CryBrary.EntitySystem");
+			foreach(var directory in Directory.GetDirectories(subSystemDirectory))
+			{
+				var type = System.Type.GetType(new DirectoryInfo(directory).Name);
+				if(type != null)
+				{
+					XmlSerializer xmlSerializer = new XmlSerializer(type);
+
+					foreach(var fileName in Directory.GetFiles(directory))
+					{
+						using(XmlReader reader = XmlReader.Create(fileName))
+						{
+							if(xmlSerializer.CanDeserialize(reader))
+							{
+								EntitySystem.SpawnedEntities.Add(xmlSerializer.Deserialize(reader) as StaticEntity);
+							}
+						}
+					}
 				}
 			}
-		}
-
-		static List<CryScriptInstance> ReloadedScriptInstances = new List<CryScriptInstance>();
-
-		static object ConvertTypeValue(string type, string value, object parent)
-		{
-			return Convert.FromString(type, value);
 		}
 	}
 }
