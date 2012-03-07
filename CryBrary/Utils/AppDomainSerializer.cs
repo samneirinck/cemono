@@ -111,7 +111,10 @@ namespace CryEngine.Utils
 						var formatter = new CrySerializer();
 						var stream = File.Open(fileName, FileMode.Open);
 
-						script.ScriptInstances.Add(formatter.Deserialize(stream) as CryScriptInstance);
+						var scriptInstance = formatter.Deserialize(stream) as CryScriptInstance;
+
+						if(scriptInstance != null)
+							script.ScriptInstances.Add(scriptInstance);
 
 						stream.Close();
 
@@ -140,7 +143,10 @@ namespace CryEngine.Utils
 						var formatter = new CrySerializer();
 						var stream = File.Open(fileName, FileMode.Open);
 
-						EntitySystem.SpawnedEntities.Add(formatter.Deserialize(stream) as StaticEntity);
+						var entity = formatter.Deserialize(stream) as StaticEntity;
+
+						if(entity != null)
+							EntitySystem.SpawnedEntities.Add(entity);
 
 						stream.Close();
 					}
@@ -185,24 +191,21 @@ namespace CryEngine.Utils
 			if(type == null)
 				return null;
 
-			object objectInstance = null;
+			ObjectReference reference = null;
 
 			if(type.GetConstructor(System.Type.EmptyTypes) != null || type.IsValueType)
-				objectInstance = System.Activator.CreateInstance(type);
+				reference = new ObjectReference(System.Activator.CreateInstance(type));
 			else
 				Debug.Log("[Warning] Could not serialize type {0} since it did not contain an parameterless constructor", type.Name);
 
-			if(objectInstance == null)
+			if(reference == null || reference.Object == null)
 				return null;
 
-			Debug.LogAlways("Serializing {0}", type.Name);
-
-			ObjectReference reference = new ObjectReference(objectInstance);
-
 			if(ObjectReferences.ContainsKey(reference))
-				return objectInstance;
+				return reference.Object;
 
 			ObjectReferences.Add(reference, ((FileStream)serializationStream).Name);
+			int referenceIndex = ObjectReferences.Count - 1;
 
 			// Store serialized variable name -> value pairs.
 			StringDictionary sdict = new StringDictionary();
@@ -218,7 +221,7 @@ namespace CryEngine.Utils
 
 			if(type.IsArray)
 			{
-				System.Array array = (System.Array)objectInstance;
+				System.Array array = (System.Array)reference.Object;
 
 				foreach(var dict in sdict.Keys)
 				{
@@ -240,7 +243,7 @@ namespace CryEngine.Utils
 						array.SetValue(Convert.ChangeType(indexVal, array.GetType().GetElementType()), System.Convert.ToInt32((string)dict) /* index as a string */);
 				}
 
-				objectInstance = array;
+				reference.Object = array;
 			}
 			else if(!type.IsPrimitive && !type.IsEnum && type != typeof(string))
 			{
@@ -263,20 +266,20 @@ namespace CryEngine.Utils
 
 								stream.Close();
 
-								fieldInfo.SetValue(objectInstance, deserializedObject);
+								fieldInfo.SetValue(reference.Object, deserializedObject);
 							}
 							else
-								fieldInfo.SetValue(objectInstance, Convert.ChangeType(sdict[fieldInfo.Name], fieldInfo.FieldType));
+								fieldInfo.SetValue(reference.Object, Convert.ChangeType(sdict[fieldInfo.Name], fieldInfo.FieldType));
 						}
 						else
-							Debug.Log("Missing field value : " + fieldInfo.Name);
+							Debug.Log("Field {0} was not serialized in object of type {1}", fieldInfo.Name, fieldInfo.FieldType.Name);
 					}
 
 					type = type.BaseType;
 				}
 			}
 
-			return objectInstance;
+			return reference.Object;
 		}
 
 		public void Serialize(Stream serializationStream, object objectInstance)
@@ -386,10 +389,9 @@ namespace CryEngine.Utils
 			set { context = value; }
 		}
 
-		internal struct ObjectReference
+		internal class ObjectReference
 		{
 			public ObjectReference(object obj)
-				: this()
 			{
 				Object = obj;
 				Type = obj.GetType();
