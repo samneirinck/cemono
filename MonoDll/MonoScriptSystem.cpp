@@ -168,7 +168,7 @@ bool CScriptSystem::Reload(bool initialLoad)
 		CryLogAlways("C# modifications detected on disk, initializing CryBrary reload");
 
 		 // Force dump of instance data. 
-		m_AppDomainSerializer->CallMethod("DumpScriptData", true);
+		m_AppDomainSerializer->CallMethod("DumpScriptData");
  	
 		mono_domain_set(mono_get_root_domain(), false);
 
@@ -193,7 +193,7 @@ bool CScriptSystem::Reload(bool initialLoad)
 	if (!m_pCryBraryAssembly)
 		return false;
 
-	m_AppDomainSerializer = m_pCryBraryAssembly->GetCustomClass("AppDomainSerializer", "CryEngine.Utils");
+	m_AppDomainSerializer = m_pCryBraryAssembly->InstantiateClass("AppDomainSerializer", "CryEngine.Utils");
 
 	CryLogAlways("		Initializing subsystems...");
 	InitializeSystems();
@@ -211,7 +211,7 @@ bool CScriptSystem::Reload(bool initialLoad)
 	{
 		PostInit();
 
-		m_AppDomainSerializer->CallMethod("TrySetScriptData", true);
+		m_AppDomainSerializer->CallMethod("TrySetScriptData");
 
 		for each(auto script in m_scripts)
 		{
