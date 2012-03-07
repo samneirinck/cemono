@@ -160,7 +160,7 @@ namespace CryEngine.Utils
 			context = new StreamingContext(StreamingContextStates.All);
 		}
 
-		public object Deserialize(System.IO.Stream serializationStream)
+		public object Deserialize(Stream serializationStream)
 		{
 			StreamReader sr = new StreamReader(serializationStream);
 
