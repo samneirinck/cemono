@@ -57,6 +57,7 @@ CScriptSystem::CScriptSystem()
 	, m_pScriptManager(NULL)
 	, m_AppDomainSerializer(NULL)
 	, m_pInput(NULL)
+	, m_bLastCompilationSuccess(true)
 {
 	CryLogAlways("Initializing Mono Script System");
 
@@ -162,28 +163,24 @@ void CScriptSystem::PostInit()
 
 bool CScriptSystem::Reload(bool initialLoad)
 {
+	MonoDomain *pPrevScriptDomain = NULL;
+	IMonoAssembly *pPrevCryBraryAssembly = m_pCryBraryAssembly;
+
 	// Store the state of current instances to apply them to the reloaded scripts at the end.
 	if(!initialLoad)
 	{
 		CryLogAlways("C# modifications detected on disk, initializing CryBrary reload");
 
-		 // Force dump of instance data. 
-		m_AppDomainSerializer->CallMethod("DumpScriptData");
+		 // Force dump of instance data if last script reload was successful. (Otherwise we'll override the existing script dump with an invalid one)
+		if(m_bLastCompilationSuccess)
+			m_AppDomainSerializer->CallMethod("DumpScriptData");
+
+		pPrevScriptDomain = mono_domain_get();
  	
 		mono_domain_set(mono_get_root_domain(), false);
 
-		mono_domain_finalize(m_pScriptDomain, -1);
-
-		MonoObject *pException;
-		mono_domain_try_unload(m_pScriptDomain, &pException);
-
-		if(pException)	
-		{			
-			CryLogAlways("[MonoWarning] An exception was raised during ScriptDomain unload:");
-			MonoMethod *pExceptionMethod = mono_method_desc_search_in_class(mono_method_desc_new("::ToString()", false),mono_get_exception_class());		
-			MonoString *exceptionString = (MonoString *)mono_runtime_invoke(pExceptionMethod, pException, NULL, NULL);		
-			CryLogAlways(ToCryString((mono::string)exceptionString));
-		}
+		SAFE_DELETE(m_pScriptManager);
+		SAFE_DELETE(m_AppDomainSerializer);
 	}
 
 	m_pScriptDomain = mono_domain_create_appdomain("ScriptDomain", NULL);
@@ -200,8 +197,33 @@ bool CScriptSystem::Reload(bool initialLoad)
 
 	CryLogAlways("		Compiling scripts...");
 	m_pScriptManager = m_pCryBraryAssembly->GetCustomClass("ScriptCompiler");
-	m_pScriptManager->CallMethod("Initialize", true);
 
+	IMonoObject *pInitializationResult = m_pScriptManager->CallMethod("Initialize", true);
+
+	m_bLastCompilationSuccess = pInitializationResult->Unbox<bool>();
+
+	if(m_bLastCompilationSuccess)
+	{
+		SAFE_DELETE(pPrevCryBraryAssembly);
+
+		UnloadDomain(pPrevScriptDomain);
+	}
+	else if(!initialLoad)
+	{
+		// Compilation failed or something, revert to the old script domain.
+		UnloadDomain(m_pScriptDomain);
+
+		mono_domain_set(pPrevScriptDomain, false);
+
+		SAFE_DELETE(m_pCryBraryAssembly);
+		m_pCryBraryAssembly = pPrevCryBraryAssembly;
+		
+		SAFE_DELETE(m_AppDomainSerializer);
+		SAFE_DELETE(m_pScriptManager);
+
+		m_AppDomainSerializer = m_pCryBraryAssembly->InstantiateClass("AppDomainSerializer", "CryEngine.Utils");
+		m_pScriptManager = m_pCryBraryAssembly->GetCustomClass("ScriptCompiler");
+	}
 
 	m_pInput->Reset();
 	m_pConverter->Reset();
@@ -228,12 +250,30 @@ bool CScriptSystem::Reload(bool initialLoad)
 
 			SAFE_RELEASE(pParams);
 		}
-	
 	}
 
 	gEnv->pGameFramework->RegisterListener(this, "CryMono", eFLPriority_Game);
 
 	return true;
+}
+
+void CScriptSystem::UnloadDomain(MonoDomain *pDomain)
+{
+	if(pDomain)
+	{
+		mono_domain_finalize(pDomain, -1);
+
+		MonoObject *pException;
+		mono_domain_try_unload(pDomain, &pException);
+
+		if(pException)	
+		{			
+			CryLogAlways("[MonoWarning] An exception was raised during ScriptDomain unload:");
+			MonoMethod *pExceptionMethod = mono_method_desc_search_in_class(mono_method_desc_new("::ToString()", false),mono_get_exception_class());		
+			MonoString *exceptionString = (MonoString *)mono_runtime_invoke(pExceptionMethod, pException, NULL, NULL);		
+			CryLogAlways(ToCryString((mono::string)exceptionString));
+		}
+		}
 }
 
 bool CScriptSystem::InitializeDomain()

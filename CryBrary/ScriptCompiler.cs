@@ -11,24 +11,19 @@ using System.Reflection;
 using CryEngine.Extensions;
 using CryEngine.Utils;
 
-using System.Xml.Linq;
 using System.ComponentModel;
 
 using System.Threading.Tasks;
-using System.Diagnostics;
 
 namespace CryEngine
 {
 	public static partial class ScriptCompiler
 	{
-		public static void Initialize()
+		public static bool Initialize()
 		{
-#if !RELEASE
-			//Pdb2Mdb.Driver.Convert(Assembly.GetExecutingAssembly());
-#endif
 
 			CompiledScripts = new List<CryScript>();
-			FlowNodes = new List<StoredNode>();
+			FlowNodes = new Collection<StoredNode>();
 
             assemblyReferenceHandler = new AssemblyReferenceHandler();
 
@@ -38,11 +33,26 @@ namespace CryEngine
 
 			LoadPrecompiledAssemblies();
 
-			AddScripts(CompileScriptsInFolders(
+			var compilationParams = new CompilationParameters();
+
+			compilationParams.Folders = new string[] 
+			{ 
 				PathUtils.GetScriptFolder(ScriptType.Entity),
 				PathUtils.GetScriptFolder(ScriptType.GameRules),
-				PathUtils.GetScriptFolder(ScriptType.FlowNode)
-			));
+				PathUtils.GetScriptFolder(ScriptType.FlowNode) 
+			};
+
+			try
+			{
+				CompileScripts(ref compilationParams);
+			}
+			catch(Exception ex)
+			{
+				if(compilationParams.Results.Errors.HasErrors)
+					return false;
+			}
+
+			return true;
 		}
 
 		public static void PostInit()
@@ -54,15 +64,7 @@ namespace CryEngine
 		private static void LoadPrecompiledAssemblies()
 		{
 			//Add pre-compiled assemblies / plugins
-			AddScripts(ScriptCompiler.LoadLibrariesInFolder(Path.Combine(PathUtils.GetScriptsFolder(), "Plugins")));
-		}
-
-		private static void AddScripts(IEnumerable<CryScript> scripts)
-		{
-			if(scripts == null || scripts.Count() < 1)
-				return;
-
-			CompiledScripts.AddRange(scripts);
+			ScriptCompiler.LoadLibrariesInFolder(Path.Combine(PathUtils.GetScriptsFolder(), "Plugins"));
 		}
 
 		/// <summary>
@@ -90,34 +92,27 @@ namespace CryEngine
 				return null;
 			}
 
-			CryScript script = CompiledScripts.ElementAt(index);
+			AddScriptInstance(System.Activator.CreateInstance(CompiledScripts[index].ClassType, constructorParams) as CryScriptInstance, index);
 
-			NextScriptId++;
-
-			if(script.ScriptType == ScriptType.GameRules)
-				script.ScriptInstances = null;
-
-			if(script.ScriptInstances == null)
-				script.ScriptInstances = new Collection<CryScriptInstance>();
-
-			script.ScriptInstances.Add(System.Activator.CreateInstance(script.ClassType, constructorParams) as CryScriptInstance);
-			script.ScriptInstances.Last().ScriptId = NextScriptId;
-
-			CompiledScripts[index] = script;
-
-			return script.ScriptInstances.Last();
+			return CompiledScripts[index].ScriptInstances.Last();
 		}
 
 		/// <summary>
 		/// Adds an script instance to the script collection and returns its new id.
 		/// </summary>
 		/// <param name="instance"></param>
-		public static int AddScriptInstance(CryScriptInstance instance)
+		/// <param name="compiledScriptsIndex">Index of the CryScript object residing in ScriptCompiler.CompiledScripts</param>
+		public static int AddScriptInstance(CryScriptInstance instance, int scriptIndex = -1)
 		{
-			int scriptIndex = CompiledScripts.FindIndex(x => x.ClassName == instance.GetType().Name);
+			if(scriptIndex == -1)
+				scriptIndex = CompiledScripts.FindIndex(x => x.ClassName == instance.GetType().Name);
+
 			if(scriptIndex != -1)
 			{
-				CryScript script = CompiledScripts.ElementAt(scriptIndex);
+				var script = CompiledScripts.ElementAt(scriptIndex);
+
+				if(script.ScriptType == ScriptType.GameRules)
+					script.ScriptInstances = null;
 
 				if(script.ScriptInstances == null)
 					script.ScriptInstances = new Collection<CryScriptInstance>();
@@ -134,7 +129,7 @@ namespace CryEngine
 				return NextScriptId;
 			}
 
-			Debug.LogAlways("Couldn't add script {0}", instance.GetType().Name);
+			Debug.LogAlways("Failed to add object of type {0} to list of compiled scripts", instance.GetType().Name);
 			return -1;
 		}
 
@@ -248,12 +243,12 @@ namespace CryEngine
 		/// <summary>
 		/// This function will automatically scan for C# dll (*.dll) files and load the types contained within them.
 		/// </summary>
-		public static IEnumerable<CryScript> LoadLibrariesInFolder(string directory)
+		public static void LoadLibrariesInFolder(string directory)
 		{
 			if (!Directory.Exists(directory))
 			{
 				Debug.LogAlways("Libraries failed to load; Folder {0} does not exist.", directory);
-				return null;
+				return;
 			}
 
 			var plugins = Directory.GetFiles(directory, "*.dll", SearchOption.AllDirectories);
@@ -291,54 +286,13 @@ namespace CryEngine
 					}
 				}
 
-				return compiledScripts.ToArray();
+				if(compiledScripts.Count < 1)
+					return;
+
+				CompiledScripts.AddRange(compiledScripts);
 			}
 
-			return null;
-		}
-
-		/// <summary>
-		/// This function will automatically scan for C# (*.cs) files and compile them using CompileScripts.
-		/// </summary>
-		public static IEnumerable<CryScript> CompileScriptsInFolder(string directory)
-		{
-			if (!Directory.GetParent(directory).Exists)
-			{
-				Debug.LogAlways("Aborting script compilation; script directory parent could not be located.");
-				return null;
-			}
-
-			if (!Directory.Exists(directory))
-			{
-				Debug.LogAlways("Script compilation failed; Folder {0} does not exist.", directory);
-				return null;
-			}
-
-			string[] scriptsInFolder = Directory.GetFiles(directory, "*.cs", SearchOption.AllDirectories);
-			if (scriptsInFolder == null || scriptsInFolder.Length < 1)
-			{
-				Debug.LogAlways("No scripts were found in {0}.", directory);
-				return null;
-			}
-
-			return CompileScripts(scriptsInFolder, ScriptLanguage.CSharp);
-		}
-
-		public static IEnumerable<CryScript> CompileScriptsInFolders(params string[] scriptFolders)
-		{
-			List<string> scripts = new List<string>();
-			foreach (var directory in scriptFolders)
-			{
-				if (Directory.Exists(directory))
-					scripts.AddRange(Directory.GetFiles(directory, "*.cs", SearchOption.AllDirectories));
-				else
-					Debug.LogAlways("Could not compile scripts in {0}; directory not found", directory);
-			}
-
-			if (scripts.Count > 0)
-				return CompileScripts(scripts.ToArray(), ScriptLanguage.CSharp);
-			else
-				return null;
+			return;
 		}
 
 		public enum ScriptLanguage
@@ -348,35 +302,80 @@ namespace CryEngine
 			JScript
 		}
 
+		public class CompilationParameters
+		{
+			public CompilationParameters()
+			{
+				Language = ScriptLanguage.CSharp;
+			}
+
+			public ScriptLanguage Language { get; set; }
+			public CompilerResults Results { get; internal set; }
+
+			/// <summary>
+			/// The folders from which scripts should be compiled from.
+			/// </summary>
+			public string[] Folders { get; set; }
+
+			/// <summary>
+			/// Forces generation of debug information, even in release mode.
+			/// </summary>
+			public bool ForceDebugInformation { get; set; }
+		}
+
 		/// <summary>
 		/// Compiles the scripts and compiles them into an assembly.
 		/// </summary>
-		/// <param name="scripts">A string array containing full paths to scripts to be compiled.</param>
+		/// <param name="compilationParams"></param>
 		/// <returns></returns>
-		public static IEnumerable<CryScript> CompileScripts(string[] scripts, ScriptLanguage language)
+		/// <exception cref="System.IO.DirectoryNotFoundException">Thrown when one or more script folders could not be located.</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown if the compiled assembly could not be loaded.</exception>
+		/// <exception cref="CryEngine.ScriptCompilationException">Thrown if one or more compilation errors occur.</exception>
+		public static void CompileScripts(ref CompilationParameters compilationParams)
 		{
-			if (scripts.Length < 1)
-				return null;
+			if (compilationParams.Folders == null || compilationParams.Folders.Length < 1)
+				return;
+
+			var scripts = new List<string>();
+			foreach(var directory in compilationParams.Folders)
+			{
+				if (Directory.Exists(directory))
+					scripts.AddRange(Directory.GetFiles(directory, "*.cs", SearchOption.AllDirectories));
+				else
+					throw new DirectoryNotFoundException(string.Format("Could not compile scripts in {0}; directory not found", directory));
+			}
+
+			if(scripts.Count <= 0)
+				return;
 
 			CodeDomProvider provider = null;
-			if(language == ScriptLanguage.VisualBasic)
-				provider = CodeDomProvider.CreateProvider("VisualBasic");
-			else if(language == ScriptLanguage.JScript)
-				provider = CodeDomProvider.CreateProvider("JScript");
-			else if(language == ScriptLanguage.CSharp)
-				provider = CodeDomProvider.CreateProvider("CSharp");
+			switch(compilationParams.Language)
+			{
+				case ScriptLanguage.VisualBasic:
+					provider = CodeDomProvider.CreateProvider("VisualBasic");
+					break;
+				case ScriptLanguage.JScript:
+					provider = CodeDomProvider.CreateProvider("JScript");
+					break;
+				case ScriptLanguage.CSharp:
+					provider = CodeDomProvider.CreateProvider("CSharp");
+					break;
+			}
 
 			CompilerParameters compilerParameters = new CompilerParameters();
 
 			compilerParameters.GenerateExecutable = false;
+
+			bool includeDebugInfo = true;
+
 #if RELEASE
-			compilerParameters.IncludeDebugInformation = false;
-			compilerParameters.GenerateInMemory = true;
-#else
-			// Necessary for stack trace line numbers etc
-			compilerParameters.IncludeDebugInformation = true;
-			compilerParameters.GenerateInMemory = false;
+			if(!compilationParams.ForceDebugInformation)
+				includeDebugInfo = false;
 #endif
+
+			// Necessary for stack trace line numbers etc
+			compilerParameters.IncludeDebugInformation = includeDebugInfo;
+			compilerParameters.GenerateInMemory = !includeDebugInfo;
 
 			//Add additional assemblies as needed by gamecode to referencedAssemblies
             foreach (var assembly in assemblyReferenceHandler.GetRequiredAssembliesForScriptFiles(scripts))
@@ -387,32 +386,32 @@ namespace CryEngine
 
             compilerParameters.ReferencedAssemblies.AddRange(assemblyReferenceHandler.ReferencedAssemblies.ToArray());
 
-			try
+			CompilerResults results = provider.CompileAssemblyFromFile(compilerParameters, scripts.ToArray());
+
+			provider.Dispose();
+			provider = null;
+			compilerParameters = null;
+
+			compilationParams.Results = results;
+
+			if(results.CompiledAssembly != null) // success
 			{
-				CompilerResults results = provider.CompileAssemblyFromFile(compilerParameters, scripts);
+				var compiledScripts = LoadAssembly(results.CompiledAssembly);
+				if(compiledScripts != null && compiledScripts.Count() > 0)
+					CompiledScripts.AddRange(compiledScripts);
 
-				provider.Dispose();
-				provider = null;
-				compilerParameters = null;
-
-				if (results.CompiledAssembly != null) // success
-					return LoadAssembly(results.CompiledAssembly);
-				else if (results.Errors.HasErrors)
-				{
-					Debug.LogAlways("Compilation failed; {0} errors:", results.Errors.Count);
-
-					foreach (CompilerError error in results.Errors)
-						Debug.LogAlways(error.ErrorText);
-				}
-				else
-					throw new ArgumentNullException("Tried loading a NULL assembly");
 			}
-			catch (Exception ex)
+			else if(results.Errors.HasErrors)
 			{
-				Debug.LogException(ex);
-			}
+				string compilationError = string.Format("Compilation failed; {0} errors: ", results.Errors.Count);
 
-			return null;
+				foreach(CompilerError error in results.Errors)
+					compilationError += error.ErrorText;
+
+				throw new ScriptCompilationException(compilationError);
+			}
+			else
+				throw new ArgumentNullException("Tried loading a NULL assembly");
 		}
 
 
@@ -561,7 +560,7 @@ namespace CryEngine
 			public string category;
 		}
 
-		internal static List<StoredNode> FlowNodes;
+		internal static Collection<StoredNode> FlowNodes;
         private static AssemblyReferenceHandler assemblyReferenceHandler;
 
 		public static List<CryScript> CompiledScripts;
@@ -656,31 +655,14 @@ namespace CryEngine
 		#endregion
 	}
 
-	public struct InternalCallMethod
+	public class ScriptCompilationException : Exception
 	{
-		public string name;
-		public string returnType;
+		public ScriptCompilationException(string errorMessage)
+			: base(errorMessage) { }
 
-		public string parameters;
-	}
+		public ScriptCompilationException(string errorMessage, Exception innerEx)
+			: base(errorMessage, innerEx) { }
 
-	public struct Scriptbind
-	{
-		public Scriptbind(string Namespace, string Class, object[] Methods)
-			: this()
-		{
-			namespaceName = Namespace;
-			className = Class;
-
-			methods = Methods;
-		}
-
-		public string namespaceName;
-		public string className;
-
-		/// <summary>
-		/// Array of InternalCallMethod
-		/// </summary>
-		public object[] methods;
+		public string Message { get { return base.Message.ToString(); } }
 	}
 }

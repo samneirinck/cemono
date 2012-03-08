@@ -89,6 +89,8 @@ protected:
 	void RegisterDefaultBindings();
 	bool InitializeSystems();
 
+	void UnloadDomain(MonoDomain *pDomain);
+
 	MonoDomain *m_pMonoDomain;
 
 	// The app domain in which we load scripts into. Killed and reloaded on script reload.
@@ -114,6 +116,9 @@ protected:
 
 	// ScriptBinds declared in this project.
 	std::vector<IMonoScriptBind *> m_localScriptBinds;
+
+	// If true, the last script reload was successful. This is necessary to make sure we don't override with invalid script dumps.
+	bool m_bLastCompilationSuccess;
 };
 
 #endif //__MONO_H__
