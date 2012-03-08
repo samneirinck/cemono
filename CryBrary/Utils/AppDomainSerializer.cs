@@ -2,6 +2,7 @@
 
 using System.IO;
 
+using System.Collections;
 using System.Collections.Specialized;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
@@ -11,6 +12,8 @@ using System.Xml;
 
 using System.Xml.Serialization;
 using System.Runtime.Serialization;
+
+using CryEngine.Extensions;
 
 namespace CryEngine.Utils
 {
@@ -219,9 +222,9 @@ namespace CryEngine.Utils
 			}
 			sr.Close();
 
-			if(type.IsArray)
+			if(type.Implements(typeof(IEnumerable)))
 			{
-				System.Array array = (System.Array)reference.Object;
+				var array = (reference.Object as IEnumerable).Cast<object>().ToArray();
 
 				foreach(var dict in sdict.Keys)
 				{
@@ -271,8 +274,6 @@ namespace CryEngine.Utils
 							else
 								fieldInfo.SetValue(reference.Object, Convert.ChangeType(sdict[fieldInfo.Name], fieldInfo.FieldType));
 						}
-						else
-							Debug.Log("Field {0} was not serialized in object of type {1}", fieldInfo.Name, fieldInfo.FieldType.Name);
 					}
 
 					type = type.BaseType;
@@ -305,13 +306,13 @@ namespace CryEngine.Utils
 			// Should definitely not hardcode FileStream like this
 			ObjectReferences.Add(objectReference, ((FileStream)serializationStream).Name);
 
-			if(objectReference.Type.IsArray)
+			if(objectReference.Type.Implements(typeof(IEnumerable)))
 			{
-				System.Array array = (System.Array)objectReference.Object;
+				var array = (objectReference.Object as IEnumerable).Cast<object>();
 
-				for(int i = 0; i < array.Length; i++)
+				for(int i = 0; i < array.Count(); i++)
 				{
-					object indexedItem = array.GetValue(i);
+					object indexedItem = array.ElementAt(i);
 
 					if(indexedItem != null)
 						WriteReference(indexedItem, i.ToString(), ref sw);
@@ -336,6 +337,8 @@ namespace CryEngine.Utils
 					type = type.BaseType;
 				}
 			}
+			else
+				throw new System.Exception(string.Format("This should not happen! Hand this data over to the nearest highly trained monkey: {1}{1}{0}{1}{1}", objectReference.Type.FullName, objectReference.Type.GetHashCode()));
 
 			sw.Close();
 		}
@@ -343,7 +346,7 @@ namespace CryEngine.Utils
 		void WriteReference(object objectInstance, string name, ref StreamWriter sw)
 		{
 			ObjectReference reference = new ObjectReference(objectInstance);
-
+			
 			if(!reference.Type.IsPrimitive && !reference.Type.IsEnum && reference.Type != typeof(string))
 			{
 				// We can't simply write value.ToString() here, write to file and leave the path within brackets to reference it.
