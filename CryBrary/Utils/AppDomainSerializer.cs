@@ -47,32 +47,26 @@ namespace CryEngine.Utils
 			string subSystemDirectory = Path.Combine(scriptDumpFolder, "CryBrary.EntitySystem");
 			Directory.CreateDirectory(subSystemDirectory);
 
-			Dictionary<System.Type, List<object>> types = new Dictionary<System.Type,List<object>>();
+			var processedTypes = new Dictionary<System.Type, string>();
 
-			foreach(var entity in EntitySystem.SpawnedEntities)
+			for(int i = 0; i < EntitySystem.SpawnedEntities.Count; i++)
 			{
-				var type = entity.GetType();
+				var entityType = EntitySystem.SpawnedEntities[i].GetType();
 
-				if(!types.ContainsKey(type))
-					types.Add(type, new List<object>());
-
-				types[type].Add(entity);
-			}
-
-			foreach(var type in types)
-			{
-				string directory = Path.Combine(subSystemDirectory, type.Key.Namespace + "." + type.Key.Name);
-				Directory.CreateDirectory(directory);
-
-				for(int i = 0; i < type.Value.Count; i++)
+				if(!processedTypes.ContainsKey(entityType))
 				{
-					var formatter = new CrySerializer();
-					var stream = File.Create(Path.Combine(directory, i.ToString()));
+					string directory = Path.Combine(subSystemDirectory, entityType.Namespace + "." + entityType.Name);
+					Directory.CreateDirectory(directory);
 
-					formatter.Serialize(stream, type.Value.ElementAt(i));
-
-					stream.Close();
+					processedTypes.Add(entityType, directory);
 				}
+
+				var formatter = new CrySerializer();
+				var stream = File.Create(Path.Combine(processedTypes[entityType], Directory.GetFiles(processedTypes[entityType]).Count().ToString()));
+
+				formatter.Serialize(stream, EntitySystem.SpawnedEntities[i]);
+
+				stream.Close();
 			}
 		}
 
@@ -141,6 +135,8 @@ namespace CryEngine.Utils
 
 				if(type != null)
 				{
+					int scriptIndex = ScriptCompiler.CompiledScripts.IndexOf(scriptMatch);
+
 					foreach(var fileName in Directory.GetFiles(directory))
 					{
 						var formatter = new CrySerializer();
@@ -149,7 +145,16 @@ namespace CryEngine.Utils
 						var entity = formatter.Deserialize(stream) as StaticEntity;
 
 						if(entity != null)
+						{
 							EntitySystem.SpawnedEntities.Add(entity);
+
+							scriptMatch.ScriptInstances.Add(entity);
+
+							if(ScriptCompiler.NextScriptId <= entity.ScriptId)
+								ScriptCompiler.NextScriptId = entity.ScriptId + 1;
+						}
+
+						ScriptCompiler.CompiledScripts[scriptIndex] = scriptMatch;
 
 						stream.Close();
 					}
@@ -180,14 +185,8 @@ namespace CryEngine.Utils
 			string className = sarr[1];
 
 			System.Type type = null;
-			foreach(var script in ScriptCompiler.CompiledScripts)
-			{
-				if(script.ClassType.FullName.Equals(className))
-				{
-					type = script.ClassType;
-					break;
-				}
-			}
+
+			type = ScriptCompiler.CompiledScripts.Find(x => x.ClassType.FullName.Equals(className)).ClassType;
 
 			type = type ?? System.Type.GetType(className);
 
@@ -204,11 +203,11 @@ namespace CryEngine.Utils
 			if(reference == null || reference.Object == null)
 				return null;
 
-			if(ObjectReferences.ContainsKey(reference))
-				return reference.Object;
+			// This is really, really, really, really bad.
+			string streamName = ((FileStream)serializationStream).Name;
 
-			ObjectReferences.Add(reference, ((FileStream)serializationStream).Name);
-			int referenceIndex = ObjectReferences.Count - 1;
+			if(ObjectReferences.ContainsValue(streamName))
+				return ObjectReferences.Keys.First(x => ObjectReferences[x] == streamName).Object;
 
 			// Store serialized variable name -> value pairs.
 			StringDictionary sdict = new StringDictionary();
@@ -279,6 +278,8 @@ namespace CryEngine.Utils
 					type = type.BaseType;
 				}
 			}
+
+			ObjectReferences.Add(reference, ((FileStream)serializationStream).Name);
 
 			return reference.Object;
 		}

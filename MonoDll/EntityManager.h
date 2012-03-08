@@ -99,8 +99,11 @@ public:
 	virtual void OnEvent( IEntity *pEntity, SEntityEvent &event ) {}
 	// ~IEntitySystemSink
 
+	// IMonoEntityManager
+	virtual int GetScriptId(EntityId entityId, bool returnBackIfInvalid = false) override;
+	// ~IMonoEntityManager
+
 	CEntity *GetEntity(EntityId entityId);
-	int GetScriptId(EntityId entityId, bool returnBackIfInvalid = false) override;
 	bool IsMonoEntity(const char *entityClassName);
 
 protected:
