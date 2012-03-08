@@ -198,7 +198,7 @@ namespace CryEngine.Utils
 			if(type.GetConstructor(System.Type.EmptyTypes) != null || type.IsValueType)
 				reference = new ObjectReference(System.Activator.CreateInstance(type));
 			else
-				Debug.Log("[Warning] Could not serialize type {0} since it did not contain an parameterless constructor", type.Name);
+				Debug.Log("[Warning] Could not serialize type {0} since it did not contain a parameterless constructor", type.Name);
 
 			if(reference == null || reference.Object == null)
 				return null;
