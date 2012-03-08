@@ -289,6 +289,22 @@ namespace CryEngine.Utils
 			Serialize(serializationStream, new ObjectReference(objectInstance));
 		}
 
+		static System.Type[] forbiddenTypes = new System.Type[] { typeof(MethodInfo) };
+
+		bool IsTypeAllowed(System.Type type)
+		{
+			foreach(var forbiddenType in forbiddenTypes)
+			{
+				if(type == forbiddenType || (type.HasElementType && type.GetElementType() == forbiddenType))
+					return false;
+
+				if(type.Implements(forbiddenType))
+					return false;
+			}
+
+			return true;
+		}
+
 		void Serialize(Stream serializationStream, ObjectReference objectReference)
 		{
 			// Write class name and all fields & values to file
@@ -301,6 +317,9 @@ namespace CryEngine.Utils
 
 				return;
 			}
+
+			if(!IsTypeAllowed(objectReference.Type))
+				return;
 
 			sw.WriteLine("@ClassName={0}", objectReference.Type.FullName);
 
@@ -368,7 +387,8 @@ namespace CryEngine.Utils
 
 					stream.Close();
 
-					sw.WriteLine("{0}={1}", name, string.Format(ReferenceSeperator + "{0}" + ReferenceSeperator, ObjectReferences[reference]));
+					if(ObjectReferences.ContainsKey(reference))
+						sw.WriteLine("{0}={1}", name, string.Format(ReferenceSeperator + "{0}" + ReferenceSeperator, ObjectReferences[reference]));
 				}
 				else // Reference already existed, write path to its script dump.
 					sw.WriteLine("{0}={1}", name, string.Format(ReferenceSeperator + "{0}" + ReferenceSeperator, ObjectReferences[reference]));
