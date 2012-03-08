@@ -103,7 +103,7 @@ namespace CryEngine.Utils
 					foreach(var fileName in Directory.GetFiles(directoryName))
 					{
 						if(script.ScriptInstances == null)
-							script.ScriptInstances = new Collection<CryScriptInstance>();
+							script.ScriptInstances = new List<CryScriptInstance>();
 
 						var formatter = new CrySerializer();
 						var stream = File.Open(fileName, FileMode.Open);

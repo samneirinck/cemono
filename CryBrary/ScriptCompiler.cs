@@ -115,7 +115,7 @@ namespace CryEngine
 					script.ScriptInstances = null;
 
 				if(script.ScriptInstances == null)
-					script.ScriptInstances = new Collection<CryScriptInstance>();
+					script.ScriptInstances = new List<CryScriptInstance>();
 				else if(script.ScriptInstances.Contains(instance))
 					return -1;
 
@@ -231,11 +231,15 @@ namespace CryEngine
 		{
 			Time.DeltaTime = frameTime;
 
-			Parallel.ForEach(CompiledScripts, script =>
+			foreach(var script in CompiledScripts)
 			{
 				if(script.ScriptInstances != null)
-					script.ScriptInstances.Where(i => i.ReceiveUpdates).ToList().ForEach(i => i.OnUpdate());
-			});
+					script.ScriptInstances.ForEach(i =>
+					{
+						if(i.ReceiveUpdates)
+							i.OnUpdate();
+					});
+			}
 
 			EntitySystem.OnUpdate();
 		}
@@ -626,7 +630,7 @@ namespace CryEngine
 		/// <summary>
 		/// Stores all instances of this class.
 		/// </summary>
-		public Collection<CryScriptInstance> ScriptInstances { get; internal set; }
+		public List<CryScriptInstance> ScriptInstances { get; internal set; }
 
 		#region Operators
 		public static bool operator ==(CryScript script1, CryScript script2)
