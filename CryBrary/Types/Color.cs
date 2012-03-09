@@ -83,14 +83,14 @@ namespace CryEngine
 		public float R { get; set; }
 
 		/// <summary>
-		/// The blue value of the colour.
-		/// </summary>
-		public float B { get; set; }
-
-		/// <summary>
 		/// The green value of the colour.
 		/// </summary>
 		public float G { get; set; }
+
+		/// <summary>
+		/// The blue value of the colour.
+		/// </summary>
+		public float B { get; set; }
 
 		/// <summary>
 		/// The alpha value of the colour.
