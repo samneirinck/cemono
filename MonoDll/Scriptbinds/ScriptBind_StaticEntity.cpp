@@ -10,8 +10,8 @@ CScriptBind_StaticEntity::CScriptBind_StaticEntity()
 
 	REGISTER_METHOD(SetWorldPos);
 	REGISTER_METHOD(GetWorldPos);
-	REGISTER_METHOD(SetWorldAngles);
-	REGISTER_METHOD(GetWorldAngles);
+	REGISTER_METHOD(SetRotation);
+	REGISTER_METHOD(GetRotation);
 
 	REGISTER_METHOD(LoadObject);
 	REGISTER_METHOD(LoadCharacter);
@@ -84,22 +84,22 @@ Vec3 CScriptBind_StaticEntity::GetWorldPos(EntityId id)
 	return pEntity->GetWorldPos();
 }
 
-void CScriptBind_StaticEntity::SetWorldAngles(EntityId id, Vec3 newAngles)
+void CScriptBind_StaticEntity::SetRotation(EntityId id, Quat newAngles)
 {
 	IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id);
 	if(!pEntity)
 		return;
 
-	pEntity->SetRotation(Quat(Ang3(newAngles)));
+	pEntity->SetRotation(newAngles);
 }
 
-Vec3 CScriptBind_StaticEntity::GetWorldAngles(EntityId id)
+Quat CScriptBind_StaticEntity::GetRotation(EntityId id)
 {
 	IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id);
 	if(!pEntity)
-		return Vec3(ZERO);
+		return Quat(ZERO);
 
-	return Vec3(pEntity->GetWorldAngles());
+	return pEntity->GetRotation();
 }
 
 void CScriptBind_StaticEntity::LoadObject(EntityId entityId, mono::string fileName, int slot)

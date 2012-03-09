@@ -28,9 +28,9 @@ namespace CryEngine
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static Vec3 _GetWorldPos(uint entityId);
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _SetWorldAngles(uint entityId, Vec3 newAngles);
+		extern internal static void _SetRotation(uint entityId, Quat newAngles);
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static Vec3 _GetWorldAngles(uint entityId);
+		extern internal static Quat _GetRotation(uint entityId);
 
 		/// <summary>
 		/// Loads a static model on the object (.cgf).
@@ -189,7 +189,7 @@ namespace CryEngine
 
 		#region Methods & Fields
 		public Vec3 Position { get { return _GetWorldPos(Id); } set { _SetWorldPos(Id, value); } }
-		public Vec3 Rotation { get { return _GetWorldAngles(Id); } set { _SetWorldAngles(Id, value); } }
+		public Quat Rotation { get { return _GetRotation(Id); } set { _SetRotation(Id, value); } }
 
 		public EntityId Id { get; set; }
 		public string Name { get; set; }
