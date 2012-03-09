@@ -1,6 +1,8 @@
 #include "StdAfx.h"
 #include "ScriptBind_PhysicalWorld.h"
 
+#include <IEntitySystem.h>
+
 #include <IMonoArray.h>
 #include <IMonoObject.h>
 
@@ -12,28 +14,40 @@ CScriptBind_PhysicalWorld::CScriptBind_PhysicalWorld()
 int CScriptBind_PhysicalWorld::RayWorldIntersection(Vec3 origin, Vec3 dir, int objFlags, unsigned int flags, MonoRayHit &hit, int maxHits, mono::array skipEntities)
 {
 	IPhysicalEntity **pSkipEnts = NULL;
-	IMonoArray *pSkipEntities = NULL;
+	std::vector<IPhysicalEntity *> physEnts;
 
-	if(skipEntities != NULL)
+	if(skipEntities)
 	{
-		pSkipEntities = *skipEntities;
-		pSkipEnts = new IPhysicalEntity*[pSkipEntities->GetSize()];
+		IMonoArray *pSkipEntities = *skipEntities;
+
 		for(int i = 0; i < pSkipEntities->GetSize(); i++)
-			pSkipEnts[i] = gEnv->pPhysicalWorld->GetPhysicalEntityById(pSkipEntities->GetItem(i)->Unbox<EntityId>());
+		{
+			if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(pSkipEntities->GetItem(i)->Unbox<EntityId>()))
+			{
+				if(IPhysicalEntity *pPhysEnt = pEntity->GetPhysics())
+					physEnts.push_back(pPhysEnt);
+			}
+		}
+
+		pSkipEnts = new IPhysicalEntity*[physEnts.size()];
+
+		for(int i = 0; i < physEnts.size(); i++)
+			pSkipEnts[i] = physEnts[i];
 
 		delete pSkipEntities;
 	}
 
 	ray_hit realHit;
 
-	int numHits = gEnv->pPhysicalWorld->RayWorldIntersection(origin, dir, objFlags, flags, &realHit, maxHits, pSkipEntities ? pSkipEnts : NULL, pSkipEntities ? pSkipEntities->GetSize() : 0);
+	int numHits = gEnv->pPhysicalWorld->RayWorldIntersection(origin, dir, objFlags, flags, &realHit, maxHits, physEnts.size() > 0 ? pSkipEnts : NULL, physEnts.size());
 
 	SAFE_DELETE_ARRAY(pSkipEnts);
+	physEnts.clear();
 
 	hit.bTerrain = realHit.bTerrain;
 
 	// We should return physical entity id's really, but this isn't exposed yet.
-	if(realHit.pCollider != NULL && realHit.pCollider->GetType() != PE_STATIC && realHit.pCollider->GetType() != PE_NONE)
+	if(realHit.pCollider)
 		hit.colliderId = gEnv->pPhysicalWorld->GetPhysicalEntityId(realHit.pCollider);
 
 	hit.dist = realHit.dist;
