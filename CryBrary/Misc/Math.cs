@@ -39,9 +39,44 @@ namespace CryEngine
 			return 1.0 / Sqrt(d);
 		}
 
+		public static double Abs(double d)
+		{
+			return System.Math.Abs(d);
+		}
+
 		public static double Sin(double a)
 		{
 			return System.Math.Sin(a);
+		}
+
+		public static double Asin(double d)
+		{
+			return System.Math.Asin(d);
+		}
+
+		public static double Cos(double d)
+		{
+			return System.Math.Cos(d);
+		}
+
+		public static double Acos(double d)
+		{
+			return System.Math.Acos(d);
+		}
+
+		public static double Tan(double d)
+		{
+			return System.Math.Tan(d);
+		}
+
+		public static double Atan(double d)
+		{
+			return System.Math.Atan(d);
+		}
+
+		public static double Atan2(double y, double x)
+		{
+			return System.Math.Atan2(y, x);
 		}
 
 		public static void SinCos(double a, out double sinVal, out double cosVal)
@@ -84,5 +119,23 @@ namespace CryEngine
 			else
 				return value;
 		}
+
+		public static T Max<T>(T val1, T val2) where T : IComparable<T>
+		{
+			if(val1.CompareTo(val2) > 0)
+				return val1;
+
+			return val2;
+		}
+
+		public static T Min<T>(T val1, T val2) where T : IComparable<T>
+		{
+			if(val1.CompareTo(val2) < 0)
+				return val1;
+
+			return val2;
+		}
+
+		public static double PI { get { return System.Math.PI; } }
 	}
 }
