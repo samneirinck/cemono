@@ -33,6 +33,11 @@ CScriptBind_StaticEntity::CScriptBind_StaticEntity()
 
 	REGISTER_METHOD(GetVelocity);
 	REGISTER_METHOD(SetVelocity);
+
+	REGISTER_METHOD(SetWorldTM);
+	REGISTER_METHOD(GetWorldTM);
+	REGISTER_METHOD(SetLocalTM);
+	REGISTER_METHOD(GetLocalTM);
 }
 
 mono::string CScriptBind_StaticEntity::GetPropertyValue(EntityId entityId, mono::string propertyName)
@@ -42,10 +47,37 @@ mono::string CScriptBind_StaticEntity::GetPropertyValue(EntityId entityId, mono:
 		IEntityPropertyHandler *pPropertyHandler = pEntity->GetClass()->GetPropertyHandler();
 
 		return ToMonoString(pPropertyHandler->GetProperty(pEntity, 0));
-		//return pPropertyHandler->GetProperty(pEntity, propertyName);
 	}
 
 	return ToMonoString("");
+}
+
+void CScriptBind_StaticEntity::SetWorldTM(EntityId id, Matrix34 tm)
+{
+	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id))
+		pEntity->SetWorldTM(tm);
+}
+
+Matrix34 CScriptBind_StaticEntity::GetWorldTM(EntityId id)
+{
+	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id))
+		return pEntity->GetWorldTM();
+
+	return Matrix34(IDENTITY);
+}
+
+void CScriptBind_StaticEntity::SetLocalTM(EntityId id, Matrix34 tm)
+{
+	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id))
+		pEntity->SetLocalTM(tm);
+}
+
+Matrix34 CScriptBind_StaticEntity::GetLocalTM(EntityId id)
+{
+	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id))
+		return pEntity->GetLocalTM();
+
+	return Matrix34(IDENTITY);
 }
 
 AABB CScriptBind_StaticEntity::GetBoundingBox(EntityId entityId, int slot)

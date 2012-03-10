@@ -61,6 +61,18 @@ namespace CryEngine
 			_SetSlotFlags(Id, slot, flags);
 		}
 
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static void _SetWorldTM(uint entityId, Matrix34 tm);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static Matrix34 _GetWorldTM(uint entityId);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static void _SetLocalTM(uint entityId, Matrix34 tm);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static Matrix34 _GetLocalTM(uint entityId);
+
+		public Matrix34 WorldTM { get { return _GetWorldTM(Id); } set { _SetWorldTM(Id, value); } }
+		public Matrix34 LocalTM { get { return _GetLocalTM(Id); } set { _SetLocalTM(Id, value); } }
+
 		public BoundingBox BoundingBox { get { return _GetBoundingBox(Id, 0); } }
 
 		/// <summary>

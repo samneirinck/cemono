@@ -93,6 +93,20 @@ namespace CryEngine
             }
         }
 
+		public bool IsEquivalent(Vec3 v1, float epsilon = 0.05f)
+		{
+			return ((Math.Abs(X - v1.X) <= epsilon) && (Math.Abs(Y - v1.Y) <= epsilon) && (Math.Abs(Z - v1.Z) <= epsilon));	
+		}
+
+		public float Dot(Vec3 vec)
+		{
+			return Dot(this, vec);
+		}
+
+		public Vec3 Cross(Vec3 vec)
+		{
+			return Cross(this, vec);
+		}
         #endregion
 
         #region Operators
@@ -137,6 +151,21 @@ namespace CryEngine
             return new Vec3(v.X * s, v.Y * s, v.Z * s);
         }
 
+		public static float operator *(Vec3 v0, Vec3 v1)
+		{
+			return v0.Dot(v1);
+		}
+
+		public static float operator |(Vec3 v0, Vec3 v1)
+		{
+			return v0.Dot(v1);
+		}
+
+		public static Vec3 operator %(Vec3 v0, Vec3 v1)
+		{
+			return v0.Cross(v1);
+		}
+
         public static bool operator ==(Vec3 v1, Vec3 v2)
         {
             return (v1.X == v2.X && v1.Y == v2.Y && v1.Z == v2.Z);
@@ -146,6 +175,16 @@ namespace CryEngine
         {
             return (v1.X != v2.X || v1.Y != v2.Y || v1.Z == v2.Z);
         }
+
+		public static Vec3 operator /(Vec3 v, float k)
+		{
+			return new Vec3(v.X / k, v.Y / k, v.Z / k);
+		}
+
+		public static Vec3 operator /(Vec3 v, double k)
+		{
+			return new Vec3(v.X / (float)k, v.Y / (float)k, v.Z / (float)k);
+		}
 
 		public static bool operator >(Vec3 v1, Vec3 v2)
 		{
@@ -166,7 +205,6 @@ namespace CryEngine
 		{
 			return v1.Length <= v2.Length;
 		}
-
         #endregion
 
         #region Statics
