@@ -190,7 +190,7 @@ bool CScriptSystem::Reload(bool initialLoad)
 	if (!m_pCryBraryAssembly)
 		return false;
 
-	m_AppDomainSerializer = m_pCryBraryAssembly->InstantiateClass("AppDomainSerializer", "CryEngine.Utils");
+	m_AppDomainSerializer = m_pCryBraryAssembly->InstantiateClass("AppDomainSerializer", "CryEngine.Serialization");
 
 	CryLogAlways("		Initializing subsystems...");
 	InitializeSystems();
@@ -221,7 +221,7 @@ bool CScriptSystem::Reload(bool initialLoad)
 		SAFE_DELETE(m_AppDomainSerializer);
 		SAFE_DELETE(m_pScriptManager);
 
-		m_AppDomainSerializer = m_pCryBraryAssembly->InstantiateClass("AppDomainSerializer", "CryEngine.Utils");
+		m_AppDomainSerializer = m_pCryBraryAssembly->InstantiateClass("AppDomainSerializer", "CryEngine.Serialization");
 		m_pScriptManager = m_pCryBraryAssembly->GetCustomClass("ScriptCompiler");
 	}
 
