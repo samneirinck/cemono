@@ -144,6 +144,8 @@ bool CScriptSystem::CompleteInit()
 	CryLogAlways("		Registering default scriptbinds...");
 	RegisterDefaultBindings();
 
+	RegisterCVars();
+
 	if(!Reload(true))
 		return false;
 
@@ -152,6 +154,11 @@ bool CScriptSystem::CompleteInit()
 	CryLogAlways("		Initializing CryMono done, MemUsage=%iKb", (memInfo.allocated + m_pCryBraryAssembly->GetCustomClass("CryStats", "CryEngine.Utils")->GetProperty("MemoryUsage")->Unbox<long>()) / 1024);
 
 	return true;
+}
+
+void CScriptSystem::RegisterCVars()
+{
+	REGISTER_CVAR(mono_revertScriptsOnError, 1, VF_NULL, "Determines if the last functional compiled scripts should be reloaded upon script compilation failure");
 }
 
 void CScriptSystem::PostInit()
@@ -208,7 +215,7 @@ bool CScriptSystem::Reload(bool initialLoad)
 
 		UnloadDomain(pPrevScriptDomain);
 	}
-	else if(!initialLoad)
+	else if(!initialLoad && mono_revertScriptsOnError)
 	{
 		// Compilation failed or something, revert to the old script domain.
 		UnloadDomain(m_pScriptDomain);

@@ -86,8 +86,10 @@ public:
 protected:
 	bool CompleteInit();
 	bool InitializeDomain();
-	void RegisterDefaultBindings();
 	bool InitializeSystems();
+
+	void RegisterDefaultBindings();
+	void RegisterCVars();
 
 	void UnloadDomain(MonoDomain *pDomain);
 
@@ -119,6 +121,10 @@ protected:
 
 	// If true, the last script reload was successful. This is necessary to make sure we don't override with invalid script dumps.
 	bool m_bLastCompilationSuccess;
+
+	// CVars, possibly create a SCVars-like struct for this later?
+	int mono_revertScriptsOnError;
+	// ~CVars
 };
 
 #endif //__MONO_H__
