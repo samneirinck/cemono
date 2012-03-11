@@ -10,21 +10,6 @@ namespace CryEngine
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static int _RayWorldIntersection(Vec3 origin, Vec3 dir, EntityQueryFlags objFlags, RayWorldIntersectionFlags flags, ref RayHit rayHit, int maxHits, object[] skipEnts);
 
-		public struct RaycastHit
-		{
-			RayHit _info;
-
-			internal RaycastHit(RayHit hit)
-			{
-				_info = hit;
-			}
-
-			public float Distance { get { return _info.dist; } }
-			public EntityId ColliderId { get { return new EntityId(_info.colliderId); } }
-			public Vec3 Point { get { return _info.pt; } }
-			public Vec3 Normal { get { return _info.n; } }
-		}
-
         internal struct RayHit
         {
             internal float dist;
@@ -68,6 +53,21 @@ namespace CryEngine
             return rayResult;
         }
     }
+
+	public struct RaycastHit
+	{
+		PhysicalWorld.RayHit _info;
+
+		internal RaycastHit(PhysicalWorld.RayHit hit)
+		{
+			_info = hit;
+		}
+
+		public float Distance { get { return _info.dist; } }
+		public EntityId ColliderId { get { return new EntityId(_info.colliderId); } }
+		public Vec3 Point { get { return _info.pt; } }
+		public Vec3 Normal { get { return _info.n; } }
+	}
 
 	[Flags]
 	public enum SurfaceFlags
