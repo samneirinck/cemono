@@ -2,7 +2,7 @@
 
 namespace CryEngine
 {
-    partial class Debug
+	partial class Console
     {
         class CryTraceListener : TraceListener
         {

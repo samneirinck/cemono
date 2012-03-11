@@ -58,7 +58,7 @@ namespace CryEngine
         public static string GetGameFolder()
         {
             CVar cvar;
-            if (Debug.TryGetCVar("sys_game_folder", out cvar))
+			if(Console.TryGetCVar("sys_game_folder", out cvar))
                 return Path.Combine(GetRootFolder(), cvar.String);
 
             return Path.Combine(GetRootFolder(), "Game");

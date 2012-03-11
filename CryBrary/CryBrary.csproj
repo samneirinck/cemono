@@ -160,7 +160,7 @@
     <Compile Include="Console\CVar.cs" />
     <Compile Include="Misc\Time.cs" />
     <Compile Include="ThirdParty\Arduino.cs" />
-    <Compile Include="Utils\Debug.cs" />
+    <Compile Include="Utils\Debug\Debug.cs" />
     <Compile Include="Utils\Tester.cs" />
     <Compile Include="Types\TypeExtensions.cs" />
     <Compile Include="EntitySystem\EntitySystem.cs" />
@@ -170,7 +170,7 @@
     <Compile Include="Console\CVars.cs" />
     <Compile Include="FlowSystem\FlowSystem.cs" />
     <Compile Include="ActorSystem\ItemSystem.cs" />
-    <Compile Include="Console\Logging.cs" />
+    <Compile Include="Utils\Debug\Logging.cs" />
     <Compile Include="GameRules\GameRulesSystem.cs" />
     <Compile Include="GameRules\BaseGameRules.cs" />
     <Compile Include="Utils\Statistics.cs" />

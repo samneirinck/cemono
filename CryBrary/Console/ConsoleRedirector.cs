@@ -3,7 +3,7 @@ using System;
 
 namespace CryEngine
 {
-    partial class Debug
+	partial class Console
     {
         class CryRedirector : StringWriter
         {
