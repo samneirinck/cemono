@@ -165,8 +165,8 @@ namespace CryEngine
 		{
 			if(script.ScriptInstances != null && script.ScriptInstances.Count > 0)
 			{
-				var scriptInstance = script.ScriptInstances.First(x => x.ScriptId == scriptId);
-				if(scriptInstance == null)
+				var scriptInstance = script.ScriptInstances.FirstOrDefault(x => x.ScriptId == scriptId);
+				if(scriptInstance == default(CryScriptInstance))
 					return;
 
 				int instanceIndex = script.ScriptInstances.IndexOf(scriptInstance);
@@ -404,13 +404,9 @@ namespace CryEngine
 		{
 			var assemblyTypes = assembly.GetTypes().Where(type => type.Implements(typeof(CryScriptInstance)));
 
-			Debug.LogAlways(assembly.FullName);
-
 			Parallel.For(0, assemblyTypes.Count(), i =>
 			{
 				var type = assemblyTypes.ElementAt(i);
-
-				Debug.LogAlways(type.FullName);
 
 				if (type != null && !type.ContainsAttribute<ExcludeFromCompilationAttribute>())
 				{
