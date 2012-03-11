@@ -134,10 +134,11 @@
     <Compile Include="ActorSystem\Player.cs" />
     <Compile Include="EntitySystem\EntityId.cs" />
     <Compile Include="EntitySystem\Physics.cs" />
+    <Compile Include="Serialization\CrySerializer.cs" />
     <Compile Include="Types\BoundingBox.cs" />
     <Compile Include="Types\Color.cs" />
     <Compile Include="Types\Matrix.cs" />
-    <Compile Include="Utils\AppDomainSerializer.cs" />
+    <Compile Include="Serialization\AppDomainSerializer.cs" />
     <Compile Include="Misc\Convert.cs" />
     <Compile Include="Misc\Math.cs" />
     <Compile Include="Engine\3DEngine.cs" />
