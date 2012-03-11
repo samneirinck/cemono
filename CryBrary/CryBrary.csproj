@@ -137,6 +137,7 @@
     <Compile Include="Types\BoundingBox.cs" />
     <Compile Include="Types\Color.cs" />
     <Compile Include="Types\Matrix.cs" />
+    <Compile Include="UI.cs" />
     <Compile Include="Utils\AppDomainSerializer.cs" />
     <Compile Include="Misc\Convert.cs" />
     <Compile Include="Misc\Math.cs" />

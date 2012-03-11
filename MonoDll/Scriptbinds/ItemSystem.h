@@ -21,7 +21,7 @@ public:
 
 protected:
 	// IMonoScriptBind
-	virtual const char *GetClassName() { return "ItemSystem"; }
+	virtual const char *GetClassName() override { return "ItemSystem"; }
 	// ~IMonoScriptBind
 
 	static void CacheItemGeometry(mono::string);

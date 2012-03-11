@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace CryEngine
 {
-	public class InputSystem
+	public static class InputSystem
 	{
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static void _RegisterAction(string actionName);
