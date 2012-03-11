@@ -21,15 +21,12 @@ namespace CryEngine
 	{
 		public static bool Initialize()
 		{
-
 			CompiledScripts = new List<CryScript>();
 			FlowNodes = new Collection<StoredNode>();
 
             assemblyReferenceHandler = new AssemblyReferenceHandler();
 
 			NextScriptId = 0;
-
-			//GenerateScriptbindAssembly(scriptBinds.ToArray());
 
 			LoadPrecompiledAssemblies();
 
@@ -46,10 +43,11 @@ namespace CryEngine
 			{
 				CompileScripts(ref compilationParams);
 			}
-			catch(Exception ex)
+			catch(ScriptCompilationException ex)
 			{
-				if(compilationParams.Results.Errors.HasErrors)
-					return false;
+				Debug.LogException(ex);
+
+				return false;
 			}
 
 			return true;
@@ -83,8 +81,7 @@ namespace CryEngine
 				return null;
 			}
 
-			// I can play with sexy lambdas too!
-			int index = CompiledScripts.FindIndex(x => x.ClassName.Equals(scriptName));
+			int index = CompiledScripts.FindIndex(x => x.ScriptType.Name.Equals(scriptName));
 			if(index == -1)
 			{
 				Debug.LogAlways("Failed to instantiate {0}, compiled script could not be found.", scriptName);
@@ -92,7 +89,7 @@ namespace CryEngine
 				return null;
 			}
 
-			AddScriptInstance(System.Activator.CreateInstance(CompiledScripts[index].ClassType, constructorParams) as CryScriptInstance, index);
+			AddScriptInstance(System.Activator.CreateInstance(CompiledScripts[index].ScriptType, constructorParams) as CryScriptInstance, index);
 
 			return CompiledScripts[index].ScriptInstances.Last();
 		}
@@ -105,17 +102,14 @@ namespace CryEngine
 		public static int AddScriptInstance(CryScriptInstance instance, int scriptIndex = -1)
 		{
 			if(scriptIndex == -1)
-				scriptIndex = CompiledScripts.FindIndex(x => x.ClassName == instance.GetType().Name);
+				scriptIndex = CompiledScripts.FindIndex(x => x.ScriptType == instance.GetType());
 
 			if(scriptIndex != -1)
 			{
 				var script = CompiledScripts.ElementAt(scriptIndex);
 
-				if(script.ScriptType == ScriptType.GameRules)
-					script.ScriptInstances = null;
-
 				if(script.ScriptInstances == null)
-					script.ScriptInstances = new List<CryScriptInstance>();
+					script.ScriptInstances = new Collection<CryScriptInstance>();
 				else if(script.ScriptInstances.Contains(instance))
 					return -1;
 
@@ -144,7 +138,7 @@ namespace CryEngine
 		{
 			if(scriptName.Length > 0)
 			{
-				int i = CompiledScripts.FindIndex(x => x.ClassName.Equals(scriptName));
+				int i = CompiledScripts.FindIndex(x => x.ScriptType.Name.Equals(scriptName));
 				if(i == -1)
 					return;
 
@@ -209,7 +203,7 @@ namespace CryEngine
 
 		public static int GetEntityScriptId(EntityId entityId, System.Type scriptType = null)
 		{
-			var scripts = CompiledScripts.Where(script => (scriptType != null ? script.ClassType.Implements(scriptType) : true) && script.ScriptInstances != null);
+			var scripts = CompiledScripts.Where(script => (scriptType != null ? script.ScriptType.Implements(scriptType) : true) && script.ScriptInstances != null);
 
 			foreach(var compiledScript in scripts)
 			{
@@ -234,11 +228,11 @@ namespace CryEngine
 			foreach(var script in CompiledScripts)
 			{
 				if(script.ScriptInstances != null)
-					script.ScriptInstances.ForEach(i =>
-					{
-						if(i.ReceiveUpdates)
-							i.OnUpdate();
-					});
+				{
+					foreach(var instance in script.ScriptInstances)
+						if(instance.ReceiveUpdates)
+							instance.OnUpdate();
+				}
 			}
 
 			EntitySystem.OnUpdate();
@@ -259,8 +253,6 @@ namespace CryEngine
 
 			if (plugins != null && plugins.Length != 0)
 			{
-				List<CryScript> compiledScripts = new List<CryScript>();
-
 				foreach (var plugin in plugins)
 				{
 					try
@@ -277,11 +269,7 @@ namespace CryEngine
 #endif
 
 						//Process it, in case it contains types/gamerules
-						Assembly assembly = Assembly.LoadFrom(newPath);
-
-                        assemblyReferenceHandler.ReferencedAssemblies.Add(newPath);
-
-						compiledScripts.AddRange(LoadAssembly(assembly));
+						LoadAssembly(Assembly.LoadFrom(newPath));
 					}
 					//This exception tells us that the assembly isn't a valid .NET assembly for whatever reason
 					catch (BadImageFormatException)
@@ -289,11 +277,6 @@ namespace CryEngine
 						Debug.LogAlways("Plugin loading failed for {0}; dll is not valid.", plugin);
 					}
 				}
-
-				if(compiledScripts.Count < 1)
-					return;
-
-				CompiledScripts.AddRange(compiledScripts);
 			}
 
 			return;
@@ -388,7 +371,7 @@ namespace CryEngine
 					compilerParameters.ReferencedAssemblies.Add(assembly);
 			}
 
-            compilerParameters.ReferencedAssemblies.AddRange(assemblyReferenceHandler.ReferencedAssemblies.ToArray());
+			compilerParameters.ReferencedAssemblies.AddRange(AppDomain.CurrentDomain.GetAssemblies().Select(x => x.Location).ToArray());
 
 			CompilerResults results = provider.CompileAssemblyFromFile(compilerParameters, scripts.ToArray());
 
@@ -399,12 +382,7 @@ namespace CryEngine
 			compilationParams.Results = results;
 
 			if(results.CompiledAssembly != null) // success
-			{
-				var compiledScripts = LoadAssembly(results.CompiledAssembly);
-				if(compiledScripts != null && compiledScripts.Count() > 0)
-					CompiledScripts.AddRange(compiledScripts);
-
-			}
+				LoadAssembly(results.CompiledAssembly);
 			else if(results.Errors.HasErrors)
 			{
 				string compilationError = string.Format("Compilation failed; {0} errors: ", results.Errors.Count);
@@ -420,68 +398,53 @@ namespace CryEngine
 
 
 		/// <summary>
-		/// Loads an C# assembly and return encapulsated script Type.
+		/// Loads an C# assembly and adds all found types to ScriptCompiler.CompiledScripts
 		/// </summary>
-		public static IEnumerable<CryScript> LoadAssembly(Assembly assembly)
+		public static void LoadAssembly(Assembly assembly)
 		{
 			var assemblyTypes = assembly.GetTypes().Where(type => type.Implements(typeof(CryScriptInstance)));
 
-			List<CryScript> scripts = new List<CryScript>();
+			Debug.LogAlways(assembly.FullName);
 
 			Parallel.For(0, assemblyTypes.Count(), i =>
 			{
 				var type = assemblyTypes.ElementAt(i);
 
+				Debug.LogAlways(type.FullName);
+
 				if (type != null && !type.ContainsAttribute<ExcludeFromCompilationAttribute>())
 				{
-					scripts.Add(new CryScript(type));
+					CompiledScripts.Add(new CryScript(type));
+
+					string className = type.Name;
 
 					if (type.Implements(typeof(BaseGameRules)))
 					{
-						scripts.Last().SetScriptType(ScriptType.GameRules);
-
-						GameRulesSystem._RegisterGameMode(scripts.Last().ClassName);
+						GameRulesSystem._RegisterGameMode(className);
 
 						if (type.ContainsAttribute<DefaultGamemodeAttribute>())
-							GameRulesSystem._SetDefaultGameMode(scripts.Last().ClassName);
+							GameRulesSystem._SetDefaultGameMode(className);
 					}
 					else if (type.Implements(typeof(BasePlayer)))
-					{
-						scripts.Last().SetScriptType(ScriptType.Actor);
-
-						ActorSystem._RegisterActorClass(scripts.Last().ClassName, false);
-					}
+						ActorSystem._RegisterActorClass(className, false);
 					else if (type.Implements(typeof(StaticEntity)))
 					{
 						bool staticEntity = !type.Implements(typeof(Entity));
 
-						if (!staticEntity)
-							scripts.Last().SetScriptType(ScriptType.Entity);
-						else
-							scripts.Last().SetScriptType(ScriptType.StaticEntity);
-
-						LoadEntity(type, scripts.Last(), staticEntity);
+						LoadEntity(type, CompiledScripts.Last(), staticEntity);
 					}
 					else if (type.Implements(typeof(FlowNode)))
-					{
-						scripts.Last().SetScriptType(ScriptType.FlowNode);
-
-						LoadFlowNode(type, scripts.Last().ClassName);
-					}
-					else if (type.Implements(typeof(CryScriptInstance)))
-						scripts.Last().SetScriptType(ScriptType.Unknown);
+						LoadFlowNode(type, className);
 				}
 			});
 
 			assemblyTypes = null;
-
-			return scripts.ToArray();
 		}
 
 		internal static void RegisterFlownodes()
 		{
 			foreach (var node in FlowNodes)
-				FlowSystem.RegisterNode(node.className, node.category, node.category.Equals("entity", StringComparison.Ordinal));
+				FlowSystem.RegisterNode(node.className, node.category, node.category.Equals("entity"));
 		}
 
 		private static void LoadEntity(Type type, CryScript script, bool staticEntity)
@@ -490,26 +453,14 @@ namespace CryEngine
 			if (type.IsAbstract)
 				return;
 
-			EntityConfig config = default(EntityConfig);
-			StaticEntity entity = null;
-
-			if (staticEntity)
-				entity = Activator.CreateInstance(type) as StaticEntity;
-			else
-				entity = Activator.CreateInstance(type) as Entity;
-
-			config = entity.GetEntityConfig();
-
-			entity = null;
+			EntityConfig config = StaticEntity.GetEntityConfig(type);
 
 			if (config.registerParams.Name.Length <= 0)
-				config.registerParams.Name = script.ClassName;
+				config.registerParams.Name = script.ScriptType.Name;
 			if (config.registerParams.Category.Length <= 0)
 				config.registerParams.Category = ""; // TODO: Use the folder structure in Scripts/Entities. (For example if the entity is in Scripts/Entities/Multiplayer, the category should become "Multiplayer")
 
 			EntitySystem.RegisterEntityClass(config);
-
-			entity = null;
 
 			LoadFlowNode(type, config.registerParams.Name, true);
 		}
@@ -612,35 +563,25 @@ namespace CryEngine
 		public CryScript(Type type)
 			: this()
 		{
-			ClassType = type;
-			ClassName = ClassType.Name;
+			ScriptType = type;
 		}
 
-		public void SetScriptType(ScriptType scriptType)
-		{
-			ScriptType = scriptType;
-		}
-
-		public Type ClassType { get; private set; }
-		public ScriptType ScriptType { get; private set; }
-
-		// Type.Name is costly to call
-		public string ClassName { get; private set; }
+		public Type ScriptType { get; private set; }
 
 		/// <summary>
 		/// Stores all instances of this class.
 		/// </summary>
-		public List<CryScriptInstance> ScriptInstances { get; internal set; }
+		public Collection<CryScriptInstance> ScriptInstances { get; internal set; }
 
 		#region Operators
 		public static bool operator ==(CryScript script1, CryScript script2)
 		{
-			return script1.ClassType == script2.ClassType;
+			return script1.ScriptType == script2.ScriptType;
 		}
 
 		public static bool operator !=(CryScript script1, CryScript script2)
 		{
-			return script1.ClassType != script2.ClassType;
+			return script1.ScriptType != script2.ScriptType;
 		}
 
 		public override bool Equals(object obj)
@@ -653,7 +594,7 @@ namespace CryEngine
 
 		public override int GetHashCode()
 		{
-			return ClassType.GetHashCode();
+			return ScriptType.GetHashCode();
 		}
 
 		#endregion
