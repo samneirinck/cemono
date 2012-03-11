@@ -120,7 +120,10 @@ namespace CryEngine
 						}
 					}
 
-					outputs.Add(new OutputPortConfig(portAttribute.Name, portAttribute.Name, portAttribute.Description, portType));
+					var portConfig = new OutputPortConfig(portAttribute.Name, portAttribute.Name, portAttribute.Description, portType);
+
+					if(!outputs.Contains(portConfig))
+						outputs.Add(portConfig);
 				}
 			}
 		}
