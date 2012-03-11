@@ -57,3 +57,6 @@ _ReSharper*/
 output
 
 MonoDll/Profile/CryMono.lib
+
+# Excludes
+!*/Utils/Debug
