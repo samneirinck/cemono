@@ -120,6 +120,9 @@
     <ClInclude Include="Scriptbinds\ScriptBind_Debug.h">
       <Filter>ScriptBinds\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="Scriptbinds\Scriptbind_UI.h">
+      <Filter>ScriptBinds</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -198,6 +201,9 @@
     </ClCompile>
     <ClCompile Include="Scriptbinds\ScriptBind_Debug.cpp">
       <Filter>ScriptBinds\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Scriptbinds\Scriptbind_UI.cpp">
+      <Filter>ScriptBinds</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
