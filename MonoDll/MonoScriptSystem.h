@@ -54,7 +54,7 @@ public:
 
 	virtual void RegisterMethodBinding(const void *method, const char *fullMethodName) override;
 
-	virtual int InstantiateScript(EMonoScriptType scriptType, const char *scriptName, IMonoArray *pConstructorParameters = nullptr) override;  	
+	virtual int InstantiateScript(const char *scriptName, IMonoArray *pConstructorParameters = nullptr) override;  	
 	virtual IMonoClass *GetScriptById(int id) override;
 	virtual void RemoveScriptInstance(int id) override;
 	

@@ -4,7 +4,7 @@ using CryEngine;
 
 namespace CryEngine
 {
-	public partial class Debug
+	public static partial class Debug
 	{
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static void _AddPersistentSphere(Vec3 pos, float radius, Color color, float timeout);

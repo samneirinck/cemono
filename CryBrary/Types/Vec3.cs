@@ -5,8 +5,6 @@ namespace CryEngine
 	/// <summary>
 	/// The Vec3 struct is used for all 3D coordinates within the engine.
 	/// </summary>
-    [System.Serializable]
-    [StructLayout(LayoutKind.Sequential)]
     public struct Vec3
     {
         #region Properties
@@ -16,8 +14,24 @@ namespace CryEngine
         #endregion
 
         #region Constructor(s)
+		public Vec3(Quat q)
+			: this()
+		{
+			Y = (float)Math.Asin(Math.Max(-1.0f, Math.Min(1.0f, -(q.Axis.X * q.Axis.Z - q.Angle * q.Axis.Y) * 2.0f)));
+			if(Math.Abs(Math.Abs(Y) - (Math.PI * 0.5)) < 0.01)
+			{
+				X = 0;
+				Z = (float)Math.Atan2(-2 * (q.Axis.X * q.Axis.Y - q.Angle * q.Axis.Z), 1 - (q.Axis.X * q.Axis.X + q.Axis.Z * q.Axis.Z) * 2);
+			}
+			else
+			{
+				X = (float)Math.Atan2((q.Axis.Y * q.Axis.Z + q.Angle * q.Axis.X) * 2, 1 - (q.Axis.X * q.Axis.X + q.Axis.Y * q.Axis.Y) * 2);
+				Z = (float)Math.Atan2((q.Axis.X * q.Axis.Y + q.Angle * q.Axis.Z) * 2, 1 - (q.Axis.Z * q.Axis.Z + q.Axis.Y * q.Axis.Y) * 2);
+			}
+		}
+
         public Vec3(float x, float y, float z)
-            : this()
+			: this()
         {
             X = x;
             Y = y;
@@ -25,7 +39,7 @@ namespace CryEngine
         }
 
         public Vec3(float x, float y)
-            : this()
+			: this()
         {
             X = x;
             Y = y;
@@ -36,7 +50,18 @@ namespace CryEngine
         #region Methods
         public void Normalize()
         {
-			this = this.Normalized;
+			if(Length > 0)
+			{
+				X /= Length;
+				Y /= Length;
+				Z /= Length;
+			}
+			else
+			{
+				X = 0;
+				Y = 0;
+				Z = 0;
+			}
         }
 
         public void Zero() { X = 0f; Y = 0f; Z = 0f; }
@@ -45,10 +70,10 @@ namespace CryEngine
 		{
 			get
 			{
-				if(Length > 0)
-					return new Vec3(X / Length, Y / Length, Z / Length);
+				Vec3 vec = new Vec3(X, Y, Z);
+				vec.Normalize();
 
-				return new Vec3();
+				return vec;
 			}
 		}
 
@@ -68,6 +93,20 @@ namespace CryEngine
             }
         }
 
+		public bool IsEquivalent(Vec3 v1, float epsilon = 0.05f)
+		{
+			return ((Math.Abs(X - v1.X) <= epsilon) && (Math.Abs(Y - v1.Y) <= epsilon) && (Math.Abs(Z - v1.Z) <= epsilon));	
+		}
+
+		public float Dot(Vec3 vec)
+		{
+			return Dot(this, vec);
+		}
+
+		public Vec3 Cross(Vec3 vec)
+		{
+			return Cross(this, vec);
+		}
         #endregion
 
         #region Operators
@@ -112,6 +151,21 @@ namespace CryEngine
             return new Vec3(v.X * s, v.Y * s, v.Z * s);
         }
 
+		public static float operator *(Vec3 v0, Vec3 v1)
+		{
+			return v0.Dot(v1);
+		}
+
+		public static float operator |(Vec3 v0, Vec3 v1)
+		{
+			return v0.Dot(v1);
+		}
+
+		public static Vec3 operator %(Vec3 v0, Vec3 v1)
+		{
+			return v0.Cross(v1);
+		}
+
         public static bool operator ==(Vec3 v1, Vec3 v2)
         {
             return (v1.X == v2.X && v1.Y == v2.Y && v1.Z == v2.Z);
@@ -121,6 +175,16 @@ namespace CryEngine
         {
             return (v1.X != v2.X || v1.Y != v2.Y || v1.Z == v2.Z);
         }
+
+		public static Vec3 operator /(Vec3 v, float k)
+		{
+			return new Vec3(v.X / k, v.Y / k, v.Z / k);
+		}
+
+		public static Vec3 operator /(Vec3 v, double k)
+		{
+			return new Vec3(v.X / (float)k, v.Y / (float)k, v.Z / (float)k);
+		}
 
 		public static bool operator >(Vec3 v1, Vec3 v2)
 		{
@@ -141,7 +205,6 @@ namespace CryEngine
 		{
 			return v1.Length <= v2.Length;
 		}
-
         #endregion
 
         #region Statics

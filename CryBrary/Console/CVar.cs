@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 
 namespace CryEngine
 {
-	public partial class Debug
+	public partial class Console
 	{
         static List<CVar> internalCVars = new List<CVar>();
 
@@ -31,7 +31,7 @@ namespace CryEngine
             if(cvar!=default(CVar))
                 return cvar;
 
-            if (Debug._HasCVar(name))
+            if (Console._HasCVar(name))
                 return new CVar(name);
 
             return null;
@@ -74,14 +74,14 @@ namespace CryEngine
                 Type = CVarType.Int;
                 IVal = (int)value;
 
-                Debug._RegisterCVarInt(Name, ref IntValue, IVal, Flags, Help);
+				Console._RegisterCVarInt(Name, ref IntValue, IVal, Flags, Help);
             }
             else if (value is float || value is double)
             {
                 Type = CVarType.Float;
                 FVal = (float)value;
 
-				Debug._RegisterCVarFloat(Name, ref FloatValue, FVal, Flags, Help);
+				Console._RegisterCVarFloat(Name, ref FloatValue, FVal, Flags, Help);
             }
             else if (value is string)
             {
@@ -118,14 +118,14 @@ namespace CryEngine
             get
             {
                 if (ExternallyRegistered)
-                    return Debug._GetCVarString(Name);
+					return Console._GetCVarString(Name);
 
                 return StringValue;
             }
             set
             {
                 if (ExternallyRegistered)
-                    Debug._SetCVarString(Name, value);
+					Console._SetCVarString(Name, value);
                 else
                     StringValue = value;
             }
@@ -135,14 +135,14 @@ namespace CryEngine
             get
             {
                 if (ExternallyRegistered)
-                    return Debug._GetCVarFloat(Name);
+					return Console._GetCVarFloat(Name);
 
                 return FloatValue;
             }
             set
             {
                 if (ExternallyRegistered)
-                    Debug._SetCVarFloat(Name, value);
+					Console._SetCVarFloat(Name, value);
                 else
                     FloatValue = value;
             }
@@ -152,14 +152,14 @@ namespace CryEngine
             get
             {
                 if (ExternallyRegistered)
-                    return Debug._GetCVarInt(Name);
+					return Console._GetCVarInt(Name);
 
                 return IntValue;
             }
             set
             {
                 if (ExternallyRegistered)
-                    Debug._SetCVarInt(Name, value);
+					Console._SetCVarInt(Name, value);
                 else
                     IntValue = value;
             }

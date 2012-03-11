@@ -61,6 +61,6 @@
 			}
 		}
 
-		public float Angle;
+		public float Angle { get; set; }
 	}
 }

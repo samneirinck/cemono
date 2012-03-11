@@ -28,9 +28,9 @@ namespace CryEngine
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static Vec3 _GetWorldPos(uint entityId);
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _SetWorldAngles(uint entityId, Vec3 newAngles);
+		extern internal static void _SetRotation(uint entityId, Quat newAngles);
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static Vec3 _GetWorldAngles(uint entityId);
+		extern internal static Quat _GetRotation(uint entityId);
 
 		/// <summary>
 		/// Loads a static model on the object (.cgf).
@@ -60,6 +60,18 @@ namespace CryEngine
 		{
 			_SetSlotFlags(Id, slot, flags);
 		}
+
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static void _SetWorldTM(uint entityId, Matrix34 tm);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static Matrix34 _GetWorldTM(uint entityId);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static void _SetLocalTM(uint entityId, Matrix34 tm);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static Matrix34 _GetLocalTM(uint entityId);
+
+		public Matrix34 WorldTM { get { return _GetWorldTM(Id); } set { _SetWorldTM(Id, value); } }
+		public Matrix34 LocalTM { get { return _GetLocalTM(Id); } set { _SetLocalTM(Id, value); } }
 
 		public BoundingBox BoundingBox { get { return _GetBoundingBox(Id, 0); } }
 
@@ -189,7 +201,7 @@ namespace CryEngine
 
 		#region Methods & Fields
 		public Vec3 Position { get { return _GetWorldPos(Id); } set { _SetWorldPos(Id, value); } }
-		public Vec3 Rotation { get { return _GetWorldAngles(Id); } set { _SetWorldAngles(Id, value); } }
+		public Quat Rotation { get { return _GetRotation(Id); } set { _SetRotation(Id, value); } }
 
 		public EntityId Id { get; set; }
 		public string Name { get; set; }
@@ -289,33 +301,28 @@ namespace CryEngine
 			if(value.Length <= 0 && propertyType != EntityPropertyType.String)
 				return;
 
-			if(!memberIsProperty.ContainsKey(propertyName))
+			var property = GetType().GetProperty(propertyName);
+			if(property != null)
 			{
-				if(GetType().GetProperty(propertyName) != null)
-					memberIsProperty.Add(propertyName, true);
-				else if(GetType().GetField(propertyName) != null)
-					memberIsProperty.Add(propertyName, false);
-				else
-					throw new Exception("The specified property name does not exist. This really shouldn't happen.");
-			}
+				// Store properties so we can utilize the get set functionality after opening a saved level.
+				if(!Spawned)
+				{
+					if(storedProperties == null)
+						storedProperties = new Dictionary<string[], EntityPropertyType>();
 
-			var isProperty = memberIsProperty[propertyName];
+					storedProperties.Add(new string[] { propertyName, value }, propertyType);
 
-			// Store properties so we can utilize the get set functionality after opening a saved level.
-			if(!Spawned && isProperty)
-			{
-				if(storedProperties == null)
-					storedProperties = new Dictionary<string[], EntityPropertyType>();
+					return;
+				}
 
-				storedProperties.Add(new string[] { propertyName, value }, propertyType);
+				property.SetValue(this, Convert.FromString(propertyType, value), null);
 
 				return;
 			}
 
-			if (isProperty)
-				GetType().GetProperty(propertyName).SetValue(this, Convert.FromString(propertyType, value), null);
-			else
-				GetType().GetField(propertyName).SetValue(this, Convert.FromString(propertyType, value));
+			var field = GetType().GetField(propertyName);
+			if(field != null)
+				field.SetValue(this, Convert.FromString(propertyType, value));
 		}
 
 		/// <summary>
@@ -341,10 +348,8 @@ namespace CryEngine
 			return _GetStaticObjectFilePath(Id, slot);
 		}
 
-		Dictionary<string, bool> memberIsProperty = new Dictionary<string, bool>();
-		internal EntityConfig GetEntityConfig()
+		internal static EntityConfig GetEntityConfig(Type type)
 		{
-			Type type = GetType();
 			var properties = type.GetProperties();
 			var fields = type.GetFields();
 			var entityProperties = new List<object>();
@@ -357,7 +362,7 @@ namespace CryEngine
 					var attribute = property.GetAttribute<EditorPropertyAttribute>();
 					EntityPropertyType propertyType = GetEditorType(property.PropertyType, attribute.Type);
 					var limits = new EntityPropertyLimits(attribute.Min, attribute.Max);
-					memberIsProperty.Add(property.Name, true);
+
 					entityProperties.Add(new EntityProperty(property.Name, attribute.Description, propertyType, limits, attribute.Flags));
 				}
 			}
@@ -370,7 +375,7 @@ namespace CryEngine
 					var attribute = field.GetAttribute<EditorPropertyAttribute>();
 					EntityPropertyType propertyType = GetEditorType(field.FieldType, attribute.Type);
 					var limits = new EntityPropertyLimits(attribute.Min, attribute.Max);
-					memberIsProperty.Add(field.Name, false);
+
 					entityProperties.Add(new EntityProperty(field.Name, attribute.Description, propertyType, limits, attribute.Flags));
 				}
 			}
@@ -378,7 +383,7 @@ namespace CryEngine
 			return new EntityConfig(GetRegistrationConfig(type), entityProperties.ToArray());
 		}
 
-		internal EntityPropertyType GetEditorType(Type type, EntityPropertyType propertyType)
+		internal static EntityPropertyType GetEditorType(Type type, EntityPropertyType propertyType)
 		{
 			//If a special type is needed, do this here.
 			switch(propertyType)
@@ -424,7 +429,7 @@ namespace CryEngine
 			return new NodeConfig(FlowNodeCategory.Approved, "", FlowNodeFlags.HideUI | FlowNodeFlags.TargetEntity);
 		}
 
-		internal EntityRegisterParams GetRegistrationConfig(Type type)
+		internal static EntityRegisterParams GetRegistrationConfig(Type type)
 		{
 			EntityAttribute entityAttribute = null;
 			if(type.TryGetAttribute<EntityAttribute>(out entityAttribute))

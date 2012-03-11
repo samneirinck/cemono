@@ -20,7 +20,7 @@ public:
 
 protected:
 	// IMonoScriptBind
-	virtual const char *GetClassName() { return "Debug"; }
+	virtual const char *GetClassName() { return "Console"; }
 	// ~IMonoScriptBind
 
 	// Logging

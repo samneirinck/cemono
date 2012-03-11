@@ -35,8 +35,8 @@ protected:
 
 	static void SetWorldPos(EntityId, Vec3);
 	static Vec3 GetWorldPos(EntityId);
-	static void SetWorldAngles(EntityId, Vec3);
-	static Vec3 GetWorldAngles(EntityId);
+	static void SetRotation(EntityId, Quat);
+	static Quat GetRotation(EntityId);
 
 	static AABB GetBoundingBox(EntityId, int slot);
 
@@ -62,6 +62,12 @@ protected:
 
 	static Vec3 GetVelocity(EntityId);
 	static void SetVelocity(EntityId, Vec3);
+
+	static void SetWorldTM(EntityId id, Matrix34 tm);
+	static Matrix34 GetWorldTM(EntityId id);
+	static void SetLocalTM(EntityId id, Matrix34 tm);
+	static Matrix34 GetLocalTM(EntityId id);
+
 };
 
 struct ActionImpulse

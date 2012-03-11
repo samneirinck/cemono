@@ -113,7 +113,7 @@ Vec3 CScriptBind_Renderer::ScreenToWorld(int x, int y)
 		float mouseX, mouseY, mouseZ;
 		Vec3  camPos = gEnv->pSystem->GetViewCamera().GetPosition();
 
-		gEnv->pRenderer->UnProjectFromScreen((float)x, GetHeight() - y, 0.0f, &mouseX, &mouseY, &mouseZ);
+		gEnv->pRenderer->UnProjectFromScreen((float)x, GetHeight() - (float)y, 0.0f, &mouseX, &mouseY, &mouseZ);
 		Vec3 dir = (Vec3(mouseX, mouseY, mouseZ) - camPos).GetNormalizedSafe();
 
 		static ray_hit hit;

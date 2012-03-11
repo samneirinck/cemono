@@ -24,19 +24,6 @@ struct IMonoEntityManager;
 
 struct IMonoConverter;
 
-enum EMonoScriptType
-{
-	EMonoScriptType_NULL = -1,
-
-	EMonoScriptType_GameRules,
-	EMonoScriptType_FlowNode,
-	EMonoScriptType_StaticEntity,
-	EMonoScriptType_Entity,
-	EMonoScriptType_Actor,
-	EMonoScriptType_EditorForm,
-	EMonoScriptType_Unknown,
-};
-
 /// <summary>
 /// The main module in CryMono; initializes mono domain and handles calls to C# scripts.
 /// </summary>
@@ -74,7 +61,7 @@ struct IMonoScriptSystem : ICryUnknown
 	/// Instantiates a script (with constructor parameters if supplied) of type and name
 	/// This assumes that the script was present in a .dll in Plugins or within a .cs file when PostInit was called.
 	/// </summary>
-	virtual int InstantiateScript(EMonoScriptType scriptType, const char *scriptName, IMonoArray *pConstructorParameters = nullptr) = 0;
+	virtual int InstantiateScript(const char *scriptName, IMonoArray *pConstructorParameters = nullptr) = 0;
 	/// <summary>
 	/// Gets the instantied script with the supplied id.
 	/// </summary>

@@ -54,7 +54,7 @@ bool CFlowNode::InstantiateScript(const char *nodeName)
 		next = fullTypeName.Tokenize(":", curPos);
 	}
 
-	m_scriptId = gEnv->pMonoScriptSystem->InstantiateScript(EMonoScriptType_FlowNode, typeName);
+	m_scriptId = gEnv->pMonoScriptSystem->InstantiateScript(typeName);
 	if(m_scriptId!=-1)
 		static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager()->RegisterFlowNode(this, m_scriptId);
 

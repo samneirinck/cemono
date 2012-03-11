@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
+using System.ComponentModel;
+
 namespace CryEngine
 {
-    public partial class Debug
+    public static partial class Debug
     {
         [DllImport("CryMono.dll")]
         extern static void _LogAlways(string msg);

@@ -368,9 +368,9 @@ void CScriptSystem::RegisterMethodBinding(const void *method, const char *fullMe
 		mono_add_internal_call(fullMethodName, method);
 }
 
-int CScriptSystem::InstantiateScript(EMonoScriptType scriptType, const char *scriptName, IMonoArray *pConstructorParameters)
+int CScriptSystem::InstantiateScript(const char *scriptName, IMonoArray *pConstructorParameters)
 {
-	if(scriptType==EMonoScriptType_GameRules)
+	/*if(scriptType==EMonoScriptType_GameRules)
 	{
 		IMonoClass *pClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("CryNetwork");
 		IMonoArray *pArray = CreateMonoArray(3);
@@ -380,7 +380,7 @@ int CScriptSystem::InstantiateScript(EMonoScriptType scriptType, const char *scr
 		pClass->CallMethod("InitializeNetwork", pArray, true);
 		SAFE_RELEASE(pArray);
 		SAFE_RELEASE(pClass);
-	}
+	}*/
 
 	IMonoArray *pArgs = CreateMonoArray(2);
 	pArgs->Insert(scriptName);

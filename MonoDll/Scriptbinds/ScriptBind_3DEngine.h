@@ -23,6 +23,11 @@ public:
 	// IMonoScriptBind
 	virtual const char *GetClassName() { return "Engine"; }
 	// ~IMonoScriptBind
+
+	static float GetTerrainElevation(int x, int y, bool includeVoxels);
+
+	static int GetTerrainSize();
+	static int GetTerrainSectorSize();
 };
 
 #endif //__SCRIPTBIND_3DENGINE__

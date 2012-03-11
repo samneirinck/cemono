@@ -1,10 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Linq;
-using System.Linq;
 
 using System.IO;
-using System;
-using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace CryEngine.Utils
@@ -16,10 +13,7 @@ namespace CryEngine.Utils
     {
         public AssemblyReferenceHandler()
         {
-            Assembly[] loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
-
-            ReferencedAssemblies = new List<string>(loadedAssemblies.Length);
-            ReferencedAssemblies.AddRange(loadedAssemblies.Select(a => a.Location));
+			assemblies = Directory.GetFiles(Path.Combine(PathUtils.GetEngineFolder(), "Mono", "lib", "mono", "gac"), "*.dll", SearchOption.AllDirectories);
         }
 
         /// <summary>
@@ -96,37 +90,29 @@ namespace CryEngine.Utils
         {
             // Avoid reloading the xml file for every call
             if (assemblyLookupDocument == null)
-            {
                 assemblyLookupDocument = XDocument.Load(Path.Combine(PathUtils.GetEngineFolder(), "Mono", "assemblylookup.xml"));
-            }
 
-            string[] assemblies = Directory.GetFiles(Path.Combine(PathUtils.GetEngineFolder(), "Mono", "lib", "mono", "gac"), "*.dll", SearchOption.AllDirectories);
-            foreach (var node in assemblyLookupDocument.Descendants().Where(e => e.Name.LocalName == "Namespace" && e.Attribute("name").Value == name))
+            foreach (var node in assemblyLookupDocument.Descendants("Namespace"))
             {
-                string assemblyName = node.Parent.Attribute("name").Value;
+				if(node.Attribute("name").Value.Equals(name))
+				{
+					string assemblyName = node.Parent.Attribute("name").Value;
 
-
-                foreach (var assembly in assemblies)
-                {
-                    if (assembly.Contains(assemblyName))
-                    {
-                        assemblyName = assembly;
-                        break;
-                    }
-                }
-
-                if (!ReferencedAssemblies.Contains(assemblyName))
-                    return assemblyName;
+					foreach(var assembly in assemblies)
+					{
+						if(assembly.Contains(assemblyName))
+						{
+							assemblyName = assembly;
+							break;
+						}
+					}
+				}
             }
 
             return null;
         }
 
         private XDocument assemblyLookupDocument;
-
-        /// <summary>
-        /// All libraries passed through ScriptCompiler.LoadLibrariesInFolder will be automatically added to this list.
-        /// </summary>
-        public List<string> ReferencedAssemblies { get; protected set; }
+		string[] assemblies;
     }
 }
