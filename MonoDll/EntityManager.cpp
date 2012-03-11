@@ -46,7 +46,7 @@ bool CEntityManager::OnBeforeSpawn(SEntitySpawnParams &params)
 	if(!IsMonoEntity(className))
 		return true;
 
-	m_monoEntities.push_back(new CEntity(gEnv->pMonoScriptSystem->InstantiateScript(EMonoScriptType_Entity, className)));
+	m_monoEntities.push_back(new CEntity(gEnv->pMonoScriptSystem->InstantiateScript(className)));
 
 	return true;
 }
