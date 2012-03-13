@@ -8,35 +8,35 @@ using System.Runtime.CompilerServices;
 
 namespace CryEngine
 {
-    public enum EUIParameterType
+    public enum UIParameterType
     {
-        eUIPT_Any = 0,
-        eUIPT_Bool,
-        eUIPT_Int,
-        eUIPT_Float,
-        eUIPT_String,
+        Any = 0,
+        Bool,
+        Int,
+        Float,
+        String,
     };
 
-    public enum EUIEventDirection
+    public enum UIEventDirection
     {
-        eUIED_UIToSystem = 0,
-        eUIED_SystemToUI,
+        UIToSystem = 0,
+        SystemToUI,
     };
 
-    public struct SUIParameterDesc
+    public struct UIParameterDescription
     {
-        public EUIParameterType Type;
+        public UIParameterType Type;
         public string Name;
         public string DisplayName;
         public string Description;
-        public SUIParameterDesc(EUIParameterType type = EUIParameterType.eUIPT_Any)
+        public UIParameterDescription(UIParameterType type = UIParameterType.Any)
         {
-            Type = EUIParameterType.eUIPT_Any;
+            Type = UIParameterType.Any;
             Name = "Undefined";
             DisplayName = "Undefined";
             Description = "Undefined";
         }
-        public SUIParameterDesc(string name, string displayname, string description, EUIParameterType type = EUIParameterType.eUIPT_Any)
+        public UIParameterDescription(string name, string displayname, string description, UIParameterType type = UIParameterType.Any)
         {
             Type = type;
             Name = name;
@@ -45,10 +45,10 @@ namespace CryEngine
         }
     };
 
-    public struct SUIEventDesc
+    public struct UIEventDescription
     {
 
-        public EUIParameterType Type;
+        public UIParameterType Type;
         public string Name;
         public string DisplayName;
         public string Description;
@@ -57,9 +57,9 @@ namespace CryEngine
         public bool IsDynamic;
         public string DynamicName;
         public string DynamicDesc;
-        public SUIEventDesc(EUIParameterType type = EUIParameterType.eUIPT_Any)
+        public UIEventDescription(UIParameterType type = UIParameterType.Any)
         {
-            Type = EUIParameterType.eUIPT_Any;
+            Type = UIParameterType.Any;
             Name = "Undefined";
             DisplayName = "Undefined";
             Description = "Undefined";
@@ -69,9 +69,9 @@ namespace CryEngine
             DynamicDesc = "";
             Params = null;
         }
-        public SUIEventDesc(string name, string displayname, string description, bool isdyn = false, string dynamicname = "Array", string dynamicdesc = "")
+        public UIEventDescription(string name, string displayname, string description, bool isdyn = false, string dynamicname = "Array", string dynamicdesc = "")
         {
-            Type = EUIParameterType.eUIPT_Any;
+            Type = UIParameterType.Any;
             Name = name;
             DisplayName = displayname;
             Description = description;
@@ -101,7 +101,7 @@ namespace CryEngine
 	public class UI
 	{
         [MethodImpl(MethodImplOptions.InternalCall)]
-	    extern internal static int _RegisterEvent(string eventsystem, int direction, SUIEventDesc desc);
+	    extern internal static int _RegisterEvent(string eventsystem, int direction, UIEventDescription desc);
         [MethodImpl(MethodImplOptions.InternalCall)]
 	    extern internal static bool _RegisterToEventSystem(string eventsystem, int type);
 	    [MethodImpl(MethodImplOptions.InternalCall)]
@@ -112,7 +112,7 @@ namespace CryEngine
         extern internal static void _SendNamedEvent(string eventsystem, string Event, object[] args);
 
 
-        private static Dictionary<int, string> s_EventMap;
+        private static Dictionary<int, string> eventMap;
 
 		public static void OnEvent(string EventSystem, string EventName, int EventID, object[] args)
 		{
@@ -133,16 +133,16 @@ namespace CryEngine
 		}
 
 
-        public static int RegisterEvent(string eventsystem, EUIEventDirection direction, SUIEventDesc desc)
+        public static int RegisterEvent(string eventsystem, UIEventDirection direction, UIEventDescription desc)
         {
             return _RegisterEvent(eventsystem, (int)direction, desc);
         }
 
-        public static bool RegisterToEventSystem(string eventsystem, EUIEventDirection direction)
+        public static bool RegisterToEventSystem(string eventsystem, UIEventDirection direction)
         {
             return _RegisterToEventSystem(eventsystem, (int)direction);
         }
-        public static void UnregisterFromEventSystem(string eventsystem, EUIEventDirection direction)
+        public static void UnregisterFromEventSystem(string eventsystem, UIEventDirection direction)
         {
             _UnregisterFromEventSystem(eventsystem, (int)direction);
         }
@@ -167,21 +167,21 @@ namespace CryEngine
         public static void TestInit()
         {
             bool b;
-            b = RegisterToEventSystem("MenuEvents", EUIEventDirection.eUIED_UIToSystem);
+            b = RegisterToEventSystem("MenuEvents", UIEventDirection.UIToSystem);
             Debug.LogAlways("RegisterToEventSystem(\"MenuEvents\") == {0}", b);
-            SUIEventDesc desc = new SUIEventDesc("TestEvent", "TestEventDName", "TestEventDescription");
+            UIEventDescription desc = new UIEventDescription("TestEvent", "TestEventDName", "TestEventDescription");
             desc.Params = new Object[2];
-            desc.Params[0] = new SUIParameterDesc("Param1", "Param1DName", "Param1Desc", EUIParameterType.eUIPT_String);
-            desc.Params[1] = new SUIParameterDesc("Param2", "Param2DName", "Param2Desc", EUIParameterType.eUIPT_Int);
-            int i = RegisterEvent("MyEvent", EUIEventDirection.eUIED_UIToSystem, desc);
+            desc.Params[0] = new UIParameterDescription("Param1", "Param1DName", "Param1Desc", UIParameterType.String);
+            desc.Params[1] = new UIParameterDescription("Param2", "Param2DName", "Param2Desc", UIParameterType.Int);
+            int i = RegisterEvent("MyEvent", UIEventDirection.UIToSystem, desc);
             Debug.LogAlways("RegisterEvent == {0}", i);
-            i = RegisterEvent("MyEvent2", EUIEventDirection.eUIED_UIToSystem, desc);
+            i = RegisterEvent("MyEvent2", UIEventDirection.UIToSystem, desc);
             Debug.LogAlways("RegisterEvent2 == {0}", i);
 
-			desc = new SUIEventDesc("BoidCount", "BoidCount", "Sets the boid count");
+			desc = new UIEventDescription("BoidCount", "BoidCount", "Sets the boid count");
 			desc.Params = new Object[1];
-			desc.Params[0] = new SUIParameterDesc("Count", "Count", "Number of available boids", EUIParameterType.eUIPT_Int);
-			i = RegisterEvent("AngryBoids", EUIEventDirection.eUIED_SystemToUI, desc);
+			desc.Params[0] = new UIParameterDescription("Count", "Count", "Number of available boids", UIParameterType.Int);
+			i = RegisterEvent("AngryBoids", UIEventDirection.SystemToUI, desc);
         }
 	}
 }
