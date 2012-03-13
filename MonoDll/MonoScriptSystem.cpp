@@ -35,6 +35,7 @@
 #include "Scriptbinds\ScriptBind_Renderer.h"
 #include "Scriptbinds\ScriptBind_StaticEntity.h"
 #include "Scriptbinds\ScriptBind_Debug.h"
+#include "Scriptbinds\Scriptbind_UI.h"
 
 #include "EntityManager.h"
 #include "FlowManager.h"
@@ -58,6 +59,7 @@ CScriptSystem::CScriptSystem()
 	, m_AppDomainSerializer(NULL)
 	, m_pInput(NULL)
 	, m_bLastCompilationSuccess(true)
+	, m_pUIScriptBind(NULL)
 {
 	CryLogAlways("Initializing Mono Script System");
 
@@ -100,6 +102,7 @@ CScriptSystem::~CScriptSystem()
 
 	SAFE_DELETE(m_pConverter);
 	SAFE_DELETE(m_pCallbackHandler);
+	SAFE_DELETE(m_pUIScriptBind);
 
 	SAFE_RELEASE(m_pCryBraryAssembly);
 
@@ -234,6 +237,7 @@ bool CScriptSystem::Reload(bool initialLoad)
 
 	m_pInput->Reset();
 	m_pConverter->Reset();
+	m_pUIScriptBind->OnReset();
 
 	// Nodes won't get recompiled if we forget this.
 	if(!initialLoad)
@@ -319,6 +323,7 @@ void CScriptSystem::RegisterDefaultBindings()
 	RegisterBinding(CTester);
 
 #define RegisterBindingAndSet(var, T) RegisterBinding(T); var = (T *)m_localScriptBinds.back();
+	RegisterBindingAndSet(m_pUIScriptBind, CScriptbind_UI);
 	RegisterBindingAndSet(m_pCallbackHandler, CCallbackHandler);
 	RegisterBindingAndSet(m_pEntityManager, CEntityManager);
 	RegisterBindingAndSet(m_pFlowManager, CFlowManager);

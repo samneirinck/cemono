@@ -83,26 +83,26 @@ IMonoObject *CConverter::CreateObject(MonoAnyValue &any)
 		break;
 	case MONOTYPE_INT:
 		{
-			return CreateMonoObject<int>((int)any.number);
+			return CreateMonoObject<int>((int)any.i);
 		}
 		break;
 	case MONOTYPE_SHORT:
 		{
-			return CreateMonoObject<short>((short)any.number);
+			return CreateMonoObject<short>((short)any.i);
 		}
 	case MONOTYPE_USHORT:
 		{
-			return CreateMonoObject<unsigned short>((unsigned short)any.number);
+			return CreateMonoObject<unsigned short>((unsigned short)any.u);
 		}
 		break;
 	case MONOTYPE_UINT:
 		{
-			return ToManagedType(eCMT_EntityId, new mono::entityId((EntityId)any.number));
+			return ToManagedType(eCMT_EntityId, new mono::entityId((EntityId)any.u));
 		}
 		break;
 	case MONOTYPE_FLOAT:
 		{
-			return CreateMonoObject<float>(any.number);
+			return CreateMonoObject<float>(any.f);
 		}
 		break;
 	case MONOTYPE_VEC3:

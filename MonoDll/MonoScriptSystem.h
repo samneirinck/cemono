@@ -29,6 +29,7 @@ class CTester;
 class CFlowManager;
 class CCallbackHandler;
 class CInput;
+class CScriptbind_UI;
 
 class CScriptSystem
 	: public IMonoScriptSystem
@@ -108,6 +109,7 @@ protected:
 	CInput *m_pInput;
 	CTester *m_pTester;
 	CCallbackHandler *m_pCallbackHandler;
+	CScriptbind_UI*	m_pUIScriptBind;
 
 	IMonoConverter *m_pConverter;
 
