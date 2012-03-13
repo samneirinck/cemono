@@ -100,7 +100,7 @@ namespace CryEngine
 			{
 				var view = _GetActiveView();
 				var viewParams = _GetViewParams(view);
-				viewParams.fov = (float)Math.DegToRad(value);
+				viewParams.fov = Math.DegToRad(value);
 				_SetViewParams(view, viewParams);
 			}
 		}

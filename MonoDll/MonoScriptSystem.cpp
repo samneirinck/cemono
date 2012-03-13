@@ -63,21 +63,25 @@ CScriptSystem::CScriptSystem()
 {
 	CryLogAlways("Initializing Mono Script System");
 
-	// We should look into CryPak for this (as well as c# scripts), in case it's possible to read them while they're pak'd.
+	// We should look into storing mono binaries, configuration as well as scripts via CryPak.
 	mono_set_dirs(PathUtils::GetLibPath(), PathUtils::GetConfigPath());
 
 	string monoCmdOptions = "";
 
-	// Commandline switch -DEBUG makes the process connect to the debugging server. Warning: Failure to connect to a	debugging server WILL result in a crash.
+	// Commandline switch -DEBUG makes the process connect to the debugging server. Warning: Failure to connect to a debugging server WILL result in a crash.
+	// This is currently a WIP feature which requires custom MonoDevelop extensions and other irritating things.
 	const ICmdLineArg* arg = gEnv->pSystem->GetICmdLine()->FindArg(eCLAT_Pre, "DEBUG");
 	if (arg != NULL)
 		monoCmdOptions.append("--debugger-agent=transport=dt_socket,address=127.0.0.1:65432 ");
 
 	char *options = new char[monoCmdOptions.size() + 1];
 	strcpy(options, monoCmdOptions.c_str());
+
+	// Note: iPhone requires AOT compilation, this can be enforced via mono options. TODO: Get Crytek to add CryMobile support to the Free SDK.
 	mono_jit_parse_options(1, &options);
 
 #ifndef _RELEASE
+	// Required for mdb's to load for detailed stack traces etc.
 	mono_debug_init(MONO_DEBUG_FORMAT_MONO);
 #endif
 
@@ -85,6 +89,7 @@ CScriptSystem::CScriptSystem()
 
 	gEnv->pMonoScriptSystem = this;
 
+	// I'm really not sure if the IFileChangeMonitor works outside the Editor, but developers shouldn't use script reloading there anyway.
 	if(gEnv->IsEditor())
 		gEnv->pFileChangeMonitor->RegisterListener(this, "scripts\\");
 
@@ -94,6 +99,7 @@ CScriptSystem::CScriptSystem()
 
 CScriptSystem::~CScriptSystem()
 {
+	// Force garbage collection of all generations.
 	mono_gc_collect(mono_gc_max_generation());
 
 	gEnv->pFileChangeMonitor->UnregisterListener(this);
@@ -142,6 +148,7 @@ bool CScriptSystem::CompleteInit()
 	m_pPdb2MdbAssembly = new CScriptAssembly(PathUtils::GetMonoPath() + "bin\\pdb2mdb.dll");
 #endif
 	
+	// WIP ScriptManager game object, to be used for CryMono RMI support etc in the future.
 	REGISTER_GAME_OBJECT_EXTENSION(gEnv->pGameFramework, ScriptManager);
 
 	CryLogAlways("		Registering default scriptbinds...");
@@ -151,6 +158,8 @@ bool CScriptSystem::CompleteInit()
 
 	if(!Reload(true))
 		return false;
+
+	gEnv->pGameFramework->RegisterListener(this, "CryMono", eFLPriority_Game);
 
 	CryModuleMemoryInfo memInfo;
 	CryModuleGetMemoryInfo(&memInfo);
@@ -181,10 +190,11 @@ bool CScriptSystem::Reload(bool initialLoad)
 	{
 		CryLogAlways("C# modifications detected on disk, initializing CryBrary reload");
 
-		 // Force dump of instance data if last script reload was successful. (Otherwise we'll override the existing script dump with an invalid one)
+		 // Force dump of instance data if last script reload was successful. (Otherwise we'd override the existing script dump with an invalid one)
 		if(m_bLastCompilationSuccess)
 			m_AppDomainSerializer->CallMethod("DumpScriptData");
 
+		// Store the previous script domain so we can either restore to it (in case of compilation failure) or fully destruct it.
 		pPrevScriptDomain = mono_domain_get();
  	
 		mono_domain_set(mono_get_root_domain(), false);
@@ -193,6 +203,7 @@ bool CScriptSystem::Reload(bool initialLoad)
 		SAFE_DELETE(m_AppDomainSerializer);
 	}
 
+	// This will lead to all ScriptDomains using the same friendly name, but doesn't look like it's causing any issues. TODO: Investigate to be sure.
 	m_pScriptDomain = mono_domain_create_appdomain("ScriptDomain", NULL);
 	mono_domain_set(m_pScriptDomain, false);
 
@@ -205,9 +216,9 @@ bool CScriptSystem::Reload(bool initialLoad)
 	CryLogAlways("		Initializing subsystems...");
 	InitializeSystems();
 
-	CryLogAlways("		Compiling scripts...");
 	m_pScriptManager = m_pCryBraryAssembly->GetCustomClass("ScriptCompiler");
 
+	CryLogAlways("		Compiling scripts...");
 	IMonoObject *pInitializationResult = m_pScriptManager->CallMethod("Initialize", true);
 
 	m_bLastCompilationSuccess = pInitializationResult->Unbox<bool>();
@@ -246,6 +257,7 @@ bool CScriptSystem::Reload(bool initialLoad)
 
 		m_AppDomainSerializer->CallMethod("TrySetScriptData");
 
+		// All CScriptClass objects now contain invalid pointers, this will force an update.
 		for each(auto script in m_scripts)
 		{
 			IMonoArray *pParams = CreateMonoArray(1);
@@ -262,8 +274,6 @@ bool CScriptSystem::Reload(bool initialLoad)
 			SAFE_RELEASE(pParams);
 		}
 	}
-
-	gEnv->pGameFramework->RegisterListener(this, "CryMono", eFLPriority_Game);
 
 	return true;
 }
@@ -284,12 +294,14 @@ void CScriptSystem::UnloadDomain(MonoDomain *pDomain)
 			MonoString *exceptionString = (MonoString *)mono_runtime_invoke(pExceptionMethod, pException, NULL, NULL);		
 			CryLogAlways(ToCryString((mono::string)exceptionString));
 		}
-		}
+	}
 }
 
 bool CScriptSystem::InitializeDomain()
 {
-	// Create root domain
+	// Create root domain and determines the runtime version we'll be using.
+	// Currently supported runtimes; (See domain.c) v2.0.50215, v2.0.50727, v4.0.20506, v4.0.30128, v4.0.30319
+	// In case mono_jit_init is used instead of mono_jit_init_version; default runtime version is v2.0.50727 (most stable version)
 	m_pMonoDomain = mono_jit_init_version("CryMono", "v4.0.30319");
 	if(!m_pMonoDomain)
 	{
@@ -357,6 +369,7 @@ bool CScriptSystem::InitializeSystems()
 
 void CScriptSystem::OnPostUpdate(float fDeltaTime)
 {
+	// Updates all scripts and sets Time.FrameTime.
 	IMonoArray *pArgs = CreateMonoArray(1);
 	pArgs->Insert(fDeltaTime);
 	m_pScriptManager->CallMethod("OnUpdate", pArgs, true);
@@ -382,6 +395,7 @@ void CScriptSystem::RegisterMethodBinding(const void *method, const char *fullMe
 
 int CScriptSystem::InstantiateScript(const char *scriptName, IMonoArray *pConstructorParameters)
 {
+	// TODO: Find a new and better way to set Network.IsMultiplayer, IsClient & IsServer. Currently always false!
 	/*if(scriptType==EMonoScriptType_GameRules)
 	{
 		IMonoClass *pClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("CryNetwork");
@@ -398,7 +412,7 @@ int CScriptSystem::InstantiateScript(const char *scriptName, IMonoArray *pConstr
 	pArgs->Insert(scriptName);
 	pArgs->Insert(pConstructorParameters);
 
-	int scriptId = -1;
+	int scriptId = -1; // Always returns -1 if unsuccessful, mayhaps change this to 0 and uint?
 	if(IMonoObject *pScriptInstance = m_pScriptManager->CallMethod("InstantiateScript", pArgs, true))
 	{
 		IMonoClass *pScript = pScriptInstance->Unbox<IMonoClass *>();

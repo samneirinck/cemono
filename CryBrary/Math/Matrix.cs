@@ -248,13 +248,13 @@ namespace CryEngine
 
 		/*!
 		*  Create a rotation matrix around an arbitrary axis (Eulers Theorem).  
-		*  The axis is specified as an normalized Vec3. The angle is assumed to be in radians.  
+		*  The axis is specified as an normalized Vector3. The angle is assumed to be in radians.  
 		*  This function also assumes a translation-vector and stores it in the right column.  
 		*
 		*  Example:
 		*		Matrix34 m34;
-		*		Vec3 axis=GetNormalized( Vec3(-1.0f,-0.3f,0.0f) );
-		*		m34.SetRotationAA( 3.14314f, axis, Vec3(5,5,5) );
+		*		Vector3 axis=GetNormalized( Vector3(-1.0f,-0.3f,0.0f) );
+		*		m34.SetRotationAA( 3.14314f, axis, Vector3(5,5,5) );
 		*/
 		public void SetRotationAA(float rad, Vec3 axis, Vec3 t = default(Vec3))
 		{
@@ -601,7 +601,7 @@ namespace CryEngine
 			double cosine = Math.Clamp((d.m00+d.m11+d.m22-1.0)*0.5,-1.0,+1.0);
 			double angle = Math.Atan2(Math.Sqrt(1.0-cosine*cosine),cosine);
 			Vec3 axis = new Vec3(d.m21-d.m12,d.m02-d.m20,d.m10-d.m01);
-			double l = Math.Sqrt(axis|axis);	if (l>0.00001) axis/=l; else axis = new Vec3(1,0,0); 
+			double l = Math.Sqrt(axis|axis);	if (l>0.00001) axis/=(float)l; else axis = new Vec3(1,0,0); 
 			i.SetRotationAA((float)angle*t,axis); //angle interpolation and calculation of new delta-matrix (=26 flops) 
 
 			//final concatenation (=39 flops)

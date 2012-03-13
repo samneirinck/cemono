@@ -75,19 +75,11 @@ namespace CryEngine
 		public static CryScriptInstance InstantiateScript(string scriptName, object[] constructorParams = null)
 		{
 			if(scriptName.Length < 1)
-			{
-				Debug.LogAlways("Empty script passed to InstantiateClass");
-
-				return null;
-			}
+				throw new ArgumentException("Empty script name passed to InstantiateClass");
 
 			int index = CompiledScripts.FindIndex(x => x.ScriptType.Name.Equals(scriptName));
 			if(index == -1)
-			{
-				Debug.LogAlways("Failed to instantiate {0}, compiled script could not be found.", scriptName);
-
-				return null;
-			}
+				throw new ScriptNotFoundException(string.Format("Compiled script {0} could not be found.", scriptName));
 
 			AddScriptInstance(System.Activator.CreateInstance(CompiledScripts[index].ScriptType, constructorParams) as CryScriptInstance, index);
 
@@ -98,33 +90,39 @@ namespace CryEngine
 		/// Adds an script instance to the script collection and returns its new id.
 		/// </summary>
 		/// <param name="instance"></param>
-		/// <param name="compiledScriptsIndex">Index of the CryScript object residing in ScriptCompiler.CompiledScripts</param>
-		public static int AddScriptInstance(CryScriptInstance instance, int scriptIndex = -1)
+		public static int AddScriptInstance(CryScriptInstance instance)
+		{
+			if(instance == null)
+				return -1;
+
+			return AddScriptInstance(instance, CompiledScripts.FindIndex(x => x.ScriptType == instance.GetType()));
+		}
+
+		/// <summary>
+		/// Adds an script instance to the script collection and returns its new id.
+		/// </summary>
+		/// <param name="instance"></param>
+		/// <param name="scriptIndex">Index of the CryScript object residing in ScriptCompiler.CompiledScripts</param>
+		public static int AddScriptInstance(CryScriptInstance instance, int scriptIndex)
 		{
 			if(scriptIndex == -1)
-				scriptIndex = CompiledScripts.FindIndex(x => x.ScriptType == instance.GetType());
+				throw new ScriptNotFoundException(string.Format("Failed to locate the compiled script of type {0}", instance.GetType().Name));
 
-			if(scriptIndex != -1)
-			{
-				var script = CompiledScripts.ElementAt(scriptIndex);
+			var script = CompiledScripts.ElementAt(scriptIndex);
 
-				if(script.ScriptInstances == null)
-					script.ScriptInstances = new Collection<CryScriptInstance>();
-				else if(script.ScriptInstances.Contains(instance))
-					return -1;
+			if(script.ScriptInstances == null)
+				script.ScriptInstances = new Collection<CryScriptInstance>();
+			else if(script.ScriptInstances.Contains(instance))
+				return -1;
 
-				NextScriptId++;
+			NextScriptId++;
 
-				instance.ScriptId = NextScriptId;
-				script.ScriptInstances.Add(instance);
+			instance.ScriptId = NextScriptId;
+			script.ScriptInstances.Add(instance);
 
-				CompiledScripts[scriptIndex] = script;
+			CompiledScripts[scriptIndex] = script;
 
-				return NextScriptId;
-			}
-
-			Debug.LogAlways("Failed to add object of type {0} to list of compiled scripts", instance.GetType().Name);
-			return -1;
+			return NextScriptId;
 		}
 
 		/// <summary>
@@ -140,7 +138,7 @@ namespace CryEngine
 			{
 				int i = CompiledScripts.FindIndex(x => x.ScriptType.Name.Equals(scriptName));
 				if(i == -1)
-					return;
+					throw new ScriptNotFoundException(string.Format("Failed to find script by name {0}", scriptName));
 
 				CryScript script = CompiledScripts[i];
 
@@ -166,7 +164,7 @@ namespace CryEngine
 			if(script.ScriptInstances != null && script.ScriptInstances.Count > 0)
 			{
 				var scriptInstance = script.ScriptInstances.FirstOrDefault(x => x.ScriptId == scriptId);
-				if(scriptInstance == default(CryScriptInstance))
+				if(scriptInstance == InvalidScriptInstance)
 					return;
 
 				int instanceIndex = script.ScriptInstances.IndexOf(scriptInstance);
@@ -244,10 +242,7 @@ namespace CryEngine
 		public static void LoadLibrariesInFolder(string directory)
 		{
 			if (!Directory.Exists(directory))
-			{
-				Debug.LogAlways("Libraries failed to load; Folder {0} does not exist.", directory);
-				return;
-			}
+				throw new DirectoryNotFoundException(string.Format("Libraries failed to load; Folder {0} does not exist.", directory));
 
 			var plugins = Directory.GetFiles(directory, "*.dll", SearchOption.AllDirectories);
 
@@ -278,8 +273,6 @@ namespace CryEngine
 					}
 				}
 			}
-
-			return;
 		}
 
 		public enum ScriptLanguage
@@ -320,8 +313,10 @@ namespace CryEngine
 		/// <exception cref="CryEngine.ScriptCompilationException">Thrown if one or more compilation errors occur.</exception>
 		public static void CompileScripts(ref CompilationParameters compilationParams)
 		{
-			if (compilationParams.Folders == null || compilationParams.Folders.Length < 1)
-				return;
+			if(compilationParams.Folders == null)
+				throw new ArgumentException("Supplied Folders array in CompilationParameters argument was null");
+			else if(compilationParams.Folders.Length < 1)
+				throw new ArgumentException("Supplied Folders array in CompilationParameters did not contain any strings");
 
 			var scripts = new List<string>();
 			foreach(var directory in compilationParams.Folders)
@@ -406,35 +401,52 @@ namespace CryEngine
 
 			Parallel.For(0, assemblyTypes.Count(), i =>
 			{
-				var type = assemblyTypes.ElementAt(i);
-
-				if (type != null && !type.ContainsAttribute<ExcludeFromCompilationAttribute>())
+				try
 				{
-					CompiledScripts.Add(new CryScript(type));
-
-					string className = type.Name;
-
-					if (type.Implements(typeof(BaseGameRules)))
-					{
-						GameRulesSystem._RegisterGameMode(className);
-
-						if (type.ContainsAttribute<DefaultGamemodeAttribute>())
-							GameRulesSystem._SetDefaultGameMode(className);
-					}
-					else if (type.Implements(typeof(BasePlayer)))
-						ActorSystem._RegisterActorClass(className, false);
-					else if (type.Implements(typeof(StaticEntity)))
-					{
-						bool staticEntity = !type.Implements(typeof(Entity));
-
-						LoadEntity(type, CompiledScripts.Last(), staticEntity);
-					}
-					else if (type.Implements(typeof(FlowNode)))
-						LoadFlowNode(type, className);
+					ProcessType(assemblyTypes.ElementAt(i));
+				}
+				catch(Exception ex)
+				{
+					Debug.LogException(ex);
 				}
 			});
 
 			assemblyTypes = null;
+		}
+
+		/// <summary>
+		/// Processes a type and adds all found types to ScriptCompiler.CompiledScripts
+		/// </summary>
+		/// <param name="type"></param>
+		public static void ProcessType(Type type)
+		{
+			if(type.IsAbstract)
+				throw new TypeLoadException("Failed to load entity of type {0}: abstract entities are not supported");
+
+			if(type != null && !type.ContainsAttribute<ExcludeFromCompilationAttribute>())
+			{
+				CompiledScripts.Add(new CryScript(type));
+
+				string className = type.Name;
+
+				if(type.Implements(typeof(BaseGameRules)))
+				{
+					GameRulesSystem._RegisterGameMode(className);
+
+					if(type.ContainsAttribute<DefaultGamemodeAttribute>())
+						GameRulesSystem._SetDefaultGameMode(className);
+				}
+				else if(type.Implements(typeof(BasePlayer)))
+					ActorSystem._RegisterActorClass(className, false);
+				else if(type.Implements(typeof(StaticEntity)))
+				{
+					bool staticEntity = !type.Implements(typeof(Entity));
+
+					LoadEntity(type, CompiledScripts.Last(), staticEntity);
+				}
+				else if(type.Implements(typeof(FlowNode)))
+					LoadFlowNode(type, className);
+			}
 		}
 
 		internal static void RegisterFlownodes()
@@ -443,12 +455,15 @@ namespace CryEngine
 				FlowSystem.RegisterNode(node.className, node.category, node.category.Equals("entity"));
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="type"></param>
+		/// <param name="script"></param>
+		/// <param name="staticEntity"></param>
+		/// <exception cref="System.TypeLoadException">Thrown if the type was invalid</exception>
 		private static void LoadEntity(Type type, CryScript script, bool staticEntity)
 		{
-			// Shoulda thought of this before. Abstract classes brutally murder the engine otherwise.
-			if (type.IsAbstract)
-				return;
-
 			EntityConfig config = StaticEntity.GetEntityConfig(type);
 
 			if (config.registerParams.Name.Length <= 0)
@@ -520,7 +535,10 @@ namespace CryEngine
 
 	public enum ScriptType
 	{
-		Null = -1,
+		/// <summary>
+		/// Scripts will be linked to this type if they inherit from CryScriptInstance, but not any other script base.
+		/// </summary>
+		Unknown = 0,
 		/// <summary>
 		/// Scripts directly inheriting from BaseGameRules will utilize this script type.
 		/// </summary>
@@ -545,10 +563,6 @@ namespace CryEngine
 		/// 
 		/// </summary>
 		EditorForm,
-		/// <summary>
-		/// Scripts will be linked to this type if they inherit from CryScriptInstance, but not any other script base.
-		/// </summary>
-		Unknown
 	}
 
 	/// <summary>
@@ -604,6 +618,20 @@ namespace CryEngine
 		public ScriptCompilationException(string errorMessage, Exception innerEx)
 			: base(errorMessage, innerEx) { }
 
-		public string Message { get { return base.Message.ToString(); } }
+		public override string Message { get { return base.Message.ToString(); } }
+	}
+
+	class ScriptNotFoundException : Exception
+	{
+		public ScriptNotFoundException(string error)
+		{
+			message = error;
+		}
+
+		private string message;
+		public override string Message
+		{
+			get { return message; }
+		}
 	}
 }

@@ -4,7 +4,7 @@ using System.IO;
 namespace CryEngine
 {
 	/// <summary>
-	/// CryPath provides a clean method of retrieving commonly used engine filepaths.
+	/// Provides a clean method of retrieving commonly used engine filepaths.
 	/// </summary>
     public static class PathUtils
     {
