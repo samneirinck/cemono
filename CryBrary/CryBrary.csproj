@@ -134,10 +134,16 @@
     <Compile Include="ActorSystem\Player.cs" />
     <Compile Include="EntitySystem\EntityId.cs" />
     <Compile Include="EntitySystem\Physics.cs" />
+    <Compile Include="Misc\Collision.cs" />
     <Compile Include="Serialization\CrySerializer.cs" />
     <Compile Include="Types\BoundingBox.cs" />
+    <Compile Include="Types\BoundingSphere.cs" />
     <Compile Include="Types\Color.cs" />
     <Compile Include="Types\Matrix.cs" />
+    <Compile Include="Types\Plane.cs" />
+    <Compile Include="Types\Ray.cs" />
+    <Compile Include="Types\Vec2.cs" />
+    <Compile Include="Types\Vec4.cs" />
     <Compile Include="UI.cs" />
     <Compile Include="Serialization\AppDomainSerializer.cs" />
     <Compile Include="Misc\Convert.cs" />

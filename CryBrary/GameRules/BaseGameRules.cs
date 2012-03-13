@@ -155,25 +155,6 @@ namespace CryEngine
 		/// </summary>
 		Unknown
 	}
-	/*
-	public struct DamageInfo
-	{
-		internal HitInfo _info;
-
-		internal DamageInfo(HitInfo info)
-		{
-			_info = info;
-		}
-
-		public EntityId Shooter { get { return new EntityId(_info.shooterId); } }
-		public EntityId Target { get { return new EntityId(_info.targetId); } }
-
-		public Vec3 Position { get { return _info.pos; } }
-		public Vec3 Direction { get { return _info.dir; } }
-		public float Impulse { get { return _info.impulse; } }
-
-		public float Damage { get { return _info.damage; } }
-	}*/
 
     public struct HitInfo
     {

@@ -27,49 +27,31 @@ using System.ComponentModel;
 namespace CryEngine
 {
 	/// <summary>
-	/// Represents an axis-aligned bounding box in three dimensional space.
+	/// Represents a bounding sphere in three dimensional space.
 	/// </summary>
 	[Serializable]
 	[StructLayout(LayoutKind.Sequential, Pack = 4)]
-	public struct BoundingBox : IEquatable<BoundingBox>, IFormattable
+	public struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
 	{
 		/// <summary>
-		/// The minimum point of the box.
+		/// The center of the sphere in three dimensional space.
 		/// </summary>
-		public Vec3 Minimum;
+		public Vec3 Center;
 
 		/// <summary>
-		/// The maximum point of the box.
+		/// The radious of the sphere.
 		/// </summary>
-		public Vec3 Maximum;
+		public float Radius;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CryEngine.BoundingBox"/> struct.
 		/// </summary>
-		/// <param name="minimum">The minimum vertex of the bounding box.</param>
-		/// <param name="maximum">The maximum vertex of the bounding box.</param>
-		public BoundingBox(Vec3 minimum, Vec3 maximum)
+		/// <param name="center">The center of the sphere in three dimensional space.</param>
+		/// <param name="radius">The radius of the sphere.</param>
+		public BoundingSphere(Vec3 center, float radius)
 		{
-			this.Minimum = minimum;
-			this.Maximum = maximum;
-		}
-
-		/// <summary>
-		/// Retrieves the eight corners of the bounding box.
-		/// </summary>
-		/// <returns>An array of points representing the eight corners of the bounding box.</returns>
-		public Vec3[] GetCorners()
-		{
-			Vec3[] results = new Vec3[8];
-			results[0] = new Vec3(Minimum.X, Maximum.Y, Maximum.Z);
-			results[1] = new Vec3(Maximum.X, Maximum.Y, Maximum.Z);
-			results[2] = new Vec3(Maximum.X, Minimum.Y, Maximum.Z);
-			results[3] = new Vec3(Minimum.X, Minimum.Y, Maximum.Z);
-			results[4] = new Vec3(Minimum.X, Maximum.Y, Minimum.Z);
-			results[5] = new Vec3(Maximum.X, Maximum.Y, Minimum.Z);
-			results[6] = new Vec3(Maximum.X, Minimum.Y, Minimum.Z);
-			results[7] = new Vec3(Minimum.X, Minimum.Y, Minimum.Z);
-			return results;
+			this.Center = center;
+			this.Radius = radius;
 		}
 
 		/// <summary>
@@ -80,7 +62,7 @@ namespace CryEngine
 		public bool Intersects(ref Ray ray)
 		{
 			float distance;
-			return Collision.RayIntersectsBox(ref ray, ref this, out distance);
+			return Collision.RayIntersectsSphere(ref ray, ref this, out distance);
 		}
 
 		/// <summary>
@@ -92,7 +74,7 @@ namespace CryEngine
 		/// <returns>Whether the two objects intersected.</returns>
 		public bool Intersects(ref Ray ray, out float distance)
 		{
-			return Collision.RayIntersectsBox(ref ray, ref this, out distance);
+			return Collision.RayIntersectsSphere(ref ray, ref this, out distance);
 		}
 
 		/// <summary>
@@ -104,7 +86,7 @@ namespace CryEngine
 		/// <returns>Whether the two objects intersected.</returns>
 		public bool Intersects(ref Ray ray, out Vec3 point)
 		{
-			return Collision.RayIntersectsBox(ref ray, ref this, out point);
+			return Collision.RayIntersectsSphere(ref ray, ref this, out point);
 		}
 
 		/// <summary>
@@ -114,10 +96,9 @@ namespace CryEngine
 		/// <returns>Whether the two objects intersected.</returns>
 		public PlaneIntersectionType Intersects(ref Plane plane)
 		{
-			return Collision.PlaneIntersectsBox(ref plane, ref this);
+			return Collision.PlaneIntersectsSphere(ref plane, ref this);
 		}
 
-		/* This implentation is wrong
 		/// <summary>
 		/// Determines if there is an intersection between the current object and a triangle.
 		/// </summary>
@@ -125,11 +106,10 @@ namespace CryEngine
 		/// <param name="vertex2">The second vertex of the triagnle to test.</param>
 		/// <param name="vertex3">The third vertex of the triangle to test.</param>
 		/// <returns>Whether the two objects intersected.</returns>
-		public bool Intersects(ref Vector3 vertex1, ref Vector3 vertex2, ref Vector3 vertex3)
+		public bool Intersects(ref Vec3 vertex1, ref Vec3 vertex2, ref Vec3 vertex3)
 		{
-			return Collision.BoxIntersectsTriangle(ref this, ref vertex1, ref vertex2, ref vertex3);
+			return Collision.SphereIntersectsTriangle(ref this, ref vertex1, ref vertex2, ref vertex3);
 		}
-		*/
 
 		/// <summary>
 		/// Determines if there is an intersection between the current object and a <see cref="CryEngine.BoundingBox"/>.
@@ -138,7 +118,7 @@ namespace CryEngine
 		/// <returns>Whether the two objects intersected.</returns>
 		public bool Intersects(ref BoundingBox box)
 		{
-			return Collision.BoxIntersectsBox(ref this, ref box);
+			return Collision.BoxIntersectsSphere(ref box, ref this);
 		}
 
 		/// <summary>
@@ -148,7 +128,7 @@ namespace CryEngine
 		/// <returns>Whether the two objects intersected.</returns>
 		public bool Intersects(ref BoundingSphere sphere)
 		{
-			return Collision.BoxIntersectsSphere(ref this, ref sphere);
+			return Collision.SphereIntersectsSphere(ref this, ref sphere);
 		}
 
 		/// <summary>
@@ -158,10 +138,9 @@ namespace CryEngine
 		/// <returns>The type of containment the two objects have.</returns>
 		public ContainmentType Contains(ref Vec3 point)
 		{
-			return Collision.BoxContainsPoint(ref this, ref point);
+			return Collision.SphereContainsPoint(ref this, ref point);
 		}
 
-		/* This implentation is wrong
 		/// <summary>
 		/// Determines whether the current objects contains a triangle.
 		/// </summary>
@@ -169,11 +148,10 @@ namespace CryEngine
 		/// <param name="vertex2">The second vertex of the triagnle to test.</param>
 		/// <param name="vertex3">The third vertex of the triangle to test.</param>
 		/// <returns>The type of containment the two objects have.</returns>
-		public ContainmentType Contains(ref Vector3 vertex1, ref Vector3 vertex2, ref Vector3 vertex3)
+		public ContainmentType Contains(ref Vec3 vertex1, ref Vec3 vertex2, ref Vec3 vertex3)
 		{
-			return Collision.BoxContainsTriangle(ref this, ref vertex1, ref vertex2, ref vertex3);
+			return Collision.SphereContainsTriangle(ref this, ref vertex1, ref vertex2, ref vertex3);
 		}
-		*/
 
 		/// <summary>
 		/// Determines whether the current objects contains a <see cref="CryEngine.BoundingBox"/>.
@@ -182,7 +160,7 @@ namespace CryEngine
 		/// <returns>The type of containment the two objects have.</returns>
 		public ContainmentType Contains(ref BoundingBox box)
 		{
-			return Collision.BoxContainsBox(ref this, ref box);
+			return Collision.SphereContainsBox(ref this, ref box);
 		}
 
 		/// <summary>
@@ -192,103 +170,136 @@ namespace CryEngine
 		/// <returns>The type of containment the two objects have.</returns>
 		public ContainmentType Contains(ref BoundingSphere sphere)
 		{
-			return Collision.BoxContainsSphere(ref this, ref sphere);
+			return Collision.SphereContainsSphere(ref this, ref sphere);
 		}
 
 		/// <summary>
-		/// Constructs a <see cref="CryEngine.BoundingBox"/> that fully contains the given points.
+		/// Constructs a <see cref="CryEngine.BoundingSphere"/> that fully contains the given points.
 		/// </summary>
-		/// <param name="points">The points that will be contained by the box.</param>
-		/// <param name="result">When the method completes, contains the newly constructed bounding box.</param>
-		/// <exception cref="ArgumentNullException">Thrown when <paramref name="points"/> is <c>null</c>.</exception>
-		public static void FromPoints(Vec3[] points, out BoundingBox result)
+		/// <param name="points">The points that will be contained by the sphere.</param>
+		/// <param name="result">When the method completes, contains the newly constructed bounding sphere.</param>
+		public static void FromPoints(Vec3[] points, out BoundingSphere result)
 		{
-			if(points == null)
-				throw new ArgumentNullException("points");
-
-			Vec3 min = new Vec3(float.MaxValue);
-			Vec3 max = new Vec3(float.MinValue);
-
+			//Find the center of all points.
+			Vec3 center = new Vec3();
 			for(int i = 0; i < points.Length; ++i)
 			{
-				Vec3.Min(ref min, ref points[i], out min);
-				Vec3.Max(ref max, ref points[i], out max);
+				Vec3.Add(ref points[i], ref center, out center);
 			}
 
-			result = new BoundingBox(min, max);
-		}
+			//This is the center of our sphere.
+			center /= (float)points.Length;
 
-		/// <summary>
-		/// Constructs a <see cref="CryEngine.BoundingBox"/> that fully contains the given points.
-		/// </summary>
-		/// <param name="points">The points that will be contained by the box.</param>
-		/// <returns>The newly constructed bounding box.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when <paramref name="points"/> is <c>null</c>.</exception>
-		public static BoundingBox FromPoints(Vec3[] points)
-		{
-			if(points == null)
-				throw new ArgumentNullException("points");
-
-			Vec3 min = new Vec3(float.MaxValue);
-			Vec3 max = new Vec3(float.MinValue);
-
+			//Find the radius of the sphere
+			float radius = 0f;
 			for(int i = 0; i < points.Length; ++i)
 			{
-				Vec3.Min(ref min, ref points[i], out min);
-				Vec3.Max(ref max, ref points[i], out max);
+				//We are doing a relative distance comparasin to find the maximum distance
+				//from the center of our sphere.
+				float distance;
+				Vec3.DistanceSquared(ref center, ref points[i], out distance);
+
+				if(distance > radius)
+					radius = distance;
 			}
 
-			return new BoundingBox(min, max);
+			//Find the real distance from the DistanceSquared.
+			radius = (float)Math.Sqrt(radius);
+
+			//Construct the sphere.
+			result.Center = center;
+			result.Radius = radius;
 		}
 
 		/// <summary>
-		/// Constructs a <see cref="CryEngine.BoundingBox"/> from a given sphere.
+		/// Constructs a <see cref="CryEngine.BoundingSphere"/> that fully contains the given points.
 		/// </summary>
-		/// <param name="sphere">The sphere that will designate the extents of the box.</param>
-		/// <param name="result">When the method completes, contains the newly constructed bounding box.</param>
-		public static void FromSphere(ref BoundingSphere sphere, out BoundingBox result)
+		/// <param name="points">The points that will be contained by the sphere.</param>
+		/// <returns>The newly constructed bounding sphere.</returns>
+		public static BoundingSphere FromPoints(Vec3[] points)
 		{
-			result.Minimum = new Vec3(sphere.Center.X - sphere.Radius, sphere.Center.Y - sphere.Radius, sphere.Center.Z - sphere.Radius);
-			result.Maximum = new Vec3(sphere.Center.X + sphere.Radius, sphere.Center.Y + sphere.Radius, sphere.Center.Z + sphere.Radius);
+			BoundingSphere result;
+			FromPoints(points, out result);
+			return result;
 		}
 
 		/// <summary>
-		/// Constructs a <see cref="CryEngine.BoundingBox"/> from a given sphere.
+		/// Constructs a <see cref="CryEngine.BoundingSphere"/> from a given box.
 		/// </summary>
-		/// <param name="sphere">The sphere that will designate the extents of the box.</param>
-		/// <returns>The newly constructed bounding box.</returns>
-		public static BoundingBox FromSphere(BoundingSphere sphere)
+		/// <param name="box">The box that will designate the extents of the sphere.</param>
+		/// <param name="result">When the method completes, the newly constructed bounding sphere.</param>
+		public static void FromBox(ref BoundingBox box, out BoundingSphere result)
 		{
-			BoundingBox box;
-			box.Minimum = new Vec3(sphere.Center.X - sphere.Radius, sphere.Center.Y - sphere.Radius, sphere.Center.Z - sphere.Radius);
-			box.Maximum = new Vec3(sphere.Center.X + sphere.Radius, sphere.Center.Y + sphere.Radius, sphere.Center.Z + sphere.Radius);
-			return box;
+			Vec3.Lerp(ref box.Minimum, ref box.Maximum, 0.5f, out result.Center);
+
+			float x = box.Minimum.X - box.Maximum.X;
+			float y = box.Minimum.Y - box.Maximum.Y;
+			float z = box.Minimum.Z - box.Maximum.Z;
+
+			float distance = (float)(Math.Sqrt((x * x) + (y * y) + (z * z)));
+			result.Radius = distance * 0.5f;
 		}
 
 		/// <summary>
-		/// Constructs a <see cref="CryEngine.BoundingBox"/> that is as large as the total combined area of the two specified boxes.
+		/// Constructs a <see cref="CryEngine.BoundingSphere"/> from a given box.
 		/// </summary>
-		/// <param name="value1">The first box to merge.</param>
-		/// <param name="value2">The second box to merge.</param>
-		/// <param name="result">When the method completes, contains the newly constructed bounding box.</param>
-		public static void Merge(ref BoundingBox value1, ref BoundingBox value2, out BoundingBox result)
+		/// <param name="box">The box that will designate the extents of the sphere.</param>
+		/// <returns>The newly constructed bounding sphere.</returns>
+		public static BoundingSphere FromBox(BoundingBox box)
 		{
-			Vec3.Min(ref value1.Minimum, ref value2.Minimum, out result.Minimum);
-			Vec3.Max(ref value1.Maximum, ref value2.Maximum, out result.Maximum);
+			BoundingSphere result;
+			FromBox(ref box, out result);
+			return result;
 		}
 
 		/// <summary>
-		/// Constructs a <see cref="CryEngine.BoundingBox"/> that is as large as the total combined area of the two specified boxes.
+		/// Constructs a <see cref="CryEngine.BoundingSphere"/> that is the as large as the total combined area of the two specified spheres.
 		/// </summary>
-		/// <param name="value1">The first box to merge.</param>
-		/// <param name="value2">The second box to merge.</param>
-		/// <returns>The newly constructed bounding box.</returns>
-		public static BoundingBox Merge(BoundingBox value1, BoundingBox value2)
+		/// <param name="value1">The first sphere to merge.</param>
+		/// <param name="value2">The second sphere to merge.</param>
+		/// <param name="result">When the method completes, contains the newly constructed bounding sphere.</param>
+		public static void Merge(ref BoundingSphere value1, ref BoundingSphere value2, out BoundingSphere result)
 		{
-			BoundingBox box;
-			Vec3.Min(ref value1.Minimum, ref value2.Minimum, out box.Minimum);
-			Vec3.Max(ref value1.Maximum, ref value2.Maximum, out box.Maximum);
-			return box;
+			Vec3 difference = value2.Center - value1.Center;
+
+			float length = difference.Length;
+			float radius = value1.Radius;
+			float radius2 = value2.Radius;
+
+			if(radius + radius2 >= length)
+			{
+				if(radius - radius2 >= length)
+				{
+					result = value1;
+					return;
+				}
+
+				if(radius2 - radius >= length)
+				{
+					result = value2;
+					return;
+				}
+			}
+
+			Vec3 vector = difference * (1.0f / length);
+			float min = Math.Min(-radius, length - radius2);
+			float max = (Math.Max(radius, length + radius2) - min) * 0.5f;
+
+			result.Center = value1.Center + vector * (max + min);
+			result.Radius = max;
+		}
+
+		/// <summary>
+		/// Constructs a <see cref="CryEngine.BoundingSphere"/> that is the as large as the total combined area of the two specified spheres.
+		/// </summary>
+		/// <param name="value1">The first sphere to merge.</param>
+		/// <param name="value2">The second sphere to merge.</param>
+		/// <returns>The newly constructed bounding sphere.</returns>
+		public static BoundingSphere Merge(BoundingSphere value1, BoundingSphere value2)
+		{
+			BoundingSphere result;
+			Merge(ref value1, ref value2, out result);
+			return result;
 		}
 
 		/// <summary>
@@ -297,7 +308,7 @@ namespace CryEngine
 		/// <param name="left">The first value to compare.</param>
 		/// <param name="right">The second value to compare.</param>
 		/// <returns><c>true</c> if <paramref name="left"/> has the same value as <paramref name="right"/>; otherwise, <c>false</c>.</returns>
-		public static bool operator ==(BoundingBox left, BoundingBox right)
+		public static bool operator ==(BoundingSphere left, BoundingSphere right)
 		{
 			return left.Equals(right);
 		}
@@ -308,7 +319,7 @@ namespace CryEngine
 		/// <param name="left">The first value to compare.</param>
 		/// <param name="right">The second value to compare.</param>
 		/// <returns><c>true</c> if <paramref name="left"/> has a different value than <paramref name="right"/>; otherwise, <c>false</c>.</returns>
-		public static bool operator !=(BoundingBox left, BoundingBox right)
+		public static bool operator !=(BoundingSphere left, BoundingSphere right)
 		{
 			return !left.Equals(right);
 		}
@@ -321,7 +332,7 @@ namespace CryEngine
 		/// </returns>
 		public override string ToString()
 		{
-			return string.Format(CultureInfo.CurrentCulture, "Minimum:{0} Maximum:{1}", Minimum.ToString(), Maximum.ToString());
+			return string.Format(CultureInfo.CurrentCulture, "Center:{0} Radius:{1}", Center.ToString(), Radius.ToString());
 		}
 
 		/// <summary>
@@ -336,8 +347,8 @@ namespace CryEngine
 			if(format == null)
 				return ToString();
 
-			return string.Format(CultureInfo.CurrentCulture, "Minimum:{0} Maximum:{1}", Minimum.ToString(format, CultureInfo.CurrentCulture),
-				Maximum.ToString(format, CultureInfo.CurrentCulture));
+			return string.Format(CultureInfo.CurrentCulture, "Center:{0} Radius:{1}", Center.ToString(format, CultureInfo.CurrentCulture),
+				Radius.ToString(format, CultureInfo.CurrentCulture));
 		}
 
 		/// <summary>
@@ -349,7 +360,7 @@ namespace CryEngine
 		/// </returns>
 		public string ToString(IFormatProvider formatProvider)
 		{
-			return string.Format(formatProvider, "Minimum:{0} Maximum:{1}", Minimum.ToString(), Maximum.ToString());
+			return string.Format(formatProvider, "Center:{0} Radius:{1}", Center.ToString(), Radius.ToString());
 		}
 
 		/// <summary>
@@ -365,8 +376,8 @@ namespace CryEngine
 			if(format == null)
 				return ToString(formatProvider);
 
-			return string.Format(formatProvider, "Minimum:{0} Maximum:{1}", Minimum.ToString(format, formatProvider),
-				Maximum.ToString(format, formatProvider));
+			return string.Format(formatProvider, "Center:{0} Radius:{1}", Center.ToString(format, formatProvider),
+				Radius.ToString(format, formatProvider));
 		}
 
 		/// <summary>
@@ -377,7 +388,7 @@ namespace CryEngine
 		/// </returns>
 		public override int GetHashCode()
 		{
-			return Minimum.GetHashCode() + Maximum.GetHashCode();
+			return Center.GetHashCode() + Radius.GetHashCode();
 		}
 
 		/// <summary>
@@ -387,9 +398,9 @@ namespace CryEngine
 		/// <returns>
 		/// <c>true</c> if the specified <see cref="CryEngine.Vec4"/> is equal to this instance; otherwise, <c>false</c>.
 		/// </returns>
-		public bool Equals(BoundingBox value)
+		public bool Equals(BoundingSphere value)
 		{
-			return Minimum == value.Minimum && Maximum == value.Maximum;
+			return Center == value.Center && Radius == value.Radius;
 		}
 
 		/// <summary>
@@ -407,72 +418,51 @@ namespace CryEngine
 			if(value.GetType() != GetType())
 				return false;
 
-			return Equals((BoundingBox)value);
+			return Equals((BoundingSphere)value);
 		}
 
 #if SlimDX1xInterop
         /// <summary>
-        /// Performs an implicit conversion from <see cref="CryEngine.BoundingBox"/> to <see cref="SlimDX.BoundingBox"/>.
+        /// Performs an implicit conversion from <see cref="CryEngine.BoundingSphere"/> to <see cref="SlimDX.BoundingSphere"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator SlimDX.BoundingBox(BoundingBox value)
+        public static implicit operator SlimDX.BoundingSphere(BoundingSphere value)
         {
-            return new SlimDX.BoundingBox(value.Minimum, value.Maximum);
+            return new SlimDX.BoundingSphere(value.Center, value.Radius);
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="SlimDX.BoundingBox"/> to <see cref="CryEngine.BoundingBox"/>.
+        /// Performs an implicit conversion from <see cref="SlimDX.BoundingSphere"/> to <see cref="CryEngine.BoundingSphere"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator BoundingBox(SlimDX.BoundingBox value)
+        public static implicit operator BoundingSphere(SlimDX.BoundingSphere value)
         {
-            return new BoundingBox(value.Minimum, value.Maximum);
+            return new BoundingSphere(value.Center, value.Radius);
         }
 #endif
 
-#if XnaInterop
+#if SlimDX1xInterop
         /// <summary>
-        /// Performs an implicit conversion from <see cref="CryEngine.BoundingBox"/> to <see cref="Microsoft.Xna.Framework.BoundingBox"/>.
+        /// Performs an implicit conversion from <see cref="CryEngine.BoundingSphere"/> to <see cref="Microsoft.Xna.Framework.BoundingSphere"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator Microsoft.Xna.Framework.BoundingBox(BoundingBox value)
+        public static implicit operator Microsoft.Xna.Framework.BoundingSphere(BoundingSphere value)
         {
-            return new Microsoft.Xna.Framework.BoundingBox(value.Minimum, value.Maximum);
+            return new Microsoft.Xna.Framework.BoundingSphere(value.Center, value.Radius);
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="Microsoft.Xna.Framework.BoundingBox"/> to <see cref="CryEngine.BoundingBox"/>.
+        /// Performs an implicit conversion from <see cref="Microsoft.Xna.Framework.BoundingSphere"/> to <see cref="CryEngine.BoundingSphere"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator BoundingBox(Microsoft.Xna.Framework.BoundingBox value)
+        public static implicit operator BoundingSphere(Microsoft.Xna.Framework.BoundingSphere value)
         {
-            return new BoundingBox(value.Min, value.Max);
+            return new BoundingSphere(value.Center, value.Radius);
         }
 #endif
 	}
-
-	/// <summary>
-	/// Describes how one bounding volume contains another.
-	/// </summary>
-	public enum ContainmentType
-	{
-		/// <summary>
-		/// The two bounding volumes don't intersect at all.
-		/// </summary>
-		Disjoint,
-
-		/// <summary>
-		/// One bounding volume completely contains another.
-		/// </summary>
-		Contains,
-
-		/// <summary>
-		/// The two bounding volumes overlap.
-		/// </summary>
-		Intersects
-	};
 }
