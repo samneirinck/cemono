@@ -44,7 +44,7 @@ MonoAnyValue CScriptObject::GetAnyValue()
 	case MONOTYPE_VEC3:
 		return  MonoAnyValue(Unbox<Vec3>());
 	case MONOTYPE_STRING:
-		return MonoAnyValue(Unbox<const char *>());
+		return MonoAnyValue(ToCryString((mono::string)m_pObject));
 	}
 
 	return (MonoAnyValue)0;
