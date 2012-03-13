@@ -35,9 +35,11 @@ class CScriptSystem
 	, public IFileChangeListener
 	, public IGameFrameworkListener
 {
+	// CryExtension
 	CRYINTERFACE_SIMPLE(IMonoScriptSystem);
 
 	CRYGENERATE_SINGLETONCLASS(CScriptSystem, "CryMono", 0xc37b8ad5d62f47de, 0xa8debe525ff0fc8a)
+	// ~CryExtension
 
 	typedef std::map<const void *, const char *> TMethodBindings;
 	typedef std::map<IMonoClass *, int> TScripts;
@@ -69,7 +71,7 @@ public:
 	// ~IFileChangeMonitor
 
 	// ~IGameFrameworkListener	  	
-	virtual void OnPostUpdate(float fDeltaTime);  	
+	virtual void OnPostUpdate(float fDeltaTime);
 	virtual void OnSaveGame(ISaveGame* pSaveGame) {} 	
 	virtual void OnLoadGame(ILoadGame* pLoadGame) {}  	
 	virtual void OnLevelEnd(const char* nextLevel) {}  	
@@ -93,19 +95,23 @@ protected:
 
 	void UnloadDomain(MonoDomain *pDomain);
 
+	// The primary app domain, not really used for anything besides holding the script domain. Do *not* unload this at runtime, we cannot execute another root domain again without restarting.
 	MonoDomain *m_pMonoDomain;
 
 	// The app domain in which we load scripts into. Killed and reloaded on script reload.
 	MonoDomain *m_pScriptDomain;
 
 	IMonoClass *m_pScriptManager;
+	// Hard pointer to the AppDomainSerializer class to quickly dump and restore scripts.
 	IMonoClass *m_AppDomainSerializer;
 
+	// Map containing all scripts and their id's for quick access.
 	TScripts m_scripts;
 
 	IMonoEntityManager *m_pEntityManager;
 	CFlowManager *m_pFlowManager;
 	CInput *m_pInput;
+	// Dedicated tester class to make sure that CryMono features work. This will be replaced using C# Unit tests in the future.
 	CTester *m_pTester;
 	CCallbackHandler *m_pCallbackHandler;
 
@@ -114,9 +120,10 @@ protected:
 	IMonoAssembly *m_pCryBraryAssembly;
 	IMonoAssembly *m_pPdb2MdbAssembly;
 
+	// We temporarily store scriptbind methods here if developers attempt to register them prior to the script system has been initialized properly.
 	TMethodBindings m_methodBindings;
 
-	// ScriptBinds declared in this project.
+	// ScriptBinds declared in this project are stored here to make sure they are destructed on shutdown.
 	std::vector<IMonoScriptBind *> m_localScriptBinds;
 
 	// If true, the last script reload was successful. This is necessary to make sure we don't override with invalid script dumps.
