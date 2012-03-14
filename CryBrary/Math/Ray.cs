@@ -80,7 +80,7 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="ray">The ray to test.</param>
 		/// <param name="point">When the method completes, contains the point of intersection,
-		/// or <see cref="CryEngine.new Vector3()"/> if there was no intersection.</param>
+		/// or <see cref="CryEngine.Vec3"/> if there was no intersection.</param>
 		/// <returns>Whether the two objects intersected.</returns>
 		public bool Intersects(ref Ray ray, out Vec3 point)
 		{
@@ -115,7 +115,7 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="plane">The plane to test.</param>
 		/// <param name="point">When the method completes, contains the point of intersection,
-		/// or <see cref="CryEngine.new Vector3()"/> if there was no intersection.</param>
+		/// or <see cref="CryEngine.Vec3"/> if there was no intersection.</param>
 		/// <returns>Whether the two objects intersected.</returns>
 		public bool Intersects(ref Plane plane, out Vec3 point)
 		{
@@ -156,7 +156,7 @@ namespace CryEngine
 		/// <param name="vertex2">The second vertex of the triangle to test.</param>
 		/// <param name="vertex3">The third vertex of the triangle to test.</param>
 		/// <param name="point">When the method completes, contains the point of intersection,
-		/// or <see cref="CryEngine.new Vector3()"/> if there was no intersection.</param>
+		/// or <see cref="CryEngine.Vec3"/> if there was no intersection.</param>
 		/// <returns>Whether the two objects intersected.</returns>
 		public bool Intersects(ref Vec3 vertex1, ref Vec3 vertex2, ref Vec3 vertex3, out Vec3 point)
 		{
@@ -191,7 +191,7 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="box">The box to test.</param>
 		/// <param name="point">When the method completes, contains the point of intersection,
-		/// or <see cref="CryEngine.new Vector3()"/> if there was no intersection.</param>
+		/// or <see cref="CryEngine.Vec3"/> if there was no intersection.</param>
 		/// <returns>Whether the two objects intersected.</returns>
 		public bool Intersects(ref BoundingBox box, out Vec3 point)
 		{
@@ -226,7 +226,7 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="sphere">The sphere to test.</param>
 		/// <param name="point">When the method completes, contains the point of intersection,
-		/// or <see cref="CryEngine.new Vector3()"/> if there was no intersection.</param>
+		/// or <see cref="CryEngine.Vec3"/> if there was no intersection.</param>
 		/// <returns>Whether the two objects intersected.</returns>
 		public bool Intersects(ref BoundingSphere sphere, out Vec3 point)
 		{

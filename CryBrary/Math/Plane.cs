@@ -228,7 +228,7 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="ray">The ray to test.</param>
 		/// <param name="point">When the method completes, contains the point of intersection,
-		/// or <see cref="CryEngine.new Vector3()"/> if there was no intersection.</param>
+		/// or <see cref="CryEngine.Vec3"/> if there was no intersection.</param>
 		/// <returns>Whether the two objects intersected.</returns>
 		public bool Intersects(ref Ray ray, out Vec3 point)
 		{
