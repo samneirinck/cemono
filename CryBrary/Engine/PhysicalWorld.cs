@@ -13,7 +13,7 @@ namespace CryEngine
         internal struct RayHit
         {
             internal float dist;
-	        internal uint colliderId;
+	        internal int colliderId;
 	        internal int ipart;
 	        internal int partid;
 	        internal short surface_idx;
@@ -64,7 +64,10 @@ namespace CryEngine
 		}
 
 		public float Distance { get { return _info.dist; } }
-		public EntityId ColliderId { get { return new EntityId(_info.colliderId); } }
+		/// <summary>
+		/// PhysicalEntityId, not yet implemented.
+		/// </summary>
+		public int ColliderId { get { return _info.colliderId; } }
 		public Vec3 Point { get { return _info.pt; } }
 		public Vec3 Normal { get { return _info.n; } }
 	}

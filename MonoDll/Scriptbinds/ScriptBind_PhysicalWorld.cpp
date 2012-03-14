@@ -38,7 +38,7 @@ int CScriptBind_PhysicalWorld::RayWorldIntersection(Vec3 origin, Vec3 dir, int o
 	}
 
 	ray_hit hit;
-	int numHits = gEnv->pPhysicalWorld->RayWorldIntersection(origin, dir, objFlags, flags, &hit, 1);
+	int numHits = gEnv->pPhysicalWorld->RayWorldIntersection(origin, dir, objFlags, flags, &hit, maxHits, pSkipEnts, physEnts.size());
 
 	SAFE_DELETE_ARRAY(pSkipEnts);
 	physEnts.clear();
@@ -46,8 +46,8 @@ int CScriptBind_PhysicalWorld::RayWorldIntersection(Vec3 origin, Vec3 dir, int o
 	monoHit.bTerrain = hit.bTerrain;
 
 	// We should return physical entity id's really, but this isn't exposed yet.
-	if(hit.pCollider)
-		monoHit.colliderId = gEnv->pPhysicalWorld->GetPhysicalEntityId(hit.pCollider);
+	//if(hit.pCollider)
+		//monoHit.colliderId = gEnv->pPhysicalWorld->GetPhysicalEntityId(hit.pCollider);
 
 	monoHit.dist = hit.dist;
 	monoHit.foreignIdx = hit.foreignIdx;

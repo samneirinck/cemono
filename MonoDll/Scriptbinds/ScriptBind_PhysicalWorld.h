@@ -16,7 +16,7 @@
 struct MonoRayHit
 {
 	float dist;
-	EntityId colliderId;
+	int colliderId;
 	int ipart;
 	int partid;
 	short surface_idx;
