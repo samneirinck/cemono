@@ -1,17 +1,17 @@
 #include "StdAfx.h"
-#include "ScriptBind_PhysicalWorld.h"
+#include "PhysicalWorld.h"
 
 #include <IEntitySystem.h>
 
 #include <IMonoArray.h>
 #include <IMonoObject.h>
 
-CScriptBind_PhysicalWorld::CScriptBind_PhysicalWorld()
+CScriptbind_PhysicalWorld::CScriptbind_PhysicalWorld()
 {
 	REGISTER_METHOD(RayWorldIntersection);
 }
 
-int CScriptBind_PhysicalWorld::RayWorldIntersection(Vec3 origin, Vec3 dir, int objFlags, unsigned int flags, MonoRayHit &monoHit, int maxHits, mono::array skipEntities)
+int CScriptbind_PhysicalWorld::RayWorldIntersection(Vec3 origin, Vec3 dir, int objFlags, unsigned int flags, MonoRayHit &monoHit, int maxHits, mono::array skipEntities)
 {
 	IPhysicalEntity **pSkipEnts = NULL;
 	std::vector<IPhysicalEntity *> physEnts;

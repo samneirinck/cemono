@@ -13,11 +13,11 @@
 #include <IMonoScriptBind.h>
 #include <MonoCommon.h>
 
-class CScriptBind_ItemSystem : public IMonoScriptBind
+class CScriptbind_ItemSystem : public IMonoScriptBind
 {
 public:
-	CScriptBind_ItemSystem();
-	~CScriptBind_ItemSystem() {}
+	CScriptbind_ItemSystem();
+	~CScriptbind_ItemSystem() {}
 
 protected:
 	// IMonoScriptBind

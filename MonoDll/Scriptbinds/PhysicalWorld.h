@@ -29,11 +29,11 @@ struct MonoRayHit
 	int iPrim; // hit triangle index
 };
 
-class CScriptBind_PhysicalWorld : public IMonoScriptBind
+class CScriptbind_PhysicalWorld : public IMonoScriptBind
 {
 public:
-	CScriptBind_PhysicalWorld();
-	~CScriptBind_PhysicalWorld() {}
+	CScriptbind_PhysicalWorld();
+	~CScriptbind_PhysicalWorld() {}
 
 	// IMonoScriptBind
 	virtual const char *GetClassName() { return "PhysicalWorld"; }

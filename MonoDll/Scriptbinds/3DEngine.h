@@ -12,13 +12,13 @@
 #include <MonoCommon.h>
 #include <IMonoScriptBind.h>
 
-#include "ScriptBind_Renderer.h"
+#include "Renderer.h"
 
-class CScriptBind_3DEngine : public IMonoScriptBind
+class CScriptbind_3DEngine : public IMonoScriptBind
 {
 public:
-	CScriptBind_3DEngine();
-	~CScriptBind_3DEngine() {}
+	CScriptbind_3DEngine();
+	~CScriptbind_3DEngine() {}
 
 	// IMonoScriptBind
 	virtual const char *GetClassName() { return "Engine"; }

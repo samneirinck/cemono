@@ -1,10 +1,10 @@
 #include "StdAfx.h"
-#include "ScriptBind_Renderer.h"
+#include "Renderer.h"
 
 #include <IViewSystem.h>
 #include <IGameFramework.h>
 
-CScriptBind_Renderer::CScriptBind_Renderer()
+CScriptbind_Renderer::CScriptbind_Renderer()
 {
 	REGISTER_METHOD(CreateView);
 	REGISTER_METHOD(RemoveView);
@@ -31,7 +31,7 @@ CScriptBind_Renderer::CScriptBind_Renderer()
 }
 
 // Externals below
-EntityId CScriptBind_Renderer::CreateView()
+EntityId CScriptbind_Renderer::CreateView()
 {
 	if (IViewSystem *pViewSystem = gEnv->pGameFramework->GetIViewSystem())
 		return pViewSystem->GetViewId(pViewSystem->CreateView());
@@ -39,14 +39,14 @@ EntityId CScriptBind_Renderer::CreateView()
 	return 0;
 }
 
-void CScriptBind_Renderer::DrawTextToScreen(float xpos, float ypos, float fontSize, ColorF color, bool center, mono::string text)
+void CScriptbind_Renderer::DrawTextToScreen(float xpos, float ypos, float fontSize, ColorF color, bool center, mono::string text)
 {
 	float actualColor[] = { color.r, color.g, color.b, color.a };
 
 	gEnv->pRenderer->Draw2dLabel(xpos, ypos, fontSize, actualColor, center, ToCryString(text));
 }
 
-void CScriptBind_Renderer::RemoveView(EntityId viewId)
+void CScriptbind_Renderer::RemoveView(EntityId viewId)
 {
 	if (IViewSystem *pViewSystem = gEnv->pGameFramework->GetIViewSystem())
 	{
@@ -55,7 +55,7 @@ void CScriptBind_Renderer::RemoveView(EntityId viewId)
 	}
 }
 
-EntityId CScriptBind_Renderer::GetActiveView()
+EntityId CScriptbind_Renderer::GetActiveView()
 {
 	if (IViewSystem *pViewSystem = gEnv->pGameFramework->GetIViewSystem())
 		return pViewSystem->GetActiveViewId();
@@ -63,7 +63,7 @@ EntityId CScriptBind_Renderer::GetActiveView()
 	return 0;
 }
 
-void CScriptBind_Renderer::SetActiveView(EntityId viewId)
+void CScriptbind_Renderer::SetActiveView(EntityId viewId)
 {
 	if (IViewSystem *pViewSystem = gEnv->pGameFramework->GetIViewSystem())
 	{
@@ -72,7 +72,7 @@ void CScriptBind_Renderer::SetActiveView(EntityId viewId)
 	}
 }
 
-SViewParams CScriptBind_Renderer::GetViewParams(EntityId viewId)
+SViewParams CScriptbind_Renderer::GetViewParams(EntityId viewId)
 {
 	if (IViewSystem *pViewSystem = gEnv->pGameFramework->GetIViewSystem())
 	{
@@ -83,7 +83,7 @@ SViewParams CScriptBind_Renderer::GetViewParams(EntityId viewId)
 	return SViewParams();
 }
 
-void CScriptBind_Renderer::SetViewParams(EntityId viewId, SViewParams viewParams)
+void CScriptbind_Renderer::SetViewParams(EntityId viewId, SViewParams viewParams)
 {
 	if (IViewSystem *pViewSystem = gEnv->pGameFramework->GetIViewSystem())
 	{
@@ -96,17 +96,17 @@ void CScriptBind_Renderer::SetViewParams(EntityId viewId, SViewParams viewParams
 	}
 }
 
-int CScriptBind_Renderer::GetWidth()
+int CScriptbind_Renderer::GetWidth()
 {
 	return gEnv->pRenderer->GetWidth();
 }
 
-int CScriptBind_Renderer::GetHeight()
+int CScriptbind_Renderer::GetHeight()
 {
 	return gEnv->pRenderer->GetHeight();
 }
 
-Vec3 CScriptBind_Renderer::ScreenToWorld(int x, int y)
+Vec3 CScriptbind_Renderer::ScreenToWorld(int x, int y)
 {	
 	if(gEnv->pPhysicalWorld)
 	{
@@ -126,7 +126,7 @@ Vec3 CScriptBind_Renderer::ScreenToWorld(int x, int y)
 	return Vec3(ZERO);
 }
 
-int CScriptBind_Renderer::LoadTexture(mono::string texturePath)
+int CScriptbind_Renderer::LoadTexture(mono::string texturePath)
 {
 	if(ITexture *pTexture = gEnv->pRenderer->EF_LoadTexture(ToCryString(texturePath)))
 		return pTexture->GetTextureID();
@@ -134,23 +134,23 @@ int CScriptBind_Renderer::LoadTexture(mono::string texturePath)
 	return -1;
 }
 
-void CScriptBind_Renderer::DrawTextureToScreen(float xpos, float ypos, float width, float height, int textureId, float s0, float t0, float s1, float t1, float angle, float r, float g, float b, float a, float z)
+void CScriptbind_Renderer::DrawTextureToScreen(float xpos, float ypos, float width, float height, int textureId, float s0, float t0, float s1, float t1, float angle, float r, float g, float b, float a, float z)
 {
 	// Could expose the optional args later.
 	gEnv->pRenderer->Draw2dImage(xpos, ypos, width, height, textureId, s0, t0, s1, t1, angle, r, g, b, a, z);
 }
 
-int CScriptBind_Renderer::CreateRenderTarget(int width, int height, ETEX_Format texFormat)
+int CScriptbind_Renderer::CreateRenderTarget(int width, int height, ETEX_Format texFormat)
 {
 	return gEnv->pRenderer->CreateRenderTarget(width, height, texFormat);
 }
 
-void CScriptBind_Renderer::DestroyRenderTarget(int textureId)
+void CScriptbind_Renderer::DestroyRenderTarget(int textureId)
 {
 	gEnv->pRenderer->DestroyRenderTarget(textureId);
 }
 
-void CScriptBind_Renderer::SetRenderTarget(int textureId)
+void CScriptbind_Renderer::SetRenderTarget(int textureId)
 {
 	gEnv->pRenderer->SetRenderTarget(textureId);
 }

@@ -19,11 +19,11 @@ struct MovementRequest;
 struct MonoPhysicalizationParams;
 struct ActionImpulse;
 
-class CScriptBind_StaticEntity : public IMonoScriptBind
+class CScriptbind_StaticEntity : public IMonoScriptBind
 {
 public:
-	CScriptBind_StaticEntity();
-	virtual ~CScriptBind_StaticEntity() {}
+	CScriptbind_StaticEntity();
+	virtual ~CScriptbind_StaticEntity() {}
 
 protected:
 	// IMonoScriptBind

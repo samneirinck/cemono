@@ -13,11 +13,11 @@
 #include <MonoCommon.h>
 #include <IMonoScriptBind.h>
 
-class CScriptBind_GameRules : public IMonoScriptBind
+class CGameRules : public IMonoScriptBind
 {
 public:
-	CScriptBind_GameRules();
-	~CScriptBind_GameRules() {}
+	CGameRules();
+	~CGameRules() {}
 
 	// IMonoScriptBind
 	virtual const char *GetClassName() { return "GameRulesSystem"; }

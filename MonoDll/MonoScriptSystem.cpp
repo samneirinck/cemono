@@ -28,14 +28,15 @@
 // Bindings
 #include "Scriptbinds\ItemSystem.h"
 #include "Scriptbinds\Console.h"
-#include "Scriptbinds\ScriptBind_GameRules.h"
+#include "Scriptbinds\GameRules.h"
 #include "Scriptbinds\ActorSystem.h"
-#include "Scriptbinds\ScriptBind_3DEngine.h"
-#include "Scriptbinds\ScriptBind_PhysicalWorld.h"
-#include "Scriptbinds\ScriptBind_Renderer.h"
-#include "Scriptbinds\ScriptBind_StaticEntity.h"
-#include "Scriptbinds\ScriptBind_Debug.h"
+#include "Scriptbinds\3DEngine.h"
+#include "Scriptbinds\PhysicalWorld.h"
+#include "Scriptbinds\Renderer.h"
+#include "Scriptbinds\StaticEntity.h"
+#include "Scriptbinds\Debug.h"
 #include "Scriptbinds\Scriptbind_UI.h"
+#include "Scriptbinds\MaterialManager.h"
 
 #include "EntityManager.h"
 #include "FlowManager.h"
@@ -322,16 +323,17 @@ void CScriptSystem::RegisterDefaultBindings()
 	}
 
 #define RegisterBinding(T) m_localScriptBinds.push_back((IMonoScriptBind *)new T());
-	RegisterBinding(CScriptBind_ActorSystem);
-	RegisterBinding(CScriptBind_3DEngine);
-	RegisterBinding(CScriptBind_PhysicalWorld);
-	RegisterBinding(CScriptBind_Renderer);
-	RegisterBinding(CScriptBind_Console);
-	RegisterBinding(CScriptBind_ItemSystem);
-	RegisterBinding(CScriptBind_GameRules);
-	RegisterBinding(CScriptBind_StaticEntity);
-	RegisterBinding(CScriptBind_Debug);
-	RegisterBinding(CScriptBind_Time);
+	RegisterBinding(CActorSystem);
+	RegisterBinding(CScriptbind_3DEngine);
+	RegisterBinding(CScriptbind_PhysicalWorld);
+	RegisterBinding(CScriptbind_Renderer);
+	RegisterBinding(CScriptbind_Console);
+	RegisterBinding(CScriptbind_ItemSystem);
+	RegisterBinding(CGameRules);
+	RegisterBinding(CScriptbind_StaticEntity);
+	RegisterBinding(CScriptbind_Debug);
+	RegisterBinding(CTime);
+	RegisterBinding(CScriptbind_MaterialManager);
 	RegisterBinding(CTester);
 
 #define RegisterBindingAndSet(var, T) RegisterBinding(T); var = (T *)m_localScriptBinds.back();
