@@ -37,6 +37,7 @@
 #include "Scriptbinds\Debug.h"
 #include "Scriptbinds\Scriptbind_UI.h"
 #include "Scriptbinds\MaterialManager.h"
+#include "Scriptbinds\ParticleSystem.h"
 
 #include "EntityManager.h"
 #include "FlowManager.h"
@@ -334,6 +335,7 @@ void CScriptSystem::RegisterDefaultBindings()
 	RegisterBinding(CScriptbind_Debug);
 	RegisterBinding(CTime);
 	RegisterBinding(CScriptbind_MaterialManager);
+	RegisterBinding(CScriptbind_ParticleSystem);
 	RegisterBinding(CTester);
 
 #define RegisterBindingAndSet(var, T) RegisterBinding(T); var = (T *)m_localScriptBinds.back();

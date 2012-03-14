@@ -126,6 +126,9 @@
     <ClInclude Include="ScriptBinds\MaterialManager.h">
       <Filter>ScriptBinds\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="Scriptbinds\ParticleSystem.h">
+      <Filter>ScriptBinds\Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -209,6 +212,9 @@
       <Filter>ScriptBinds</Filter>
     </ClCompile>
     <ClCompile Include="ScriptBinds\MaterialManager.cpp">
+      <Filter>ScriptBinds\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Scriptbinds\ParticleSystem.cpp">
       <Filter>ScriptBinds\Engine</Filter>
     </ClCompile>
   </ItemGroup>
