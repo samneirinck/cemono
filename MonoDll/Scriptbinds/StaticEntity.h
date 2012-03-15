@@ -68,6 +68,8 @@ protected:
 	static void SetLocalTM(EntityId id, Matrix34 tm);
 	static Matrix34 GetLocalTM(EntityId id);
 
+	static mono::string GetMaterial(EntityId id);
+	static void SetMaterial(EntityId id, mono::string material);
 };
 
 struct ActionImpulse

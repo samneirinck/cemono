@@ -38,6 +38,9 @@ CScriptbind_StaticEntity::CScriptbind_StaticEntity()
 	REGISTER_METHOD(GetWorldTM);
 	REGISTER_METHOD(SetLocalTM);
 	REGISTER_METHOD(GetLocalTM);
+
+	REGISTER_METHOD(GetMaterial);
+	REGISTER_METHOD(SetMaterial);
 }
 
 mono::string CScriptbind_StaticEntity::GetPropertyValue(EntityId entityId, mono::string propertyName)
@@ -315,5 +318,27 @@ void CScriptbind_StaticEntity::SetVelocity(EntityId id, Vec3 vel)
 
 			pPhysEnt->Action(&asv);
 		}
+	}
+}
+
+mono::string CScriptbind_StaticEntity::GetMaterial(EntityId id)
+{
+	const char *material = "";
+
+	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id))
+	{
+		if(IMaterial *pMaterial = pEntity->GetMaterial())
+			material = pMaterial->GetName();
+	}
+	
+	return ToMonoString(material);
+}
+
+void CScriptbind_StaticEntity::SetMaterial(EntityId id, mono::string material)
+{
+	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id))
+	{
+		if(IMaterial *pMaterial = gEnv->p3DEngine->GetMaterialManager()->FindMaterial(ToCryString(material)))
+			pEntity->SetMaterial(pMaterial);
 	}
 }
