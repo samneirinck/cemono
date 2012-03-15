@@ -28,6 +28,8 @@ protected:
 	// Externals
 	static int CreateMaterial(mono::string name);
 	static int LoadMaterial(mono::string name, bool makeIfNotFound, bool nonRemovable);
+
+	static mono::string GetSurfaceTypeName(int matId);
 	// ~Externals
 
 	// IMonoScriptBind

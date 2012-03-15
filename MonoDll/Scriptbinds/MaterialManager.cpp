@@ -14,6 +14,16 @@ CScriptbind_MaterialManager::CScriptbind_MaterialManager()
 	REGISTER_METHOD(LoadMaterial);
 }
 
+mono::string CScriptbind_MaterialManager::GetSurfaceTypeName(int matId)
+{
+	const char *surfaceType = "";
+
+	if(ISurfaceType *pSurfaceType = m_materials[matId]->GetSurfaceType())
+		surfaceType = pSurfaceType->GetName();
+
+	return ToMonoString(surfaceType);
+}
+
 int CScriptbind_MaterialManager::CreateMaterial(mono::string name)
 {
 	if(IMaterial *pMaterial = m_pMaterialManager->CreateMaterial(ToCryString(name)))

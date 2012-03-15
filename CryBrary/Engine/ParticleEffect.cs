@@ -7,7 +7,7 @@ namespace CryEngine
 {
 	public class ParticleEffect
 	{
-		public ParticleEffect(int id)
+		internal ParticleEffect(int id)
 		{
 			Id = id;
 		}
