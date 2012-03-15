@@ -17,7 +17,7 @@ struct IMaterialManager;
 
 class CScriptbind_MaterialManager : public IMonoScriptBind
 {
-	typedef std::map<IMaterial *, int> TMaterialMap;
+	typedef std::map<int, IMaterial *> TMaterialMap;
 
 public:
 	CScriptbind_MaterialManager();

@@ -33,6 +33,9 @@ namespace CryEngine
 	[StructLayout(LayoutKind.Sequential, Pack = 4)]
 	public struct Vec3 : IEquatable<Vec3>, IFormattable
 	{
+		public static readonly Vec3 Up = new Vec3(0, 0, 1);
+		public static readonly Vec3 Down = new Vec3(0, 0, -1);
+
 		/// <summary>
 		/// The X component of the vector.
 		/// </summary>

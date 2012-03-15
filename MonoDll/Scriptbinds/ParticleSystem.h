@@ -18,7 +18,7 @@ struct IParticleEffect;
 
 class CScriptbind_ParticleSystem : public IMonoScriptBind
 {
-	typedef std::map<IParticleEffect *, int> TParticleEffectsMap;
+	typedef std::map<int, IParticleEffect *> TParticleEffectsMap;
 
 public:
 	CScriptbind_ParticleSystem();
@@ -31,6 +31,8 @@ protected:
 
 	// Externals
 	static int FindEffect(mono::string effectName, bool bLoadResources = true);
+
+	static void SpawnEffect(int id, bool independent, Vec3 pos, Vec3 dir, float scale);
 	// ~Externals
 
 	static IParticleManager *m_pParticleManager;

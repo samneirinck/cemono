@@ -133,6 +133,7 @@
   <ItemGroup>
     <Compile Include="ActorSystem\Player.cs" />
     <Compile Include="Engine\Material.cs" />
+    <Compile Include="Engine\ParticleEffect.cs" />
     <Compile Include="Engine\ParticleSystem.cs" />
     <Compile Include="EntitySystem\EntityId.cs" />
     <Compile Include="EntitySystem\Physics.cs" />

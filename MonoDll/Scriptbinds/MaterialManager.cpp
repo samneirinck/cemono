@@ -19,7 +19,7 @@ int CScriptbind_MaterialManager::CreateMaterial(mono::string name)
 	if(IMaterial *pMaterial = m_pMaterialManager->CreateMaterial(ToCryString(name)))
 	{
 		int index = m_materials.size();
-		m_materials.insert(TMaterialMap::value_type(pMaterial, index));
+		m_materials.insert(TMaterialMap::value_type(index, pMaterial));
 
 		return index;
 	}
@@ -29,10 +29,16 @@ int CScriptbind_MaterialManager::CreateMaterial(mono::string name)
 
 int CScriptbind_MaterialManager::LoadMaterial(mono::string name, bool makeIfNotFound, bool nonRemovable)
 {
+	for each(auto material in m_materials)
+	{
+		if(!strcmp(material.second->GetName(), ToCryString(name)))
+			return material.first;
+	}
+
 	if(IMaterial *pMaterial = m_pMaterialManager->LoadMaterial(ToCryString(name), makeIfNotFound, nonRemovable))
 	{
 		int index = m_materials.size();
-		m_materials.insert(TMaterialMap::value_type(pMaterial, index));
+		m_materials.insert(TMaterialMap::value_type(index, pMaterial));
 
 		return index;
 	}
