@@ -26,13 +26,13 @@ public:
 
 protected:
 	// IMonoScriptBind
-	virtual const char *GetClassName() override { return "ParticleSystem"; }
+	virtual const char *GetClassName() override { return "ParticleEffect"; }
 	// ~IMonoScriptBind
 
 	// Externals
 	static int FindEffect(mono::string effectName, bool bLoadResources = true);
 
-	static void SpawnEffect(int id, bool independent, Vec3 pos, Vec3 dir, float scale);
+	static void Spawn(int id, bool independent, Vec3 pos, Vec3 dir, float scale);
 	// ~Externals
 
 	static IParticleManager *m_pParticleManager;

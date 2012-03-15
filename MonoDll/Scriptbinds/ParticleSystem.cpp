@@ -11,7 +11,7 @@ CScriptbind_ParticleSystem::CScriptbind_ParticleSystem()
 	m_pParticleManager = gEnv->p3DEngine->GetParticleManager();
 
 	REGISTER_METHOD(FindEffect);
-	REGISTER_METHOD(SpawnEffect);
+	REGISTER_METHOD(Spawn);
 }
 
 int CScriptbind_ParticleSystem::FindEffect(mono::string effectName, bool bLoadResources)
@@ -27,7 +27,7 @@ int CScriptbind_ParticleSystem::FindEffect(mono::string effectName, bool bLoadRe
 	return -1;
 }
 
-void CScriptbind_ParticleSystem::SpawnEffect(int id, bool independent, Vec3 pos, Vec3 dir, float scale)
+void CScriptbind_ParticleSystem::Spawn(int id, bool independent, Vec3 pos, Vec3 dir, float scale)
 {
 	m_particleEffects[id]->Spawn(independent, IParticleEffect::ParticleLoc(pos, dir, scale));
 }
