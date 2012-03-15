@@ -17,7 +17,7 @@ struct IMaterialManager;
 
 class CScriptbind_MaterialManager : public IMonoScriptBind
 {
-	typedef std::map<const char *, int> TMaterialMap;
+	typedef std::map<IMaterial *, int> TMaterialMap;
 
 public:
 	CScriptbind_MaterialManager();
@@ -26,10 +26,8 @@ public:
 protected:
 
 	// Externals
-	static bool MaterialExists(mono::string name);
-
-	static void CreateMaterial(mono::string name);
-	static void LoadMaterial(mono::string name, bool makeIfNotFound, bool nonRemovable);
+	static int CreateMaterial(mono::string name);
+	static int LoadMaterial(mono::string name, bool makeIfNotFound, bool nonRemovable);
 	// ~Externals
 
 	// IMonoScriptBind
@@ -37,6 +35,7 @@ protected:
 	// ~IMonoScriptBind
 
 	static IMaterialManager *m_pMaterialManager;
+	static TMaterialMap m_materials;
 };
 
 #endif //__SCRIPTBIND_MATERIAL_MANAGER__

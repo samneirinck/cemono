@@ -4,27 +4,38 @@
 #include <IGameFramework.h>
 
 IMaterialManager *CScriptbind_MaterialManager::m_pMaterialManager = NULL;
+CScriptbind_MaterialManager::TMaterialMap CScriptbind_MaterialManager::m_materials = CScriptbind_MaterialManager::TMaterialMap();
 
 CScriptbind_MaterialManager::CScriptbind_MaterialManager()
 {
 	m_pMaterialManager = gEnv->p3DEngine->GetMaterialManager();
 
-	REGISTER_METHOD(MaterialExists);
 	REGISTER_METHOD(CreateMaterial);
 	REGISTER_METHOD(LoadMaterial);
 }
 
-bool CScriptbind_MaterialManager::MaterialExists(mono::string name)
+int CScriptbind_MaterialManager::CreateMaterial(mono::string name)
 {
-	return m_pMaterialManager->FindMaterial(ToCryString(name));
+	if(IMaterial *pMaterial = m_pMaterialManager->CreateMaterial(ToCryString(name)))
+	{
+		int index = m_materials.size();
+		m_materials.insert(TMaterialMap::value_type(pMaterial, index));
+
+		return index;
+	}
+
+	return -1;
 }
 
-void CScriptbind_MaterialManager::CreateMaterial(mono::string name)
+int CScriptbind_MaterialManager::LoadMaterial(mono::string name, bool makeIfNotFound, bool nonRemovable)
 {
-	m_pMaterialManager->CreateMaterial(ToCryString(name));
-}
+	if(IMaterial *pMaterial = m_pMaterialManager->LoadMaterial(ToCryString(name), makeIfNotFound, nonRemovable))
+	{
+		int index = m_materials.size();
+		m_materials.insert(TMaterialMap::value_type(pMaterial, index));
 
-void CScriptbind_MaterialManager::LoadMaterial(mono::string name, bool makeIfNotFound, bool nonRemovable)
-{
-	m_pMaterialManager->LoadMaterial(ToCryString(name), makeIfNotFound, nonRemovable);
+		return index;
+	}
+
+	return -1;
 }

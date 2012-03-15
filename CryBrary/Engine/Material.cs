@@ -5,11 +5,8 @@ namespace CryEngine
 	public class Material
 	{
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static bool _MaterialExists(string name);
-
+		extern internal static int _CreateMaterial(string name);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _CreateMaterial(string name);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _LoadMaterial(string name, bool makeIfNotFound = true, bool nonRemovable = false);
+		extern internal static int _LoadMaterial(string name, bool makeIfNotFound = true, bool nonRemovable = false);
 	}
 }

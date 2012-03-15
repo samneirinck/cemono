@@ -13,20 +13,28 @@
 #include <MonoCommon.h>
 #include <IMonoScriptBind.h>
 
+struct IParticleManager;
+struct IParticleEffect;
+
 class CScriptbind_ParticleSystem : public IMonoScriptBind
 {
+	typedef std::map<IParticleEffect *, int> TParticleEffectsMap;
+
 public:
 	CScriptbind_ParticleSystem();
 	~CScriptbind_ParticleSystem() {}
 
 protected:
-
-	// Externals
-	// ~Externals
-
 	// IMonoScriptBind
 	virtual const char *GetClassName() override { return "ParticleSystem"; }
 	// ~IMonoScriptBind
+
+	// Externals
+	static int FindEffect(mono::string effectName, bool bLoadResources = true);
+	// ~Externals
+
+	static IParticleManager *m_pParticleManager;
+	static TParticleEffectsMap m_particleEffects;
 };
 
 #endif //__SCRIPTBIND_PARTICLE_SYSTEM__
