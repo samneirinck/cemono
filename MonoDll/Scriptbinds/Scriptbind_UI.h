@@ -39,7 +39,7 @@ struct SMonoUIEventDesc
 	mono::string	DynamicDescription;
 };
 
-class CUICallback : public IUIEventListener 
+class CUICallback : public IUIEventListener
 {
 public:
 	CUICallback(const char *name, CScriptbind_UI *pParent, IUIEventSystem *pUIEventSystem, IUIEventSystem::EEventSystemType type);
@@ -48,6 +48,7 @@ public:
 	// IUIEventListener
 	virtual void OnEvent(const SUIEvent& event);
 	// ~IUIEventListener
+
 
 	const char *FindEvent(uint ID);
 	int FindEvent(const char *name);
@@ -67,7 +68,7 @@ protected:
 };
 
 class CScriptbind_UI
-	: public IMonoScriptBind
+	: public IMonoScriptBind, IUIModule
 {
 	typedef std::map<string, CUICallback *> TEventMap;
 	typedef std::pair<string, CUICallback *> TEventMapPair;
@@ -85,7 +86,14 @@ public:
 	static CScriptbind_UI *s_pInstance;
 
 	void OnReset();
-
+	
+	//IUIModule
+	virtual void Init();
+	virtual void Shutdown();
+	virtual void Reload();
+	virtual void Reset();
+	virtual void Update(float fDelta);
+	//~IUIModule
 	void OnEvent(const char *systemName, const char *eventName, const SUIEvent& event);
 	
 	//Exposed to CryMono

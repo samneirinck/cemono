@@ -10,6 +10,7 @@ namespace CryEngine
 {
     public enum UIParameterType
     {
+		Invalid = -1,
         Any = 0,
         Bool,
         Int,
@@ -90,11 +91,16 @@ namespace CryEngine
 
     public class UIEventArgs : System.EventArgs
     {
-        public int Event;
-        public Object[] Args;
-        public UIEventArgs()
+		public string EventName { get; private set; }
+		public string EventSystem { get; private set; }
+		public int EventID { get; private set; }
+		public Object[] Args { get; private set; }
+		public UIEventArgs(string eventSystem, string eventName, int eventID, object[] args)
 		{
-            Event = 0;
+			EventName = eventName;
+			EventSystem = eventSystem;
+			EventID = eventID;
+			Args = args;
 		}
     }
 
@@ -111,15 +117,10 @@ namespace CryEngine
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern internal static void _SendNamedEvent(string eventsystem, string Event, object[] args);
 
-
-        private static Dictionary<int, string> eventMap;
-
 		public static void OnEvent(string EventSystem, string EventName, int EventID, object[] args)
 		{
-            UIEventArgs e = new UIEventArgs();
-            e.Event = EventID;
-            e.Args = args;
-            Debug.LogAlways("Event: {0}.{1} = {2}", EventSystem, EventName, e.Event);
+			UIEventArgs e = new UIEventArgs(EventSystem, EventName, EventID, args);
+            Debug.LogAlways("Event: {0}.{1} = {2}", EventSystem, EventName, e.EventID);
             int i, c;
             Object o;
             c = e.Args.Length;
@@ -127,12 +128,38 @@ namespace CryEngine
                 o = e.Args[i];
                 Debug.LogAlways("Arg {0}/{1}: {2} {3}", i+1, c, o.GetType().Name, o);
             }
-			SendEvent("MySystemEvent", "TestEvent2", new object[2] { EventName, EventID });
-
-			//Events(null, new UIEventArgs());
+			//SendEvent("MySystemEvent", "TestEvent2", new object[2] { EventName, EventID });
+			if (Events != null)
+				Events(null, e);
 		}
 
+		public static void OnInit()
+		{
+		}
 
+		public static void OnShutdown()
+		{
+		}
+
+		public static void OnReload()
+		{
+		}
+
+		public static void OnReset()
+		{
+		}
+
+		public static void OnUpdate(float delta)
+		{
+		}
+
+		/// <summary>
+		/// Registers an event to the system
+		/// </summary>
+		/// <param name="eventsystem">The name of the eventsystem this is registered to</param>
+		/// <param name="direction">Event direction (system -> UI or UI -> system)</param>
+		/// <param name="desc">Descriptor of the event</param>
+		/// <returns>-1 if registration failed, event ID otherwise</returns>
         public static int RegisterEvent(string eventsystem, UIEventDirection direction, UIEventDescription desc)
         {
             return _RegisterEvent(eventsystem, (int)direction, desc);
@@ -142,6 +169,7 @@ namespace CryEngine
         {
             return _RegisterToEventSystem(eventsystem, (int)direction);
         }
+
         public static void UnregisterFromEventSystem(string eventsystem, UIEventDirection direction)
         {
             _UnregisterFromEventSystem(eventsystem, (int)direction);
@@ -166,7 +194,8 @@ namespace CryEngine
 
         public static void TestInit()
         {
-            bool b;
+			Debug.LogAlways("Test init called!");
+			bool b;
             b = RegisterToEventSystem("MenuEvents", UIEventDirection.UIToSystem);
             Debug.LogAlways("RegisterToEventSystem(\"MenuEvents\") == {0}", b);
             UIEventDescription desc = new UIEventDescription("TestEvent", "TestEventDName", "TestEventDescription");
@@ -178,10 +207,9 @@ namespace CryEngine
             i = RegisterEvent("MyEvent2", UIEventDirection.UIToSystem, desc);
             Debug.LogAlways("RegisterEvent2 == {0}", i);
 
-			desc = new UIEventDescription("BoidCount", "BoidCount", "Sets the boid count");
+			/*desc = new UIEventDescription("BoidCount", "BoidCount", "Sets the boid count");
 			desc.Params = new Object[1];
 			desc.Params[0] = new UIParameterDescription("Count", "Count", "Number of available boids", UIParameterType.Int);
-			i = RegisterEvent("AngryBoids", UIEventDirection.SystemToUI, desc);
+			i = RegisterEvent("AngryBoids", UIEventDirection.SystemToUI, desc);*/
         }
-	}
 }
