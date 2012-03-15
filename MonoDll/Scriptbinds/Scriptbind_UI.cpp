@@ -177,6 +177,8 @@ CScriptbind_UI::CScriptbind_UI()
 	REGISTER_METHOD(SendNamedEvent);
 
 	s_pInstance = this;
+	if (gEnv->pFlashUI)
+		gEnv->pFlashUI->RegisterModule(this, "CScriptbind_UI");
 }
 
 CScriptbind_UI::~CScriptbind_UI()
@@ -186,6 +188,8 @@ CScriptbind_UI::~CScriptbind_UI()
 	
 	m_EventMapS2UI.clear();
 	m_EventMapUI2S.clear();
+	if (gEnv->pFlashUI)
+		gEnv->pFlashUI->UnregisterModule(this);
 }
 
 void CScriptbind_UI::OnReset()
@@ -195,6 +199,38 @@ void CScriptbind_UI::OnReset()
 #ifdef _DEBUG
 	m_pUIClass->CallMethod("TestInit", NULL, true);
 #endif //_DEBUG
+}
+
+
+
+void CScriptbind_UI::Init()
+{
+	m_pUIClass->CallMethod("OnInit", NULL, true);
+}
+
+void CScriptbind_UI::Shutdown()
+{
+	m_pUIClass->CallMethod("OnShutdown", NULL, true);
+}
+
+void CScriptbind_UI::Reload()
+{
+	m_pUIClass->CallMethod("OnReload", NULL, true);
+}
+
+void CScriptbind_UI::Reset()
+{
+	m_pUIClass->CallMethod("OnReset", NULL, true);
+}
+
+void CScriptbind_UI::Update(float fDelta)
+{
+	IMonoArray *pArgs = gEnv->pMonoScriptSystem->GetConverter()->CreateArray(1);
+	if (!pArgs)
+		return;
+	pArgs->Insert(fDelta);
+	m_pUIClass->CallMethod("OnUpdate", pArgs, true);
+	SAFE_RELEASE(pArgs);
 }
 
 void CScriptbind_UI::OnEvent(const char *SystemName, const char *EventName, const SUIEvent& event)
@@ -254,21 +290,23 @@ int CScriptbind_UI::RegisterEvent(mono::string eventsystem, int direction, SMono
 		return -1;
 
 	SUIEventDesc uidesc(ToCryString(desc.Name), ToCryString(desc.DisplayName), ToCryString(desc.Description), desc.IsDynamic, ToCryString(desc.DynamicName), ToCryString(desc.DynamicDescription));
-	pArray = new CScriptArray(desc.Params);
-	if (!pArray)
-		return -1;
+	if (desc.Params){
+		pArray = new CScriptArray(desc.Params);
+		if (!pArray)
+			return -1;
 
-	c = pArray->GetSize();
-	for (i = 0; i < c; i++)
-	{
-		pObject = pArray->GetItem(i);
-		if (!pObject)
-			return delete pArray, -1;
+		c = pArray->GetSize();
+		for (i = 0; i < c; i++)
+		{
+			pObject = pArray->GetItem(i);
+			if (!pObject)
+				return delete pArray, -1;
 
-		param = pObject->Unbox<SMonoUIParameterDesc>();
-		uidesc.Params.push_back(SUIParameterDesc(ToCryString(param.Name), ToCryString(param.DisplayName), ToCryString(param.Description), (SUIParameterDesc::EUIParameterType)param.Type));
+			param = pObject->Unbox<SMonoUIParameterDesc>();
+			uidesc.Params.push_back(SUIParameterDesc(ToCryString(param.Name), ToCryString(param.DisplayName), ToCryString(param.Description), (SUIParameterDesc::EUIParameterType)param.Type));
+		}
+		delete pArray;
 	}
-	delete pArray;
 
 	return (int)pCB->GetEventSystem()->RegisterEvent(uidesc);
 }
@@ -312,24 +350,26 @@ void CScriptbind_UI::SendEvent(mono::string eventsystem, int event, mono::array 
 	if (!pCB)
 		return;
 
-	pArray = new CScriptArray(args);
-	if (!pArray)
-		return;
-
-	c = pArray->GetSize();
-	for (i = 0; i < c; i++)
-	{
-		pObject = pArray->GetItem(i);
-		if (!pObject)
-		{
-			delete pArray;
+	if (args){
+		pArray = new CScriptArray(args);
+		if (!pArray)
 			return;
-		}
 
-		uiargs.AddArgument(MAVToUIDT(pObject->GetAnyValue()));
+		c = pArray->GetSize();
+		for (i = 0; i < c; i++)
+		{
+			pObject = pArray->GetItem(i);
+			if (!pObject)
+			{
+				delete pArray;
+				return;
+			}
+
+			uiargs.AddArgument(MAVToUIDT(pObject->GetAnyValue()));
+		}
+		delete pArray;
 	}
 
-	delete pArray;
 	pCB->GetEventSystem()->SendEvent(SUIEvent((uint)event, uiargs));
 }
 
