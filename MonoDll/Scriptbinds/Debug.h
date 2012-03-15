@@ -4,7 +4,7 @@
 //////////////////////////////////////////////////////////////////////////
 // Scriptbind to hold various debugging methods
 //////////////////////////////////////////////////////////////////////////
-// 01/03/2011 : Created by Filip 'i59' Lundgren
+// 01/03/2012 : Created by Filip 'i59' Lundgren
 ////////////////////////////////////////////////////////////////////////*/
 
 #ifndef __SCRIPTBIND_DEBUG__
@@ -15,11 +15,11 @@
 
 struct IPersistantDebug;
 
-class CScriptBind_Debug : public IMonoScriptBind
+class CScriptbind_Debug : public IMonoScriptBind
 {
 public:
-	CScriptBind_Debug();
-	~CScriptBind_Debug() {}
+	CScriptbind_Debug();
+	~CScriptbind_Debug() {}
 
 protected:
 
@@ -37,7 +37,6 @@ protected:
 	static IPersistantDebug *GetIPersistentDebug();
 
 	// IMonoScriptBind
-	virtual const char *GetNamespace() override { return "CryEngine"; }
 	virtual const char *GetClassName() override { return "Debug"; }
 	// ~IMonoScriptBind
 };

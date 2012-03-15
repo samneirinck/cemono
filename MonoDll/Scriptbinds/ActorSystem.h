@@ -13,11 +13,11 @@
 
 #include <MonoCommon.h>
 
-class CScriptBind_ActorSystem : public IMonoScriptBind
+class CActorSystem : public IMonoScriptBind
 {
 public:
-	CScriptBind_ActorSystem();
-	~CScriptBind_ActorSystem() {}
+	CActorSystem();
+	~CActorSystem() {}
 
 protected:
 	// IMonoScriptBind

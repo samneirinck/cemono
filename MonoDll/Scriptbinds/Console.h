@@ -12,11 +12,11 @@
 #include <MonoCommon.h>
 #include <IMonoScriptBind.h>
 
-class CScriptBind_Console : public IMonoScriptBind
+class CScriptbind_Console : public IMonoScriptBind
 {
 public:
-	CScriptBind_Console();
-	virtual ~CScriptBind_Console() {}
+	CScriptbind_Console();
+	virtual ~CScriptbind_Console() {}
 
 protected:
 	// IMonoScriptBind
@@ -48,15 +48,15 @@ protected:
 	static void SetCVarString(mono::string, mono::string);
 };
 
-class CScriptBind_Time : public IMonoScriptBind
+class CTime : public IMonoScriptBind
 {
 public:
-	CScriptBind_Time()
+	CTime()
 	{
 		REGISTER_METHOD(GetFrameStartTime);
 	}
 
-	~CScriptBind_Time() {}
+	~CTime() {}
 
 protected:
 	// IMonoScriptBind

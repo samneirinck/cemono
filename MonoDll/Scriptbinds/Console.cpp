@@ -8,7 +8,7 @@
 
 #include "MonoScriptSystem.h"
 
-CScriptBind_Console::CScriptBind_Console()
+CScriptbind_Console::CScriptbind_Console()
 {
 	// Logging
 	//REGISTER_METHOD(LogAlways);
@@ -52,7 +52,7 @@ extern "C"
 	}
 }
 
-void CScriptBind_Console::OnMonoCmd(IConsoleCmdArgs *cmdArgs)
+void CScriptbind_Console::OnMonoCmd(IConsoleCmdArgs *cmdArgs)
 {
 	string cmdLine = cmdArgs->GetCommandLine();
 
@@ -65,27 +65,27 @@ void CScriptBind_Console::OnMonoCmd(IConsoleCmdArgs *cmdArgs)
 	gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("CryConsole")->CallMethod("OnMonoCmd", &args, true);
 }
 
-void CScriptBind_Console::RegisterCommand(mono::string cmd, mono::string desc, EVarFlags flags)
+void CScriptbind_Console::RegisterCommand(mono::string cmd, mono::string desc, EVarFlags flags)
 {
 	gEnv->pConsole->AddCommand(ToCryString(cmd), OnMonoCmd, flags, ToCryString(desc));
 }
 
-void CScriptBind_Console::RegisterCVarFloat(mono::string name, float &val, float defaultVal, EVarFlags flags, mono::string description)
+void CScriptbind_Console::RegisterCVarFloat(mono::string name, float &val, float defaultVal, EVarFlags flags, mono::string description)
 {
 	gEnv->pConsole->Register(ToCryString(name), &val, defaultVal, flags, ToCryString(description));
 }
 
-void CScriptBind_Console::RegisterCVarInt(mono::string name, int &val, int defaultVal, EVarFlags flags, mono::string description)
+void CScriptbind_Console::RegisterCVarInt(mono::string name, int &val, int defaultVal, EVarFlags flags, mono::string description)
 {
 	gEnv->pConsole->Register(ToCryString(name), &val, defaultVal, flags, ToCryString(description));
 }
 
-void CScriptBind_Console::RegisterCVarString(mono::string name, mono::string &val, mono::string defaultVal, EVarFlags flags, mono::string description)
+void CScriptbind_Console::RegisterCVarString(mono::string name, mono::string &val, mono::string defaultVal, EVarFlags flags, mono::string description)
 {
 	//gEnv->pConsole->Register(ToCryString(name), &val, ToCryString(defaultVal), flags, ToCryString(description));
 }
 
-bool CScriptBind_Console::HasCVar(mono::string name)
+bool CScriptbind_Console::HasCVar(mono::string name)
 {
 	if(ICVar *pCVar = gEnv->pConsole->GetCVar(ToCryString(name)))
 		return true;
@@ -93,7 +93,7 @@ bool CScriptBind_Console::HasCVar(mono::string name)
 	return false;
 }
 
-float CScriptBind_Console::GetCVarFloat(mono::string name)
+float CScriptbind_Console::GetCVarFloat(mono::string name)
 {
 	if(ICVar *pCVar = gEnv->pConsole->GetCVar(ToCryString(name)))
 		return pCVar->GetFVal();
@@ -101,7 +101,7 @@ float CScriptBind_Console::GetCVarFloat(mono::string name)
 	return 0.0f;
 }
 
-int CScriptBind_Console::GetCVarInt(mono::string name)
+int CScriptbind_Console::GetCVarInt(mono::string name)
 {
 	if(ICVar *pCVar = gEnv->pConsole->GetCVar(ToCryString(name)))
 		return pCVar->GetIVal();
@@ -109,7 +109,7 @@ int CScriptBind_Console::GetCVarInt(mono::string name)
 	return 0;
 }
 
-mono::string CScriptBind_Console::GetCVarString(mono::string name)
+mono::string CScriptbind_Console::GetCVarString(mono::string name)
 {
 	if(ICVar *pCVar = gEnv->pConsole->GetCVar(ToCryString(name)))
 		return (mono::string )ToMonoString(pCVar->GetString());
@@ -117,19 +117,19 @@ mono::string CScriptBind_Console::GetCVarString(mono::string name)
 	return (mono::string )ToMonoString("");
 }
 
-void CScriptBind_Console::SetCVarFloat(mono::string name, float val)
+void CScriptbind_Console::SetCVarFloat(mono::string name, float val)
 {
 	if(ICVar *pCVar = gEnv->pConsole->GetCVar(ToCryString(name)))
 		pCVar->Set(val);
 }
 
-void CScriptBind_Console::SetCVarInt(mono::string name, int val)
+void CScriptbind_Console::SetCVarInt(mono::string name, int val)
 {
 	if(ICVar *pCVar = gEnv->pConsole->GetCVar(ToCryString(name)))
 		pCVar->Set(val);
 }
 
-void CScriptBind_Console::SetCVarString(mono::string name, mono::string val)
+void CScriptbind_Console::SetCVarString(mono::string name, mono::string val)
 {
 	if(ICVar *pCVar = gEnv->pConsole->GetCVar(ToCryString(name)))
 		pCVar->Set(ToCryString(val));

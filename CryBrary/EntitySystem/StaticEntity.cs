@@ -94,6 +94,11 @@ namespace CryEngine
 		extern internal static Vec3 _GetVelocity(uint entityId);
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static void _SetVelocity(uint entityId, Vec3 velocity);
+
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static string _GetMaterial(uint entityId);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static void _SetMaterial(uint entityId, string material);
 		#endregion
 
 		public StaticEntity() { }

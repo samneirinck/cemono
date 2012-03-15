@@ -22,10 +22,10 @@ struct MonoCamera
 	float FieldOfView;
 };
 
-class CScriptBind_Renderer : public IMonoScriptBind
+class CScriptbind_Renderer : public IMonoScriptBind
 {
 public:
-	CScriptBind_Renderer();
+	CScriptbind_Renderer();
 
 protected:
 	// IMonoScriptBind

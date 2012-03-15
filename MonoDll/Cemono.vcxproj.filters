@@ -81,9 +81,6 @@
     <ClInclude Include="MonoConverter.h">
       <Filter>Mono</Filter>
     </ClInclude>
-    <ClInclude Include="Scriptbinds\ScriptBind_GameRules.h">
-      <Filter>ScriptBinds</Filter>
-    </ClInclude>
     <ClInclude Include="Headers\MonoAnyValue.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
@@ -92,18 +89,6 @@
     </ClInclude>
     <ClInclude Include="MonoEntity.h">
       <Filter>EntitySystem</Filter>
-    </ClInclude>
-    <ClInclude Include="ScriptBinds\ScriptBind_StaticEntity.h">
-      <Filter>ScriptBinds</Filter>
-    </ClInclude>
-    <ClInclude Include="Scriptbinds\ScriptBind_3DEngine.h">
-      <Filter>ScriptBinds\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Scriptbinds\ScriptBind_Renderer.h">
-      <Filter>ScriptBinds\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Scriptbinds\ScriptBind_PhysicalWorld.h">
-      <Filter>ScriptBinds\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Scriptbinds\ItemSystem.h">
       <Filter>ScriptBinds</Filter>
@@ -117,11 +102,32 @@
     <ClInclude Include="ScriptManager.h">
       <Filter>Mono</Filter>
     </ClInclude>
-    <ClInclude Include="Scriptbinds\ScriptBind_Debug.h">
-      <Filter>ScriptBinds\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="Scriptbinds\Scriptbind_UI.h">
       <Filter>ScriptBinds</Filter>
+    </ClInclude>
+    <ClInclude Include="Scriptbinds\3DEngine.h">
+      <Filter>ScriptBinds\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Scriptbinds\Debug.h">
+      <Filter>ScriptBinds\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Scriptbinds\PhysicalWorld.h">
+      <Filter>ScriptBinds\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Scriptbinds\Renderer.h">
+      <Filter>ScriptBinds\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Scriptbinds\GameRules.h">
+      <Filter>ScriptBinds</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptBinds\StaticEntity.h">
+      <Filter>ScriptBinds</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptBinds\MaterialManager.h">
+      <Filter>ScriptBinds\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Scriptbinds\ParticleSystem.h">
+      <Filter>ScriptBinds\Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -169,26 +175,11 @@
     <ClCompile Include="MonoConverter.cpp">
       <Filter>Mono</Filter>
     </ClCompile>
-    <ClCompile Include="Scriptbinds\ScriptBind_GameRules.cpp">
-      <Filter>ScriptBinds</Filter>
-    </ClCompile>
     <ClCompile Include="Scriptbinds\ActorSystem.cpp">
       <Filter>ActorSystem</Filter>
     </ClCompile>
     <ClCompile Include="MonoEntity.cpp">
       <Filter>EntitySystem</Filter>
-    </ClCompile>
-    <ClCompile Include="ScriptBinds\ScriptBind_StaticEntity.cpp">
-      <Filter>ScriptBinds</Filter>
-    </ClCompile>
-    <ClCompile Include="Scriptbinds\ScriptBind_3DEngine.cpp">
-      <Filter>ScriptBinds\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Scriptbinds\ScriptBind_PhysicalWorld.cpp">
-      <Filter>ScriptBinds\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Scriptbinds\ScriptBind_Renderer.cpp">
-      <Filter>ScriptBinds\Engine</Filter>
     </ClCompile>
     <ClCompile Include="Scriptbinds\ItemSystem.cpp">
       <Filter>ScriptBinds</Filter>
@@ -199,11 +190,32 @@
     <ClCompile Include="ScriptManager.cpp">
       <Filter>Mono</Filter>
     </ClCompile>
-    <ClCompile Include="Scriptbinds\ScriptBind_Debug.cpp">
-      <Filter>ScriptBinds\Engine</Filter>
-    </ClCompile>
     <ClCompile Include="Scriptbinds\Scriptbind_UI.cpp">
       <Filter>ScriptBinds</Filter>
+    </ClCompile>
+    <ClCompile Include="Scriptbinds\3DEngine.cpp">
+      <Filter>ScriptBinds\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Scriptbinds\Debug.cpp">
+      <Filter>ScriptBinds\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Scriptbinds\PhysicalWorld.cpp">
+      <Filter>ScriptBinds\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Scriptbinds\Renderer.cpp">
+      <Filter>ScriptBinds\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Scriptbinds\GameRules.cpp">
+      <Filter>ScriptBinds</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptBinds\StaticEntity.cpp">
+      <Filter>ScriptBinds</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptBinds\MaterialManager.cpp">
+      <Filter>ScriptBinds\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Scriptbinds\ParticleSystem.cpp">
+      <Filter>ScriptBinds\Engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

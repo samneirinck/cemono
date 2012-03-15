@@ -163,7 +163,7 @@ namespace CryEngine
 		/// <param name="sphere"></param>
 		/// <param name="point">The point to test.</param>
 		/// <param name="result">When the method completes, contains the closest point between the two objects;
-		/// or, if the point is directly in the center of the sphere, contains <see cref="CryEngine.new Vector3()"/>.</param>
+		/// or, if the point is directly in the center of the sphere, contains <see cref="CryEngine.Vec3"/>.</param>
 		public static void ClosestPointSpherePoint(ref BoundingSphere sphere, ref Vec3 point, out Vec3 result)
 		{
 			//Source: Jorgy343
@@ -187,7 +187,7 @@ namespace CryEngine
 		/// <param name="sphere1">The first sphere to test.</param>
 		/// <param name="sphere2">The second sphere to test.</param>
 		/// <param name="result">When the method completes, contains the closest point between the two objects;
-		/// or, if the point is directly in the center of the sphere, contains <see cref="CryEngine.new Vector3()"/>.</param>
+		/// or, if the point is directly in the center of the sphere, contains <see cref="CryEngine.Vec3"/>.</param>
 		/// <remarks>
 		/// If the two spheres are overlapping, but not directly ontop of each other, the closest point
 		/// is the 'closest' point of intersection. This can also be considered is the deepest point of
@@ -378,7 +378,7 @@ namespace CryEngine
 		/// <param name="ray1">The first ray to test.</param>
 		/// <param name="ray2">The second ray to test.</param>
 		/// <param name="point">When the method completes, contains the point of intersection,
-		/// or <see cref="CryEngine.new Vector3()"/> if there was no intersection.</param>
+		/// or <see cref="CryEngine.Vec3"/> if there was no intersection.</param>
 		/// <returns>Whether the two objects intersect.</returns>
 		/// <remarks>
 		/// This method performs a ray vs ray intersection test based on the following formula
@@ -516,7 +516,7 @@ namespace CryEngine
 		/// <param name="ray">The ray to test.</param>
 		/// <param name="plane">The plane to test</param>
 		/// <param name="point">When the method completes, contains the point of intersection,
-		/// or <see cref="CryEngine.new Vector3()"/> if there was no intersection.</param>
+		/// or <see cref="CryEngine.Vec3"/> if there was no intersection.</param>
 		/// <returns>Whether the two objects intersected.</returns>
 		public static bool RayIntersectsPlane(ref Ray ray, ref Plane plane, out Vec3 point)
 		{
@@ -649,7 +649,7 @@ namespace CryEngine
 		/// <param name="vertex2">The second vertex of the triagnle to test.</param>
 		/// <param name="vertex3">The third vertex of the triangle to test.</param>
 		/// <param name="point">When the method completes, contains the point of intersection,
-		/// or <see cref="CryEngine.new Vector3()"/> if there was no intersection.</param>
+		/// or <see cref="CryEngine.Vec3"/> if there was no intersection.</param>
 		/// <returns>Whether the two objects intersected.</returns>
 		public static bool RayIntersectsTriangle(ref Ray ray, ref Vec3 vertex1, ref Vec3 vertex2, ref Vec3 vertex3, out Vec3 point)
 		{
@@ -782,7 +782,7 @@ namespace CryEngine
 		/// <param name="ray">The ray to test.</param>
 		/// <param name="box">The box to test.</param>
 		/// <param name="point">When the method completes, contains the point of intersection,
-		/// or <see cref="CryEngine.new Vector3()"/> if there was no intersection.</param>
+		/// or <see cref="CryEngine.Vec3"/> if there was no intersection.</param>
 		/// <returns>Whether the two objects intersected.</returns>
 		public static bool RayIntersectsBox(ref Ray ray, ref BoundingBox box, out Vec3 point)
 		{
@@ -844,7 +844,7 @@ namespace CryEngine
 		/// <param name="ray">The ray to test.</param>
 		/// <param name="sphere">The sphere to test.</param>
 		/// <param name="point">When the method completes, contains the point of intersection,
-		/// or <see cref="CryEngine.new Vector3()"/> if there was no intersection.</param>
+		/// or <see cref="CryEngine.Vec3"/> if there was no intersection.</param>
 		/// <returns>Whether the two objects intersected.</returns>
 		public static bool RayIntersectsSphere(ref Ray ray, ref BoundingSphere sphere, out Vec3 point)
 		{
