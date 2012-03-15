@@ -12,16 +12,8 @@ CScriptbind_MaterialManager::CScriptbind_MaterialManager()
 
 	REGISTER_METHOD(CreateMaterial);
 	REGISTER_METHOD(LoadMaterial);
-}
 
-mono::string CScriptbind_MaterialManager::GetSurfaceTypeName(int matId)
-{
-	const char *surfaceType = "";
-
-	if(ISurfaceType *pSurfaceType = m_materials[matId]->GetSurfaceType())
-		surfaceType = pSurfaceType->GetName();
-
-	return ToMonoString(surfaceType);
+	REGISTER_METHOD(GetSurfaceTypeName);
 }
 
 int CScriptbind_MaterialManager::CreateMaterial(mono::string name)
@@ -54,4 +46,14 @@ int CScriptbind_MaterialManager::LoadMaterial(mono::string name, bool makeIfNotF
 	}
 
 	return -1;
+}
+
+mono::string CScriptbind_MaterialManager::GetSurfaceTypeName(int matId)
+{
+	const char *surfaceType = "";
+
+	if(ISurfaceType *pSurfaceType = m_materials[matId]->GetSurfaceType())
+		surfaceType = pSurfaceType->GetName();
+
+	return ToMonoString(surfaceType);
 }
