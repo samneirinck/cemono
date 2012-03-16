@@ -134,7 +134,6 @@
     <Compile Include="ActorSystem\Player.cs" />
     <Compile Include="Engine\Material.cs" />
     <Compile Include="Engine\ParticleEffect.cs" />
-    <Compile Include="Engine\ParticleSystem.cs" />
     <Compile Include="EntitySystem\EntityId.cs" />
     <Compile Include="EntitySystem\Physics.cs" />
     <Compile Include="Misc\Collision.cs" />
@@ -147,7 +146,7 @@
     <Compile Include="Math\Ray.cs" />
     <Compile Include="Math\Vec2.cs" />
     <Compile Include="Math\Vec4.cs" />
-    <Compile Include="UI.cs" />
+    <Compile Include="UI\UI.cs" />
     <Compile Include="Serialization\AppDomainSerializer.cs" />
     <Compile Include="Misc\Convert.cs" />
     <Compile Include="Math\Math.cs" />

@@ -36,7 +36,8 @@ namespace CryEngine
 			{ 
 				PathUtils.GetScriptFolder(ScriptType.Entity),
 				PathUtils.GetScriptFolder(ScriptType.GameRules),
-				PathUtils.GetScriptFolder(ScriptType.FlowNode) 
+				PathUtils.GetScriptFolder(ScriptType.FlowNode),
+				PathUtils.GetScriptFolder(ScriptType.UIEvent)
 			};
 
 			try
@@ -397,7 +398,7 @@ namespace CryEngine
 		/// </summary>
 		public static void LoadAssembly(Assembly assembly)
 		{
-			var assemblyTypes = assembly.GetTypes().Where(type => type.Implements(typeof(CryScriptInstance)));
+			var assemblyTypes = assembly.GetTypes().Where(type => type.Implements(typeof(CryScriptInstance)) || type.ContainsAttribute<UIEventAttribute>());
 
 			Parallel.For(0, assemblyTypes.Count(), i =>
 			{
@@ -420,11 +421,11 @@ namespace CryEngine
 		/// <param name="type"></param>
 		public static void ProcessType(Type type)
 		{
-			if(type.IsAbstract)
-				throw new TypeLoadException("Failed to load entity of type {0}: abstract entities are not supported");
-
 			if(type != null && !type.ContainsAttribute<ExcludeFromCompilationAttribute>())
 			{
+				if(type.IsAbstract)
+					throw new TypeLoadException(string.Format("Failed to load entity of type {0}: abstract entities are not supported", type.Name));
+
 				CompiledScripts.Add(new CryScript(type));
 
 				string className = type.Name;
@@ -446,6 +447,8 @@ namespace CryEngine
 				}
 				else if(type.Implements(typeof(FlowNode)))
 					LoadFlowNode(type, className);
+				else if(type.ContainsAttribute<UIEventAttribute>())
+					UI.LoadEvent(type);
 			}
 		}
 
@@ -560,7 +563,9 @@ namespace CryEngine
 		/// </summary>
 		Actor,
 		/// <summary>
-		/// 
+		/// </summary>
+		UIEvent,
+		/// <summary>
 		/// </summary>
 		EditorForm,
 	}

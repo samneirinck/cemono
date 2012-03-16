@@ -35,7 +35,7 @@ namespace CryEngine
 		/// <param name="pos"></param>
 		/// <param name="dir">Is set to Vec3.Up if null</param>
 		/// <param name="scale"></param>
-		public void Spawn(bool independent, Vec3 pos, Vec3? dir = null, float scale = 1f)
+		public void Spawn(Vec3 pos, Vec3? dir = null, float scale = 1f, bool independent = true)
 		{
 			_Spawn(Id, independent, pos, dir ?? Vec3.Up, scale);
 		}

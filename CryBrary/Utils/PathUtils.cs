@@ -90,9 +90,7 @@ namespace CryEngine
                     folder = @"Entities/Actor";
                     break;
                 case ScriptType.Entity:
-                    folder = "Entities";
-                    break;
-                case ScriptType.StaticEntity:
+				case ScriptType.StaticEntity:
                     folder = "Entities";
                     break;
                 case ScriptType.FlowNode:
@@ -103,6 +101,9 @@ namespace CryEngine
                     break;
 				case ScriptType.EditorForm:
 					folder = "EditorForms";
+					break;
+				case ScriptType.UIEvent:
+					folder = "UI";
 					break;
             }
 
