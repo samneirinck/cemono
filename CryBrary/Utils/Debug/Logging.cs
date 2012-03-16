@@ -6,14 +6,7 @@ using System.ComponentModel;
 namespace CryEngine
 {
     public static partial class Debug
-    {
-        [DllImport("CryMono.dll")]
-        extern static void _LogAlways(string msg);
-        [DllImport("CryMono.dll")]
-        extern static void _Log(string msg);
-        [DllImport("CryMono.dll")]
-        extern static void _Warning(string msg);
-        
+    { 
         /// <summary>
         /// Logs a message to the console
         /// </summary>
@@ -21,7 +14,7 @@ namespace CryEngine
         /// <param name="args"></param>
         public static void Log(string format, params object[] args)
         {
-            _Log(String.Format(format, args));
+            NativeMethods._Log(String.Format(format, args));
         }
 
         /// <summary>
@@ -29,7 +22,7 @@ namespace CryEngine
         /// </summary>
         public static void Log(string msg)
         {
-            _Log(msg);
+            NativeMethods._Log(msg);
         }
 
         /// <summary>
@@ -39,7 +32,7 @@ namespace CryEngine
         /// <param name="args"></param>
         public static void LogAlways(string format, params object[] args)
         {
-            _LogAlways(String.Format(format, args));
+            NativeMethods._LogAlways(String.Format(format, args));
         }
 
         /// <summary>
@@ -47,7 +40,7 @@ namespace CryEngine
         /// </summary>
         public static void LogAlways(string msg)
         {
-            _LogAlways(msg);
+            NativeMethods._LogAlways(msg);
         }
 
 		/// <summary>
@@ -67,7 +60,7 @@ namespace CryEngine
         /// <param name="args"></param>
         public static void Warning(string format, params object[] args)
         {
-            _Warning(String.Format(format, args));
+            NativeMethods._Warning(String.Format(format, args));
         }
 
         /// <summary>
@@ -75,7 +68,7 @@ namespace CryEngine
         /// </summary>
         public static void Warning(string msg)
         {
-            _Warning(msg);
+            NativeMethods._Warning(msg);
         }
     }
 }
