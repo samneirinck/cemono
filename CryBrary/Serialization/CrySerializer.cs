@@ -34,7 +34,9 @@ namespace CryEngine.Serialization
 
             System.Type type = null;
 
-            type = ScriptCompiler.CompiledScripts.Find(x => x.ScriptType.FullName.Equals(className)).ScriptType;
+            var script = ScriptCompiler.CompiledScripts.FirstOrDefault(x => x.ScriptType.FullName.Equals(className));
+            if(script != default(CryScript))
+                type = script.ScriptType;
 
             type = type ?? System.Type.GetType(className);
 

@@ -21,7 +21,7 @@ namespace CryEngine
 	{
 		public static bool Initialize()
 		{
-			CompiledScripts = new List<CryScript>();
+			CompiledScripts = new Collection<CryScript>();
 			FlowNodes = new Collection<StoredNode>();
 
             assemblyReferenceHandler = new AssemblyReferenceHandler();
@@ -78,9 +78,11 @@ namespace CryEngine
 			if(scriptName.Length < 1)
 				throw new ArgumentException("Empty script name passed to InstantiateClass");
 
-			int index = CompiledScripts.FindIndex(x => x.ScriptType.Name.Equals(scriptName));
-			if(index == -1)
+            var script = CompiledScripts.FirstOrDefault(x => x.ScriptType.Name.Equals(scriptName));
+            if(script == default(CryScript))
 				throw new ScriptNotFoundException(string.Format("Compiled script {0} could not be found.", scriptName));
+
+            int index = CompiledScripts.IndexOf(script);
 
 			AddScriptInstance(System.Activator.CreateInstance(CompiledScripts[index].ScriptType, constructorParams) as CryScriptInstance, index);
 
@@ -96,7 +98,11 @@ namespace CryEngine
 			if(instance == null)
 				return -1;
 
-			return AddScriptInstance(instance, CompiledScripts.FindIndex(x => x.ScriptType == instance.GetType()));
+            var script = CompiledScripts.FirstOrDefault(x => x.ScriptType == instance.GetType());
+            if (script == default(CryScript))
+                throw new ScriptNotFoundException(string.Format("Compiled script {0} could not be found.", instance.GetType().Name));
+
+            return AddScriptInstance(instance, CompiledScripts.IndexOf(script));
 		}
 
 		/// <summary>
@@ -133,19 +139,17 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="scriptId"></param>
 		/// <param name="scriptName"></param>
-		public static void RemoveInstance(int scriptId, string scriptName = "")
+		public static void RemoveInstance(int scriptId, Type scriptType = null)
 		{
-			if(scriptName.Length > 0)
+			if(scriptType != null)
 			{
-				int i = CompiledScripts.FindIndex(x => x.ScriptType.Name.Equals(scriptName));
-				if(i == -1)
-					throw new ScriptNotFoundException(string.Format("Failed to find script by name {0}", scriptName));
-
-				CryScript script = CompiledScripts[i];
+				var script = CompiledScripts.FirstOrDefault(x => x.ScriptType == scriptType);
+				if(script != default(CryScript))
+                    throw new ScriptNotFoundException(string.Format("Failed to find script by name {0}", scriptType.Name));
 
 				RemoveInstanceFromScriptById(ref script, scriptId);
 
-				CompiledScripts[i] = script;
+				CompiledScripts[CompiledScripts.IndexOf(script)] = script;
 			}
 			else
 			{
@@ -307,32 +311,35 @@ namespace CryEngine
 		/// <summary>
 		/// Compiles the scripts and compiles them into an assembly.
 		/// </summary>
-		/// <param name="compilationParams"></param>
+		/// <param name="compilationParameters"></param>
 		/// <returns></returns>
 		/// <exception cref="System.IO.DirectoryNotFoundException">Thrown when one or more script folders could not be located.</exception>
 		/// <exception cref="System.ArgumentNullException">Thrown if the compiled assembly could not be loaded.</exception>
 		/// <exception cref="CryEngine.ScriptCompilationException">Thrown if one or more compilation errors occur.</exception>
-		public static void CompileScripts(ref CompilationParameters compilationParams)
+		public static void CompileScripts(ref CompilationParameters compilationParameters)
 		{
-			if(compilationParams.Folders == null)
-				throw new ArgumentException("Supplied Folders array in CompilationParameters argument was null");
-			else if(compilationParams.Folders.Length < 1)
-				throw new ArgumentException("Supplied Folders array in CompilationParameters did not contain any strings");
+            if (compilationParameters == null)
+                throw new ArgumentException("CompilationParameters was null");
+
+			if(compilationParameters.Folders == null)
+                throw new ArgumentException(message: "Supplied Folders array in CompilationParameters argument was null");
+			else if(compilationParameters.Folders.Length < 1)
+                throw new ArgumentException(message: "Supplied Folders array in CompilationParameters did not contain any strings");
 
 			var scripts = new List<string>();
-			foreach(var directory in compilationParams.Folders)
+			foreach(var directory in compilationParameters.Folders)
 			{
 				if (Directory.Exists(directory))
 					scripts.AddRange(Directory.GetFiles(directory, "*.cs", SearchOption.AllDirectories));
 				else
-					throw new DirectoryNotFoundException(string.Format("Could not compile scripts in {0}; directory not found", directory));
+					throw new DirectoryNotFoundException(message: string.Format("Could not compile scripts in {0}; directory not found", directory));
 			}
 
 			if(scripts.Count <= 0)
 				return;
 
 			CodeDomProvider provider = null;
-			switch(compilationParams.Language)
+			switch(compilationParameters.Language)
 			{
 				case ScriptLanguage.VisualBasic:
 					provider = CodeDomProvider.CreateProvider("VisualBasic");
@@ -375,7 +382,7 @@ namespace CryEngine
 			provider = null;
 			compilerParameters = null;
 
-			compilationParams.Results = results;
+			compilationParameters.Results = results;
 
 			if(results.CompiledAssembly != null) // success
 				LoadAssembly(results.CompiledAssembly);
@@ -389,7 +396,7 @@ namespace CryEngine
 				throw new ScriptCompilationException(compilationError);
 			}
 			else
-				throw new ArgumentNullException("Tried loading a NULL assembly");
+                throw new ArgumentNullException(paramName: "Tried loading a NULL assembly");
 		}
 
 
@@ -532,7 +539,7 @@ namespace CryEngine
 		internal static Collection<StoredNode> FlowNodes;
         private static AssemblyReferenceHandler assemblyReferenceHandler;
 
-		public static List<CryScript> CompiledScripts;
+		public static Collection<CryScript> CompiledScripts;
 		public static int NextScriptId;
 	}
 

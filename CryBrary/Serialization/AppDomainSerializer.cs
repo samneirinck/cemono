@@ -137,7 +137,7 @@ namespace CryEngine.Serialization
 				string typeDirectory = new DirectoryInfo(directory).Name;
 
 				System.Type type = null;
-				var scriptMatch = ScriptCompiler.CompiledScripts.Find(script => (script.ScriptType.Namespace + "." + script.ScriptType.Name).Equals(typeDirectory));
+				var scriptMatch = ScriptCompiler.CompiledScripts.FirstOrDefault(script => (script.ScriptType.Namespace + "." + script.ScriptType.Name).Equals(typeDirectory));
 				if(scriptMatch != default(CryScript))
 					type = scriptMatch.ScriptType;
 
