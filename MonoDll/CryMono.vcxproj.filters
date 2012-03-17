@@ -165,7 +165,7 @@
     <ClCompile Include="MonoObject.cpp">
       <Filter>Wrappers</Filter>
     </ClCompile>
-    <ClCompile Include="CemonoDll.cpp" />
+    <ClCompile Include="CryMonoDll.cpp" />
     <ClCompile Include="MonoConverter.cpp">
       <Filter>Mono</Filter>
     </ClCompile>

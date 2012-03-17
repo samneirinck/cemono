@@ -29,7 +29,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B41C810B-A08F-4AFD-8E68-D4D7ABA39044}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>Cemono</RootNamespace>
+    <RootNamespace>CryMono</RootNamespace>
     <ProjectName>CryMono</ProjectName>
     <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath11)</VCTargetsPath>
   </PropertyGroup>
@@ -127,7 +127,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Full</Optimization>
-      <PreprocessorDefinitions>CEMONO_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalIncludeDirectories>.\;..\..\CryEngine\CryCommon;..\..\CryEngine\CryAction;..\..\SDKs\;..\..\SDKs\boost;Headers;..\</AdditionalIncludeDirectories>
       <StringPooling>
@@ -163,16 +163,13 @@
       <LargeAddressAware>true</LargeAddressAware>
       <ImportLibrary>$(IntDir)$(TargetName).lib</ImportLibrary>
     </Link>
-    <PostBuildEvent>
-      <Command>if exist f:\Games\cemono\Bin32 copy $(TargetPath) f:\Games\cemono\Bin32</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>CEMONO_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalIncludeDirectories>.\;..\..\CryEngine\CryCommon;..\..\CryEngine\CryAction;..\..\SDKs\;..\..\SDKs\boost;Headers;..\</AdditionalIncludeDirectories>
       <StringPooling>true</StringPooling>
@@ -206,9 +203,6 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <ImportLibrary>$(IntDir)$(TargetName).lib</ImportLibrary>
     </Link>
-    <PostBuildEvent>
-      <Command>if exist f:\Games\cemono\Bin32 copy $(TargetPath) f:\Games\cemono\Bin32</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -218,7 +212,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>CEMONO_EXPORTS;_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\;..\..\CryEngine\CryCommon;..\..\CryEngine\CryAction;..\..\SDKs\;..\..\SDKs\boost;Headers;..\</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <StringPooling>true</StringPooling>
@@ -289,7 +283,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>CEMONO_EXPORTS;_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\;..\..\CryEngine\CryCommon;..\..\CryEngine\CryAction;..\..\SDKs\;..\..\SDKs\boost;Headers;..\</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <MultiProcessorCompilation>
@@ -325,7 +319,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>CEMONO_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\;..\..\CryEngine\CryCommon;..\..\CryEngine\CryAction;..\..\SDKs\;..\..\SDKs\boost;Headers;..\</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <MultiProcessorCompilation>
@@ -410,7 +404,7 @@
     <ClCompile Include="MonoScriptSystem.cpp" />
     <ClCompile Include="MonoArray.cpp" />
     <ClCompile Include="MonoAssembly.cpp" />
-    <ClCompile Include="CemonoDll.cpp" />
+    <ClCompile Include="CryMonoDll.cpp" />
     <ClCompile Include="MonoClass.cpp" />
     <ClCompile Include="MonoEntityClass.cpp" />
     <ClCompile Include="MonoEntityPropertyHandler.cpp" />
