@@ -161,92 +161,92 @@ namespace CryEngine
         /// <summary>
         /// EntityId of the shooter
         /// </summary>
-        public EntityId shooterId;
+        public EntityId ShooterId { get; set; }
         /// <summary>
         /// EntityId of the target which got shot
         /// </summary>
-		public EntityId targetId;
+        public EntityId TargetId { get; set; }
         /// <summary>
         /// EntityId of the weapon
         /// </summary>
-		public EntityId weaponId;
+        public EntityId WeaponId { get; set; }
         /// <summary>
         /// 0 if hit was not caused by a projectile
         /// </summary>
-		public EntityId projectileId;
+        public EntityId ProjectileId { get; set; }
 
         /// <summary>
         /// damage count of the hit
         /// </summary>
-        public float damage;
-        public float impulse;
-        public float radius;
+        public float Damage { get; set; }
+        public float ImpulseStrength { get; set; }
         /// <summary>
         /// radius of the hit
         /// </summary>
-        public float angle;
+        public float Radius { get; set; }
+        public float Angle { get; set; }
         /// <summary>
         /// material id of the surface which got hit
         /// </summary>
-        public int material;
+        public int MaterialId { get; set; }
         /// <summary>
         /// type id of the hit, see IGameRules::GetHitTypeId for more information
         /// </summary>
-        public int type;
+        public int TypeId { get; set; }
         /// <summary>
         /// type of bullet, if hit was of type bullet
         /// </summary>
-        public int bulletType;
+        public int BulletType { get; set; }
 
-        public float damageMin;
+        public float MinimumDamage { get; set; }
         /// <summary>
         /// bullet pierceability
         /// </summary>
-        public float pierce;
+        public float Pierceability { get; set; }
 
-        public int partId;
+        public int PartId { get; set; }
 
         /// <summary>
         /// position of the hit
         /// </summary>
-        public Vec3 pos;
+        public Vec3 Position { get; set; }
         /// <summary>
         /// direction of the hit
         /// </summary>
-        public Vec3 dir;
-        public Vec3 normal;
+        public Vec3 Direction { get; set; }
+        public Vec3 Normal { get; set; }
 
-        public UInt16 projectileClassId;
-        public UInt16 weaponClassId;
+        public UInt16 ProjectileClassId { get; set; }
+        public UInt16 WeaponClassId { get; set; }
 
-        public bool remote;
+        public bool Remote { get; set; }
         /// <summary>
         /// set to true if shot was aimed - i.e. first bullet, zoomed in etc.
         /// </summary>
-        public bool aimed;
+        public bool Aimed { get; set; }
         /// <summary>
         /// true if the hit should knockdown
         /// </summary>
-        public bool knocksDown;
+        public bool KnocksDown { get; set; }
         /// <summary>
         /// true if the hit should knockdown when hit in a leg
         /// </summary>
-        public bool knocksDownLeg;
+        public bool KnocksDownLeg { get; set; }
         /// <summary>
         /// true if the 'shooter' didn't actually shoot, ie. a weapon acting on their behalf did (team perks)
         /// </summary>
-        public bool hitViaProxy;
+        public bool HitViaProxy { get; set; }
         /// <summary>
         /// true if this hit directly results from an explosion
         /// </summary>
-        public bool explosion;
+        public bool Explosion { get; set; }
         /// <summary>
         /// dynamic pierceability reduction
         /// </summary>
-        public float armorHeating;
+        public float ArmorHeating { get; set; }
         /// <summary>
         /// number of surfaces the bullet has penetrated
         /// </summary>
-        public int penetrationCount;
+        public int PenetrationCount { get; set; }
     }
 }
