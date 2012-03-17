@@ -386,6 +386,7 @@
     <ClInclude Include="Scriptbinds\PhysicalWorld.h" />
     <ClInclude Include="Scriptbinds\Renderer.h" />
     <ClInclude Include="ScriptBinds\MaterialManager.h" />
+    <ClInclude Include="Scriptbinds\ViewSystem.h" />
     <ClInclude Include="ScriptBinds\StaticEntity.h" />
     <ClInclude Include="Scriptbinds\Scriptbind_UI.h" />
     <ClInclude Include="ScriptManager.h" />
@@ -417,6 +418,7 @@
     <ClCompile Include="Scriptbinds\PhysicalWorld.cpp" />
     <ClCompile Include="Scriptbinds\Renderer.cpp" />
     <ClCompile Include="ScriptBinds\MaterialManager.cpp" />
+    <ClCompile Include="Scriptbinds\ViewSystem.cpp" />
     <ClCompile Include="ScriptBinds\StaticEntity.cpp" />
     <ClCompile Include="Scriptbinds\Scriptbind_UI.cpp" />
     <ClCompile Include="ScriptManager.cpp" />

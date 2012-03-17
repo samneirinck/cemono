@@ -1,20 +1,8 @@
 #include "StdAfx.h"
 #include "Renderer.h"
 
-#include <IViewSystem.h>
-#include <IGameFramework.h>
-
 CScriptbind_Renderer::CScriptbind_Renderer()
 {
-	REGISTER_METHOD(CreateView);
-	REGISTER_METHOD(RemoveView);
-
-	REGISTER_METHOD(GetActiveView);
-	REGISTER_METHOD(SetActiveView);
-
-	REGISTER_METHOD(GetViewParams);
-	REGISTER_METHOD(SetViewParams);
-
 	REGISTER_METHOD(GetWidth);
 	REGISTER_METHOD(GetHeight);
 
@@ -30,70 +18,11 @@ CScriptbind_Renderer::CScriptbind_Renderer()
 	REGISTER_METHOD(SetRenderTarget);
 }
 
-// Externals below
-EntityId CScriptbind_Renderer::CreateView()
-{
-	if (IViewSystem *pViewSystem = gEnv->pGameFramework->GetIViewSystem())
-		return pViewSystem->GetViewId(pViewSystem->CreateView());
-
-	return 0;
-}
-
 void CScriptbind_Renderer::DrawTextToScreen(float xpos, float ypos, float fontSize, ColorF color, bool center, mono::string text)
 {
 	float actualColor[] = { color.r, color.g, color.b, color.a };
 
 	gEnv->pRenderer->Draw2dLabel(xpos, ypos, fontSize, actualColor, center, ToCryString(text));
-}
-
-void CScriptbind_Renderer::RemoveView(EntityId viewId)
-{
-	if (IViewSystem *pViewSystem = gEnv->pGameFramework->GetIViewSystem())
-	{
-		if(pViewSystem->GetViewByEntityId(viewId))
-			pViewSystem->RemoveView(viewId);
-	}
-}
-
-EntityId CScriptbind_Renderer::GetActiveView()
-{
-	if (IViewSystem *pViewSystem = gEnv->pGameFramework->GetIViewSystem())
-		return pViewSystem->GetActiveViewId();
-
-	return 0;
-}
-
-void CScriptbind_Renderer::SetActiveView(EntityId viewId)
-{
-	if (IViewSystem *pViewSystem = gEnv->pGameFramework->GetIViewSystem())
-	{
-		if(pViewSystem->GetViewByEntityId(viewId))
-			pViewSystem->SetActiveView(viewId);
-	}
-}
-
-SViewParams CScriptbind_Renderer::GetViewParams(EntityId viewId)
-{
-	if (IViewSystem *pViewSystem = gEnv->pGameFramework->GetIViewSystem())
-	{
-		if(IView *pView = pViewSystem->GetView(viewId))
-			return *pView->GetCurrentParams();
-	}
-
-	return SViewParams();
-}
-
-void CScriptbind_Renderer::SetViewParams(EntityId viewId, SViewParams viewParams)
-{
-	if (IViewSystem *pViewSystem = gEnv->pGameFramework->GetIViewSystem())
-	{
-		if(IView *pView = pViewSystem->GetView(viewId))
-		{
-			viewParams.SaveLast();
-
-			pView->SetCurrentParams(viewParams);
-		}
-	}
 }
 
 int CScriptbind_Renderer::GetWidth()

@@ -4,54 +4,6 @@ namespace CryEngine
 {
 	public static class Renderer
 	{
-		// Change to protected once we've implemented properties etc.
-		#region ViewSystem
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static uint _CreateView();
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _RemoveView(uint viewId);
-
-		public static EntityId CreateView()
-		{
-			return new EntityId(_CreateView());
-		}
-
-		public static void RemoveView(EntityId viewId)
-		{
-			_RemoveView(viewId);
-		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static uint _GetActiveView();
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _SetActiveView(uint viewId);
-
-		public static EntityId GetActiveView()
-		{
-			return GetActiveView();
-		}
-
-		public static void SetActiveView(EntityId viewId)
-		{
-			_SetActiveView(viewId);
-		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static ViewParams _GetViewParams(uint viewId);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _SetViewParams(uint viewId, ViewParams cam);
-
-		public static ViewParams GetViewParams(EntityId viewId)
-		{
-			return _GetViewParams(viewId);
-		}
-
-		public static void SetViewParams(EntityId viewId, ViewParams viewParams)
-		{
-			_SetViewParams(viewId, viewParams);
-		}
-		#endregion
-
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static int _GetWidth();
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
@@ -88,21 +40,6 @@ namespace CryEngine
 		public static void DrawTextToScreen(float x, float y, float fontSize, Color color, bool centered, string text, params object[] args)
 		{
 			_DrawTextToScreen(x, y, fontSize, color, centered, string.Format(text, args));
-		}
-
-		public static float FieldOfView
-		{
-			get
-			{
-				return _GetViewParams(_GetActiveView()).fov;
-			}
-			set
-			{
-				var view = _GetActiveView();
-				var viewParams = _GetViewParams(view);
-				viewParams.fov = Math.DegreesToRadians(value);
-				_SetViewParams(view, viewParams);
-			}
 		}
 
 		/// <summary>
@@ -154,127 +91,82 @@ namespace CryEngine
 		}
 	}
 
-	/*public struct ViewId
-	{
-		internal uint _value;
-
-		public ViewId(int id)
-		{
-			if(id >= 0)
-				_value = (uint)id;
-			else
-				throw new System.ArgumentException("Tried to set a negative view ID");
-		}
-
-		public static implicit operator int(ViewId id)
-		{
-			return (int)id;
-		}
-
-		public static implicit operator ViewId(int value)
-		{
-			return new ViewId(value);
-		}
-
-		[System.CLSCompliant(false)]
-		public static implicit operator uint(ViewId id)
-		{
-			return id;
-		}
-
-		[System.CLSCompliant(false)]
-		public static implicit operator ViewId(uint value)
-		{
-			return new ViewId { _value = value };
-		}
-	}
-
-	public class ViewSettings
-	{
-		internal ViewParams _params;
-
-		internal ViewSettings(ViewParams viewParams)
-		{
-			_params = viewParams;
-		}
-	}*/
-
-	public struct ViewParams
+	internal struct ViewParams
 	{
 		/// <summary>
 		/// view position
 		/// </summary>
-		public Vec3 position;
+		public Vec3 Position { get; set; }
 		/// <summary>
 		/// view orientation
 		/// </summary>
-		public Quat rotation;
-		public Quat localRotationLAST;
+		public Quat Rotation { get; set; }
+        public Quat LastLocalRotation { get; set; }
 
 		/// <summary>
 		/// custom near clipping plane, 0 means use engine defaults
 		/// </summary>
-		public float nearplane;
-		public float fov;
+		public float Nearplane { get; set; }
+		public float FieldOfView { get; set; }
 
-		public byte viewID;
+		public byte ViewID { get; set; }
 
 		/// <summary>
 		/// view shake status
 		/// </summary>
-		public bool groundOnly;
+		public bool GroundOnly { get; set; }
 		/// <summary>
 		/// whats the amount of shake, from 0.0 to 1.0
 		/// </summary>
-		public float shakingRatio;
+		public float ShakingRatio { get; set; }
 		/// <summary>
 		/// what the current angular shake
 		/// </summary>
-		public Quat currentShakeQuat;
+		public Quat CurrentShakeQuat { get; set; }
 		/// <summary>
 		/// what is the current translational shake
 		/// </summary>
-		public Vec3 currentShakeShift;
+		public Vec3 CurrentShakeShift { get; set; }
 
 		// For damping camera movement.
 		/// <summary>
 		/// Who we're watching. 0 == nobody.
 		/// </summary>
-		public uint idTarget;
+		public EntityId TargetId { get; set; }
 		/// <summary>
 		/// Where the target was.
 		/// </summary>
-		public Vec3 targetPos;
+		public Vec3 TargetPosition { get; set; }
 		/// <summary>
 		/// current dt.
 		/// </summary>
-		public float frameTime;
+		public float FrameTime { get; set; }
 		/// <summary>
 		/// previous rate of change of angle.
 		/// </summary>
-		public float angleVel;
+		public float AngleVelocity { get; set; }
 		/// <summary>
 		/// previous rate of change of dist between target and camera.
 		/// </summary>
-		public float vel;
+		public float Velocity { get; set; }
 		/// <summary>
 		/// previous dist of cam from target
 		/// </summary>
-		public float dist;
+		public float Distance { get; set; }
 
 		// blending
-		public bool blend;
-		public float blendPosSpeed;
-		public float blendRotSpeed;
-		public float blendFOVSpeed;
-		public Vec3 blendPosOffset;
-		public Quat blendRotOffset;
-		public float blendFOVOffset;
-		public bool justActivated;
+		public bool Blend { get; set; }
+		public float BlendPositionSpeed { get; set; }
+		public float BlendRotationSpeed { get; set; }
+		public float BlendFieldOfViewSpeed { get; set; }
+		public Vec3 BlendPositionOffset { get; set; }
+		public Quat BlendRotationOffset { get; set; }
+		public float BlendFieldOfViewOffset { get; set; }
+		public bool JustActivated { get; set; }
 
-		private byte viewIDLast;
-		private Vec3 positionLast;
-		private Quat rotationLast;
-		private float FOVLast;
+        private byte LastViewID { get; set; }
+        private Vec3 LastPosition { get; set; }
+        private Quat LastRotation { get; set; }
+		private float LastFieldOfView { get; set; }
 	}
 }

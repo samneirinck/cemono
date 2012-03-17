@@ -135,6 +135,8 @@
     <Compile Include="ActorSystem\Player.cs" />
     <Compile Include="Engine\Material.cs" />
     <Compile Include="Engine\ParticleEffect.cs" />
+    <Compile Include="Engine\View.cs" />
+    <Compile Include="Engine\ViewSystem.cs" />
     <Compile Include="EntitySystem\EntityId.cs" />
     <Compile Include="EntitySystem\Physics.cs" />
     <Compile Include="GlobalSuppressions.cs" />

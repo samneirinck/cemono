@@ -21,9 +21,6 @@
     <ClInclude Include="MonoObject.h">
       <Filter>Wrappers</Filter>
     </ClInclude>
-    <ClInclude Include="Scriptbinds\Console.h">
-      <Filter>ScriptBinds</Filter>
-    </ClInclude>
     <ClInclude Include="MonoEntityPropertyHandler.h">
       <Filter>EntitySystem</Filter>
     </ClInclude>
@@ -102,29 +99,35 @@
     <ClInclude Include="Scriptbinds\Scriptbind_UI.h">
       <Filter>ScriptBinds</Filter>
     </ClInclude>
-    <ClInclude Include="Scriptbinds\3DEngine.h">
-      <Filter>ScriptBinds\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Scriptbinds\Debug.h">
-      <Filter>ScriptBinds\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Scriptbinds\PhysicalWorld.h">
-      <Filter>ScriptBinds\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Scriptbinds\Renderer.h">
-      <Filter>ScriptBinds\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="Scriptbinds\GameRules.h">
       <Filter>ScriptBinds</Filter>
     </ClInclude>
     <ClInclude Include="ScriptBinds\StaticEntity.h">
       <Filter>ScriptBinds</Filter>
     </ClInclude>
+    <ClInclude Include="Scriptbinds\3DEngine.h">
+      <Filter>ScriptBinds</Filter>
+    </ClInclude>
     <ClInclude Include="ScriptBinds\MaterialManager.h">
-      <Filter>ScriptBinds\Engine</Filter>
+      <Filter>ScriptBinds</Filter>
     </ClInclude>
     <ClInclude Include="Scriptbinds\ParticleSystem.h">
-      <Filter>ScriptBinds\Engine</Filter>
+      <Filter>ScriptBinds</Filter>
+    </ClInclude>
+    <ClInclude Include="Scriptbinds\PhysicalWorld.h">
+      <Filter>ScriptBinds</Filter>
+    </ClInclude>
+    <ClInclude Include="Scriptbinds\Renderer.h">
+      <Filter>ScriptBinds</Filter>
+    </ClInclude>
+    <ClInclude Include="Scriptbinds\Debug.h">
+      <Filter>ScriptBinds</Filter>
+    </ClInclude>
+    <ClInclude Include="Scriptbinds\Console.h">
+      <Filter>ScriptBinds</Filter>
+    </ClInclude>
+    <ClInclude Include="Scriptbinds\ViewSystem.h">
+      <Filter>ScriptBinds</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -137,9 +140,6 @@
     </ClCompile>
     <ClCompile Include="MonoEntityClass.cpp">
       <Filter>EntitySystem</Filter>
-    </ClCompile>
-    <ClCompile Include="Scriptbinds\Console.cpp">
-      <Filter>ScriptBinds</Filter>
     </ClCompile>
     <ClCompile Include="MonoEntityPropertyHandler.cpp">
       <Filter>EntitySystem</Filter>
@@ -187,29 +187,35 @@
     <ClCompile Include="Scriptbinds\Scriptbind_UI.cpp">
       <Filter>ScriptBinds</Filter>
     </ClCompile>
-    <ClCompile Include="Scriptbinds\3DEngine.cpp">
-      <Filter>ScriptBinds\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Scriptbinds\Debug.cpp">
-      <Filter>ScriptBinds\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Scriptbinds\PhysicalWorld.cpp">
-      <Filter>ScriptBinds\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Scriptbinds\Renderer.cpp">
-      <Filter>ScriptBinds\Engine</Filter>
-    </ClCompile>
     <ClCompile Include="Scriptbinds\GameRules.cpp">
       <Filter>ScriptBinds</Filter>
     </ClCompile>
     <ClCompile Include="ScriptBinds\StaticEntity.cpp">
       <Filter>ScriptBinds</Filter>
     </ClCompile>
+    <ClCompile Include="Scriptbinds\3DEngine.cpp">
+      <Filter>ScriptBinds</Filter>
+    </ClCompile>
     <ClCompile Include="ScriptBinds\MaterialManager.cpp">
-      <Filter>ScriptBinds\Engine</Filter>
+      <Filter>ScriptBinds</Filter>
     </ClCompile>
     <ClCompile Include="Scriptbinds\ParticleSystem.cpp">
-      <Filter>ScriptBinds\Engine</Filter>
+      <Filter>ScriptBinds</Filter>
+    </ClCompile>
+    <ClCompile Include="Scriptbinds\PhysicalWorld.cpp">
+      <Filter>ScriptBinds</Filter>
+    </ClCompile>
+    <ClCompile Include="Scriptbinds\Renderer.cpp">
+      <Filter>ScriptBinds</Filter>
+    </ClCompile>
+    <ClCompile Include="Scriptbinds\Console.cpp">
+      <Filter>ScriptBinds</Filter>
+    </ClCompile>
+    <ClCompile Include="Scriptbinds\Debug.cpp">
+      <Filter>ScriptBinds</Filter>
+    </ClCompile>
+    <ClCompile Include="Scriptbinds\ViewSystem.cpp">
+      <Filter>ScriptBinds</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -236,9 +242,6 @@
     </Filter>
     <Filter Include="ActorSystem">
       <UniqueIdentifier>{32d4459d-d985-405f-b557-6c1c738d1804}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ScriptBinds\Engine">
-      <UniqueIdentifier>{eced402b-3030-4e66-851f-54f11f392c9b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Mono">
       <UniqueIdentifier>{2de1619b-2f0c-4705-a8e5-59c8778b080d}</UniqueIdentifier>

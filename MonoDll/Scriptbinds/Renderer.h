@@ -12,16 +12,6 @@
 #include <MonoCommon.h>
 #include <IMonoScriptBind.h>
 
-struct SViewParams;
-
-struct MonoCamera
-{
-	Vec3 Angles;
-	Vec3 Position;
-
-	float FieldOfView;
-};
-
 class CScriptbind_Renderer : public IMonoScriptBind
 {
 public:
@@ -33,15 +23,6 @@ protected:
 	// ~IMonoScriptBind
 
 	// External methods
-	static EntityId CreateView();
-	static void RemoveView(EntityId viewId);
-
-	static EntityId GetActiveView();
-	static void SetActiveView(EntityId viewId);
-
-	static SViewParams GetViewParams(EntityId viewId);
-	static void SetViewParams(EntityId viewId, SViewParams);
-
 	static int GetWidth();
 	static int GetHeight();
 
