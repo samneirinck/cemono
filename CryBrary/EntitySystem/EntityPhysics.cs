@@ -103,14 +103,14 @@ namespace CryEngine
 		/// </summary>
 		public float Mass
 		{
-			get { return _params.mass; }
-			set { _params.mass = value; _params.density = -1; if(AutoUpdate) Save(); }
+			get { return _params.Mass; }
+			set { _params.Mass = value; if(AutoUpdate) Save(); }
 		}
 
 		public float Density
 		{
-			get { return _params.density; }
-			set { _params.density = value; _params.mass = -1; if(AutoUpdate) Save(); }
+			get { return _params.Density; }
+			set { _params.Density = value; if(AutoUpdate) Save(); }
 		}
 
 		/// <summary>
@@ -118,14 +118,14 @@ namespace CryEngine
 		/// </summary>
 		public int Slot
 		{
-			get { return _params.slot; }
-			set { _params.slot = value; if(AutoUpdate) Save(); }
+			get { return _params.Slot; }
+			set { _params.Slot = value; if(AutoUpdate) Save(); }
 		}
 
 		public PhysicalizationType Type
 		{
-			get { return _params.type; }
-			set { _params.type = value; if(AutoUpdate) Save(); }
+			get { return _params.PhysicalizationType; }
+            set { _params.PhysicalizationType = value; if (AutoUpdate) Save(); }
 		}
 		#endregion
 
@@ -135,8 +135,8 @@ namespace CryEngine
 		/// </summary>
 		public float Stiffness
 		{
-			get { return _params.stiffnessScale; }
-			set { _params.stiffnessScale = value; if(AutoUpdate) Save(); }
+			get { return _params.StiffnessScale; }
+			set { _params.StiffnessScale = value; if(AutoUpdate) Save(); }
 		}
 
 		#endregion
@@ -183,23 +183,23 @@ namespace CryEngine
 
 	public struct PhysicalizationParams
 	{
-		public PhysicalizationType type;
+		public PhysicalizationType PhysicalizationType { get; set; }
 
 		/// <summary>
 		/// Index of object slot, -1 if all slots should be used.
 		/// </summary>
-		public int slot;
+        public int Slot { get; set; }
 
 		/// <summary>
 		/// Only one either density or mass must be set, parameter set to 0 is ignored.
 		/// </summary>
-		public float density;
-		public float mass;
+        public float Density { get; set; }
+        public float Mass { get; set; }
 
 		/// <summary>
 		/// Used for character physicalization (Scale of force in character joint's springs).
 		/// </summary>
-		public float stiffnessScale;
+        public float StiffnessScale { get; set; }
 
 		public PlayerDimensions playerDimensions;
 		public PlayerDynamics playerDynamics;
@@ -210,79 +210,79 @@ namespace CryEngine
 		/// <summary>
 		/// inertia koefficient, the more it is, the less inertia is; 0 means no inertia
 		/// </summary>
-		public float kInertia;
+        public float Inertia { get; set; }
 		/// <summary>
-		/// inertia on acceleration
+		/// inertia on acceleration koefficient
 		/// </summary>
-		public float kInertiaAccel;
+        public float InertiaAcceleration { get; set; }
 		/// <summary>
 		/// air control koefficient 0..1, 1 - special value (total control of movement)
 		/// </summary>
-		public float kAirControl;
+        public float AirControl { get; set; }
 		/// <summary>
-		/// standard air resistance 
+        /// standard air resistance koefficient
 		/// </summary>
-		public float kAirResistance;
+        public float AirResistance { get; set; }
 		/// <summary>
-		/// gravity vector, utilizes sv_gravity if null.
+		/// gravity vector
 		/// </summary>
-		public Vec3 gravity;
+		public Vec3 Gravity { get; set; }
 		/// <summary>
 		/// vertical camera shake speed after landings
 		/// </summary>
-		public float nodSpeed;
+		public float NodSpeed { get; set; }
 		/// <summary>
 		/// whether entity is swimming (is not bound to ground plane)
 		/// </summary>
-		public bool swimming;
+		public bool Swimming { get; set; }
 		/// <summary>
 		/// mass (in kg)
 		/// </summary>
-		public float mass;
+		public float Mass { get; set; }
 		/// <summary>
 		/// surface identifier for collisions
 		/// </summary>
-		public int surface_idx;
+		public int SurfaceId { get; set; }
 		/// <summary>
 		/// if surface slope is more than this angle, player starts sliding (angle is in radians)
 		/// </summary>
-		public float minSlideAngle;
+		public float MinSlideAngle { get; set; }
 		/// <summary>
 		/// player cannot climb surface which slope is steeper than this angle
 		/// </summary>
-		public float maxClimbAngle;
+		public float MaxClimbAngle { get; set; }
 		/// <summary>
 		/// player is not allowed to jump towards ground if this angle is exceeded
 		/// </summary>
-		public float maxJumpAngle;
+		public float MaxJumpAngle { get; set; }
 		/// <summary>
 		/// player starts falling when slope is steeper than this
 		/// </summary>
-		public float minFallAngle;
+		public float MinFallAngle { get; set; }
 		/// <summary>
 		/// player cannot stand of surfaces that are moving faster than this
 		/// </summary>
-		public float maxVelGround;
+		public float MaxVelGround { get; set; }
 		/// <summary>
 		/// forcefully turns on inertia for that duration after receiving an impulse
 		/// </summary>
-		public float timeImpulseRecover;
+		public float TimeImpulseRecover { get; set; }
 		/// <summary>
 		/// entity types to check collisions against
 		/// </summary>
-		public int collTypes;
+		public int CollisionTypes { get; set; }
 		/// <summary>
 		/// ignore collisions with this *living entity* (doesn't work with other entity types)
 		/// </summary>
-		public EntityId livingEntToIgnore;
+		public EntityId LivingEntToIgnore { get; set; }
 		/// <summary>
 		/// 0 disables all simulation for the character, apart from moving along the requested velocity
 		/// </summary>
-		public bool active;
+		public bool Active { get; set; }
 		/// <summary>
 		/// requests that the player rolls back to that time and re-exucutes pending actions during the next step
 		/// </summary>
-		public int iRequestedTime;
+		public int RequestedTime { get; set; }
 	}
 
 	public struct PlayerDimensions
@@ -290,39 +290,39 @@ namespace CryEngine
 		/// <summary>
 		/// offset from central ground position that is considered entity center
 		/// </summary>
-		public float heightPivot;
+		public float HeightPivot { get; set; }
 		/// <summary>
 		/// vertical offset of camera
 		/// </summary>
-		public float heightEye;
+		public float HeightEye { get; set; }
 		/// <summary>
 		/// collision cylinder dimensions
 		/// </summary>
-		public Vec3 sizeCollider;
+		public Vec3 SizeCollider { get; set; }
 		/// <summary>
 		/// vertical offset of collision geometry center
 		/// </summary>
-		public float heightCollider;
+		public float HeightCollider { get; set; }
 		/// <summary>
 		/// radius of the 'head' geometry (used for camera offset)
 		/// </summary>
-		public float headRadius;
+		public float HeadRadius { get; set; }
 		/// <summary>
 		/// center.z of the head geometry
 		/// </summary>
-		public float heightHead;
+		public float HeightHead { get; set; }
 		/// <summary>
 		/// unprojection direction to test in case the new position overlaps with the environment (can be 0 for 'auto')
 		/// </summary>
-		public Vec3 dirUnproj;
+		public Vec3 UnprojectionDirection { get; set; }
 		/// <summary>
 		/// maximum allowed unprojection
 		/// </summary>
-		public float maxUnproj;
+		public float MaxUnprojection { get; set; }
 		/// <summary>
 		/// switches between capsule and cylinder collider geometry
 		/// </summary>
-		public bool useCapsule;
+		public bool UseCapsule { get; set; }
 	}
 	public enum PhysicalizationType
 	{
