@@ -362,6 +362,7 @@
     <ClInclude Include="Headers\MonoSerializable.h" />
     <ClInclude Include="MonoArray.h" />
     <ClInclude Include="MonoConverter.h" />
+    <ClInclude Include="MonoCVars.h" />
     <ClInclude Include="MonoEntity.h" />
     <ClInclude Include="MonoFlowNode.h" />
     <ClInclude Include="MonoInput.h" />
@@ -397,6 +398,7 @@
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="FlowManager.cpp" />
     <ClCompile Include="MonoConverter.cpp" />
+    <ClCompile Include="MonoCVars.cpp" />
     <ClCompile Include="MonoEntity.cpp" />
     <ClCompile Include="MonoFlowNode.cpp" />
     <ClCompile Include="MonoInput.cpp" />

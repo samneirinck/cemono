@@ -38,12 +38,17 @@
 #include "Scriptbinds\Scriptbind_UI.h"
 #include "Scriptbinds\MaterialManager.h"
 #include "Scriptbinds\ParticleSystem.h"
+#include "Scriptbinds\ViewSystem.h"
 
 #include "EntityManager.h"
 #include "FlowManager.h"
 #include "MonoInput.h"
 
 #include "CallbackHandler.h"
+
+#include "MonoCVars.h"
+
+SCVars *g_pMonoCVars = 0;
 
 CRYREGISTER_CLASS(CScriptSystem)
 
@@ -86,12 +91,15 @@ CScriptSystem::CScriptSystem()
 
 	gEnv->pMonoScriptSystem = this;
 
-	// I'm really not sure if the IFileChangeMonitor works outside the Editor, but developers shouldn't use script reloading there anyway.
-	if(gEnv->IsEditor())
-		gEnv->pFileChangeMonitor->RegisterListener(this, "scripts\\");
+	m_pCVars = new SCVars();
+	g_pMonoCVars = m_pCVars;
 
 	if(!CompleteInit())
 		CryFatalError("Failed to initialize CryMono, aborting..");
+
+	// I'm really not sure if the IFileChangeMonitor works outside the Editor, but developers shouldn't use script reloading there anyway.
+	if(gEnv->IsEditor())
+		gEnv->pFileChangeMonitor->RegisterListener(this, "scripts\\");
 }
 
 CScriptSystem::~CScriptSystem()
@@ -108,6 +116,7 @@ CScriptSystem::~CScriptSystem()
 	SAFE_DELETE(m_pUIScriptBind);
 
 	SAFE_RELEASE(m_pCryBraryAssembly);
+	SAFE_DELETE(m_pCVars);
 
 	m_localScriptBinds.clear();
 
@@ -151,8 +160,6 @@ bool CScriptSystem::CompleteInit()
 	CryLogAlways("		Registering default scriptbinds...");
 	RegisterDefaultBindings();
 
-	RegisterCVars();
-
 	if(!Reload(true))
 		return false;
 
@@ -160,14 +167,9 @@ bool CScriptSystem::CompleteInit()
 
 	CryModuleMemoryInfo memInfo;
 	CryModuleGetMemoryInfo(&memInfo);
-	CryLogAlways("		Initializing CryMono done, MemUsage=%iKb", (memInfo.allocated + m_pCryBraryAssembly->GetCustomClass("CryStats", "CryEngine.Utils")->GetProperty("MemoryUsage")->Unbox<long>()) / 1024);
+	CryLogAlways("		Initializing CryMono done, MemUsage=%iKb", (memInfo.allocated + m_pCryBraryAssembly->GetCustomClass("CryStats", "CryEngine.Utilities")->GetProperty("MemoryUsage")->Unbox<long>()) / 1024);
 
 	return true;
-}
-
-void CScriptSystem::RegisterCVars()
-{
-	REGISTER_CVAR(mono_revertScriptsOnError, 1, VF_NULL, "Determines if the last functional compiled scripts should be reloaded upon script compilation failure");
 }
 
 void CScriptSystem::PostInit()
@@ -226,7 +228,7 @@ bool CScriptSystem::Reload(bool initialLoad)
 
 		UnloadDomain(pPrevScriptDomain);
 	}
-	else if(!initialLoad && mono_revertScriptsOnError)
+	else if(!initialLoad && g_pMonoCVars->mono_revertScriptsOnError)
 	{
 		// Compilation failed or something, revert to the old script domain.
 		UnloadDomain(m_pScriptDomain);
@@ -302,7 +304,7 @@ bool CScriptSystem::InitializeDomain()
 	m_pMonoDomain = mono_jit_init_version("CryMono", "v4.0.30319");
 	if(!m_pMonoDomain)
 	{
-		GameWarning("Mono initialization failed!");
+		CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "Mono initialization failed!");
 		return false;
 	}
 
@@ -331,6 +333,7 @@ void CScriptSystem::RegisterDefaultBindings()
 	RegisterBinding(CTime);
 	RegisterBinding(CScriptbind_MaterialManager);
 	RegisterBinding(CScriptbind_ParticleSystem);
+	RegisterBinding(CScriptbind_ViewSystem);
 
 #define RegisterBindingAndSet(var, T) RegisterBinding(T); var = (T *)m_localScriptBinds.back();
 	RegisterBindingAndSet(m_pUIScriptBind, CScriptbind_UI);

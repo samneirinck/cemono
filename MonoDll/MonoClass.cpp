@@ -4,6 +4,8 @@
 #include "MonoArray.h"
 #include "MonoObject.h"
 
+#include "MonoCVars.h"
+
 #include <mono/metadata/debug-helpers.h>
 
 CScriptClass::CScriptClass(MonoClass *pClass, IMonoArray *pConstructorArguments)
@@ -86,7 +88,7 @@ IMonoObject *CScriptClass::CallMethod(const char *methodName, IMonoArray *pParam
 		}
 		catch(char *str)
 		{
-			CryLogAlways("Exception was raised when invoking method %s: %s", methodName, str);
+			CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "Exception was raised when invoking method %s: %s", methodName, str);
 		}
 
 		if(pException)
@@ -173,9 +175,10 @@ void CScriptClass::SetField(const char *fieldName, IMonoObject *pNewValue)
 
 void CScriptClass::HandleException(MonoObject *pException)
 {
-	CryLogAlways("[MonoWarning] Class %s raised an exception:", mono_class_get_name(m_pClass));
-
 	MonoMethod *pExceptionMethod = mono_method_desc_search_in_class(mono_method_desc_new("::ToString()", false),mono_get_exception_class());
 	MonoString *exceptionString = (MonoString *)mono_runtime_invoke(pExceptionMethod, pException, NULL, NULL);
-	CryLogAlways(ToCryString((mono::string)exceptionString));
+	if(g_pMonoCVars->mono_exceptionsTriggerMessageBoxes)
+		CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, ToCryString((mono::string)exceptionString));
+	else
+		CryLogAlways(ToCryString((mono::string)exceptionString));
 }

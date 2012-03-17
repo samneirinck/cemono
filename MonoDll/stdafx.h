@@ -45,20 +45,7 @@
 #define MONO_API
 #endif
 
-#pragma warning(disable: 4018)	// conditional expression is constant
-
-//////////////////////////////////////////////////////////////////////////
-//! Reports a Game Warning to validator with WARNING severity.
-inline void GameWarning( const char *format,... ) PRINTF_PARAMS(1, 2);
-inline void GameWarning( const char *format,... )
-{
-	if (!format)
-		return;
-	va_list args;
-	va_start(args, format);
-	GetISystem()->WarningV( VALIDATOR_MODULE_GAME,VALIDATOR_WARNING,0,NULL,format,args );
-	va_end(args);
-}
+extern struct SCVars *g_pMonoCVars;
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.

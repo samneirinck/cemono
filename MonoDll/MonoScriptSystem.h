@@ -25,7 +25,8 @@ struct IMonoScriptBind;
 struct IMonoScriptManager;
 struct IMonoEntityManager;
 
-class CTester;
+struct SCVars;
+
 class CFlowManager;
 class CCallbackHandler;
 class CInput;
@@ -92,7 +93,6 @@ protected:
 	bool InitializeSystems();
 
 	void RegisterDefaultBindings();
-	void RegisterCVars();
 
 	void UnloadDomain(MonoDomain *pDomain);
 
@@ -120,6 +120,8 @@ protected:
 	IMonoAssembly *m_pCryBraryAssembly;
 	IMonoAssembly *m_pPdb2MdbAssembly;
 
+	SCVars *m_pCVars;
+
 	// We temporarily store scriptbind methods here if developers attempt to register them prior to the script system has been initialized properly.
 	TMethodBindings m_methodBindings;
 
@@ -128,10 +130,6 @@ protected:
 
 	// If true, the last script reload was successful. This is necessary to make sure we don't override with invalid script dumps.
 	bool m_bLastCompilationSuccess;
-
-	// CVars, possibly create a SCVars-like struct for this later?
-	int mono_revertScriptsOnError;
-	// ~CVars
 };
 
 #endif //__MONO_H__
