@@ -7,23 +7,23 @@ namespace CryEngine
 {
 	public struct Matrix33
 	{
-		public float m00 { get; set; }
-		public float m01 { get; set; }
-		public float m02 { get; set; }
+		public float M00 { get; set; }
+		public float M01 { get; set; }
+		public float M02 { get; set; }
 
-		public float m10 { get; set; }
-		public float m11 { get; set; }
-		public float m12 { get; set; }
+		public float M10 { get; set; }
+		public float M11 { get; set; }
+		public float M12 { get; set; }
 
-		public float m20 { get; set; }
-		public float m21 { get; set; }
-		public float m22 { get; set; }
+		public float M20 { get; set; }
+		public float M21 { get; set; }
+		public float M22 { get; set; }
 
 		public void SetIdentity()
 		{
-			m00 = 1; m01 = 0; m02 = 0;
-			m10 = 0; m11 = 1; m12 = 0;
-			m20 = 0; m21 = 0; m22 = 1; 
+			M00 = 1; M01 = 0; M02 = 0;
+			M10 = 0; M11 = 1; M12 = 0;
+			M20 = 0; M21 = 0; M22 = 1; 
 		}
 
 		public static Matrix33 CreateIdentity()
@@ -39,9 +39,9 @@ namespace CryEngine
 			double s, c; Math.SinCos(angle, out s, out c); float mc = 1.0f - (float)c;
 			float mcx = mc * axis.X; float mcy = mc * axis.Y; float mcz = mc * axis.Z;
 			float tcx = axis.X * (float)s; float tcy = axis.Y * (float)s; float tcz = axis.Z * (float)s;
-			m00 = mcx * axis.X + (float)c; m01 = mcx * axis.Y - tcz; m02 = mcx * axis.Z + tcy;
-			m10 = mcy * axis.X + tcz; m11 = mcy * axis.Y + (float)c; m12 = mcy * axis.Z - tcx;
-			m20 = mcz * axis.X - tcy; m21 = mcz * axis.Y + tcx; m22 = mcz * axis.Z + (float)c;
+			M00 = mcx * axis.X + (float)c; M01 = mcx * axis.Y - tcz; M02 = mcx * axis.Z + tcy;
+			M10 = mcy * axis.X + tcz; M11 = mcy * axis.Y + (float)c; M12 = mcy * axis.Z - tcx;
+			M20 = mcz * axis.X - tcy; M21 = mcz * axis.Y + tcx; M22 = mcz * axis.Z + (float)c;
 		}
 
 		public static Matrix33 CreateRotationAA(float rad, Vec3 axis)
@@ -55,9 +55,9 @@ namespace CryEngine
 		public void SetRotationAA(float c, float s, Vec3 axis)
 		{
 			float mc = 1 - c;
-			m00 = mc * axis.X * axis.X + c; m01 = mc * axis.X * axis.Y - axis.Z * s; m02 = mc * axis.X * axis.Z + axis.Y * s;
-			m10 = mc * axis.Y * axis.X + axis.Z * s; m11 = mc * axis.Y * axis.Y + c; m12 = mc * axis.Y * axis.Z - axis.X * s;
-			m20 = mc * axis.Z * axis.X - axis.Y * s; m21 = mc * axis.Z * axis.Y + axis.X * s; m22 = mc * axis.Z * axis.Z + c;
+			M00 = mc * axis.X * axis.X + c; M01 = mc * axis.X * axis.Y - axis.Z * s; M02 = mc * axis.X * axis.Z + axis.Y * s;
+			M10 = mc * axis.Y * axis.X + axis.Z * s; M11 = mc * axis.Y * axis.Y + c; M12 = mc * axis.Y * axis.Z - axis.X * s;
+			M20 = mc * axis.Z * axis.X - axis.Y * s; M21 = mc * axis.Z * axis.Y + axis.X * s; M22 = mc * axis.Z * axis.Z + c;
 		}
 
 		public static Matrix33 CreateRotationAA(float c, float s, Vec3 axis)
@@ -88,9 +88,9 @@ namespace CryEngine
 		public void SetRotationX(float rad)
 		{
 			double s, c; Math.SinCos(rad, out s, out c);
-			m00 = 1.0f; m01 = 0.0f; m02 = 0.0f;
-			m10 = 0.0f; m11 = (float)c; m12 = (float)-s;
-			m20 = 0.0f; m21 = (float)s; m22 = (float)c;
+			M00 = 1.0f; M01 = 0.0f; M02 = 0.0f;
+			M10 = 0.0f; M11 = (float)c; M12 = (float)-s;
+			M20 = 0.0f; M21 = (float)s; M22 = (float)c;
 		}
 
 		public static Matrix33 CreateRotationX(float rad)
@@ -104,9 +104,9 @@ namespace CryEngine
 		public void SetRotationY(float rad)
 		{
 			double s, c; Math.SinCos(rad, out s, out c);
-			m00 = (float)c; m01 = 0; m02 = (float)s;
-			m10 = 0; m11 = 1; m12 = 0;
-			m20 = (float)-s; m21 = 0; m22 = (float)c;	
+			M00 = (float)c; M01 = 0; M02 = (float)s;
+			M10 = 0; M11 = 1; M12 = 0;
+			M20 = (float)-s; M21 = 0; M22 = (float)c;	
 		}
 
 		public static Matrix33 CreateRotationY(float rad)
@@ -120,9 +120,9 @@ namespace CryEngine
 		public void SetRotationZ(float rad)
 		{
 			double s, c; Math.SinCos(rad, out s, out c);
-			m00 = (float)c; m01 = (float)-s; m02 = 0.0f;
-			m10 = (float)s; m11 = (float)c; m12 = 0.0f;
-			m20 = 0.0f; m21 = 0.0f; m22 = 1.0f;
+			M00 = (float)c; M01 = (float)-s; M02 = 0.0f;
+			M10 = (float)s; M11 = (float)c; M12 = 0.0f;
+			M20 = 0.0f; M21 = 0.0f; M22 = 1.0f;
 		}
 
 		public static Matrix33 CreateRotationZ(float rad)
@@ -139,9 +139,9 @@ namespace CryEngine
 			double sy, cy; Math.SinCos(rad.Y, out sy, out cy);
 			double sz, cz; Math.SinCos(rad.Z, out sz, out cz);
 			double sycz = (sy * cz), sysz = (sy * sz);
-			m00 = (float)(cy * cz); m01 = (float)(sycz * sx - cx * sz); m02 = (float)(sycz * cx + sx * sz);
-			m10 = (float)(cy * sz); m11 = (float)(sysz * sx + cx * cz); m12 = (float)(sysz * cx - sx * cz);
-			m20 = (float)(-sy); m21 = (float)(cy * sx); m22 = (float)(cy * cx);			
+			M00 = (float)(cy * cz); M01 = (float)(sycz * sx - cx * sz); M02 = (float)(sycz * cx + sx * sz);
+			M10 = (float)(cy * sz); M11 = (float)(sysz * sx + cx * cz); M12 = (float)(sysz * cx - sx * cz);
+			M20 = (float)(-sy); M21 = (float)(cy * sx); M22 = (float)(cy * cx);			
 		}
 
 		public static Matrix33 CreateRotationXYZ(Vec3 rad)
@@ -154,9 +154,9 @@ namespace CryEngine
 
 		public void SetScale(Vec3 s)
 		{
-			m00 = s.X; m01 = 0; m02 = 0;
-			m10 = 0; m11 = s.Y; m12 = 0;
-			m20 = 0; m21 = 0; m22 = s.Z;
+			M00 = s.X; M01 = 0; M02 = 0;
+			M10 = 0; M11 = s.Y; M12 = 0;
+			M20 = 0; M21 = 0; M22 = s.Z;
 		}
 
 		public static Matrix33 CreateScale(Vec3 s)
@@ -170,28 +170,28 @@ namespace CryEngine
 
 	public struct Matrix34
 	{
-		public float m00 { get; set; }
-		public float m01 { get; set; }
-		public float m02 { get; set; }
-		public float m03 { get; set; }
+		public float M00 { get; set; }
+		public float M01 { get; set; }
+		public float M02 { get; set; }
+		public float M03 { get; set; }
 
-		public float m10 { get; set; }
-		public float m11 { get; set; }
-		public float m12 { get; set; }
-		public float m13 { get; set; }
+		public float M10 { get; set; }
+		public float M11 { get; set; }
+		public float M12 { get; set; }
+		public float M13 { get; set; }
 
-		public float m20 { get; set; }
-		public float m21 { get; set; }
-		public float m22 { get; set; }
-		public float m23 { get; set; }
+		public float M20 { get; set; }
+		public float M21 { get; set; }
+		public float M22 { get; set; }
+		public float M23 { get; set; }
 
 		#region Constructors
 		public Matrix34(float v00, float v01, float v02, float v03, float v10, float v11, float v12, float v13, float v20, float v21, float v22, float v23)
 			: this()
 		{
-			m00 = v00; m01 = v01; m02 = v02; m03 = v03; 
-			m10 = v10; m11 = v11; m12 = v12; m13 = v13;
-			m20 = v20; m21 = v21; m22 = v22; m23 = v23;
+			M00 = v00; M01 = v01; M02 = v02; M03 = v03; 
+			M10 = v10; M11 = v11; M12 = v12; M13 = v13;
+			M20 = v20; M21 = v21; M22 = v22; M23 = v23;
 		}
 
 		public Matrix34(Vec3 s, Quat q, Vec3 t = default(Vec3))
@@ -214,9 +214,9 @@ namespace CryEngine
 		/// <param name="s"></param>
 		void ScaleColumn(Vec3 s)
 		{
-			m00 *= s.X; m01 *= s.Y; m02 *= s.Z;
-			m10 *= s.X; m11 *= s.Y; m12 *= s.Z;
-			m20 *= s.X; m21 *= s.Y; m22 *= s.Z;
+			M00 *= s.X; M01 *= s.Y; M02 *= s.Z;
+			M10 *= s.X; M11 *= s.Y; M12 *= s.Z;
+			M20 *= s.X; M21 *= s.Y; M22 *= s.Z;
 		}
 
 		/// <summary>
@@ -225,16 +225,16 @@ namespace CryEngine
 		/// <returns></returns>
 		void Scale(Vec3 s)
 		{
-			m00 *= s.X; m01 *= s.Y; m02 *= s.Z;
-			m10 *= s.X; m11 *= s.Y; m12 *= s.Z;
-			m20 *= s.X; m21 *= s.Y; m22 *= s.Z;
+			M00 *= s.X; M01 *= s.Y; M02 *= s.Z;
+			M10 *= s.X; M11 *= s.Y; M12 *= s.Z;
+			M20 *= s.X; M21 *= s.Y; M22 *= s.Z;
 		}
 
 		public void SetIdentity()
 		{
-			m00 = 1.0f; m01 = 0.0f; m02 = 0.0f; m03 = 0.0f;
-			m10 = 0.0f; m11 = 1.0f; m12 = 0.0f; m13 = 0.0f;
-			m20 = 0.0f; m21 = 0.0f; m22 = 1.0f; m23 = 0.0f;
+			M00 = 1.0f; M01 = 0.0f; M02 = 0.0f; M03 = 0.0f;
+			M10 = 0.0f; M11 = 1.0f; M12 = 0.0f; M13 = 0.0f;
+			M20 = 0.0f; M21 = 0.0f; M22 = 1.0f; M23 = 0.0f;
 		}
 
 		public static Matrix34 CreateIdentity()
@@ -389,7 +389,7 @@ namespace CryEngine
 		public void SetRotationAA(float c, float s, Vec3 axis, Vec3 t = default(Vec3))
 		{
 			this = new Matrix34(Matrix33.CreateRotationAA(c, s, axis));
-			m03 = t.X; m13 = t.Y; m23 = t.Z;
+			M03 = t.X; M13 = t.Y; M23 = t.Z;
 		}
 
 		public static Matrix34 CreateRotationAA(float c, float s, Vec3 axis, Vec3 t = default(Vec3))
@@ -405,9 +405,9 @@ namespace CryEngine
 			float vxvx=q.Axis.X*q.Axis.X;		float vzvz=q.Axis.Z*q.Axis.Z;		float vyvy=q.Axis.Y*q.Axis.Y; 
 			float vxvy=q.Axis.X*q.Axis.Y;		float vxvz=q.Axis.X*q.Axis.Z;		float vyvz=q.Axis.Y*q.Axis.Z; 
 			float svx=q.Angle*q.Axis.X;			float svy=q.Angle*q.Axis.Y;			float svz=q.Angle*q.Axis.Z;
-			m00=(1-(vyvy+vzvz)*2)*s.X;	m01=(vxvy-svz)*2*s.Y;				m02=(vxvz+svy)*2*s.Z;				m03=t.X;
-			m10=(vxvy+svz)*2*s.X;				m11=(1-(vxvx+vzvz)*2)*s.Y;	m12=(vyvz-svx)*2*s.Z;				m13=t.Y;
-			m20=(vxvz-svy)*2*s.X;				m21=(vyvz+svx)*2*s.Y;				m22=(1-(vxvx+vyvy)*2)*s.Z;	m23=t.Z;
+			M00=(1-(vyvy+vzvz)*2)*s.X;	M01=(vxvy-svz)*2*s.Y;				M02=(vxvz+svy)*2*s.Z;				M03=t.X;
+			M10=(vxvy+svz)*2*s.X;				M11=(1-(vxvx+vzvz)*2)*s.Y;	M12=(vyvz-svx)*2*s.Z;				M13=t.Y;
+			M20=(vxvz-svy)*2*s.X;				M21=(vyvz+svx)*2*s.Y;				M22=(1-(vxvx+vyvy)*2)*s.Z;	M23=t.Z;
 		}
 
 		public static Matrix34 Create(Vec3 s, Quat q, Vec3 t = default(Vec3))
@@ -435,9 +435,9 @@ namespace CryEngine
 
 		public void SetTranslationMat(Vec3 v)
 		{
-			m00 = 1.0f; m01 = 0.0f; m02 = 0.0f; m03 = v.X;
-			m10 = 0.0f; m11 = 1.0f; m12 = 0.0f; m13 = v.Y;
-			m20 = 0.0f; m21 = 0.0f; m22 = 1.0f; m23 = v.Z;
+			M00 = 1.0f; M01 = 0.0f; M02 = 0.0f; M03 = v.X;
+			M10 = 0.0f; M11 = 1.0f; M12 = 0.0f; M13 = v.Y;
+			M20 = 0.0f; M21 = 0.0f; M22 = 1.0f; M23 = v.Z;
 		}
 
 		public static Matrix34 CreateTranslationMat(Vec3 v)
@@ -450,9 +450,9 @@ namespace CryEngine
 
 		public void SetFromVectors(Vec3 vx, Vec3 vy, Vec3 vz, Vec3 pos)
 		{
-			m00 = vx.X; m01 = vy.X; m02 = vz.X; m03 = pos.X;
-			m10 = vx.Y; m11 = vy.Y; m12 = vz.Y; m13 = pos.Y;
-			m20 = vx.Z; m21 = vy.Z; m22 = vz.Z; m23 = pos.Z;
+			M00 = vx.X; M01 = vy.X; M02 = vz.X; M03 = pos.X;
+			M10 = vx.Y; M11 = vy.Y; M12 = vz.Y; M13 = pos.Y;
+			M20 = vx.Z; M21 = vy.Z; M22 = vz.Z; M23 = pos.Z;
 		}
 
 		public static Matrix34 CreateFromVectors(Vec3 vx, Vec3 vy, Vec3 vz, Vec3 pos)
@@ -465,18 +465,18 @@ namespace CryEngine
 
 		public void InvertFast()
 		{
-			float t; Vec3 v = new Vec3(m03, m13, m23);
-			t = m01; m01 = m10; m10 = t; m03 = -v.X * m00 - v.Y * m01 - v.Z * m20;
-			t = m02; m02 = m20; m20 = t; m13 = -v.X * m10 - v.Y * m11 - v.Z * m21;
-			t = m12; m12 = m21; m21 = t; m23 = -v.X * m20 - v.Y * m21 - v.Z * m22;
+			float t; Vec3 v = new Vec3(M03, M13, M23);
+			t = M01; M01 = M10; M10 = t; M03 = -v.X * M00 - v.Y * M01 - v.Z * M20;
+			t = M02; M02 = M20; M20 = t; M13 = -v.X * M10 - v.Y * M11 - v.Z * M21;
+			t = M12; M12 = M21; M21 = t; M23 = -v.X * M20 - v.Y * M21 - v.Z * M22;
 		}
 
 		public Matrix34 GetInvertedFast()
 		{
 			Matrix34 dst = new Matrix34();
-			dst.m00 = m00; dst.m01 = m10; dst.m02 = m20; dst.m03 = -m03 * m00 - m13 * m10 - m23 * m20;
-			dst.m10 = m01; dst.m11 = m11; dst.m12 = m21; dst.m13 = -m03 * m01 - m13 * m11 - m23 * m21;
-			dst.m20 = m02; dst.m21 = m12; dst.m22 = m22; dst.m23 = -m03 * m02 - m13 * m12 - m23 * m22;
+			dst.M00 = M00; dst.M01 = M10; dst.M02 = M20; dst.M03 = -M03 * M00 - M13 * M10 - M23 * M20;
+			dst.M10 = M01; dst.M11 = M11; dst.M12 = M21; dst.M13 = -M03 * M01 - M13 * M11 - M23 * M21;
+			dst.M20 = M02; dst.M21 = M12; dst.M22 = M22; dst.M23 = -M03 * M02 - M13 * M12 - M23 * M22;
 			return dst;
 		}
 
@@ -485,24 +485,24 @@ namespace CryEngine
 			//rescue members	
 			Matrix34 m = this;
 			// calculate 12 cofactors
-			m00 = m.m22 * m.m11 - m.m12 * m.m21;
-			m10 = m.m12 * m.m20 - m.m22 * m.m10;
-			m20 = m.m10 * m.m21 - m.m20 * m.m11;
-			m01 = m.m02 * m.m21 - m.m22 * m.m01;
-			m11 = m.m22 * m.m00 - m.m02 * m.m20;
-			m21 = m.m20 * m.m01 - m.m00 * m.m21;
-			m02 = m.m12 * m.m01 - m.m02 * m.m11;
-			m12 = m.m02 * m.m10 - m.m12 * m.m00;
-			m22 = m.m00 * m.m11 - m.m10 * m.m01;
-			m03 = (m.m22 * m.m13 * m.m01 + m.m02 * m.m23 * m.m11 + m.m12 * m.m03 * m.m21) - (m.m12 * m.m23 * m.m01 + m.m22 * m.m03 * m.m11 + m.m02 * m.m13 * m.m21);
-			m13 = (m.m12 * m.m23 * m.m00 + m.m22 * m.m03 * m.m10 + m.m02 * m.m13 * m.m20) - (m.m22 * m.m13 * m.m00 + m.m02 * m.m23 * m.m10 + m.m12 * m.m03 * m.m20);
-			m23 = (m.m20 * m.m11 * m.m03 + m.m00 * m.m21 * m.m13 + m.m10 * m.m01 * m.m23) - (m.m10 * m.m21 * m.m03 + m.m20 * m.m01 * m.m13 + m.m00 * m.m11 * m.m23);
+			M00 = m.M22 * m.M11 - m.M12 * m.M21;
+			M10 = m.M12 * m.M20 - m.M22 * m.M10;
+			M20 = m.M10 * m.M21 - m.M20 * m.M11;
+			M01 = m.M02 * m.M21 - m.M22 * m.M01;
+			M11 = m.M22 * m.M00 - m.M02 * m.M20;
+			M21 = m.M20 * m.M01 - m.M00 * m.M21;
+			M02 = m.M12 * m.M01 - m.M02 * m.M11;
+			M12 = m.M02 * m.M10 - m.M12 * m.M00;
+			M22 = m.M00 * m.M11 - m.M10 * m.M01;
+			M03 = (m.M22 * m.M13 * m.M01 + m.M02 * m.M23 * m.M11 + m.M12 * m.M03 * m.M21) - (m.M12 * m.M23 * m.M01 + m.M22 * m.M03 * m.M11 + m.M02 * m.M13 * m.M21);
+			M13 = (m.M12 * m.M23 * m.M00 + m.M22 * m.M03 * m.M10 + m.M02 * m.M13 * m.M20) - (m.M22 * m.M13 * m.M00 + m.M02 * m.M23 * m.M10 + m.M12 * m.M03 * m.M20);
+			M23 = (m.M20 * m.M11 * m.M03 + m.M00 * m.M21 * m.M13 + m.M10 * m.M01 * m.M23) - (m.M10 * m.M21 * m.M03 + m.M20 * m.M01 * m.M13 + m.M00 * m.M11 * m.M23);
 			// calculate determinant
-			float det = 1.0f / (m.m00 * m00 + m.m10 * m01 + m.m20 * m02);
+			float det = 1.0f / (m.M00 * M00 + m.M10 * M01 + m.M20 * M02);
 			// calculate matrix inverse/
-			m00 *= det; m01 *= det; m02 *= det; m03 *= det;
-			m10 *= det; m11 *= det; m12 *= det; m13 *= det;
-			m20 *= det; m21 *= det; m22 *= det; m23 *= det;
+			M00 *= det; M01 *= det; M02 *= det; M03 *= det;
+			M10 *= det; M11 *= det; M12 *= det; M13 *= det;
+			M20 *= det; M21 *= det; M22 *= det; M23 *= det;
 		}
 
 		Matrix34 GetInverted()
@@ -521,7 +521,7 @@ namespace CryEngine
 		/// <returns></returns>
 		public Vec3 TransformVector(Vec3 p)
 		{
-			return new Vec3(m00 * p.X + m01 * p.Y + m02 * p.Z + m03, m10 * p.X + m11 * p.Y + m12 * p.Z + m13, m20 * p.X + m21 * p.Y + m22 * p.Z + m23);
+			return new Vec3(M00 * p.X + M01 * p.Y + M02 * p.Z + M03, M10 * p.X + M11 * p.Y + M12 * p.Z + M13, M20 * p.X + M21 * p.Y + M22 * p.Z + M23);
 		}
 
 		/// <summary>
@@ -531,7 +531,7 @@ namespace CryEngine
 		/// <returns></returns>
 		public Vec3 TransformPoint(Vec3 p)
 		{
-			return new Vec3(m00 * p.X + m01 * p.Y + m02 * p.Z + m03, m10 * p.X + m11 * p.Y + m12 * p.Z + m13, m20 * p.X + m21 * p.Y + m22 * p.Z + m23);
+			return new Vec3(M00 * p.X + M01 * p.Y + M02 * p.Z + M03, M10 * p.X + M11 * p.Y + M12 * p.Z + M13, M20 * p.X + M21 * p.Y + M22 * p.Z + M23);
 		}
 
 		/// <summary>
@@ -539,15 +539,15 @@ namespace CryEngine
 		/// </summary>
 		public void OrthonormalizeFast()
 		{
-			Vec3 x = new Vec3( m00,m10,m20 );
-			Vec3 y = new Vec3(m01, m11, m21);
+			Vec3 x = new Vec3( M00,M10,M20 );
+			Vec3 y = new Vec3(M01, M11, M21);
 			Vec3 z;
 			x = x.Normalized;
 			z = (x % y).Normalized;
 			y = (z % x).Normalized;
-			m00=x.X;		m10=x.Y;		m20=x.Z;
-			m01=y.X;		m11=y.Y;		m21=y.Z;
-			m02=z.X;		m12=z.Y;		m22=z.Z;
+			M00=x.X;		M10=x.Y;		M20=x.Z;
+			M01=y.X;		M11=y.Y;		M21=y.Z;
+			M02=z.X;		M12=z.Y;		M22=z.Z;
 		}
 
 		/// <summary>
@@ -556,7 +556,7 @@ namespace CryEngine
 		/// <returns></returns>
 		public float Determinant()
 		{
-			return (m00 * m11 * m22) + (m01 * m12 * m20) + (m02 * m10 * m21) - (m02 * m11 * m20) - (m00 * m12 * m21) - (m01 * m10 * m22);
+			return (M00 * M11 * M22) + (M01 * M12 * M20) + (M02 * M10 * M21) - (M02 * M11 * M20) - (M00 * M12 * M21) - (M01 * M10 * M22);
 		}
 
 		public static Matrix34 CreateSlerp(Matrix34 m, Matrix34 n, float t)
@@ -593,69 +593,69 @@ namespace CryEngine
 		{
 			//calculate delta-rotation between m and n (=39 flops)
 			Matrix33 d = new Matrix33(), i = new Matrix33();
-			d.m00=m.m00*n.m00+m.m10*n.m10+m.m20*n.m20;	d.m01=m.m00*n.m01+m.m10*n.m11+m.m20*n.m21;	d.m02=m.m00*n.m02+m.m10*n.m12+m.m20*n.m22;
-			d.m10=m.m01*n.m00+m.m11*n.m10+m.m21*n.m20;	d.m11=m.m01*n.m01+m.m11*n.m11+m.m21*n.m21;	d.m12=m.m01*n.m02+m.m11*n.m12+m.m21*n.m22;
-			d.m20=d.m01*d.m12-d.m02*d.m11;							d.m21=d.m02*d.m10-d.m00*d.m12;							d.m22=d.m00*d.m11-d.m01*d.m10;
+			d.M00=m.M00*n.M00+m.M10*n.M10+m.M20*n.M20;	d.M01=m.M00*n.M01+m.M10*n.M11+m.M20*n.M21;	d.M02=m.M00*n.M02+m.M10*n.M12+m.M20*n.M22;
+			d.M10=m.M01*n.M00+m.M11*n.M10+m.M21*n.M20;	d.M11=m.M01*n.M01+m.M11*n.M11+m.M21*n.M21;	d.M12=m.M01*n.M02+m.M11*n.M12+m.M21*n.M22;
+			d.M20=d.M01*d.M12-d.M02*d.M11;							d.M21=d.M02*d.M10-d.M00*d.M12;							d.M22=d.M00*d.M11-d.M01*d.M10;
 
 			//extract angle and axis
-			double cosine = Math.Clamp((d.m00+d.m11+d.m22-1.0)*0.5,-1.0,+1.0);
+			double cosine = Math.Clamp((d.M00+d.M11+d.M22-1.0)*0.5,-1.0,+1.0);
 			double angle = Math.Atan2(Math.Sqrt(1.0-cosine*cosine),cosine);
-			Vec3 axis = new Vec3(d.m21-d.m12,d.m02-d.m20,d.m10-d.m01);
+			Vec3 axis = new Vec3(d.M21-d.M12,d.M02-d.M20,d.M10-d.M01);
 			double l = Math.Sqrt(axis|axis);	if (l>0.00001) axis/=(float)l; else axis = new Vec3(1,0,0); 
 			i.SetRotationAA((float)angle*t,axis); //angle interpolation and calculation of new delta-matrix (=26 flops) 
 
 			//final concatenation (=39 flops)
-			m00=m.m00*i.m00+m.m01*i.m10+m.m02*i.m20;	m01=m.m00*i.m01+m.m01*i.m11+m.m02*i.m21;	m02=m.m00*i.m02+m.m01*i.m12+m.m02*i.m22;
-			m10=m.m10*i.m00+m.m11*i.m10+m.m12*i.m20;	m11=m.m10*i.m01+m.m11*i.m11+m.m12*i.m21;	m12=m.m10*i.m02+m.m11*i.m12+m.m12*i.m22;
-			m20=m01*m12-m02*m11;												m21=m02*m10-m00*m12;												m22=m00*m11-m01*m10;
+			M00=m.M00*i.M00+m.M01*i.M10+m.M02*i.M20;	M01=m.M00*i.M01+m.M01*i.M11+m.M02*i.M21;	M02=m.M00*i.M02+m.M01*i.M12+m.M02*i.M22;
+			M10=m.M10*i.M00+m.M11*i.M10+m.M12*i.M20;	M11=m.M10*i.M01+m.M11*i.M11+m.M12*i.M21;	M12=m.M10*i.M02+m.M11*i.M12+m.M12*i.M22;
+			M20=M01*M12-M02*M11;												M21=M02*M10-M00*M12;												M22=M00*M11-M01*M10;
 
-			m03=m.m03*(1-t) + n.m03*t;
-			m13=m.m13*(1-t) + n.m13*t;
-			m23=m.m23*(1-t) + n.m23*t;
+			M03=m.M03*(1-t) + n.M03*t;
+			M13=m.M13*(1-t) + n.M13*t;
+			M23=m.M23*(1-t) + n.M23*t;
 		}
 
 		//--------------------------------------------------------------------------------
 		//----                  helper functions to access matrix-members     ------------
 		//--------------------------------------------------------------------------------
 
-		public Vec3 GetColumn0() { return new Vec3(m00, m10, m20); }
-		public Vec3 GetColumn1() { return new Vec3(m01, m11, m21); }
-		public Vec3 GetColumn2() { return new Vec3(m02, m12, m22); }
-		public Vec3 GetColumn3() { return new Vec3(m03, m13, m23); }
+		public Vec3 GetColumn0() { return new Vec3(M00, M10, M20); }
+		public Vec3 GetColumn1() { return new Vec3(M01, M11, M21); }
+		public Vec3 GetColumn2() { return new Vec3(M02, M12, M22); }
+		public Vec3 GetColumn3() { return new Vec3(M03, M13, M23); }
 
 		public void SetTranslation(Vec3 t)
 		{
-			m03 = t.X;
-			m13 = t.Y;
-			m23 = t.Z;
+			M03 = t.X;
+			M13 = t.Y;
+			M23 = t.Z;
 		}
 
 		public Vec3 GetTranslation()
 		{
-			return new Vec3(m03, m13, m23);
+			return new Vec3(M03, M13, M23);
 		}
 
 		public void ScaleTranslation(float s)
 		{
-			m03 *= s;
-			m13 *= s;
-			m23 *= s;
+			M03 *= s;
+			M13 *= s;
+			M23 *= s;
 		}
 
 		public Matrix34 AddTranslation(Vec3 t)
 		{
-			m03 += t.X;
-			m13 += t.Y;
-			m23 += t.Z;
+			M03 += t.X;
+			M13 += t.Y;
+			M23 += t.Z;
 
 			return this;
 		}
 
 		public void SetRotation33(Matrix33 m33)
 		{
-			m00 = m33.m00; m01 = m33.m01; m02 = m33.m02;
-			m10 = m33.m10; m11 = m33.m11; m12 = m33.m12;
-			m20 = m33.m20; m21 = m33.m21; m22 = m33.m22;
+			M00 = m33.M00; M01 = m33.M01; M02 = m33.M02;
+			M10 = m33.M10; M11 = m33.M11; M12 = m33.M12;
+			M20 = m33.M20; M21 = m33.M21; M22 = m33.M22;
 		}
 
 		/// <summary>
@@ -685,9 +685,9 @@ namespace CryEngine
 		public bool IsEquivalent(Matrix34 m, float e = 0.05f)
 		{
 			return (
-			(Math.Abs(m00 - m.m00) <= e) && (Math.Abs(m01 - m.m01) <= e) && (Math.Abs(m02 - m.m02) <= e) && (Math.Abs(m03 - m.m03) <= e) &&
-			(Math.Abs(m10 - m.m10) <= e) && (Math.Abs(m11 - m.m11) <= e) && (Math.Abs(m12 - m.m12) <= e) && (Math.Abs(m13 - m.m13) <= e) &&
-			(Math.Abs(m20 - m.m20) <= e) && (Math.Abs(m21 - m.m21) <= e) && (Math.Abs(m22 - m.m22) <= e) && (Math.Abs(m23 - m.m23) <= e)
+			(Math.Abs(M00 - m.M00) <= e) && (Math.Abs(M01 - m.M01) <= e) && (Math.Abs(M02 - m.M02) <= e) && (Math.Abs(M03 - m.M03) <= e) &&
+			(Math.Abs(M10 - m.M10) <= e) && (Math.Abs(M11 - m.M11) <= e) && (Math.Abs(M12 - m.M12) <= e) && (Math.Abs(M13 - m.M13) <= e) &&
+			(Math.Abs(M20 - m.M20) <= e) && (Math.Abs(M21 - m.M21) <= e) && (Math.Abs(M22 - m.M22) <= e) && (Math.Abs(M23 - m.M23) <= e)
 			);	
 		}
 		#endregion

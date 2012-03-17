@@ -9,14 +9,14 @@ namespace CryEngine
 {
     internal class NativeMethods
     {
-        [DllImport("CryMono.dll")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA2101:SpecifyMarshalingForPInvokeStringArguments", MessageId = "0"), DllImport("CryMono.dll")]
         public extern static void _LogAlways(string msg);
-        [DllImport("CryMono.dll")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA2101:SpecifyMarshalingForPInvokeStringArguments", MessageId = "0"), DllImport("CryMono.dll")]
         public extern static void _Log(string msg);
-        [DllImport("CryMono.dll")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA2101:SpecifyMarshalingForPInvokeStringArguments", MessageId = "0"), DllImport("CryMono.dll")]
         public extern static void _Warning(string msg);
 
-        [DllImport("CryMono.dll")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA2101:SpecifyMarshalingForPInvokeStringArguments", MessageId = "1"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA2101:SpecifyMarshalingForPInvokeStringArguments", MessageId = "0"), DllImport("CryMono.dll")]
         public extern static void _RegisterCallback(string func, string className, CallbackHandler.Callback cb);
     }
 }

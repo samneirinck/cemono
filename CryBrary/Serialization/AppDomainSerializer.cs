@@ -76,17 +76,17 @@ namespace CryEngine.Serialization
 			Debug.LogAlways("Serializer took {0}ms to dump script data", stopwatch.ElapsedMilliseconds);
 		}
 
-		public void SerializeTypesToXml(IEnumerable<object> typeInstances, System.Type type, string targetDir)
+		public void SerializeTypesToXml(IEnumerable<object> typeInstances, System.Type type, string targetDirection)
 		{
-			if(typeInstances.Count() <= 0)
+			if(typeInstances.Count() <= 0 || type == null)
 				return;
 
-			targetDir = Directory.CreateDirectory(Path.Combine(targetDir, type.Namespace + "." + type.Name)).FullName;
+			targetDirection = Directory.CreateDirectory(Path.Combine(targetDirection, type.Namespace + "." + type.Name)).FullName;
 
 			for(int i = 0; i < typeInstances.Count(); i++)
 			{
 				var formatter = new CrySerializer();
-				var stream = File.Create(Path.Combine(targetDir, i.ToString()));
+				var stream = File.Create(Path.Combine(targetDirection, i.ToString()));
 
 				formatter.Serialize(stream, typeInstances.ElementAt(i));
 

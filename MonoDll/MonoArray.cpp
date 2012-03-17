@@ -9,7 +9,7 @@ CScriptArray::CScriptArray(int size)
 	if(size<1)
 	{
 		gEnv->pLog->LogError("Attempted to create array with invalid size %i", size);
-		delete this;
+		Release();
 	}
 
 	m_pArray = (mono::array)mono_array_new(mono_domain_get(), mono_get_object_class(), size);

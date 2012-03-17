@@ -42,13 +42,8 @@
 #include "EntityManager.h"
 #include "FlowManager.h"
 #include "MonoInput.h"
-#include "MonoTester.h"
 
 #include "CallbackHandler.h"
-
-#ifndef _RELEASE
-#include "MonoTester.h"
-#endif
 
 CRYREGISTER_CLASS(CScriptSystem)
 
@@ -336,7 +331,6 @@ void CScriptSystem::RegisterDefaultBindings()
 	RegisterBinding(CTime);
 	RegisterBinding(CScriptbind_MaterialManager);
 	RegisterBinding(CScriptbind_ParticleSystem);
-	RegisterBinding(CTester);
 
 #define RegisterBindingAndSet(var, T) RegisterBinding(T); var = (T *)m_localScriptBinds.back();
 	RegisterBindingAndSet(m_pUIScriptBind, CScriptbind_UI);
@@ -345,21 +339,12 @@ void CScriptSystem::RegisterDefaultBindings()
 	RegisterBindingAndSet(m_pFlowManager, CFlowManager);
 	RegisterBindingAndSet(m_pInput, CInput);
 
-#ifndef _RELEASE
-	RegisterBindingAndSet(m_pTester, CTester);
-#endif
-
 #undef RegisterBindingAndSet
 #undef RegisterBinding
 }
 
 bool CScriptSystem::InitializeSystems()
 {
-#ifndef _RELEASE
-	//m_pTester->CommenceTesting();
-	//SAFE_DELETE(m_pTester);
-#endif
-
 	IMonoClass *pClass = m_pCryBraryAssembly->GetCustomClass("CryNetwork");
 	IMonoArray *pArray = GetConverter()->CreateArray(2);
 	pArray->Insert(gEnv->IsEditor());

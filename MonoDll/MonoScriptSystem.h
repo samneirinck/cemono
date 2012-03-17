@@ -112,8 +112,6 @@ protected:
 	IMonoEntityManager *m_pEntityManager;
 	CFlowManager *m_pFlowManager;
 	CInput *m_pInput;
-	// Dedicated tester class to make sure that CryMono features work. This will be replaced using C# Unit tests in the future.
-	CTester *m_pTester;
 	CCallbackHandler *m_pCallbackHandler;
 	CScriptbind_UI*	m_pUIScriptBind;
 

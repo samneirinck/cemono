@@ -9,7 +9,7 @@ using System.CodeDom.Compiler;
 using System.Reflection;
 
 using CryEngine.Extensions;
-using CryEngine.Utils;
+using CryEngine.Utilities;
 
 using System.ComponentModel;
 
@@ -615,6 +615,7 @@ namespace CryEngine
 		#endregion
 	}
 
+    [Serializable]
 	public class ScriptCompilationException : Exception
 	{
 		public ScriptCompilationException(string errorMessage)
@@ -626,6 +627,7 @@ namespace CryEngine
 		public override string Message { get { return base.Message.ToString(); } }
 	}
 
+    [Serializable]
 	class ScriptNotFoundException : Exception
 	{
 		public ScriptNotFoundException(string error)

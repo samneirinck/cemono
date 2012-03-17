@@ -48,9 +48,6 @@
     <ClInclude Include="Headers\IMonoAssembly.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="MonoTester.h">
-      <Filter>Mono</Filter>
-    </ClInclude>
     <ClInclude Include="CallbackHandler.h">
       <Filter>Mono\Callbacks</Filter>
     </ClInclude>
@@ -149,9 +146,6 @@
     </ClCompile>
     <ClCompile Include="MonoArray.cpp">
       <Filter>Wrappers</Filter>
-    </ClCompile>
-    <ClCompile Include="MonoTester.cpp">
-      <Filter>Mono</Filter>
     </ClCompile>
     <ClCompile Include="CallbackHandler.cpp">
       <Filter>Mono\Callbacks</Filter>

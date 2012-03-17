@@ -1157,19 +1157,19 @@ namespace CryEngine
 		/// <summary>
 		/// Determines whether the specified <see cref="System.Object"/> is equal to this instance.
 		/// </summary>
-		/// <param name="value">The <see cref="System.Object"/> to compare with this instance.</param>
+		/// <param name="obj">The <see cref="System.Object"/> to compare with this instance.</param>
 		/// <returns>
 		/// <c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.
 		/// </returns>
-		public override bool Equals(object value)
+		public override bool Equals(object obj)
 		{
-			if(value == null)
+			if(obj == null)
 				return false;
 
-			if(value.GetType() != GetType())
+			if(obj.GetType() != GetType())
 				return false;
 
-			return Equals((Vec4)value);
+			return Equals((Vec4)obj);
 		}
 
 #if SlimDX1xInterop

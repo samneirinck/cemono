@@ -52,14 +52,15 @@ CScriptAssembly::CScriptAssembly(const char *assemblyPath)
 	{
 		gEnv->pLog->LogError("Failed to create assembly from %s", assemblyPath);
 		
-		delete this;
+		Release();
 	}
+
 	m_pImage = mono_assembly_get_image(m_pAssembly);
 	if (!m_pImage)
 	{
 		gEnv->pLog->LogError("Failed to get image from assembly %s", assemblyPath);
 		
-		delete this;
+		Release();
 	}
 }
 

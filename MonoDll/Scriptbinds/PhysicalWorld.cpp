@@ -13,7 +13,6 @@ CScriptbind_PhysicalWorld::CScriptbind_PhysicalWorld()
 
 int CScriptbind_PhysicalWorld::RayWorldIntersection(Vec3 origin, Vec3 dir, int objFlags, unsigned int flags, MonoRayHit &monoHit, int maxHits, mono::array skipEntities)
 {
-	IPhysicalEntity **pSkipEnts = NULL;
 	std::vector<IPhysicalEntity *> physEnts;
 
 	if(skipEntities)
@@ -29,13 +28,15 @@ int CScriptbind_PhysicalWorld::RayWorldIntersection(Vec3 origin, Vec3 dir, int o
 			}
 		}
 
-		pSkipEnts = new IPhysicalEntity*[physEnts.size()];
-
-		for(int i = 0; i < physEnts.size(); i++)
-			pSkipEnts[i] = physEnts[i];
-
 		delete pSkipEntities;
 	}
+
+	IPhysicalEntity **pSkipEnts = new IPhysicalEntity*[physEnts.size()];
+
+#pragma warning(suppress: 6386)
+
+	for(int i = 0; i < physEnts.size(); i++)
+		pSkipEnts[i] = physEnts[i];
 
 	ray_hit hit;
 	int numHits = gEnv->pPhysicalWorld->RayWorldIntersection(origin, dir, objFlags, flags, &hit, maxHits, pSkipEnts, physEnts.size());

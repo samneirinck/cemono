@@ -4,7 +4,7 @@ using System.Xml.Linq;
 using System.IO;
 using System.Text.RegularExpressions;
 
-namespace CryEngine.Utils
+namespace CryEngine.Utilities
 {
     /// <summary>
     /// Handles retrieval of required assemblies for compiled scripts etc.
@@ -24,6 +24,9 @@ namespace CryEngine.Utils
         /// <returns></returns>
         public IEnumerable<string> GetRequiredAssembliesForScriptFiles(IEnumerable<string> scriptFilePaths)
         {
+            if (scriptFilePaths == null)
+                return null;
+
             var namespaces = new List<string>();
             var assemblyPaths = new List<string>();
 

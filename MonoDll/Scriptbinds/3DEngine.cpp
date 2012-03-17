@@ -3,9 +3,9 @@
 
 CScriptbind_3DEngine::CScriptbind_3DEngine()
 {
-	REGISTER_EXPOSED_METHOD(GetTerrainElevation);
-	REGISTER_EXPOSED_METHOD(GetTerrainSize);
-	REGISTER_EXPOSED_METHOD(GetTerrainSectorSize);
+	REGISTER_METHOD(GetTerrainElevation);
+	REGISTER_METHOD(GetTerrainSize);
+	REGISTER_METHOD(GetTerrainSectorSize);
 }
 
 float CScriptbind_3DEngine::GetTerrainElevation(int x, int y, bool includeOutdoorVoxels)

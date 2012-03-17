@@ -22,7 +22,7 @@
     <WarningLevel>0</WarningLevel>
     <DocumentationFile>..\..\..\Bin32\CryBrary.XML</DocumentationFile>
     <RunCodeAnalysis>false</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>MixedRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>ExtendedDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisIgnoreGeneratedCode>true</CodeAnalysisIgnoreGeneratedCode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -137,6 +137,7 @@
     <Compile Include="Engine\ParticleEffect.cs" />
     <Compile Include="EntitySystem\EntityId.cs" />
     <Compile Include="EntitySystem\Physics.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Misc\Collision.cs" />
     <Compile Include="Misc\NativeMethods.cs" />
     <Compile Include="Serialization\CrySerializer.cs" />
@@ -166,14 +167,11 @@
     <Compile Include="Misc\CompilationAttributes.cs" />
     <Compile Include="CallbackHandler.cs" />
     <Compile Include="Console\CCommand.cs" />
-    <Compile Include="Console\ConsoleRedirector.cs" />
-    <Compile Include="Console\ConsoleTraceListener.cs" />
     <Compile Include="EntitySystem\EntityConfig.cs" />
     <Compile Include="Console\CVar.cs" />
     <Compile Include="Misc\Time.cs" />
     <Compile Include="ThirdParty\Arduino.cs" />
     <Compile Include="Utils\Debug\Debug.cs" />
-    <Compile Include="Utils\Tester.cs" />
     <Compile Include="Extensions\Reflection.cs" />
     <Compile Include="EntitySystem\EntitySystem.cs" />
     <Compile Include="EntitySystem\StaticEntity.cs" />

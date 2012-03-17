@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CryEngine.Utils
+namespace CryEngine.Utilities
 {
 	/// <summary>
 	/// CryStats enables tracking of commonly used library statistics such as memory usage.

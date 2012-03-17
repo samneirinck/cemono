@@ -9,7 +9,7 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="angle"></param>
 		/// <returns></returns>
-		public static double DegToRad(double angle)
+		public static double DegreesToRadians(double angle)
 		{
 			return System.Math.PI * angle / 180.0f;
 		}
@@ -19,7 +19,7 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="angle"></param>
 		/// <returns></returns>
-		public static float DegToRad(float angle)
+		public static float DegreesToRadians(float angle)
 		{
 			return (float)System.Math.PI * angle / 180.0f;
 		}
@@ -29,7 +29,7 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="angle"></param>
 		/// <returns></returns>
-		public static double RadToDeg(double angle)
+		public static double RadiansToDegrees(double angle)
 		{
 			return angle * (180.0 / System.Math.PI);
 		}
@@ -39,7 +39,7 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="angle"></param>
 		/// <returns></returns>
-		public static float RadToDeg(float angle)
+		public static float RadiansToDegrees(float angle)
 		{
 			return angle * (float)(180.0 / System.Math.PI);
 		}

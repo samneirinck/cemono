@@ -83,7 +83,7 @@ public:
 	template <typename TResult>
 	static TResult CallMethod(int scriptId, const char *funcName, IMonoArray *pArgs = NULL, bool releaseArgs = false)
 	{
-		TResult result;
+		TResult result = TResult();
 
 		if(IMonoClass *pClass = gEnv->pMonoScriptSystem->GetScriptById(scriptId))
 		{

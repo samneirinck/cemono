@@ -14,7 +14,7 @@ CScriptClass::CScriptClass(MonoClass *pClass, IMonoArray *pConstructorArguments)
 	{
 		gEnv->pLog->LogError("Mono class object creation failed!");
 
-		delete this;
+		Release();
 	}
 
 	Instantiate(pConstructorArguments);
