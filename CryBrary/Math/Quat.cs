@@ -296,148 +296,6 @@ namespace CryEngine
         }
 
         /// <summary>
-        /// Adds two quaternions.
-        /// </summary>
-        /// <param name="left">The first quaternion to add.</param>
-        /// <param name="right">The second quaternion to add.</param>
-        /// <param name="result">When the method completes, contains the sum of the two quaternions.</param>
-        public static void Add(ref Quat left, ref Quat right, out Quat result)
-        {
-            result.V.X = left.V.X + right.V.X;
-            result.V.Y = left.V.Y + right.V.Y;
-            result.V.Z = left.V.Z + right.V.Z;
-            result.W = left.W + right.W;
-        }
-
-        /// <summary>
-        /// Adds two quaternions.
-        /// </summary>
-        /// <param name="left">The first quaternion to add.</param>
-        /// <param name="right">The second quaternion to add.</param>
-        /// <returns>The sum of the two quaternions.</returns>
-        public static Quat Add(Quat left, Quat right)
-        {
-            Quat result;
-            Add(ref left, ref right, out result);
-            return result;
-        }
-
-        /// <summary>
-        /// Subtracts two quaternions.
-        /// </summary>
-        /// <param name="left">The first quaternion to subtract.</param>
-        /// <param name="right">The second quaternion to subtract.</param>
-        /// <param name="result">When the method completes, contains the difference of the two quaternions.</param>
-        public static void Subtract(ref Quat left, ref Quat right, out Quat result)
-        {
-            result.V.X = left.V.X - right.V.X;
-            result.V.Y = left.V.Y - right.V.Y;
-            result.V.Z = left.V.Z - right.V.Z;
-            result.W = left.W - right.W;
-        }
-
-        /// <summary>
-        /// Subtracts two quaternions.
-        /// </summary>
-        /// <param name="left">The first quaternion to subtract.</param>
-        /// <param name="right">The second quaternion to subtract.</param>
-        /// <returns>The difference of the two quaternions.</returns>
-        public static Quat Subtract(Quat left, Quat right)
-        {
-            Quat result;
-            Subtract(ref left, ref right, out result);
-            return result;
-        }
-
-        /// <summary>
-        /// Scales a quaternion by the given value.
-        /// </summary>
-        /// <param name="value">The quaternion to scale.</param>
-        /// <param name="scale">The amount by which to scale the quaternion.</param>
-        /// <param name="result">When the method completes, contains the scaled quaternion.</param>
-        public static void Multiply(ref Quat value, float scale, out Quat result)
-        {
-            result.V.X = value.V.X * scale;
-            result.V.Y = value.V.Y * scale;
-            result.V.Z = value.V.Z * scale;
-            result.W = value.W * scale;
-        }
-
-        /// <summary>
-        /// Scales a quaternion by the given value.
-        /// </summary>
-        /// <param name="value">The quaternion to scale.</param>
-        /// <param name="scale">The amount by which to scale the quaternion.</param>
-        /// <returns>The scaled quaternion.</returns>
-        public static Quat Multiply(Quat value, float scale)
-        {
-            Quat result;
-            Multiply(ref value, scale, out result);
-            return result;
-        }
-
-        /// <summary>
-        /// Modulates a quaternion by another.
-        /// </summary>
-        /// <param name="left">The first quaternion to modulate.</param>
-        /// <param name="right">The second quaternion to modulate.</param>
-        /// <param name="result">When the moethod completes, contains the modulated quaternion.</param>
-        public static void Multiply(ref Quat left, ref Quat right, out Quat result)
-        {
-            float lx = left.V.X;
-            float ly = left.V.Y;
-            float lz = left.V.Z;
-            float lw = left.W;
-            float rx = right.V.X;
-            float ry = right.V.Y;
-            float rz = right.V.Z;
-            float rw = right.W;
-
-            result.V.X = (rx * lw + lx * rw + ry * lz) - (rz * ly);
-            result.V.Y = (ry * lw + ly * rw + rz * lx) - (rx * lz);
-            result.V.Z = (rz * lw + lz * rw + rx * ly) - (ry * lx);
-            result.W = (rw * lw) - (rx * lx + ry * ly + rz * lz);
-        }
-
-        /// <summary>
-        /// Modulates a quaternion by another.
-        /// </summary>
-        /// <param name="left">The first quaternion to modulate.</param>
-        /// <param name="right">The second quaternion to modulate.</param>
-        /// <returns>The modulated quaternion.</returns>
-        public static Quat Multiply(Quat left, Quat right)
-        {
-            Quat result;
-            Multiply(ref left, ref right, out result);
-            return result;
-        }
-
-        /// <summary>
-        /// Reverses the direction of a given quaternion.
-        /// </summary>
-        /// <param name="value">The quaternion to negate.</param>
-        /// <param name="result">When the method completes, contains a quaternion facing in the opposite direction.</param>
-        public static void Negate(ref Quat value, out Quat result)
-        {
-            result.V.X = -value.V.X;
-            result.V.Y = -value.V.Y;
-            result.V.Z = -value.V.Z;
-            result.W = -value.W;
-        }
-
-        /// <summary>
-        /// Reverses the direction of a given quaternion.
-        /// </summary>
-        /// <param name="value">The quaternion to negate.</param>
-        /// <returns>A quaternion facing in the opposite direction.</returns>
-        public static Quat Negate(Quat value)
-        {
-            Quat result;
-            Negate(ref value, out result);
-            return result;
-        }
-
-        /// <summary>
         /// Returns a <see cref="CryEngine.Quaternion"/> containing the 4D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
         /// </summary>
         /// <param name="value1">A <see cref="CryEngine.Quaternion"/> containing the 4D Cartesian coordinates of vertex 1 of the triangle.</param>
@@ -886,8 +744,11 @@ namespace CryEngine
         /// <returns>The sum of the two quaternions.</returns>
         public static Quat operator +(Quat left, Quat right)
         {
-            Quat result;
-            Add(ref left, ref right, out result);
+            Quat result = new Quat();
+            result.V.X = left.V.X + right.V.X;
+            result.V.Y = left.V.Y + right.V.Y;
+            result.V.Z = left.V.Z + right.V.Z;
+            result.W = left.W + right.W;
             return result;
         }
 
@@ -899,8 +760,13 @@ namespace CryEngine
         /// <returns>The difference of the two quaternions.</returns>
         public static Quat operator -(Quat left, Quat right)
         {
-            Quat result;
-            Subtract(ref left, ref right, out result);
+            Quat result = new Quat();
+
+            result.V.X = left.V.X - right.V.X;
+            result.V.Y = left.V.Y - right.V.Y;
+            result.V.Z = left.V.Z - right.V.Z;
+            result.W = left.W - right.W;
+
             return result;
         }
 
@@ -911,8 +777,11 @@ namespace CryEngine
         /// <returns>A quaternion facing in the opposite direction.</returns>
         public static Quat operator -(Quat value)
         {
-            Quat result;
-            Negate(ref value, out result);
+            Quat result = new Quat();
+            result.V.X = -value.V.X;
+            result.V.Y = -value.V.Y;
+            result.V.Z = -value.V.Z;
+            result.W = -value.W;
             return result;
         }
 
@@ -924,9 +793,7 @@ namespace CryEngine
         /// <returns>The scaled quaternion.</returns>
         public static Quat operator *(float scale, Quat value)
         {
-            Quat result;
-            Multiply(ref value, scale, out result);
-            return result;
+            return value * scale;
         }
 
         /// <summary>
@@ -937,8 +804,11 @@ namespace CryEngine
         /// <returns>The scaled quaternion.</returns>
         public static Quat operator *(Quat value, float scale)
         {
-            Quat result;
-            Multiply(ref value, scale, out result);
+            Quat result = new Quat();
+            result.V.X = value.V.X * scale;
+            result.V.Y = value.V.Y * scale;
+            result.V.Z = value.V.Z * scale;
+            result.W = value.W * scale;
             return result;
         }
 
@@ -950,8 +820,20 @@ namespace CryEngine
         /// <returns>The multiplied quaternion.</returns>
         public static Quat operator *(Quat left, Quat right)
         {
-            Quat result;
-            Multiply(ref left, ref right, out result);
+            Quat result = new Quat();
+            float lx = left.V.X;
+            float ly = left.V.Y;
+            float lz = left.V.Z;
+            float lw = left.W;
+            float rx = right.V.X;
+            float ry = right.V.Y;
+            float rz = right.V.Z;
+            float rw = right.W;
+
+            result.V.X = (rx * lw + lx * rw + ry * lz) - (rz * ly);
+            result.V.Y = (ry * lw + ly * rw + rz * lx) - (rx * lz);
+            result.V.Z = (rz * lw + lz * rw + rx * ly) - (ry * lx);
+            result.W = (rw * lw) - (rx * lx + ry * ly + rz * lz);
             return result;
         }
 
