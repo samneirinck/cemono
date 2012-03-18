@@ -75,7 +75,7 @@ IMonoObject *CScriptClass::CallMethod(const char *methodName, IMonoArray *pParam
 	if(!_static && !m_pInstance)
 		CryLogAlways("[Warning] Attempting to invoke non-static method %s on non-instantiated class %s!", methodName, GetName());
 
-	if(MonoMethod *pMethod = GetMethod(methodName, _static))
+	if(MonoMethod *pMethod = GetMethod(methodName, pParams ? pParams->GetSize() : 0, _static))
 	{
 		MonoObject *pException = NULL;
 		MonoObject *pResult = NULL;
@@ -100,7 +100,7 @@ IMonoObject *CScriptClass::CallMethod(const char *methodName, IMonoArray *pParam
 	return NULL;
 }
 
-MonoMethod *CScriptClass::GetMethod(const char *methodName, bool bStatic)
+MonoMethod *CScriptClass::GetMethod(const char *methodName, int numParams, bool bStatic)
 {
 	MonoMethod *pMethod = NULL;
 
@@ -111,17 +111,20 @@ MonoMethod *CScriptClass::GetMethod(const char *methodName, bool bStatic)
 
 		while (pClass != NULL && pMethod == NULL) 
 		{
-			pMethod = mono_method_desc_search_in_class(pMethodDesc, pClass); 
+			if(numParams > -1)
+				pMethod = mono_class_get_method_from_name(pClass, methodName, numParams);
+			else
+				pMethod = mono_method_desc_search_in_class(pMethodDesc, pClass); 
 			if (!pMethod) 
 				pClass = mono_class_get_parent(pClass);
 		}
 
 		mono_method_desc_free(pMethodDesc);
-	}
 
-	// If overridden, get the "new" method.
-	if (m_pInstance && !bStatic && pMethod)
-        pMethod = mono_object_get_virtual_method((MonoObject *)m_pInstance, pMethod); 
+		// If overridden, get the "new" method.
+		if (m_pInstance && !bStatic && pMethod)
+			pMethod = mono_object_get_virtual_method((MonoObject *)m_pInstance, pMethod);
+	}
 
 	return pMethod;
 }
