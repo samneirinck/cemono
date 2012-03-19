@@ -10,6 +10,7 @@ struct SCVars
 	SCVars()
 	{
 		memset(this,0,sizeof(SCVars));
+		InitCVars(gEnv->pConsole);
 	}
 
 	~SCVars() { ReleaseCVars(); }
