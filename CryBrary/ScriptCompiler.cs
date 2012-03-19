@@ -26,7 +26,7 @@ namespace CryEngine
 
             assemblyReferenceHandler = new AssemblyReferenceHandler();
 
-			NextScriptId = 0;
+			LastScriptId = 0;
 
 			LoadPrecompiledAssemblies();
 
@@ -122,30 +122,32 @@ namespace CryEngine
 			else if(script.ScriptInstances.Contains(instance))
 				return -1;
 
-			NextScriptId++;
+			LastScriptId++;
 
-			instance.ScriptId = NextScriptId;
+			instance.ScriptId = LastScriptId;
 			script.ScriptInstances.Add(instance);
 
 			CompiledScripts[scriptIndex] = script;
 
-			return NextScriptId;
+			return LastScriptId;
+		}
+
+		public static void RemoveInstance(int scriptId)
+		{
+			RemoveInstance(scriptId, null);
 		}
 
 		/// <summary>
 		/// Locates and destructs the script with the assigned scriptId.
-		/// 
-		/// Warning: Not supplying the scriptName will make the method execute slower.
 		/// </summary>
 		/// <param name="scriptId"></param>
-		/// <param name="scriptName"></param>
-		public static void RemoveInstance(int scriptId, Type scriptType = null)
+		public static void RemoveInstance(int scriptId, Type scriptType)	
 		{
 			if(scriptType != null)
 			{
 				var script = CompiledScripts.FirstOrDefault(x => x.ScriptType == scriptType);
-				if(script != default(CryScript))
-                    throw new ScriptNotFoundException(string.Format("Failed to find script by name {0}", scriptType.Name));
+				if(script == default(CryScript))
+					throw new ScriptNotFoundException(string.Format("Failed to find script by name {0}", scriptType.Name));
 
 				RemoveInstanceFromScriptById(ref script, scriptId);
 
@@ -540,7 +542,10 @@ namespace CryEngine
         private static AssemblyReferenceHandler assemblyReferenceHandler;
 
 		public static Collection<CryScript> CompiledScripts;
-		public static int NextScriptId;
+		/// <summary>
+		/// Last assigned ScriptId, next = + 1
+		/// </summary>
+		public static int LastScriptId;
 	}
 
 	public enum ScriptType

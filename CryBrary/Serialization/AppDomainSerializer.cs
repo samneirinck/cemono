@@ -123,8 +123,8 @@ namespace CryEngine.Serialization
 
 						stream.Close();
 
-						if(ScriptCompiler.NextScriptId <= script.ScriptInstances.Last().ScriptId)
-							ScriptCompiler.NextScriptId = script.ScriptInstances.Last().ScriptId + 1;
+						if(ScriptCompiler.LastScriptId <= script.ScriptInstances.Last().ScriptId)
+							ScriptCompiler.LastScriptId = script.ScriptInstances.Last().ScriptId + 1;
 					}
 				}
 
@@ -158,8 +158,8 @@ namespace CryEngine.Serialization
 
 							scriptMatch.ScriptInstances.Add(entity);
 
-							if(ScriptCompiler.NextScriptId <= entity.ScriptId)
-								ScriptCompiler.NextScriptId = entity.ScriptId + 1;
+							if(ScriptCompiler.LastScriptId <= entity.ScriptId)
+								ScriptCompiler.LastScriptId = entity.ScriptId + 1;
 						}
 
 						ScriptCompiler.CompiledScripts[scriptIndex] = scriptMatch;

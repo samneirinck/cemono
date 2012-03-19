@@ -426,9 +426,8 @@ void CScriptSystem::RemoveScriptInstance(int id)
 	{
 		if((*it).second==id)
 		{
-			IMonoArray *pArgs = CreateMonoArray(2);
+			IMonoArray *pArgs = CreateMonoArray(1);
 			pArgs->Insert(id);
-			pArgs->Insert((*it).first->GetName());
 
 			m_pScriptManager->CallMethod("RemoveInstance", pArgs, true);
 			SAFE_RELEASE(pArgs);
