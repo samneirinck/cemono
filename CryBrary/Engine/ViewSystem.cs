@@ -46,7 +46,7 @@ namespace CryEngine
                 if (view != default(View))
                     return view;
 
-                return new View(_GetActiveView());
+				return new View(viewId);
             }
             set
             {
