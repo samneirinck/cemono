@@ -35,9 +35,9 @@ void CScriptArray::InsertObject(mono::object object)
 	curIndex++;
 }
 
-void CScriptArray::InsertString(mono::string pString)
+void CScriptArray::InsertString(mono::string string)
 {
-	mono_array_set((MonoArray *)m_pArray, MonoString *, curIndex, (MonoString *)pString);
+	mono_array_set((MonoArray *)m_pArray, MonoString *, curIndex, (MonoString *)string);
 
 	curIndex++;
 }

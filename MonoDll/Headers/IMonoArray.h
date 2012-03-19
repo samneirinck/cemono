@@ -85,6 +85,11 @@ public:
 	virtual void InsertString(mono::string string) = 0;
 
 	/// <summary>
+	/// Inserts a mono object into the array.
+	/// </summary>
+	virtual void InsertObject(mono::object obj) = 0;
+
+	/// <summary>
 	/// Retrieves the mono array, can be passed directly to C#.
 	/// </summary>
 	virtual mono::array GetMonoArray() = 0;
