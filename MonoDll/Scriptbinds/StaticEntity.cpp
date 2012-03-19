@@ -282,7 +282,8 @@ void CScriptbind_StaticEntity::AddImpulse(EntityId id, ActionImpulse actionImpul
 		impulse.partid = actionImpulse.partid;
 		impulse.point = actionImpulse.point;
 
-		pEntity->GetPhysics()->Action(&impulse);
+		if(IPhysicalEntity *pPhysEnt = pEntity->GetPhysics())
+			pPhysEnt->Action(&impulse);
 	}
 }
 
