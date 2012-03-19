@@ -7,6 +7,8 @@ using System.Runtime.Serialization;
 using System.ComponentModel;
 using System.Reflection;
 
+using System.Linq;
+
 using CryEngine.Extensions;
 
 namespace CryEngine
@@ -138,14 +140,11 @@ namespace CryEngine
 		/// <returns></returns>
 		public bool IsEntityFlowNode()
 		{
-			PortAttribute portAttribute;
-			foreach(var member in GetType().GetMembers(BindingFlags.Instance))
-			{
-				if (member.TryGetAttribute(out portAttribute))
-					return true;
-			}
+			var members = GetType().GetMembers(BindingFlags.Instance);
+			if(members == null || members.Length <= 0)
+				return false;
 
-			return false;
+			return members.Any(member => member.ContainsAttribute<PortAttribute>());
 		}
 
 		internal void SpawnCommon(EntityId entityId)
@@ -153,51 +152,57 @@ namespace CryEngine
 			Id = entityId;
 
 			MonoEntity = true;
-			EntitySystem.RegisterInternalEntity(this);
 			Spawned = true;
 
 			//Do this before the property overwrites
 			InitPhysics();
 
-			//TODO: Make sure that mutators are only called once on startup
-			//var storedPropertyNames = storedProperties.Keys.Select(key => key[0]);
-
-			foreach(var property in GetType().GetProperties())
+			if(CanContainEditorProperties)
 			{
-				EditorPropertyAttribute attr;
-				try
+				//TODO: Make sure that mutators are only called once on startup
+				//var storedPropertyNames = storedProperties.Keys.Select(key => key[0]);
+
+				foreach(var property in GetType().GetProperties())
 				{
-					if(property.TryGetAttribute(out attr) && attr.DefaultValue != null)// && !storedPropertyNames.Contains(property.Name))
-						property.SetValue(this, attr.DefaultValue, null);
+					EditorPropertyAttribute attr;
+					try
+					{
+						if(property.TryGetAttribute(out attr) && attr.DefaultValue != null)// && !storedPropertyNames.Contains(property.Name))
+							property.SetValue(this, attr.DefaultValue, null);
+					}
+					catch(Exception ex)
+					{
+						Debug.LogException(ex);
+					}
 				}
-				catch(Exception ex)
+
+				foreach(var field in GetType().GetFields())
 				{
-					Debug.LogException(ex);
+					EditorPropertyAttribute attr;
+					if(field.TryGetAttribute(out attr) && attr.DefaultValue != null)// && !storedPropertyNames.Contains(field.Name))
+						field.SetValue(this, attr.DefaultValue);
 				}
+
+				if(storedProperties == null)
+					return;
+
+				foreach(var storedProperty in storedProperties)
+				{
+					if(string.IsNullOrEmpty(storedProperty.Key[1]))
+						continue;
+
+					SetPropertyValue(storedProperty.Key[0], storedProperty.Value, storedProperty.Key[1]);
+					Debug.LogAlways("Applying serialised property {0}, value is {1}", storedProperty.Key[0], storedProperty.Key[1]);
+				}
+
+				storedProperties.Clear();
+				storedProperties = null;
 			}
 
-			foreach(var field in GetType().GetFields())
-			{
-				EditorPropertyAttribute attr;
-				if(field.TryGetAttribute(out attr) && attr.DefaultValue != null)// && !storedPropertyNames.Contains(field.Name))
-					field.SetValue(this, attr.DefaultValue);
-			}
-
-			if (storedProperties == null)
-				return;
-
-			foreach (var storedProperty in storedProperties)
-			{
-				if (string.IsNullOrEmpty(storedProperty.Key[1]))
-					continue;
-
-				SetPropertyValue(storedProperty.Key[0], storedProperty.Value, storedProperty.Key[1]);
-				Debug.LogAlways("Applying serialised property {0}, value is {1}", storedProperty.Key[0], storedProperty.Key[1]);
-			}
-
-			storedProperties.Clear();
-			storedProperties = null;
+			EntitySystem.RegisterInternalEntity(this);
 		}
+
+		internal virtual bool CanContainEditorProperties { get { return true; } }
 
 		public static implicit operator StaticEntity(EntityId id)
 		{
@@ -306,6 +311,7 @@ namespace CryEngine
 			if(value.Length <= 0 && propertyType != EntityPropertyType.String)
 				return;
 
+			// Perhaps we should exclude properties entirely, and just utilize fields (including backing fields)
 			var property = GetType().GetProperty(propertyName);
 			if(property != null)
 			{

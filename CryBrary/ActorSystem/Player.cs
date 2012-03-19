@@ -14,13 +14,10 @@
         /// <param name="channelId"></param>
 		public void InternalSpawn(EntityId entityId, int channelId)
         {
-			SpawnCommon(entityId);
-           // Id = entityId;
-            ChannelId = channelId;
-			//MonoEntity = true;
-			//Spawned = true;
+			ChannelId = channelId;
 
-			//InitPhysics();
+			// Should be called second last, prior to OnSpawn
+			SpawnCommon(entityId);
 
 			OnSpawn();
         }
@@ -30,5 +27,7 @@
 		public float MaxHealth { get { return ActorSystem._GetPlayerMaxHealth(Id); } set { ActorSystem._SetPlayerMaxHealth(Id, value); } }
 
         public bool IsDead() { return Health <= 0; }
+
+		internal override bool CanContainEditorProperties { get { return false; } }
     }
 }
