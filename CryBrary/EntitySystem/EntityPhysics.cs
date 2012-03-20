@@ -93,7 +93,7 @@ namespace CryEngine
 
 			actionImpulse.impulse = impulse;
 			actionImpulse.angImpulse = angImpulse;
-			actionImpulse.point = point ?? Entity.GetEntity(_entityId).Position;
+			actionImpulse.point = point ?? Entity.Get(_entityId).Position;
 
 			Entity._AddImpulse(_entityId, actionImpulse);
 		}
