@@ -14,8 +14,7 @@ using CryEngine.Extensions;
 namespace CryEngine
 {
 	/// <summary>
-	/// Static entities must inherit this in order to be registered.
-	/// It is no longer an interface, due to basic functionality each entity <b>must</b> have.
+	/// The base class for all entities in the game world.
 	/// </summary>
 	public partial class Entity : FlowNode
 	{
@@ -34,12 +33,6 @@ namespace CryEngine
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static Quat _GetRotation(uint entityId);
 
-		/// <summary>
-		/// Loads a static model on the object (.cgf).
-		/// </summary>
-		/// <param name="entityId"></param>
-		/// <param name="fileName"></param>
-		/// <param name="slot"></param>
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static void _LoadObject(uint entityId, string fileName, int slot);
 		[MethodImpl(MethodImplOptions.InternalCall)]
@@ -186,14 +179,8 @@ namespace CryEngine
 				if(storedProperties == null)
 					return;
 
-				foreach(var storedProperty in storedProperties)
-				{
-					if(string.IsNullOrEmpty(storedProperty.Key[1]))
-						continue;
-
+				foreach(var storedProperty in storedProperties.Where(prop => !string.IsNullOrEmpty(prop.Key[1])))
 					SetPropertyValue(storedProperty.Key[0], storedProperty.Value, storedProperty.Key[1]);
-					Debug.LogAlways("Applying serialised property {0}, value is {1}", storedProperty.Key[0], storedProperty.Key[1]);
-				}
 
 				storedProperties.Clear();
 				storedProperties = null;
