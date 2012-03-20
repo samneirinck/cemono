@@ -41,6 +41,10 @@ namespace CryEngine
 			return Views.Last();
 		}
 
+		/// <summary>
+		/// Removes an existing view.
+		/// </summary>
+		/// <param name="view"></param>
 		public static void Remove(View view)
 		{
 			Views.Remove(view);
