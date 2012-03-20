@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using CryEngine.Utils;
+using CryEngine.Utilities;
 using NUnit.Framework;
 
-namespace CryBrary.Tests.Utils
+namespace CryBrary.Tests.Utilities
 {
     // We want to test protected methods, the public interface relies on file IO
     // This is not a good practice, but we don't want to pollute the actual class with IO abstractions
