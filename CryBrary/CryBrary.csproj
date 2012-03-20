@@ -135,6 +135,7 @@
     <Compile Include="ActorSystem\Actor.cs" />
     <Compile Include="Engine\Material.cs" />
     <Compile Include="Engine\ParticleEffect.cs" />
+    <Compile Include="Engine\Terrain.cs" />
     <Compile Include="Engine\View.cs" />
     <Compile Include="EntitySystem\EntityId.cs" />
     <Compile Include="EntitySystem\Physics.cs" />

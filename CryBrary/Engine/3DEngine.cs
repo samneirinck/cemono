@@ -4,24 +4,22 @@ namespace CryEngine
 {
 	/// <summary>
 	/// Provides an direct interface to the 3DEngine.
-	/// Mildly WIP.
 	/// </summary>
-    public static class Engine
+    internal static class Engine
     {
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern internal static float _GetTerrainElevation(int positionX, int positionY, bool includeOutdoorVoxels);
+        extern internal static float _GetTerrainElevation(float positionX, float positionY, bool includeOutdoorVoxels);
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static int _GetTerrainSize();
+
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static int _GetTerrainSectorSize();
 
-        public static float GetTerrainElevation(int positionX, int positionY, bool includeOutdoorVoxels = false)
-        {
-            return _GetTerrainElevation(positionX, positionY, includeOutdoorVoxels);
-        }
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static int _GetTerrainUnitSize();
 
-        public static int TerrainSize { get { return _GetTerrainSize(); } }
-        public static int TerrainSectorSize { get { return _GetTerrainSectorSize(); } }
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static int _GetTerrainZ(int x, int y);
     }
 }
