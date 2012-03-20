@@ -6,14 +6,14 @@ using System.Runtime.Serialization;
 
 namespace CryEngine
 {
-	public partial class Console
+	public class CVar
 	{
         static List<CVar> internalCVars = new List<CVar>();
 
         /// <summary>
         /// Invoked by a CVar after its creation. Should <b>not</b> be visible outside this assembly.
         /// </summary>
-        public static CVar RegisterCVar<T>(string name, T value, CVarFlags flags, string help)
+        public static CVar Register<T>(string name, T value, CVarFlags flags, string help)
         {
             internalCVars.Add(new CVar(name, value, flags, help));
 
@@ -25,7 +25,7 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="name">The name of the CVar to retrieve</param>
 		/// <returns></returns>
-        public static CVar GetCVar(string name)
+        public static CVar Get(string name)
         {
             CVar cvar = internalCVars.FirstOrDefault(var => var.Name.Equals(name));
             if(cvar!=default(CVar))
@@ -43,18 +43,13 @@ namespace CryEngine
 		/// <param name="name">The name of the CVar to retrieve</param>
 		/// <param name="cvar">The CVar object to modify (usually blank)</param>
 		/// <returns>True if the CVar exists, otherwise false</returns>
-        public static bool TryGetCVar(string name, out CVar cvar)
+        public static bool TryGet(string name, out CVar cvar)
         {
-            if ((cvar = GetCVar(name)) != null)
+            if ((cvar = Get(name)) != null)
                 return true;
 
             return false;
         }
-	}
-
-	public class CVar
-    {
-		public CVar() { }
 
         /// <summary>
         /// Used by CryConsole.RegisterCVar to construct the CVar.
