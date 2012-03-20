@@ -74,7 +74,7 @@ CScriptSystem::CScriptSystem()
 	// This is currently a WIP feature which requires custom MonoDevelop extensions and other irritating things.
 	const ICmdLineArg* arg = gEnv->pSystem->GetICmdLine()->FindArg(eCLAT_Pre, "DEBUG");
 	if (arg != NULL)
-		monoCmdOptions.append("--debugger-agent=transport=dt_socket,address=127.0.0.1:65432 ");
+		monoCmdOptions.append("--debugger-agent=transport=dt_socket,address=127.0.0.1:65432,embedding=1");
 
 	char *options = new char[monoCmdOptions.size() + 1];
 	strcpy(options, monoCmdOptions.c_str());
