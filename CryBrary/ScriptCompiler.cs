@@ -442,6 +442,7 @@ namespace CryEngine
 					throw new TypeLoadException(string.Format("Failed to load entity of type {0}: abstract entities are not supported", type.Name));
 
 				CompiledScripts.Add(new CryScript(type));
+				var script = CompiledScripts.Last();
 
 				string className = type.Name;
 
@@ -455,15 +456,11 @@ namespace CryEngine
 				else if(type.Implements(typeof(Actor)))
 					Actor._RegisterActorClass(className, false);
 				else if(type.Implements(typeof(Entity)))
-				{
-					bool staticEntity = !type.Implements(typeof(Entity));
-
-					LoadEntity(type, CompiledScripts.Last(), staticEntity);
-				}
+					LoadEntity(script);
 				else if(type.Implements(typeof(FlowNode)))
-					LoadFlowNode(type, className);
+					LoadFlowNode(script);
 				else if(type.ContainsAttribute<UIEventAttribute>())
-					UI.LoadEvent(type);
+					UI.LoadEvent(script);
 			}
 		}
 
@@ -480,30 +477,24 @@ namespace CryEngine
 		/// <param name="script"></param>
 		/// <param name="staticEntity"></param>
 		/// <exception cref="System.TypeLoadException">Thrown if the type was invalid</exception>
-		private static void LoadEntity(Type type, CryScript script, bool staticEntity)
+		private static void LoadEntity(CryScript script)
 		{
-			EntityConfig config = Entity.GetEntityConfig(type);
+			Entity.RegisterEntityClass(Entity.GetEntityConfig(script.ScriptType));
 
-			if (config.registerParams.Name.Length <= 0)
-				config.registerParams.Name = script.ScriptType.Name;
-			if (config.registerParams.Category.Length <= 0)
-				config.registerParams.Category = ""; // TODO: Use the folder structure in Scripts/Entities. (For example if the entity is in Scripts/Entities/Multiplayer, the category should become "Multiplayer")
-
-			Entity.RegisterEntityClass(config);
-
-			LoadFlowNode(type, config.registerParams.Name, true);
+			LoadFlowNode(script, true);
 		}
 
-		private static void LoadFlowNode(Type type, string nodeName, bool entityNode = false)
+		private static void LoadFlowNode(CryScript script, bool entityNode = false)
 		{
 			string category = null;
+			string nodeName = script.ScriptType.Name;
 
 			if (!entityNode)
 			{
-				category = type.Namespace;
+				category = script.ScriptType.Namespace;
 
 				FlowNodeAttribute nodeInfo;
-				if (type.TryGetAttribute<FlowNodeAttribute>(out nodeInfo))
+				if(script.ScriptType.TryGetAttribute<FlowNodeAttribute>(out nodeInfo))
 				{
 					if (nodeInfo.UICategory != null)
 						category = nodeInfo.UICategory;

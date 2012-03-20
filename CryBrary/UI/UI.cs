@@ -120,17 +120,17 @@ namespace CryEngine
 			i = RegisterEvent("AngryBoids", UIEventDirection.SystemToUI, desc);*/
 		}
 
-		public static void LoadEvent(Type type)
+		public static void LoadEvent(CryScript script)
 		{
 			UIEventAttribute attribute;
-			if(type.TryGetAttribute(out attribute))
+			if(script.ScriptType.TryGetAttribute(out attribute))
 			{
 				UIEventDescription eventDesc = new UIEventDescription(attribute.Name, attribute.Name, attribute.Description);
 				UIEventDirection eventDirection = UIEventDirection.ToSystem;
 
 				Collection<UIParameterDescription> parameterDescriptions = new Collection<UIParameterDescription>();
 
-				foreach(var member in type.GetMembers())
+				foreach(var member in script.ScriptType.GetMembers())
 					ProcessMember(member, attribute, ref parameterDescriptions, ref eventDirection);
 
 				eventDesc.Params = parameterDescriptions.Cast<object>().ToArray();

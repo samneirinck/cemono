@@ -437,14 +437,10 @@ namespace CryEngine
 
 		internal static EntityRegisterParams GetRegistrationConfig(Type type)
 		{
-			EntityAttribute entityAttribute = null;
-			if(type.TryGetAttribute<EntityAttribute>(out entityAttribute))
-			{
-				return new EntityRegisterParams(type.Name, entityAttribute.Category, entityAttribute.EditorHelper,
-					entityAttribute.Icon, entityAttribute.Flags);
-			}
+			EntityAttribute entityAttribute = type.ContainsAttribute<EntityAttribute>() ? type.GetAttribute<EntityAttribute>() : new EntityAttribute();
 
-			return new EntityRegisterParams(type.Name, "Default", "", "", EntityClassFlags.Default);
+			return new EntityRegisterParams(entityAttribute.Name ?? type.Name, entityAttribute.Category, entityAttribute.EditorHelper,
+					entityAttribute.Icon, entityAttribute.Flags);
 		}
 
         [Serializable]
