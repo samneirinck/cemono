@@ -38,7 +38,7 @@ namespace CryEngine
 		/// <param name="maxHits"></param>
 		/// <param name="skipEntities"></param>
 		/// <returns>The total amount of hits detected (solid and pierceable)</returns>
-		public static int RayWorldIntersection(Vec3 origin, Vec3 dir, EntityQueryFlags objectTypes, RayWorldIntersectionFlags flags, out RaycastHit hits, int maxHits = 1, EntityId[] skipEntities = null)
+		public static int RayWorldIntersection(Vec3 origin, Vec3 dir, out RaycastHit hits, EntityQueryFlags objectTypes = EntityQueryFlags.All, RayWorldIntersectionFlags flags = RayWorldIntersectionFlags.AnyHit, int maxHits = 1, EntityId[] skipEntities = null)
         {
 			var internalRayHit = new RayHit();
 
