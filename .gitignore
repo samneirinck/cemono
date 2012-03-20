@@ -60,3 +60,4 @@ MonoDll/Profile/CryMono.lib
 
 # Excludes
 !*/Utils/Debug
+MonoDll/Profile/CryMono.lib
