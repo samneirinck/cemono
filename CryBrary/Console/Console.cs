@@ -8,7 +8,7 @@ namespace CryEngine
         // Console commands
 		[System.CLSCompliant(false)]
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern protected static void _RegisterCommand(string name, string description, CVarFlags flags);
+        extern internal static void _RegisterCommand(string name, string description, CVarFlags flags);
 
         // CVars
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
