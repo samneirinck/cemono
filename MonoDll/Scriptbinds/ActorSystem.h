@@ -21,7 +21,7 @@ public:
 
 protected:
 	// IMonoScriptBind
-	virtual const char *GetClassName() { return "ActorSystem"; }
+	virtual const char *GetClassName() { return "Actor"; }
 	// ~IMonoScriptBind
 
 	static float GetPlayerHealth(EntityId);

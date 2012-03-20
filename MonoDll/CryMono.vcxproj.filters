@@ -75,9 +75,6 @@
     <ClInclude Include="Headers\MonoAnyValue.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="Scriptbinds\ActorSystem.h">
-      <Filter>ActorSystem</Filter>
-    </ClInclude>
     <ClInclude Include="MonoEntity.h">
       <Filter>EntitySystem</Filter>
     </ClInclude>
@@ -132,6 +129,9 @@
     <ClInclude Include="ScriptBinds\StaticEntity.h">
       <Filter>ScriptBinds\Game Logic</Filter>
     </ClInclude>
+    <ClInclude Include="Scriptbinds\ActorSystem.h">
+      <Filter>ScriptBinds\Game Logic</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -171,9 +171,6 @@
     <ClCompile Include="CryMonoDll.cpp" />
     <ClCompile Include="MonoConverter.cpp">
       <Filter>Mono</Filter>
-    </ClCompile>
-    <ClCompile Include="Scriptbinds\ActorSystem.cpp">
-      <Filter>ActorSystem</Filter>
     </ClCompile>
     <ClCompile Include="MonoEntity.cpp">
       <Filter>EntitySystem</Filter>
@@ -223,6 +220,9 @@
     <ClCompile Include="ScriptBinds\StaticEntity.cpp">
       <Filter>ScriptBinds\Game Logic</Filter>
     </ClCompile>
+    <ClCompile Include="Scriptbinds\ActorSystem.cpp">
+      <Filter>ScriptBinds\Game Logic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ScriptBinds">
@@ -245,9 +245,6 @@
     </Filter>
     <Filter Include="Utils">
       <UniqueIdentifier>{aa1f26db-41b9-4103-b477-74ef21bd29e0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ActorSystem">
-      <UniqueIdentifier>{32d4459d-d985-405f-b557-6c1c738d1804}</UniqueIdentifier>
     </Filter>
     <Filter Include="Mono">
       <UniqueIdentifier>{2de1619b-2f0c-4705-a8e5-59c8778b080d}</UniqueIdentifier>

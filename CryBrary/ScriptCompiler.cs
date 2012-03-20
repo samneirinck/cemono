@@ -446,8 +446,8 @@ namespace CryEngine
 					if(type.ContainsAttribute<DefaultGamemodeAttribute>())
 						GameRulesSystem._SetDefaultGameMode(className);
 				}
-				else if(type.Implements(typeof(BasePlayer)))
-					ActorSystem._RegisterActorClass(className, false);
+				else if(type.Implements(typeof(Actor)))
+					Actor._RegisterActorClass(className, false);
 				else if(type.Implements(typeof(StaticEntity)))
 				{
 					bool staticEntity = !type.Implements(typeof(Entity));

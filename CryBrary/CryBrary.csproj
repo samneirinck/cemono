@@ -132,7 +132,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ActorSystem\Player.cs" />
+    <Compile Include="ActorSystem\Actor.cs" />
     <Compile Include="Engine\Material.cs" />
     <Compile Include="Engine\ParticleEffect.cs" />
     <Compile Include="Engine\View.cs" />
@@ -177,7 +177,6 @@
     <Compile Include="EntitySystem\EntitySystem.cs" />
     <Compile Include="EntitySystem\StaticEntity.cs" />
     <Compile Include="FlowSystem\FlowNode.cs" />
-    <Compile Include="ActorSystem\ActorSystem.cs" />
     <Compile Include="Console\CVars.cs" />
     <Compile Include="ActorSystem\ItemSystem.cs" />
     <Compile Include="Utils\Debug\Logging.cs" />
