@@ -7,7 +7,7 @@
 
 #include <Windows.h>
 
-#include "MonoPathUtils.h"
+#include "PathUtils.h"
 #include "MonoScriptSystem.h"
 
 #include <IMonoClass.h>
