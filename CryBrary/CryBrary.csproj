@@ -177,7 +177,7 @@
     <Compile Include="EntitySystem\EntitySystem.cs" />
     <Compile Include="EntitySystem\Entity.cs" />
     <Compile Include="FlowSystem\FlowNode.cs" />
-    <Compile Include="Console\CVars.cs" />
+    <Compile Include="Console\Console.cs" />
     <Compile Include="ActorSystem\ItemSystem.cs" />
     <Compile Include="Utils\Debug\Logging.cs" />
     <Compile Include="GameRules\GameRulesSystem.cs" />
