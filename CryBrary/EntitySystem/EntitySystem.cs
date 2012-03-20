@@ -47,9 +47,17 @@ namespace CryEngine
 		public static T SpawnEntity<T>(string name, Vec3 pos, Vec3? rot = null, Vec3? scale = null, bool autoInit = true, EntityFlags flags = EntityFlags.CastShadow) where T : StaticEntity
 		{
 			var entId = new EntityId(_SpawnEntity(new EntitySpawnParams { Name = name, Class = typeof(T).Name, Pos = pos, Rot = rot ?? new Vec3(0, 0, 0), Scale = scale ?? new Vec3(1, 1, 1), Flags = flags }, autoInit));
-			SpawnedEntities.Add(GetEntity(entId));
+			RegisterInternalEntity(GetEntity(entId));
 
 			return SpawnedEntities.Last() as T;
+		}
+
+		internal static void RegisterInternalEntity(StaticEntity entity)
+		{
+			//if(!SpawnedEntities.Contains(entity))
+				SpawnedEntities.Add(entity);
+			/*else
+				throw new Exception("Attempted to register internal entity twice.");*/
 		}
 
 		public static void RemoveEntity(EntityId id)
@@ -139,14 +147,6 @@ namespace CryEngine
 
 			return null;
 		}
-
-        internal static void RegisterInternalEntity(StaticEntity entity)
-        {
-			if (!SpawnedEntities.Contains(entity))
-				SpawnedEntities.Add(entity);
-			else
-				throw new Exception("Attempted to register internal entity twice.");
-        }
 
 		internal static void OnUpdate()
 		{
