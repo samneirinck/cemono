@@ -54,20 +54,15 @@ extern "C"
 
 void CScriptbind_Console::OnMonoCmd(IConsoleCmdArgs *cmdArgs)
 {
-	string cmdLine = cmdArgs->GetCommandLine();
+	IMonoArray *pArgs = CreateMonoArray(1);
+	pArgs->Insert(cmdArgs->GetCommandLine());
 
-	int start = 0;
-	string cmdName = cmdLine.Tokenize(" ", start);
-
-	CScriptArray args(1);
-	args.Insert(cmdName);
-
-	gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("CryConsole")->CallMethod("OnMonoCmd", &args, true);
+	gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("CCommand")->CallMethod("OnCommand", pArgs, true);
 }
 
 void CScriptbind_Console::RegisterCommand(mono::string cmd, mono::string desc, EVarFlags flags)
 {
-	gEnv->pConsole->AddCommand(ToCryString(cmd), OnMonoCmd, flags, ToCryString(desc));
+	REGISTER_COMMAND(ToCryString(cmd), OnMonoCmd, flags, ToCryString(desc));
 }
 
 void CScriptbind_Console::RegisterCVarFloat(mono::string name, float &val, float defaultVal, EVarFlags flags, mono::string description)

@@ -413,7 +413,9 @@ namespace CryEngine
 		/// </summary>
 		public static void LoadAssembly(Assembly assembly)
 		{
-			var assemblyTypes = assembly.GetTypes().Where(type => type.Implements(typeof(CryScriptInstance)) || type.ContainsAttribute<UIEventAttribute>());
+			var assemblyTypes = assembly.GetTypes().Where(type => type.Implements(typeof(CryScriptInstance)));
+			foreach(var node in assembly.GetTypes().Where(type => type.ContainsAttribute<UINodeAttribute>()))
+				UI.LoadEvent(node);
 
 			Parallel.For(0, assemblyTypes.Count(), i =>
 			{
@@ -459,8 +461,6 @@ namespace CryEngine
 					LoadEntity(script);
 				else if(type.Implements(typeof(FlowNode)))
 					LoadFlowNode(script);
-				else if(type.ContainsAttribute<UIEventAttribute>())
-					UI.LoadEvent(script);
 			}
 		}
 
