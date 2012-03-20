@@ -464,7 +464,7 @@ namespace CryEngine
 		internal static void RegisterFlownodes()
 		{
 			foreach (var node in FlowNodes)
-				FlowSystem.RegisterNode(node.className, node.category, node.category.Equals("entity"));
+				FlowNode.RegisterNode(node.className, node.category, node.category.Equals("entity"));
 		}
 
 		/// <summary>

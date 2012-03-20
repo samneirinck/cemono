@@ -179,7 +179,6 @@
     <Compile Include="FlowSystem\FlowNode.cs" />
     <Compile Include="ActorSystem\ActorSystem.cs" />
     <Compile Include="Console\CVars.cs" />
-    <Compile Include="FlowSystem\FlowSystem.cs" />
     <Compile Include="ActorSystem\ItemSystem.cs" />
     <Compile Include="Utils\Debug\Logging.cs" />
     <Compile Include="GameRules\GameRulesSystem.cs" />

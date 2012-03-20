@@ -84,7 +84,7 @@ public:
 
 protected:
 	// IMonoScriptBind
-	virtual const char *GetClassName() { return "FlowSystem"; }
+	virtual const char *GetClassName() { return "FlowNode"; }
 	// ~IMonoScriptBind
 
 	static void RegisterNode(mono::string, mono::string, bool);

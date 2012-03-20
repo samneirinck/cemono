@@ -1,13 +1,55 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+
+using System.Runtime.CompilerServices;
+
 using CryEngine.Extensions;
 
 namespace CryEngine
 {
 	public class FlowNode : CryScriptInstance
 	{
-        internal virtual NodeConfig GetNodeConfig()
+		#region Externals
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern public static void RegisterNode(string name, string category, bool isEntity);
+
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static void _SetRegularlyUpdated(int scriptId, bool updated);
+
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static bool _IsPortActive(int scriptId, int port);
+
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static void _ActivateOutput(int scriptId, int port);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static void _ActivateOutputInt(int scriptId, int port, int value);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static void _ActivateOutputFloat(int scriptId, int port, float value);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static void _ActivateOutputEntityId(int scriptId, int port, uint value);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static void _ActivateOutputString(int scriptId, int port, string value);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static void _ActivateOutputBool(int scriptId, int port, bool value);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static void _ActivateOutputVec3(int scriptId, int port, Vec3 value);
+
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static int _GetPortValueInt(int scriptId, int port);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static float _GetPortValueFloat(int scriptId, int port);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static uint _GetPortValueEntityId(int scriptId, int port);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static string _GetPortValueString(int scriptId, int port);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static bool _GetPortValueBool(int scriptId, int port);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static Vec3 _GetPortValueVec3(int scriptId, int port);
+		#endregion
+
+		internal virtual NodeConfig GetNodeConfig()
         {
             var nodeInfo = GetType().GetAttribute<FlowNodeAttribute>();
 
@@ -180,7 +222,7 @@ namespace CryEngine
 		/// <returns></returns>
 		protected int GetPortInt(Action<int> port)
 		{
-			return FlowSystem._GetPortValueInt(ScriptId, GetInputPortId(port.Method));
+			return _GetPortValueInt(ScriptId, GetInputPortId(port.Method));
 		}
 
 		/// <summary>
@@ -190,7 +232,7 @@ namespace CryEngine
 		/// <returns></returns>
 		protected float GetPortFloat(Action<float> port)
 		{
-			return FlowSystem._GetPortValueFloat(ScriptId, GetInputPortId(port.Method));
+			return _GetPortValueFloat(ScriptId, GetInputPortId(port.Method));
 		}
 
 		/// <summary>
@@ -200,7 +242,7 @@ namespace CryEngine
 		/// <returns></returns>
 		protected Vec3 GetPortVec3(Action<Vec3> port)
 		{
-			return FlowSystem._GetPortValueVec3(ScriptId, GetInputPortId(port.Method));
+			return _GetPortValueVec3(ScriptId, GetInputPortId(port.Method));
 		}
 
 		/// <summary>
@@ -210,7 +252,7 @@ namespace CryEngine
 		/// <returns></returns>
 		protected string GetPortString(Action<string> port)
 		{
-			return FlowSystem._GetPortValueString(ScriptId, GetInputPortId(port.Method));
+			return _GetPortValueString(ScriptId, GetInputPortId(port.Method));
 		}
 
 		/// <summary>
@@ -220,7 +262,7 @@ namespace CryEngine
 		/// <returns></returns>
 		protected bool GetPortBool(Action<bool> port)
 		{
-			return FlowSystem._GetPortValueBool(ScriptId, GetInputPortId(port.Method));
+			return _GetPortValueBool(ScriptId, GetInputPortId(port.Method));
 		}
 
 		int GetInputPortId(MethodInfo method)
@@ -239,7 +281,7 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="port"></param>
 		/// <returns></returns>
-		protected bool IsPortActive(int port) { return FlowSystem._IsPortActive(ScriptId, port); }
+		protected bool IsPortActive(int port) { return _IsPortActive(ScriptId, port); }
 		#endregion
 
 		internal bool Initialized;
@@ -284,7 +326,7 @@ namespace CryEngine
 
 		public void Activate()
 		{
-			FlowSystem._ActivateOutput(ParentScriptId, PortId);
+			FlowNode._ActivateOutput(ParentScriptId, PortId);
 		}
 
 		int ParentScriptId;
@@ -304,17 +346,17 @@ namespace CryEngine
 		public void Activate(T value)
 		{
 			if (value is int)
-				FlowSystem._ActivateOutputInt(ParentScriptId, PortId, System.Convert.ToInt32(value));
+				FlowNode._ActivateOutputInt(ParentScriptId, PortId, System.Convert.ToInt32(value));
 			else if (value is float || value is double)
-				FlowSystem._ActivateOutputFloat(ParentScriptId, PortId, System.Convert.ToSingle(value));
+				FlowNode._ActivateOutputFloat(ParentScriptId, PortId, System.Convert.ToSingle(value));
 			else if (value is uint)
-				FlowSystem._ActivateOutputEntityId(ParentScriptId, PortId, System.Convert.ToUInt32(value));
+				FlowNode._ActivateOutputEntityId(ParentScriptId, PortId, System.Convert.ToUInt32(value));
 			else if (value is string)
-				FlowSystem._ActivateOutputString(ParentScriptId, PortId, System.Convert.ToString(value));
+				FlowNode._ActivateOutputString(ParentScriptId, PortId, System.Convert.ToString(value));
 			else if (value is bool)
-				FlowSystem._ActivateOutputBool(ParentScriptId, PortId, System.Convert.ToBoolean(value));
+				FlowNode._ActivateOutputBool(ParentScriptId, PortId, System.Convert.ToBoolean(value));
 			else if (value is Vec3)
-				FlowSystem._ActivateOutputVec3(ParentScriptId, PortId, (Vec3)(object)value);
+				FlowNode._ActivateOutputVec3(ParentScriptId, PortId, (Vec3)(object)value);
 			else
 				throw new ArgumentException("Attempted to activate output with invalid value!");
 		}
