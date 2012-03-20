@@ -13,7 +13,7 @@ namespace CryEngine
         /// <summary>
         /// Invoked by a CVar after its creation. Should <b>not</b> be visible outside this assembly.
         /// </summary>
-        public static CVar Register<T>(string name, T value, CVarFlags flags, string help)
+		public static CVar Register<T>(string name, T value, string help = "", CVarFlags flags = CVarFlags.Null)
         {
             internalCVars.Add(new CVar(name, value, flags, help));
 
