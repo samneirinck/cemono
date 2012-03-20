@@ -393,7 +393,14 @@ namespace CryEngine
 				string compilationError = string.Format("Compilation failed; {0} errors: ", results.Errors.Count);
 
 				foreach(CompilerError error in results.Errors)
-					compilationError += Environment.NewLine + string.Format("{0}({1},{2}): {3} {4}: {5}", error.FileName, error.Line, error.Column, error.IsWarning ? "warning" : "error", error.ErrorNumber, error.ErrorText);
+				{
+					compilationError += Environment.NewLine;
+
+					if(!error.ErrorText.Contains("(Location of the symbol related to previous error)"))
+						compilationError += string.Format("{0}({1},{2}): {3} {4}: {5}", error.FileName, error.Line, error.Column, error.IsWarning ? "warning" : "error", error.ErrorNumber, error.ErrorText);
+					else
+						compilationError += "	" + error.ErrorText; 
+				}
 				throw new ScriptCompilationException(compilationError);
 			}
 			else
