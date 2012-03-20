@@ -191,11 +191,6 @@ namespace CryEngine
 
 		internal virtual bool CanContainEditorProperties { get { return true; } }
 
-		public static implicit operator Entity(EntityId id)
-		{
-			return Entity.GetEntity(id);
-		}
-
 		#region Methods & Fields
 		public Vec3 Position { get { return _GetWorldPos(Id); } set { _SetWorldPos(Id, value); } }
 		public Quat Rotation { get { return _GetRotation(Id); } set { _SetRotation(Id, value); } }
@@ -263,7 +258,7 @@ namespace CryEngine
 		/// <summary>
 		/// 
 		/// </summary>
-		public virtual void OnHit(HitInfo hitInfo) { }
+		protected virtual void OnHit(HitInfo hitInfo) { }
 		#endregion
 
 		#region Overrides
@@ -329,7 +324,7 @@ namespace CryEngine
 		/// <param name="name"></param>
 		/// <param name="slotNumber"></param>
 		/// <returns></returns>
-		protected bool LoadObject(string name, int slotNumber = 0)
+		public bool LoadObject(string name, int slotNumber = 0)
 		{
 			if(name.EndsWith("cgf"))
 				_LoadObject(Id, name, slotNumber);
@@ -429,14 +424,10 @@ namespace CryEngine
 
 		internal static EntityRegisterParams GetRegistrationConfig(Type type)
 		{
-			EntityAttribute entityAttribute = null;
-			if(type.TryGetAttribute<EntityAttribute>(out entityAttribute))
-			{
-				return new EntityRegisterParams(type.Name, entityAttribute.Category, entityAttribute.EditorHelper,
-					entityAttribute.Icon, entityAttribute.Flags);
-			}
+			EntityAttribute entityAttribute = type.ContainsAttribute<EntityAttribute>() ? type.GetAttribute<EntityAttribute>() : new EntityAttribute();
 
-			return new EntityRegisterParams(type.Name, "Default", "", "", EntityClassFlags.Default);
+			return new EntityRegisterParams(entityAttribute.Name ?? type.Name, entityAttribute.Category, entityAttribute.EditorHelper,
+					entityAttribute.Icon, entityAttribute.Flags);
 		}
 
         [Serializable]

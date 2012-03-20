@@ -9,6 +9,20 @@ namespace CryEngine
 	[AttributeUsage(AttributeTargets.Class)]
 	public class EntityAttribute : Attribute
 	{
+		public EntityAttribute()
+		{
+			Name = null;
+			EditorHelper = "";
+			Category = "";
+			Icon = "";
+
+			Flags = EntityClassFlags.Default;
+		}
+
+		/// <summary>
+		/// Sets the Entity class name. Uses class name if not set.
+		/// </summary>
+		public string Name { get; set; }
 		/// <summary>
 		/// The helper mesh displayed inside Sandbox.
 		/// </summary>

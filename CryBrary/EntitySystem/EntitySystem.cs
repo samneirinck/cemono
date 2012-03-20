@@ -44,10 +44,10 @@ namespace CryEngine
 		/// <param name="scale"></param>
 		/// <param name="autoInit"></param>
 		/// <returns></returns>
-		public static T SpawnEntity<T>(string name, Vec3 pos, Vec3? rot = null, Vec3? scale = null, bool autoInit = true, EntityFlags flags = EntityFlags.CastShadow) where T : Entity
+		public static T Spawn<T>(string name, Vec3 pos, Vec3? rot = null, Vec3? scale = null, bool autoInit = true, EntityFlags flags = EntityFlags.CastShadow) where T : Entity
 		{
 			var entId = new EntityId(_SpawnEntity(new EntitySpawnParams { Name = name, Class = typeof(T).Name, Pos = pos, Rot = rot ?? new Vec3(0, 0, 0), Scale = scale ?? new Vec3(1, 1, 1), Flags = flags }, autoInit));
-			RegisterInternalEntity(GetEntity(entId));
+			RegisterInternalEntity(Get(entId));
 
 			return SpawnedEntities.Last() as T;
 		}
@@ -60,11 +60,16 @@ namespace CryEngine
 				throw new Exception("Attempted to register internal entity twice.");*/
 		}
 
-		public static void RemoveEntity(EntityId id)
+		public static void Remove(EntityId id)
 		{
 			_RemoveEntity(id);
 
 			RemoveInternalEntity(id);
+		}
+
+		public void Remove()
+		{
+			Entity.Remove(Id);
 		}
 
 		internal static void RemoveInternalEntity(EntityId id)
@@ -87,7 +92,7 @@ namespace CryEngine
 		/// <returns>A reference to the entity.</returns>
 		/// <remarks>If the entity does not exist in the managed space, this function will attempt to find
 		/// a C++ entity with the specified ID></remarks>
-		public static Entity GetEntity(EntityId entityId)
+		public static Entity Get(EntityId entityId)
         {
 			if (entityId == 0)
 				return null;
@@ -109,9 +114,9 @@ namespace CryEngine
 		/// <returns>A reference to the entity.</returns>
 		/// <remarks>If multiple entities have the same name, it will return the first found.
 		/// Consider using IDs where necessary.</remarks>
-        public static Entity GetEntity(string name)
+        public static Entity Find(string name)
         {
-            return GetEntity(new EntityId(_FindEntity(name)));
+            return Get(new EntityId(_FindEntity(name)));
         }
 
 		/// <summary>
@@ -128,7 +133,7 @@ namespace CryEngine
             var entities = new Entity[entitiesByClass.Length];
 
 			for(int i = 0; i < entitiesByClass.Length; i++)
-				entities[i] = GetEntity((EntityId)entitiesByClass[i]);
+				entities[i] = Get((EntityId)entitiesByClass[i]);
 
 		    return entities;
         }
