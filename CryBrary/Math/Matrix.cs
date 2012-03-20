@@ -577,7 +577,6 @@ namespace CryEngine
 		///  a great arc on the rotation sphere (geodesic). Not only does Slerp follow a great arc it follows 
 		///  the shortest great arc.	Furthermore Slerp has constant angular velocity. All in all Slerp is the 
 		///  optimal interpolation curve between two rotations. 
-	
 		///  STABILITY PROBLEM: There are two singularities at angle=0 and angle=PI. At 0 the interpolation-axis 
 		///  is arbitrary, which means any axis will produce the same result because we have no rotation. Thats 
 		///  why I'm using (1,0,0). At PI the rotations point away from each other and the interpolation-axis 

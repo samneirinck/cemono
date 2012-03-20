@@ -470,13 +470,6 @@ namespace CryEngine
 				FlowNode.RegisterNode(node.className, node.category, node.category.Equals("entity"));
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="type"></param>
-		/// <param name="script"></param>
-		/// <param name="staticEntity"></param>
-		/// <exception cref="System.TypeLoadException">Thrown if the type was invalid</exception>
 		private static void LoadEntity(CryScript script)
 		{
 			Entity.RegisterEntityClass(Entity.GetEntityConfig(script.ScriptType));

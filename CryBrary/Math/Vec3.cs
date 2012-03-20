@@ -52,7 +52,7 @@ namespace CryEngine
 		public float Z;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CryEngine.Vector3"/> struct.
+		/// Initializes a new instance of the <see cref="CryEngine.Vec3"/> struct.
 		/// </summary>
 		/// <param name="value">The value that will be assigned to all components.</param>
 		public Vec3(float value)
@@ -63,7 +63,7 @@ namespace CryEngine
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CryEngine.Vector3"/> struct.
+		/// Initializes a new instance of the <see cref="CryEngine.Vec3"/> struct.
 		/// </summary>
 		/// <param name="x">Initial value for the X component of the vector.</param>
 		/// <param name="y">Initial value for the Y component of the vector.</param>
@@ -76,7 +76,7 @@ namespace CryEngine
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CryEngine.Vector3"/> struct.
+		/// Initializes a new instance of the <see cref="CryEngine.Vec3"/> struct.
 		/// </summary>
 		/// <param name="value">A vector containing the values with which to initialize the X and Y components.</param>
 		/// <param name="z">Initial value for the Z component of the vector.</param>
@@ -88,7 +88,7 @@ namespace CryEngine
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CryEngine.Vector3"/> struct.
+		/// Initializes a new instance of the <see cref="CryEngine.Vec3"/> struct.
 		/// </summary>
 		/// <param name="values">The values to assign to the X, Y, and Z components of the vector. This must be an array with three elements.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
@@ -166,7 +166,7 @@ namespace CryEngine
 		/// </summary>
 		/// <returns>The length of the vector.</returns>
 		/// <remarks>
-		/// <see cref="CryEngine.Vector3.LengthSquared"/> may be preferred when only the relative length is needed
+		/// <see cref="CryEngine.Vec3.LengthSquared"/> may be preferred when only the relative length is needed
 		/// and speed is of the essence.
 		/// </remarks>
 		public float Length
@@ -179,7 +179,7 @@ namespace CryEngine
 		/// </summary>
 		/// <returns>The squared length of the vector.</returns>
 		/// <remarks>
-		/// This method may be preferred to <see cref="CryEngine.Vector3.Length"/> when only a relative length is needed
+		/// This method may be preferred to <see cref="CryEngine.Vec3.Length"/> when only a relative length is needed
 		/// and speed is of the essence.
 		/// </remarks>
 		public float LengthSquared()
@@ -353,11 +353,11 @@ namespace CryEngine
 		}
 
 		/// <summary>
-		/// Returns a <see cref="CryEngine.Vector3"/> containing the 3D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 3D triangle.
+		/// Returns a <see cref="CryEngine.Vec3"/> containing the 3D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 3D triangle.
 		/// </summary>
-		/// <param name="value1">A <see cref="CryEngine.Vector3"/> containing the 3D Cartesian coordinates of vertex 1 of the triangle.</param>
-		/// <param name="value2">A <see cref="CryEngine.Vector3"/> containing the 3D Cartesian coordinates of vertex 2 of the triangle.</param>
-		/// <param name="value3">A <see cref="CryEngine.Vector3"/> containing the 3D Cartesian coordinates of vertex 3 of the triangle.</param>
+		/// <param name="value1">A <see cref="CryEngine.Vec3"/> containing the 3D Cartesian coordinates of vertex 1 of the triangle.</param>
+		/// <param name="value2">A <see cref="CryEngine.Vec3"/> containing the 3D Cartesian coordinates of vertex 2 of the triangle.</param>
+		/// <param name="value3">A <see cref="CryEngine.Vec3"/> containing the 3D Cartesian coordinates of vertex 3 of the triangle.</param>
 		/// <param name="amount1">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="value2"/>).</param>
 		/// <param name="amount2">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="value3"/>).</param>
 		/// <param name="result">When the method completes, contains the 3D Cartesian coordinates of the specified point.</param>
@@ -369,14 +369,14 @@ namespace CryEngine
 		}
 
 		/// <summary>
-		/// Returns a <see cref="CryEngine.Vector3"/> containing the 3D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 3D triangle.
+		/// Returns a <see cref="CryEngine.Vec3"/> containing the 3D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 3D triangle.
 		/// </summary>
-		/// <param name="value1">A <see cref="CryEngine.Vector3"/> containing the 3D Cartesian coordinates of vertex 1 of the triangle.</param>
-		/// <param name="value2">A <see cref="CryEngine.Vector3"/> containing the 3D Cartesian coordinates of vertex 2 of the triangle.</param>
-		/// <param name="value3">A <see cref="CryEngine.Vector3"/> containing the 3D Cartesian coordinates of vertex 3 of the triangle.</param>
+		/// <param name="value1">A <see cref="CryEngine.Vec3"/> containing the 3D Cartesian coordinates of vertex 1 of the triangle.</param>
+		/// <param name="value2">A <see cref="CryEngine.Vec3"/> containing the 3D Cartesian coordinates of vertex 2 of the triangle.</param>
+		/// <param name="value3">A <see cref="CryEngine.Vec3"/> containing the 3D Cartesian coordinates of vertex 3 of the triangle.</param>
 		/// <param name="amount1">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="value2"/>).</param>
 		/// <param name="amount2">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="value3"/>).</param>
-		/// <returns>A new <see cref="CryEngine.Vector3"/> containing the 3D Cartesian coordinates of the specified point.</returns>
+		/// <returns>A new <see cref="CryEngine.Vec3"/> containing the 3D Cartesian coordinates of the specified point.</returns>
 		public static Vec3 Barycentric(Vec3 value1, Vec3 value2, Vec3 value3, float amount1, float amount2)
 		{
 			Vec3 result;
@@ -456,7 +456,7 @@ namespace CryEngine
 		/// <param name="value2">The second vector.</param>
 		/// <param name="result">When the method completes, contains the distance between the two vectors.</param>
 		/// <remarks>
-		/// <see cref="CryEngine.Vector3.DistanceSquared(ref Vector3, ref Vector3, out float)"/> may be preferred when only the relative distance is needed
+		/// DistanceSquared(ref Vector3, ref Vector3, out float) may be preferred when only the relative distance is needed
 		/// and speed is of the essence.
 		/// </remarks>
 		public static void Distance(ref Vec3 value1, ref Vec3 value2, out float result)
@@ -475,7 +475,7 @@ namespace CryEngine
 		/// <param name="value2">The second vector.</param>
 		/// <returns>The distance between the two vectors.</returns>
 		/// <remarks>
-		/// <see cref="CryEngine.Vector3.DistanceSquared(Vector3, Vector3)"/> may be preferred when only the relative distance is needed
+		/// CryEngine.Vec3.DistanceSquared(Vector3, Vector3) may be preferred when only the relative distance is needed
 		/// and speed is of the essence.
 		/// </remarks>
 		public static float Distance(Vec3 value1, Vec3 value2)
@@ -948,10 +948,10 @@ namespace CryEngine
 		}
 
 		/// <summary>
-		/// Transforms a 3D vector by the given <see cref="CryEngine.Quaternion"/> rotation.
+		/// Transforms a 3D vector by the given <see cref="CryEngine.Quat"/> rotation.
 		/// </summary>
 		/// <param name="vector">The vector to rotate.</param>
-		/// <param name="rotation">The <see cref="CryEngine.Quaternion"/> rotation to apply.</param>
+		/// <param name="rotation">The <see cref="CryEngine.Quat"/> rotation to apply.</param>
 		/// <param name="result">When the method completes, contains the transformed <see cref="CryEngine.Vec4"/>.</param>
 		public static void Transform(ref Vec3 vector, ref Quat rotation, out Vec3 result)
 		{
@@ -975,10 +975,10 @@ namespace CryEngine
 		}
 
 		/// <summary>
-		/// Transforms a 3D vector by the given <see cref="CryEngine.Quaternion"/> rotation.
+		/// Transforms a 3D vector by the given <see cref="CryEngine.Quat"/> rotation.
 		/// </summary>
 		/// <param name="vector">The vector to rotate.</param>
-		/// <param name="rotation">The <see cref="CryEngine.Quaternion"/> rotation to apply.</param>
+		/// <param name="rotation">The <see cref="CryEngine.Quat"/> rotation to apply.</param>
 		/// <returns>The transformed <see cref="CryEngine.Vec4"/>.</returns>
 		public static Vec3 Transform(Vec3 vector, Quat rotation)
 		{
@@ -988,10 +988,10 @@ namespace CryEngine
 		}
 
 		/// <summary>
-		/// Transforms an array of vectors by the given <see cref="CryEngine.Quaternion"/> rotation.
+		/// Transforms an array of vectors by the given <see cref="CryEngine.Quat"/> rotation.
 		/// </summary>
 		/// <param name="source">The array of vectors to transform.</param>
-		/// <param name="rotation">The <see cref="CryEngine.Quaternion"/> rotation to apply.</param>
+		/// <param name="rotation">The <see cref="CryEngine.Quat"/> rotation to apply.</param>
 		/// <param name="destination">The array for which the transformed vectors are stored.
 		/// This array may be the same array as <paramref name="source"/>.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
@@ -1145,7 +1145,7 @@ namespace CryEngine
 		}
 
 		/// <summary>
-		/// Performs an explicit conversion from <see cref="CryEngine.Vector3"/> to <see cref="CryEngine.Vec2"/>.
+		/// Performs an explicit conversion from <see cref="CryEngine.Vec3"/> to <see cref="CryEngine.Vec2"/>.
 		/// </summary>
 		/// <param name="value">The value.</param>
 		/// <returns>The result of the conversion.</returns>
@@ -1155,7 +1155,7 @@ namespace CryEngine
 		}
 
 		/// <summary>
-		/// Performs an explicit conversion from <see cref="CryEngine.Vector3"/> to <see cref="CryEngine.Vec4"/>.
+		/// Performs an explicit conversion from <see cref="CryEngine.Vec3"/> to <see cref="CryEngine.Vec4"/>.
 		/// </summary>
 		/// <param name="value">The value.</param>
 		/// <returns>The result of the conversion.</returns>
@@ -1237,11 +1237,11 @@ namespace CryEngine
 		}
 
 		/// <summary>
-		/// Determines whether the specified <see cref="CryEngine.Vector3"/> is equal to this instance.
+		/// Determines whether the specified <see cref="CryEngine.Vec3"/> is equal to this instance.
 		/// </summary>
-		/// <param name="other">The <see cref="CryEngine.Vector3"/> to compare with this instance.</param>
+		/// <param name="other">The <see cref="CryEngine.Vec3"/> to compare with this instance.</param>
 		/// <returns>
-		/// <c>true</c> if the specified <see cref="CryEngine.Vector3"/> is equal to this instance; otherwise, <c>false</c>.
+		/// <c>true</c> if the specified <see cref="CryEngine.Vec3"/> is equal to this instance; otherwise, <c>false</c>.
 		/// </returns>
 		public bool Equals(Vec3 other)
 		{
@@ -1249,12 +1249,12 @@ namespace CryEngine
 		}
 
 		/// <summary>
-		/// Determines whether the specified <see cref="CryEngine.Vector3"/> is equal to this instance.
+		/// Determines whether the specified <see cref="CryEngine.Vec3"/> is equal to this instance.
 		/// </summary>
-		/// <param name="other">The <see cref="CryEngine.Vector3"/> to compare with this instance.</param>
+		/// <param name="other">The <see cref="CryEngine.Vec3"/> to compare with this instance.</param>
 		/// <param name="epsilon">The amount of error allowed.</param>
 		/// <returns>
-		/// <c>true</c> if the specified <see cref="CryEngine.Vector3"/> is equal to this instance; otherwise, <c>false</c>.
+		/// <c>true</c> if the specified <see cref="CryEngine.Vec3"/> is equal to this instance; otherwise, <c>false</c>.
 		/// </returns>
 		public bool Equals(Vec3 other, float epsilon)
 		{
@@ -1283,7 +1283,7 @@ namespace CryEngine
 
 #if SlimDX1xInterop
         /// <summary>
-        /// Performs an implicit conversion from <see cref="CryEngine.Vector3"/> to <see cref="SlimDX.Vector3"/>.
+        /// Performs an implicit conversion from <see cref="CryEngine.Vec3"/> to <see cref="SlimDX.Vector3"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -1293,7 +1293,7 @@ namespace CryEngine
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="SlimDX.Vector3"/> to <see cref="CryEngine.Vector3"/>.
+        /// Performs an implicit conversion from <see cref="SlimDX.Vector3"/> to <see cref="CryEngine.Vec3"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -1305,7 +1305,7 @@ namespace CryEngine
 
 #if WPFInterop
         /// <summary>
-        /// Performs an implicit conversion from <see cref="CryEngine.Vector3"/> to <see cref="System.Windows.Media.Media3D.Vector3D"/>.
+        /// Performs an implicit conversion from <see cref="CryEngine.Vec3"/> to <see cref="System.Windows.Media.Media3D.Vector3D"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -1315,7 +1315,7 @@ namespace CryEngine
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="System.Windows.Media.Media3D.Vector3D"/> to <see cref="CryEngine.Vector3"/>.
+        /// Performs an explicit conversion from <see cref="System.Windows.Media.Media3D.Vector3D"/> to <see cref="CryEngine.Vec3"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -1327,7 +1327,7 @@ namespace CryEngine
 
 #if XnaInterop
         /// <summary>
-        /// Performs an implicit conversion from <see cref="CryEngine.Vector3"/> to <see cref="Microsoft.Xna.Framework.Vector3"/>.
+        /// Performs an implicit conversion from <see cref="CryEngine.Vec3"/> to <see cref="Microsoft.Xna.Framework.Vector3"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -1337,7 +1337,7 @@ namespace CryEngine
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="Microsoft.Xna.Framework.Vector3"/> to <see cref="CryEngine.Vector3"/>.
+        /// Performs an implicit conversion from <see cref="Microsoft.Xna.Framework.Vector3"/> to <see cref="CryEngine.Vec3"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>

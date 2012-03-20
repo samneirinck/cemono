@@ -32,7 +32,7 @@ namespace CryEngine
 			return new EntityId(_GetEntityIdForChannelId((ushort)channelId));
 		}
 
-		public static void Remove(EntityId id)
+		public static new void Remove(EntityId id)
 		{
 			_RemoveActor(id);
 

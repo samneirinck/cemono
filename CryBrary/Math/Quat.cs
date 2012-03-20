@@ -36,7 +36,7 @@ namespace CryEngine
     public struct Quat : IEquatable<Quat>, IFormattable
     {
         /// <summary>
-        /// The identity <see cref="CryEngine.Quaternion"/> (0, 0, 0, 1).
+        /// The identity <see cref="CryEngine.Quat"/> (0, 0, 0, 1).
         /// </summary>
         public static readonly Quat Identity = new Quat(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -51,7 +51,7 @@ namespace CryEngine
         public float W;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CryEngine.Quaternion"/> struct.
+        /// Initializes a new instance of the <see cref="CryEngine.Quat"/> struct.
         /// </summary>
         /// <param name="value">The value that will be assigned to all components.</param>
         public Quat(float value)
@@ -63,7 +63,7 @@ namespace CryEngine
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CryEngine.Quaternion"/> struct.
+        /// Initializes a new instance of the <see cref="CryEngine.Quat"/> struct.
         /// </summary>
         /// <param name="value">A vector containing the values with which to initialize the components.</param>
         public Quat(Vec4 value)
@@ -75,7 +75,7 @@ namespace CryEngine
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CryEngine.Quaternion"/> struct.
+        /// Initializes a new instance of the <see cref="CryEngine.Quat"/> struct.
         /// </summary>
         /// <param name="value">A vector containing the values with which to initialize the X, Y, and Z components.</param>
         /// <param name="w">Initial value for the W component of the quaternion.</param>
@@ -88,7 +88,7 @@ namespace CryEngine
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CryEngine.Quaternion"/> struct.
+        /// Initializes a new instance of the <see cref="CryEngine.Quat"/> struct.
         /// </summary>
         /// <param name="value">A vector containing the values with which to initialize the X and Y components.</param>
         /// <param name="z">Initial value for the Z component of the quaternion.</param>
@@ -102,7 +102,7 @@ namespace CryEngine
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CryEngine.Quaternion"/> struct.
+        /// Initializes a new instance of the <see cref="CryEngine.Quat"/> struct.
         /// </summary>
         /// <param name="x">Initial value for the X component of the quaternion.</param>
         /// <param name="y">Initial value for the Y component of the quaternion.</param>
@@ -117,7 +117,7 @@ namespace CryEngine
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CryEngine.Quaternion"/> struct.
+        /// Initializes a new instance of the <see cref="CryEngine.Quat"/> struct.
         /// </summary>
         /// <param name="values">The values to assign to the X, Y, Z, and W components of the quaternion. This must be an array with four elements.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
@@ -249,7 +249,7 @@ namespace CryEngine
         /// </summary>
         /// <returns>The length of the quaternion.</returns>
         /// <remarks>
-        /// <see cref="CryEngine.Quaternion.LengthSquared"/> may be preferred when only the relative length is needed
+        /// <see cref="CryEngine.Quat.LengthSquared"/> may be preferred when only the relative length is needed
         /// and speed is of the essence.
         /// </remarks>
         public float Length()
@@ -262,7 +262,7 @@ namespace CryEngine
         /// </summary>
         /// <returns>The squared length of the quaternion.</returns>
         /// <remarks>
-        /// This method may be preferred to <see cref="CryEngine.Quaternion.Length"/> when only a relative length is needed
+        /// This method may be preferred to <see cref="CryEngine.Quat.Length"/> when only a relative length is needed
         /// and speed is of the essence.
         /// </remarks>
         public float LengthSquared()
@@ -296,14 +296,14 @@ namespace CryEngine
         }
 
         /// <summary>
-        /// Returns a <see cref="CryEngine.Quaternion"/> containing the 4D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
+        /// Returns a <see cref="CryEngine.Quat"/> containing the 4D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
         /// </summary>
-        /// <param name="value1">A <see cref="CryEngine.Quaternion"/> containing the 4D Cartesian coordinates of vertex 1 of the triangle.</param>
-        /// <param name="value2">A <see cref="CryEngine.Quaternion"/> containing the 4D Cartesian coordinates of vertex 2 of the triangle.</param>
-        /// <param name="value3">A <see cref="CryEngine.Quaternion"/> containing the 4D Cartesian coordinates of vertex 3 of the triangle.</param>
+        /// <param name="value1">A <see cref="CryEngine.Quat"/> containing the 4D Cartesian coordinates of vertex 1 of the triangle.</param>
+        /// <param name="value2">A <see cref="CryEngine.Quat"/> containing the 4D Cartesian coordinates of vertex 2 of the triangle.</param>
+        /// <param name="value3">A <see cref="CryEngine.Quat"/> containing the 4D Cartesian coordinates of vertex 3 of the triangle.</param>
         /// <param name="amount1">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="value2"/>).</param>
         /// <param name="amount2">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="value3"/>).</param>
-        /// <param name="result">When the method completes, contains a new <see cref="CryEngine.Quaternion"/> containing the 4D Cartesian coordinates of the specified point.</param>
+        /// <param name="result">When the method completes, contains a new <see cref="CryEngine.Quat"/> containing the 4D Cartesian coordinates of the specified point.</param>
         public static void Barycentric(ref Quat value1, ref Quat value2, ref Quat value3, float amount1, float amount2, out Quat result)
         {
             Quat start, end;
@@ -313,14 +313,14 @@ namespace CryEngine
         }
 
         /// <summary>
-        /// Returns a <see cref="CryEngine.Quaternion"/> containing the 4D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
+        /// Returns a <see cref="CryEngine.Quat"/> containing the 4D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
         /// </summary>
-        /// <param name="value1">A <see cref="CryEngine.Quaternion"/> containing the 4D Cartesian coordinates of vertex 1 of the triangle.</param>
-        /// <param name="value2">A <see cref="CryEngine.Quaternion"/> containing the 4D Cartesian coordinates of vertex 2 of the triangle.</param>
-        /// <param name="value3">A <see cref="CryEngine.Quaternion"/> containing the 4D Cartesian coordinates of vertex 3 of the triangle.</param>
+        /// <param name="value1">A <see cref="CryEngine.Quat"/> containing the 4D Cartesian coordinates of vertex 1 of the triangle.</param>
+        /// <param name="value2">A <see cref="CryEngine.Quat"/> containing the 4D Cartesian coordinates of vertex 2 of the triangle.</param>
+        /// <param name="value3">A <see cref="CryEngine.Quat"/> containing the 4D Cartesian coordinates of vertex 3 of the triangle.</param>
         /// <param name="amount1">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="value2"/>).</param>
         /// <param name="amount2">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="value3"/>).</param>
-        /// <returns>A new <see cref="CryEngine.Quaternion"/> containing the 4D Cartesian coordinates of the specified point.</returns>
+        /// <returns>A new <see cref="CryEngine.Quat"/> containing the 4D Cartesian coordinates of the specified point.</returns>
         public static Quat Barycentric(Quat value1, Quat value2, Quat value3, float amount1, float amount2)
         {
             Quat result;
@@ -927,11 +927,11 @@ namespace CryEngine
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="CryEngine.Quaternion"/> is equal to this instance.
+        /// Determines whether the specified <see cref="CryEngine.Quat"/> is equal to this instance.
         /// </summary>
-        /// <param name="other">The <see cref="CryEngine.Quaternion"/> to compare with this instance.</param>
+        /// <param name="other">The <see cref="CryEngine.Quat"/> to compare with this instance.</param>
         /// <returns>
-        /// <c>true</c> if the specified <see cref="CryEngine.Quaternion"/> is equal to this instance; otherwise, <c>false</c>.
+        /// <c>true</c> if the specified <see cref="CryEngine.Quat"/> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         public bool Equals(Quat other)
         {
@@ -939,12 +939,12 @@ namespace CryEngine
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="CryEngine.Quaternion"/> is equal to this instance.
+        /// Determines whether the specified <see cref="CryEngine.Quat"/> is equal to this instance.
         /// </summary>
-        /// <param name="other">The <see cref="CryEngine.Quaternion"/> to compare with this instance.</param>
+        /// <param name="other">The <see cref="CryEngine.Quat"/> to compare with this instance.</param>
         /// <param name="epsilon">The amount of error allowed.</param>
         /// <returns>
-        /// <c>true</c> if the specified <see cref="CryEngine.Quaternion"/> is equal to this instance; otherwise, <c>false</c>.
+        /// <c>true</c> if the specified <see cref="CryEngine.Quat"/> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         public bool Equals(Quat other, float epsilon)
         {
@@ -974,7 +974,7 @@ namespace CryEngine
 
 #if SlimDX1xInterop
         /// <summary>
-        /// Performs an implicit conversion from <see cref="CryEngine.Quaternion"/> to <see cref="SlimDX.Quaternion"/>.
+        /// Performs an implicit conversion from <see cref="CryEngine.Quat"/> to <see cref="SlimDX.Quaternion"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -984,7 +984,7 @@ namespace CryEngine
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="SlimDX.Quaternion"/> to <see cref="CryEngine.Quaternion"/>.
+        /// Performs an implicit conversion from <see cref="SlimDX.Quaternion"/> to <see cref="CryEngine.Quat"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -996,7 +996,7 @@ namespace CryEngine
 
 #if WPFInterop
         /// <summary>
-        /// Performs an implicit conversion from <see cref="CryEngine.Quaternion"/> to <see cref="System.Windows.Media.Media3D.Quaternion"/>.
+        /// Performs an implicit conversion from <see cref="CryEngine.Quat"/> to <see cref="System.Windows.Media.Media3D.Quaternion"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -1006,7 +1006,7 @@ namespace CryEngine
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="System.Windows.Media.Media3D.Quaternion"/> to <see cref="CryEngine.Quaternion"/>.
+        /// Performs an explicit conversion from <see cref="System.Windows.Media.Media3D.Quaternion"/> to <see cref="CryEngine.Quat"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -1018,7 +1018,7 @@ namespace CryEngine
 
 #if XnaInterop
         /// <summary>
-        /// Performs an implicit conversion from <see cref="CryEngine.Quaternion"/> to <see cref="Microsoft.Xna.Framework.Quaternion"/>.
+        /// Performs an implicit conversion from <see cref="CryEngine.Quat"/> to <see cref="Microsoft.Xna.Framework.Quaternion"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -1028,7 +1028,7 @@ namespace CryEngine
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="Microsoft.Xna.Framework.Quaternion"/> to <see cref="CryEngine.Quaternion"/>.
+        /// Performs an implicit conversion from <see cref="Microsoft.Xna.Framework.Quaternion"/> to <see cref="CryEngine.Quat"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>

@@ -45,7 +45,7 @@ namespace CryEngine.Extensions
 		/// Gets the first instance of a given attribute on the selected member.
 		/// </summary>
 		/// <typeparam name="T">The attribute to search for.</typeparam>
-		/// <param name="info">The member on which the search is performed.</param>
+		/// <param name="memberInfo">The member on which the search is performed.</param>
 		/// <returns>The first instance of attribute T, or null if none is found.</returns>
 		public static T GetAttribute<T>(this MemberInfo memberInfo) where T : Attribute
 		{
@@ -64,7 +64,7 @@ namespace CryEngine.Extensions
 		/// Gets the first instance of a given attribute on the selected method.
 		/// </summary>
 		/// <typeparam name="T">The attribute to search for.</typeparam>
-		/// <param name="info">The method on which the search is performed.</param>
+		/// <param name="methodInfo">The method on which the search is performed.</param>
 		/// <returns>The first instance of attribute T, or null if none is found.</returns>
 		public static T GetAttribute<T>(this MethodInfo methodInfo) where T : Attribute
 		{
@@ -83,7 +83,7 @@ namespace CryEngine.Extensions
 		/// Tests whether the method is decorated with a given attribute, and if so, assigns it via the out variable.
 		/// </summary>
 		/// <typeparam name="T">The attribute to search for.</typeparam>
-		/// <param name="info">The method on which the search is performed.</param>
+		/// <param name="method">The method on which the search is performed.</param>
 		/// <param name="attribute">The out parameter to which the attribute will be assigned.</param>
 		/// <returns>True if the attribute exists.</returns>
 		public static bool TryGetAttribute<T>(this MethodInfo method, out T attribute) where T : Attribute
@@ -106,7 +106,7 @@ namespace CryEngine.Extensions
 		/// Tests whether the member is decorated with a given attribute, and if so, assigns it via the out variable.
 		/// </summary>
 		/// <typeparam name="T">The attribute to search for.</typeparam>
-		/// <param name="info">The member on which the search is performed.</param>
+		/// <param name="member">The member on which the search is performed.</param>
 		/// <param name="attribute">The out parameter to which the attribute will be assigned.</param>
 		/// <returns>True if the attribute exists.</returns>
         public static bool TryGetAttribute<T>(this MemberInfo member, out T attribute) where T : Attribute

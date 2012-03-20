@@ -13,9 +13,9 @@ namespace CryEngine
 		/// <summary>
 		/// Constructs a new colour object specifying the red, green, blue and alpha values.
 		/// </summary>
-		/// <param name="r"></param>
-		/// <param name="g"></param>
-		/// <param name="b"></param>
+		/// <param name="red"></param>
+		/// <param name="green"></param>
+		/// <param name="blue"></param>
 		/// <param name="alpha"></param>
 		public Color(float red, float green, float blue, float alpha)
 			: this()
@@ -34,9 +34,9 @@ namespace CryEngine
 		/// <summary>
 		/// Constructs a new colour object specifying the red, green, and blue values.
 		/// </summary>
-		/// <param name="r"></param>
-		/// <param name="g"></param>
-		/// <param name="b"></param>
+		/// <param name="red"></param>
+		/// <param name="green"></param>
+		/// <param name="blue"></param>
 		public Color(float red, float green, float blue) : this(red, green, blue, 1) { }
 
 		/// <summary>

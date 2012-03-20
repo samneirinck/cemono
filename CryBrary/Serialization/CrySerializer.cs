@@ -99,7 +99,6 @@ namespace CryEngine.Serialization
             }
             else if (!type.IsPrimitive && !type.IsEnum && type != typeof(string))
             {
-                FieldInfo[] fields = null;
                 while (type != null)
                 {
                     foreach (var fieldInfo in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))

@@ -851,10 +851,10 @@ namespace CryEngine
 		}
 
 		/// <summary>
-		/// Transforms a 4D vector by the given <see cref="CryEngine.Quaternion"/> rotation.
+		/// Transforms a 4D vector by the given <see cref="CryEngine.Quat"/> rotation.
 		/// </summary>
 		/// <param name="vector">The vector to rotate.</param>
-		/// <param name="rotation">The <see cref="CryEngine.Quaternion"/> rotation to apply.</param>
+		/// <param name="rotation">The <see cref="CryEngine.Quat"/> rotation to apply.</param>
 		/// <param name="result">When the method completes, contains the transformed <see cref="CryEngine.Vec4"/>.</param>
 		public static void Transform(ref Vec4 vector, ref Quat rotation, out Vec4 result)
 		{
@@ -879,10 +879,10 @@ namespace CryEngine
 		}
 
 		/// <summary>
-		/// Transforms a 4D vector by the given <see cref="CryEngine.Quaternion"/> rotation.
+		/// Transforms a 4D vector by the given <see cref="CryEngine.Quat"/> rotation.
 		/// </summary>
 		/// <param name="vector">The vector to rotate.</param>
-		/// <param name="rotation">The <see cref="CryEngine.Quaternion"/> rotation to apply.</param>
+		/// <param name="rotation">The <see cref="CryEngine.Quat"/> rotation to apply.</param>
 		/// <returns>The transformed <see cref="CryEngine.Vec4"/>.</returns>
 		public static Vec4 Transform(Vec4 vector, Quat rotation)
 		{
@@ -892,10 +892,10 @@ namespace CryEngine
 		}
 
 		/// <summary>
-		/// Transforms an array of vectors by the given <see cref="CryEngine.Quaternion"/> rotation.
+		/// Transforms an array of vectors by the given <see cref="CryEngine.Quat"/> rotation.
 		/// </summary>
 		/// <param name="source">The array of vectors to transform.</param>
-		/// <param name="rotation">The <see cref="CryEngine.Quaternion"/> rotation to apply.</param>
+		/// <param name="rotation">The <see cref="CryEngine.Quat"/> rotation to apply.</param>
 		/// <param name="destination">The array for which the transformed vectors are stored.
 		/// This array may be the same array as <paramref name="source"/>.</param>
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
@@ -1050,7 +1050,7 @@ namespace CryEngine
 		}
 
 		/// <summary>
-		/// Performs an explicit conversion from <see cref="CryEngine.Vec4"/> to <see cref="CryEngine.Vector3"/>.
+		/// Performs an explicit conversion from <see cref="CryEngine.Vec4"/> to <see cref="CryEngine.Vec3"/>.
 		/// </summary>
 		/// <param name="value">The value.</param>
 		/// <returns>The result of the conversion.</returns>

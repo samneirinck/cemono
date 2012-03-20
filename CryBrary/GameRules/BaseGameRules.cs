@@ -216,8 +216,11 @@ namespace CryEngine
         public Vec3 Direction { get; set; }
         public Vec3 Normal { get; set; }
 
-        public UInt16 ProjectileClassId { get; set; }
-        public UInt16 WeaponClassId { get; set; }
+		public int ProjectileClassId { get { return _projectileClassId; } set { _projectileClassId = (ushort)value; } }
+		public int WeaponClassId { get { return _weaponClassId; } set { _weaponClassId = (ushort)value; } }
+
+		internal ushort _projectileClassId;
+		internal ushort _weaponClassId;
 
         public bool Remote { get; set; }
         /// <summary>
