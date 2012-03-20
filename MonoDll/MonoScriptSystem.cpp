@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "MonoScriptSystem.h"
 
-#include "MonoPathUtils.h"
+#include "PathUtils.h"
 #include "MonoAssembly.h"
 #include "MonoCommon.h"
 #include "MonoArray.h"
