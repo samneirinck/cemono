@@ -157,7 +157,7 @@
     <Compile Include="Engine\3DEngine.cs" />
     <Compile Include="Engine\PhysicalWorld.cs" />
     <Compile Include="Engine\Renderer.cs" />
-    <Compile Include="EntitySystem\Entity.cs" />
+    <Compile Include="EntitySystem\EntityMovement.cs" />
     <Compile Include="EntitySystem\EntityPhysics.cs" />
     <Compile Include="GameRules\Network.cs" />
     <Compile Include="Input\InputSystem.cs" />
@@ -175,7 +175,7 @@
     <Compile Include="Utils\Debug\Debug.cs" />
     <Compile Include="Extensions\Reflection.cs" />
     <Compile Include="EntitySystem\EntitySystem.cs" />
-    <Compile Include="EntitySystem\StaticEntity.cs" />
+    <Compile Include="EntitySystem\Entity.cs" />
     <Compile Include="FlowSystem\FlowNode.cs" />
     <Compile Include="ActorSystem\ActorSystem.cs" />
     <Compile Include="Console\CVars.cs" />

@@ -27,7 +27,7 @@ public:
 
 protected:
 	// IMonoScriptBind
-	virtual const char *GetClassName() { return "StaticEntity"; }
+	virtual const char *GetClassName() { return "Entity"; }
 	// ~IMonoScriptBind
 
 	static mono::string GetPropertyValue(EntityId, mono::string);

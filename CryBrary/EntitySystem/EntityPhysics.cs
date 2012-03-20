@@ -3,7 +3,7 @@ using System;
 
 namespace CryEngine
 {
-	public partial class StaticEntity
+	public partial class Entity
 	{
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static void _Physicalize(uint entityId, PhysicalizationParams physicalizationParams);
@@ -55,7 +55,7 @@ namespace CryEngine
 
 		public void Break(BreakageParameters breakageParams)
 		{
-			StaticEntity._BreakIntoPieces(_entityId, 0, 0, breakageParams);
+			Entity._BreakIntoPieces(_entityId, 0, 0, breakageParams);
 		}
 
 		#region Basics
@@ -69,14 +69,14 @@ namespace CryEngine
 		/// Determines if this physical entity is in a sleeping state or not. (Will not be affected by gravity)
 		/// Autoamtically wakes upon collision.
 		/// </summary>
-		public bool Resting { get { return resting; } set { resting = value; StaticEntity._Sleep(_entityId, value); } }
+		public bool Resting { get { return resting; } set { resting = value; Entity._Sleep(_entityId, value); } }
 
 		/// <summary>
 		/// Save the current physics settings.
 		/// </summary>
 		public void Save()
 		{
-			StaticEntity._Physicalize(_entityId, _params);
+			Entity._Physicalize(_entityId, _params);
 		}
 
 		/// <summary>
@@ -93,9 +93,9 @@ namespace CryEngine
 
 			actionImpulse.impulse = impulse;
 			actionImpulse.angImpulse = angImpulse;
-			actionImpulse.point = point ?? EntitySystem.GetEntity(_entityId).Position;
+			actionImpulse.point = point ?? Entity.GetEntity(_entityId).Position;
 
-			StaticEntity._AddImpulse(_entityId, actionImpulse);
+			Entity._AddImpulse(_entityId, actionImpulse);
 		}
 
 		/// <summary>

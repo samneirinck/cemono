@@ -51,9 +51,9 @@ namespace CryEngine.Serialization
 
 			var processedTypes = new Dictionary<System.Type, string>();
 
-			for(int i = 0; i < EntitySystem.SpawnedEntities.Count; i++)
+			for(int i = 0; i < Entity.SpawnedEntities.Count; i++)
 			{
-				var entityType = EntitySystem.SpawnedEntities[i].GetType();
+				var entityType = Entity.SpawnedEntities[i].GetType();
 
 				if(!processedTypes.ContainsKey(entityType))
 				{
@@ -66,7 +66,7 @@ namespace CryEngine.Serialization
 				var formatter = new CrySerializer();
 				var stream = File.Create(Path.Combine(processedTypes[entityType], Directory.GetFiles(processedTypes[entityType]).Count().ToString()));
 
-				formatter.Serialize(stream, EntitySystem.SpawnedEntities[i]);
+				formatter.Serialize(stream, Entity.SpawnedEntities[i]);
 
 				stream.Close();
 			}
@@ -150,11 +150,11 @@ namespace CryEngine.Serialization
 						var formatter = new CrySerializer();
 						var stream = File.Open(fileName, FileMode.Open);
 
-						var entity = formatter.Deserialize(stream) as StaticEntity;
+						var entity = formatter.Deserialize(stream) as Entity;
 
 						if(entity != null)
 						{
-							EntitySystem.SpawnedEntities.Add(entity);
+							Entity.SpawnedEntities.Add(entity);
 
 							scriptMatch.ScriptInstances.Add(entity);
 

@@ -3,7 +3,7 @@
 	/// <summary>
 	/// WIP Player class.
 	/// </summary>
-    public class BasePlayer : StaticEntity
+    public class BasePlayer : Entity
     {
         public BasePlayer() { }
 

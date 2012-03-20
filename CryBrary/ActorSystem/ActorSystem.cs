@@ -33,7 +33,7 @@ namespace CryEngine
 		{
 			_RemoveActor(id);
 
-			EntitySystem.RemoveInternalEntity(id);
+			Entity.RemoveInternalEntity(id);
 		}
 
 		public static void RemoveActor(int channelId)

@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace CryEngine
 {
-    public partial class EntitySystem
+    public partial class Entity
 	{
 		/// <summary>
 		/// Spawns an entity with the specified parameters.
@@ -44,7 +44,7 @@ namespace CryEngine
 		/// <param name="scale"></param>
 		/// <param name="autoInit"></param>
 		/// <returns></returns>
-		public static T SpawnEntity<T>(string name, Vec3 pos, Vec3? rot = null, Vec3? scale = null, bool autoInit = true, EntityFlags flags = EntityFlags.CastShadow) where T : StaticEntity
+		public static T SpawnEntity<T>(string name, Vec3 pos, Vec3? rot = null, Vec3? scale = null, bool autoInit = true, EntityFlags flags = EntityFlags.CastShadow) where T : Entity
 		{
 			var entId = new EntityId(_SpawnEntity(new EntitySpawnParams { Name = name, Class = typeof(T).Name, Pos = pos, Rot = rot ?? new Vec3(0, 0, 0), Scale = scale ?? new Vec3(1, 1, 1), Flags = flags }, autoInit));
 			RegisterInternalEntity(GetEntity(entId));
@@ -52,7 +52,7 @@ namespace CryEngine
 			return SpawnedEntities.Last() as T;
 		}
 
-		internal static void RegisterInternalEntity(StaticEntity entity)
+		internal static void RegisterInternalEntity(Entity entity)
 		{
 			//if(!SpawnedEntities.Contains(entity))
 				SpawnedEntities.Add(entity);
@@ -87,17 +87,17 @@ namespace CryEngine
 		/// <returns>A reference to the entity.</returns>
 		/// <remarks>If the entity does not exist in the managed space, this function will attempt to find
 		/// a C++ entity with the specified ID></remarks>
-		public static StaticEntity GetEntity(EntityId entityId)
+		public static Entity GetEntity(EntityId entityId)
         {
 			if (entityId == 0)
 				return null;
 
-			StaticEntity ent = SpawnedEntities.Find(entity => entity.Id == entityId);
-			if (ent != default(StaticEntity))
+			Entity ent = SpawnedEntities.Find(entity => entity.Id == entityId);
+			if (ent != default(Entity))
 				return ent;
 
 			if(_EntityExists(entityId))
-				return new StaticEntity(entityId);
+				return new Entity(entityId);
 
             return null;
         }
@@ -109,7 +109,7 @@ namespace CryEngine
 		/// <returns>A reference to the entity.</returns>
 		/// <remarks>If multiple entities have the same name, it will return the first found.
 		/// Consider using IDs where necessary.</remarks>
-        public static StaticEntity GetEntity(string name)
+        public static Entity GetEntity(string name)
         {
             return GetEntity(new EntityId(_FindEntity(name)));
         }
@@ -119,13 +119,13 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="className">The entity class to search for.</param>
 		/// <returns>An array of entities.</returns>
-        public static IEnumerable<StaticEntity> GetEntities(string className)
+        public static IEnumerable<Entity> GetEntities(string className)
         {
             var entitiesByClass = _GetEntitiesByClass(className);
             if (entitiesByClass == null)
                 return null;
 
-            var entities = new StaticEntity[entitiesByClass.Length];
+            var entities = new Entity[entitiesByClass.Length];
 
 			for(int i = 0; i < entitiesByClass.Length; i++)
 				entities[i] = GetEntity((EntityId)entitiesByClass[i]);
@@ -138,7 +138,7 @@ namespace CryEngine
 		/// </summary>
 		/// <typeparam name="T">The entity class to search for.</typeparam>
 		/// <returns>An array of entities of type T.</returns>
-		public static IEnumerable<T> GetEntities<T>() where T : StaticEntity
+		public static IEnumerable<T> GetEntities<T>() where T : Entity
 		{
 			var results = GetEntities(typeof(T).Name);
 
@@ -148,11 +148,11 @@ namespace CryEngine
 			return null;
 		}
 
-		internal static void OnUpdate()
+		internal static void UpdateSpawnedEntities()
 		{
 			foreach (var entity in SpawnedEntities)
 			{
-				if (entity != null && entity.ReceiveUpdates==true)
+				if(entity != null && entity.ReceiveUpdates == true)
 					entity.OnUpdate();
 			}
 		}
@@ -161,7 +161,7 @@ namespace CryEngine
 		/// Contains entities spawned using EntitySystem.SpawnEntity.
 		/// Necessary to update scripts.
 		/// </summary>
-		internal static List<StaticEntity> SpawnedEntities = new List<StaticEntity>();
+		internal static List<Entity> SpawnedEntities = new List<Entity>();
     }
 
 	/// <summary>

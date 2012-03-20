@@ -214,7 +214,7 @@ namespace CryEngine
 			{
 				foreach(var script in compiledScript.ScriptInstances)
 				{
-					var scriptEntity = script as StaticEntity;
+					var scriptEntity = script as Entity;
 					if(scriptEntity != null && scriptEntity.Id == entityId)
 						return script.ScriptId;
 				}
@@ -240,7 +240,7 @@ namespace CryEngine
 				}
 			}
 
-			EntitySystem.OnUpdate();
+			Entity.UpdateSpawnedEntities();
 		}
 
 		/// <summary>
@@ -448,7 +448,7 @@ namespace CryEngine
 				}
 				else if(type.Implements(typeof(BasePlayer)))
 					ActorSystem._RegisterActorClass(className, false);
-				else if(type.Implements(typeof(StaticEntity)))
+				else if(type.Implements(typeof(Entity)))
 				{
 					bool staticEntity = !type.Implements(typeof(Entity));
 
@@ -476,14 +476,14 @@ namespace CryEngine
 		/// <exception cref="System.TypeLoadException">Thrown if the type was invalid</exception>
 		private static void LoadEntity(Type type, CryScript script, bool staticEntity)
 		{
-			EntityConfig config = StaticEntity.GetEntityConfig(type);
+			EntityConfig config = Entity.GetEntityConfig(type);
 
 			if (config.registerParams.Name.Length <= 0)
 				config.registerParams.Name = script.ScriptType.Name;
 			if (config.registerParams.Category.Length <= 0)
 				config.registerParams.Category = ""; // TODO: Use the folder structure in Scripts/Entities. (For example if the entity is in Scripts/Entities/Multiplayer, the category should become "Multiplayer")
 
-			EntitySystem.RegisterEntityClass(config);
+			Entity.RegisterEntityClass(config);
 
 			LoadFlowNode(type, config.registerParams.Name, true);
 		}
