@@ -366,7 +366,7 @@
     <ClInclude Include="MonoEntity.h" />
     <ClInclude Include="MonoFlowNode.h" />
     <ClInclude Include="MonoInput.h" />
-    <ClInclude Include="MonoPathUtils.h" />
+    <ClInclude Include="PathUtils.h" />
     <ClInclude Include="MonoScriptSystem.h" />
     <ClInclude Include="MonoAssembly.h" />
     <ClInclude Include="MonoClass.h" />
