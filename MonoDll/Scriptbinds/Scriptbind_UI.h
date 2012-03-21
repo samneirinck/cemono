@@ -19,7 +19,7 @@ class CScriptbind_UI;
 
 struct SMonoUIParameterDesc 
 {
-	int				Type;
+	SUIParameterDesc::EUIParameterType			Type;
 
 	mono::string	Name;
 	mono::string	DisplayName;
@@ -88,18 +88,18 @@ public:
 	void OnReset();
 	
 	//IUIModule
-	virtual void Init();
-	virtual void Shutdown();
-	virtual void Reload();
-	virtual void Reset();
-	virtual void Update(float fDelta);
+	virtual void Init() {}
+	virtual void Shutdown() {}
+	virtual void Reload() {}
+	virtual void Reset() {}
+	virtual void Update(float fDelta) {}
 	//~IUIModule
 	void OnEvent(const char *systemName, const char *eventName, const SUIEvent& event);
 	
 	//Exposed to CryMono
-	static int RegisterEvent(mono::string eventsystem, int direction, SMonoUIEventDesc desc);
-	static bool RegisterToEventSystem(mono::string eventsystem, int type);
-	static void UnregisterFromEventSystem(mono::string eventsystem, int type);
+	static int RegisterEvent(mono::string eventsystem, IUIEventSystem::EEventSystemType direction, SMonoUIEventDesc desc);
+	static bool RegisterToEventSystem(mono::string eventsystem, IUIEventSystem::EEventSystemType type);
+	static void UnregisterFromEventSystem(mono::string eventsystem, IUIEventSystem::EEventSystemType type);
 	static void SendEvent(mono::string eventsystem, int event, mono::array args);
 	static void SendNamedEvent(mono::string eventsystem, mono::string event, mono::array args);
 
