@@ -31,6 +31,8 @@ public:
 
 	virtual IMonoObject *ToObject(mono::object obj) override;
 
+	virtual IMonoClass *GetCommonClass(ECommonManagedTypes commonType) override { return m_preStoredTypes[commonType]; }
+
 	virtual IMonoObject *ToManagedType(ECommonManagedTypes commonType, void *object) override;
 	virtual IMonoObject *ToManagedType(IMonoClass *pTo, void *object) override;
 
