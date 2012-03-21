@@ -26,9 +26,13 @@ CScriptArray::~CScriptArray()
 IMonoObject *CScriptArray::GetItem(int index)
 { 
 	if(index < GetSize())
-		return *(mono::object)mono_array_get((MonoArray *)m_pArray, MonoObject *, index);
+	{
+		if(mono::object monoObj = (mono::object)mono_array_get((MonoArray *)m_pArray, MonoObject *, index))
+			return *monoObj;
+	}
+	else
+		CryLogAlways("[Warning] Index out of range exception: Attempted to access index %i on IMonoArray of size %i", index, GetSize());
 
-	CryLogAlways("[Warning] Index out of range exception: Attempted to access index %i on IMonoArray of size %i", index, GetSize());
 	return NULL;
 }
 
