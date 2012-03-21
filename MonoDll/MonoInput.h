@@ -22,6 +22,7 @@ class CInput
 	, public IMonoScriptBind
 	, public IActionListener
 	, public IHardwareMouseEventListener
+	, public IInputEventListener
 {
 public:
 	CInput();
@@ -38,6 +39,10 @@ public:
 	// IHardwareMouseEventListener
 	virtual void OnHardwareMouseEvent(int iX,int iY,EHARDWAREMOUSEEVENT eHardwareMouseEvent, int wheelDelta = 0);
 	// ~IHardwareMouseEventListener
+
+	// IInputEventListener
+	virtual bool OnInputEvent(const SInputEvent &event);
+	// ~IInputEventListener
 
 	void Reset();
 

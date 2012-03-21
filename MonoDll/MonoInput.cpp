@@ -16,6 +16,7 @@ CInput::CInput()
 
 	gEnv->pGameFramework->GetIActionMapManager()->AddExtraActionListener(this);
 	gEnv->pHardwareMouse->AddListener(this);
+	gEnv->pInput->AddEventListener(this);
 }
 
 CInput::~CInput()
@@ -27,6 +28,30 @@ CInput::~CInput()
 void CInput::Reset()
 {
 	m_pClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("InputSystem");
+}
+
+void CInput::OnHardwareMouseEvent(int iX,int iY,EHARDWAREMOUSEEVENT eHardwareMouseEvent, int wheelDelta)
+{
+	IMonoArray *pParams = CreateMonoArray(4);
+	pParams->Insert(iX);
+	pParams->Insert(iY);
+	pParams->Insert(eHardwareMouseEvent);
+	pParams->Insert(wheelDelta);
+
+	m_pClass->CallMethod("OnMouseEvent", pParams, true);
+	SAFE_RELEASE(pParams);
+}
+
+bool CInput::OnInputEvent(const SInputEvent &event)
+{
+	IMonoArray *pParams = CreateMonoArray(3);
+	pParams->Insert(event.keyName.c_str());
+	pParams->Insert(event.value);
+
+	m_pClass->CallMethod("OnKeyEvent", pParams, true);
+	SAFE_RELEASE(pParams);
+
+	return false;
 }
 
 void CInput::OnAction(const ActionId& actionId, int activationMode, float value)
@@ -45,18 +70,6 @@ bool CInput::OnActionTriggered(EntityId entityId, const ActionId& actionId, int 
 	SAFE_RELEASE(pParams);
 
 	return false;
-}
-
-void CInput::OnHardwareMouseEvent(int iX,int iY,EHARDWAREMOUSEEVENT eHardwareMouseEvent, int wheelDelta)
-{
-	IMonoArray *pParams = CreateMonoArray(4);
-	pParams->Insert(iX);
-	pParams->Insert(iY);
-	pParams->Insert(eHardwareMouseEvent);
-	pParams->Insert(wheelDelta);
-
-	m_pClass->CallMethod("OnMouseEvent", pParams, true);
-	SAFE_RELEASE(pParams);
 }
 
 // Scriptbinds

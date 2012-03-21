@@ -9,21 +9,38 @@ namespace CryEngine
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static void _RegisterAction(string actionName);
 
+		public delegate void ActionMapEventDelegate(object sender, ActionMapEventArgs e);
+
 		/// <summary>
 		/// Registers an event declared in the players actionmap. Without invoking this, Your KeyEventDelegate will never be invoked with the new action.
 		/// </summary>
 		/// <param name="actionName"></param>
-		public static void RegisterAction(string actionName)
+		public static void RegisterAction(string actionName, ActionMapEventDelegate eventDelegate)
 		{
 			_RegisterAction(actionName);
-		}
 
-		public delegate void KeyEventDelegate(object sender, KeyEventArgs e);
+			actionmapDelegates.Add(actionName, eventDelegate);
+		}
 
 		public static void OnActionTriggered(string action, KeyEvent keyEvent, float value)
 		{
+			actionmapDelegates[action](null, new ActionMapEventArgs(keyEvent, action, value));
+		}
+
+		static Dictionary<string, ActionMapEventDelegate> actionmapDelegates = new Dictionary<string, ActionMapEventDelegate>();
+
+		public delegate void KeyEventDelegate(object sender, KeyEventArgs e);
+
+		/// <summary>
+		/// TODO, Call
+		/// </summary>
+		/// <param name="action"></param>
+		/// <param name="keyEvent"></param>
+		/// <param name="value"></param>
+		public static void OnKeyEvent(string keyName, float value)
+		{
 			if(KeyEvents != null)
-				KeyEvents(null, new KeyEventArgs(keyEvent, action, value));
+				KeyEvents(null, new KeyEventArgs(keyName, value));
 		}
 
 		public static event KeyEventDelegate KeyEvents;
@@ -39,9 +56,9 @@ namespace CryEngine
 		public static event MouseEventDelegate MouseEvents;
 	}
 
-	public class KeyEventArgs : System.EventArgs
+	public class ActionMapEventArgs : System.EventArgs
 	{
-		public KeyEventArgs(KeyEvent keyEvent, string actionName, float value)
+		public ActionMapEventArgs(KeyEvent keyEvent, string actionName, float value)
 		{
 			KeyEvent = keyEvent;
 			ActionName = actionName;
@@ -50,6 +67,18 @@ namespace CryEngine
 
 		public string ActionName { get; set; }
 		public KeyEvent KeyEvent { get; set; }
+		public float Value { get; set; }
+	}
+
+	public class KeyEventArgs : System.EventArgs
+	{
+		public KeyEventArgs(string actionName, float value)
+		{
+			ActionName = actionName;
+			Value = value;
+		}
+
+		public string ActionName { get; set; }
 		public float Value { get; set; }
 	}
 
