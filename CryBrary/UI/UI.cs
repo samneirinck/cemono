@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
@@ -30,6 +31,47 @@ namespace CryEngine
 
 		public static void OnEvent(string EventSystem, string EventName, int EventID, object[] args)
 		{
+			var eventType = events.Where(x => x.Value == EventID).FirstOrDefault();
+			var obj = eventType.Key;
+
+			bool initialized = !(obj is System.Type);
+			var objType = !initialized ? obj as System.Type : obj.GetType();
+
+			if(objType.Implements(typeof(UIFunction)))
+			{
+				// We store the type at first, but replace it with the node object when instantiated.
+				if(!initialized)
+				{
+					events.Remove(eventType); // So we can re-insert again
+
+					obj = System.Activator.CreateInstance(obj as System.Type);
+
+					events.Add(obj, EventID);
+				}
+
+				// Set port values
+				int curPort = 0;
+				foreach(var member in obj.GetType().GetMembers())
+				{
+					if(member.ContainsAttribute<PortAttribute>())
+					{
+						if(member.MemberType == MemberTypes.Field)
+						{
+							var field = member as FieldInfo;
+							field.SetValue(obj, args[curPort]);
+						}
+						else
+						{
+							var property = member as PropertyInfo;
+							property.SetValue(obj, args[curPort], null);
+						}
+
+						curPort++;
+					}
+				}
+
+				obj.GetType().InvokeMember("OnEvent", BindingFlags.InvokeMethod | BindingFlags.Instance, null, obj, null);
+			}
 		}
 
 		public static void LoadEvent(System.Type type)
@@ -38,18 +80,20 @@ namespace CryEngine
 			if(type.TryGetAttribute(out attribute))
 			{
 				UIEventDescription eventDesc = new UIEventDescription(attribute.Name, attribute.Name, attribute.Description);
-				UIEventDirection eventDirection = UIEventDirection.ToSystem;
+				UIEventDirection eventDirection = type.Implements(typeof(UIFunction)) ? UIEventDirection.ToSystem : UIEventDirection.ToUI;
 
 				Collection<UIParameterDescription> parameterDescriptions = new Collection<UIParameterDescription>();
 
 				foreach(var member in type.GetMembers())
-					ProcessMember(member, attribute, ref parameterDescriptions, ref eventDirection);
+					ProcessMember(member, attribute, ref parameterDescriptions, eventDirection);
 
 				eventDesc.Params = parameterDescriptions.Cast<object>().ToArray();
 
-				_RegisterEvent(attribute.Category, eventDirection, eventDesc);
+				events.Add(type, _RegisterEvent(attribute.Category, eventDirection, eventDesc));
 			}
 		}
+
+		internal static Dictionary<object, int> events = new Dictionary<object, int>();
 
 		static UIParameterType GetParameterType(System.Type type)
 		{
@@ -65,7 +109,7 @@ namespace CryEngine
 			return UIParameterType.Any;
 		}
 
-		static void ProcessMember(MemberInfo member, UINodeAttribute parentAttribute, ref Collection<UIParameterDescription> parameterDescriptions, ref UIEventDirection eventDirection)
+		static void ProcessMember(MemberInfo member, UINodeAttribute parentAttribute, ref Collection<UIParameterDescription> parameterDescriptions, UIEventDirection eventDirection)
 		{
 			PortAttribute attribute;
 			if(member.TryGetAttribute(out attribute))
@@ -78,11 +122,10 @@ namespace CryEngine
 							UIParameterType parameterType = UIParameterType.Any;
 
 							var memberType = member.MemberType == MemberTypes.Field ? ((FieldInfo)member).FieldType : ((PropertyInfo)member).PropertyType;
-							if(memberType.IsGenericType ? memberType.GetGenericTypeDefinition() == typeof(OutputPort<>) : memberType == typeof(OutputPort))
+							if(eventDirection == UIEventDirection.ToUI && memberType.IsGenericType ? memberType.GetGenericTypeDefinition() == typeof(OutputPort<>) : memberType == typeof(OutputPort))
 							{
 								parameterType = GetParameterType(memberType.IsGenericType ? memberType.GetGenericArguments()[0] : memberType);
 
-								eventDirection = UIEventDirection.ToUI;
 								if(!toUIEventSystems.Contains(parentAttribute.Category))
 								{
 									_RegisterToEventSystem(parentAttribute.Category, UIEventDirection.ToUI);
@@ -90,11 +133,10 @@ namespace CryEngine
 									toUIEventSystems.Add(parentAttribute.Category);
 								}
 							}
-							else
+							else if(eventDirection == UIEventDirection.ToSystem)
 							{
 								parameterType = GetParameterType(memberType);
 
-								eventDirection = UIEventDirection.ToSystem;
 								if(!toSystemEventSystems.Contains(parentAttribute.Category))
 								{
 									_RegisterToEventSystem(parentAttribute.Category, UIEventDirection.ToSystem);
@@ -130,17 +172,17 @@ namespace CryEngine
 
 	public class UIEvent
 	{
-		static int EventId { get; set; }
-	}
-
-	public class UIFunction
-	{
 		public void Send()
 		{
 			string eventSystem = GetType().GetAttribute<UINodeAttribute>().Category;
-		}
 
-		static int EventId { get; set; }
+			//events[GetType()]
+		}
+	}
+
+	public interface UIFunction
+	{
+		void OnEvent();
 	}
 
 	internal enum UIParameterType

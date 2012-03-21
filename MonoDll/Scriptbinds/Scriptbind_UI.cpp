@@ -62,6 +62,8 @@ CUICallback::CUICallback(const char *_name, CScriptbind_UI *pParent, IUIEventSys
 	//Only listen for UI to system events
 	if (m_type == IUIEventSystem::eEST_UI_TO_SYSTEM)
 		m_pSystem->RegisterListener(this, "CUICallback");
+
+
 }
 
 CUICallback::~CUICallback()
@@ -104,8 +106,7 @@ CUICallback *CScriptbind_UI::GetOrCreateSystem(const char *s, IUIEventSystem::EE
 	if (!gEnv->pFlashUI)
 		return NULL;
 	
-	CUICallback *pCB = (type == IUIEventSystem::eEST_UI_TO_SYSTEM ? m_EventMapUI2S : m_EventMapS2UI)[s];
-	if (pCB)
+	if (CUICallback *pCB = (type == IUIEventSystem::eEST_UI_TO_SYSTEM ? m_EventMapUI2S : m_EventMapS2UI)[s])
 		return pCB;
 
 	IUIEventSystem *pSystem = gEnv->pFlashUI->GetEventSystem(s, type);
@@ -116,7 +117,7 @@ CUICallback *CScriptbind_UI::GetOrCreateSystem(const char *s, IUIEventSystem::EE
 			return NULL;
 	}
 
-	pCB = new CUICallback(s, this, pSystem, type);
+	CUICallback *pCB = new CUICallback(s, this, pSystem, type);
 	if (!pCB)
 		return NULL;
 
@@ -152,8 +153,6 @@ CScriptbind_UI::CScriptbind_UI()
 	REGISTER_METHOD(SendNamedEvent);
 
 	s_pInstance = this;
-	if (gEnv->pFlashUI)
-		gEnv->pFlashUI->RegisterModule(this, "CScriptbind_UI");
 }
 
 CScriptbind_UI::~CScriptbind_UI()
@@ -163,17 +162,11 @@ CScriptbind_UI::~CScriptbind_UI()
 	
 	m_EventMapS2UI.clear();
 	m_EventMapUI2S.clear();
-	if (gEnv->pFlashUI)
-		gEnv->pFlashUI->UnregisterModule(this);
 }
 
 void CScriptbind_UI::OnReset()
 {
 	m_pUIClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("UI");
-
-#ifdef _DEBUG
-	m_pUIClass->CallMethod("TestInit", NULL, true);
-#endif //_DEBUG
 }
 
 void CScriptbind_UI::OnEvent(const char *SystemName, const char *EventName, const SUIEvent& event)

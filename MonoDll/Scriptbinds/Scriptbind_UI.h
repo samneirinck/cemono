@@ -68,10 +68,9 @@ protected:
 };
 
 class CScriptbind_UI
-	: public IMonoScriptBind, IUIModule
+	: public IMonoScriptBind
 {
 	typedef std::map<string, CUICallback *> TEventMap;
-	typedef std::pair<string, CUICallback *> TEventMapPair;
 
 public:
 
@@ -87,13 +86,6 @@ public:
 
 	void OnReset();
 	
-	//IUIModule
-	virtual void Init() {}
-	virtual void Shutdown() {}
-	virtual void Reload() {}
-	virtual void Reset() {}
-	virtual void Update(float fDelta) {}
-	//~IUIModule
 	void OnEvent(const char *systemName, const char *eventName, const SUIEvent& event);
 	
 	//Exposed to CryMono
