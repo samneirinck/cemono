@@ -12,7 +12,7 @@ namespace CryEngine
 	{
 		#region Externals
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern public static void RegisterNode(string name, string category, bool isEntity);
+		extern internal static void RegisterNode(string name, string category, bool isEntity);
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static void _SetRegularlyUpdated(int scriptId, bool updated);
