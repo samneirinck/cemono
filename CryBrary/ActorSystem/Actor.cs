@@ -5,7 +5,7 @@ namespace CryEngine
 	/// <summary>
 	/// WIP Player class.
 	/// </summary>
-    public class Actor : Entity
+    public abstract class Actor : Entity
 	{
 		#region Externals
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
