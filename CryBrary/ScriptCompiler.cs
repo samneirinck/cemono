@@ -37,7 +37,9 @@ namespace CryEngine
 				PathUtils.GetScriptFolder(ScriptType.Entity),
 				PathUtils.GetScriptFolder(ScriptType.GameRules),
 				PathUtils.GetScriptFolder(ScriptType.FlowNode),
-				PathUtils.GetScriptFolder(ScriptType.UIEvent)
+				PathUtils.GetScriptFolder(ScriptType.UIEvent),
+
+				PathUtils.GetScriptsFolder()
 			};
 
 			try
