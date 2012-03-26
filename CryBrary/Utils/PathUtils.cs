@@ -90,7 +90,6 @@ namespace CryEngine
                     folder = @"Entities/Actor";
                     break;
                 case ScriptType.Entity:
-				case ScriptType.StaticEntity:
                     folder = "Entities";
                     break;
                 case ScriptType.FlowNode:

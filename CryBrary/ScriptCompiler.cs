@@ -305,6 +305,12 @@ namespace CryEngine
 			public string[] Folders { get; set; }
 
 			/// <summary>
+			/// Determines what types of scripts should be compiled.
+			/// Accepts all scripts by default.
+			/// </summary>
+			public ScriptType[] ScriptTypes { get; set; }
+
+			/// <summary>
 			/// Forces generation of debug information, even in release mode.
 			/// </summary>
 			public bool ForceDebugInformation { get; set; }
@@ -370,13 +376,17 @@ namespace CryEngine
 			compilerParameters.GenerateInMemory = !includeDebugInfo;
 
 			//Add additional assemblies as needed by gamecode to referencedAssemblies
-            foreach (var assembly in assemblyReferenceHandler.GetRequiredAssembliesForScriptFiles(scripts))
+			var assemblyRefs = new List<string>();
+			assemblyRefs.AddRange(AppDomain.CurrentDomain.GetAssemblies().Select(x => x.Location).ToArray());
+			assemblyRefs.AddRange(assemblyReferenceHandler.GetRequiredAssembliesForScriptFiles(scripts));
+
+			foreach(var assembly in assemblyRefs)
 			{
 				if (!compilerParameters.ReferencedAssemblies.Contains(assembly))
 					compilerParameters.ReferencedAssemblies.Add(assembly);
 			}
 
-			compilerParameters.ReferencedAssemblies.AddRange(AppDomain.CurrentDomain.GetAssemblies().Select(x => x.Location).ToArray());
+			assemblyRefs = null;
 
 			CompilerResults results = provider.CompileAssemblyFromFile(compilerParameters, scripts.ToArray());
 
@@ -387,7 +397,7 @@ namespace CryEngine
 			compilationParameters.Results = results;
 
 			if(results.CompiledAssembly != null) // success
-				LoadAssembly(results.CompiledAssembly);
+				LoadAssembly(results.CompiledAssembly, compilationParameters.ScriptTypes);
 			else if(results.Errors.HasErrors)
 			{
 				string compilationError = string.Format("Compilation failed; {0} errors: ", results.Errors.Count);
@@ -411,7 +421,7 @@ namespace CryEngine
 		/// <summary>
 		/// Loads an C# assembly and adds all found types to ScriptCompiler.CompiledScripts
 		/// </summary>
-		public static void LoadAssembly(Assembly assembly)
+		public static void LoadAssembly(Assembly assembly, ScriptType[] scriptTypes = null)
 		{
 			var assemblyTypes = assembly.GetTypes().Where(type => type.Implements(typeof(CryScriptInstance)));
 			foreach(var node in assembly.GetTypes().Where(type => type.ContainsAttribute<UINodeAttribute>()))
@@ -421,7 +431,10 @@ namespace CryEngine
 			{
 				try
 				{
-					ProcessType(assemblyTypes.ElementAt(i));
+					var type = assemblyTypes.ElementAt(i);
+
+					if(scriptTypes == null || scriptTypes.Any(x => IsScriptType(type, x)))
+						ProcessType(type);
 				}
 				catch(Exception ex)
 				{
@@ -430,6 +443,25 @@ namespace CryEngine
 			});
 
 			assemblyTypes = null;
+		}
+
+		public static ScriptType GetScriptType(Type type)
+		{
+			if(type.Implements(typeof(BaseGameRules)))
+				return ScriptType.GameRules;
+			else if(type.Implements(typeof(Actor)))
+				return ScriptType.Actor;
+			else if(type.Implements(typeof(Entity)))
+				return ScriptType.Entity;
+			else if(type.Implements(typeof(FlowNode)))
+				return ScriptType.FlowNode;
+
+			return ScriptType.Unknown;
+		}
+
+		public static bool IsScriptType(Type type, ScriptType scriptType)
+		{
+			return GetScriptType(type) == scriptType || scriptType == ScriptType.Unknown; // Return true for unknown scripts as well
 		}
 
 		/// <summary>
@@ -552,10 +584,6 @@ namespace CryEngine
 		/// Scripts directly inheriting from FlowNode will utilize this script type.
 		/// </summary>
 		FlowNode,
-		/// <summary>
-		/// Scripts directly inheriting from StaticEntity will utilize this script type.
-		/// </summary>
-		StaticEntity,
 		/// <summary>
 		/// Scripts directly inheriting from Entity will utilize this script type.
 		/// </summary>
