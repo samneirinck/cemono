@@ -128,7 +128,7 @@ namespace CryEngine
         {
             var entitiesByClass = _GetEntitiesByClass(className);
             if (entitiesByClass == null)
-                return null;
+				return Enumerable.Empty<Entity>();
 
             var entities = new Entity[entitiesByClass.Length];
 
