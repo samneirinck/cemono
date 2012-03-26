@@ -49,7 +49,8 @@ public:
 	MonoClass *GetMonoClass() { return m_pClass; }
 
 private:
-	MonoMethod *GetMethod(const char *methodName, int numParams = -1, bool bStatic = false);
+	MonoMethod *GetMethod(const char *methodName, IMonoArray *pArgs, bool bStatic);
+
 	void HandleException(MonoObject *pException);
 
 	mono::object m_pInstance;
