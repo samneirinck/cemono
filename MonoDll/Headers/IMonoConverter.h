@@ -71,6 +71,7 @@ struct IMonoConverter
 	/// </summary>
 	virtual IMonoClass *ToClass(IMonoObject *pObject) = 0;
 
+	virtual IMonoClass *GetCommonClass(ECommonManagedTypes commonType) = 0;
 	virtual IMonoObject *ToManagedType(ECommonManagedTypes commonType, void *object) = 0;
 
 	/// <summary>

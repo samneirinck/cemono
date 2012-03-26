@@ -9,20 +9,20 @@ MonoAnyType CScriptObject::GetType()
 
 	// :eek:
 	MonoClass *pClass = GetMonoClass();
-	if(pClass==mono_get_int32_class())
-		type = MONOTYPE_INT;
-	else if(pClass==mono_get_single_class())
+	if(pClass==mono_get_single_class())
 		type = MONOTYPE_FLOAT;
 	else if(pClass==mono_get_boolean_class())
 		type = MONOTYPE_BOOL;
 	else if(pClass==mono_get_uint16_class())
 		type = MONOTYPE_USHORT;
+	else if(pClass==mono_get_int32_class())
+		type = MONOTYPE_INT;
 	else if(pClass==mono_get_uint32_class())
 		type = MONOTYPE_UINT;
-	else if(pClass==static_cast<CScriptClass *>(gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("Vec3"))->GetMonoClass())
-		type = MONOTYPE_VEC3;
 	else if(pClass==mono_get_string_class())
 		type = MONOTYPE_STRING;
+	else if(pClass==static_cast<CScriptClass *>(gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("Vec3"))->GetMonoClass())
+		type = MONOTYPE_VEC3;
 
 	return type;
 }
