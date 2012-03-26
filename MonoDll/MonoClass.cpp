@@ -75,8 +75,12 @@ IMonoObject *CScriptClass::CallMethod(const char *methodName, IMonoArray *pParam
 	if(!_static && !m_pInstance)
 		CryLogAlways("[Warning] Attempting to invoke non-static method %s on non-instantiated class %s!", methodName, GetName());
 
-	if(MonoMethod *pMethod = GetMethod(methodName, pParams ? pParams->GetSize() : 0, _static))
+	if(MonoMethod *pMethod = GetMethod(methodName, pParams, _static))
 	{
+		// If overridden, get the "new" method.
+		if (m_pInstance && !_static)
+			pMethod = mono_object_get_virtual_method((MonoObject *)m_pInstance, pMethod);
+
 		MonoObject *pException = NULL;
 		MonoObject *pResult = NULL;
 
@@ -96,12 +100,80 @@ IMonoObject *CScriptClass::CallMethod(const char *methodName, IMonoArray *pParam
 		else if(pResult)
 			return *(mono::object)(pResult);
 	}
+	else
+		CryLogAlways("[Warning] Failed to get method %s", methodName);
 
 	return NULL;
 }
 
-MonoMethod *CScriptClass::GetMethod(const char *methodName, int numParams, bool bStatic)
+#include <mono\metadata\tabledefs.h>
+MonoMethod *CScriptClass::GetMethod(const char *methodName, IMonoArray *pArgs, bool bStatic)
 {
+	if(g_pMonoCVars->mono_useExperimentalMethodFinding)
+	{
+		MonoMethodSignature *pSignature = NULL;
+
+		void *pIterator = NULL;
+
+		MonoClass *pClass = m_pClass;
+		MonoMethod *pMethod = NULL;
+
+		while (pClass != NULL) 
+		{
+			CryLogAlways("Checking type %s for method %s", mono_class_get_name(pClass), methodName);
+
+			for(pMethod = mono_class_get_methods(pClass, &pIterator); pMethod != NULL; pMethod = mono_class_get_methods(pClass, &pIterator))
+			{
+				if(strcmp(mono_method_get_name(pMethod), methodName))
+					continue;
+
+				//if(bStatic != (mono_method_get_flags(pMethod, NULL) & METHOD_ATTRIBUTE_STATIC) > 0)
+					//continue;
+
+				if(!pArgs || pArgs->GetSize() <= 0)
+					return pMethod;
+			
+				void *pIter = NULL;
+
+				pSignature = mono_method_signature(pMethod);
+				int numParams = mono_signature_get_param_count(pSignature);
+
+				for(int i = 0; i < numParams; i++)
+				{
+					MonoType *pType = mono_signature_get_params(pSignature, &pIter);
+
+					if(IMonoObject *pItem = pArgs->GetItem(i))
+					{
+						MonoAnyType anyType = pItem->GetType();
+						MonoTypeEnum monoType = (MonoTypeEnum)mono_type_get_type(pType);
+
+						if(monoType == MONO_TYPE_BOOLEAN && anyType != MONOTYPE_BOOL)
+							break;
+						else if(monoType == MONO_TYPE_I4 && anyType != MONOTYPE_INT)
+							break;
+						else if(monoType == MONO_TYPE_U4 && anyType != MONOTYPE_UINT)
+							break;
+						else if(monoType == MONO_TYPE_I2 && anyType != MONOTYPE_SHORT)
+							break;
+						else if(monoType == MONO_TYPE_U2 && anyType != MONOTYPE_USHORT)
+							break;
+						else if(monoType == MONO_TYPE_STRING && anyType != MONOTYPE_STRING && anyType != MONOTYPE_WSTRING)
+							break;
+					}
+			
+					if(i >= pArgs->GetSize() - 1)
+						return pMethod;
+				}
+			}
+
+			pClass = mono_class_get_parent(pClass);
+		}
+
+		return NULL;
+	}
+
+	// Old method, to be removed when the new implementation is stable.
+	int numParams = pArgs ? pArgs->GetSize() : 0;
 	MonoMethod *pMethod = NULL;
 
 	if(m_pClass)
