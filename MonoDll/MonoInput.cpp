@@ -44,7 +44,7 @@ void CInput::OnHardwareMouseEvent(int iX,int iY,EHARDWAREMOUSEEVENT eHardwareMou
 
 bool CInput::OnInputEvent(const SInputEvent &event)
 {
-	IMonoArray *pParams = CreateMonoArray(3);
+	IMonoArray *pParams = CreateMonoArray(2);
 	pParams->Insert(event.keyName.c_str());
 	pParams->Insert(event.value);
 
