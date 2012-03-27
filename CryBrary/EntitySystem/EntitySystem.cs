@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Reflection;
 
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 using System.Linq;
 
@@ -52,12 +53,9 @@ namespace CryEngine
 			return SpawnedEntities.Last() as T;
 		}
 
-		internal static void RegisterInternalEntity(Entity entity)
+		internal static void RegisterInternalEntity<T>(T t) where T : Entity
 		{
-			//if(!SpawnedEntities.Contains(entity))
-				SpawnedEntities.Add(entity);
-			/*else
-				throw new Exception("Attempted to register internal entity twice.");*/
+			SpawnedEntities.Add(t);
 		}
 
 		public static void Remove(EntityId id)
@@ -127,13 +125,13 @@ namespace CryEngine
         public static IEnumerable<Entity> GetEntities(string className)
         {
             var entitiesByClass = _GetEntitiesByClass(className);
-            if (entitiesByClass == null)
+            if (entitiesByClass == null || entitiesByClass.Length <= 0)
 				return Enumerable.Empty<Entity>();
 
-            var entities = new Entity[entitiesByClass.Length];
+            var entities = new Collection<Entity>();
 
-			for(int i = 0; i < entitiesByClass.Length; i++)
-				entities[i] = Get((EntityId)entitiesByClass[i]);
+			foreach(EntityId id in entitiesByClass)
+				entities.Add(Get(id));
 
 		    return entities;
         }
@@ -145,12 +143,7 @@ namespace CryEngine
 		/// <returns>An array of entities of type T.</returns>
 		public static IEnumerable<T> GetEntities<T>() where T : Entity
 		{
-			var results = GetEntities(typeof(T).Name);
-
-			if(results != null && results.Count() > 0)
-				return results.Cast<T>();
-
-			return null;
+			return GetEntities(typeof(T).Name).Cast<T>();
 		}
 
 		internal static void UpdateSpawnedEntities()
