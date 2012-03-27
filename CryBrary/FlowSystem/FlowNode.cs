@@ -8,7 +8,7 @@ using CryEngine.Extensions;
 
 namespace CryEngine
 {
-	public class FlowNode : CryScriptInstance
+	public abstract class FlowNode : CryScriptInstance
 	{
 		#region Externals
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
