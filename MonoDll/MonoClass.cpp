@@ -173,6 +173,7 @@ MonoMethod *CScriptClass::GetMethod(const char *methodName, IMonoArray *pArgs, b
 	}
 
 	// Old method, to be removed when the new implementation is stable.
+	int numParams = pArgs ? pArgs->GetSize() : 0;
 	MonoMethod *pMethod = NULL;
 
 	if(m_pClass)
@@ -182,17 +183,21 @@ MonoMethod *CScriptClass::GetMethod(const char *methodName, IMonoArray *pArgs, b
 
 		while (pClass != NULL && pMethod == NULL) 
 		{
-			pMethod = mono_method_desc_search_in_class(pMethodDesc, pClass); 
+			// TODO: Accurate method signature matching; currently several methods with the same name and amount of parameters will break.
+			if(numParams > -1)
+				pMethod = mono_class_get_method_from_name(pClass, methodName, numParams);
+			else
+				pMethod = mono_method_desc_search_in_class(pMethodDesc, pClass); 
 			if (!pMethod) 
 				pClass = mono_class_get_parent(pClass);
 		}
 
 		mono_method_desc_free(pMethodDesc);
-	}
 
-	// If overridden, get the "new" method.
-	if (m_pInstance && !bStatic && pMethod)
-        pMethod = mono_object_get_virtual_method((MonoObject *)m_pInstance, pMethod); 
+		// If overridden, get the "new" method.
+		if (m_pInstance && !bStatic && pMethod)
+			pMethod = mono_object_get_virtual_method((MonoObject *)m_pInstance, pMethod);
+	}
 
 	return pMethod;
 }
