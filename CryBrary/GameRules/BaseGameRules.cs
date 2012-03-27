@@ -56,6 +56,24 @@ namespace CryEngine
 		public virtual void OnVehicleSubmerged(EntityId vehicleId, float ratio) { }
     }
 
+	public class GameRulesAttribute : Attribute
+	{
+		public GameRulesAttribute(bool defaultGamemode)
+		{
+			DefaultGamemode = defaultGamemode;
+		}
+
+		/// <summary>
+		/// Sets the game mode's name. Uses the class name if not set.
+		/// </summary>
+		public string Name { get; set; }
+
+		/// <summary>
+		/// If set to true, the game mode will be set as default.
+		/// </summary>
+		public bool DefaultGamemode { get; set; }
+	}
+
 	public enum DisconnectionCause
 	{
 		/// <summary>
