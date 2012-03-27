@@ -11,13 +11,6 @@ namespace CryEngine
         /// </summary>
         public virtual void OnUpdate() { }
 
-		/// <summary>
-		/// Invoked following a successful script reload
-		/// </summary>
-		public virtual void OnPostScriptReload()
-		{
-		}
-
 		public int ScriptId { internal set; get; }
 
 		/// <summary>
