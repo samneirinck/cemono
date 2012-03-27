@@ -15,6 +15,8 @@ CActorSystem::CActorSystem()
 	REGISTER_METHOD(GetEntityIdForChannelId);
 	REGISTER_METHOD(RemoveActor);
 
+	REGISTER_METHOD(GetClientActor);
+
 	REGISTER_METHOD(RegisterActorClass);
 }
 
@@ -29,6 +31,11 @@ EntityId CActorSystem::GetEntityIdForChannelId(uint16 channelId)
 void CActorSystem::RemoveActor(EntityId id)
 {
 	gEnv->pGameFramework->GetIActorSystem()->RemoveActor(id);
+}
+
+EntityId CActorSystem::GetClientActor()
+{
+	return gEnv->pGameFramework->GetClientActorId();
 }
 
 void CActorSystem::RegisterActorClass(mono::string className, bool isAI)

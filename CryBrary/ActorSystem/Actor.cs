@@ -21,16 +21,31 @@ namespace CryEngine
 		extern internal static void _SetPlayerMaxHealth(uint playerId, float newMaxHealth);
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static uint _GetEntityIdForChannelId(ushort channelId);
+		extern internal static EntityId _GetEntityIdForChannelId(ushort channelId);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static void _RemoveActor(uint id);
+
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static EntityId _GetClientActor();
 		#endregion
 
 		#region Statics
-		public static EntityId GetEntityId(int channelId)
+		public static EntityId GetEntityIdByChannelId(int channelId)
 		{
 			return new EntityId(_GetEntityIdForChannelId((ushort)channelId));
 		}
+
+		public static Actor Get(EntityId actorId)
+		{
+			return Entity.Get(actorId) as Actor;
+		}
+
+		public static T Get<T>(EntityId actorId) where T : Actor
+		{
+			return Get(actorId) as T;
+		}
+
+		public static Actor LocalPlayer { get { return Get(_GetClientActor()); } }
 
 		public static new void Remove(EntityId id)
 		{
@@ -46,7 +61,7 @@ namespace CryEngine
 
 		public static void Remove(int channelId)
 		{
-			Remove(GetEntityId(channelId));
+			Remove(GetEntityIdByChannelId(channelId));
 		}
 		#endregion
 
