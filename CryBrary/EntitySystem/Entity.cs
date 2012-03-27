@@ -101,8 +101,6 @@ namespace CryEngine
 		internal Entity(EntityId entityId)
 		{
 			Id = entityId;
-
-			MonoEntity = false;
 		}
 
 		/// <summary>
@@ -144,7 +142,6 @@ namespace CryEngine
 		{
 			Id = entityId;
 
-			MonoEntity = true;
 			Spawned = true;
 
 			//Do this before the property overwrites
@@ -199,8 +196,6 @@ namespace CryEngine
 		public string Name { get; set; }
 		public EntityFlags Flags { get; set; }
 		internal bool Spawned;
-
-		internal bool MonoEntity;
 		#endregion
 
 		#region Callbacks
