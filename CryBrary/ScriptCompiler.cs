@@ -24,7 +24,7 @@ namespace CryEngine
 			CompiledScripts = new Collection<CryScript>();
 			FlowNodes = new Collection<StoredNode>();
 
-            assemblyReferenceHandler = new AssemblyReferenceHandler();
+			assemblyReferenceHandler = new AssemblyReferenceHandler();
 
 			LastScriptId = 0;
 
@@ -80,11 +80,11 @@ namespace CryEngine
 			if(scriptName.Length < 1)
 				throw new ArgumentException("Empty script name passed to InstantiateClass");
 
-            var script = CompiledScripts.FirstOrDefault(x => x.ScriptType.Name.Equals(scriptName));
-            if(script == default(CryScript))
+			var script = CompiledScripts.FirstOrDefault(x => x.ScriptType.Name.Equals(scriptName));
+			if(script == default(CryScript))
 				throw new ScriptNotFoundException(string.Format("Compiled script {0} could not be found.", scriptName));
 
-            int index = CompiledScripts.IndexOf(script);
+			int index = CompiledScripts.IndexOf(script);
 
 			AddScriptInstance(System.Activator.CreateInstance(CompiledScripts[index].ScriptType, constructorParams) as CryScriptInstance, index);
 
@@ -100,11 +100,11 @@ namespace CryEngine
 			if(instance == null)
 				return -1;
 
-            var script = CompiledScripts.FirstOrDefault(x => x.ScriptType == instance.GetType());
-            if (script == default(CryScript))
-                throw new ScriptNotFoundException(string.Format("Compiled script {0} could not be found.", instance.GetType().Name));
+			var script = CompiledScripts.FirstOrDefault(x => x.ScriptType == instance.GetType());
+			if(script == default(CryScript))
+				throw new ScriptNotFoundException(string.Format("Compiled script {0} could not be found.", instance.GetType().Name));
 
-            return AddScriptInstance(instance, CompiledScripts.IndexOf(script));
+			return AddScriptInstance(instance, CompiledScripts.IndexOf(script));
 		}
 
 		/// <summary>
@@ -143,7 +143,7 @@ namespace CryEngine
 		/// Locates and destructs the script with the assigned scriptId.
 		/// </summary>
 		/// <param name="scriptId"></param>
-		public static void RemoveInstance(int scriptId, Type scriptType)	
+		public static void RemoveInstance(int scriptId, Type scriptType)
 		{
 			if(scriptType != null)
 			{
@@ -250,14 +250,14 @@ namespace CryEngine
 		/// </summary>
 		public static void LoadLibrariesInFolder(string directory)
 		{
-			if (!Directory.Exists(directory))
+			if(!Directory.Exists(directory))
 				throw new DirectoryNotFoundException(string.Format("Libraries failed to load; Folder {0} does not exist.", directory));
 
 			var plugins = Directory.GetFiles(directory, "*.dll", SearchOption.AllDirectories);
 
-			if (plugins != null && plugins.Length != 0)
+			if(plugins != null && plugins.Length != 0)
 			{
-				foreach (var plugin in plugins)
+				foreach(var plugin in plugins)
 				{
 					try
 					{
@@ -268,7 +268,7 @@ namespace CryEngine
 						GenerateDebugDatabaseForAssembly(plugin);
 
 						string mdbFile = plugin + ".mdb";
-						if (File.Exists(mdbFile)) // success
+						if(File.Exists(mdbFile)) // success
 							File.Copy(mdbFile, Path.Combine(Path.GetTempPath(), Path.GetFileName(mdbFile)), true);
 #endif
 
@@ -276,7 +276,7 @@ namespace CryEngine
 						LoadAssembly(Assembly.LoadFrom(newPath));
 					}
 					//This exception tells us that the assembly isn't a valid .NET assembly for whatever reason
-					catch (BadImageFormatException)
+					catch(BadImageFormatException)
 					{
 						Debug.LogAlways("Plugin loading failed for {0}; dll is not valid.", plugin);
 					}
@@ -328,18 +328,18 @@ namespace CryEngine
 		/// <exception cref="CryEngine.ScriptCompilationException">Thrown if one or more compilation errors occur.</exception>
 		public static void CompileScripts(ref CompilationParameters compilationParameters)
 		{
-            if (compilationParameters == null)
-                throw new ArgumentException("CompilationParameters was null");
+			if(compilationParameters == null)
+				throw new ArgumentException("CompilationParameters was null");
 
 			if(compilationParameters.Folders == null)
-                throw new ArgumentException(message: "Supplied Folders array in CompilationParameters argument was null");
+				throw new ArgumentException(message: "Supplied Folders array in CompilationParameters argument was null");
 			else if(compilationParameters.Folders.Length < 1)
-                throw new ArgumentException(message: "Supplied Folders array in CompilationParameters did not contain any strings");
+				throw new ArgumentException(message: "Supplied Folders array in CompilationParameters did not contain any strings");
 
 			var scripts = new List<string>();
 			foreach(var directory in compilationParameters.Folders)
 			{
-				if (Directory.Exists(directory))
+				if(Directory.Exists(directory))
 					scripts.AddRange(Directory.GetFiles(directory, "*.cs", SearchOption.AllDirectories));
 				else
 					Debug.LogAlways("Skipping compilation of scripts in {0}; directory not found", directory);
@@ -384,7 +384,7 @@ namespace CryEngine
 
 			foreach(var assembly in assemblyRefs)
 			{
-				if (!compilerParameters.ReferencedAssemblies.Contains(assembly))
+				if(!compilerParameters.ReferencedAssemblies.Contains(assembly))
 					compilerParameters.ReferencedAssemblies.Add(assembly);
 			}
 
@@ -411,12 +411,12 @@ namespace CryEngine
 					if(!error.ErrorText.Contains("(Location of the symbol related to previous error)"))
 						compilationError += string.Format("{0}({1},{2}): {3} {4}: {5}", error.FileName, error.Line, error.Column, error.IsWarning ? "warning" : "error", error.ErrorNumber, error.ErrorText);
 					else
-						compilationError += "	" + error.ErrorText; 
+						compilationError += "	" + error.ErrorText;
 				}
 				throw new ScriptCompilationException(compilationError);
 			}
 			else
-                throw new ArgumentNullException(paramName: "Tried loading a NULL assembly");
+				throw new ArgumentNullException(paramName: "Tried loading a NULL assembly");
 		}
 
 
@@ -484,10 +484,19 @@ namespace CryEngine
 
 				if(type.Implements(typeof(BaseGameRules)))
 				{
-					GameRulesSystem._RegisterGameMode(className);
+					string gamemodeName = null;
 
-					if(type.ContainsAttribute<DefaultGamemodeAttribute>())
-						GameRulesSystem._SetDefaultGameMode(className);
+					GameRulesAttribute gamemodeAttribute;
+					if(type.TryGetAttribute<GameRulesAttribute>(out gamemodeAttribute))
+					{
+						if(gamemodeAttribute.Name != null)
+							gamemodeName = gamemodeAttribute.Name;
+
+						if(gamemodeAttribute.DefaultGamemode)
+							GameRulesSystem._SetDefaultGameMode(gamemodeName);
+					}
+
+					GameRulesSystem._RegisterGameMode(gamemodeName ?? className);
 				}
 				else if(type.Implements(typeof(Actor)))
 					Actor._RegisterActorClass(className, false);
@@ -500,7 +509,7 @@ namespace CryEngine
 
 		internal static void RegisterFlownodes()
 		{
-			foreach (var node in FlowNodes)
+			foreach(var node in FlowNodes)
 				FlowNode.RegisterNode(node.className, node.category, node.category.Equals("entity"));
 		}
 
@@ -516,17 +525,17 @@ namespace CryEngine
 			string category = null;
 			string nodeName = script.ScriptType.Name;
 
-			if (!entityNode)
+			if(!entityNode)
 			{
 				category = script.ScriptType.Namespace;
 
 				FlowNodeAttribute nodeInfo;
 				if(script.ScriptType.TryGetAttribute<FlowNodeAttribute>(out nodeInfo))
 				{
-					if (nodeInfo.UICategory != null)
+					if(nodeInfo.UICategory != null)
 						category = nodeInfo.UICategory;
 
-					if (nodeInfo.Name != null)
+					if(nodeInfo.Name != null)
 						nodeName = nodeInfo.Name;
 				}
 			}
@@ -538,7 +547,7 @@ namespace CryEngine
 
 		public static void GenerateDebugDatabaseForAssembly(string assemblyPath)
 		{
-			if (File.Exists(Path.ChangeExtension(assemblyPath, "pdb")))
+			if(File.Exists(Path.ChangeExtension(assemblyPath, "pdb")))
 			{
 				Assembly assembly = Assembly.LoadFrom(Path.Combine(PathUtils.GetEngineFolder(), "Mono", "bin", "pdb2mdb.dll"));
 				Type driver = assembly.GetType("Driver");
@@ -563,7 +572,7 @@ namespace CryEngine
 		}
 
 		internal static Collection<StoredNode> FlowNodes;
-        private static AssemblyReferenceHandler assemblyReferenceHandler;
+		private static AssemblyReferenceHandler assemblyReferenceHandler;
 
 		public static Collection<CryScript> CompiledScripts;
 		/// <summary>
@@ -633,7 +642,7 @@ namespace CryEngine
 
 		public override bool Equals(object obj)
 		{
-			if (obj is CryScript)
+			if(obj is CryScript)
 				return (CryScript)obj == this;
 
 			return false;
@@ -647,7 +656,7 @@ namespace CryEngine
 		#endregion
 	}
 
-    [Serializable]
+	[Serializable]
 	public class ScriptCompilationException : Exception
 	{
 		public ScriptCompilationException(string errorMessage)
@@ -659,7 +668,7 @@ namespace CryEngine
 		public override string Message { get { return base.Message.ToString(); } }
 	}
 
-    [Serializable]
+	[Serializable]
 	class ScriptNotFoundException : Exception
 	{
 		public ScriptNotFoundException(string error)
