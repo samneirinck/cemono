@@ -492,7 +492,7 @@ namespace CryEngine
 						if(gamemodeAttribute.Name != null)
 							gamemodeName = gamemodeAttribute.Name;
 
-						if(gamemodeAttribute.DefaultGamemode)
+						if(gamemodeAttribute.Default)
 							GameRulesSystem._SetDefaultGameMode(gamemodeName);
 					}
 

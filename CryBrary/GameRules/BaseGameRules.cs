@@ -60,7 +60,7 @@ namespace CryEngine
 	{
 		public GameRulesAttribute(bool defaultGamemode)
 		{
-			DefaultGamemode = defaultGamemode;
+			Default = defaultGamemode;
 		}
 
 		/// <summary>
@@ -71,7 +71,7 @@ namespace CryEngine
 		/// <summary>
 		/// If set to true, the game mode will be set as default.
 		/// </summary>
-		public bool DefaultGamemode { get; set; }
+		public bool Default { get; set; }
 	}
 
 	public enum DisconnectionCause
