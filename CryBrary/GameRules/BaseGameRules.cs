@@ -56,11 +56,11 @@ namespace CryEngine
 		public virtual void OnVehicleSubmerged(EntityId vehicleId, float ratio) { }
     }
 
+	[AttributeUsage(AttributeTargets.Class)]
 	public class GameRulesAttribute : Attribute
 	{
-		public GameRulesAttribute(bool defaultGamemode)
+		public GameRulesAttribute()
 		{
-			Default = defaultGamemode;
 		}
 
 		/// <summary>

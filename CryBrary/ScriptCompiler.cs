@@ -489,7 +489,7 @@ namespace CryEngine
 					GameRulesAttribute gamemodeAttribute;
 					if(type.TryGetAttribute<GameRulesAttribute>(out gamemodeAttribute))
 					{
-						if(gamemodeAttribute.Name != null)
+						if(!string.IsNullOrEmpty(gamemodeAttribute.Name))
 							gamemodeName = gamemodeAttribute.Name;
 
 						if(gamemodeAttribute.Default)
