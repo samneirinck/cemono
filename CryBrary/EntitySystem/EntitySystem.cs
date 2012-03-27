@@ -124,16 +124,17 @@ namespace CryEngine
 		/// <returns>An array of entities.</returns>
         public static IEnumerable<Entity> GetEntities(string className)
         {
+            if (String.IsNullOrEmpty(className))
+            {
+                throw new ArgumentException("className should not be null or empty", "className");
+            }
+
             var entitiesByClass = _GetEntitiesByClass(className);
             if (entitiesByClass == null || entitiesByClass.Length <= 0)
-				return Enumerable.Empty<Entity>();
-
-            var entities = new Collection<Entity>();
+                yield break;
 
 			foreach(EntityId id in entitiesByClass)
-				entities.Add(Get(id));
-
-		    return entities;
+				yield return Get(id);
         }
 
 		/// <summary>
