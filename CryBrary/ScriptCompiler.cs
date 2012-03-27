@@ -342,7 +342,7 @@ namespace CryEngine
 				if (Directory.Exists(directory))
 					scripts.AddRange(Directory.GetFiles(directory, "*.cs", SearchOption.AllDirectories));
 				else
-					throw new DirectoryNotFoundException(message: string.Format("Could not compile scripts in {0}; directory not found", directory));
+					Debug.LogAlways("Skipping compilation of scripts in {0}; directory not found", directory);
 			}
 
 			if(scripts.Count <= 0)
