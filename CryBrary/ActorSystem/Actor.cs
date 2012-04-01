@@ -35,7 +35,7 @@ namespace CryEngine
 			return new EntityId(_GetEntityIdForChannelId((ushort)channelId));
 		}
 
-		public static Actor Get(EntityId actorId)
+		public static new Actor Get(EntityId actorId)
 		{
 			return Entity.Get(actorId) as Actor;
 		}

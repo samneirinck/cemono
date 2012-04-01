@@ -189,7 +189,7 @@ bool CEntityManager::EntityExists(EntityId entityId)
 	if(entityId == 0)
 		return false;
 
-	return gEnv->pEntitySystem->GetEntity(entityId);
+	return gEnv->pEntitySystem->GetEntity(entityId) != NULL;
 }
 
 mono::array CEntityManager::GetEntitiesByClass(mono::string _class)
