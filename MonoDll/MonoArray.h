@@ -24,6 +24,13 @@ public:
 	CScriptArray(int size);
 	virtual ~CScriptArray();
 
+	// IMonoObject
+	virtual MonoAnyType GetType() override { return MONOTYPE_ARRAY; }
+	virtual MonoAnyValue GetAnyValue() override { return 0; }
+
+	virtual mono::object GetMonoObject() override { return (mono::object)GetMonoArray(); }
+	// ~IMonoObject
+
 	// IMonoArray
 	virtual void Release() override { delete this; }
 
@@ -48,6 +55,8 @@ public:
 	virtual mono::array GetMonoArray() override { return m_pArray; }
 
 private:
+	virtual void *UnboxObject() override { return GetMonoArray(); } // IMonoObject
+
 	mono::array m_pArray;
 	int curIndex;
 
