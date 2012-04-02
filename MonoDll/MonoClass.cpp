@@ -129,7 +129,7 @@ MonoMethod *CScriptClass::GetMethod(const char *methodName, IMonoArray *pArgs, b
 
 				continue;
 			}
-
+				
 			if(strcmp(mono_method_get_name(pCurMethod), methodName))
 				continue;
 
@@ -196,18 +196,9 @@ MonoMethod *CScriptClass::GetMethod(const char *methodName, IMonoArray *pArgs, b
 			// TODO: Accurate method signature matching; currently several methods with the same name and amount of parameters will break.
 			if(numParams > -1)
 			{
-				if(!strcmp(methodName, "OnClientConnect"))
-				{
-					// Fugly temporary solution to get optional args to work.
-					for(int i = numParams; pMethod == NULL && i >= 0; i++)
-						pMethod = mono_class_get_method_from_name(pClass, methodName, i);
-				}
-				else
-				{
 				// Fugly temporary solution to get optional args to work.
 				for(int i = numParams; pMethod == NULL && i >= 0; i--)
 					pMethod = mono_class_get_method_from_name(pClass, methodName, i);
-				}
 			}
 			else
 				pMethod = mono_method_desc_search_in_class(pMethodDesc, pClass); 
