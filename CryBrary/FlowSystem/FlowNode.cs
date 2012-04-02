@@ -56,7 +56,7 @@ namespace CryEngine
             return new NodeConfig(nodeInfo.Category, nodeInfo.Description);
         }
 
-		internal NodePortConfig GetPortConfig()
+		internal virtual NodePortConfig GetPortConfig()
         {
             if (inputMethods == null)
                 inputMethods = new List<MethodInfo>();

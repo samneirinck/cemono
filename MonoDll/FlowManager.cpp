@@ -164,45 +164,46 @@ mono::object CFlowManager::GetPortValueVec3(int scriptId, int index)
 SInputPortConfig *SNodeData::pInputs = nullptr;
 SOutputPortConfig *SNodeData::pOutputs = nullptr;
 
-static const int maxPortCount = 20;
-
-#define GetInput(index) ((pInputPorts->GetSize() > index) ? pInputPorts->GetItem(index)->Unbox<SMonoInputPortConfig>().Convert() : nullConfig)
-#define GetOutput(index) ((pOutputPorts->GetSize() > index) ? pOutputPorts->GetItem(index)->Unbox<SMonoOutputPortConfig>().Convert() : nullOutputConfig)
+static const int MAX_NODE_PORT_COUNT = 20;
 void SNodeData::ReloadPorts()
 {
-	SMonoNodePortConfig monoConfig = CallMonoScript<SMonoNodePortConfig>(pNode->GetScriptId(), "GetPortConfig");
-
-	SInputPortConfig nullConfig = {0};
-	SOutputPortConfig nullOutputConfig = {0};
-
-	CScriptArray *pInputPorts = new CScriptArray(monoConfig.inputs);
-
-	static SInputPortConfig inputs[maxPortCount];
-
-	pInputs = inputs;
-
-	for(int i = 0; i < pInputPorts->GetSize(); i++)
-		pInputs[i] = pInputPorts->GetItem(i)->Unbox<SMonoInputPortConfig>().Convert();
-
-	for(int i = 0; i < maxPortCount; i++)
+	IMonoClass *pScriptClass = pNode->GetScript();
+	if(IMonoObject *pResult = pScriptClass->CallMethod("GetPortConfig"))
 	{
-		if(i >= pInputPorts->GetSize())
-			pInputs[i] = nullConfig;
-	}
+		auto monoConfig = pResult->Unbox<SMonoNodePortConfig>();
 
-	// Convert MonoArray type to our custom CScriptArray for easier handling.
-	CScriptArray *pOutputPorts = new CScriptArray(monoConfig.outputs);
+		SInputPortConfig nullConfig = {0};
+		SOutputPortConfig nullOutputConfig = {0};
 
-	static SOutputPortConfig outputs[maxPortCount];
+		CScriptArray *pInputPorts = new CScriptArray(monoConfig.inputs);
 
-	pOutputs = outputs;
+		static SInputPortConfig inputs[MAX_NODE_PORT_COUNT];
 
-	for(int i = 0; i < pOutputPorts->GetSize(); i++)
-		pOutputs[i] = pOutputPorts->GetItem(i)->Unbox<SMonoOutputPortConfig>().Convert();
+		pInputs = inputs;
 
-	for(int i = 0; i < maxPortCount; i++)
-	{
-		if(i >= pOutputPorts->GetSize())
-			pOutputs[i] = nullOutputConfig;
+		for(int i = 0; i < pInputPorts->GetSize(); i++)
+			pInputs[i] = pInputPorts->GetItem(i)->Unbox<SMonoInputPortConfig>().Convert();
+
+		for(int i = 0; i < MAX_NODE_PORT_COUNT; i++)
+		{
+			if(i >= pInputPorts->GetSize())
+				pInputs[i] = nullConfig;
+		}
+
+		// Convert MonoArray type to our custom CScriptArray for easier handling.
+		CScriptArray *pOutputPorts = new CScriptArray(monoConfig.outputs);
+
+		static SOutputPortConfig outputs[MAX_NODE_PORT_COUNT];
+
+		pOutputs = outputs;
+
+		for(int i = 0; i < pOutputPorts->GetSize(); i++)
+			pOutputs[i] = pOutputPorts->GetItem(i)->Unbox<SMonoOutputPortConfig>().Convert();
+
+		for(int i = 0; i < MAX_NODE_PORT_COUNT; i++)
+		{
+			if(i >= pOutputPorts->GetSize())
+				pOutputs[i] = nullOutputConfig;
+		}
 	}
 }

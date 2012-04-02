@@ -151,7 +151,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 
 	TFlowNodeId GetId() const { return m_pActInfo->myID; }
-	int GetScriptId() const { return m_scriptId; }
+	IMonoClass *GetScript() const { return m_pScriptClass; }
 
 	void SetRegularlyUpdated(bool update) { m_pActInfo->pGraph->SetRegularlyUpdated(m_pActInfo->myID, update); }
 
@@ -163,7 +163,7 @@ private:
 	SActivationInfo *m_pActInfo;
 	IFlowGraph *m_pHookedGraph;
 
-	int m_scriptId;
+	IMonoClass *m_pScriptClass;
 
 	bool m_bInitialized;
 	bool m_bEntityNode;
