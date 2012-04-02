@@ -83,21 +83,21 @@ public:
 	template <typename TResult>
 	static TResult CallMethod(int scriptId, const char *funcName, IMonoArray *pArgs = NULL, bool releaseArgs = false)
 	{
-		TResult result = TResult();
-
 		if(IMonoClass *pClass = gEnv->pMonoScriptSystem->GetScriptById(scriptId))
 		{
 			if(IMonoObject *pResult = pClass->CallMethod(funcName, pArgs))
 			{
-				result = pResult->Unbox<TResult>();
+				TResult result = pResult->Unbox<TResult>();
 
 				SAFE_RELEASE(pResult);
 				if(releaseArgs)
 					SAFE_RELEASE(pArgs);
+
+				return result;
 			}
 		}
 
-		return result;
+		return (TResult)0;
 	}
 
 	template <>
