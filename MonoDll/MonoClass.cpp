@@ -11,6 +11,7 @@
 CScriptClass::CScriptClass(MonoClass *pClass, IMonoArray *pConstructorArguments)
 	: m_pClass(pClass)
 	, m_pInstance(NULL)
+	, m_scriptId(-1)
 {
 	if (!m_pClass)
 	{
@@ -20,6 +21,15 @@ CScriptClass::CScriptClass(MonoClass *pClass, IMonoArray *pConstructorArguments)
 	}
 
 	Instantiate(pConstructorArguments);
+}
+
+CScriptClass::CScriptClass(MonoClass *pClass, mono::object instance)
+	: m_pClass(pClass)
+	, m_pInstance(instance) 
+{
+	m_instanceHandle = mono_gchandle_new((MonoObject *)m_pInstance, false);
+
+	GetScriptId();
 }
 
 CScriptClass::~CScriptClass()
@@ -34,10 +44,13 @@ CScriptClass::~CScriptClass()
 
 int CScriptClass::GetScriptId()
 {
-	if(IMonoObject *pScriptId = GetProperty("ScriptId"))
-		return pScriptId->Unbox<int>();
+	if(m_scriptId == -1)
+	{
+		if(IMonoObject *pScriptId = GetProperty("ScriptId"))
+			m_scriptId = pScriptId->Unbox<int>();
+	}
 
-	return -1;
+	return m_scriptId;
 }
 
 void CScriptClass::Instantiate(IMonoArray *pConstructorParams)
@@ -58,8 +71,7 @@ void CScriptClass::Instantiate(IMonoArray *pConstructorParams)
 	else
 		mono_runtime_object_init((MonoObject *)m_pInstance);
 
-	if(IMonoObject *pScriptId = GetProperty("ScriptId"))
-		m_scriptId = pScriptId->Unbox<int>();
+	GetScriptId();
 }
 
 void CScriptClass::OnReload(MonoClass *pNewClass, mono::object pNewInstance)
@@ -112,7 +124,7 @@ MonoMethod *CScriptClass::GetMethod(const char *methodName, IMonoArray *pArgs, b
 	{
 		MonoMethodSignature *pSignature = NULL;
 
-		void *pIterator = NULL;
+		void *pIterator = 0;
 
 		MonoType *pClassType = mono_class_get_type(m_pClass);
 		MonoClass *pClass = m_pClass;
@@ -129,7 +141,7 @@ MonoMethod *CScriptClass::GetMethod(const char *methodName, IMonoArray *pArgs, b
 
 				continue;
 			}
-				
+
 			if(strcmp(mono_method_get_name(pCurMethod), methodName))
 				continue;
 

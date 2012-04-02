@@ -24,7 +24,7 @@ public:
 	// No instance provided, can only be used to invoke / get static members. Instantiation is possible using the Instantiate method.
 	CScriptClass(MonoClass *pClass) : m_pClass(pClass), m_pInstance(NULL) {}
 	// Set up using an existing instance.
-	CScriptClass(MonoClass *pClass, mono::object instance) : m_pClass(pClass), m_pInstance(instance) { m_instanceHandle = mono_gchandle_new((MonoObject *)m_pInstance, false); }
+	CScriptClass(MonoClass *pClass, mono::object instance);
 	~CScriptClass();
 
 	// IMonoClass
