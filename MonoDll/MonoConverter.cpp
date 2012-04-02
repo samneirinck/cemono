@@ -56,8 +56,8 @@ IMonoObject *CConverter::ToManagedType(IMonoClass *pTo, void *object)
 
 IMonoObject *CConverter::ToObject(mono::object obj)
 {
-	if(mono_object_get_class((MonoObject *)obj) == mono_get_array_class())
-		return new CScriptArray((mono::array)obj);
+	//if(mono_object_get_class((MonoObject *)obj) == mono_get_array_class())
+		//return new CScriptArray((mono::array)obj);
 
 	return new CScriptObject(obj);
 }

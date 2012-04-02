@@ -29,7 +29,7 @@ struct MonoAnyValue;
 /// Creating an IMonoArray: IMonoArray *pMyArray = CreateMonoArray(arraySize);
 /// Converting an mono::array: IMonoArray *pConvertedArray = *(mono::array)monoArray;
 /// </summary>
-struct IMonoArray : public IMonoObject
+struct IMonoArray : public CSerializable
 {
 public:
 	/// <summary>
