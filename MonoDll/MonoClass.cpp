@@ -106,7 +106,6 @@ IMonoObject *CScriptClass::CallMethod(const char *methodName, IMonoArray *pParam
 	return NULL;
 }
 
-#include <mono\metadata\tabledefs.h>
 MonoMethod *CScriptClass::GetMethod(const char *methodName, IMonoArray *pArgs, bool bStatic)
 {
 	if(g_pMonoCVars->mono_useExperimentalMethodFinding)
@@ -115,32 +114,41 @@ MonoMethod *CScriptClass::GetMethod(const char *methodName, IMonoArray *pArgs, b
 
 		void *pIterator = NULL;
 
+		MonoType *pClassType = mono_class_get_type(m_pClass);
 		MonoClass *pClass = m_pClass;
-		MonoMethod *pMethod = NULL;
+		MonoMethod *pCurMethod = NULL;
 
-		while (pClass != NULL) 
+		while (pClass != NULL)
 		{
-			CryLogAlways("Checking type %s for method %s", mono_class_get_name(pClass), methodName);
-
-			for(pMethod = mono_class_get_methods(pClass, &pIterator); pMethod != NULL; pMethod = mono_class_get_methods(pClass, &pIterator))
+			pCurMethod = mono_class_get_methods(pClass, &pIterator);
+			if(pCurMethod == NULL)
 			{
-				if(strcmp(mono_method_get_name(pMethod), methodName))
-					continue;
+				pClass = mono_class_get_parent(pClass);
+				if(pClass == mono_get_object_class())
+					break;
 
-				//if(bStatic != (mono_method_get_flags(pMethod, NULL) & METHOD_ATTRIBUTE_STATIC) > 0)
-					//continue;
+				continue;
+			}
 
-				if(!pArgs || pArgs->GetSize() <= 0)
-					return pMethod;
-			
+			if(strcmp(mono_method_get_name(pCurMethod), methodName))
+				continue;
+
+			//if(bStatic != (mono_method_get_flags(pCurMethod, NULL) & METHOD_ATTRIBUTE_STATIC) > 0)
+				//continue;
+
+			pSignature = mono_method_signature(pCurMethod);
+
+			int signatureParamCount = mono_signature_get_param_count(pSignature);
+			int suppliedArgsCount = pArgs ? pArgs->GetSize() : 0;
+
+			if(suppliedArgsCount > 0)
+			{
 				void *pIter = NULL;
 
-				pSignature = mono_method_signature(pMethod);
-				int numParams = mono_signature_get_param_count(pSignature);
-
-				for(int i = 0; i < numParams; i++)
+				MonoType *pType = NULL;
+				for(int i = 0; i < signatureParamCount; i++)
 				{
-					MonoType *pType = mono_signature_get_params(pSignature, &pIter);
+					pType = mono_signature_get_params(pSignature, &pIter);
 
 					if(IMonoObject *pItem = pArgs->GetItem(i))
 					{
@@ -160,13 +168,15 @@ MonoMethod *CScriptClass::GetMethod(const char *methodName, IMonoArray *pArgs, b
 						else if(monoType == MONO_TYPE_STRING && anyType != MONOTYPE_STRING && anyType != MONOTYPE_WSTRING)
 							break;
 					}
-			
-					if(i >= pArgs->GetSize() - 1)
-						return pMethod;
+					else if(suppliedArgsCount - 1 < i)
+						return pCurMethod;
+
+					if(i >= suppliedArgsCount - 1)
+						return pCurMethod;
 				}
 			}
-
-			pClass = mono_class_get_parent(pClass);
+			else if(signatureParamCount == 0)
+				return pCurMethod; // The args desired to be sent and the method signature's num args were both 0, we can safely return this MonoMethod object.
 		}
 
 		return NULL;
@@ -185,7 +195,20 @@ MonoMethod *CScriptClass::GetMethod(const char *methodName, IMonoArray *pArgs, b
 		{
 			// TODO: Accurate method signature matching; currently several methods with the same name and amount of parameters will break.
 			if(numParams > -1)
-				pMethod = mono_class_get_method_from_name(pClass, methodName, numParams);
+			{
+				if(!strcmp(methodName, "OnClientConnect"))
+				{
+					// Fugly temporary solution to get optional args to work.
+					for(int i = numParams; pMethod == NULL && i >= 0; i++)
+						pMethod = mono_class_get_method_from_name(pClass, methodName, i);
+				}
+				else
+				{
+				// Fugly temporary solution to get optional args to work.
+				for(int i = numParams; pMethod == NULL && i >= 0; i--)
+					pMethod = mono_class_get_method_from_name(pClass, methodName, i);
+				}
+			}
 			else
 				pMethod = mono_method_desc_search_in_class(pMethodDesc, pClass); 
 			if (!pMethod) 
