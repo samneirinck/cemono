@@ -1,19 +1,11 @@
-﻿using System.Reflection;
+﻿using System.IO;
 
-using System.IO;
-
-using System.Collections;
-using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 using System.Linq;
 
-using System.Runtime.Serialization;
-
 using System.Diagnostics;
-
-using CryEngine.Extensions;
 
 namespace CryEngine.Serialization
 {
@@ -43,7 +35,7 @@ namespace CryEngine.Serialization
 			foreach(var script in ScriptCompiler.CompiledScripts)
 			{
 				if(script.ScriptInstances != null)
-					SerializeTypesToXml(script.ScriptInstances, script.ScriptType, compiledScriptsDirectory);
+					SerializeTypes(script.ScriptInstances, script.ScriptType, compiledScriptsDirectory);
 			}
 
 			string subSystemDirectory = Path.Combine(scriptDumpFolder, "CryBrary.EntitySystem");
@@ -76,24 +68,23 @@ namespace CryEngine.Serialization
 			Debug.LogAlways("Serializer took {0}ms to dump script data", stopwatch.ElapsedMilliseconds);
 		}
 
-		public void SerializeTypesToXml(IEnumerable<object> typeInstances, System.Type type, string targetDirection)
+		public void SerializeTypes(IEnumerable<object> typeInstances, System.Type type, string targetDirectory)
 		{
 			if(typeInstances.Count() <= 0 || type == null)
 				return;
 
-			targetDirection = Directory.CreateDirectory(Path.Combine(targetDirection, type.Namespace + "." + type.Name)).FullName;
+			targetDirectory = Directory.CreateDirectory(Path.Combine(targetDirectory, type.Namespace + "." + type.Name)).FullName;
 
 			for(int i = 0; i < typeInstances.Count(); i++)
 			{
 				var formatter = new CrySerializer();
-				var stream = File.Create(Path.Combine(targetDirection, i.ToString()));
+				var stream = File.Create(Path.Combine(targetDirectory, i.ToString()));
 
 				formatter.Serialize(stream, typeInstances.ElementAt(i));
 
 				stream.Close();
 			}
 		}
-
 
 		public void TrySetScriptData()
 		{
