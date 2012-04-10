@@ -22,10 +22,10 @@ public:
 	// Instantiate a class right away.
 	CScriptClass(MonoClass *pClass, IMonoArray *pConstructorArguments);
 	// No instance provided, can only be used to invoke / get static members. Instantiation is possible using the Instantiate method.
-	CScriptClass(MonoClass *pClass) : m_pClass(pClass), m_pInstance(NULL) {}
+	CScriptClass(MonoClass *pClass) : m_pClass(pClass), m_pInstance(NULL), m_scriptId(-1) {}
 	// Set up using an existing instance.
 	CScriptClass(MonoClass *pClass, mono::object instance);
-	~CScriptClass();
+	virtual ~CScriptClass();
 
 	// IMonoClass
 	virtual void Release() override { delete this; }

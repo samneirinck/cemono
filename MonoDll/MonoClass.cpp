@@ -26,6 +26,7 @@ CScriptClass::CScriptClass(MonoClass *pClass, IMonoArray *pConstructorArguments)
 CScriptClass::CScriptClass(MonoClass *pClass, mono::object instance)
 	: m_pClass(pClass)
 	, m_pInstance(instance) 
+	, m_scriptId(-1)
 {
 	m_instanceHandle = mono_gchandle_new((MonoObject *)m_pInstance, false);
 

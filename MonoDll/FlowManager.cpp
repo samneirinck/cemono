@@ -10,7 +10,7 @@
 #include "MonoScriptSystem.h"
 #include <IGameFramework.h>
 
-CFlowManager::TFlowNodes CFlowManager::m_nodes = TFlowNodes();
+CFlowManager::TFlowTypes CFlowManager::m_nodeTypes = TFlowTypes();
 
 CFlowManager::CFlowManager()
 	: m_refs(0)
@@ -32,51 +32,62 @@ CFlowManager::CFlowManager()
 	REGISTER_METHOD(GetPortValueString);
 	REGISTER_METHOD(GetPortValueBool);
 	REGISTER_METHOD(GetPortValueVec3);
-
-	m_pEntityFlowManager = new CEntityFlowManager();
 }
 
 void CFlowManager::Reset()
 {
-	for each(auto node in m_nodes)
-		node.second->ReloadPorts();
+	for each(auto nodeType in m_nodeTypes)
+		nodeType->ReloadPorts();
 }
 
-void CFlowManager::RegisterNode(mono::string name, mono::string category, bool isEntity)
+void CFlowManager::RegisterNode(mono::string monoTypeName)
 {
-	if(IFlowSystem *pFlowSystem = gEnv->pFlowSystem)
+	if(IFlowSystem *pFlowSystem = NULL)//gEnv->pFlowSystem)
 	{
 		CFlowManager *pFlowManager = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager();
 
-		pFlowSystem->RegisterType(ToCryString(category) + (string)":" + ToCryString(name), isEntity ? pFlowManager->GetEntityFlowManager() : (IFlowNodeFactoryPtr)pFlowManager);
+		const char *typeName = ToCryString(monoTypeName);
+		CryLogAlways("registering node %s", typeName);
+		m_nodeTypes.push_back(new SNodeType(typeName));
+		pFlowSystem->RegisterType(typeName, (IFlowNodeFactoryPtr)pFlowManager);
 	}
-}
-
-void CFlowManager::UnregisterFlowNode(int id)
-{
-	for(TFlowNodes::iterator it = m_nodes.begin(); it != m_nodes.end(); ++it)
-	{
-		if((*it).first==id)
-			m_nodes.erase(it);
-	}
-}
-
-IFlowNodePtr CEntityFlowManager::Create(IFlowNode::SActivationInfo *pActInfo)
-{
-	return new CFlowNode(pActInfo, true);
 }
 
 IFlowNodePtr CFlowManager::Create(IFlowNode::SActivationInfo *pActInfo)
 {
-	return new CFlowNode(pActInfo, false);
+	return new CFlowNode(pActInfo);
 }
 
-SNodeData *CFlowManager::GetNodeDataById(int scriptId)
+IMonoClass *CFlowManager::InstantiateNode(CFlowNode *pNode, const char *typeName)
 {
-	for each(auto node in m_nodes)
+	for each(auto nodeType in m_nodeTypes)
 	{
-		if(node.first==scriptId)
-			return node.second;
+		if(!strcmp(nodeType->GetTypeName(), typeName))
+		{
+			IMonoClass *pScriptClass = gEnv->pMonoScriptSystem->GetScriptById(gEnv->pMonoScriptSystem->InstantiateScript(typeName));
+			nodeType->nodes.push_back(pNode);
+
+			return pScriptClass;
+		}
+	}
+
+	return NULL;
+}
+
+SNodeType *CFlowManager::GetNodeTypeById(int scriptId)
+{
+	for each(auto nodeType in m_nodeTypes)
+	{
+		for each(auto node in nodeType->nodes)
+		{
+			if(node)
+			{
+				IMonoClass *pScriptClass = node->GetScript();
+
+				if(pScriptClass && pScriptClass->GetScriptId() == scriptId)
+					return nodeType;
+			}
+		}
 	}
 
 	return NULL;
@@ -84,8 +95,11 @@ SNodeData *CFlowManager::GetNodeDataById(int scriptId)
 
 CFlowNode *CFlowManager::GetNodeById(int scriptId)
 {
-	if(SNodeData *pData = GetNodeDataById(scriptId))
-		return pData->pNode;
+	for each(auto node in GetNodeTypeById(scriptId)->nodes)
+	{
+		if(node->GetScript()->GetScriptId() == scriptId)
+			return node;
+	}
 
 	return NULL;
 }
@@ -102,13 +116,13 @@ template <class T>
 void CFlowManager::ActivateOutputOnNode(int scriptId, int index, const T &value)
 {
 	if(CFlowNode *pFlowNode = GetNodeById(scriptId))
-		pFlowNode->ActivateOutput(index, value);
+		pFlowNode->ActivateOutput(pFlowNode->GetActivationInfo(), index, value);
 }
 
 bool CFlowManager::IsPortActive(int scriptId, int port)
 {
 	if(CFlowNode *pFlowNode = GetNodeById(scriptId))
-		return pFlowNode->IsPortActive(port);
+		return pFlowNode->IsPortActive(pFlowNode->GetActivationInfo(), port);
 
 	return false;
 }
@@ -116,7 +130,7 @@ bool CFlowManager::IsPortActive(int scriptId, int port)
 int CFlowManager::GetPortValueInt(int scriptId, int index)
 {
 	if(CFlowNode *pFlowNode = GetNodeById(scriptId))
-		return pFlowNode->GetPortInt(index);
+		return pFlowNode->GetPortInt(pFlowNode->GetActivationInfo(), index);
 
 	return -1;
 }
@@ -124,7 +138,7 @@ int CFlowManager::GetPortValueInt(int scriptId, int index)
 float CFlowManager::GetPortValueFloat(int scriptId, int index)
 {
 	if(CFlowNode *pFlowNode = GetNodeById(scriptId))
-		return pFlowNode->GetPortFloat(index);
+		return pFlowNode->GetPortFloat(pFlowNode->GetActivationInfo(), index);
 
 	return -1;
 }
@@ -132,7 +146,7 @@ float CFlowManager::GetPortValueFloat(int scriptId, int index)
 EntityId CFlowManager::GetPortValueEntityId(int scriptId, int index)
 {
 	if(CFlowNode *pFlowNode = GetNodeById(scriptId))
-		return pFlowNode->GetPortEntityId(index);
+		return pFlowNode->GetPortEntityId(pFlowNode->GetActivationInfo(), index);
 
 	return -1;
 }
@@ -140,7 +154,7 @@ EntityId CFlowManager::GetPortValueEntityId(int scriptId, int index)
 mono::string CFlowManager::GetPortValueString(int scriptId, int index)
 {
 	if(CFlowNode *pFlowNode = GetNodeById(scriptId))
-		return (mono::string)ToMonoString(pFlowNode->GetPortString(index));
+		return (mono::string)ToMonoString(pFlowNode->GetPortString(pFlowNode->GetActivationInfo(), index));
 
 	return NULL;
 }
@@ -148,7 +162,7 @@ mono::string CFlowManager::GetPortValueString(int scriptId, int index)
 bool CFlowManager::GetPortValueBool(int scriptId, int index)
 {
 	if(CFlowNode *pFlowNode = GetNodeById(scriptId))
-		return pFlowNode->GetPortBool(index);
+		return pFlowNode->GetPortBool(pFlowNode->GetActivationInfo(), index);
 
 	return false;
 }
@@ -156,18 +170,17 @@ bool CFlowManager::GetPortValueBool(int scriptId, int index)
 mono::object CFlowManager::GetPortValueVec3(int scriptId, int index)
 {
 	if(CFlowNode *pFlowNode = GetNodeById(scriptId))
-		return *gEnv->pMonoScriptSystem->GetConverter()->ToManagedType(eCMT_Vec3, pFlowNode->GetPortVec3(index));
+		return *gEnv->pMonoScriptSystem->GetConverter()->ToManagedType(eCMT_Vec3, pFlowNode->GetPortVec3(pFlowNode->GetActivationInfo(), index));
 
 	return NULL;
 }
 
-SInputPortConfig *SNodeData::pInputs = nullptr;
-SOutputPortConfig *SNodeData::pOutputs = nullptr;
-
 static const int MAX_NODE_PORT_COUNT = 20;
-void SNodeData::ReloadPorts()
+void SNodeType::ReloadPorts()
 {
-	IMonoClass *pScriptClass = pNode->GetScript();
+	// Temporary script instance
+	IMonoClass *pScriptClass = gEnv->pMonoScriptSystem->GetScriptById(gEnv->pMonoScriptSystem->InstantiateScript(typeName));
+
 	if(IMonoObject *pResult = pScriptClass->CallMethod("GetPortConfig"))
 	{
 		auto monoConfig = pResult->Unbox<SMonoNodePortConfig>();
@@ -206,4 +219,6 @@ void SNodeData::ReloadPorts()
 				pOutputs[i] = nullOutputConfig;
 		}
 	}
+
+	pScriptClass->Release();
 }

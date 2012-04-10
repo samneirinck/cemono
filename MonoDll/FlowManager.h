@@ -15,50 +15,39 @@
 #include <IFlowSystem.h>
 
 struct IMonoArray;
+struct IMonoClass;
+
 class CFlowNode;
 
-struct SNodeData
+struct SNodeType
 {
-	SNodeData(CFlowNode *pFlowNode) : pNode(pFlowNode) { ReloadPorts(); };
+	SNodeType(const char *name) : typeName(name), pInputs(NULL), pOutputs(NULL) {}
 
 	void ReloadPorts();
 
-	CFlowNode *pNode;
+	const char *GetTypeName() const { return typeName; }
 
-	static SOutputPortConfig *pOutputs;
-	static SInputPortConfig *pInputs;
+	std::vector<CFlowNode *> nodes;
+
+	SOutputPortConfig *GetOutputPorts() { if(!pOutputs) ReloadPorts(); return pOutputs; }
+	SInputPortConfig *GetInputPorts() { if(!pInputs) ReloadPorts(); return pInputs; }
+
+private:
+	const char *typeName;
+
+	SOutputPortConfig *pOutputs;
+	SInputPortConfig *pInputs;
 };
 
-class CEntityFlowManager : public IFlowNodeFactory
-{
-public:
-	CEntityFlowManager() : m_refs(0) {}
-
-	// IFlowNodeFactory
-	virtual void AddRef() { ++m_refs; }
-	// We want to manually kill this off, since it's used so often.
-	virtual void Release() { if( 0 >= --m_refs) delete this; }
-	IFlowNodePtr Create( IFlowNode::SActivationInfo *pActInfo );
-
-	virtual void GetMemoryUsage(ICrySizer * s) const
-	{ 
-		SIZER_SUBCOMPONENT_NAME(s, "CEntityFlowManager");
-		s->Add(*this); 
-	}
-	virtual void Reset() {}
-	// ~IFlowNodeFactory
-
-protected:
-	int m_refs;
-};
-
-class CFlowManager : public IMonoScriptBind, IFlowNodeFactory
+class CFlowManager : 
+	public IMonoScriptBind,
+	public IFlowNodeFactory
 {
 public:
 	CFlowManager();
 	~CFlowManager() {}
 
-	typedef std::map<int, SNodeData *> TFlowNodes;
+	typedef std::vector<SNodeType *> TFlowTypes;
 
 	// IFlowNodeFactory
 	virtual void AddRef() override { ++m_refs; }
@@ -69,25 +58,23 @@ public:
 	virtual void GetMemoryUsage(ICrySizer * s) const override
 	{ 
 		SIZER_SUBCOMPONENT_NAME(s, "CFlowManager");
-		s->Add(*this); 
+		s->Add(*this);
 	}
 	virtual void Reset() override;
 	// ~IFlowNodeFactory
 
-	static void RegisterFlowNode(CFlowNode *pNode, int scriptId) { m_nodes.insert(TFlowNodes::value_type(scriptId, new SNodeData(pNode))); }
-	static void UnregisterFlowNode(int id);
+	static IMonoClass *InstantiateNode(CFlowNode *pNode, const char *typeName);
 
-	static SNodeData *GetNodeDataById(int scriptId);
+	static SNodeType *GetNodeTypeById(int scriptId);
 	static CFlowNode *GetNodeById(int scriptId);
-
-	CEntityFlowManager *GetEntityFlowManager() const { return m_pEntityFlowManager; }
 
 protected:
 	// IMonoScriptBind
 	virtual const char *GetClassName() { return "FlowNode"; }
 	// ~IMonoScriptBind
 
-	static void RegisterNode(mono::string, mono::string, bool);
+
+	static void RegisterNode(mono::string typeName);
 
 	static bool IsPortActive(int, int);
 
@@ -109,9 +96,7 @@ protected:
 	static void ActivateOutputBool(int, int, bool);
 	static void ActivateOutputVec3(int, int, Vec3);
 
-	static TFlowNodes m_nodes;
-
-	CEntityFlowManager *m_pEntityFlowManager;
+	static TFlowTypes m_nodeTypes;
 
 	int m_refs;
 };

@@ -15,6 +15,8 @@ using System.ComponentModel;
 
 using System.Threading.Tasks;
 
+using System.Runtime.InteropServices;
+
 namespace CryEngine
 {
 	public static partial class ScriptCompiler
@@ -80,7 +82,7 @@ namespace CryEngine
 			if(scriptName.Length < 1)
 				throw new ArgumentException("Empty script name passed to InstantiateClass");
 
-			var script = CompiledScripts.FirstOrDefault(x => x.ScriptType.Name.Equals(scriptName));
+			var script = CompiledScripts.FirstOrDefault(x => x.ScriptName.Equals(scriptName));
 			if(script == default(CryScript))
 				throw new ScriptNotFoundException(string.Format("Compiled script {0} could not be found.", scriptName));
 
@@ -369,7 +371,7 @@ namespace CryEngine
 			bool includeDebugInfo = true;
 
 #if RELEASE
-			if(!compilationParams.ForceDebugInformation)
+			if(!compilationParameters.ForceDebugInformation)
 				includeDebugInfo = false;
 #endif
 
@@ -477,10 +479,7 @@ namespace CryEngine
 				if(type.IsAbstract)
 					throw new TypeLoadException(string.Format("Failed to load entity of type {0}: abstract entities are not supported", type.Name));
 
-				CompiledScripts.Add(new CryScript(type));
-				var script = CompiledScripts.Last();
-
-				string className = type.Name;
+				var script = new CryScript(type);
 
 				if(type.Implements(typeof(BaseGameRules)))
 				{
@@ -496,31 +495,33 @@ namespace CryEngine
 							GameRulesSystem._SetDefaultGameMode(gamemodeName);
 					}
 
-					GameRulesSystem._RegisterGameMode(gamemodeName ?? className);
+					GameRulesSystem._RegisterGameMode(gamemodeName ?? script.ScriptName);
 				}
 				else if(type.Implements(typeof(Actor)))
-					Actor._RegisterActorClass(className, false);
+					Actor._RegisterActorClass(script.ScriptName, false);
 				else if(type.Implements(typeof(Entity)))
-					LoadEntity(script);
+					LoadEntity(ref script);
 				else if(type.Implements(typeof(FlowNode)))
-					LoadFlowNode(script);
+					LoadFlowNode(ref script);
+
+				CompiledScripts.Add(script);
 			}
 		}
 
 		internal static void RegisterFlownodes()
 		{
 			foreach(var node in FlowNodes)
-				FlowNode.RegisterNode(node.className, node.category, node.category.Equals("entity"));
+				FlowNode.RegisterNode(node.category + ":" + node.className);
 		}
 
-		private static void LoadEntity(CryScript script)
+		private static void LoadEntity(ref CryScript script)
 		{
 			Entity.RegisterEntityClass(Entity.GetEntityConfig(script.ScriptType));
 
-			LoadFlowNode(script, true);
+			LoadFlowNode(ref script, true);
 		}
 
-		private static void LoadFlowNode(CryScript script, bool entityNode = false)
+		private static void LoadFlowNode(ref CryScript script, bool entityNode = false)
 		{
 			string category = null;
 			string nodeName = script.ScriptType.Name;
@@ -541,6 +542,8 @@ namespace CryEngine
 			}
 			else
 				category = "entity";
+
+			script.ScriptName = category + ":" + nodeName;
 
 			FlowNodes.Add(new StoredNode(nodeName, category));
 		}
@@ -620,9 +623,14 @@ namespace CryEngine
 			: this()
 		{
 			ScriptType = type;
+			ScriptName = type.Name;
 		}
 
 		public Type ScriptType { get; private set; }
+		/// <summary>
+		/// The script's name, not always type name!
+		/// </summary>
+		public string ScriptName { get; set; }
 
 		/// <summary>
 		/// Stores all instances of this class.
