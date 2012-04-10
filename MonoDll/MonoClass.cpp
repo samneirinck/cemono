@@ -207,14 +207,7 @@ MonoMethod *CScriptClass::GetMethod(const char *methodName, IMonoArray *pArgs, b
 		while (pClass != NULL && pMethod == NULL) 
 		{
 			// TODO: Accurate method signature matching; currently several methods with the same name and amount of parameters will break.
-			if(numParams > -1)
-			{
-				// Fugly temporary solution to get optional args to work.
-				for(int i = numParams; pMethod == NULL && i >= 0; i--)
-					pMethod = mono_class_get_method_from_name(pClass, methodName, i);
-			}
-			else
-				pMethod = mono_method_desc_search_in_class(pMethodDesc, pClass); 
+			pMethod = mono_method_desc_search_in_class(pMethodDesc, pClass); 
 			if (!pMethod) 
 				pClass = mono_class_get_parent(pClass);
 		}
