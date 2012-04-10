@@ -342,7 +342,13 @@ namespace CryEngine
 			foreach(var directory in compilationParameters.Folders)
 			{
 				if(Directory.Exists(directory))
-					scripts.AddRange(Directory.GetFiles(directory, "*.cs", SearchOption.AllDirectories));
+				{
+					foreach(var script in Directory.GetFiles(directory, "*.cs", SearchOption.AllDirectories))
+					{
+						if(!scripts.Contains(script))
+							scripts.Add(script);
+					}
+				}
 				else
 					Debug.LogAlways("Skipping compilation of scripts in {0}; directory not found", directory);
 			}
