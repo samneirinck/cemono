@@ -71,7 +71,7 @@ namespace CryEngine.Serialization
 
 			public bool Equals(ObjectReference other)
 			{
-				return (this.Value.Equals(other.Value)) && (this.FullName.Equals(other.FullName));
+				return (this.Value != null && this.Value.Equals(other.Value)) && (this.FullName.Equals(other.FullName));
 			}
 
 			/// <summary>
