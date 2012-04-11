@@ -18,17 +18,76 @@ namespace CryEngine.Serialization
 		Assembly CallingAssembly { get; set; }
 		FormatterConverter Converter { get; set; }
 
+		Dictionary<string, ObjectReference> ObjectReferences;
+
 		public CrySerializer()
 		{
 			Converter = new FormatterConverter();
+			ObjectReferences = new Dictionary<string, ObjectReference>();
 		}
 
 		struct ObjectReference
 		{
-			public ObjectReference(string name, object value) : this() { Name = name; Value = value; }
+			public ObjectReference(string name, object value) 
+				: this() 
+			{ 
+				Name = name;
+				Value = value;
+				FullName = Name;
+			}
+
+			public ObjectReference(string name, object value, ObjectReference owner)
+				: this(name, value)
+			{
+				FullName = owner.FullName + "." + Name;
+			}
+
+			public ObjectReference(string name, object value, string fullName)
+				: this(name, value)
+			{
+				FullName = fullName;
+			}
 
 			public string Name { get; set; }
+			/// <summary>
+			/// The full name including owner objects seperated by '.'
+			/// </summary>
+			public string FullName { get; set; }
 			public object Value { get; set; }
+
+			public override bool Equals(object obj)
+			{
+				if(obj is ObjectReference)
+					return this.Equals(obj);
+
+				return false;
+			}
+
+			public override int GetHashCode()
+			{
+				return base.GetHashCode();
+			}
+
+			public bool Equals(ObjectReference other)
+			{
+				return (this.Value.Equals(other.Value)) && (this.FullName.Equals(other.FullName));
+			}
+
+			/// <summary>
+			/// Special behaviour; unlike Equals the operator methods do not compare Value!
+			/// </summary>
+			/// <param name="ref1"></param>
+			/// <param name="ref2"></param>
+			/// <returns></returns>
+			public static bool operator ==(ObjectReference ref1, ObjectReference ref2)
+			{
+				return ref1.FullName.Equals(ref2.FullName);
+			}
+
+			public static bool operator !=(ObjectReference ref1, ObjectReference ref2)
+			{
+				return !(ref1 == ref2);
+			}
 		}
 
 		public void Serialize(Stream stream, object graph)
@@ -36,6 +95,8 @@ namespace CryEngine.Serialization
 			try
 			{
 				Writer = new StreamWriter(stream);
+				ObjectReferences.Clear();
+
 				StartWrite(new ObjectReference("root", graph));
 			}
 			finally
@@ -51,11 +112,17 @@ namespace CryEngine.Serialization
 		void StartWrite(ObjectReference objectReference)
 		{
 			if(objectReference.Value == null)
+			{
 				WriteNull(objectReference);
+				return;
+			}
 
 			Type valueType = objectReference.Value.GetType();
 			if(!IsTypeAllowed(valueType))
+			{
+				WriteNull(objectReference);
 				return;
+			}
 
 			if(valueType.Implements(typeof(IEnumerable)))
 				WriteEnumerable(objectReference);
@@ -80,13 +147,14 @@ namespace CryEngine.Serialization
 			Writer.WriteLine("object");
 			Writer.WriteLine(fields.Count);
 			Writer.WriteLine(objectReference.Name);
+			Writer.WriteLine(objectReference.FullName);
 			Writer.WriteLine(objectReference.Value.GetType());
 
 			foreach(var field in fields)
 			{
 				object fieldValue = field.GetValue(objectReference.Value);
 
-				StartWrite(new ObjectReference(field.Name, fieldValue));
+				StartWrite(new ObjectReference(field.Name, fieldValue, objectReference));
 			}
 		}
 
@@ -97,10 +165,11 @@ namespace CryEngine.Serialization
 			var array = (objectReference.Value as IEnumerable).Cast<object>();
 			Writer.WriteLine(array.Count());
 			Writer.WriteLine(objectReference.Name);
-			Writer.WriteLine(array.ElementAt(0).GetType());
+			Writer.WriteLine(objectReference.FullName);
+			Writer.WriteLine(array.GetType().GetElementType());
 
 			for(int i = 0; i < array.Count(); i++)
-				StartWrite(new ObjectReference(i.ToString(), array.ElementAt(i)));
+				StartWrite(new ObjectReference(i.ToString(), array.ElementAt(i), objectReference));
 		}
 
 		void WriteNull(ObjectReference objectReference)
@@ -113,7 +182,8 @@ namespace CryEngine.Serialization
 		{
 			Writer.WriteLine("any");
 			Writer.WriteLine(objectReference.Name);
-			Writer.WriteLine(objectReference.GetType());
+			Writer.WriteLine(objectReference.FullName);
+			Writer.WriteLine(objectReference.Value.GetType());
 			Writer.WriteLine(Converter.ToString(objectReference.Value));
 		}
 
@@ -121,8 +191,12 @@ namespace CryEngine.Serialization
 		{
 			try
 			{
+				Debug.LogAlways("Commencing deserialization");
 				Reader = new StreamReader(stream);
 				CallingAssembly = Assembly.GetCallingAssembly();
+				ObjectReferences.Clear();
+
+				Debug.LogAlways("Deserializing");
 
 				return StartRead().Value;
 			}
@@ -138,28 +212,47 @@ namespace CryEngine.Serialization
 
 		ObjectReference StartRead()
 		{
+			Debug.LogAlways("Start read");
+			ObjectReference result = default(ObjectReference);
+
 			switch(Reader.ReadLine())
 			{
-				case "null": return ReadNull();
-				case "object": return ReadObject();
-				case "enumerable": return ReadEnumerable();
-				case "any": return ReadAny();
+				case "null": result = ReadNull(); break;
+				case "object": result = ReadObject(); break;
+				case "enumerable": result = ReadEnumerable(); break;
+				case "any": result = ReadAny(); break;
 				default: break;
 			}
 
-			throw new Exception(string.Format("Cannot deserialize object!"));
+			if(result.Equals(default(ObjectReference)))
+				throw new Exception(string.Format("Could not deserialize object!"));
+			
+			Debug.LogAlways("End start read");
+			return result;
 		}
 
 		ObjectReference ReadNull()
 		{
+			Debug.LogAlways("Reading null");
 			return new ObjectReference(Reader.ReadLine(), null);
 		}
 
 		ObjectReference ReadObject()
 		{
+			Debug.LogAlways("Reading object");
 			int numFields = int.Parse(Reader.ReadLine());
 			string name = Reader.ReadLine();
+			string fullName = Reader.ReadLine();
 			string typeName = Reader.ReadLine();
+
+			if(ObjectReferences.ContainsKey(fullName))
+			{
+				// We have to read anyway, in order to get to the correct line for the next object.
+				for(int i = 0; i != numFields; ++i)
+					StartRead();
+
+				return ObjectReferences[fullName];
+			}
 
 			object objectInstance = CreateObjectInstance(typeName);
 
@@ -171,14 +264,27 @@ namespace CryEngine.Serialization
 				fieldInfo.SetValue(objectInstance, fieldReference.Value);
 			}
 
-			return new ObjectReference(name, objectInstance);
+			ObjectReferences.Add(fullName, new ObjectReference(name, objectInstance, fullName));
+			Debug.LogAlways("Done reading object");
+			return ObjectReferences.Last().Value;
 		}
 
 		ObjectReference ReadEnumerable()
 		{
+			Debug.LogAlways("Reading enumerable");
 			int elements = int.Parse(Reader.ReadLine());
 			string name = Reader.ReadLine();
+			string fullName = Reader.ReadLine();
 			string typeName = Reader.ReadLine();
+
+			if(ObjectReferences.ContainsKey(fullName))
+			{
+				// We have to read anyway, in order to get to the correct line for the next object.
+				for(int i = 0; i != elements; ++i)
+					StartRead();
+
+				return ObjectReferences[fullName];
+			}
 
 			object objectInstance = CreateObjectInstance(typeName);
 			var array = (objectInstance as IEnumerable).Cast<object>().ToArray();
@@ -186,16 +292,32 @@ namespace CryEngine.Serialization
 			for(int i = 0; i != elements; ++i)
 				array.SetValue(StartRead().Value, i);
 
-			return new ObjectReference(name, array);
+			ObjectReferences.Add(fullName, new ObjectReference(name, array, fullName));
+			Debug.LogAlways("Done reading enumerable");
+			return ObjectReferences.Last().Value;
 		}
 
 		ObjectReference ReadAny()
 		{
+			Debug.LogAlways("Reading any");
 			string name = Reader.ReadLine();
+			string fullName = Reader.ReadLine();
+
+			if(ObjectReferences.ContainsKey(fullName))
+			{
+				// In order to get to the next object's line, we have to read anyway.
+				Reader.ReadLine(); // type
+				Reader.ReadLine(); // value
+
+				return ObjectReferences[fullName];
+			}
+
 			Type type = Type.GetType(Reader.ReadLine());
 			object value = Converter.Convert(Reader.ReadLine(), type);
 
-			return new ObjectReference(name, value);
+			ObjectReferences.Add(fullName, new ObjectReference(name, value, fullName));
+			Debug.LogAlways("Done reading any");
+			return ObjectReferences.Last().Value;
 		}
 
 		static System.Type[] forbiddenTypes = new System.Type[] { typeof(MethodInfo) };

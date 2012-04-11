@@ -16,7 +16,10 @@ namespace CryEngine.Serialization
 	{
 		AppDomainSerializer()
 		{
+			Formatter = new CrySerializer();
 		}
+
+		CrySerializer Formatter { get; set; }
 
 		public void DumpScriptData()
 		{
@@ -55,17 +58,15 @@ namespace CryEngine.Serialization
 					processedTypes.Add(entityType, directory);
 				}
 
-				var formatter = new CrySerializer();
-				var stream = File.Create(Path.Combine(processedTypes[entityType], Directory.GetFiles(processedTypes[entityType]).Count().ToString()));
-
-				formatter.Serialize(stream, Entity.SpawnedEntities[i]);
-
-				stream.Close();
+				using(var stream = File.Create(Path.Combine(processedTypes[entityType], Directory.GetFiles(processedTypes[entityType]).Count().ToString())))
+					Formatter.Serialize(stream, Entity.SpawnedEntities[i]);
 			}
 
 			stopwatch.Stop();
 
 			Debug.LogAlways("Serializer took {0}ms to dump script data", stopwatch.ElapsedMilliseconds);
+
+			Formatter = null;
 		}
 
 		public void SerializeTypes(IEnumerable<object> typeInstances, System.Type type, string targetDirectory)
@@ -77,12 +78,8 @@ namespace CryEngine.Serialization
 
 			for(int i = 0; i < typeInstances.Count(); i++)
 			{
-				var formatter = new CrySerializer();
-				var stream = File.Create(Path.Combine(targetDirectory, i.ToString()));
-
-				formatter.Serialize(stream, typeInstances.ElementAt(i));
-
-				stream.Close();
+				using(var stream = File.Create(Path.Combine(targetDirectory, i.ToString())))
+					Formatter.Serialize(stream, typeInstances.ElementAt(i));
 			}
 		}
 
@@ -104,15 +101,12 @@ namespace CryEngine.Serialization
 						if(script.ScriptInstances == null)
 							script.ScriptInstances = new Collection<CryScriptInstance>();
 
-						var formatter = new CrySerializer();
-						var stream = File.Open(fileName, FileMode.Open);
-
-						var scriptInstance = formatter.Deserialize(stream) as CryScriptInstance;
+						CryScriptInstance scriptInstance = null;
+						using(var stream = File.Open(fileName, FileMode.Open))
+							scriptInstance = Formatter.Deserialize(stream) as CryScriptInstance;
 
 						if(scriptInstance != null)
 							script.ScriptInstances.Add(scriptInstance);
-
-						stream.Close();
 
 						if(ScriptCompiler.LastScriptId <= script.ScriptInstances.Last().ScriptId)
 							ScriptCompiler.LastScriptId = script.ScriptInstances.Last().ScriptId + 1;
@@ -120,6 +114,8 @@ namespace CryEngine.Serialization
 				}
 
 				ScriptCompiler.CompiledScripts[i] = script;
+
+				Formatter = null;
 			}
 
 			string subSystemDirectory = Path.Combine(PathUtils.GetScriptDumpFolder(), "CryBrary.EntitySystem");
@@ -138,10 +134,9 @@ namespace CryEngine.Serialization
 
 					foreach(var fileName in Directory.GetFiles(directory))
 					{
-						var formatter = new CrySerializer();
-						var stream = File.Open(fileName, FileMode.Open);
-
-						var entity = formatter.Deserialize(stream) as Entity;
+						Entity entity = null;
+						using(var stream = File.Open(fileName, FileMode.Open))
+							entity = Formatter.Deserialize(stream) as Entity;
 
 						if(entity != null)
 						{
@@ -154,8 +149,6 @@ namespace CryEngine.Serialization
 						}
 
 						ScriptCompiler.CompiledScripts[scriptIndex] = scriptMatch;
-
-						stream.Close();
 					}
 				}
 			}
