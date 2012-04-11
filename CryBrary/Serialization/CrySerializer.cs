@@ -19,7 +19,7 @@ namespace CryEngine.Serialization
 		Assembly CallingAssembly { get; set; }
 		FormatterConverter Converter { get; set; }
 
-		Dictionary<string, ObjectReference> ObjectReferences;
+		Dictionary<string, ObjectReference> ObjectReferences { get; set; }
 
 		public CrySerializer()
 		{

@@ -243,9 +243,7 @@ bool CScriptSystem::Reload(bool initialLoad)
 		m_pScriptCompiler = m_pCryBraryAssembly->InstantiateClass("ScriptCompiler", "CryEngine.Initialization");
 	}
 
-	IMonoArray *pAppDomainArgs = CreateMonoArray(1);
-	pAppDomainArgs->Insert((IMonoObject *)*static_cast<CScriptClass *>(m_pScriptCompiler)->GetInstance());
-	m_AppDomainSerializer = m_pCryBraryAssembly->InstantiateClass("AppDomainSerializer", "CryEngine.Serialization", pAppDomainArgs);
+	m_AppDomainSerializer = m_pCryBraryAssembly->InstantiateClass("AppDomainSerializer", "CryEngine.Serialization");
 
 	m_pInput->Reset();
 	m_pConverter->Reset();

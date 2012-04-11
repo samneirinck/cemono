@@ -16,14 +16,12 @@ namespace CryEngine.Serialization
 	/// </summary>
 	public class AppDomainSerializer
 	{
-		AppDomainSerializer(ScriptCompiler scriptCompiler)
+		AppDomainSerializer()
 		{
 			Formatter = new CrySerializer();
-			ScriptCompiler = scriptCompiler;
 		}
 
 		CrySerializer Formatter { get; set; }
-		ScriptCompiler ScriptCompiler { get; set; }
 
 		public void DumpScriptData()
 		{
