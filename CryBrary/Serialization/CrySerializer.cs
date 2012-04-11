@@ -129,6 +129,8 @@ namespace CryEngine.Serialization
 				WriteEnumerable(objectReference);
 			else if(!valueType.IsPrimitive && !valueType.IsEnum && valueType != typeof(string))
 				WriteObject(objectReference);
+			else if(valueType.IsEnum)
+				WriteEnum(objectReference);
 			else
 				WriteAny(objectReference);
 		}
@@ -204,16 +206,22 @@ namespace CryEngine.Serialization
 			Writer.WriteLine(Converter.ToString(objectReference.Value));
 		}
 
+		void WriteEnum(ObjectReference objectReference)
+		{
+			Writer.WriteLine("enum");
+			Writer.WriteLine(objectReference.Name);
+			Writer.WriteLine(objectReference.FullName);
+			Writer.WriteLine(objectReference.Value.GetType().FullName);
+			Writer.WriteLine(objectReference.Value);
+		}
+
 		public object Deserialize(Stream stream)
 		{
 			try
 			{
-				Debug.LogAlways("Commencing deserialization");
 				Reader = new StreamReader(stream);
 				CallingAssembly = Assembly.GetCallingAssembly();
 				ObjectReferences.Clear();
-
-				Debug.LogAlways("Deserializing");
 
 				return StartRead().Value;
 			}
@@ -229,7 +237,6 @@ namespace CryEngine.Serialization
 
 		ObjectReference StartRead()
 		{
-			Debug.LogAlways("Start read");
 			ObjectReference result = default(ObjectReference);
 
 			switch(Reader.ReadLine())
@@ -237,6 +244,7 @@ namespace CryEngine.Serialization
 				case "null": result = ReadNull(); break;
 				case "object": result = ReadObject(); break;
 				case "enumerable": result = ReadEnumerable(); break;
+				case "enum": result = ReadEnum(); break;
 				case "any": result = ReadAny(); break;
 				default: break;
 			}
@@ -244,19 +252,16 @@ namespace CryEngine.Serialization
 			if(result.Equals(default(ObjectReference)))
 				throw new Exception(string.Format("Could not deserialize object!"));
 			
-			Debug.LogAlways("End start read");
 			return result;
 		}
 
 		ObjectReference ReadNull()
 		{
-			Debug.LogAlways("Reading null");
 			return new ObjectReference(Reader.ReadLine(), null);
 		}
 
 		ObjectReference ReadObject()
 		{
-			Debug.LogAlways("Reading object");
 			int numFields = int.Parse(Reader.ReadLine());
 			string name = Reader.ReadLine();
 			string fullName = Reader.ReadLine();
@@ -282,13 +287,11 @@ namespace CryEngine.Serialization
 			}
 
 			ObjectReferences.Add(fullName, new ObjectReference(name, objectInstance, fullName));
-			Debug.LogAlways("Done reading object");
 			return ObjectReferences.Last().Value;
 		}
 
 		ObjectReference ReadEnumerable()
 		{
-			Debug.LogAlways("Reading enumerable");
 			int elements = int.Parse(Reader.ReadLine());
 			string name = Reader.ReadLine();
 			string fullName = Reader.ReadLine();
@@ -310,13 +313,11 @@ namespace CryEngine.Serialization
 				array.SetValue(StartRead().Value, i);
 
 			ObjectReferences.Add(fullName, new ObjectReference(name, array, fullName));
-			Debug.LogAlways("Done reading enumerable");
 			return ObjectReferences.Last().Value;
 		}
 
 		ObjectReference ReadAny()
 		{
-			Debug.LogAlways("Reading any");
 			string name = Reader.ReadLine();
 			string fullName = Reader.ReadLine();
 
@@ -335,8 +336,23 @@ namespace CryEngine.Serialization
 				value = Converter.Convert(Reader.ReadLine(), type);
 
 			ObjectReferences.Add(fullName, new ObjectReference(name, value, fullName));
-			Debug.LogAlways("Done reading any");
 			return ObjectReferences.Last().Value;
+		}
+
+		ObjectReference ReadEnum()
+		{
+			string name = Reader.ReadLine();
+			string fullName = Reader.ReadLine();
+			string typeName = Reader.ReadLine();
+
+			object value = null;
+			var type = GetType(typeName);
+			if(type != null)
+				value = Enum.Parse(type, Reader.ReadLine());
+			else
+				Debug.LogAlways("Failed to get type {0}", typeName);
+
+			return new ObjectReference(name, value, fullName);
 		}
 
 		static System.Type[] forbiddenTypes = new System.Type[] { typeof(MethodInfo) };
@@ -357,6 +373,14 @@ namespace CryEngine.Serialization
 
 		Type GetType(string typeName)
 		{
+			if(typeName.Contains('+'))
+			{
+				var splitString = typeName.Split('+');
+				var ownerType = GetType(splitString.First());
+
+				return ownerType.Assembly.GetType(typeName);
+			}
+
 			Type type = null;
 
 			var script = ScriptCompiler.CompiledScripts.FirstOrDefault(x => x.ScriptType.FullName.Equals(typeName));
