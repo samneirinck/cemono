@@ -1,8 +1,8 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryBrary", "CryBrary\CryBrary.csproj", "{4A7993B3-6611-4D9D-B8AB-836D6C27B12B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryBrary", "..\CryBrary\CryBrary.csproj", "{4A7993B3-6611-4D9D-B8AB-836D6C27B12B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryBrary.Tests", "CryBrary.Tests\CryBrary.Tests.csproj", "{25588172-6725-4C61-8CE5-3799FA125533}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryBrary.Tests", "..\CryBrary.Tests\CryBrary.Tests.csproj", "{25588172-6725-4C61-8CE5-3799FA125533}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

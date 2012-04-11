@@ -1,19 +1,19 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CryMono", "MonoDll\CryMono.vcxproj", "{B41C810B-A08F-4AFD-8E68-D4D7ABA39044}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CryMono", "..\MonoDll\CryMono.vcxproj", "{B41C810B-A08F-4AFD-8E68-D4D7ABA39044}"
 	ProjectSection(ProjectDependencies) = postProject
 		{4A7993B3-6611-4D9D-B8AB-836D6C27B12B} = {4A7993B3-6611-4D9D-B8AB-836D6C27B12B}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryBrary", "CryBrary\CryBrary.csproj", "{4A7993B3-6611-4D9D-B8AB-836D6C27B12B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryBrary", "..\CryBrary\CryBrary.csproj", "{4A7993B3-6611-4D9D-B8AB-836D6C27B12B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CryENGINE Interfaces", "CryENGINE Interfaces", "{B7E82CAA-B45D-4CF5-A700-57B7B3FE4033}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CryCommon", "..\CryEngine\CryCommon\CryCommon.vcxproj", "{AEB958D4-45CA-478B-BA8E-D0E897CE974B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CryCommon", "..\..\CryEngine\CryCommon\CryCommon.vcxproj", "{AEB958D4-45CA-478B-BA8E-D0E897CE974B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CryAction", "..\CryEngine\CryAction\CryActionHeaders.vcxproj", "{498187B3-E46F-45FA-A202-992AE9FDA01A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CryAction", "..\..\CryEngine\CryAction\CryActionHeaders.vcxproj", "{498187B3-E46F-45FA-A202-992AE9FDA01A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryBrary.Tests", "CryBrary.Tests\CryBrary.Tests.csproj", "{25588172-6725-4C61-8CE5-3799FA125533}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryBrary.Tests", "..\CryBrary.Tests\CryBrary.Tests.csproj", "{25588172-6725-4C61-8CE5-3799FA125533}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
