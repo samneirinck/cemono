@@ -545,11 +545,11 @@ namespace CryEngine
 					if(nodeInfo.Name != null)
 						nodeName = nodeInfo.Name;
 				}
+
+				script.ScriptName = category + ":" + nodeName;
 			}
 			else
 				category = "entity";
-
-			script.ScriptName = category + ":" + nodeName;
 
 			FlowNodes.Add(new StoredNode(nodeName, category));
 		}
