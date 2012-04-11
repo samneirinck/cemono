@@ -4,7 +4,7 @@ namespace CryEngine
 	/// <summary>
 	/// This interface permits derived classes to be used for script compilation recognition.
 	/// </summary>
-	public class CryScriptInstance 
+	public abstract class CryScriptInstance 
     {
         /// <summary>
         /// Called each frame if script has been set to be regularly updated (See Updated property)
