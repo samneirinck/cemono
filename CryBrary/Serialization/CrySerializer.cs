@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using CryEngine.Extensions;
+using CryEngine.Initialization;
 
 namespace CryEngine.Serialization
 {

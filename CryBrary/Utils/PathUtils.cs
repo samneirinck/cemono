@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 
+using CryEngine.Initialization;
+
 namespace CryEngine
 {
 	/// <summary>

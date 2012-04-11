@@ -15,19 +15,21 @@ using System.ComponentModel;
 
 using System.Threading.Tasks;
 
-using System.Runtime.InteropServices;
+using CryEngine;
 
-namespace CryEngine
+namespace CryEngine.Initialization
 {
-	public static partial class ScriptCompiler
+	public class ScriptCompiler
 	{
-		public static bool Initialize()
+		public ScriptCompiler()
 		{
-			CompiledScripts = new Collection<CryScript>();
 			FlowNodes = new Collection<StoredNode>();
 
 			assemblyReferenceHandler = new AssemblyReferenceHandler();
+		}
 
+		public bool Initialize()
+		{
 			LastScriptId = 0;
 
 			LoadPrecompiledAssemblies();
@@ -58,16 +60,16 @@ namespace CryEngine
 			return true;
 		}
 
-		public static void PostInit()
+		public void PostInit()
 		{
 			// These have to be registered later on due to the flow system being initialized late.
 			RegisterFlownodes();
 		}
 
-		private static void LoadPrecompiledAssemblies()
+		private void LoadPrecompiledAssemblies()
 		{
 			//Add pre-compiled assemblies / plugins
-			ScriptCompiler.LoadLibrariesInFolder(Path.Combine(PathUtils.GetScriptsFolder(), "Plugins"));
+			LoadLibrariesInFolder(Path.Combine(PathUtils.GetScriptsFolder(), "Plugins"));
 		}
 
 		/// <summary>
@@ -77,7 +79,7 @@ namespace CryEngine
 		/// <param name="constructorParams"></param>
 		/// <returns>New instance scriptId or -1 if instantiation failed.</returns>
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public static CryScriptInstance InstantiateScript(string scriptName, object[] constructorParams = null)
+		public CryScriptInstance InstantiateScript(string scriptName, object[] constructorParams = null)
 		{
 			if(scriptName.Length < 1)
 				throw new ArgumentException("Empty script name passed to InstantiateClass");
@@ -136,7 +138,7 @@ namespace CryEngine
 			return LastScriptId;
 		}
 
-		public static void RemoveInstance(int scriptId)
+		public void RemoveInstance(int scriptId)
 		{
 			RemoveInstance(scriptId, null);
 		}
@@ -145,7 +147,7 @@ namespace CryEngine
 		/// Locates and destructs the script with the assigned scriptId.
 		/// </summary>
 		/// <param name="scriptId"></param>
-		public static void RemoveInstance(int scriptId, Type scriptType)
+		public void RemoveInstance(int scriptId, Type scriptType)
 		{
 			if(scriptType != null)
 			{
@@ -170,7 +172,7 @@ namespace CryEngine
 			}
 		}
 
-		static void RemoveInstanceFromScriptById(ref CryScript script, int scriptId)
+		void RemoveInstanceFromScriptById(ref CryScript script, int scriptId)
 		{
 			if(script.ScriptInstances != null && script.ScriptInstances.Count > 0)
 			{
@@ -205,12 +207,7 @@ namespace CryEngine
 			return null;
 		}
 
-		/// <summary>
-		/// Avoid creating a new empty CryScriptInstance each time we need to check
-		/// </summary>
-		static CryScriptInstance InvalidScriptInstance = default(CryScriptInstance);
-
-		public static int GetEntityScriptId(EntityId entityId, System.Type scriptType = null)
+		public int GetEntityScriptId(EntityId entityId, System.Type scriptType = null)
 		{
 			var scripts = CompiledScripts.Where(script => (scriptType != null ? script.ScriptType.Implements(scriptType) : true) && script.ScriptInstances != null);
 
@@ -230,7 +227,7 @@ namespace CryEngine
 		/// <summary>
 		/// Called once per frame.
 		/// </summary>
-		public static void OnUpdate(float frameTime)
+		public void OnUpdate(float frameTime)
 		{
 			Time.DeltaTime = frameTime;
 
@@ -250,7 +247,7 @@ namespace CryEngine
 		/// <summary>
 		/// This function will automatically scan for C# dll (*.dll) files and load the types contained within them.
 		/// </summary>
-		public static void LoadLibrariesInFolder(string directory)
+		public void LoadLibrariesInFolder(string directory)
 		{
 			if(!Directory.Exists(directory))
 				throw new DirectoryNotFoundException(string.Format("Libraries failed to load; Folder {0} does not exist.", directory));
@@ -286,40 +283,6 @@ namespace CryEngine
 			}
 		}
 
-		public enum ScriptLanguage
-		{
-			CSharp,
-			VisualBasic,
-			JScript
-		}
-
-		public class CompilationParameters
-		{
-			public CompilationParameters()
-			{
-				Language = ScriptLanguage.CSharp;
-			}
-
-			public ScriptLanguage Language { get; set; }
-			public CompilerResults Results { get; internal set; }
-
-			/// <summary>
-			/// The folders from which scripts should be compiled from.
-			/// </summary>
-			public string[] Folders { get; set; }
-
-			/// <summary>
-			/// Determines what types of scripts should be compiled.
-			/// Accepts all scripts by default.
-			/// </summary>
-			public ScriptType[] ScriptTypes { get; set; }
-
-			/// <summary>
-			/// Forces generation of debug information, even in release mode.
-			/// </summary>
-			public bool ForceDebugInformation { get; set; }
-		}
-
 		/// <summary>
 		/// Compiles the scripts and compiles them into an assembly.
 		/// </summary>
@@ -328,7 +291,7 @@ namespace CryEngine
 		/// <exception cref="System.IO.DirectoryNotFoundException">Thrown when one or more script folders could not be located.</exception>
 		/// <exception cref="System.ArgumentNullException">Thrown if the compiled assembly could not be loaded.</exception>
 		/// <exception cref="CryEngine.ScriptCompilationException">Thrown if one or more compilation errors occur.</exception>
-		public static void CompileScripts(ref CompilationParameters compilationParameters)
+		public void CompileScripts(ref CompilationParameters compilationParameters)
 		{
 			if(compilationParameters == null)
 				throw new ArgumentException("CompilationParameters was null");
@@ -431,7 +394,7 @@ namespace CryEngine
 		/// <summary>
 		/// Loads an C# assembly and adds all found types to ScriptCompiler.CompiledScripts
 		/// </summary>
-		public static void LoadAssembly(Assembly assembly, ScriptType[] scriptTypes = null)
+		public void LoadAssembly(Assembly assembly, ScriptType[] scriptTypes = null)
 		{
 			var assemblyTypes = assembly.GetTypes().Where(type => type.Implements(typeof(CryScriptInstance)));
 			foreach(var node in assembly.GetTypes().Where(type => type.ContainsAttribute<UINodeAttribute>()))
@@ -455,7 +418,7 @@ namespace CryEngine
 			assemblyTypes = null;
 		}
 
-		public static ScriptType GetScriptType(Type type)
+		public ScriptType GetScriptType(Type type)
 		{
 			if(type.Implements(typeof(BaseGameRules)))
 				return ScriptType.GameRules;
@@ -469,7 +432,7 @@ namespace CryEngine
 			return ScriptType.Unknown;
 		}
 
-		public static bool IsScriptType(Type type, ScriptType scriptType)
+		public bool IsScriptType(Type type, ScriptType scriptType)
 		{
 			return GetScriptType(type) == scriptType || scriptType == ScriptType.Unknown; // Return true for unknown scripts as well
 		}
@@ -478,7 +441,7 @@ namespace CryEngine
 		/// Processes a type and adds all found types to ScriptCompiler.CompiledScripts
 		/// </summary>
 		/// <param name="type"></param>
-		public static void ProcessType(Type type)
+		public void ProcessType(Type type)
 		{
 			if(type != null && !type.ContainsAttribute<ExcludeFromCompilationAttribute>())
 			{
@@ -514,20 +477,20 @@ namespace CryEngine
 			}
 		}
 
-		internal static void RegisterFlownodes()
+		internal void RegisterFlownodes()
 		{
 			foreach(var node in FlowNodes)
 				FlowNode.RegisterNode(node.category + ":" + node.className);
 		}
 
-		private static void LoadEntity(ref CryScript script)
+		private void LoadEntity(ref CryScript script)
 		{
 			Entity.RegisterEntityClass(Entity.GetEntityConfig(script.ScriptType));
 
 			LoadFlowNode(ref script, true);
 		}
 
-		private static void LoadFlowNode(ref CryScript script, bool entityNode = false)
+		private void LoadFlowNode(ref CryScript script, bool entityNode = false)
 		{
 			string category = null;
 			string nodeName = script.ScriptType.Name;
@@ -554,7 +517,7 @@ namespace CryEngine
 			FlowNodes.Add(new StoredNode(nodeName, category));
 		}
 
-		public static void GenerateDebugDatabaseForAssembly(string assemblyPath)
+		public void GenerateDebugDatabaseForAssembly(string assemblyPath)
 		{
 			if(File.Exists(Path.ChangeExtension(assemblyPath, "pdb")))
 			{
@@ -565,6 +528,55 @@ namespace CryEngine
 				object[] args = { assemblyPath };
 				convertMethod.Invoke(null, args);
 			}
+		}
+
+		/// <summary>
+		/// Last assigned ScriptId, next = + 1
+		/// </summary>
+		public static int LastScriptId;
+
+		internal Collection<StoredNode> FlowNodes;
+		AssemblyReferenceHandler assemblyReferenceHandler;
+
+		/// <summary>
+		/// Avoid creating a new empty CryScriptInstance each time we need to check
+		/// </summary>
+		static CryScriptInstance InvalidScriptInstance = default(CryScriptInstance);
+
+		public static Collection<CryScript> CompiledScripts = new Collection<CryScript>();
+
+		public enum ScriptLanguage
+		{
+			CSharp,
+			VisualBasic,
+			JScript
+		}
+
+		public class CompilationParameters
+		{
+			public CompilationParameters()
+			{
+				Language = ScriptLanguage.CSharp;
+			}
+
+			public ScriptLanguage Language { get; set; }
+			public CompilerResults Results { get; internal set; }
+
+			/// <summary>
+			/// The folders from which scripts should be compiled from.
+			/// </summary>
+			public string[] Folders { get; set; }
+
+			/// <summary>
+			/// Determines what types of scripts should be compiled.
+			/// Accepts all scripts by default.
+			/// </summary>
+			public ScriptType[] ScriptTypes { get; set; }
+
+			/// <summary>
+			/// Forces generation of debug information, even in release mode.
+			/// </summary>
+			public bool ForceDebugInformation { get; set; }
 		}
 
 		internal struct StoredNode
@@ -579,15 +591,6 @@ namespace CryEngine
 			public string className;
 			public string category;
 		}
-
-		internal static Collection<StoredNode> FlowNodes;
-		private static AssemblyReferenceHandler assemblyReferenceHandler;
-
-		public static Collection<CryScript> CompiledScripts;
-		/// <summary>
-		/// Last assigned ScriptId, next = + 1
-		/// </summary>
-		public static int LastScriptId;
 	}
 
 	public enum ScriptType

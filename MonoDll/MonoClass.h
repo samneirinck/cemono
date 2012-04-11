@@ -47,6 +47,7 @@ public:
 	void OnReload(MonoClass *pNewClass, mono::object pNewInstance);
 
 	MonoClass *GetMonoClass() { return m_pClass; }
+	mono::object GetInstance() { return m_pInstance; }
 
 private:
 	MonoMethod *GetMethod(const char *methodName, IMonoArray *pArgs, bool bStatic);

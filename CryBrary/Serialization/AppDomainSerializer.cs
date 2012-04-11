@@ -7,6 +7,8 @@ using System.Linq;
 
 using System.Diagnostics;
 
+using CryEngine.Initialization;
+
 namespace CryEngine.Serialization
 {
 	/// <summary>
@@ -14,12 +16,14 @@ namespace CryEngine.Serialization
 	/// </summary>
 	public class AppDomainSerializer
 	{
-		AppDomainSerializer()
+		AppDomainSerializer(ScriptCompiler scriptCompiler)
 		{
 			Formatter = new CrySerializer();
+			ScriptCompiler = scriptCompiler;
 		}
 
 		CrySerializer Formatter { get; set; }
+		ScriptCompiler ScriptCompiler { get; set; }
 
 		public void DumpScriptData()
 		{
@@ -114,8 +118,6 @@ namespace CryEngine.Serialization
 				}
 
 				ScriptCompiler.CompiledScripts[i] = script;
-
-				Formatter = null;
 			}
 
 			string subSystemDirectory = Path.Combine(PathUtils.GetScriptDumpFolder(), "CryBrary.EntitySystem");
