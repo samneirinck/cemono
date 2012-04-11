@@ -321,22 +321,12 @@ namespace CryEngine.Serialization
 			string name = Reader.ReadLine();
 			string fullName = Reader.ReadLine();
 
-			if(ObjectReferences.ContainsKey(fullName))
-			{
-				// In order to get to the next object's line, we have to read anyway.
-				Reader.ReadLine(); // type
-				Reader.ReadLine(); // value
-
-				return ObjectReferences[fullName];
-			}
-
 			object value = null;
 			var type = GetType(Reader.ReadLine());
 			if(type != null)
 				value = Converter.Convert(Reader.ReadLine(), type);
 
-			ObjectReferences.Add(fullName, new ObjectReference(name, value, fullName));
-			return ObjectReferences.Last().Value;
+			return new ObjectReference(name, value, fullName);
 		}
 
 		ObjectReference ReadEnum()
