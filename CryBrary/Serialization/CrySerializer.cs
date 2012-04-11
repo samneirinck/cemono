@@ -270,20 +270,32 @@ namespace CryEngine.Serialization
 			if(ObjectReferences.ContainsKey(fullName))
 			{
 				// We have to read anyway, in order to get to the correct line for the next object.
-				for(int i = 0; i != numFields; ++i)
+				for(int i = 0; i < numFields; ++i)
 					StartRead();
 
 				return ObjectReferences[fullName];
 			}
 
 			object objectInstance = CreateObjectInstance(typeName);
-
-			for(int i = 0; i != numFields; ++i)
+			for(int i = 0; i < numFields; ++i)
 			{
 				ObjectReference fieldReference = StartRead();
-				var fieldInfo = objectInstance.GetType().GetField(fieldReference.Name);
+				FieldInfo fieldInfo = null;
 
-				fieldInfo.SetValue(objectInstance, fieldReference.Value);
+				var type = objectInstance.GetType();
+				while(type != null)
+				{
+					fieldInfo = type.GetField(fieldReference.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+					if(fieldInfo != null)
+						break;
+
+					type = type.BaseType;
+				}
+
+				if(fieldInfo != null)
+					fieldInfo.SetValue(objectInstance, fieldReference.Value);
+				else
+					Debug.LogAlways("failed to find field {0} in type {1}!", fieldReference.Name, typeName);
 			}
 
 			ObjectReferences.Add(fullName, new ObjectReference(name, objectInstance, fullName));
