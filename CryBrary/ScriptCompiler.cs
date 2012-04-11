@@ -445,10 +445,15 @@ namespace CryEngine.Initialization
 		{
 			if(type != null && !type.ContainsAttribute<ExcludeFromCompilationAttribute>())
 			{
-				if(type.IsAbstract)
-					throw new TypeLoadException(string.Format("Failed to load entity of type {0}: abstract entities are not supported", type.Name));
-
 				var script = new CryScript(type);
+
+				if(type.IsAbstract)
+				{
+					// Add anyway, to fix serialization bug caused by child types within abstract entities.
+					CompiledScripts.Add(script);
+
+					throw new TypeLoadException(string.Format("Failed to load entity of type {0}: abstract entities are not supported", type.Name));
+				}
 
 				if(type.Implements(typeof(BaseGameRules)))
 				{
