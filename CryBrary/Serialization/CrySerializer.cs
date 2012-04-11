@@ -167,7 +167,23 @@ namespace CryEngine.Serialization
 			Writer.WriteLine(array.Count());
 			Writer.WriteLine(objectReference.Name);
 			Writer.WriteLine(objectReference.FullName);
-			Writer.WriteLine(array.GetType().GetElementType().FullName);
+
+			Type elementType = array.GetType().GetElementType();
+			if(elementType == null)
+			{
+				// Not an array type, we've got to use an alternate method to get the type of elements contained within.
+				Type arrayType = array.GetType();
+				if(arrayType.IsGenericType && arrayType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+					elementType = arrayType.GetGenericArguments()[0];
+				else
+				{
+					elementType = (from i in arrayType.GetInterfaces()
+								   where i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>)
+								   select i).FirstOrDefault();
+				}
+			}
+
+			Writer.WriteLine(elementType.FullName);
 
 			for(int i = 0; i < array.Count(); i++)
 				StartWrite(new ObjectReference(i.ToString(), array.ElementAt(i), objectReference));
