@@ -164,7 +164,6 @@ namespace CryEngine.Serialization
 		void WriteEnumerable(ObjectReference objectReference)
 		{
 			Writer.WriteLine("enumerable");
-
 			var array = (objectReference.Value as IEnumerable).Cast<object>();
 			Writer.WriteLine(array.Count());
 			Writer.WriteLine(objectReference.Name);
@@ -179,9 +178,10 @@ namespace CryEngine.Serialization
 					elementType = arrayType.GetGenericArguments()[0];
 				else
 				{
-					elementType = (from i in arrayType.GetInterfaces()
-								   where i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>)
-								   select i).FirstOrDefault();
+					Type[] interfaces = objectReference.Value.GetType().GetInterfaces();
+					foreach(Type i in interfaces)
+						if(i.IsGenericType && i.GetGenericTypeDefinition().Equals(typeof(IEnumerable<>)))
+							elementType = i.GetGenericArguments()[0];
 				}
 			}
 
@@ -318,8 +318,7 @@ namespace CryEngine.Serialization
 				return ObjectReferences[fullName];
 			}
 
-			object objectInstance = CreateObjectInstance(typeName);
-			var array = (objectInstance as IEnumerable).Cast<object>().ToArray();
+			var array = Array.CreateInstance(GetType(typeName), elements);
 
 			for(int i = 0; i != elements; ++i)
 				array.SetValue(StartRead().Value, i);
@@ -389,7 +388,7 @@ namespace CryEngine.Serialization
 			if(script != default(CryScript))
 				type = script.ScriptType;
 
-			type = type ?? System.Type.GetType(typeName);
+			type = type ?? Type.GetType(typeName);
 
 			if(type == null)
 				throw new Exception(string.Format("Could not localize type with name {0}", typeName));
