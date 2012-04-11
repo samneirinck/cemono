@@ -149,7 +149,7 @@ namespace CryEngine.Serialization
 			Writer.WriteLine(fields.Count);
 			Writer.WriteLine(objectReference.Name);
 			Writer.WriteLine(objectReference.FullName);
-			Writer.WriteLine(objectReference.Value.GetType());
+			Writer.WriteLine(objectReference.Value.GetType().FullName);
 
 			foreach(var field in fields)
 			{
@@ -167,7 +167,7 @@ namespace CryEngine.Serialization
 			Writer.WriteLine(array.Count());
 			Writer.WriteLine(objectReference.Name);
 			Writer.WriteLine(objectReference.FullName);
-			Writer.WriteLine(array.GetType().GetElementType());
+			Writer.WriteLine(array.GetType().GetElementType().FullName);
 
 			for(int i = 0; i < array.Count(); i++)
 				StartWrite(new ObjectReference(i.ToString(), array.ElementAt(i), objectReference));
@@ -184,7 +184,7 @@ namespace CryEngine.Serialization
 			Writer.WriteLine("any");
 			Writer.WriteLine(objectReference.Name);
 			Writer.WriteLine(objectReference.FullName);
-			Writer.WriteLine(objectReference.Value.GetType());
+			Writer.WriteLine(objectReference.Value.GetType().FullName);
 			Writer.WriteLine(Converter.ToString(objectReference.Value));
 		}
 
@@ -313,8 +313,10 @@ namespace CryEngine.Serialization
 				return ObjectReferences[fullName];
 			}
 
-			Type type = Type.GetType(Reader.ReadLine());
-			object value = Converter.Convert(Reader.ReadLine(), type);
+			object value = null;
+			var type = GetType(Reader.ReadLine());
+			if(type != null)
+				value = Converter.Convert(Reader.ReadLine(), type);
 
 			ObjectReferences.Add(fullName, new ObjectReference(name, value, fullName));
 			Debug.LogAlways("Done reading any");
@@ -337,7 +339,7 @@ namespace CryEngine.Serialization
 			return true;
 		}
 
-		object CreateObjectInstance(string typeName)
+		Type GetType(string typeName)
 		{
 			Type type = null;
 
@@ -349,6 +351,13 @@ namespace CryEngine.Serialization
 
 			if(type == null)
 				throw new Exception(string.Format("Could not localize type with name {0}", typeName));
+
+			return type;
+		}
+
+		object CreateObjectInstance(string typeName)
+		{
+			Type type = GetType(typeName);
 
 			if(type.GetConstructor(System.Type.EmptyTypes) != null || type.IsValueType)
 				return System.Activator.CreateInstance(type);
