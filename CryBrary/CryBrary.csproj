@@ -116,13 +116,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Cecil">
-      <HintPath>..\..\..\Engine\Mono\lib\mono\gac\Mono.Cecil\0.9.4.0__0738eb9f132ed756\Mono.Cecil.dll</HintPath>
-      <Private>False</Private>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
+      <HintPath>References\Mono.Cecil.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil.Mdb">
-      <HintPath>..\..\..\Engine\Mono\lib\mono\gac\Mono.Cecil.Mdb\0.9.4.0__0738eb9f132ed756\Mono.Cecil.Mdb.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>References\Mono.Cecil.Mdb.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
