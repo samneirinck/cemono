@@ -162,6 +162,7 @@ namespace CryEngine
 		static Collection<string> toUIEventSystems = new Collection<string>();
 	}
 
+	[System.AttributeUsage(System.AttributeTargets.Class)]
 	public class UINodeAttribute : System.Attribute
 	{
 		public string Name { get; set; }
@@ -170,7 +171,7 @@ namespace CryEngine
 		public string Category { get; set; }
 	}
 
-	public class UIEvent
+	public abstract class UIEvent
 	{
 		public void Send()
 		{
