@@ -21,16 +21,22 @@ class CFlowNode;
 
 struct SNodeType
 {
-	SNodeType(const char *name) : typeName(name), pInputs(NULL), pOutputs(NULL) {}
+	typedef std::vector<CFlowNode *> TFlowNodes;
 
-	void ReloadPorts();
+	SNodeType(const char *name) : typeName(name), pInputs(NULL), pOutputs(NULL)
+	{
+	}
+
+	void ReloadPorts(IMonoClass *pScript);
 
 	const char *GetTypeName() const { return typeName; }
 
-	std::vector<CFlowNode *> nodes;
+	TFlowNodes nodes;
 
-	SOutputPortConfig *GetOutputPorts() { if(!pOutputs) ReloadPorts(); return pOutputs; }
-	SInputPortConfig *GetInputPorts() { if(!pInputs) ReloadPorts(); return pInputs; }
+	SOutputPortConfig *GetOutputPorts(IMonoClass *pScript) { if(!pOutputs) ReloadPorts(pScript); return pOutputs; }
+	SInputPortConfig *GetInputPorts(IMonoClass *pScript) { if(!pInputs) ReloadPorts(pScript); return pInputs; }
+
+	void RemoveNode(CFlowNode *pNode) { nodes.erase(std::remove(nodes.begin(), nodes.end(), pNode), nodes.end()); }
 
 private:
 	const char *typeName;
@@ -64,6 +70,7 @@ public:
 	// ~IFlowNodeFactory
 
 	static IMonoClass *InstantiateNode(CFlowNode *pNode, const char *typeName);
+	static void UnregisterNode(CFlowNode *pNode);
 
 	static SNodeType *GetNodeTypeById(int scriptId);
 	static CFlowNode *GetNodeById(int scriptId);

@@ -37,7 +37,11 @@ CFlowManager::CFlowManager()
 void CFlowManager::Reset()
 {
 	for each(auto nodeType in m_nodeTypes)
-		nodeType->ReloadPorts();
+	{
+		IMonoClass *pScript = gEnv->pMonoScriptSystem->GetScriptById(gEnv->pMonoScriptSystem->InstantiateScript(nodeType->GetTypeName()));
+		nodeType->ReloadPorts(pScript);
+		SAFE_RELEASE(pScript);
+	}
 }
 
 void CFlowManager::RegisterNode(mono::string monoTypeName)
@@ -47,10 +51,21 @@ void CFlowManager::RegisterNode(mono::string monoTypeName)
 		CFlowManager *pFlowManager = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager();
 
 		const char *typeName = ToCryString(monoTypeName);
-		CryLogAlways("registering node %s", typeName);
+
+		CryLogAlways("Registering node %s", typeName);
 		m_nodeTypes.push_back(new SNodeType(typeName));
 		pFlowSystem->RegisterType(typeName, (IFlowNodeFactoryPtr)pFlowManager);
 	}
+}
+
+void CFlowManager::UnregisterNode(CFlowNode *pNode)
+{
+	CryLogAlways("hai.");
+
+	for each(auto nodeType in m_nodeTypes)
+		nodeType->RemoveNode(pNode);
+
+	CryLogAlways("sup");
 }
 
 IFlowNodePtr CFlowManager::Create(IFlowNode::SActivationInfo *pActInfo)
@@ -58,11 +73,19 @@ IFlowNodePtr CFlowManager::Create(IFlowNode::SActivationInfo *pActInfo)
 	return new CFlowNode(pActInfo);
 }
 
-IMonoClass *CFlowManager::InstantiateNode(CFlowNode *pNode, const char *typeName)
+IMonoClass *CFlowManager::InstantiateNode(CFlowNode *pNode, const char *name)
 {
+	CryLogAlways("instantiating node %s", name);
+
+	string nodeTypeName = "";
+	string typeName = name;
+
 	for each(auto nodeType in m_nodeTypes)
 	{
-		if(!strcmp(nodeType->GetTypeName(), typeName))
+		nodeTypeName = nodeType->GetTypeName();
+		CryLogAlways("found node %s", nodeTypeName.c_str());
+
+		if(typeName.find(nodeTypeName.find(":") == -1 ? ":" : "" + nodeTypeName))
 		{
 			IMonoClass *pScriptClass = gEnv->pMonoScriptSystem->GetScriptById(gEnv->pMonoScriptSystem->InstantiateScript(typeName));
 			nodeType->nodes.push_back(pNode);
@@ -80,13 +103,15 @@ SNodeType *CFlowManager::GetNodeTypeById(int scriptId)
 	{
 		for each(auto node in nodeType->nodes)
 		{
-			if(node)
-			{
-				IMonoClass *pScriptClass = node->GetScript();
+			if(!node)
+				continue;
 
-				if(pScriptClass && pScriptClass->GetScriptId() == scriptId)
-					return nodeType;
-			}
+			IMonoClass *pScriptClass = node->GetScript();
+			if(!pScriptClass)
+				continue;
+
+			if(pScriptClass->GetScriptId() == scriptId)
+				return nodeType;
 		}
 	}
 
@@ -176,11 +201,8 @@ mono::object CFlowManager::GetPortValueVec3(int scriptId, int index)
 }
 
 static const int MAX_NODE_PORT_COUNT = 20;
-void SNodeType::ReloadPorts()
+void SNodeType::ReloadPorts(IMonoClass *pScriptClass)
 {
-	// Temporary script instance
-	IMonoClass *pScriptClass = gEnv->pMonoScriptSystem->GetScriptById(gEnv->pMonoScriptSystem->InstantiateScript(typeName));
-
 	if(IMonoObject *pResult = pScriptClass->CallMethod("GetPortConfig"))
 	{
 		auto monoConfig = pResult->Unbox<SMonoNodePortConfig>();
@@ -188,7 +210,7 @@ void SNodeType::ReloadPorts()
 		SInputPortConfig nullConfig = {0};
 		SOutputPortConfig nullOutputConfig = {0};
 
-		CScriptArray *pInputPorts = new CScriptArray(monoConfig.inputs);
+		IMonoArray *pInputPorts = new CScriptArray(monoConfig.inputs);
 
 		static SInputPortConfig inputs[MAX_NODE_PORT_COUNT];
 
@@ -203,8 +225,10 @@ void SNodeType::ReloadPorts()
 				pInputs[i] = nullConfig;
 		}
 
+		SAFE_RELEASE(pInputPorts);
+
 		// Convert MonoArray type to our custom CScriptArray for easier handling.
-		CScriptArray *pOutputPorts = new CScriptArray(monoConfig.outputs);
+		IMonoArray *pOutputPorts = new CScriptArray(monoConfig.outputs);
 
 		static SOutputPortConfig outputs[MAX_NODE_PORT_COUNT];
 
@@ -218,7 +242,7 @@ void SNodeType::ReloadPorts()
 			if(i >= pOutputPorts->GetSize())
 				pOutputs[i] = nullOutputConfig;
 		}
-	}
 
-	pScriptClass->Release();
+		SAFE_RELEASE(pOutputPorts);
+	}
 }

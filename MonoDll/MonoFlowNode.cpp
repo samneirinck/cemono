@@ -28,6 +28,11 @@ CFlowNode::~CFlowNode()
 	SAFE_RELEASE(m_pScriptClass);
 }
 
+void CFlowNode::Release()
+{
+	static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager()->UnregisterNode(this);
+}
+
 bool CFlowNode::CreatedNode(TFlowNodeId id, const char *name, TFlowNodeTypeId typeId, IFlowNodePtr pNode) 
 { 
 	if(pNode==this)
@@ -44,6 +49,8 @@ IFlowNodePtr CFlowNode::Clone(SActivationInfo *pActInfo)
 		return this;
 	case eNCT_Instanced:
 		return new CFlowNode(pActInfo);
+	default:
+		break;
 	}
 
 	return NULL;
@@ -53,19 +60,20 @@ bool CFlowNode::InstantiateScript(const char *nodeName)
 {
 	string fullTypeName = nodeName;
 
-	string typeName = "";
-	int curPos = 0;
-
-	string next = fullTypeName.Tokenize(":", curPos);
-	m_bEntityNode = !strcmp(next.c_str(), "entity");
-
-	while(!next.empty())
+	m_bEntityNode = fullTypeName.find("entity:") != -1;
+	if(m_bEntityNode)
 	{
-		typeName = next;
-		next = fullTypeName.Tokenize(":", curPos);
+		int curPos = 0;
+		string next = fullTypeName.Tokenize(":", curPos);
+
+		while(!next.empty())
+		{
+			nodeName = next.c_str();
+			next = fullTypeName.Tokenize(":", curPos);
+		}
 	}
 
-	m_pScriptClass = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager()->InstantiateNode(this, fullTypeName.c_str());
+	m_pScriptClass = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager()->InstantiateNode(this, nodeName);
 
 	return m_pScriptClass->GetScriptId() != -1;
 }
@@ -175,15 +183,14 @@ void CFlowNode::GetConfiguration(SFlowNodeConfig &config)
 	CryLogAlways(m_pScriptClass->GetName());
 	if(IMonoObject *pResult = m_pScriptClass->CallMethod("GetNodeConfig"))
 	{
-		CryLogAlways("end");
 		SMonoNodeConfig monoConfig = pResult->Unbox<SMonoNodeConfig>();
 
 		SNodeType *pNodeType = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager()->GetNodeTypeById(m_pScriptClass->GetScriptId());
 
-		config.nFlags |= monoConfig.flags;
-		config.pInputPorts = pNodeType->GetInputPorts();
-		config.pOutputPorts = pNodeType->GetOutputPorts();
+		config.pInputPorts = pNodeType->GetInputPorts(m_pScriptClass);
+		config.pOutputPorts = pNodeType->GetOutputPorts(m_pScriptClass);
 
+		config.nFlags |= monoConfig.flags;
 		config.sDescription = _HELP(ToCryString(monoConfig.description));
 		config.SetCategory(monoConfig.category);
 	}
