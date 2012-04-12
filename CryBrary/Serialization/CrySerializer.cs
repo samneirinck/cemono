@@ -104,7 +104,7 @@ namespace CryEngine.Serialization
 			{
 				if(Writer != null)
 				{
-					Writer.Dispose();
+					//Writer.Dispose();
 					Writer = null;
 				}
 			}
@@ -229,7 +229,7 @@ namespace CryEngine.Serialization
 			{
 				if(Reader != null)
 				{
-					Reader.Dispose();
+					//Reader.Dispose();
 					Reader = null;
 				}
 			}
