@@ -21,7 +21,7 @@
 class CScriptObject : public IMonoObject
 {
 public:
-	CScriptObject(mono::object pObject) { m_pObject = pObject; m_objectHandle = mono_gchandle_new((MonoObject *)pObject, false); }
+	CScriptObject(mono::object object);
 	virtual ~CScriptObject() { mono_gchandle_free(m_objectHandle); m_pObject = 0; }
 
 	MonoClass *GetMonoClass() { return mono_object_get_class((MonoObject *)m_pObject); }

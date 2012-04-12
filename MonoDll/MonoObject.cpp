@@ -3,6 +3,13 @@
 
 #include <IMonoAssembly.h>
 
+CScriptObject::CScriptObject(mono::object object) 
+{
+	m_pObject = object; 
+
+	m_objectHandle = mono_gchandle_new((MonoObject *)object, false); 
+}
+
 MonoAnyType CScriptObject::GetType()
 {
 	MonoAnyType type = MONOTYPE_NULL;

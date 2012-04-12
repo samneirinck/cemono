@@ -198,8 +198,8 @@ bool CScriptSystem::Reload(bool initialLoad)
  	
 		mono_domain_set(mono_get_root_domain(), false);
 
-		SAFE_DELETE(m_pScriptCompiler);
-		SAFE_DELETE(m_AppDomainSerializer);
+		SAFE_RELEASE(m_pScriptCompiler);
+		SAFE_RELEASE(m_AppDomainSerializer);
 	}
 
 	// This will lead to all ScriptDomains using the same friendly name, but doesn't look like it's causing any issues. TODO: Investigate to be sure.
@@ -222,7 +222,7 @@ bool CScriptSystem::Reload(bool initialLoad)
 
 	if(m_bLastCompilationSuccess)
 	{
-		SAFE_DELETE(pPrevCryBraryAssembly);
+		SAFE_RELEASE(pPrevCryBraryAssembly);
 
 		UnloadDomain(pPrevScriptDomain);
 	}
@@ -233,11 +233,11 @@ bool CScriptSystem::Reload(bool initialLoad)
 
 		mono_domain_set(pPrevScriptDomain, false);
 
-		SAFE_DELETE(m_pCryBraryAssembly);
+		SAFE_RELEASE(m_pCryBraryAssembly);
 		m_pCryBraryAssembly = pPrevCryBraryAssembly;
 		
-		SAFE_DELETE(m_AppDomainSerializer);
-		SAFE_DELETE(m_pScriptCompiler);
+		SAFE_RELEASE(m_AppDomainSerializer);
+		SAFE_RELEASE(m_pScriptCompiler);
 
 		//m_AppDomainSerializer = m_pCryBraryAssembly->InstantiateClass("AppDomainSerializer", "CryEngine.Serialization");
 		m_pScriptCompiler = m_pCryBraryAssembly->InstantiateClass("ScriptCompiler", "CryEngine.Initialization");

@@ -35,8 +35,12 @@ CScriptAssembly::CScriptAssembly(const char *assemblyPath)
 				IMonoArray *pArgs = CreateMonoArray(1);
 				pArgs->Insert(assemblyPath);
 				pDriverClass->CallMethod("Convert", pArgs, true);
-				SAFE_DELETE(pArgs);
+
+				SAFE_RELEASE(pArgs);
+				SAFE_RELEASE(pDriverClass);
 			}
+
+			SAFE_RELEASE(pDebugDatabaseCreator);
 		}
 
 		CopyFile(path.append(".mdb"), newAssemblyPath + ".mdb", false);
