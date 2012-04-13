@@ -46,16 +46,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Serialization\CrySerializerTests.cs" />
     <Compile Include="Utils\AssemblyReferenceHandlerTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CryBrary\CryBrary.csproj">
-      <Project>{4a7993b3-6611-4d9d-b8ab-836d6c27b12b}</Project>
-      <Name>CryBrary</Name>
-    </ProjectReference>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <ProjectReference Include="..\CryBrary\CryBrary.csproj">
+      <Project>{4A7993B3-6611-4D9D-B8AB-836D6C27B12B}</Project>
+      <Name>CryBrary</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
