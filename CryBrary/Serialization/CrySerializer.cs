@@ -190,6 +190,7 @@ namespace CryEngine.Serialization
 		void WriteAny(ObjectReference objectReference)
 		{
 			Writer.WriteLine("any");
+
 			Writer.WriteLine(objectReference.Name);
 			Writer.WriteLine(objectReference.FullName);
 			Writer.WriteLine(objectReference.Value.GetType().FullName);
@@ -361,13 +362,16 @@ namespace CryEngine.Serialization
 				return ownerType.Assembly.GetType(typeName);
 			}
 
-			Type type = null;
+			Type type = Type.GetType(typeName);
+			if(type != null)
+				return type;
 
-			var script = ScriptCompiler.CompiledScripts.FirstOrDefault(x => x.ScriptType.FullName.Equals(typeName));
-			if(script != default(CryScript))
-				type = script.ScriptType;
-
-			type = type ?? Type.GetType(typeName);
+			foreach(var assembly in AppDomain.CurrentDomain.GetAssemblies())
+			{
+				type = assembly.GetType(typeName);
+				if(type != null)
+					return type;
+			}
 
 			if(type == null)
 				throw new Exception(string.Format("Could not localize type with name {0}", typeName));
