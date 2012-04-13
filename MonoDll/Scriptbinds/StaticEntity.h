@@ -14,6 +14,7 @@
 #include <MonoCommon.h>
 
 #include <IEntitySystem.h>
+#include <IBreakableManager.h>
 
 struct MovementRequest;
 struct MonoPhysicalizationParams;

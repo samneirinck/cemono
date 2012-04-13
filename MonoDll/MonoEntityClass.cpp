@@ -4,14 +4,12 @@
 #include "MonoEntityPropertyHandler.h"
 #include "MonoEntityEventHandler.h"
 
-CEntityClass::CEntityClass(IEntityClassRegistry::SEntityClassDesc desc, const char* category, std::vector<IEntityPropertyHandler::SPropertyInfo> properties)
+CEntityClass::CEntityClass(IEntityClassRegistry::SEntityClassDesc desc, std::vector<IEntityPropertyHandler::SPropertyInfo> properties)
 	: m_pPropertyHandler(NULL)
 {
 	m_flags = desc.flags;
 	m_name = desc.sName;
-	m_editorHelper = desc.sEditorHelper;
-	m_editorIcon = desc.sEditorIcon;
-	m_category = category;
+	m_classInfo = desc.editorClassInfo;
 	m_properties = properties;
 
 	m_pPropertyHandler = new CEntityPropertyHandler(properties);

@@ -14,7 +14,7 @@
 class CEntityClass : public IEntityClass
 {
 public:
-	CEntityClass(IEntityClassRegistry::SEntityClassDesc desc, const char* category, std::vector<IEntityPropertyHandler::SPropertyInfo> properties);
+	CEntityClass(IEntityClassRegistry::SEntityClassDesc desc, std::vector<IEntityPropertyHandler::SPropertyInfo> properties);
 	virtual ~CEntityClass();
 
 	// IEntityClass interface
@@ -25,8 +25,8 @@ public:
 	virtual const char *GetScriptFile() const { return ""; }
 	virtual IEntityScript *GetIEntityScript() const { return NULL; }
 	virtual IScriptTable *GetScriptTable() const { return NULL; }
-	virtual const char *GetEditorHelperObjectName() const { return m_editorHelper; }
-	virtual const char *GetEditorIconName() const { return m_editorIcon; }
+	virtual const char *GetEditorHelperObjectName() const { return m_classInfo.sHelper; }
+	virtual const char *GetEditorIconName() const { return m_classInfo.sIcon; }
 	virtual bool LoadScript(bool bForceReload) { return false; }
 	virtual IEntityClass::UserProxyCreateFunc GetUserProxyCreateFunc() const { return NULL; }
 	virtual void *GetUserProxyData() const { return NULL; }
@@ -37,6 +37,9 @@ public:
 	virtual IEntityClass::SEventInfo GetEventInfo( int nIndex ) { return IEntityClass::SEventInfo(); }
 	virtual bool FindEventInfo( const char *sEvent,SEventInfo &event ) { return false; }
 	virtual void GetMemoryUsage( ICrySizer *pSizer ) const {}
+
+	virtual const SEditorClassInfo& GetEditorClassInfo() const { return m_classInfo; }
+	virtual void SetEditorClassInfo(const SEditorClassInfo& editorClassInfo) { m_classInfo = editorClassInfo; }
 	// ~IEntityClass
 
 	ILINE void SetName(const char* name) { m_name = name;}
@@ -45,9 +48,8 @@ public:
 protected:
 	uint32	m_flags;
 	string	m_name;
-	string m_editorHelper;
-	string m_editorIcon;
-	string m_category;
+
+	SEditorClassInfo m_classInfo;
 
 	IEntityPropertyHandler *m_pPropertyHandler;
 	IEntityEventHandler *m_pEventHandler;
