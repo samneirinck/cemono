@@ -39,8 +39,6 @@ CScriptAssembly::CScriptAssembly(const char *assemblyPath)
 				SAFE_RELEASE(pArgs);
 				SAFE_RELEASE(pDriverClass);
 			}
-
-			SAFE_RELEASE(pDebugDatabaseCreator);
 		}
 
 		CopyFile(path.append(".mdb"), newAssemblyPath + ".mdb", false);
