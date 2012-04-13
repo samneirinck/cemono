@@ -122,7 +122,12 @@ namespace CryEngine.Serialization
 			else if(valueType.IsEnum)
 				WriteEnum(objectReference);
 			else
-				WriteAny(objectReference);
+			{
+				if(valueType.IsPrimitive && valueType != typeof(object) && valueType != typeof(string) && valueType != typeof(bool) && System.Convert.ToInt32(objectReference.Value) == 0)
+					WriteNull(objectReference);
+				else
+					WriteAny(objectReference);
+			}
 		}
 
 		void WriteObject(ObjectReference objectReference)
