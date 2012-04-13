@@ -22,7 +22,7 @@ namespace CryBrary.Tests.Serialization
 				{
 					NestedEnum = enumVal;
 				}
-
+				 
 				public NestedEnum NestedEnum { get; set; }
 			}
 
