@@ -110,24 +110,22 @@ namespace CryEngine.Serialization
 
 			Type valueType = objectReference.Value.GetType();
 			if(!IsTypeAllowed(valueType))
-			{
 				WriteNull(objectReference);
-				return;
-			}
-
-			if(valueType.Implements(typeof(IEnumerable)))
-				WriteEnumerable(objectReference);
-			else if(!valueType.IsPrimitive && !valueType.IsEnum && valueType != typeof(string))
-				WriteObject(objectReference);
-			else if(valueType.IsEnum)
-				WriteEnum(objectReference);
-			else
+			else if(valueType.IsPrimitive)
 			{
-				if(valueType.IsPrimitive && valueType != typeof(object) && valueType != typeof(string) && valueType != typeof(bool) && System.Convert.ToInt32(objectReference.Value) == 0)
+				if(valueType != typeof(object)&& valueType != typeof(bool) && System.Convert.ToInt32(objectReference.Value) == 0)
 					WriteNull(objectReference);
 				else
 					WriteAny(objectReference);
 			}
+			else if(valueType == typeof(string))
+				WriteString(objectReference);
+			else if(valueType.Implements(typeof(IEnumerable)))
+				WriteEnumerable(objectReference);
+			else if(valueType.IsEnum)
+				WriteEnum(objectReference);
+			else if(!valueType.IsPrimitive && !valueType.IsEnum)
+				WriteObject(objectReference);
 		}
 
 		void WriteObject(ObjectReference objectReference)
@@ -195,11 +193,16 @@ namespace CryEngine.Serialization
 		void WriteAny(ObjectReference objectReference)
 		{
 			Writer.WriteLine("any");
-
 			Writer.WriteLine(objectReference.Name);
-			Writer.WriteLine(objectReference.FullName);
 			Writer.WriteLine(objectReference.Value.GetType().FullName);
 			Writer.WriteLine(Converter.ToString(objectReference.Value));
+		}
+
+		void WriteString(ObjectReference objectReference)
+		{
+			Writer.WriteLine("string");
+			Writer.WriteLine(objectReference.Name);
+			Writer.WriteLine(objectReference.Value);
 		}
 
 		void WriteEnum(ObjectReference objectReference)
@@ -231,6 +234,7 @@ namespace CryEngine.Serialization
 				case "enumerable": result = ReadEnumerable(); break;
 				case "enum": result = ReadEnum(); break;
 				case "any": result = ReadAny(); break;
+				case "string": result = ReadString(); break;
 				default: break;
 			}
 
@@ -278,12 +282,7 @@ namespace CryEngine.Serialization
 				}
 
 				if(fieldInfo != null)
-				{
-					if(fieldReference.Value is char[])
-						fieldReference.Value = Converter.ToString(fieldReference.Value);
-
 					fieldInfo.SetValue(objectInstance, fieldReference.Value);
-				}
 				else
 					Debug.LogAlways("failed to find field {0} in type {1}!", fieldReference.Name, typeName);
 			}
@@ -320,7 +319,6 @@ namespace CryEngine.Serialization
 		ObjectReference ReadAny()
 		{
 			string name = Reader.ReadLine();
-			string fullName = Reader.ReadLine();
 			string typeName = Reader.ReadLine();
 			string valueString = Reader.ReadLine();
 
@@ -329,7 +327,13 @@ namespace CryEngine.Serialization
 			if(type != null)
 				value = Converter.Convert(valueString, type);
 
-			return new ObjectReference(name, value, fullName);
+			return new ObjectReference(name, value);
+		}
+
+		ObjectReference ReadString()
+		{
+			string name = Reader.ReadLine();
+			return new ObjectReference(name, Reader.ReadLine());
 		}
 
 		ObjectReference ReadEnum()
