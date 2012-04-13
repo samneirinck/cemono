@@ -121,7 +121,12 @@ namespace CryEngine.Serialization
 			else if(valueType == typeof(string))
 				WriteString(objectReference);
 			else if(valueType.Implements(typeof(IEnumerable)))
-				WriteEnumerable(objectReference);
+			{
+				if(valueType.IsGenericType)
+					WriteGenericEnumerable(objectReference);
+				else
+					WriteEnumerable(objectReference);
+			}
 			else if(valueType.IsEnum)
 				WriteEnum(objectReference);
 			else if(!valueType.IsPrimitive && !valueType.IsEnum)
@@ -162,23 +167,26 @@ namespace CryEngine.Serialization
 			Writer.WriteLine(objectReference.Name);
 			Writer.WriteLine(objectReference.FullName);
 
-			Type elementType = array.GetType().GetElementType();
-			if(elementType == null)
-			{
-				// Not an array type, we've got to use an alternate method to get the type of elements contained within.
-				Type arrayType = array.GetType();
-				if(arrayType.IsGenericType && arrayType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-					elementType = arrayType.GetGenericArguments()[0];
-				else
-				{
-					Type[] interfaces = objectReference.Value.GetType().GetInterfaces();
-					foreach(Type i in interfaces)
-						if(i.IsGenericType && i.GetGenericTypeDefinition().Equals(typeof(IEnumerable<>)))
-							elementType = i.GetGenericArguments()[0];
-				}
-			}
+			Writer.WriteLine(GetIEnumerableElementType(array.GetType()));
 
-			Writer.WriteLine(elementType.FullName);
+			for(int i = 0; i < array.Count(); i++)
+				StartWrite(new ObjectReference(i.ToString(), array.ElementAt(i), objectReference));
+		}
+
+		void WriteGenericEnumerable(ObjectReference objectReference)
+		{
+			Writer.WriteLine("generic_enumerable");
+			var array = (objectReference.Value as IEnumerable).Cast<object>();
+			Writer.WriteLine(array.Count());
+			Writer.WriteLine(objectReference.Name);
+			Writer.WriteLine(objectReference.FullName);
+
+			Writer.WriteLine(objectReference.Value.GetType().GetGenericTypeDefinition().FullName);
+
+			var genericArguments = objectReference.Value.GetType().GetGenericArguments();
+			Writer.WriteLine(genericArguments.Count());
+			foreach(var genericArg in genericArguments)
+				Writer.WriteLine(genericArg.FullName);
 
 			for(int i = 0; i < array.Count(); i++)
 				StartWrite(new ObjectReference(i.ToString(), array.ElementAt(i), objectReference));
@@ -231,6 +239,7 @@ namespace CryEngine.Serialization
 			{
 				case "null": result = ReadNull(); break;
 				case "object": result = ReadObject(); break;
+				case "generic_enumerable": result = ReadGenericEnumerable(); break;
 				case "enumerable": result = ReadEnumerable(); break;
 				case "enum": result = ReadEnum(); break;
 				case "any": result = ReadAny(); break;
@@ -293,10 +302,37 @@ namespace CryEngine.Serialization
 
 		ObjectReference ReadEnumerable()
 		{
+			var numElements = int.Parse(Reader.ReadLine());
+			var name = Reader.ReadLine();
+			var fullName = Reader.ReadLine();
+			var typeName = Reader.ReadLine();
+
+			if(ObjectReferences.ContainsKey(fullName))
+			{
+				// We have to read anyway, in order to get to the correct line for the next object.
+				for(int i = 0; i != numElements; ++i)
+					StartRead();
+
+				return ObjectReferences[fullName];
+			}
+
+			var array = Array.CreateInstance(GetType(typeName), numElements);
+
+			for(int i = 0; i != numElements; ++i)
+				array.SetValue(StartRead().Value, i);
+
+			ObjectReferences.Add(fullName, new ObjectReference(name, array, fullName));
+			return ObjectReferences.Last().Value;
+		}
+
+		ObjectReference ReadGenericEnumerable()
+		{
 			int elements = int.Parse(Reader.ReadLine());
 			string name = Reader.ReadLine();
 			string fullName = Reader.ReadLine();
 			string typeName = Reader.ReadLine();
+
+			var type = GetType(typeName);
 
 			if(ObjectReferences.ContainsKey(fullName))
 			{
@@ -307,12 +343,39 @@ namespace CryEngine.Serialization
 				return ObjectReferences[fullName];
 			}
 
-			var array = Array.CreateInstance(GetType(typeName), elements);
+			var numGenericArgs = int.Parse(Reader.ReadLine());
+			var genericArgs = new Type[numGenericArgs];
+			for(int i = 0; i < numGenericArgs; i++)
+				genericArgs[i] = GetType(Reader.ReadLine());
 
-			for(int i = 0; i != elements; ++i)
-				array.SetValue(StartRead().Value, i);
+			var enumerable = CreateGenericObjectInstance(type, genericArgs) as IEnumerable;
 
-			ObjectReferences.Add(fullName, new ObjectReference(name, array, fullName));
+			if(enumerable.GetType().Implements(typeof(IDictionary)))
+			{
+				var dict = enumerable as IDictionary;
+
+				for(int i = 0; i < elements; i++)
+				{
+					var keyPair = StartRead().Value;
+					var valueMethod = keyPair.GetType().GetProperty("Value");
+					var keyMethod = keyPair.GetType().GetProperty("Key");
+
+					dict.Add(keyMethod.GetValue(keyPair, null), valueMethod.GetValue(keyPair, null));
+				}
+
+				enumerable = dict;
+			}
+			else
+			{
+				var list = enumerable as IList;
+
+				for(int i = 0; i < elements; i++)
+					list.Add(StartRead().Value);
+
+				enumerable = list;
+			}
+
+			ObjectReferences.Add(fullName, new ObjectReference(name, enumerable, fullName));
 			return ObjectReferences.Last().Value;
 		}
 
@@ -394,6 +457,34 @@ namespace CryEngine.Serialization
 				throw new Exception(string.Format("Could not localize type with name {0}", typeName));
 
 			return type;
+		}
+
+		Type GetIEnumerableElementType(Type enumerableType)
+		{
+			Type type = enumerableType.GetElementType();
+			if(type != null)
+				return type;
+
+
+			// Not an array type, we've got to use an alternate method to get the type of elements contained within.
+			if(enumerableType.IsGenericType && enumerableType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+				type = enumerableType.GetGenericArguments()[0];
+			else
+			{
+				Type[] interfaces = enumerableType.GetInterfaces();
+				foreach(Type i in interfaces)
+					if(i.IsGenericType && i.GetGenericTypeDefinition().Equals(typeof(IEnumerable<>)))
+						type = i.GetGenericArguments()[0];
+			}
+
+			return type;
+		}
+
+		object CreateGenericObjectInstance(Type type, params Type[] genericArguments)
+		{
+			Type genericType = type.MakeGenericType(genericArguments);
+
+			return System.Activator.CreateInstance(genericType);
 		}
 
 		object CreateObjectInstance(string typeName)
