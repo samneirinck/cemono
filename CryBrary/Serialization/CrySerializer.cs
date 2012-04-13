@@ -316,11 +316,13 @@ namespace CryEngine.Serialization
 		{
 			string name = Reader.ReadLine();
 			string fullName = Reader.ReadLine();
+			string typeName = Reader.ReadLine();
+			string valueString = Reader.ReadLine();
 
 			object value = null;
-			var type = GetType(Reader.ReadLine());
+			var type = GetType(typeName);
 			if(type != null)
-				value = Converter.Convert(Reader.ReadLine(), type);
+				value = Converter.Convert(valueString, type);
 
 			return new ObjectReference(name, value, fullName);
 		}
@@ -330,11 +332,12 @@ namespace CryEngine.Serialization
 			string name = Reader.ReadLine();
 			string fullName = Reader.ReadLine();
 			string typeName = Reader.ReadLine();
+			string valueString = Reader.ReadLine();
 
 			object value = null;
 			var type = GetType(typeName);
 			if(type != null)
-				value = Enum.Parse(type, Reader.ReadLine());
+				value = Enum.Parse(type, valueString);
 			else
 				Debug.LogAlways("Failed to get type {0}", typeName);
 
