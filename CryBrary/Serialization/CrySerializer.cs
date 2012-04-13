@@ -93,21 +93,11 @@ namespace CryEngine.Serialization
 
 		public void Serialize(Stream stream, object graph)
 		{
-			try
-			{
-				Writer = new StreamWriter(stream);
-				ObjectReferences.Clear();
+			Writer = new StreamWriter(stream);
+			ObjectReferences.Clear();
 
-				StartWrite(new ObjectReference("root", graph));
-			}
-			finally
-			{
-				if(Writer != null)
-				{
-					//Writer.Dispose();
-					Writer = null;
-				}
-			}
+			StartWrite(new ObjectReference("root", graph));
+			stream.Seek(0, SeekOrigin.Begin);
 		}
 
 		void StartWrite(ObjectReference objectReference)
@@ -217,22 +207,11 @@ namespace CryEngine.Serialization
 
 		public object Deserialize(Stream stream)
 		{
-			try
-			{
-				Reader = new StreamReader(stream);
-				CallingAssembly = Assembly.GetCallingAssembly();
-				ObjectReferences.Clear();
+			Reader = new StreamReader(stream);
+			CallingAssembly = Assembly.GetCallingAssembly();
+			ObjectReferences.Clear();
 
-				return StartRead().Value;
-			}
-			finally
-			{
-				if(Reader != null)
-				{
-					//Reader.Dispose();
-					Reader = null;
-				}
-			}
+			return StartRead().Value;
 		}
 
 		ObjectReference StartRead()
