@@ -94,7 +94,7 @@ namespace CryEngine.Serialization
 		public void Serialize(Stream stream, object graph)
 		{
 			Writer = new StreamWriter(stream);
-			ObjectReferences.Clear();
+			Writer.AutoFlush = true;
 
 			StartWrite(new ObjectReference("root", graph));
 			stream.Seek(0, SeekOrigin.Begin);
