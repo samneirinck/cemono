@@ -278,7 +278,12 @@ namespace CryEngine.Serialization
 				}
 
 				if(fieldInfo != null)
+				{
+					if(fieldReference.Value is char[])
+						fieldReference.Value = Converter.ToString(fieldReference.Value);
+
 					fieldInfo.SetValue(objectInstance, fieldReference.Value);
+				}
 				else
 					Debug.LogAlways("failed to find field {0} in type {1}!", fieldReference.Name, typeName);
 			}
