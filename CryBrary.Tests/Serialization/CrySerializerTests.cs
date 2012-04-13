@@ -96,13 +96,13 @@ namespace CryBrary.Tests.Serialization
 				serializer.Serialize(stream, list);
 
 				list = null;
-				list = serializer.Deserialize(stream) as List<string>;
+				var deserialized = serializer.Deserialize(stream) as List<string>;
 
-				Assert.IsNotNull(list);
-				Assert.IsNotEmpty(list);
+				Assert.IsNotNull(deserialized);
+				Assert.AreEqual(2, deserialized.Count());
 
-				Assert.AreSame("test1", list.ElementAt(0));
-				Assert.AreSame("test2", list.ElementAt(1));
+				Assert.AreEqual("test1", deserialized.ElementAt(0));
+				Assert.AreEqual("test2", deserialized.ElementAt(1));
 			}
 		}
 
@@ -121,9 +121,9 @@ namespace CryBrary.Tests.Serialization
 				var deserializedDictionary = serializer.Deserialize(stream) as Dictionary<string, int>;
 				Assert.IsNotNull(deserializedDictionary);
 
-				Assert.IsNotEmpty(deserializedDictionary);
+				Assert.AreEqual(2, deserializedDictionary.Count);
 
-				Assert.AreSame(2, deserializedDictionary.Count);
+				Assert.AreEqual(2, deserializedDictionary.Count);
 
 				var firstKey = deserializedDictionary.First().Key;
 				Assert.AreEqual("test1", firstKey);
@@ -131,7 +131,7 @@ namespace CryBrary.Tests.Serialization
 
 				var secondKey = deserializedDictionary.ElementAt(1).Key;
 				Assert.AreEqual("test2", secondKey);
-				Assert.AreEqual(1, deserializedDictionary[secondKey]); // fail on purpose for unit testing, fix after :p
+				Assert.AreEqual(2, deserializedDictionary[secondKey]);
 			}
 		}
 
