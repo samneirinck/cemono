@@ -140,9 +140,8 @@
     <Compile Include="Engine\View.cs" />
     <Compile Include="EntitySystem\EntityId.cs" />
     <Compile Include="EntitySystem\Physics.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Lua\LuaScript.cs" />
-    <Compile Include="Misc\Collision.cs" />
+    <Compile Include="Math\Collision.cs" />
     <Compile Include="Misc\NativeMethods.cs" />
     <Compile Include="Serialization\CrySerializer.cs" />
     <Compile Include="Math\BoundingBox.cs" />
