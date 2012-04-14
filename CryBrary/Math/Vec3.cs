@@ -423,6 +423,40 @@ namespace CryEngine
 		}
 
 		/// <summary>
+		/// Restricts entire vector to be within a specified range.
+		/// </summary>
+		/// <param name="value">The value to clamp.</param>
+		/// <param name="min">The minimum value.</param>
+		/// <param name="max">The maximum value.</param>
+		/// <returns>The clamped value.</returns>
+		public static Vec3 ClampXYZ(Vec3 value, float min, float max)
+		{
+			return new Vec3(Math.Clamp(value.X, min, max), Math.Clamp(value.Y, min, max), Math.Clamp(value.Z, min, max));
+		}
+
+		/// <summary>
+		/// Sets all values within vector to a specific minimum value
+		/// </summary>
+		/// <param name="value">The vector to restrict</param>
+		/// <param name="min">The minimum value</param>
+		/// <returns>Restricted vector</returns>
+		public static Vec3 MinXYZ(Vec3 value, float min)
+		{
+			return new Vec3(Math.Min(value.X, min), Math.Min(value.Y, min), Math.Min(value.Z, min));
+		}
+
+		/// <summary>
+		/// Sets all values within vector to a specific maximum value
+		/// </summary>
+		/// <param name="value">The vector to restrict</param>
+		/// <param name="max">The maximum value</param>
+		/// <returns>Restricted vector</returns>
+		public static Vec3 MaxXYZ(Vec3 value, float min)
+		{
+			return new Vec3(Math.Max(value.X, min), Math.Max(value.Y, min), Math.Max(value.Z, min));
+		}
+
+		/// <summary>
 		/// Calculates the cross product of two vectors.
 		/// </summary>
 		/// <param name="left">First source vector.</param>
