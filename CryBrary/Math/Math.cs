@@ -168,6 +168,16 @@ namespace CryEngine
 			cosVal = Sqrt(1.0f - sinVal * sinVal);
 		}
 
+		public static double Pow(double x, double y)
+		{
+			return System.Math.Pow(x, y);
+		}
+
+		public static float Pow(float x, float y)
+		{
+			return (float)System.Math.Pow(x, y);
+		}
+
 		/// <summary>
 		/// Determines whether a value is inside the specified range.
 		/// </summary>
