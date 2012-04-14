@@ -155,7 +155,7 @@ namespace CryBrary.Tests.Serialization
 
 				Assert.AreEqual("testString", array.ElementAt(0));
 				Assert.AreEqual(1337, array.ElementAt(1));
-				Assert.AreEqual(true, array.ElementAt(2));
+				Assert.AreEqual(false, array.ElementAt(2));
 			}
 		}
 	}
