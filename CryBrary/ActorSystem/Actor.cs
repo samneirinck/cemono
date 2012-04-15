@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace CryEngine
 {
@@ -79,6 +80,12 @@ namespace CryEngine
 
 			OnSpawn();
         }
+
+		[Obsolete("Not supported in the Actor class")]
+		protected override void OnReset(bool enteringGame)
+		{
+			base.OnReset(enteringGame);
+		}
 
         public int ChannelId { get; set; }
 		public float Health { get { return _GetPlayerHealth(Id); } set { _SetPlayerHealth(Id, value); } }
