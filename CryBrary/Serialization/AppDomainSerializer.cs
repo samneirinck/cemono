@@ -43,27 +43,6 @@ namespace CryEngine.Serialization
 					SerializeTypes(script.ScriptInstances, script.ScriptType, compiledScriptsDirectory);
 			}
 
-			string subSystemDirectory = Path.Combine(scriptDumpFolder, "CryBrary.EntitySystem");
-			Directory.CreateDirectory(subSystemDirectory);
-
-			var processedTypes = new Dictionary<System.Type, string>();
-
-			for(int i = 0; i < Entity.SpawnedEntities.Count; i++)
-			{
-				var entityType = Entity.SpawnedEntities[i].GetType();
-
-				if(!processedTypes.ContainsKey(entityType))
-				{
-					string directory = Path.Combine(subSystemDirectory, entityType.Namespace + "." + entityType.Name);
-					Directory.CreateDirectory(directory);
-
-					processedTypes.Add(entityType, directory);
-				}
-
-				using(var stream = File.Create(Path.Combine(processedTypes[entityType], Directory.GetFiles(processedTypes[entityType]).Count().ToString())))
-					Formatter.Serialize(stream, Entity.SpawnedEntities[i]);
-			}
-
 			stopwatch.Stop();
 
 			Debug.LogAlways("Serializer took {0}ms to dump script data", stopwatch.ElapsedMilliseconds);
@@ -91,7 +70,7 @@ namespace CryEngine.Serialization
 
 			string compiledScriptsDirectory = Path.Combine(PathUtils.GetScriptDumpFolder(), "ScriptCompiler.CompiledScripts");
 
-			for(int i = 0; i < ScriptCompiler.CompiledScripts.Count; i++)
+			for(int i = 0; i < ScriptCompiler.CompiledScripts.Length; i++)
 			{
 				var script = ScriptCompiler.CompiledScripts[i];
 
@@ -101,7 +80,7 @@ namespace CryEngine.Serialization
 					foreach(var fileName in Directory.GetFiles(directoryName))
 					{
 						if(script.ScriptInstances == null)
-							script.ScriptInstances = new Collection<CryScriptInstance>();
+							script.ScriptInstances = new List<CryScriptInstance>();
 
 						CryScriptInstance scriptInstance = null;
 						using(var stream = File.Open(fileName, FileMode.Open))
@@ -116,41 +95,6 @@ namespace CryEngine.Serialization
 				}
 
 				ScriptCompiler.CompiledScripts[i] = script;
-			}
-
-			string subSystemDirectory = Path.Combine(PathUtils.GetScriptDumpFolder(), "CryBrary.EntitySystem");
-			foreach(var directory in Directory.GetDirectories(subSystemDirectory))
-			{
-				string typeDirectory = new DirectoryInfo(directory).Name;
-
-				System.Type type = null;
-				var scriptMatch = ScriptCompiler.CompiledScripts.FirstOrDefault(script => (script.ScriptType.Namespace + "." + script.ScriptType.Name).Equals(typeDirectory));
-				if(scriptMatch != default(CryScript))
-					type = scriptMatch.ScriptType;
-
-				if(type != null)
-				{
-					int scriptIndex = ScriptCompiler.CompiledScripts.IndexOf(scriptMatch);
-
-					foreach(var fileName in Directory.GetFiles(directory))
-					{
-						Entity entity = null;
-						using(var stream = File.Open(fileName, FileMode.Open))
-							entity = Formatter.Deserialize(stream) as Entity;
-
-						if(entity != null)
-						{
-							Entity.SpawnedEntities.Add(entity);
-
-							scriptMatch.ScriptInstances.Add(entity);
-
-							if(ScriptCompiler.LastScriptId <= entity.ScriptId)
-								ScriptCompiler.LastScriptId = entity.ScriptId + 1;
-						}
-
-						ScriptCompiler.CompiledScripts[scriptIndex] = scriptMatch;
-					}
-				}
 			}
 
 			stopwatch.Stop();

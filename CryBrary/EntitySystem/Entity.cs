@@ -182,8 +182,6 @@ namespace CryEngine
 				storedProperties.Clear();
 				storedProperties = null;
 			}
-
-			Entity.RegisterInternalEntity(this);
 		}
 
 		internal virtual bool CanContainEditorProperties { get { return true; } }

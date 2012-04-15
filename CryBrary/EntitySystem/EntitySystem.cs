@@ -7,6 +7,9 @@ using System.Collections.ObjectModel;
 
 using System.Linq;
 
+using CryEngine.Initialization;
+using CryEngine.Extensions;
+
 namespace CryEngine
 {
     public partial class Entity
@@ -48,14 +51,8 @@ namespace CryEngine
 		public static T Spawn<T>(string name, Vec3 pos, Vec3? rot = null, Vec3? scale = null, bool autoInit = true, EntityFlags flags = EntityFlags.CastShadow) where T : Entity
 		{
 			var entId = new EntityId(_SpawnEntity(new EntitySpawnParams { Name = name, Class = typeof(T).Name, Pos = pos, Rot = rot ?? new Vec3(0, 0, 0), Scale = scale ?? new Vec3(1, 1, 1), Flags = flags }, autoInit));
-			RegisterInternalEntity(Get(entId));
 
-			return SpawnedEntities.Last() as T;
-		}
-
-		internal static void RegisterInternalEntity<T>(T t) where T : Entity
-		{
-			SpawnedEntities.Add(t);
+			return ScriptCompiler.AddScriptInstance(Get(entId)) as T;
 		}
 
 		public static void Remove(EntityId id)
@@ -72,7 +69,11 @@ namespace CryEngine
 
 		internal static void RemoveInternalEntity(EntityId id)
 		{
-			SpawnedEntities.RemoveAll(entity => entity.Id == id);
+			foreach(var script in ScriptCompiler.CompiledScripts)
+			{
+				if(script.ScriptInstances != null)
+					script.ScriptInstances.RemoveAll(instance => instance is Entity && (instance as Entity).Id == id);
+			}
 		}
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -95,9 +96,17 @@ namespace CryEngine
 			if (entityId == 0)
 				return null;
 
-			Entity ent = SpawnedEntities.Find(entity => entity.Id == entityId);
-			if (ent != default(Entity))
-				return ent;
+			Entity ent = null;
+			for(int i = 0; i < ScriptCompiler.CompiledScripts.Length; i++)
+			{
+				var script = ScriptCompiler.CompiledScripts[i];
+				if(script.ScriptInstances != null)
+				{
+					ent = script.ScriptInstances.Find(x => x is Entity && (x as Entity).Id == entityId) as Entity;
+					if(ent != null)
+						return ent;
+				}
+			}
 
 			if(_EntityExists(entityId))
 				return new Entity(entityId);
@@ -146,21 +155,6 @@ namespace CryEngine
 		{
 			return GetEntities(typeof(T).Name).Cast<T>();
 		}
-
-		internal static void UpdateSpawnedEntities()
-		{
-			foreach (var entity in SpawnedEntities)
-			{
-				if(entity != null && entity.ReceiveUpdates == true)
-					entity.OnUpdate();
-			}
-		}
-        
-		/// <summary>
-		/// Contains entities spawned using EntitySystem.SpawnEntity.
-		/// Necessary to update scripts.
-		/// </summary>
-		internal static List<Entity> SpawnedEntities = new List<Entity>();
     }
 
 	/// <summary>
