@@ -85,8 +85,8 @@ namespace CryEngine.Initialization
 			if(scriptName.Length < 1)
 				throw new ArgumentException("Empty script name passed to InstantiateClass");
 
-			CryScript script = default(CryScript);
-			int scriptIndex = 0;
+			var script = default(CryScript);
+			var scriptIndex = 0;
 			for(; scriptIndex < CompiledScripts.Length; scriptIndex++)
 			{
 				script = CompiledScripts[scriptIndex];
@@ -159,7 +159,7 @@ namespace CryEngine.Initialization
 			{
 				for(int i = 0; i < CompiledScripts.Length; i++)
 				{
-					CryScript script = CompiledScripts[i];
+					var script = CompiledScripts[i];
 
 					RemoveInstanceFromScriptById(ref script, scriptId);
 
@@ -176,7 +176,7 @@ namespace CryEngine.Initialization
 				if(scriptInstance == InvalidScriptInstance)
 					return;
 
-				int instanceIndex = script.ScriptInstances.IndexOf(scriptInstance);
+				var instanceIndex = script.ScriptInstances.IndexOf(scriptInstance);
 				if(instanceIndex == -1)
 				{
 					Debug.LogAlways("Failed to remove script with id {0}; instance was not found.", scriptId);
@@ -189,7 +189,7 @@ namespace CryEngine.Initialization
 
 		internal static CryScript GetScriptByType(Type type, out int scriptIndex)
 		{
-			CryScript script = default(CryScript);
+			var script = default(CryScript);
 			scriptIndex = 0;
 
 			for(; scriptIndex < CompiledScripts.Length; scriptIndex++)
@@ -273,13 +273,13 @@ namespace CryEngine.Initialization
 				{
 					try
 					{
-						string newPath = Path.Combine(Path.GetTempPath(), Path.GetFileName(plugin));
+						var newPath = Path.Combine(Path.GetTempPath(), Path.GetFileName(plugin));
 
 						File.Copy(plugin, newPath, true);
 #if !RELEASE
 						GenerateDebugDatabaseForAssembly(plugin);
 
-						string mdbFile = plugin + ".mdb";
+						var mdbFile = plugin + ".mdb";
 						if(File.Exists(mdbFile)) // success
 							File.Copy(mdbFile, Path.Combine(Path.GetTempPath(), Path.GetFileName(mdbFile)), true);
 #endif
@@ -350,7 +350,7 @@ namespace CryEngine.Initialization
 					break;
 			}
 
-			CompilerParameters compilerParameters = new CompilerParameters();
+			var compilerParameters = new CompilerParameters();
 
 			compilerParameters.GenerateExecutable = false;
 
@@ -378,7 +378,7 @@ namespace CryEngine.Initialization
 
 			assemblyRefs = null;
 
-			CompilerResults results = provider.CompileAssemblyFromFile(compilerParameters, scripts.ToArray());
+			var results = provider.CompileAssemblyFromFile(compilerParameters, scripts.ToArray());
 
 			provider.Dispose();
 			provider = null;
@@ -509,7 +509,7 @@ namespace CryEngine.Initialization
 		private void LoadFlowNode(ref CryScript script, bool entityNode = false)
 		{
 			string category = null;
-			string nodeName = script.ScriptType.Name;
+			var nodeName = script.ScriptType.Name;
 
 			if(!entityNode)
 			{
@@ -537,9 +537,9 @@ namespace CryEngine.Initialization
 		{
 			if(File.Exists(Path.ChangeExtension(assemblyPath, "pdb")))
 			{
-				Assembly assembly = Assembly.LoadFrom(Path.Combine(PathUtils.GetEngineFolder(), "Mono", "bin", "pdb2mdb.dll"));
-				Type driver = assembly.GetType("Driver");
-				MethodInfo convertMethod = driver.GetMethod("Convert", BindingFlags.Static | BindingFlags.Public);
+				var assembly = Assembly.LoadFrom(Path.Combine(PathUtils.GetEngineFolder(), "Mono", "bin", "pdb2mdb.dll"));
+				var driver = assembly.GetType("Driver");
+				var convertMethod = driver.GetMethod("Convert", BindingFlags.Static | BindingFlags.Public);
 
 				object[] args = { assemblyPath };
 				convertMethod.Invoke(null, args);
