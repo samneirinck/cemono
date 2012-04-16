@@ -25,33 +25,6 @@ namespace CryEngine
 	        internal int bTerrain;	// global terrain hit
 	        internal int iPrim; // hit triangle index
         };
-
-		/// <summary>
-		/// Steps through the entity grid and raytraces entities
-		/// traces a finite ray from org along dir
-		/// </summary>
-		/// <param name="origin"></param>
-		/// <param name="dir"></param>
-		/// <param name="objectTypes"></param>
-		/// <param name="flags"></param>
-		/// <param name="hits"></param>
-		/// <param name="maxHits"></param>
-		/// <param name="skipEntities"></param>
-		/// <returns>The total amount of hits detected (solid and pierceable)</returns>
-		public static int RayWorldIntersection(Vec3 origin, Vec3 dir, out RaycastHit hits, EntityQueryFlags objectTypes = EntityQueryFlags.All, RayWorldIntersectionFlags flags = RayWorldIntersectionFlags.AnyHit, int maxHits = 1, EntityId[] skipEntities = null)
-        {
-			var internalRayHit = new RayHit();
-
-			object[] skippedEntities = null;
-			if(skipEntities != null && skipEntities.Count() > 0)
-				skippedEntities = skipEntities.Cast<object>().ToArray(); 
-
-			int rayResult = _RayWorldIntersection(origin, dir, objectTypes, flags, ref internalRayHit, maxHits, skippedEntities);
-
-			hits = new RaycastHit(internalRayHit);
-
-            return rayResult;
-        }
     }
 
 	public struct RaycastHit
