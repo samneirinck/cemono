@@ -57,6 +57,9 @@ namespace CryEngine.Initialization
 				return false;
 			}
 
+			// Special types
+			foundTypes.Add(typeof(NativeEntity));
+
 			ProcessTypes(foundTypes);
 			foundTypes.Clear();
 			foundTypes = null;
@@ -82,11 +85,19 @@ namespace CryEngine.Initialization
 			if(scriptName.Length < 1)
 				throw new ArgumentException("Empty script name passed to InstantiateClass");
 
-			var script = CompiledScripts.FirstOrDefault(x => x.ScriptName.Equals(scriptName));
+			CryScript script = default(CryScript);
+			int scriptIndex = 0;
+			for(; scriptIndex < CompiledScripts.Length; scriptIndex++)
+			{
+				script = CompiledScripts[scriptIndex];
+				if(script.ScriptName.Equals(scriptName))
+					break;
+			}
+
 			if(script == default(CryScript))
 				throw new ScriptNotFoundException(string.Format("Compiled script {0} could not be found.", scriptName));
 
-			return AddScriptInstance(System.Activator.CreateInstance(script.ScriptType, constructorParams) as CryScriptInstance);
+			return AddScriptInstance(System.Activator.CreateInstance(script.ScriptType, constructorParams) as CryScriptInstance, script, scriptIndex);
 		}
 
 		/// <summary>
@@ -100,6 +111,14 @@ namespace CryEngine.Initialization
 
 			int scriptIndex;
 			var script = GetScriptByType(instance.GetType(), out scriptIndex);
+
+			return AddScriptInstance(instance, script, scriptIndex);
+		}
+
+		static CryScriptInstance AddScriptInstance(CryScriptInstance instance, CryScript script, int scriptIndex)
+		{
+			if(instance == null)
+				return null;
 
 			if(script.ScriptInstances == null)
 				script.ScriptInstances = new List<CryScriptInstance>();
@@ -286,7 +305,7 @@ namespace CryEngine.Initialization
 		/// <returns></returns>
 		/// <exception cref="System.IO.DirectoryNotFoundException">Thrown when one or more script folders could not be located.</exception>
 		/// <exception cref="System.ArgumentNullException">Thrown if the compiled assembly could not be loaded.</exception>
-		/// <exception cref="CryEngine.ScriptCompilationException">Thrown if one or more compilation errors occur.</exception>
+		/// <exception cref="CryEngine.Initialization.ScriptCompilationException">Thrown if one or more compilation errors occur.</exception>
 		public IEnumerable<Type> CompileScripts(ref CompilationParameters compilationParameters)
 		{
 			if(compilationParameters == null)

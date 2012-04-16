@@ -139,6 +139,7 @@
     <Compile Include="Engine\Terrain.cs" />
     <Compile Include="Engine\View.cs" />
     <Compile Include="EntitySystem\EntityId.cs" />
+    <Compile Include="EntitySystem\NativeEntity.cs" />
     <Compile Include="EntitySystem\Physics.cs" />
     <Compile Include="Lua\LuaScript.cs" />
     <Compile Include="Math\Collision.cs" />
