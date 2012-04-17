@@ -1,4 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Linq;
+
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+
 using System.Xml.Linq;
 
 using System.IO;
@@ -22,27 +27,31 @@ namespace CryEngine.Utilities
         /// </summary>
         /// <param name="scriptFilePaths"></param>
         /// <returns></returns>
-        public IEnumerable<string> GetRequiredAssembliesForScriptFiles(IEnumerable<string> scriptFilePaths)
+        public string[] GetRequiredAssembliesForScriptFiles(IEnumerable<string> scriptFilePaths)
         {
             if (scriptFilePaths == null)
                 return null;
 
-            var namespaces = new List<string>();
-            var assemblyPaths = new List<string>();
+            var assemblyPaths = new Collection<string>();
 
             foreach (var scriptFilePath in scriptFilePaths)
             {
                 foreach (var foundNamespace in GetNamespacesFromScriptFile(scriptFilePath))
                 {
-                    if (!namespaces.Contains(foundNamespace))
-                        namespaces.Add(foundNamespace);
+					var assemblyPath = GetAssemblyPathFromNamespace(foundNamespace);
+
+					if(assemblyPath != null && !assemblyPaths.Contains(assemblyPath))
+						assemblyPaths.Add(assemblyPath);
                 }
             }
 
-            foreach (var foundNamespace in namespaces)
-                assemblyPaths.Add(GetAssemblyPathFromNamespace(foundNamespace));
+			foreach(var assembly in AppDomain.CurrentDomain.GetAssemblies().Select(x => x.Location).ToArray())
+			{
+				if(!assemblyPaths.Contains(assembly))
+					assemblyPaths.Add(assembly);
+			}
 
-            return assemblyPaths;
+            return assemblyPaths.ToArray();
         }
 
 

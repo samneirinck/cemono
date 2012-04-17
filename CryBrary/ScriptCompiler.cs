@@ -15,8 +15,6 @@ using System.ComponentModel;
 
 using System.Threading.Tasks;
 
-using CryEngine;
-
 namespace CryEngine.Initialization
 {
 	public class ScriptCompiler
@@ -32,7 +30,8 @@ namespace CryEngine.Initialization
 		{
 			LastScriptId = 0;
 
-			var foundTypes = LoadLibrariesInFolder(Path.Combine(PathUtils.GetScriptsFolder(), "Plugins")) as List<Type>;
+			var foundTypes = new List<Type>();
+			foundTypes.AddRange(LoadLibrariesInFolder(Path.Combine(PathUtils.GetScriptsFolder(), "Plugins")));
 
 			var compilationParams = new CompilationParameters();
 
@@ -207,15 +206,16 @@ namespace CryEngine.Initialization
 
 		public static CryScriptInstance GetScriptInstanceById(int id)
 		{
-			var scripts = CompiledScripts.Where(script => script.ScriptInstances != null && script.ScriptInstances.Count > 0);
-
 			CryScriptInstance scriptInstance = null;
-			foreach(var script in scripts)
+			foreach(var script in CompiledScripts)
 			{
-				scriptInstance = script.ScriptInstances.FirstOrDefault(instance => instance.ScriptId == id);
+				if(script.ScriptInstances != null && script.ScriptInstances.Count > 0)
+				{
+					scriptInstance = script.ScriptInstances.FirstOrDefault(instance => instance.ScriptId == id);
 
-				if(scriptInstance != InvalidScriptInstance)
-					return scriptInstance;
+					if(scriptInstance != InvalidScriptInstance)
+						return scriptInstance;
+				}
 			}
 
 			return null;
@@ -261,41 +261,45 @@ namespace CryEngine.Initialization
 		/// </summary>
 		public IEnumerable<Type> LoadLibrariesInFolder(string directory)
 		{
-			if(!Directory.Exists(directory))
-				throw new DirectoryNotFoundException(string.Format("Libraries failed to load; Folder {0} does not exist.", directory));
-
-			var plugins = Directory.GetFiles(directory, "*.dll", SearchOption.AllDirectories);
-			var typeCollection = new List<Type>();
-
-			if(plugins != null && plugins.Length != 0)
+			if(Directory.Exists(directory))
 			{
-				foreach(var plugin in plugins)
+				var plugins = Directory.GetFiles(directory, "*.dll", SearchOption.AllDirectories);
+
+				if(plugins != null && plugins.Length != 0)
 				{
-					try
-					{
-						var newPath = Path.Combine(Path.GetTempPath(), Path.GetFileName(plugin));
+					var typeCollection = new Collection<Type>();
 
-						File.Copy(plugin, newPath, true);
+					foreach(var plugin in plugins)
+					{
+						try
+						{
+							var newPath = Path.Combine(Path.GetTempPath(), Path.GetFileName(plugin));
+
+							File.Copy(plugin, newPath, true);
 #if !RELEASE
-						GenerateDebugDatabaseForAssembly(plugin);
+							GenerateDebugDatabaseForAssembly(plugin);
 
-						var mdbFile = plugin + ".mdb";
-						if(File.Exists(mdbFile)) // success
-							File.Copy(mdbFile, Path.Combine(Path.GetTempPath(), Path.GetFileName(mdbFile)), true);
+							var mdbFile = plugin + ".mdb";
+							if(File.Exists(mdbFile)) // success
+								File.Copy(mdbFile, Path.Combine(Path.GetTempPath(), Path.GetFileName(mdbFile)), true);
 #endif
+							foreach(var type in LoadAssembly(Assembly.LoadFrom(newPath)))
+								typeCollection.Add(type);
+						}
+						//This exception tells us that the assembly isn't a valid .NET assembly for whatever reason
+						catch(BadImageFormatException)
+						{
+							Debug.LogAlways("Plugin loading failed for {0}; dll is not valid.", plugin);
+						}
+					}
 
-						//Process it, in case it contains types/gamerules
-						typeCollection.AddRange(LoadAssembly(Assembly.LoadFrom(newPath)));
-					}
-					//This exception tells us that the assembly isn't a valid .NET assembly for whatever reason
-					catch(BadImageFormatException)
-					{
-						Debug.LogAlways("Plugin loading failed for {0}; dll is not valid.", plugin);
-					}
+					return typeCollection;
 				}
 			}
+			else
+				Debug.LogAlways("Skipping load of plugins in {0}, directory does not exist.", directory);
 
-			return typeCollection;
+			return Enumerable.Empty<Type>();
 		}
 
 		/// <summary>
@@ -316,11 +320,11 @@ namespace CryEngine.Initialization
 			else if(compilationParameters.Folders.Length < 1)
 				throw new ArgumentException(message: "Supplied Folders array in CompilationParameters did not contain any strings");
 
-			var scripts = new List<string>();
+			var scripts = new Collection<string>();
 			foreach(var directory in compilationParameters.Folders)
 			{
 				if(Directory.Exists(directory))
-				{
+			{
 					foreach(var script in Directory.GetFiles(directory, "*.cs", SearchOption.AllDirectories))
 					{
 						if(!scripts.Contains(script))
@@ -331,24 +335,8 @@ namespace CryEngine.Initialization
 					Debug.LogAlways("Skipping compilation of scripts in {0}; directory not found", directory);
 			}
 
-			var types = new List<Type>();
-
 			if(scripts.Count <= 0)
-				return types;
-
-			CodeDomProvider provider = null;
-			switch(compilationParameters.Language)
-			{
-				case ScriptLanguage.VisualBasic:
-					provider = CodeDomProvider.CreateProvider("VisualBasic");
-					break;
-				case ScriptLanguage.JScript:
-					provider = CodeDomProvider.CreateProvider("JScript");
-					break;
-				case ScriptLanguage.CSharp:
-					provider = CodeDomProvider.CreateProvider("CSharp");
-					break;
-			}
+				return Enumerable.Empty<Type>();
 
 			var compilerParameters = new CompilerParameters();
 
@@ -365,29 +353,17 @@ namespace CryEngine.Initialization
 			compilerParameters.IncludeDebugInformation = includeDebugInfo;
 			compilerParameters.GenerateInMemory = !includeDebugInfo;
 
-			//Add additional assemblies as needed by gamecode to referencedAssemblies
-			var assemblyRefs = new List<string>();
-			assemblyRefs.AddRange(AppDomain.CurrentDomain.GetAssemblies().Select(x => x.Location).ToArray());
-			assemblyRefs.AddRange(assemblyReferenceHandler.GetRequiredAssembliesForScriptFiles(scripts));
+			compilerParameters.ReferencedAssemblies.AddRange(assemblyReferenceHandler.GetRequiredAssembliesForScriptFiles(scripts));
 
-			foreach(var assembly in assemblyRefs)
-			{
-				if(!compilerParameters.ReferencedAssemblies.Contains(assembly))
-					compilerParameters.ReferencedAssemblies.Add(assembly);
-			}
+			CompilerResults results;
+			using(var provider = GetCodeProvider(compilationParameters.Language))
+				results = provider.CompileAssemblyFromFile(compilerParameters, scripts.ToArray());
 
-			assemblyRefs = null;
-
-			var results = provider.CompileAssemblyFromFile(compilerParameters, scripts.ToArray());
-
-			provider.Dispose();
-			provider = null;
 			compilerParameters = null;
-
 			compilationParameters.Results = results;
 
 			if(results.CompiledAssembly != null) // success
-				types.AddRange(LoadAssembly(results.CompiledAssembly, compilationParameters.ScriptTypes));
+				return LoadAssembly(results.CompiledAssembly, compilationParameters.ScriptTypes);
 			else if(results.Errors.HasErrors)
 			{
 				string compilationError = string.Format("Compilation failed; {0} errors: ", results.Errors.Count);
@@ -403,10 +379,23 @@ namespace CryEngine.Initialization
 				}
 				throw new ScriptCompilationException(compilationError);
 			}
-			else
-				throw new ArgumentNullException(paramName: "Tried loading a NULL assembly");
 
-			return types;
+			throw new ArgumentNullException(paramName: "Tried loading a NULL assembly");
+		}
+
+		public CodeDomProvider GetCodeProvider(ScriptLanguage language)
+		{
+			switch(language)
+			{
+				case ScriptLanguage.VisualBasic:
+					return CodeDomProvider.CreateProvider("VisualBasic");
+				case ScriptLanguage.JScript:
+					return CodeDomProvider.CreateProvider("JScript");
+				case ScriptLanguage.CSharp:
+					return CodeDomProvider.CreateProvider("CSharp");
+			}
+
+			return null;
 		}
 
 		/// <summary>
@@ -414,16 +403,16 @@ namespace CryEngine.Initialization
 		/// </summary>
 		public IEnumerable<Type> LoadAssembly(Assembly assembly, ScriptType[] allowedTypes = null)
 		{
-			var typeCollection = new Collection<Type>();
+			var types = new Collection<Type>();
 
-			assembly.GetTypes().AsParallel().ForAll(type =>
+			Parallel.ForEach(assembly.GetTypes(), type =>
 				{
 					// TODO: Re-implement allowedTypes
 					if(!type.ContainsAttribute<ExcludeFromCompilationAttribute>())
-						typeCollection.Add(type);
+						types.Add(type);
 				});
 
-			return typeCollection;
+			return types;
 		}
 
 		public ScriptType GetScriptType(Type type)
