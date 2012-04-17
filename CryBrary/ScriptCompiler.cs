@@ -56,9 +56,6 @@ namespace CryEngine.Initialization
 				return false;
 			}
 
-			// Special types
-			foundTypes.Add(typeof(NativeEntity));
-
 			ProcessTypes(foundTypes);
 			foundTypes.Clear();
 			foundTypes = null;
@@ -440,7 +437,9 @@ namespace CryEngine.Initialization
 		/// <param name="type"></param>
 		public void ProcessTypes(IEnumerable<Type> types)
 		{
-			CompiledScripts = new CryScript[types.Count()];
+			Type[] specialTypes = { typeof(NativeEntity) };
+
+			CompiledScripts = new CryScript[types.Count() + specialTypes.Count()];
 
 			for(int i = 0; i < types.Count(); i++)
 			{
@@ -451,8 +450,7 @@ namespace CryEngine.Initialization
 				{
 					// Add anyway, to fix serialization bug caused by child types within abstract entities.
 					CompiledScripts[i] = script;
-
-					Debug.LogAlways("Failed to load entity of type {0}: abstract entities are not supported", type.Name);
+					continue;
 				}
 
 				if(type.Implements(typeof(BaseGameRules)))
@@ -480,6 +478,9 @@ namespace CryEngine.Initialization
 
 				CompiledScripts[i] = script;
 			}
+
+			for(int i = 0; i < specialTypes.Count(); i++)
+				CompiledScripts[i] = new CryScript(specialTypes[i]);
 		}
 
 		internal void RegisterFlownodes()
