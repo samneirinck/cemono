@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace CryEngine
 {
-    public class PhysicalWorld
+    class PhysicalWorld
     {
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static int _RayWorldIntersection(Vec3 origin, Vec3 dir, EntityQueryFlags objFlags, RayWorldIntersectionFlags flags, ref RayHit rayHit, int maxHits, object[] skipEnts);
