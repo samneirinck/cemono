@@ -414,7 +414,7 @@ namespace CryEngine.Initialization
 
 		public ScriptType GetScriptType(Type type)
 		{
-			if(type.Implements(typeof(BaseGameRules)))
+			if(type.Implements(typeof(GameRules)))
 				return ScriptType.GameRules;
 			else if(type.Implements(typeof(Actor)))
 				return ScriptType.Actor;
@@ -439,7 +439,7 @@ namespace CryEngine.Initialization
 		{
 			Type[] specialTypes = { typeof(NativeEntity) };
 
-			CompiledScripts = new CryScript[types.Count() + specialTypes.Count()];
+			CompiledScripts = new CryScript[types.Count() + specialTypes.Length];
 
 			for(int i = 0; i < types.Count(); i++)
 			{
@@ -453,7 +453,7 @@ namespace CryEngine.Initialization
 					continue;
 				}
 
-				if(type.Implements(typeof(BaseGameRules)))
+				if(type.Implements(typeof(GameRules)))
 				{
 					string gamemodeName = null;
 
@@ -464,10 +464,10 @@ namespace CryEngine.Initialization
 							gamemodeName = gamemodeAttribute.Name;
 
 						if(gamemodeAttribute.Default)
-							GameRulesSystem._SetDefaultGameMode(gamemodeName);
+							GameRules._SetDefaultGameMode(gamemodeName);
 					}
 
-					GameRulesSystem._RegisterGameMode(gamemodeName ?? script.ScriptName);
+					GameRules._RegisterGameMode(gamemodeName ?? script.ScriptName);
 				}
 				else if(type.Implements(typeof(Actor)))
 					Actor._RegisterActorClass(script.ScriptName, false);
@@ -479,7 +479,7 @@ namespace CryEngine.Initialization
 				CompiledScripts[i] = script;
 			}
 
-			for(int i = 0; i < specialTypes.Count(); i++)
+			for(int i = 0; i < specialTypes.Length; i++)
 				CompiledScripts[i] = new CryScript(specialTypes[i]);
 		}
 

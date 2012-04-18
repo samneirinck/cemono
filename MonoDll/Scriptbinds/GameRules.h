@@ -20,7 +20,7 @@ public:
 	~CGameRules() {}
 
 	// IMonoScriptBind
-	virtual const char *GetClassName() { return "GameRulesSystem"; }
+	virtual const char *GetClassName() { return "GameRules"; }
 	// ~IMonoScriptBind
 
 	static void RegisterGameMode(mono::string);
