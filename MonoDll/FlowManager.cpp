@@ -46,7 +46,7 @@ void CFlowManager::Reset()
 
 void CFlowManager::RegisterNode(mono::string monoTypeName)
 {
-	if(IFlowSystem *pFlowSystem = gEnv->pFlowSystem)
+	if(IFlowSystem *pFlowSystem = NULL//gEnv->pFlowSystem)
 	{
 		CFlowManager *pFlowManager = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager();
 
