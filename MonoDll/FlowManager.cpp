@@ -46,26 +46,30 @@ void CFlowManager::Reset()
 
 void CFlowManager::RegisterNode(mono::string monoTypeName)
 {
-	if(IFlowSystem *pFlowSystem = NULL)//gEnv->pFlowSystem)
+	if(IFlowSystem *pFlowSystem = gEnv->pFlowSystem)
 	{
 		CFlowManager *pFlowManager = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager();
 
 		const char *typeName = ToCryString(monoTypeName);
+		const char *scriptName = typeName;
+		string str = string(scriptName);
 
-		CryLogAlways("Registering node %s", typeName);
-		m_nodeTypes.push_back(new SNodeType(typeName));
+		if(str.find("entity:") != string::npos) // Determines if this is an entity node
+		{
+			str = str.substr(7);
+			m_nodeTypes.push_back(new SNodeType(typeName, str.c_str()));
+		}
+		else
+			m_nodeTypes.push_back(new SNodeType(typeName));
+
 		pFlowSystem->RegisterType(typeName, (IFlowNodeFactoryPtr)pFlowManager);
 	}
 }
 
 void CFlowManager::UnregisterNode(CFlowNode *pNode)
 {
-	CryLogAlways("hai.");
-
 	for each(auto nodeType in m_nodeTypes)
 		nodeType->RemoveNode(pNode);
-
-	CryLogAlways("sup");
 }
 
 IFlowNodePtr CFlowManager::Create(IFlowNode::SActivationInfo *pActInfo)
@@ -73,45 +77,17 @@ IFlowNodePtr CFlowManager::Create(IFlowNode::SActivationInfo *pActInfo)
 	return new CFlowNode(pActInfo);
 }
 
-IMonoClass *CFlowManager::InstantiateNode(CFlowNode *pNode, const char *name)
+SNodeType *CFlowManager::InstantiateNode(CFlowNode *pNode, const char *name)
 {
-	CryLogAlways("instantiating node %s", name);
-
-	string nodeTypeName = "";
-	string typeName = name;
-
 	for each(auto nodeType in m_nodeTypes)
 	{
-		nodeTypeName = nodeType->GetTypeName();
-		CryLogAlways("found node %s", nodeTypeName.c_str());
-
-		if(typeName.find(nodeTypeName.find(":") == -1 ? ":" : "" + nodeTypeName))
+		if(!strcmp(nodeType->GetTypeName(), name))
 		{
-			IMonoClass *pScriptClass = gEnv->pMonoScriptSystem->GetScriptById(gEnv->pMonoScriptSystem->InstantiateScript(typeName));
+			IMonoClass *pScriptClass = gEnv->pMonoScriptSystem->GetScriptById(gEnv->pMonoScriptSystem->InstantiateScript(nodeType->GetScriptName()));
+			pNode->SetScript(pScriptClass);
 			nodeType->nodes.push_back(pNode);
 
-			return pScriptClass;
-		}
-	}
-
-	return NULL;
-}
-
-SNodeType *CFlowManager::GetNodeTypeById(int scriptId)
-{
-	for each(auto nodeType in m_nodeTypes)
-	{
-		for each(auto node in nodeType->nodes)
-		{
-			if(!node)
-				continue;
-
-			IMonoClass *pScriptClass = node->GetScript();
-			if(!pScriptClass)
-				continue;
-
-			if(pScriptClass->GetScriptId() == scriptId)
-				return nodeType;
+			return nodeType;
 		}
 	}
 
@@ -120,10 +96,17 @@ SNodeType *CFlowManager::GetNodeTypeById(int scriptId)
 
 CFlowNode *CFlowManager::GetNodeById(int scriptId)
 {
-	for each(auto node in GetNodeTypeById(scriptId)->nodes)
+	for each(auto nodeType in m_nodeTypes)
 	{
-		if(node->GetScript()->GetScriptId() == scriptId)
-			return node;
+		for each(auto node in nodeType->nodes)
+		{
+			IMonoClass *pScriptClass = node->GetScript();
+			if(!pScriptClass)
+				continue;
+
+			if(pScriptClass->GetScriptId() == scriptId)
+				return node;
+		}
 	}
 
 	return NULL;
@@ -212,36 +195,26 @@ void SNodeType::ReloadPorts(IMonoClass *pScriptClass)
 
 		IMonoArray *pInputPorts = new CScriptArray(monoConfig.inputs);
 
-		static SInputPortConfig inputs[MAX_NODE_PORT_COUNT];
-
-		pInputs = inputs;
+		pInputs = new SInputPortConfig[MAX_NODE_PORT_COUNT];
 
 		for(int i = 0; i < pInputPorts->GetSize(); i++)
 			pInputs[i] = pInputPorts->GetItem(i)->Unbox<SMonoInputPortConfig>().Convert();
 
-		for(int i = 0; i < MAX_NODE_PORT_COUNT; i++)
-		{
-			if(i >= pInputPorts->GetSize())
-				pInputs[i] = nullConfig;
-		}
+		for(int i = pInputPorts->GetSize(); i < MAX_NODE_PORT_COUNT; i++)
+			pInputs[i] = nullConfig;
 
 		SAFE_RELEASE(pInputPorts);
 
 		// Convert MonoArray type to our custom CScriptArray for easier handling.
 		IMonoArray *pOutputPorts = new CScriptArray(monoConfig.outputs);
 
-		static SOutputPortConfig outputs[MAX_NODE_PORT_COUNT];
-
-		pOutputs = outputs;
+		pOutputs = new SOutputPortConfig[MAX_NODE_PORT_COUNT];
 
 		for(int i = 0; i < pOutputPorts->GetSize(); i++)
 			pOutputs[i] = pOutputPorts->GetItem(i)->Unbox<SMonoOutputPortConfig>().Convert();
 
-		for(int i = 0; i < MAX_NODE_PORT_COUNT; i++)
-		{
-			if(i >= pOutputPorts->GetSize())
-				pOutputs[i] = nullOutputConfig;
-		}
+		for(int i = pOutputPorts->GetSize(); i < MAX_NODE_PORT_COUNT; i++)
+			pOutputs[i] = nullOutputConfig;
 
 		SAFE_RELEASE(pOutputPorts);
 	}

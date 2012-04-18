@@ -23,23 +23,31 @@ struct SNodeType
 {
 	typedef std::vector<CFlowNode *> TFlowNodes;
 
-	SNodeType(const char *name) : typeName(name), pInputs(NULL), pOutputs(NULL)
-	{
-	}
+	SNodeType(const char *name) : typeName(name), scriptName(name), pInputs(NULL), pOutputs(NULL) {}
+	SNodeType(const char *name, const char *scriptname) : typeName(name), scriptName(scriptname), pInputs(NULL), pOutputs(NULL) {}
 
 	void ReloadPorts(IMonoClass *pScript);
-
-	const char *GetTypeName() const { return typeName; }
-
-	TFlowNodes nodes;
+	
+	/// <summary>
+	/// Gets the complete node type name, i.e. entity:Bouncy
+	/// </summary>
+	const char *GetTypeName() const { return typeName.c_str(); }
+	/// <summary>
+	/// Gets the script name, same as GetTypeName unless this is an entity node.
+	/// </summary>
+	const char *GetScriptName() { return scriptName.c_str(); }
 
 	SOutputPortConfig *GetOutputPorts(IMonoClass *pScript) { if(!pOutputs) ReloadPorts(pScript); return pOutputs; }
 	SInputPortConfig *GetInputPorts(IMonoClass *pScript) { if(!pInputs) ReloadPorts(pScript); return pInputs; }
 
+	TFlowNodes nodes;
+
 	void RemoveNode(CFlowNode *pNode) { nodes.erase(std::remove(nodes.begin(), nodes.end(), pNode), nodes.end()); }
 
 private:
-	const char *typeName;
+
+	string typeName;
+	string scriptName;
 
 	SOutputPortConfig *pOutputs;
 	SInputPortConfig *pInputs;
@@ -69,10 +77,9 @@ public:
 	virtual void Reset() override;
 	// ~IFlowNodeFactory
 
-	static IMonoClass *InstantiateNode(CFlowNode *pNode, const char *typeName);
+	static SNodeType *InstantiateNode(CFlowNode *pNode, const char *typeName);
 	static void UnregisterNode(CFlowNode *pNode);
 
-	static SNodeType *GetNodeTypeById(int scriptId);
 	static CFlowNode *GetNodeById(int scriptId);
 
 protected:

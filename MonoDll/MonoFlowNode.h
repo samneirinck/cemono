@@ -63,19 +63,19 @@ public:
 
 	SActivationInfo *GetActivationInfo() { return m_pActInfo; }
 	TFlowNodeId GetId() const { return m_pActInfo->myID; }
+
 	IMonoClass *GetScript() const { return m_pScriptClass; }
+	void SetScript(IMonoClass *pScript) { m_pScriptClass = pScript; }
 
 	inline void SetRegularlyUpdated(bool update) { m_pActInfo->pGraph->SetRegularlyUpdated(m_pActInfo->myID, update); }
 
 private:
 
-	// Returns true if successful
-	virtual bool InstantiateScript(const char *nodeName);
-
 	SActivationInfo *m_pActInfo;
 	IFlowGraph *m_pHookedGraph;
 
 	IMonoClass *m_pScriptClass;
+	SNodeType *m_pNodeType;
 
 	bool m_bEntityNode;
 	ENodeCloneType m_cloneType;
