@@ -86,6 +86,7 @@ namespace CryEngine.Initialization
 			for(; scriptIndex < CompiledScripts.Length; scriptIndex++)
 			{
 				script = CompiledScripts[scriptIndex];
+
 				if(script.ScriptName.Equals(scriptName))
 					break;
 			}
@@ -480,7 +481,7 @@ namespace CryEngine.Initialization
 			}
 
 			for(int i = 0; i < specialTypes.Length; i++)
-				CompiledScripts[i] = new CryScript(specialTypes[i]);
+				CompiledScripts[types.Count() + i] = new CryScript(specialTypes[i]);
 		}
 
 		internal void RegisterFlownodes()
