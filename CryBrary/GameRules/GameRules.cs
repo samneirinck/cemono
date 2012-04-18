@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
+using CryEngine.Initialization;
+
 namespace CryEngine
 {
 	/// <summary>
@@ -18,6 +20,48 @@ namespace CryEngine
 		extern internal static void _AddGameModeLevelLocation(string gamemode, string location);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static void _SetDefaultGameMode(string gamemode);
+
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern private static EntityId _SpawnPlayer(int channelId, string name, string className, Vec3 pos, Vec3 angles, Vec3 scale);
+
+		public static T SpawnPlayer<T>(int channelId, string name, Vec3 pos, Vec3 angles, Vec3 scale) where T : Actor, new()
+		{
+			// just in case
+			Actor.Remove(channelId);
+
+			EntityId entityId = _SpawnPlayer(channelId, name, "Player", pos, angles, scale);
+			if(entityId == 0)
+			{
+				Debug.LogAlways("[GameRules.SpawnPlayer] New entityId was invalid");
+				return null;
+			}
+
+			var player = ScriptCompiler.AddScriptInstance(new T()) as T;
+			if(player == null)
+			{
+				Debug.LogAlways("[GameRules.SpawnPlayer] Failed to add script instance");
+				return null;
+			}
+
+			player.InternalSpawn(entityId, channelId);
+
+			return player;
+		}
+
+		public static T SpawnPlayer<T>(int channelId, string name, Vec3 pos, Vec3 angles) where T : Actor, new()
+		{
+			return SpawnPlayer<T>(channelId, name, pos, angles, new Vec3(1, 1, 1));
+		}
+
+		public static T SpawnPlayer<T>(int channelId, string name, Vec3 pos) where T : Actor, new()
+		{
+			return SpawnPlayer<T>(channelId, name, pos, new Vec3(0, 0, 0), new Vec3(1, 1, 1));
+		}
+
+		public static T SpawnPlayer<T>(int channelId, string name) where T : Actor, new()
+		{
+			return SpawnPlayer<T>(channelId, name, new Vec3(0, 0, 0), new Vec3(0, 0, 0), new Vec3(1, 1, 1));
+		}
 		#endregion
 
 		// Shared
