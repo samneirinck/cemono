@@ -134,7 +134,7 @@ void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 		break;
 	case eFE_SetEntityId:
 		{
-			if(m_bEntityNode)
+			if(m_pNodeType->IsEntityNode())
 			{
 				int entityScriptId = 0;
 

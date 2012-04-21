@@ -38,7 +38,7 @@ void CFlowManager::Reset()
 {
 	for each(auto nodeType in m_nodeTypes)
 	{
-		IMonoClass *pScript = gEnv->pMonoScriptSystem->GetScriptById(gEnv->pMonoScriptSystem->InstantiateScript(nodeType->GetTypeName()));
+		IMonoClass *pScript = gEnv->pMonoScriptSystem->GetScriptById(gEnv->pMonoScriptSystem->InstantiateScript(nodeType->GetScriptName()));
 		nodeType->ReloadPorts(pScript);
 		SAFE_RELEASE(pScript);
 	}
@@ -46,24 +46,19 @@ void CFlowManager::Reset()
 
 void CFlowManager::RegisterNode(mono::string monoTypeName)
 {
-	if(IFlowSystem *pFlowSystem = NULL//gEnv->pFlowSystem)
+	IFlowSystem *pFlowSystem = gEnv->pFlowSystem;
+	if(!pFlowSystem)
 	{
-		CFlowManager *pFlowManager = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager();
-
-		const char *typeName = ToCryString(monoTypeName);
-		const char *scriptName = typeName;
-		string str = string(scriptName);
-
-		if(str.find("entity:") != string::npos) // Determines if this is an entity node
-		{
-			str = str.substr(7);
-			m_nodeTypes.push_back(new SNodeType(typeName, str.c_str()));
-		}
-		else
-			m_nodeTypes.push_back(new SNodeType(typeName));
-
-		pFlowSystem->RegisterType(typeName, (IFlowNodeFactoryPtr)pFlowManager);
+		CryLogAlways("[Warning] Failed to register node %s, gEnv->pFlowSystem was null!", ToCryString(monoTypeName));
+		return;
 	}
+
+	CFlowManager *pFlowManager = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager();
+
+	const char *typeName = ToCryString(monoTypeName);
+
+	m_nodeTypes.push_back(std::shared_ptr<SNodeType>(new SNodeType(typeName)));
+	pFlowSystem->RegisterType(typeName, (IFlowNodeFactoryPtr)pFlowManager);
 }
 
 void CFlowManager::UnregisterNode(CFlowNode *pNode)
@@ -77,7 +72,7 @@ IFlowNodePtr CFlowManager::Create(IFlowNode::SActivationInfo *pActInfo)
 	return new CFlowNode(pActInfo);
 }
 
-SNodeType *CFlowManager::InstantiateNode(CFlowNode *pNode, const char *name)
+std::shared_ptr<SNodeType> CFlowManager::InstantiateNode(CFlowNode *pNode, const char *name)
 {
 	for each(auto nodeType in m_nodeTypes)
 	{

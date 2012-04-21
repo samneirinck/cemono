@@ -75,9 +75,8 @@ private:
 	IFlowGraph *m_pHookedGraph;
 
 	IMonoClass *m_pScriptClass;
-	SNodeType *m_pNodeType;
+	std::shared_ptr<SNodeType> m_pNodeType;
 
-	bool m_bEntityNode;
 	ENodeCloneType m_cloneType;
 };
 

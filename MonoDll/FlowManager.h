@@ -23,8 +23,15 @@ struct SNodeType
 {
 	typedef std::vector<CFlowNode *> TFlowNodes;
 
-	SNodeType(const char *name) : typeName(name), scriptName(name), pInputs(NULL), pOutputs(NULL) {}
-	SNodeType(const char *name, const char *scriptname) : typeName(name), scriptName(scriptname), pInputs(NULL), pOutputs(NULL) {}
+	SNodeType(const char *name) : typeName(name), pInputs(NULL), pOutputs(NULL)
+	{
+		if(bEntityNode = typeName.find("entity:") != string::npos)
+			scriptName = typeName.substr(7);
+		else 
+			scriptName = typeName;
+
+		CryLogAlways("typeName: %s scriptName: %s", typeName.c_str(), scriptName.c_str());
+	}
 
 	void ReloadPorts(IMonoClass *pScript);
 	
@@ -32,10 +39,13 @@ struct SNodeType
 	/// Gets the complete node type name, i.e. entity:Bouncy
 	/// </summary>
 	const char *GetTypeName() const { return typeName.c_str(); }
+
 	/// <summary>
-	/// Gets the script name, same as GetTypeName unless this is an entity node.
+	/// Gets the node's script name, i.e. Bouncy
 	/// </summary>
-	const char *GetScriptName() { return scriptName.c_str(); }
+	const char *GetScriptName() const { return scriptName; }
+
+	bool IsEntityNode() const { return bEntityNode; }
 
 	SOutputPortConfig *GetOutputPorts(IMonoClass *pScript) { if(!pOutputs) ReloadPorts(pScript); return pOutputs; }
 	SInputPortConfig *GetInputPorts(IMonoClass *pScript) { if(!pInputs) ReloadPorts(pScript); return pInputs; }
@@ -48,6 +58,7 @@ private:
 
 	string typeName;
 	string scriptName;
+	bool bEntityNode;
 
 	SOutputPortConfig *pOutputs;
 	SInputPortConfig *pInputs;
@@ -61,7 +72,7 @@ public:
 	CFlowManager();
 	~CFlowManager() {}
 
-	typedef std::vector<SNodeType *> TFlowTypes;
+	typedef std::vector<std::shared_ptr<SNodeType>> TFlowTypes;
 
 	// IFlowNodeFactory
 	virtual void AddRef() override { ++m_refs; }
@@ -77,7 +88,7 @@ public:
 	virtual void Reset() override;
 	// ~IFlowNodeFactory
 
-	static SNodeType *InstantiateNode(CFlowNode *pNode, const char *typeName);
+	static std::shared_ptr<SNodeType> InstantiateNode(CFlowNode *pNode, const char *typeName);
 	static void UnregisterNode(CFlowNode *pNode);
 
 	static CFlowNode *GetNodeById(int scriptId);
