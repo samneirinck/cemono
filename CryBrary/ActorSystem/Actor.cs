@@ -41,7 +41,7 @@ namespace CryEngine
 			return Entity.Get(actorId) as Actor;
 		}
 
-		public static T Get<T>(EntityId actorId) where T : Actor
+		public static new T Get<T>(EntityId actorId) where T : Actor
 		{
 			return Get(actorId) as T;
 		}
