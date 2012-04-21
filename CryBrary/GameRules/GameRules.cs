@@ -55,12 +55,12 @@ namespace CryEngine
 
 		public static T SpawnPlayer<T>(int channelId, string name, Vec3 pos) where T : Actor, new()
 		{
-			return SpawnPlayer<T>(channelId, name, pos, new Vec3(0, 0, 0), new Vec3(1, 1, 1));
+			return SpawnPlayer<T>(channelId, name, pos, Vec3.Zero, new Vec3(1, 1, 1));
 		}
 
 		public static T SpawnPlayer<T>(int channelId, string name) where T : Actor, new()
 		{
-			return SpawnPlayer<T>(channelId, name, new Vec3(0, 0, 0), new Vec3(0, 0, 0), new Vec3(1, 1, 1));
+			return SpawnPlayer<T>(channelId, name, Vec3.Zero, Vec3.Zero, new Vec3(1, 1, 1));
 		}
 		#endregion
 

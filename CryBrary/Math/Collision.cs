@@ -408,7 +408,7 @@ namespace CryEngine
 					Math.Abs(ray2.Position.Y - ray1.Position.Y) < Math.ZeroTolerance &&
 					Math.Abs(ray2.Position.Z - ray1.Position.Z) < Math.ZeroTolerance)
 				{
-					point = new Vec3();
+					point = Vec3.Zero;
 					return true;
 				}
 			}
@@ -462,7 +462,7 @@ namespace CryEngine
 				Math.Abs(point2.Y - point1.Y) > Math.ZeroTolerance ||
 				Math.Abs(point2.Z - point1.Z) > Math.ZeroTolerance)
 			{
-				point = new Vec3();
+				point = Vec3.Zero;
 				return false;
 			}
 
@@ -526,7 +526,7 @@ namespace CryEngine
 			float distance;
 			if(!RayIntersectsPlane(ref ray, ref plane, out distance))
 			{
-				point = new Vec3();
+				point = Vec3.Zero;
 				return false;
 			}
 
@@ -656,7 +656,7 @@ namespace CryEngine
 			float distance;
 			if(!RayIntersectsTriangle(ref ray, ref vertex1, ref vertex2, ref vertex3, out distance))
 			{
-				point = new Vec3();
+				point = Vec3.Zero;
 				return false;
 			}
 
@@ -789,7 +789,7 @@ namespace CryEngine
 			float distance;
 			if(!RayIntersectsBox(ref ray, ref box, out distance))
 			{
-				point = new Vec3();
+				point = Vec3.Zero;
 				return false;
 			}
 
@@ -851,7 +851,7 @@ namespace CryEngine
 			float distance;
 			if(!RayIntersectsSphere(ref ray, ref sphere, out distance))
 			{
-				point = new Vec3();
+				point = Vec3.Zero;
 				return false;
 			}
 

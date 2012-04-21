@@ -33,6 +33,7 @@ namespace CryEngine
 	[StructLayout(LayoutKind.Sequential, Pack = 4)]
 	public struct Vec3 : IEquatable<Vec3>, IFormattable
 	{
+		public static readonly Vec3 Zero = new Vec3(0, 0, 0);
 		public static readonly Vec3 Up = new Vec3(0, 0, 1);
 		public static readonly Vec3 Down = new Vec3(0, 0, -1);
 
@@ -864,9 +865,7 @@ namespace CryEngine
 			float radicand = 1.0f - (index * index) * (1.0f - (cos1 * cos1));
 
 			if(radicand < 0.0f)
-			{
-				result = new Vec3();
-			}
+				result = Vec3.Zero;
 			else
 			{
 				float cos2 = (float)Math.Sqrt(radicand);

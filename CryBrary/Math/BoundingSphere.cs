@@ -181,7 +181,7 @@ namespace CryEngine
 		public static void FromPoints(Vec3[] points, out BoundingSphere result)
 		{
 			//Find the center of all points.
-			Vec3 center = new Vec3();
+			Vec3 center = Vec3.Zero;
 			for(int i = 0; i < points.Length; ++i)
 			{
 				Vec3.Add(ref points[i], ref center, out center);

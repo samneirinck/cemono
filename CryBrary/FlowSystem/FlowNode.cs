@@ -110,7 +110,7 @@ namespace CryEngine
 									defaultVal = "";
 									break;
 								case NodePortType.Vec3:
-									defaultVal = new Vec3(0, 0, 0);
+									defaultVal = Vec3.Zero;
 									break;
 							}
 						}
