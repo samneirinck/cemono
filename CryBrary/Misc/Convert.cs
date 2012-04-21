@@ -4,6 +4,9 @@
 	{
 		public static object FromString(EntityPropertyType type, string value)
 		{
+            if (value == null)
+                throw new System.ArgumentNullException("value");
+
 			switch (type)
  			{
 				case EntityPropertyType.Bool:
