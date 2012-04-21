@@ -103,7 +103,7 @@ public:
 	virtual int GetScriptId(EntityId entityId, bool returnBackIfInvalid = false) override;
 	// ~IMonoEntityManager
 
-	CEntity *GetEntity(EntityId entityId);
+	std::shared_ptr<CEntity> GetEntity(EntityId entityId);
 	bool IsMonoEntity(const char *entityClassName);
 
 protected:
@@ -125,7 +125,7 @@ protected:
 
 	// ~ScriptBinds
 	
-	typedef std::vector<CEntity *> TMonoEntities;
+	typedef std::vector<std::shared_ptr<CEntity>> TMonoEntities;
 	TMonoEntities m_monoEntities;
 
 	static std::vector<const char *> m_monoEntityClasses;

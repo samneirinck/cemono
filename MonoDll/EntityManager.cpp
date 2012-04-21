@@ -46,7 +46,7 @@ bool CEntityManager::OnBeforeSpawn(SEntitySpawnParams &params)
 	if(!IsMonoEntity(className))
 		return true;
 
-	m_monoEntities.push_back(new CEntity(gEnv->pMonoScriptSystem->InstantiateScript(className)));
+	m_monoEntities.push_back(std::shared_ptr<CEntity>(new CEntity(gEnv->pMonoScriptSystem->InstantiateScript(className))));
 
 	return true;
 }
@@ -103,12 +103,12 @@ bool CEntityManager::IsMonoEntity(const char *entityClassName)
 	return false;
 }
 
-CEntity *CEntityManager::GetEntity(EntityId entityId)
+std::shared_ptr<CEntity> CEntityManager::GetEntity(EntityId entityId)
 {
-	for (TMonoEntities::const_iterator it=m_monoEntities.begin(); it!=m_monoEntities.end(); ++it)
+	for each(auto& monoEntity in m_monoEntities)
 	{
-		if((*it)->GetEntityId()==entityId)
-			return (*it);
+		if(monoEntity->GetEntityId()==entityId)
+			return monoEntity;
 	}
 
 	return NULL;
@@ -116,8 +116,8 @@ CEntity *CEntityManager::GetEntity(EntityId entityId)
 
 int CEntityManager::GetScriptId(EntityId entityId, bool returnBackIfInvalid)
 {
-	if(CEntity *pEntity = GetEntity(entityId))
-		return pEntity->GetScriptId();
+	if(auto& entity = GetEntity(entityId))
+		return entity->GetScriptId();
 
 	if(returnBackIfInvalid)
 		return m_monoEntities.back()->GetScriptId();

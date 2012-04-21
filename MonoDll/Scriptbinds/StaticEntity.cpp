@@ -246,14 +246,14 @@ void CScriptbind_StaticEntity::CreateGameObjectForEntity(EntityId id)
 	if(!pGameObject)
 		return;
 
-	if(CEntity *pEntity = static_cast<CEntityManager *>(gEnv->pMonoScriptSystem->GetEntityManager())->GetEntity(id))
-		pEntity->RegisterGameObject(pGameObject);
+	if(auto& entity = static_cast<CEntityManager *>(gEnv->pMonoScriptSystem->GetEntityManager())->GetEntity(id))
+		entity->RegisterGameObject(pGameObject);
 }
 
 void CScriptbind_StaticEntity::BindGameObjectToNetwork(EntityId id)
 {
-	if(CEntity *pEntity = static_cast<CEntityManager *>(gEnv->pMonoScriptSystem->GetEntityManager())->GetEntity(id))
-		pEntity->GetGameObject()->BindToNetwork();
+	if(auto& entity = static_cast<CEntityManager *>(gEnv->pMonoScriptSystem->GetEntityManager())->GetEntity(id))
+		entity->GetGameObject()->BindToNetwork();
 }
 
 mono::string CScriptbind_StaticEntity::GetStaticObjectFilePath(EntityId id, int slot)
@@ -289,8 +289,8 @@ void CScriptbind_StaticEntity::AddImpulse(EntityId id, ActionImpulse actionImpul
 
 void CScriptbind_StaticEntity::AddMovement(EntityId id, MovementRequest &movementRequest)
 {
-	if(CEntity *pEntity = static_cast<CEntityManager *>(gEnv->pMonoScriptSystem->GetEntityManager())->GetEntity(id))
-		pEntity->AddMovement(movementRequest);
+	if(auto &entity = static_cast<CEntityManager *>(gEnv->pMonoScriptSystem->GetEntityManager())->GetEntity(id))
+		entity->AddMovement(movementRequest);
 }
 
 Vec3 CScriptbind_StaticEntity::GetVelocity(EntityId id)
