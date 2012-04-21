@@ -66,7 +66,8 @@ namespace CryEngine.Initialization
 		public void PostInit()
 		{
 			// These have to be registered later on due to the flow system being initialized late.
-			RegisterFlownodes();
+			//foreach(var node in FlowNodes)
+			//FlowNode.RegisterNode(node);
 		}
 
 		/// <summary>
@@ -321,7 +322,7 @@ namespace CryEngine.Initialization
 			foreach(var directory in compilationParameters.Folders)
 			{
 				if(Directory.Exists(directory))
-			{
+				{
 					foreach(var script in Directory.GetFiles(directory, "*.cs", SearchOption.AllDirectories))
 					{
 						if(!scripts.Contains(script))
@@ -403,11 +404,11 @@ namespace CryEngine.Initialization
 			var types = new List<Type>();
 
 			Parallel.ForEach(assembly.GetTypes(), type =>
-				{
-					// TODO: Re-implement allowedTypes
-					if(!type.ContainsAttribute<ExcludeFromCompilationAttribute>())
-						types.Add(type);
-				});
+			{
+				// TODO: Re-implement allowedTypes
+				if(!type.ContainsAttribute<ExcludeFromCompilationAttribute>())
+					types.Add(type);
+			});
 
 			return types;
 		}
@@ -483,12 +484,6 @@ namespace CryEngine.Initialization
 				CompiledScripts[types.Count() + i] = new CryScript(specialTypes[i]);
 		}
 
-		internal void RegisterFlownodes()
-		{
-			foreach(var node in FlowNodes)
-				FlowNode.RegisterNode(node.category + ":" + node.className);
-		}
-
 		private void LoadEntity(ref CryScript script)
 		{
 			Entity.RegisterEntityClass(Entity.GetEntityConfig(script.ScriptType));
@@ -499,7 +494,7 @@ namespace CryEngine.Initialization
 		private void LoadFlowNode(ref CryScript script, bool entityNode = false)
 		{
 			string category = null;
-			var nodeName = script.ScriptType.Name;
+			var nodeName = script.ScriptName;
 
 			if(!entityNode)
 			{
@@ -508,10 +503,10 @@ namespace CryEngine.Initialization
 				FlowNodeAttribute nodeInfo;
 				if(script.ScriptType.TryGetAttribute<FlowNodeAttribute>(out nodeInfo))
 				{
-					if(nodeInfo.UICategory != null)
+					if(nodeInfo.UICategory != null && nodeInfo.UICategory.Length > 0)
 						category = nodeInfo.UICategory;
 
-					if(nodeInfo.Name != null)
+					if(nodeInfo.Name != null && nodeInfo.Name.Length > 0)
 						nodeName = nodeInfo.Name;
 				}
 
@@ -520,7 +515,7 @@ namespace CryEngine.Initialization
 			else
 				category = "entity";
 
-			FlowNodes.Add(new StoredNode(nodeName, category));
+			FlowNodes.Add(category + ":" + nodeName);
 		}
 
 		public void GenerateDebugDatabaseForAssembly(string assemblyPath)
@@ -583,19 +578,6 @@ namespace CryEngine.Initialization
 			/// Forces generation of debug information, even in release mode.
 			/// </summary>
 			public bool ForceDebugInformation { get; set; }
-		}
-
-		internal struct StoredNode
-		{
-			public StoredNode(string Class, string Category)
-				: this()
-			{
-				className = Class;
-				category = Category;
-			}
-
-			public string className;
-			public string category;
 		}
 	}
 
