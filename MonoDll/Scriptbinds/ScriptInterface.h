@@ -23,7 +23,8 @@ public:
 	~CScriptbind_ScriptInterface() {}
 
 	// IMonoScriptBind
-	virtual const char *GetClassName() { return "LuaScriptTable"; }
+	virtual const char *GetNamespace() override { return "CryEngine.Lua"; }
+	virtual const char *GetClassName() override { return "ScriptTable"; }
 	// ~IMonoScriptBind
 
 	// Externals

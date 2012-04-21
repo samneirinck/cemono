@@ -19,11 +19,12 @@
     <OutputPath>..\..\..\Bin32\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>0</WarningLevel>
-    <DocumentationFile>..\..\..\Bin32\CryBrary.XML</DocumentationFile>
+    <WarningLevel>3</WarningLevel>
+    <DocumentationFile>CryBrary.xml</DocumentationFile>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisRuleSet>ExtendedDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisIgnoreGeneratedCode>true</CodeAnalysisIgnoreGeneratedCode>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,9 +33,10 @@
     <DefineConstants>TRACE;RELEASE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\..\Bin32\CryBrary.XML</DocumentationFile>
+    <DocumentationFile>CryBrary.xml</DocumentationFile>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisRuleSet>MixedRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -51,7 +53,7 @@
     <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
     <WarningLevel>4</WarningLevel>
     <Optimize>false</Optimize>
-    <DocumentationFile>..\..\..\Bin64\CryBrary.XML</DocumentationFile>
+    <DocumentationFile>CryBrary.xml</DocumentationFile>
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
@@ -67,8 +69,8 @@
     <CodeAnalysisRuleSet>MixedRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
     <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\..\Bin64\CryBrary.XML</DocumentationFile>
+    <WarningLevel>2</WarningLevel>
+    <DocumentationFile>CryBrary.xml</DocumentationFile>
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Profile|AnyCPU'">
@@ -77,7 +79,7 @@
     </DefineConstants>
     <Optimize>false</Optimize>
     <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <CodeAnalysisLogFile>..\..\..\..\..\ProjectInk\Bin32\Mono\BaseLibrary.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
     <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
@@ -88,7 +90,7 @@
     <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>..\..\..\Bin32\CryBrary.XML</DocumentationFile>
+    <DocumentationFile>CryBrary.xml</DocumentationFile>
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Profile|x64'">
@@ -108,7 +110,7 @@
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>..\..\..\Bin64\CryBrary.XML</DocumentationFile>
+    <DocumentationFile>CryBrary.xml</DocumentationFile>
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup>
@@ -116,12 +118,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Cecil">
-      <HintPath>..\..\..\Engine\Mono\lib\mono\gac\Mono.Cecil\0.9.4.0__0738eb9f132ed756\Mono.Cecil.dll</HintPath>
+      <HintPath>References\Mono.Cecil.dll</HintPath>
       <Private>False</Private>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="Mono.Cecil.Mdb">
-      <HintPath>..\..\..\Engine\Mono\lib\mono\gac\Mono.Cecil.Mdb\0.9.4.0__0738eb9f132ed756\Mono.Cecil.Mdb.dll</HintPath>
+      <HintPath>References\Mono.Cecil.Mdb.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="PresentationCore" />
@@ -138,10 +139,10 @@
     <Compile Include="Engine\Terrain.cs" />
     <Compile Include="Engine\View.cs" />
     <Compile Include="EntitySystem\EntityId.cs" />
+    <Compile Include="EntitySystem\NativeEntity.cs" />
     <Compile Include="EntitySystem\Physics.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Lua\LuaScript.cs" />
-    <Compile Include="Misc\Collision.cs" />
+    <Compile Include="Math\Collision.cs" />
     <Compile Include="Misc\NativeMethods.cs" />
     <Compile Include="Serialization\CrySerializer.cs" />
     <Compile Include="Math\BoundingBox.cs" />
@@ -182,8 +183,7 @@
     <Compile Include="Console\Console.cs" />
     <Compile Include="ActorSystem\ItemSystem.cs" />
     <Compile Include="Utils\Debug\Logging.cs" />
-    <Compile Include="GameRules\GameRulesSystem.cs" />
-    <Compile Include="GameRules\BaseGameRules.cs" />
+    <Compile Include="GameRules\GameRules.cs" />
     <Compile Include="Utils\Statistics.cs" />
     <Compile Include="Math\Vec3.cs" />
     <Compile Include="Utils\PathUtils.cs" />

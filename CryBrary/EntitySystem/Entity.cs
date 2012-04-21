@@ -16,7 +16,7 @@ namespace CryEngine
 	/// <summary>
 	/// The base class for all entities in the game world.
 	/// </summary>
-	public partial class Entity : FlowNode
+	public abstract partial class Entity : FlowNode
 	{
 		#region Externals
 		[MethodImpl(MethodImplOptions.InternalCall)]
@@ -182,8 +182,6 @@ namespace CryEngine
 				storedProperties.Clear();
 				storedProperties = null;
 			}
-
-			Entity.RegisterInternalEntity(this);
 		}
 
 		internal virtual bool CanContainEditorProperties { get { return true; } }

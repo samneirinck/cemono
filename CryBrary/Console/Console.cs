@@ -6,7 +6,6 @@ namespace CryEngine
 	public partial class Console
     {
         // Console commands
-		[System.CLSCompliant(false)]
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static void _RegisterCommand(string name, string description, CVarFlags flags);
 

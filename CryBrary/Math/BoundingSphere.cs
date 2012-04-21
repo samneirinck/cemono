@@ -136,10 +136,10 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="point">The point to test.</param>
 		/// <returns>The type of containment the two objects have.</returns>
-		public ContainmentType Contains(ref Vec3 point)
+		public bool Contains(ref Vec3 point)
 		{
 			return Collision.SphereContainsPoint(ref this, ref point);
-		}
+		} 
 
 		/// <summary>
 		/// Determines whether the current objects contains a triangle.

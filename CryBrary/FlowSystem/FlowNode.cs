@@ -12,7 +12,7 @@ namespace CryEngine
 	{
 		#region Externals
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void RegisterNode(string name, string category, bool isEntity);
+		extern internal static void RegisterNode(string typeName);
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static void _SetRegularlyUpdated(int scriptId, bool updated);
@@ -56,7 +56,7 @@ namespace CryEngine
             return new NodeConfig(nodeInfo.Category, nodeInfo.Description);
         }
 
-		internal NodePortConfig GetPortConfig()
+		internal virtual NodePortConfig GetPortConfig()
         {
             if (inputMethods == null)
                 inputMethods = new List<MethodInfo>();

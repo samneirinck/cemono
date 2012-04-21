@@ -22,10 +22,10 @@ public:
 	// Instantiate a class right away.
 	CScriptClass(MonoClass *pClass, IMonoArray *pConstructorArguments);
 	// No instance provided, can only be used to invoke / get static members. Instantiation is possible using the Instantiate method.
-	CScriptClass(MonoClass *pClass) : m_pClass(pClass), m_pInstance(NULL) {}
+	CScriptClass(MonoClass *pClass) : m_pClass(pClass), m_pInstance(NULL), m_scriptId(-1) {}
 	// Set up using an existing instance.
-	CScriptClass(MonoClass *pClass, mono::object instance) : m_pClass(pClass), m_pInstance(instance) { m_instanceHandle = mono_gchandle_new((MonoObject *)m_pInstance, false); }
-	~CScriptClass();
+	CScriptClass(MonoClass *pClass, mono::object instance);
+	virtual ~CScriptClass();
 
 	// IMonoClass
 	virtual void Release() override { delete this; }
@@ -47,6 +47,7 @@ public:
 	void OnReload(MonoClass *pNewClass, mono::object pNewInstance);
 
 	MonoClass *GetMonoClass() { return m_pClass; }
+	mono::object GetInstance() { return m_pInstance; }
 
 private:
 	MonoMethod *GetMethod(const char *methodName, IMonoArray *pArgs, bool bStatic);

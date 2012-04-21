@@ -12,12 +12,11 @@
 
 #include <IGameFramework.h>
 
-CFlowNode::CFlowNode(SActivationInfo *pActInfo, bool isEntityClass)
-	: m_scriptId(-1)
-	, m_refs(0)
+CFlowNode::CFlowNode(SActivationInfo *pActInfo)
+	: m_pScriptClass(NULL)
 	, m_pActInfo(pActInfo)
-	, m_bInitialized(false)
-	, m_bEntityNode(isEntityClass)
+	, m_cloneType(eNCT_Instanced)
+	, m_pNodeType(NULL)
 {
 	// We *have* to get the id right away or inputs won't work, so lets use this fugly solution.
 	pActInfo->pGraph->RegisterHook(this);
@@ -27,103 +26,97 @@ CFlowNode::CFlowNode(SActivationInfo *pActInfo, bool isEntityClass)
 
 CFlowNode::~CFlowNode()
 {
-	gEnv->pMonoScriptSystem->RemoveScriptInstance(m_scriptId);
+	SAFE_RELEASE(m_pScriptClass);
+}
 
-	 static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager()->UnregisterFlowNode(m_scriptId);
+void CFlowNode::Release()
+{
+	static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager()->UnregisterNode(this);
 }
 
 bool CFlowNode::CreatedNode(TFlowNodeId id, const char *name, TFlowNodeTypeId typeId, IFlowNodePtr pNode) 
 { 
 	if(pNode==this)
-		InstantiateScript(gEnv->pFlowSystem->GetTypeName(typeId));
-	
+	{
+		m_pNodeType = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager()->InstantiateNode(this, gEnv->pFlowSystem->GetTypeName(typeId));
+
+		// Set by CFlowManager::InstantiateNode.
+		return m_pScriptClass != NULL;
+	}
+
 	return true; 
 }
 
-bool CFlowNode::InstantiateScript(const char *nodeName)
+IFlowNodePtr CFlowNode::Clone(SActivationInfo *pActInfo)
 {
-	string fullTypeName = nodeName;
-
-	string typeName = "";
-	int curPos = 0;
-
-	string next = fullTypeName.Tokenize(":", curPos);
-	while(!next.empty())
+	switch(m_cloneType)
 	{
-	typeName = next;
-		next = fullTypeName.Tokenize(":", curPos);
+	case eNCT_Singleton:
+		return this;
+	case eNCT_Instanced:
+		return new CFlowNode(pActInfo);
+	default:
+		break;
 	}
 
-	m_scriptId = gEnv->pMonoScriptSystem->InstantiateScript(typeName);
-	if(m_scriptId!=-1)
-		static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager()->RegisterFlowNode(this, m_scriptId);
-
-	return m_scriptId!=-1;
+	return NULL;
 }
 
 void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 {	
-	if(m_pHookedGraph && m_scriptId!=-1)
+	if(m_pHookedGraph && m_pScriptClass->GetScriptId()!=-1)
 	{
 		m_pHookedGraph->UnregisterHook(this);
 		m_pHookedGraph = NULL;
 	}
 
-	if(!m_pActInfo && !pActInfo)
-		return;
-
-	if(pActInfo)
-		m_pActInfo = pActInfo;
-
-
-
 	switch(event)
 	{
 	case eFE_Activate:
 		{
-			IFlowNodeData *pNodeData = m_pActInfo->pGraph->GetNodeData(m_pActInfo->myID);
+			IFlowNodeData *pNodeData = m_pActInfo->pGraph->GetNodeData(pActInfo->myID);
 			if(!pNodeData)
 				return;
 
 			for(int i = 0; i < pNodeData->GetNumInputPorts(); i++)
 			{
-				if(IsPortActive(i))
+				if(IsPortActive(pActInfo, i))
 				{
-					switch(GetPortType(i))
+					switch(GetPortType(pActInfo, i))
 					{
 					case eFDT_Void:
 						{
-							CallMonoScript<void>(m_scriptId, "OnPortActivated", i);
+							CallMonoScript<void>(m_pScriptClass->GetScriptId(), "OnPortActivated", i);
 						}
 						break;
 					case eFDT_Int:
 						{
-							CallMonoScript<void>(m_scriptId, "OnPortActivated", i, GetPortInt(i));
+							CallMonoScript<void>(m_pScriptClass->GetScriptId(), "OnPortActivated", i, GetPortInt(pActInfo, i));
 						}
 						break;
 					case eFDT_Float:
 						{
-							CallMonoScript<void>(m_scriptId, "OnPortActivated", i, GetPortFloat(i));
+							CallMonoScript<void>(m_pScriptClass->GetScriptId(), "OnPortActivated", i, GetPortFloat(pActInfo, i));
 						}
 						break;
 					case eFDT_EntityId:
 						{
-							CallMonoScript<void>(m_scriptId, "OnPortActivated", i, GetPortEntityId(i));
+							CallMonoScript<void>(m_pScriptClass->GetScriptId(), "OnPortActivated", i, GetPortEntityId(pActInfo, i));
 						}
 						break;
 					case eFDT_Vec3:
 						{
-							CallMonoScript<void>(m_scriptId, "OnPortActivated", i, GetPortVec3(i));
+							CallMonoScript<void>(m_pScriptClass->GetScriptId(), "OnPortActivated", i, GetPortVec3(pActInfo, i));
 						}
 						break;
 					case eFDT_String:
 						{
-							CallMonoScript<void>(m_scriptId, "OnPortActivated", i, GetPortString(i));
+							CallMonoScript<void>(m_pScriptClass->GetScriptId(), "OnPortActivated", i, GetPortString(pActInfo, i));
 						}
 						break;
 					case eFDT_Bool:
 						{
-							CallMonoScript<void>(m_scriptId, "OnPortActivated", i, GetPortBool(i));
+							CallMonoScript<void>(m_pScriptClass->GetScriptId(), "OnPortActivated", i, GetPortBool(pActInfo, i));
 						}
 						break;
 					default:
@@ -136,7 +129,7 @@ void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 		break;
 	case eFE_Initialize:
 		{
-			CallMonoScript<void>(m_scriptId, "OnInitialized");
+			CallMonoScript<void>(m_pScriptClass->GetScriptId(), "OnInitialized");
 		}
 		break;
 	case eFE_SetEntityId:
@@ -151,10 +144,11 @@ void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 						entityScriptId = pEntityManager->GetScriptId(pActInfo->pGraph->GetEntityId(pActInfo->myID));
 				}
 
-				if(entityScriptId!=m_scriptId && entityScriptId!=0)
+				int scriptId = m_pScriptClass->GetScriptId();
+				if(entityScriptId!=scriptId && entityScriptId!=0)
 				{
-					gEnv->pMonoScriptSystem->RemoveScriptInstance(m_scriptId);
-					m_scriptId = entityScriptId;
+					gEnv->pMonoScriptSystem->RemoveScriptInstance(scriptId);
+					m_pScriptClass = gEnv->pMonoScriptSystem->GetScriptById(entityScriptId);
 				}
 			}
 		}
@@ -164,14 +158,21 @@ void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 
 void CFlowNode::GetConfiguration(SFlowNodeConfig &config)
 {
-	SMonoNodeConfig monoConfig = CallMonoScript<SMonoNodeConfig>(m_scriptId, "GetNodeConfig");
+	if(!m_pScriptClass)
+	{
+		CryWarning(VALIDATOR_MODULE_FLOWGRAPH, VALIDATOR_ERROR, "CFlowNode::GetConfiguration: m_pScriptClass was NULL!");
+		return;
+	}
 
-	SNodeData *pNodeData = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager()->GetNodeDataById(m_scriptId);
+	if(IMonoObject *pResult = m_pScriptClass->CallMethod("GetNodeConfig"))
+	{
+		SMonoNodeConfig monoConfig = pResult->Unbox<SMonoNodeConfig>();
 
-	config.nFlags |= monoConfig.flags;
-	config.pInputPorts = pNodeData->pInputs;
-	config.pOutputPorts = pNodeData->pOutputs;
+		config.pInputPorts = m_pNodeType->GetInputPorts(m_pScriptClass);
+		config.pOutputPorts = m_pNodeType->GetOutputPorts(m_pScriptClass);
 
-	config.sDescription = _HELP(ToCryString(monoConfig.description));
-	config.SetCategory(monoConfig.category);
+		config.nFlags |= monoConfig.flags;
+		config.sDescription = _HELP(ToCryString(monoConfig.description));
+		config.SetCategory(monoConfig.category);
+	}
 }

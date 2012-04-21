@@ -1136,16 +1136,11 @@ namespace CryEngine
 		/// <param name="box">The box to test.</param>
 		/// <param name="point">The point to test.</param>
 		/// <returns>The type of containment the two objects have.</returns>
-		public static ContainmentType BoxContainsPoint(ref BoundingBox box, ref Vec3 point)
+		public static bool BoxContainsPoint(ref BoundingBox box, ref Vec3 point)
 		{
-			if(box.Minimum.X <= point.X && box.Maximum.X >= point.X &&
+			return (box.Minimum.X <= point.X && box.Maximum.X >= point.X &&
 				box.Minimum.Y <= point.Y && box.Maximum.Y >= point.Y &&
-				box.Minimum.Z <= point.Z && box.Maximum.Z >= point.Z)
-			{
-				return ContainmentType.Contains;
-			}
-
-			return ContainmentType.Disjoint;
+				box.Minimum.Z <= point.Z && box.Maximum.Z >= point.Z);
 		}
 
 		/* This implentation is wrong
@@ -1231,12 +1226,9 @@ namespace CryEngine
 		/// <param name="sphere">The sphere to test.</param>
 		/// <param name="point">The point to test.</param>
 		/// <returns>The type of containment the two objects have.</returns>
-		public static ContainmentType SphereContainsPoint(ref BoundingSphere sphere, ref Vec3 point)
+		public static bool SphereContainsPoint(ref BoundingSphere sphere, ref Vec3 point)
 		{
-			if(Vec3.DistanceSquared(point, sphere.Center) <= sphere.Radius * sphere.Radius)
-				return ContainmentType.Contains;
-
-			return ContainmentType.Disjoint;
+			return (Vec3.DistanceSquared(point, sphere.Center) <= sphere.Radius * sphere.Radius);
 		}
 
 		/// <summary>
@@ -1252,11 +1244,7 @@ namespace CryEngine
 			//Source: Jorgy343
 			//Reference: None
 
-			ContainmentType test1 = SphereContainsPoint(ref sphere, ref vertex1);
-			ContainmentType test2 = SphereContainsPoint(ref sphere, ref vertex2);
-			ContainmentType test3 = SphereContainsPoint(ref sphere, ref vertex3);
-
-			if(test1 == ContainmentType.Contains && test2 == ContainmentType.Contains && test3 == ContainmentType.Contains)
+			if(SphereContainsPoint(ref sphere, ref vertex1) && SphereContainsPoint(ref sphere, ref vertex2) && SphereContainsPoint(ref sphere, ref vertex3))
 				return ContainmentType.Contains;
 
 			if(SphereIntersectsTriangle(ref sphere, ref vertex1, ref vertex2, ref vertex3))

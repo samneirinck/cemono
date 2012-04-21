@@ -15,6 +15,7 @@ namespace CryEngine
 		/// Registers an event declared in the players actionmap. Without invoking this, Your KeyEventDelegate will never be invoked with the new action.
 		/// </summary>
 		/// <param name="actionName"></param>
+		/// <param name="eventDelegate"></param>
 		public static void RegisterAction(string actionName, ActionMapEventDelegate eventDelegate)
 		{
 			_RegisterAction(actionName);
@@ -31,12 +32,6 @@ namespace CryEngine
 
 		public delegate void KeyEventDelegate(object sender, KeyEventArgs e);
 
-		/// <summary>
-		/// TODO, Call
-		/// </summary>
-		/// <param name="action"></param>
-		/// <param name="keyEvent"></param>
-		/// <param name="value"></param>
 		public static void OnKeyEvent(string keyName, float value)
 		{
 			if(KeyEvents != null)

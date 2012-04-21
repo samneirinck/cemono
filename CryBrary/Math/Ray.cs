@@ -24,6 +24,8 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
 
+using System.Linq;
+
 namespace CryEngine
 {
 	/// <summary>
@@ -52,6 +54,38 @@ namespace CryEngine
 		{
 			this.Position = position;
 			this.Direction = direction;
+		}
+
+		/// <summary>
+		/// Steps through the entity grid and raytraces entities
+		/// traces a finite ray from org along dir
+		/// </summary>
+		/// <param name="hits"></param>
+		/// <param name="objectTypes"></param>
+		/// <param name="flags"></param>
+		/// <param name="maxHits"></param>
+		/// <param name="skipEntities"></param>
+		/// <returns>The total amount of hits detected (solid and pierceable)</returns>
+		public int Cast(out RaycastHit hits, EntityQueryFlags objectTypes = EntityQueryFlags.All, RayWorldIntersectionFlags flags = RayWorldIntersectionFlags.AnyHit, int maxHits = 1, EntityId[] skipEntities = null)
+		{
+			var internalRayHit = new PhysicalWorld.RayHit();
+
+			object[] skippedEntities = null;
+			if(skipEntities != null && skipEntities.Length > 0)
+				skippedEntities = skipEntities.Cast<object>().ToArray();
+
+			int rayResult = PhysicalWorld._RayWorldIntersection(Position, Direction, objectTypes, flags, ref internalRayHit, maxHits, skippedEntities);
+
+			hits = new RaycastHit(internalRayHit);
+
+			return rayResult;
+		}
+
+		public static int Cast(Vec3 pos, Vec3 dir, out RaycastHit hits, EntityQueryFlags objectTypes = EntityQueryFlags.All, RayWorldIntersectionFlags flags = RayWorldIntersectionFlags.AnyHit, int maxHits = 1, EntityId[] skipEntities = null)
+		{
+			Ray ray = new Ray(pos, dir);
+
+			return ray.Cast(out hits, objectTypes, flags, maxHits, skipEntities);
 		}
 
 		/// <summary>

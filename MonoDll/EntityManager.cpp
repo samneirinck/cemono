@@ -167,10 +167,11 @@ bool CEntityManager::RegisterEntityClass(EntityRegisterParams params, mono::arra
 	IEntityClassRegistry::SEntityClassDesc entityClassDesc;	
 	entityClassDesc.flags = params.Flags;
 	entityClassDesc.sName = ToCryString(params.Name);
-	entityClassDesc.sEditorHelper = ToCryString(params.EditorHelper);
-	entityClassDesc.sEditorIcon = ToCryString(params.EditorIcon);
+	entityClassDesc.editorClassInfo.sCategory = ToCryString(params.Category);
+	entityClassDesc.editorClassInfo.sHelper = ToCryString(params.EditorHelper);
+	entityClassDesc.editorClassInfo.sIcon = ToCryString(params.EditorIcon);
 	
-	CEntityClass *entityClass = new CEntityClass(entityClassDesc, ToCryString(params.Category), properties);
+	CEntityClass *entityClass = new CEntityClass(entityClassDesc, properties);
 
 	m_monoEntityClasses.push_back(entityClassDesc.sName);
 	return gEnv->pEntitySystem->GetClassRegistry()->RegisterClass(entityClass);
@@ -189,7 +190,7 @@ bool CEntityManager::EntityExists(EntityId entityId)
 	if(entityId == 0)
 		return false;
 
-	return gEnv->pEntitySystem->GetEntity(entityId);
+	return gEnv->pEntitySystem->GetEntity(entityId) != NULL;
 }
 
 mono::array CEntityManager::GetEntitiesByClass(mono::string _class)

@@ -20,7 +20,7 @@ public:
 	~CGameRules() {}
 
 	// IMonoScriptBind
-	virtual const char *GetClassName() { return "GameRulesSystem"; }
+	virtual const char *GetClassName() { return "GameRules"; }
 	// ~IMonoScriptBind
 
 	static void RegisterGameMode(mono::string);
@@ -28,6 +28,8 @@ public:
 	static void AddGameModeLevelLocation(mono::string, mono::string);
 	static void SetDefaultGameMode(mono::string);
 	static EntityId GetPlayer();
+
+	static EntityId SpawnPlayer(int channelId, mono::string name, mono::string className, Vec3 pos, Vec3 angles, Vec3 scale);
 };
 
 #endif //__SCRIPTBIND_GAMERULES_SYSTEM__

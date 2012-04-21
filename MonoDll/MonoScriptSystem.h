@@ -102,7 +102,7 @@ protected:
 	// The app domain in which we load scripts into. Killed and reloaded on script reload.
 	MonoDomain *m_pScriptDomain;
 
-	IMonoClass *m_pScriptManager;
+	IMonoClass *m_pScriptCompiler;
 	// Hard pointer to the AppDomainSerializer class to quickly dump and restore scripts.
 	IMonoClass *m_AppDomainSerializer;
 

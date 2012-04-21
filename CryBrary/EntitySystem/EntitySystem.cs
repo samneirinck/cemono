@@ -7,6 +7,9 @@ using System.Collections.ObjectModel;
 
 using System.Linq;
 
+using CryEngine.Initialization;
+using CryEngine.Extensions;
+
 namespace CryEngine
 {
     public partial class Entity
@@ -48,14 +51,8 @@ namespace CryEngine
 		public static T Spawn<T>(string name, Vec3 pos, Vec3? rot = null, Vec3? scale = null, bool autoInit = true, EntityFlags flags = EntityFlags.CastShadow) where T : Entity
 		{
 			var entId = new EntityId(_SpawnEntity(new EntitySpawnParams { Name = name, Class = typeof(T).Name, Pos = pos, Rot = rot ?? new Vec3(0, 0, 0), Scale = scale ?? new Vec3(1, 1, 1), Flags = flags }, autoInit));
-			RegisterInternalEntity(Get(entId));
 
-			return SpawnedEntities.Last() as T;
-		}
-
-		internal static void RegisterInternalEntity<T>(T t) where T : Entity
-		{
-			SpawnedEntities.Add(t);
+			return ScriptCompiler.AddScriptInstance(Get(entId)) as T;
 		}
 
 		public static void Remove(EntityId id)
@@ -72,7 +69,11 @@ namespace CryEngine
 
 		internal static void RemoveInternalEntity(EntityId id)
 		{
-			SpawnedEntities.RemoveAll(entity => entity.Id == id);
+			foreach(var script in ScriptCompiler.CompiledScripts)
+			{
+				if(script.ScriptInstances != null)
+					script.ScriptInstances.RemoveAll(instance => instance is Entity && (instance as Entity).Id == id);
+			}
 		}
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -90,20 +91,57 @@ namespace CryEngine
 		/// <returns>A reference to the entity.</returns>
 		/// <remarks>If the entity does not exist in the managed space, this function will attempt to find
 		/// a C++ entity with the specified ID></remarks>
-		public static Entity Get(EntityId entityId)
-        {
-			if (entityId == 0)
-				return null;
+		public static T Get<T>(EntityId entityId) where T : Entity
+		{
+			if(entityId != 0)
+			{
+				Entity ent = null;
+				for(int i = 0; i < ScriptCompiler.CompiledScripts.Length; i++)
+				{
+					var script = ScriptCompiler.CompiledScripts[i];
+					if((script.ScriptType.Equals(typeof(T)) || script.ScriptType.Implements(typeof(T))) && script.ScriptInstances != null)
+					{
+						ent = script.ScriptInstances.Find(x => x is Entity && (x as Entity).Id == entityId) as Entity;
+						if(ent != null)
+							return ent as T;
+					}
+				}
+			}
 
-			Entity ent = SpawnedEntities.Find(entity => entity.Id == entityId);
-			if (ent != default(Entity))
+			return null;
+		}
+
+		/// <summary>
+		/// Get an entity by its unique ID.
+		/// </summary>
+		/// <param name="entityId">The ID as an unsigned integer.</param>
+		/// <returns>A reference to the entity.</returns>
+		/// <remarks>If the entity does not exist in the managed space, this function will attempt to find
+		/// a C++ entity with the specified ID></remarks>
+		public static Entity Get(EntityId entityId)
+		{
+			Entity ent = Get<Entity>(entityId);
+			if(ent != null)
 				return ent;
 
+			// Couldn't find a CryMono entity, check if a non-managed one exists.
 			if(_EntityExists(entityId))
-				return new Entity(entityId);
+			{
+				int scriptIndex;
+				var script = ScriptCompiler.GetScriptByType(typeof(NativeEntity), out scriptIndex);
 
-            return null;
-        }
+				if(script.ScriptInstances == null)
+					script.ScriptInstances = new List<CryScriptInstance>();
+
+				script.ScriptInstances.Add(new NativeEntity(entityId));
+
+				ScriptCompiler.CompiledScripts[scriptIndex] = script;
+
+				return script.ScriptInstances.Last() as Entity;
+			}
+
+			return null;
+		}
 
 		/// <summary>
 		/// Get an entity by name.
@@ -124,17 +162,7 @@ namespace CryEngine
 		/// <returns>An array of entities.</returns>
         public static IEnumerable<Entity> GetEntities(string className)
         {
-            if (String.IsNullOrEmpty(className))
-            {
-                throw new ArgumentException("className should not be null or empty", "className");
-            }
-
-            var entitiesByClass = _GetEntitiesByClass(className);
-            if (entitiesByClass == null || entitiesByClass.Length <= 0)
-                yield break;
-
-			foreach(EntityId id in entitiesByClass)
-				yield return Get(id);
+			return GetEntitiesCommon<Entity>(className);
         }
 
 		/// <summary>
@@ -144,23 +172,22 @@ namespace CryEngine
 		/// <returns>An array of entities of type T.</returns>
 		public static IEnumerable<T> GetEntities<T>() where T : Entity
 		{
-			return GetEntities(typeof(T).Name).Cast<T>();
+			return GetEntitiesCommon<T>(typeof(T).Name);
 		}
 
-		internal static void UpdateSpawnedEntities()
+		internal static IEnumerable<T> GetEntitiesCommon<T>(string className) where T : Entity
 		{
-			foreach (var entity in SpawnedEntities)
-			{
-				if(entity != null && entity.ReceiveUpdates == true)
-					entity.OnUpdate();
-			}
+			if(String.IsNullOrEmpty(className))
+				throw new ArgumentException("className should not be null or empty", "className");
+
+			var entitiesByClass = _GetEntitiesByClass(className);
+			if(entitiesByClass == null || entitiesByClass.Length <= 0)
+				yield break;
+
+			foreach(EntityId id in entitiesByClass)
+				yield return Get<T>(id);
 		}
-        
-		/// <summary>
-		/// Contains entities spawned using EntitySystem.SpawnEntity.
-		/// Necessary to update scripts.
-		/// </summary>
-		internal static List<Entity> SpawnedEntities = new List<Entity>();
+
     }
 
 	/// <summary>

@@ -1,9 +1,10 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace CryEngine
 {
 	/// <summary>
-	/// WIP Player class.
+	/// WIP Player class. TODO: Redo, currently very limited in terms of callbacks + interoperability with C++ backend
 	/// </summary>
     public abstract class Actor : Entity
 	{
@@ -35,7 +36,7 @@ namespace CryEngine
 			return new EntityId(_GetEntityIdForChannelId((ushort)channelId));
 		}
 
-		public static Actor Get(EntityId actorId)
+		public static new Actor Get(EntityId actorId)
 		{
 			return Entity.Get(actorId) as Actor;
 		}
@@ -80,7 +81,30 @@ namespace CryEngine
 			OnSpawn();
         }
 
-        public int ChannelId { get; set; }
+		#region Obsolete methods
+		// TODO: Rework Actor class to implement these callbacks (and / or don't derive from Entity)
+
+		[Obsolete("Not supported in the Actor class")]
+		public override void OnSpawn() { }
+		[Obsolete("Not supported in the Actor class")]
+		protected override bool OnRemove() { return true; }
+		[Obsolete("Not supported in the Actor class")]
+		protected override void OnReset(bool enteringGame) { }
+		[Obsolete("Not supported in the Actor class")]
+		protected override void OnStartGame() { }
+		[Obsolete("Not supported in the Actor class")]
+		protected override void OnStartLevel() { }
+		[Obsolete("Not supported in the Actor class")]
+		protected override void OnEnterArea(EntityId triggerEntityId, EntityId areaEntityId) { }
+		[Obsolete("Not supported in the Actor class")]
+		protected override void OnLeaveArea(EntityId triggerEntityId, EntityId areaEntityId) { }
+		[Obsolete("Not supported in the Actor class")]
+		protected override void OnCollision(EntityId targetEntityId, Vec3 hitPos, Vec3 dir, short materialId, Vec3 contactNormal) { }
+		[Obsolete("Not supported in the Actor class")]
+		public override void OnHit(HitInfo hitInfo) { }
+		#endregion
+
+		public int ChannelId { get; set; }
 		public float Health { get { return _GetPlayerHealth(Id); } set { _SetPlayerHealth(Id, value); } }
 		public float MaxHealth { get { return _GetPlayerMaxHealth(Id); } set { _SetPlayerMaxHealth(Id, value); } }
 

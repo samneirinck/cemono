@@ -1,289 +1,504 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
+﻿using System;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
-using CryEngine;
+
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+
 using CryEngine.Extensions;
+using CryEngine.Initialization;
 
 namespace CryEngine.Serialization
 {
+	public class CrySerializer : IFormatter
+	{
+		StreamWriter Writer { get; set; }
+		StreamReader Reader { get; set; }
+		Assembly CallingAssembly { get; set; }
+		FormatterConverter Converter { get; set; }
 
-    public class CrySerializer : IFormatter
-    {
-        SerializationBinder binder;
-        StreamingContext context;
-        ISurrogateSelector surrogateSelector;
+		Dictionary<string, ObjectReference> ObjectReferences { get; set; }
 
-        public CrySerializer()
-        {
-            context = new StreamingContext(StreamingContextStates.All);
-        }
+		public CrySerializer()
+		{
+			Converter = new FormatterConverter();
+			ObjectReferences = new Dictionary<string, ObjectReference>();
+		}
 
-        public object Deserialize(Stream serializationStream)
-        {
-            StreamReader sr = new StreamReader(serializationStream);
+		struct ObjectReference
+		{
+			public ObjectReference(string name, object value) 
+				: this() 
+			{ 
+				Name = name;
+				Value = value;
+				FullName = Name;
+			}
 
-            // Get Type from serialized data.
-            string line = sr.ReadLine();
-            char[] delim = new char[] { '=' };
-            string[] sarr = line.Split(delim);
-            string className = sarr[1];
+			public ObjectReference(string name, object value, ObjectReference owner)
+				: this(name, value)
+			{
+				FullName = owner.FullName + "." + Name;
+			}
 
-            System.Type type = null;
+			public ObjectReference(string name, object value, string fullName)
+				: this(name, value)
+			{
+				FullName = fullName;
+			}
 
-            var script = ScriptCompiler.CompiledScripts.FirstOrDefault(x => x.ScriptType.FullName.Equals(className));
-            if(script != default(CryScript))
-                type = script.ScriptType;
+			public string Name { get; set; }
+			/// <summary>
+			/// The full name including owner objects seperated by '.'
+			/// </summary>
+			public string FullName { get; set; }
+			public object Value { get; set; }
 
-            type = type ?? System.Type.GetType(className);
+			public override bool Equals(object obj)
+			{
+				if(obj is ObjectReference)
+					return this.Equals(obj);
 
-            if (type == null)
-                return null;
+				return false;
+			}
 
-            ObjectReference reference = null;
+			public override int GetHashCode()
+			{
+				return base.GetHashCode();
+			}
 
-            if (type.GetConstructor(System.Type.EmptyTypes) != null || type.IsValueType)
-                reference = new ObjectReference(System.Activator.CreateInstance(type));
-            else
-                Debug.Log("[Warning] Could not serialize type {0} since it did not contain a parameterless constructor", type.Name);
+			public bool Equals(ObjectReference other)
+			{
+				return (this.Value != null && this.Value.Equals(other.Value)) && (this.FullName.Equals(other.FullName));
+			}
 
-            if (reference == null || reference.Object == null)
-                return null;
+			/// <summary>
+			/// Special behaviour; unlike Equals the operator methods do not compare Value!
+			/// </summary>
+			/// <param name="ref1"></param>
+			/// <param name="ref2"></param>
+			/// <returns></returns>
+			public static bool operator ==(ObjectReference ref1, ObjectReference ref2)
+			{
+				return ref1.FullName.Equals(ref2.FullName);
+			}
 
-            // This is really, really, really, really bad.
-            string streamName = ((FileStream)serializationStream).Name;
+			public static bool operator !=(ObjectReference ref1, ObjectReference ref2)
+			{
+				return !(ref1 == ref2);
+			}
+		}
 
-            if (ObjectReferences.ContainsValue(streamName))
-                return ObjectReferences.Keys.First(x => ObjectReferences[x] == streamName).Object;
+		public void Serialize(Stream stream, object graph)
+		{
+			Writer = new StreamWriter(stream);
+			Writer.AutoFlush = true;
 
-            // Store serialized variable name -> value pairs.
-            StringDictionary sdict = new StringDictionary();
-            while (sr.Peek() >= 0)
-            {
-                line = sr.ReadLine();
-                sarr = line.Split(delim);
+			StartWrite(new ObjectReference("root", graph));
+			stream.Seek(0, SeekOrigin.Begin);
+		}
 
-                // key = variable name, value = variable value.
-                sdict[sarr[0].Trim()] = sarr[1].Trim();
-            }
-            sr.Close();
+		void StartWrite(ObjectReference objectReference)
+		{
+			if(objectReference.Value == null)
+			{
+				WriteNull(objectReference);
+				return;
+			}
 
-            if (type.Implements(typeof(IEnumerable)))
-            {
-                var array = (reference.Object as IEnumerable).Cast<object>().ToArray();
+			Type valueType = objectReference.Value.GetType();
+			if(!IsTypeAllowed(valueType))
+				WriteNull(objectReference);
+			else if(valueType.IsPrimitive)
+			{
+				if(valueType != typeof(object)&& valueType != typeof(bool) && System.Convert.ToInt32(objectReference.Value) == 0)
+					WriteNull(objectReference);
+				else
+					WriteAny(objectReference);
+			}
+			else if(valueType == typeof(string))
+				WriteString(objectReference);
+			else if(valueType.Implements(typeof(IEnumerable)))
+			{
+				if(valueType.IsGenericType)
+					WriteGenericEnumerable(objectReference);
+				else
+					WriteEnumerable(objectReference);
+			}
+			else if(valueType.IsEnum)
+				WriteEnum(objectReference);
+			else if(!valueType.IsPrimitive && !valueType.IsEnum)
+				WriteObject(objectReference);
+		}
 
-                foreach (var dict in sdict.Keys)
-                {
-                    string indexVal = (string)sdict[(string)dict];
+		void WriteObject(ObjectReference objectReference)
+		{
+			List<FieldInfo> fields = new List<FieldInfo>();
+			var type = objectReference.Value.GetType();
+			while(type != null)
+			{
+				foreach(var field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
+					fields.Add(field);
 
-                    if (indexVal.StartsWith(ReferenceSeperator) && indexVal.EndsWith(ReferenceSeperator))
-                    {
-                        // This was a reference to a serialized object in another file, lets localize it and deserialize.
-                        string referenceFile = indexVal.Replace(ReferenceSeperator, "");
+				type = type.BaseType;
+			}
 
-                        var formatter = new CrySerializer();
-                        var stream = File.Open(referenceFile, FileMode.Open);
+			Writer.WriteLine("object");
+			Writer.WriteLine(fields.Count);
+			Writer.WriteLine(objectReference.Name);
+			Writer.WriteLine(objectReference.FullName);
+			Writer.WriteLine(objectReference.Value.GetType().FullName);
 
-                        array.SetValue(formatter.Deserialize(stream), System.Convert.ToInt32((string)dict));
+			foreach(var field in fields)
+			{
+				object fieldValue = field.GetValue(objectReference.Value);
 
-                        stream.Close();
-                    }
-                    else
-                        array.SetValue(Convert.ChangeType(indexVal, array.GetType().GetElementType()), System.Convert.ToInt32((string)dict) /* index as a string */);
-                }
+				StartWrite(new ObjectReference(field.Name, fieldValue, objectReference));
+			}
+		}
 
-                reference.Object = array;
-            }
-            else if (!type.IsPrimitive && !type.IsEnum && type != typeof(string))
-            {
-                while (type != null)
-                {
-                    foreach (var fieldInfo in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
-                    {
-                        if (sdict.ContainsKey(fieldInfo.Name))
-                        {
-                            if (sdict[fieldInfo.Name].StartsWith(ReferenceSeperator) && sdict[fieldInfo.Name].EndsWith(ReferenceSeperator))
-                            {
-                                // This was a reference to a serialized object in another file, lets localize it and deserialize.
-                                string referenceFile = sdict[fieldInfo.Name].Replace(ReferenceSeperator, "");
+		void WriteEnumerable(ObjectReference objectReference)
+		{
+			Writer.WriteLine("enumerable");
+			var array = (objectReference.Value as IEnumerable).Cast<object>();
+			Writer.WriteLine(array.Count());
+			Writer.WriteLine(objectReference.Name);
+			Writer.WriteLine(objectReference.FullName);
 
-                                var formatter = new CrySerializer();
-                                var stream = File.Open(referenceFile, FileMode.Open);
+			Writer.WriteLine(GetIEnumerableElementType(array.GetType()));
 
-                                object deserializedObject = formatter.Deserialize(stream);
+			for(int i = 0; i < array.Count(); i++)
+				StartWrite(new ObjectReference(i.ToString(), array.ElementAt(i), objectReference));
+		}
 
-                                stream.Close();
+		void WriteGenericEnumerable(ObjectReference objectReference)
+		{
+			Writer.WriteLine("generic_enumerable");
+			var array = (objectReference.Value as IEnumerable).Cast<object>();
+			Writer.WriteLine(array.Count());
+			Writer.WriteLine(objectReference.Name);
+			Writer.WriteLine(objectReference.FullName);
 
-                                fieldInfo.SetValue(reference.Object, deserializedObject);
-                            }
-                            else
-                                fieldInfo.SetValue(reference.Object, Convert.ChangeType(sdict[fieldInfo.Name], fieldInfo.FieldType));
-                        }
-                    }
+			Writer.WriteLine(objectReference.Value.GetType().GetGenericTypeDefinition().FullName);
 
-                    type = type.BaseType;
-                }
-            }
+			var genericArguments = objectReference.Value.GetType().GetGenericArguments();
+			Writer.WriteLine(genericArguments.Count());
+			foreach(var genericArg in genericArguments)
+				Writer.WriteLine(genericArg.FullName);
 
-            ObjectReferences.Add(reference, ((FileStream)serializationStream).Name);
+			for(int i = 0; i < array.Count(); i++)
+				StartWrite(new ObjectReference(i.ToString(), array.ElementAt(i), objectReference));
+		}
 
-            return reference.Object;
-        }
+		void WriteNull(ObjectReference objectReference)
+		{
+			Writer.WriteLine("null");
+			Writer.WriteLine(objectReference.Name);
+		}
 
-        public void Serialize(Stream serializationStream, object objectInstance)
-        {
-            Serialize(serializationStream, new ObjectReference(objectInstance));
-        }
+		void WriteAny(ObjectReference objectReference)
+		{
+			Writer.WriteLine("any");
+			Writer.WriteLine(objectReference.Name);
+			Writer.WriteLine(objectReference.Value.GetType().FullName);
+			Writer.WriteLine(Converter.ToString(objectReference.Value));
+		}
 
-        static System.Type[] forbiddenTypes = new System.Type[] { typeof(MethodInfo) };
+		void WriteString(ObjectReference objectReference)
+		{
+			Writer.WriteLine("string");
+			Writer.WriteLine(objectReference.Name);
+			Writer.WriteLine(objectReference.Value);
+		}
 
-        bool IsTypeAllowed(System.Type type)
-        {
-            foreach (var forbiddenType in forbiddenTypes)
-            {
-                if (type == forbiddenType || (type.HasElementType && type.GetElementType() == forbiddenType))
-                    return false;
+		void WriteEnum(ObjectReference objectReference)
+		{
+			Writer.WriteLine("enum");
+			Writer.WriteLine(objectReference.Name);
+			Writer.WriteLine(objectReference.FullName);
+			Writer.WriteLine(objectReference.Value.GetType().FullName);
+			Writer.WriteLine(objectReference.Value);
+		}
 
-                if (type.Implements(forbiddenType))
-                    return false;
-            }
+		public object Deserialize(Stream stream)
+		{
+			Reader = new StreamReader(stream);
+			CallingAssembly = Assembly.GetCallingAssembly();
+			ObjectReferences.Clear();
 
-            return true;
-        }
+			return StartRead().Value;
+		}
 
-        void Serialize(Stream serializationStream, ObjectReference objectReference)
-        {
-            // Write class name and all fields & values to file
-            StreamWriter sw = new StreamWriter(serializationStream);
+		ObjectReference StartRead()
+		{
+			ObjectReference result = default(ObjectReference);
 
-            if (ObjectReferences.ContainsKey(objectReference))
-            {
-                sw.WriteLine("@ClassName=" + ReferenceSeperator + "{0}" + ReferenceSeperator, ObjectReferences[objectReference]);
-                sw.Close();
+			switch(Reader.ReadLine())
+			{
+				case "null": result = ReadNull(); break;
+				case "object": result = ReadObject(); break;
+				case "generic_enumerable": result = ReadGenericEnumerable(); break;
+				case "enumerable": result = ReadEnumerable(); break;
+				case "enum": result = ReadEnum(); break;
+				case "any": result = ReadAny(); break;
+				case "string": result = ReadString(); break;
+				default: break;
+			}
 
-                return;
-            }
+			if(result.Equals(default(ObjectReference)))
+				throw new Exception(string.Format("Could not deserialize object!"));
+			
+			return result;
+		}
 
-            if (!IsTypeAllowed(objectReference.Type))
-                return;
+		ObjectReference ReadNull()
+		{
+			return new ObjectReference(Reader.ReadLine(), null);
+		}
 
-            sw.WriteLine("@ClassName={0}", objectReference.Type.FullName);
+		ObjectReference ReadObject()
+		{
+			int numFields = int.Parse(Reader.ReadLine());
+			string name = Reader.ReadLine();
+			string fullName = Reader.ReadLine();
+			string typeName = Reader.ReadLine();
 
-            // Should definitely not hardcode FileStream like this
-            ObjectReferences.Add(objectReference, ((FileStream)serializationStream).Name);
+			if(ObjectReferences.ContainsKey(fullName))
+			{
+				// We have to read anyway, in order to get to the correct line for the next object.
+				for(int i = 0; i < numFields; ++i)
+					StartRead();
 
-            if (objectReference.Type.Implements(typeof(IEnumerable)))
-            {
-                var array = (objectReference.Object as IEnumerable).Cast<object>();
+				return ObjectReferences[fullName];
+			}
 
-                for (int i = 0; i < array.Count(); i++)
-                {
-                    object indexedItem = array.ElementAt(i);
+			object objectInstance = CreateObjectInstance(typeName);
+			for(int i = 0; i < numFields; ++i)
+			{
+				ObjectReference fieldReference = StartRead();
+				FieldInfo fieldInfo = null;
 
-                    if (indexedItem != null)
-                        WriteReference(indexedItem, i.ToString(), ref sw);
-                }
-            }
-            else if (!objectReference.Type.IsPrimitive && !objectReference.Type.IsEnum && objectReference.Type != typeof(string))
-            {
-                BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+				var type = objectInstance.GetType();
+				while(type != null)
+				{
+					fieldInfo = type.GetField(fieldReference.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+					if(fieldInfo != null)
+						break;
 
-                var type = objectReference.Type;
+					type = type.BaseType;
+				}
 
-                while (type != null)
-                {
-                    foreach (var field in type.GetFields(bindingFlags))
-                    {
-                        object fieldValue = field.GetValue(objectReference.Object);
+				if(fieldInfo != null)
+					fieldInfo.SetValue(objectInstance, fieldReference.Value);
+				else
+					Debug.LogAlways("failed to find field {0} in type {1}!", fieldReference.Name, typeName);
+			}
 
-                        if (fieldValue != null)
-                            WriteReference(fieldValue, field.Name, ref sw);
-                    }
+			ObjectReferences.Add(fullName, new ObjectReference(name, objectInstance, fullName));
+			return ObjectReferences.Last().Value;
+		}
 
-                    type = type.BaseType;
-                }
-            }
-            else
-                throw new System.Exception(string.Format("This should not happen! Hand this data over to the nearest highly trained monkey: {1}{1}{0}{1}{1}", objectReference.Type.FullName, objectReference.Type.GetHashCode()));
+		ObjectReference ReadEnumerable()
+		{
+			var numElements = int.Parse(Reader.ReadLine());
+			var name = Reader.ReadLine();
+			var fullName = Reader.ReadLine();
+			var typeName = Reader.ReadLine();
 
-            sw.Close();
-        }
+			if(ObjectReferences.ContainsKey(fullName))
+			{
+				// We have to read anyway, in order to get to the correct line for the next object.
+				for(int i = 0; i != numElements; ++i)
+					StartRead();
 
-        void WriteReference(object objectInstance, string name, ref StreamWriter sw)
-        {
-            ObjectReference reference = new ObjectReference(objectInstance);
+				return ObjectReferences[fullName];
+			}
 
-            if (!reference.Type.IsPrimitive && !reference.Type.IsEnum && reference.Type != typeof(string))
-            {
-                // We can't simply write value.ToString() here, write to file and leave the path within brackets to reference it.
-                if (!ObjectReferences.ContainsKey(reference))
-                {
-                    string targetDir = Path.Combine(PathUtils.GetScriptDumpFolder(), "Objects");
-                    if (!Directory.Exists(targetDir))
-                        Directory.CreateDirectory(targetDir);
+			var array = Array.CreateInstance(GetType(typeName), numElements);
 
-                    targetDir = Path.Combine(targetDir, reference.Type.Namespace + "." + reference.Type.Name);
-                    if (!Directory.Exists(targetDir))
-                        Directory.CreateDirectory(targetDir);
+			for(int i = 0; i != numElements; ++i)
+				array.SetValue(StartRead().Value, i);
 
-                    var stream = File.Create(Path.Combine(targetDir, Directory.GetFiles(targetDir).Length.ToString()));
+			ObjectReferences.Add(fullName, new ObjectReference(name, array, fullName));
+			return ObjectReferences.Last().Value;
+		}
 
-                    var serializer = new CrySerializer();
-                    serializer.Serialize(stream, reference);
+		ObjectReference ReadGenericEnumerable()
+		{
+			int elements = int.Parse(Reader.ReadLine());
+			string name = Reader.ReadLine();
+			string fullName = Reader.ReadLine();
+			string typeName = Reader.ReadLine();
 
-                    stream.Close();
+			var type = GetType(typeName);
 
-                    if (ObjectReferences.ContainsKey(reference))
-                        sw.WriteLine("{0}={1}", name, string.Format(ReferenceSeperator + "{0}" + ReferenceSeperator, ObjectReferences[reference]));
-                }
-                else // Reference already existed, write path to its script dump.
-                    sw.WriteLine("{0}={1}", name, string.Format(ReferenceSeperator + "{0}" + ReferenceSeperator, ObjectReferences[reference]));
-            }
-            else
-                sw.WriteLine("{0}={1}", name, objectInstance.ToString());
-        }
+			if(ObjectReferences.ContainsKey(fullName))
+			{
+				// We have to read anyway, in order to get to the correct line for the next object.
+				for(int i = 0; i != elements; ++i)
+					StartRead();
 
-        public ISurrogateSelector SurrogateSelector
-        {
-            get { return surrogateSelector; }
-            set { surrogateSelector = value; }
-        }
-        public SerializationBinder Binder
-        {
-            get { return binder; }
-            set { binder = value; }
-        }
-        public StreamingContext Context
-        {
-            get { return context; }
-            set { context = value; }
-        }
+				return ObjectReferences[fullName];
+			}
 
-        internal class ObjectReference
-        {
-            public ObjectReference(object obj)
-            {
-                Object = obj;
-                Type = obj.GetType();
-            }
+			var numGenericArgs = int.Parse(Reader.ReadLine());
+			var genericArgs = new Type[numGenericArgs];
+			for(int i = 0; i < numGenericArgs; i++)
+				genericArgs[i] = GetType(Reader.ReadLine());
 
-            public object Object { get; set; }
-            public System.Type Type { get; set; }
-        }
+			var enumerable = CreateGenericObjectInstance(type, genericArgs) as IEnumerable;
 
-        /// <summary>
-        /// Keep references to objects around as we can't print them in the same script dump as their declaring type, also avoids processing them multiple times.
-        /// string = path to the object's state dump.
-        /// </summary>
-        internal static Dictionary<ObjectReference, string> ObjectReferences = new Dictionary<ObjectReference, string>();
+			if(enumerable.GetType().Implements(typeof(IDictionary)))
+			{
+				var dict = enumerable as IDictionary;
 
-        /// <summary>
-        /// The character used to signal a reference path.
-        /// </summary>
-        internal static string ReferenceSeperator = "'";
-    }
+				for(int i = 0; i < elements; i++)
+				{
+					var keyPair = StartRead().Value;
+					var valueMethod = keyPair.GetType().GetProperty("Value");
+					var keyMethod = keyPair.GetType().GetProperty("Key");
 
+					dict.Add(keyMethod.GetValue(keyPair, null), valueMethod.GetValue(keyPair, null));
+				}
+
+				enumerable = dict;
+			}
+			else
+			{
+				var list = enumerable as IList;
+
+				for(int i = 0; i < elements; i++)
+					list.Add(StartRead().Value);
+
+				enumerable = list;
+			}
+
+			ObjectReferences.Add(fullName, new ObjectReference(name, enumerable, fullName));
+			return ObjectReferences.Last().Value;
+		}
+
+		ObjectReference ReadAny()
+		{
+			string name = Reader.ReadLine();
+			string typeName = Reader.ReadLine();
+			string valueString = Reader.ReadLine();
+
+			object value = null;
+			var type = GetType(typeName);
+			if(type != null)
+				value = Converter.Convert(valueString, type);
+
+			return new ObjectReference(name, value);
+		}
+
+		ObjectReference ReadString()
+		{
+			string name = Reader.ReadLine();
+			return new ObjectReference(name, Reader.ReadLine());
+		}
+
+		ObjectReference ReadEnum()
+		{
+			string name = Reader.ReadLine();
+			string fullName = Reader.ReadLine();
+			string typeName = Reader.ReadLine();
+			string valueString = Reader.ReadLine();
+
+			object value = null;
+			var type = GetType(typeName);
+			if(type != null)
+				value = Enum.Parse(type, valueString);
+			else
+				Debug.LogAlways("Failed to get type {0}", typeName);
+
+			return new ObjectReference(name, value, fullName);
+		}
+
+		static System.Type[] forbiddenTypes = new System.Type[] { typeof(MethodInfo) };
+
+		bool IsTypeAllowed(System.Type type)
+		{
+			foreach(var forbiddenType in forbiddenTypes)
+			{
+				if(type == forbiddenType || (type.HasElementType && type.GetElementType() == forbiddenType))
+					return false;
+
+				if(type.Implements(forbiddenType))
+					return false;
+			}
+
+			return true;
+		}
+
+		Type GetType(string typeName)
+		{
+			if(typeName.Contains('+'))
+			{
+				var splitString = typeName.Split('+');
+				var ownerType = GetType(splitString.First());
+
+				return ownerType.Assembly.GetType(typeName);
+			}
+
+			Type type = Type.GetType(typeName);
+			if(type != null)
+				return type;
+
+			foreach(var assembly in AppDomain.CurrentDomain.GetAssemblies())
+			{
+				type = assembly.GetType(typeName);
+				if(type != null)
+					return type;
+			}
+
+			if(type == null)
+				throw new Exception(string.Format("Could not localize type with name {0}", typeName));
+
+			return type;
+		}
+
+		Type GetIEnumerableElementType(Type enumerableType)
+		{
+			Type type = enumerableType.GetElementType();
+			if(type != null)
+				return type;
+
+
+			// Not an array type, we've got to use an alternate method to get the type of elements contained within.
+			if(enumerableType.IsGenericType && enumerableType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+				type = enumerableType.GetGenericArguments()[0];
+			else
+			{
+				Type[] interfaces = enumerableType.GetInterfaces();
+				foreach(Type i in interfaces)
+					if(i.IsGenericType && i.GetGenericTypeDefinition().Equals(typeof(IEnumerable<>)))
+						type = i.GetGenericArguments()[0];
+			}
+
+			return type;
+		}
+
+		object CreateGenericObjectInstance(Type type, params Type[] genericArguments)
+		{
+			Type genericType = type.MakeGenericType(genericArguments);
+
+			return System.Activator.CreateInstance(genericType);
+		}
+
+		object CreateObjectInstance(string typeName)
+		{
+			Type type = GetType(typeName);
+
+			if(type.GetConstructor(System.Type.EmptyTypes) != null || type.IsValueType)
+				return System.Activator.CreateInstance(type);
+
+			throw new Exception(string.Format("Could not serialize type {0} since it did not containg a parameterless constructor", type.Name));
+		}
+
+		public SerializationBinder Binder { get { return null; } set { } }
+		public ISurrogateSelector SurrogateSelector { get { return null; } set { } }
+		public StreamingContext Context { get { return new StreamingContext(StreamingContextStates.Persistence); } set { } }
+	}
 }
