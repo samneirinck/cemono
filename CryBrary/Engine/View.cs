@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
@@ -87,6 +87,6 @@ namespace CryEngine
         internal ViewParams ViewParams { get { return _GetViewParams(Id); } set { _SetViewParams(Id, value); } }
         public EntityId Id;
 
-		static Collection<View> Views = new Collection<View>();
+		static List<View> Views = new List<View>();
     }
 }

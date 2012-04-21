@@ -32,7 +32,7 @@ namespace CryEngine.Utilities
             if (scriptFilePaths == null)
                 return null;
 
-            var assemblyPaths = new Collection<string>();
+            var assemblyPaths = new List<string>();
 
             foreach (var scriptFilePath in scriptFilePaths)
             {

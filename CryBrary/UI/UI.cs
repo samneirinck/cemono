@@ -82,7 +82,7 @@ namespace CryEngine
 				UIEventDescription eventDesc = new UIEventDescription(attribute.Name, attribute.Name, attribute.Description);
 				UIEventDirection eventDirection = type.Implements(typeof(UIFunction)) ? UIEventDirection.ToSystem : UIEventDirection.ToUI;
 
-				Collection<UIParameterDescription> parameterDescriptions = new Collection<UIParameterDescription>();
+				List<UIParameterDescription> parameterDescriptions = new List<UIParameterDescription>();
 
 				foreach(var member in type.GetMembers())
 					ProcessMember(member, attribute, ref parameterDescriptions, eventDirection);
@@ -109,7 +109,7 @@ namespace CryEngine
 			return UIParameterType.Any;
 		}
 
-		static void ProcessMember(MemberInfo member, UINodeAttribute parentAttribute, ref Collection<UIParameterDescription> parameterDescriptions, UIEventDirection eventDirection)
+		static void ProcessMember(MemberInfo member, UINodeAttribute parentAttribute, ref List<UIParameterDescription> parameterDescriptions, UIEventDirection eventDirection)
 		{
 			PortAttribute attribute;
 			if(member.TryGetAttribute(out attribute))
@@ -155,11 +155,11 @@ namespace CryEngine
 		/// <summary>
 		/// Event systems handling UI -> System communication.
 		/// </summary>
-		static Collection<string> toSystemEventSystems = new Collection<string>();
+		static List<string> toSystemEventSystems = new List<string>();
 		/// <summary>
 		/// Event systems handling System -> UI communication.
 		/// </summary>
-		static Collection<string> toUIEventSystems = new Collection<string>();
+		static List<string> toUIEventSystems = new List<string>();
 	}
 
 	[System.AttributeUsage(System.AttributeTargets.Class)]

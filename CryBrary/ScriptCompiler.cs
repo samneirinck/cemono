@@ -21,7 +21,7 @@ namespace CryEngine.Initialization
 	{
 		public ScriptCompiler()
 		{
-			FlowNodes = new Collection<StoredNode>();
+			FlowNodes = new List<string>();
 
 			assemblyReferenceHandler = new AssemblyReferenceHandler();
 		}
@@ -188,7 +188,6 @@ namespace CryEngine.Initialization
 		{
 			var script = default(CryScript);
 			scriptIndex = 0;
-
 			for(; scriptIndex < CompiledScripts.Length; scriptIndex++)
 			{
 				script = CompiledScripts[scriptIndex];
@@ -265,7 +264,7 @@ namespace CryEngine.Initialization
 
 				if(plugins != null && plugins.Length != 0)
 				{
-					var typeCollection = new Collection<Type>();
+					var typeCollection = new List<Type>();
 
 					foreach(var plugin in plugins)
 					{
@@ -318,7 +317,7 @@ namespace CryEngine.Initialization
 			else if(compilationParameters.Folders.Length < 1)
 				throw new ArgumentException(message: "Supplied Folders array in CompilationParameters did not contain any strings");
 
-			var scripts = new Collection<string>();
+			var scripts = new List<string>();
 			foreach(var directory in compilationParameters.Folders)
 			{
 				if(Directory.Exists(directory))
@@ -401,7 +400,7 @@ namespace CryEngine.Initialization
 		/// </summary>
 		public IEnumerable<Type> LoadAssembly(Assembly assembly, ScriptType[] allowedTypes = null)
 		{
-			var types = new Collection<Type>();
+			var types = new List<Type>();
 
 			Parallel.ForEach(assembly.GetTypes(), type =>
 				{
@@ -542,7 +541,7 @@ namespace CryEngine.Initialization
 		/// </summary>
 		public static int LastScriptId;
 
-		internal Collection<StoredNode> FlowNodes;
+		internal List<string> FlowNodes;
 		AssemblyReferenceHandler assemblyReferenceHandler;
 
 		/// <summary>
