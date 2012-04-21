@@ -10,6 +10,8 @@ namespace CryEngine
 	/// </summary>
 	internal class NativeEntity : Entity
 	{
+		public NativeEntity() { }
+
 		public NativeEntity(EntityId id)
 			: base(id)
 		{
