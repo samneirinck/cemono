@@ -86,10 +86,13 @@ namespace CryEngine.Initialization
 			var scriptIndex = 0;
 			for(; scriptIndex < CompiledScripts.Length; scriptIndex++)
 			{
-				script = CompiledScripts[scriptIndex];
+				var foundScript = CompiledScripts[scriptIndex];
 
-				if(script.ScriptName.Equals(scriptName))
+				if(foundScript.ScriptName.Equals(scriptName) || (foundScript.ScriptName.Contains(scriptName) && foundScript.ScriptType.Name.Equals(scriptName)))
+				{
+					script = foundScript;
 					break;
+				}
 			}
 
 			if(script == default(CryScript))
@@ -191,9 +194,13 @@ namespace CryEngine.Initialization
 			scriptIndex = 0;
 			for(; scriptIndex < CompiledScripts.Length; scriptIndex++)
 			{
-				script = CompiledScripts[scriptIndex];
-				if(script.ScriptType == type)
+				var foundScript = CompiledScripts[scriptIndex];
+
+				if(foundScript.ScriptType == type)
+				{
+					script = foundScript;
 					break;
+				}
 			}
 
 			if(script == default(CryScript))
