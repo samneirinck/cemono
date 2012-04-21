@@ -113,7 +113,7 @@ protected:
 	CFlowManager *m_pFlowManager;
 	CInput *m_pInput;
 	CCallbackHandler *m_pCallbackHandler;
-	CScriptbind_UI*	m_pUIScriptBind;
+	CScriptbind_UI	*m_pUIScriptBind;
 
 	IMonoConverter *m_pConverter;
 
