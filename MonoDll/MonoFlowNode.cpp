@@ -64,7 +64,7 @@ IFlowNodePtr CFlowNode::Clone(SActivationInfo *pActInfo)
 
 void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 {	
-	if(m_pHookedGraph && m_pScriptClass->GetScriptId()!=-1)
+	if(m_pHookedGraph && m_pScriptClass != NULL)
 	{
 		m_pHookedGraph->UnregisterHook(this);
 		m_pHookedGraph = NULL;
