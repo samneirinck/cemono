@@ -252,6 +252,13 @@ namespace CryEngine
 		/// 
 		/// </summary>
 		public virtual void OnHit(HitInfo hitInfo) { }
+
+		/// <summary>
+		/// Called after level has been loaded, is not called on serialization.
+		/// </summary>
+		protected virtual void OnInit()
+		{
+		}
 		#endregion
 
 		#region Overrides
@@ -409,11 +416,11 @@ namespace CryEngine
 			else
 				throw new EntityException("Invalid property type specified.");
 		}
-
+		/*
 		internal override NodeConfig GetNodeConfig()
 		{
 			return new NodeConfig(FlowNodeCategory.Approved, "", FlowNodeFlags.HideUI | FlowNodeFlags.TargetEntity);
-		}
+		}*/
 
 		internal static EntityRegisterParams GetRegistrationConfig(Type type)
 		{
