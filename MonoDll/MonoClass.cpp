@@ -114,7 +114,7 @@ IMonoObject *CScriptClass::CallMethod(const char *methodName, IMonoArray *pParam
 			return *(mono::object)(pResult);
 	}
 	else
-		CryLogAlways("[Warning] Failed to get method %s", methodName);
+		CryLogAlways("[Warning] Failed to get method %s in object of class %s", methodName, GetName());
 
 	return NULL;
 }
