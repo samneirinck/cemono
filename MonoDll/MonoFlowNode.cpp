@@ -74,7 +74,7 @@ void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 	{
 	case eFE_Activate:
 		{
-			IFlowNodeData *pNodeData = m_pActInfo->pGraph->GetNodeData(pActInfo->myID);
+			IFlowNodeData *pNodeData = pActInfo->pGraph->GetNodeData(pActInfo->myID);
 			if(!pNodeData)
 				return;
 
@@ -129,6 +129,8 @@ void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 		break;
 	case eFE_Initialize:
 		{
+			m_pActInfo = pActInfo;
+
 			CallMonoScript<void>(m_pScriptClass->GetScriptId(), "OnInitialized");
 		}
 		break;
