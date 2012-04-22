@@ -15,7 +15,7 @@ CFlowManager::TFlowTypes CFlowManager::m_nodeTypes = TFlowTypes();
 CFlowManager::CFlowManager()
 	: m_refs(0)
 {
-	REGISTER_EXPOSED_METHOD(RegisterNode);
+	REGISTER_METHOD(RegisterNode);
 	REGISTER_METHOD(IsPortActive);
 
 	REGISTER_METHOD(ActivateOutput);

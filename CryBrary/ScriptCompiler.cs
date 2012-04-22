@@ -66,8 +66,8 @@ namespace CryEngine.Initialization
 		public void PostInit()
 		{
 			// These have to be registered later on due to the flow system being initialized late.
-			//foreach(var node in FlowNodes)
-			//FlowNode.RegisterNode(node);
+			foreach(var node in FlowNodes)
+				FlowNode.Register(node);
 		}
 
 		/// <summary>
@@ -479,10 +479,13 @@ namespace CryEngine.Initialization
 				}
 				else if(type.Implements(typeof(Actor)))
 					Actor._RegisterActorClass(script.ScriptName, false);
-				else if(type.Implements(typeof(Entity)))
-					LoadEntity(ref script);
 				else if(type.Implements(typeof(FlowNode)))
+				{
 					LoadFlowNode(ref script);
+
+					if(type.Implements(typeof(Entity)))
+						LoadEntity(ref script);
+				}
 
 				CompiledScripts[i] = script;
 			}
@@ -494,12 +497,23 @@ namespace CryEngine.Initialization
 		private void LoadEntity(ref CryScript script)
 		{
 			Entity.RegisterEntityClass(Entity.GetEntityConfig(script.ScriptType));
-
-			LoadFlowNode(ref script, true);
 		}
 
 		private void LoadFlowNode(ref CryScript script, bool entityNode = false)
 		{
+			bool containsNodePorts = false;
+			foreach(var member in script.ScriptType.GetMembers())
+			{
+				if(member.ContainsAttribute<PortAttribute>())
+				{
+					containsNodePorts = true;
+					break;
+				}
+			}
+
+			if(!containsNodePorts)
+				return;
+
 			string category = null;
 			var nodeName = script.ScriptName;
 

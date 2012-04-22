@@ -12,7 +12,12 @@ namespace CryEngine
 	{
 		#region Externals
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void RegisterNode(string typeName);
+		extern internal static void _RegisterNode(string typeName);
+
+		internal static void Register(string typeName)
+		{
+			_RegisterNode(typeName);
+		}
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static void _SetRegularlyUpdated(int scriptId, bool updated);
@@ -380,6 +385,10 @@ namespace CryEngine
 		/// This node is setup for dynamic output port growth in runtime.
 		/// </summary>
 		DynamicOutput = 0x0004,
+		/// <summary>
+		/// This node cannot be deleted by the user.
+		/// </summary>
+		Unremovable = 0x0008,
 	}
 
 	public enum FlowNodeCategory
