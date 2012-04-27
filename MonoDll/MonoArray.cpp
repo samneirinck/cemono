@@ -4,7 +4,7 @@
 #include "MonoObject.h"
 
 CScriptArray::CScriptArray(int size)
-	: curIndex(0)
+	: m_curIndex(0)
 {
 	if(size<1)
 	{
@@ -17,7 +17,7 @@ CScriptArray::CScriptArray(int size)
 
 CScriptArray::~CScriptArray()
 {
-	curIndex = 0;
+	m_curIndex = 0;
 	m_pArray = 0;
 
 	mono_gchandle_free(m_arrayHandle); 
@@ -38,23 +38,41 @@ IMonoObject *CScriptArray::GetItem(int index)
 
 void CScriptArray::InsertObject(mono::object object)
 {
-	mono_array_set((MonoArray *)m_pArray, MonoObject *, curIndex, (MonoObject *)object);
+	if(m_curIndex >= GetSize() - 1)
+	{
+		CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "Attempted to insert too many objects into array of size %i", GetSize());
+		return;
+	}
 
-	curIndex++;
+	mono_array_set((MonoArray *)m_pArray, MonoObject *, m_curIndex, (MonoObject *)object);
+
+	m_curIndex++;
 }
 
 void CScriptArray::InsertString(mono::string string)
 {
-	mono_array_set((MonoArray *)m_pArray, MonoString *, curIndex, (MonoString *)string);
+	if(m_curIndex >= GetSize() - 1)
+	{
+		CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "Attempted to insert too many objects into array of size %i", GetSize());
+		return;
+	}
 
-	curIndex++;
+	mono_array_set((MonoArray *)m_pArray, MonoString *, m_curIndex, (MonoString *)string);
+
+	m_curIndex++;
 }
 
 void CScriptArray::InsertArray(mono::array arr)
 {
-	mono_array_set((MonoArray *)m_pArray, MonoArray *, curIndex, (MonoArray *)arr);
+	if(m_curIndex >= GetSize() - 1)
+	{
+		CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "Attempted to insert too many objects into array of size %i", GetSize());
+		return;
+	}
 
-	curIndex++;
+	mono_array_set((MonoArray *)m_pArray, MonoArray *, m_curIndex, (MonoArray *)arr);
+
+	m_curIndex++;
 }
 
 void CScriptArray::Insert(IMonoObject *pObject) 

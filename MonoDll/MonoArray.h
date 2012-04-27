@@ -49,7 +49,7 @@ public:
 
 private:
 	mono::array m_pArray;
-	int curIndex;
+	int m_curIndex;
 
 	int m_arrayHandle;
 };
