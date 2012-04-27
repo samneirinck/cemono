@@ -448,17 +448,18 @@ namespace CryEngine.Initialization
 		public void ProcessTypes(IEnumerable<Type> types)
 		{
 			Type[] specialTypes = { typeof(NativeEntity) };
-			
+
+			var typeList = types.ToList();
+
+			// Load custom script compilers
 			foreach(var type in types.Where(type => type.Implements(typeof(IScriptCompiler))))
 			{
 				var compiler = Activator.CreateInstance(type) as IScriptCompiler;
 				Debug.LogAlways("Loading via custom compiler, {0}", compiler.GetType().Name);
-
-				var typeList = types.ToList();
 				typeList.AddRange(LoadAssembly(compiler.Compile()));
-
-				types = typeList;
 			}
+
+			types = typeList;
 
 			CompiledScripts = new CryScript[types.Count() + specialTypes.Length];
 
