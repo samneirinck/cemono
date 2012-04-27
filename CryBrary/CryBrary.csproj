@@ -134,6 +134,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActorSystem\Actor.cs" />
+    <Compile Include="Compiler\Plugin.cs" />
     <Compile Include="Engine\Material.cs" />
     <Compile Include="Engine\ParticleEffect.cs" />
     <Compile Include="Engine\Terrain.cs" />

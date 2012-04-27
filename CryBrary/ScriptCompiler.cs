@@ -289,7 +289,17 @@ namespace CryEngine.Initialization
 								File.Copy(mdbFile, Path.Combine(Path.GetTempPath(), Path.GetFileName(mdbFile)), true);
 #endif
 							foreach(var type in LoadAssembly(Assembly.LoadFrom(newPath)))
+							{
 								typeCollection.Add(type);
+
+								if(type.Implements(typeof(IScriptCompiler)))
+								{
+									var compiler = Activator.CreateInstance(type) as IScriptCompiler;
+									Debug.LogAlways("Loading via custom compiler, {0}", compiler.GetType().Name);
+									typeCollection.AddRange(LoadAssembly(compiler.Compile()));
+									Debug.LogAlways("Finished loading");
+								}
+							}
 						}
 						//This exception tells us that the assembly isn't a valid .NET assembly for whatever reason
 						catch(BadImageFormatException)
@@ -442,7 +452,7 @@ namespace CryEngine.Initialization
 		/// <summary>
 		/// Processes a type and adds all found types to ScriptCompiler.CompiledScripts
 		/// </summary>
-		/// <param name="type"></param>
+		/// <param name="types"></param>
 		public void ProcessTypes(IEnumerable<Type> types)
 		{
 			Type[] specialTypes = { typeof(NativeEntity) };
