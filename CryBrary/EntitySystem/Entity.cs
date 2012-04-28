@@ -416,11 +416,11 @@ namespace CryEngine
 			else
 				throw new EntityException("Invalid property type specified.");
 		}
-		/*
+		
 		internal override NodeConfig GetNodeConfig()
 		{
 			return new NodeConfig(FlowNodeCategory.Approved, "", FlowNodeFlags.HideUI | FlowNodeFlags.TargetEntity);
-		}*/
+		}
 
 		internal static EntityRegisterParams GetRegistrationConfig(Type type)
 		{

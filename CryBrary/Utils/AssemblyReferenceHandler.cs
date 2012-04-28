@@ -18,32 +18,39 @@ namespace CryEngine.Utilities
     {
         public AssemblyReferenceHandler()
         {
-			assemblies = Directory.GetFiles(Path.Combine(PathUtils.GetEngineFolder(), "Mono", "lib", "mono", "gac"), "*.dll", SearchOption.AllDirectories);
+			var gacDirectory = Path.Combine(PathUtils.GetEngineFolder(), "Mono", "lib", "mono", "gac");
+			if(!Directory.Exists(gacDirectory))
+			{
+				//Debug.LogAlways("AssemblyReferenceHandler failed to initialize, could not locate gac directory.");
+				return;
+			}
+
+			assemblies = Directory.GetFiles(gacDirectory, "*.dll", SearchOption.AllDirectories);
         }
 
-        /// <summary>
-        /// Gets the required assemblies for the scripts passed to the method.
-        /// Note: Does NOT exclude assemblies already loaded by CryMono.
-        /// </summary>
-        /// <param name="scriptFilePaths"></param>
-        /// <returns></returns>
-        public string[] GetRequiredAssembliesForScriptFiles(IEnumerable<string> scriptFilePaths)
-        {
-            if (scriptFilePaths == null)
-                return null;
+		/// <summary>
+		/// Gets the required assemblies for the scripts passed to the method.
+		/// Note: Does NOT exclude assemblies already loaded by CryMono.
+		/// </summary>
+		/// <param name="scriptFilePaths"></param>
+		/// <returns></returns>
+		public string[] GetRequiredAssembliesFromFiles(IEnumerable<string> scriptFilePaths)
+		{
+			if(scriptFilePaths == null)
+				return null;
 
-            var assemblyPaths = new List<string>();
+			var assemblyPaths = new List<string>();
 
-            foreach (var scriptFilePath in scriptFilePaths)
-            {
-                foreach (var foundNamespace in GetNamespacesFromScriptFile(scriptFilePath))
-                {
+			foreach(var scriptFilePath in scriptFilePaths)
+			{
+				foreach(var foundNamespace in GetNamespacesFromScriptFile(scriptFilePath))
+				{
 					var assemblyPath = GetAssemblyPathFromNamespace(foundNamespace);
 
 					if(assemblyPath != null && !assemblyPaths.Contains(assemblyPath))
 						assemblyPaths.Add(assemblyPath);
-                }
-            }
+				}
+			}
 
 			foreach(var assembly in AppDomain.CurrentDomain.GetAssemblies().Select(x => x.Location).ToArray())
 			{
@@ -51,8 +58,38 @@ namespace CryEngine.Utilities
 					assemblyPaths.Add(assembly);
 			}
 
-            return assemblyPaths.ToArray();
-        }
+			return assemblyPaths.ToArray();
+		}
+
+		/// <summary>
+		/// Gets the required assemblies for the source file passed to the method.
+		/// Note: Does NOT exclude assemblies already loaded by CryMono.
+		/// </summary>
+		/// <param name="scriptFilePaths"></param>
+		/// <returns></returns>
+		public string[] GetRequiredAssembliesFromSource(string[] sources)
+		{
+			if(sources == null || sources.Length <= 0)
+				return null;
+
+			var namespaces = new List<string>();
+
+			foreach(var line in sources)
+			{
+				//Filter for using statements
+				var matches = Regex.Matches(line, @"using ([^;]+);");
+				foreach(Match match in matches)
+				{
+					string foundNamespace = match.Groups[1].Value;
+					if(!namespaces.Contains(foundNamespace))
+					{
+						namespaces.Add(foundNamespace);
+					}
+				}
+			}
+
+			return namespaces.ToArray();
+		}
 
 
         /// <summary>
@@ -72,31 +109,31 @@ namespace CryEngine.Utilities
             }
         }
 
-        protected IEnumerable<string> GetNamespacesFromStream(Stream stream)
-        {
-            var namespaces = new List<string>();
+		protected IEnumerable<string> GetNamespacesFromStream(Stream stream)
+		{
+			var namespaces = new List<string>();
 
-            using (var streamReader = new StreamReader(stream))
-            {
-                string line;
+			using(var streamReader = new StreamReader(stream))
+			{
+				string line;
 
-                while ((line = streamReader.ReadLine()) != null)
-                {
-                    //Filter for using statements
-                    var matches = Regex.Matches(line, @"using ([^;]+);");
-                    foreach (Match match in matches)
-                    {
-                        string foundNamespace = match.Groups[1].Value;
-                        if (!namespaces.Contains(foundNamespace))
-                        {
-                            namespaces.Add(foundNamespace);
-                        }
-                    }
-                }
-            }
+				while((line = streamReader.ReadLine()) != null)
+				{
+					//Filter for using statements
+					var matches = Regex.Matches(line, @"using ([^;]+);");
+					foreach(Match match in matches)
+					{
+						string foundNamespace = match.Groups[1].Value;
+						if(!namespaces.Contains(foundNamespace))
+						{
+							namespaces.Add(foundNamespace);
+						}
+					}
+				}
+			}
 
-            return namespaces;
-        }
+			return namespaces;
+		}
 
         private string GetAssemblyPathFromNamespace(string name)
         {

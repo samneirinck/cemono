@@ -134,7 +134,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActorSystem\Actor.cs" />
-    <Compile Include="Compiler\Plugin.cs" />
+    <Compile Include="Compiler\IScriptCompiler.cs" />
     <Compile Include="Engine\Material.cs" />
     <Compile Include="Engine\ParticleEffect.cs" />
     <Compile Include="Engine\Terrain.cs" />
@@ -189,7 +189,7 @@
     <Compile Include="Math\Vec3.cs" />
     <Compile Include="Utils\PathUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ScriptCompiler.cs" />
+    <Compile Include="Compiler\ScriptCompiler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

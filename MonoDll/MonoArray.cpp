@@ -38,7 +38,7 @@ IMonoObject *CScriptArray::GetItem(int index)
 
 void CScriptArray::InsertObject(mono::object object)
 {
-	if(m_curIndex >= GetSize() - 1)
+	if(m_curIndex >= GetSize())
 	{
 		CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "Attempted to insert too many objects into array of size %i", GetSize());
 		return;
@@ -51,7 +51,7 @@ void CScriptArray::InsertObject(mono::object object)
 
 void CScriptArray::InsertString(mono::string string)
 {
-	if(m_curIndex >= GetSize() - 1)
+	if(m_curIndex >= GetSize())
 	{
 		CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "Attempted to insert too many objects into array of size %i", GetSize());
 		return;
@@ -64,7 +64,7 @@ void CScriptArray::InsertString(mono::string string)
 
 void CScriptArray::InsertArray(mono::array arr)
 {
-	if(m_curIndex >= GetSize() - 1)
+	if(m_curIndex >= GetSize())
 	{
 		CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "Attempted to insert too many objects into array of size %i", GetSize());
 		return;

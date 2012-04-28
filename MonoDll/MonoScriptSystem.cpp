@@ -356,7 +356,7 @@ void CScriptSystem::RegisterDefaultBindings()
 bool CScriptSystem::InitializeSystems()
 {
 	IMonoClass *pClass = m_pCryBraryAssembly->GetCustomClass("CryNetwork");
-	IMonoArray *pArray = GetConverter()->CreateArray(2);
+	IMonoArray *pArray = CreateMonoArray(2);
 	pArray->Insert(gEnv->IsEditor());
 	pArray->Insert(gEnv->IsDedicated());
 	pClass->CallMethod("InitializeNetworkStatics", pArray, true);
