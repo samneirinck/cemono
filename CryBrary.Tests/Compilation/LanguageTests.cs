@@ -36,11 +36,11 @@ namespace CryBrary.Tests.Compilation
 
 			var foo = types.ElementAt(0);
 			Assert.IsNotNull(foo);
-			Assert.AreEqual(foo.Name, "Foo");
+			Assert.AreEqual("Foo", foo.Name);
 
 			var bar = types.ElementAt(1);
 			Assert.IsNotNull(bar);
-			Assert.AreEqual(bar.Name, "Bar");
+			Assert.AreEqual("Bar", bar.Name);
 		}
 
 		[Test]
@@ -62,18 +62,15 @@ namespace CryBrary.Tests.Compilation
 			Assert.IsNotNull(types);
 			// When compiling VB we get thrown 5 other types, MyApplication, MyComputer, ThreadSafeObjectProvider`1, MyWebServices & MyProject. Look into this later.
 
-			foreach(var type in types)
-				Console.WriteLine(type.Name);
-
 			Assert.AreEqual(types.Count(), 7);
 
 			var foo = types.ElementAt(3);
 			Assert.IsNotNull(foo);
-			Assert.AreEqual(foo.Name, "Foo");
+			Assert.AreEqual("Foo", foo.Name);
 
 			var bar = types.ElementAt(4);
 			Assert.IsNotNull(bar);
-			Assert.AreEqual(bar.Name, "Bar");
+			Assert.AreEqual("Bar", bar.Name);
 		}
 	}
 }
