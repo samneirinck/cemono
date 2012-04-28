@@ -384,6 +384,13 @@
             <exception cref="T:System.ArgumentNullException">Thrown if the compiled assembly could not be loaded.</exception>
             <exception cref="T:CryEngine.Initialization.ScriptCompilationException">Thrown if one or more compilation errors occur.</exception>
         </member>
+        <member name="M:CryEngine.Initialization.ScriptCompiler.ValidateCompilation(System.CodeDom.Compiler.CompilerResults)">
+            <summary>
+            Validates that a compilation has been successful.
+            </summary>
+            <param name="results">The results of the compilation that you wish to validate</param>
+            <returns>The resulting assembly, if no errors are found.</returns>
+        </member>
         <member name="M:CryEngine.Initialization.ScriptCompiler.LoadAssembly(System.Reflection.Assembly,CryEngine.Initialization.ScriptType[])">
             <summary>
             Loads an C# assembly and adds all found types to ScriptCompiler.CompiledScripts
