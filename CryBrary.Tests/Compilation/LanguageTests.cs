@@ -32,7 +32,7 @@ namespace CryBrary.Tests.Compilation
 			var types = scriptCompiler.CompileScripts(ref compilationParams);
 
 			Assert.IsNotNull(types);
-			Assert.IsNotEmpty(types);
+			Assert.AreEqual(types.Count(), 2);
 
 			var foo = types.ElementAt(0);
 			Assert.IsNotNull(foo);
