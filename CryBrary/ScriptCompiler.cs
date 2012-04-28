@@ -289,7 +289,9 @@ namespace CryEngine.Initialization
 								File.Copy(mdbFile, Path.Combine(Path.GetTempPath(), Path.GetFileName(mdbFile)), true);
 #endif
 							foreach(var type in LoadAssembly(Assembly.LoadFrom(newPath)))
+							{
 								typeCollection.Add(type);
+							}
 						}
 						//This exception tells us that the assembly isn't a valid .NET assembly for whatever reason
 						catch(BadImageFormatException)
@@ -367,25 +369,32 @@ namespace CryEngine.Initialization
 			compilerParameters = null;
 			compilationParameters.Results = results;
 
-			if(results.CompiledAssembly != null) // success
-				return LoadAssembly(results.CompiledAssembly, compilationParameters.ScriptTypes);
-			else if(results.Errors.HasErrors)
+			return LoadAssembly(ValidateCompilation(results), compilationParameters.ScriptTypes);
+		}
+
+		/// <summary>
+		/// Validates that a compilation has been successful.
+		/// </summary>
+		/// <param name="results">The results of the compilation that you wish to validate</param>
+		/// <returns>The resulting assembly, if no errors are found.</returns>
+		public static Assembly ValidateCompilation(CompilerResults results)
+		{
+			if(!results.Errors.HasErrors && results.CompiledAssembly != null)
+				return results.CompiledAssembly;
+
+			string compilationError = string.Format("Compilation failed; {0} errors: ", results.Errors.Count);
+
+			foreach(CompilerError error in results.Errors)
 			{
-				string compilationError = string.Format("Compilation failed; {0} errors: ", results.Errors.Count);
+				compilationError += Environment.NewLine;
 
-				foreach(CompilerError error in results.Errors)
-				{
-					compilationError += Environment.NewLine;
-
-					if(!error.ErrorText.Contains("(Location of the symbol related to previous error)"))
-						compilationError += string.Format("{0}({1},{2}): {3} {4}: {5}", error.FileName, error.Line, error.Column, error.IsWarning ? "warning" : "error", error.ErrorNumber, error.ErrorText);
-					else
-						compilationError += "	" + error.ErrorText;
-				}
-				throw new ScriptCompilationException(compilationError);
+				if(!error.ErrorText.Contains("(Location of the symbol related to previous error)"))
+					compilationError += string.Format("{0}({1},{2}): {3} {4}: {5}", error.FileName, error.Line, error.Column, error.IsWarning ? "warning" : "error", error.ErrorNumber, error.ErrorText);
+				else
+					compilationError += "	" + error.ErrorText;
 			}
 
-			throw new ArgumentNullException(paramName: "Tried loading a NULL assembly");
+			throw new ScriptCompilationException(compilationError);
 		}
 
 		public CodeDomProvider GetCodeProvider(ScriptLanguage language)
@@ -442,10 +451,22 @@ namespace CryEngine.Initialization
 		/// <summary>
 		/// Processes a type and adds all found types to ScriptCompiler.CompiledScripts
 		/// </summary>
-		/// <param name="type"></param>
+		/// <param name="types"></param>
 		public void ProcessTypes(IEnumerable<Type> types)
 		{
 			Type[] specialTypes = { typeof(NativeEntity) };
+
+			var typeList = types.ToList();
+
+			// Load custom script compilers
+			foreach(var type in types.Where(type => type.Implements(typeof(IScriptCompiler))))
+			{
+				var compiler = Activator.CreateInstance(type) as IScriptCompiler;
+				Debug.LogAlways("	Running custom compiler: {0}", compiler.GetType().Name);
+				typeList.AddRange(LoadAssembly(compiler.Compile()));
+			}
+
+			types = typeList;
 
 			CompiledScripts = new CryScript[types.Count() + specialTypes.Length];
 
