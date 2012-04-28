@@ -64,13 +64,8 @@ namespace CryBrary.Tests.Compilation
 
 			Assert.AreEqual(types.Count(), 7);
 
-			var foo = types.ElementAt(3);
-			Assert.IsNotNull(foo);
-			Assert.AreEqual("Foo", foo.Name);
-
-			var bar = types.ElementAt(4);
-			Assert.IsNotNull(bar);
-			Assert.AreEqual("Bar", bar.Name);
+			Assert.IsTrue(types.Any(type => type.Name.Equals("Foo")));
+			Assert.IsTrue(types.Any(type => type.Name.Equals("Bar")));
 		}
 	}
 }
