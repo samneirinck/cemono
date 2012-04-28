@@ -387,7 +387,7 @@ namespace CryEngine.Initialization
 		/// </summary>
 		/// <param name="results">The results of the compilation that you wish to validate</param>
 		/// <returns>The resulting assembly, if no errors are found.</returns>
-		Assembly ValidateCompilation(CompilerResults results)
+		public static Assembly ValidateCompilation(CompilerResults results)
 		{
 			if(!results.Errors.HasErrors && results.CompiledAssembly != null)
 				return results.CompiledAssembly;
