@@ -42,5 +42,38 @@ namespace CryBrary.Tests.Compilation
 			Assert.IsNotNull(bar);
 			Assert.AreEqual(bar.Name, "Bar");
 		}
+
+		[Test]
+		public void Compile_VB_FromSource()
+		{
+			var compilationParams = new CompilationParameters();
+
+			compilationParams.Language = ScriptLanguage.VisualBasic;
+			compilationParams.Sources = new string[] {
+				@"Public Class Foo
+				End Class
+ 
+				Public Class Bar
+				End Class" };
+
+			ScriptCompiler scriptCompiler = new ScriptCompiler();
+			var types = scriptCompiler.CompileScripts(ref compilationParams);
+
+			Assert.IsNotNull(types);
+			// When compiling VB we get thrown 5 other types, MyApplication, MyComputer, ThreadSafeObjectProvider`1, MyWebServices & MyProject. Look into this later.
+
+			foreach(var type in types)
+				Console.WriteLine(type.Name);
+
+			Assert.AreEqual(types.Count(), 7);
+
+			var foo = types.ElementAt(3);
+			Assert.IsNotNull(foo);
+			Assert.AreEqual(foo.Name, "Foo");
+
+			var bar = types.ElementAt(4);
+			Assert.IsNotNull(bar);
+			Assert.AreEqual(bar.Name, "Bar");
+		}
 	}
 }
