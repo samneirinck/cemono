@@ -70,41 +70,6 @@ namespace CryEngine.Initialization
 			return AddScriptInstance(System.Activator.CreateInstance(script.Type, constructorParams) as CryScriptInstance, script, scriptIndex);
 		}
 
-		/// <summary>
-		/// Adds an script instance to the script collection and returns its new id.
-		/// </summary>
-		/// <param name="instance"></param>
-		public static CryScriptInstance AddScriptInstance(CryScriptInstance instance)
-		{
-			if(instance == null)
-				return null;
-
-			int scriptIndex;
-			var script = GetScriptByType(instance.GetType(), out scriptIndex);
-
-			return AddScriptInstance(instance, script, scriptIndex);
-		}
-
-		static CryScriptInstance AddScriptInstance(CryScriptInstance instance, CryScript script, int scriptIndex)
-		{
-			if(instance == null)
-				return null;
-
-			if(script.ScriptInstances == null)
-				script.ScriptInstances = new List<CryScriptInstance>();
-			else if(script.ScriptInstances.Contains(instance))
-				return null;
-
-			LastScriptId++;
-
-			instance.ScriptId = LastScriptId;
-			script.ScriptInstances.Add(instance);
-
-			CompiledScripts[scriptIndex] = script;
-
-			return script.ScriptInstances.Last();
-		}
-
 		public void RemoveInstance(int scriptId)
 		{
 			RemoveInstance(scriptId, null);
@@ -155,44 +120,6 @@ namespace CryEngine.Initialization
 
 				script.ScriptInstances.RemoveAt(instanceIndex);
 			}
-		}
-
-		internal static CryScript GetScriptByType(Type type, out int scriptIndex)
-		{
-			var script = default(CryScript);
-			scriptIndex = 0;
-			for(; scriptIndex < CompiledScripts.Count; scriptIndex++)
-			{
-				var foundScript = CompiledScripts[scriptIndex];
-
-				if(foundScript.Type == type)
-				{
-					script = foundScript;
-					break;
-				}
-			}
-
-			if(script == default(CryScript))
-				throw new ScriptNotFoundException(string.Format("Failed to find script by name {0}", type.Name));
-
-			return script;
-		}
-
-		public static CryScriptInstance GetScriptInstanceById(int id)
-		{
-			CryScriptInstance scriptInstance = null;
-			foreach(var script in CompiledScripts)
-			{
-				if(script.ScriptInstances != null && script.ScriptInstances.Count > 0)
-				{
-					scriptInstance = script.ScriptInstances.FirstOrDefault(instance => instance.ScriptId == id);
-
-					if(scriptInstance != InvalidScriptInstance)
-						return scriptInstance;
-				}
-			}
-
-			return null;
 		}
 
 		public int GetEntityScriptId(EntityId entityId, System.Type scriptType = null)
@@ -396,19 +323,94 @@ namespace CryEngine.Initialization
 			}
 		}
 
-		/// <summary>
-		/// Last assigned ScriptId, next = + 1
-		/// </summary>
-		public static int LastScriptId = 0;
-
 		internal List<string> FlowNodes;
+
+		#region Statics
+		internal static CryScript GetScriptByType(Type type, out int scriptIndex)
+		{
+			var script = default(CryScript);
+			scriptIndex = 0;
+			for(; scriptIndex < CompiledScripts.Count; scriptIndex++)
+			{
+				var foundScript = CompiledScripts[scriptIndex];
+
+				if(foundScript.Type == type)
+				{
+					script = foundScript;
+					break;
+				}
+			}
+
+			if(script == default(CryScript))
+				throw new ScriptNotFoundException(string.Format("Failed to find script by name {0}", type.Name));
+
+			return script;
+		}
+
+		public static CryScriptInstance GetScriptInstanceById(int id)
+		{
+			CryScriptInstance scriptInstance = null;
+			foreach(var script in CompiledScripts)
+			{
+				if(script.ScriptInstances != null && script.ScriptInstances.Count > 0)
+				{
+					scriptInstance = script.ScriptInstances.FirstOrDefault(instance => instance.ScriptId == id);
+
+					if(scriptInstance != InvalidScriptInstance)
+						return scriptInstance;
+				}
+			}
+
+			return null;
+		}
+
+		/// <summary>
+		/// Adds an script instance to the script collection and returns its new id.
+		/// </summary>
+		/// <param name="instance"></param>
+		public static CryScriptInstance AddScriptInstance(CryScriptInstance instance)
+		{
+			if(instance == null)
+				return null;
+
+			int scriptIndex;
+			var script = GetScriptByType(instance.GetType(), out scriptIndex);
+
+			return AddScriptInstance(instance, script, scriptIndex);
+		}
+
+		static CryScriptInstance AddScriptInstance(CryScriptInstance instance, CryScript script, int scriptIndex)
+		{
+			if(instance == null)
+				return null;
+
+			if(script.ScriptInstances == null)
+				script.ScriptInstances = new List<CryScriptInstance>();
+			else if(script.ScriptInstances.Contains(instance))
+				return null;
+
+			LastScriptId++;
+
+			instance.ScriptId = LastScriptId;
+			script.ScriptInstances.Add(instance);
+
+			CompiledScripts[scriptIndex] = script;
+
+			return script.ScriptInstances.Last();
+		}
 
 		/// <summary>
 		/// Avoid creating a new empty CryScriptInstance each time we need to check
 		/// </summary>
 		static CryScriptInstance InvalidScriptInstance = default(CryScriptInstance);
 
+		/// <summary>
+		/// Last assigned ScriptId, next = + 1
+		/// </summary>
+		public static int LastScriptId = 0;
+
 		internal static List<CryScript> CompiledScripts = new List<CryScript>();
+		#endregion
 	}
 
 	[Serializable]

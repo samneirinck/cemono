@@ -3062,12 +3062,6 @@
             <param name="constructorParams"></param>
             <returns>New instance scriptId or -1 if instantiation failed.</returns>
         </member>
-        <member name="M:CryEngine.Initialization.ScriptManager.AddScriptInstance(CryEngine.CryScriptInstance)">
-            <summary>
-            Adds an script instance to the script collection and returns its new id.
-            </summary>
-            <param name="instance"></param>
-        </member>
         <member name="M:CryEngine.Initialization.ScriptManager.RemoveInstance(System.Int32,System.Type)">
             <summary>
             Locates and destructs the script with the assigned scriptId.
@@ -3095,14 +3089,20 @@
             </summary>
             <param name="types"></param>
         </member>
-        <member name="F:CryEngine.Initialization.ScriptManager.LastScriptId">
+        <member name="M:CryEngine.Initialization.ScriptManager.AddScriptInstance(CryEngine.CryScriptInstance)">
             <summary>
-            Last assigned ScriptId, next = + 1
+            Adds an script instance to the script collection and returns its new id.
             </summary>
+            <param name="instance"></param>
         </member>
         <member name="F:CryEngine.Initialization.ScriptManager.InvalidScriptInstance">
             <summary>
             Avoid creating a new empty CryScriptInstance each time we need to check
+            </summary>
+        </member>
+        <member name="F:CryEngine.Initialization.ScriptManager.LastScriptId">
+            <summary>
+            Last assigned ScriptId, next = + 1
             </summary>
         </member>
         <member name="T:CryEngine.Vec3">
