@@ -33,7 +33,7 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="config">The Entity configuration.</param>
 		/// <returns>True if registration succeeded, otherwise false.</returns>
-        public static bool RegisterEntityClass(EntityConfig config)
+        internal static bool RegisterClass(EntityConfig config)
         {
             return _RegisterEntityClass(config.registerParams, config.properties);
         }
@@ -231,7 +231,7 @@ namespace CryEngine
         Default = 0x0002,
     }
 
-    public struct EntityConfig
+    struct EntityConfig
     {
         public EntityConfig(EntityRegisterParams _params, object[] props)
             : this()
@@ -250,7 +250,7 @@ namespace CryEngine
         public object[] properties;
     }
 
-    public struct EntityRegisterParams
+    struct EntityRegisterParams
     {
         public EntityRegisterParams(string helper, string icon, EntityClassFlags flags)
             : this()

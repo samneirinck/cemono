@@ -250,7 +250,7 @@ namespace CryEngine.Initialization
 		{
 			LoadFlowNode(ref script);
 
-			Entity.RegisterEntityClass(Entity.GetEntityConfig(script.Type));
+			Entity.RegisterClass(Entity.GetEntityConfig(script.Type));
 		}
 
 		void LoadFlowNode(ref CryScript script, bool entityNode = false)
