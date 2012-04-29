@@ -277,16 +277,7 @@ namespace CryEngine.Initialization
 		/// </summary>
 		public void LoadAssembly(Assembly assembly, ScriptType[] allowedTypes = null)
 		{
-			var types = new List<Type>();
-
-			Parallel.ForEach(assembly.GetTypes(), type =>
-			{
-				// TODO: Re-implement allowedTypes
-				if(!type.ContainsAttribute<ExcludeFromCompilationAttribute>())
-					types.Add(type);
-			});
-
-			ProcessTypes(types);
+			ProcessTypes(assembly.GetTypes());
 		}
 
 		/// <summary>
@@ -295,20 +286,11 @@ namespace CryEngine.Initialization
 		/// <param name="types"></param>
 		void ProcessTypes(IEnumerable<Type> types)
 		{
-			// Load custom script compilers
-			/*
-			foreach(var type in types.Where(type => type.Implements(typeof(IScriptCompiler))))
-			{
-				var compiler = Activator.CreateInstance(type) as IScriptCompiler;
-				Debug.LogAlways("	Running custom compiler: {0}", compiler.GetType().Name);
-				typeList.AddRange(LoadAssembly(compiler.Compile()));
-			}*/
-
 			foreach(var type in types)
 			{
 				var script = new CryScript(type);
 
-				if(!type.IsAbstract)
+				if(!type.IsAbstract && !type.ContainsAttribute<ExcludeFromCompilationAttribute>())
 				{
 					if(type.Implements(typeof(GameRules)))
 					{
