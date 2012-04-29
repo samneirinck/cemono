@@ -99,7 +99,7 @@ namespace CryEngine
 				for(int i = 0; i < ScriptManager.CompiledScripts.Count; i++)
 				{
 					var script = ScriptManager.CompiledScripts[i];
-					if((script.ScriptType.Equals(typeof(T)) || script.ScriptType.Implements(typeof(T))) && script.ScriptInstances != null)
+					if((script.Type.Equals(typeof(T)) || script.Type.Implements(typeof(T))) && script.ScriptInstances != null)
 					{
 						ent = script.ScriptInstances.Find(x => x is Entity && (x as Entity).Id == entityId) as Entity;
 						if(ent != null)

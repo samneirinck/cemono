@@ -40,7 +40,7 @@ namespace CryEngine.Serialization
 			foreach(var script in ScriptManager.CompiledScripts)
 			{
 				if(script.ScriptInstances != null)
-					SerializeTypes(script.ScriptInstances, script.ScriptType, compiledScriptsDirectory);
+					SerializeTypes(script.ScriptInstances, script.Type, compiledScriptsDirectory);
 			}
 
 			stopwatch.Stop();
@@ -74,7 +74,7 @@ namespace CryEngine.Serialization
 			{
 				var script = ScriptManager.CompiledScripts[i];
 
-				string directoryName = Path.Combine(compiledScriptsDirectory, (script.ScriptType.Namespace + "." + script.ScriptType.Name));
+				string directoryName = Path.Combine(compiledScriptsDirectory, (script.Type.Namespace + "." + script.Type.Name));
 				if(Directory.Exists(directoryName))
 				{
 					foreach(var fileName in Directory.GetFiles(directoryName))

@@ -57,7 +57,7 @@ namespace CryEngine.Initialization
 			{
 				var foundScript = CompiledScripts[scriptIndex];
 
-				if(foundScript.ScriptName.Equals(scriptName) || (foundScript.ScriptName.Contains(scriptName) && foundScript.ScriptType.Name.Equals(scriptName)))
+				if(foundScript.ScriptName.Equals(scriptName) || (foundScript.ScriptName.Contains(scriptName) && foundScript.Type.Name.Equals(scriptName)))
 				{
 					script = foundScript;
 					break;
@@ -67,7 +67,7 @@ namespace CryEngine.Initialization
 			if(script == default(CryScript))
 				throw new ScriptNotFoundException(string.Format("Compiled script {0} could not be found.", scriptName));
 
-			return AddScriptInstance(System.Activator.CreateInstance(script.ScriptType, constructorParams) as CryScriptInstance, script, scriptIndex);
+			return AddScriptInstance(System.Activator.CreateInstance(script.Type, constructorParams) as CryScriptInstance, script, scriptIndex);
 		}
 
 		/// <summary>
@@ -165,7 +165,7 @@ namespace CryEngine.Initialization
 			{
 				var foundScript = CompiledScripts[scriptIndex];
 
-				if(foundScript.ScriptType == type)
+				if(foundScript.Type == type)
 				{
 					script = foundScript;
 					break;
@@ -197,7 +197,7 @@ namespace CryEngine.Initialization
 
 		public int GetEntityScriptId(EntityId entityId, System.Type scriptType = null)
 		{
-			var scripts = CompiledScripts.Where(script => (scriptType != null ? script.ScriptType.Implements(scriptType) : true) && script.ScriptInstances != null);
+			var scripts = CompiledScripts.Where(script => (scriptType != null ? script.Type.Implements(scriptType) : true) && script.ScriptInstances != null);
 
 			foreach(var compiledScript in scripts)
 			{
@@ -292,35 +292,26 @@ namespace CryEngine.Initialization
 
 				if(!type.IsAbstract && !type.ContainsAttribute<ExcludeFromCompilationAttribute>())
 				{
-					if(type.Implements(typeof(GameRules)))
+					switch(script.ScriptType)
 					{
-						string gamemodeName = null;
-
-						GameRulesAttribute gamemodeAttribute;
-						if(type.TryGetAttribute<GameRulesAttribute>(out gamemodeAttribute))
-						{
-							if(!string.IsNullOrEmpty(gamemodeAttribute.Name))
-								gamemodeName = gamemodeAttribute.Name;
-
-							if(gamemodeAttribute.Default)
-								GameRules._SetDefaultGameMode(gamemodeName);
-						}
-
-						GameRules._RegisterGameMode(gamemodeName ?? script.ScriptName);
-					}
-					else if(type.Implements(typeof(Actor)))
-						Actor._RegisterActorClass(script.ScriptName, false);
-					else if(type.Implements(typeof(FlowNode)))
-					{
-						LoadFlowNode(ref script);
-
-						if(type.Implements(typeof(Entity)))
+						case ScriptType.Actor:
+							Actor._RegisterActorClass(script.ScriptName, false);
+							break;
+						case ScriptType.Entity:
 							LoadEntity(ref script);
-					}
-					else if(type.Implements(typeof(ScriptCompiler)))
-					{
-						var compiler = Activator.CreateInstance(type) as ScriptCompiler;
-						LoadAssembly(compiler.Compile());
+							break;
+						case ScriptType.FlowNode:
+							LoadFlowNode(ref script);
+							break;
+						case ScriptType.GameRules:
+							LoadGameRules(ref script);
+							break;
+						case ScriptType.ScriptCompiler:
+							{
+								var compiler = Activator.CreateInstance(type) as ScriptCompiler;
+								LoadAssembly(compiler.Compile());
+							}
+							break;
 					}
 				}
 
@@ -328,34 +319,17 @@ namespace CryEngine.Initialization
 			}
 		}
 
-		public ScriptType GetScriptType(Type type)
+		void LoadEntity(ref CryScript script)
 		{
-			if(type.Implements(typeof(GameRules)))
-				return ScriptType.GameRules;
-			else if(type.Implements(typeof(Actor)))
-				return ScriptType.Actor;
-			else if(type.Implements(typeof(Entity)))
-				return ScriptType.Entity;
-			else if(type.Implements(typeof(FlowNode)))
-				return ScriptType.FlowNode;
+			LoadFlowNode(ref script);
 
-			return ScriptType.Unknown;
+			Entity.RegisterEntityClass(Entity.GetEntityConfig(script.Type));
 		}
 
-		public bool IsScriptType(Type type, ScriptType scriptType)
-		{
-			return GetScriptType(type) == scriptType || scriptType == ScriptType.Unknown; // Return true for unknown scripts as well
-		}
-
-		private void LoadEntity(ref CryScript script)
-		{
-			Entity.RegisterEntityClass(Entity.GetEntityConfig(script.ScriptType));
-		}
-
-		private void LoadFlowNode(ref CryScript script, bool entityNode = false)
+		void LoadFlowNode(ref CryScript script, bool entityNode = false)
 		{
 			bool containsNodePorts = false;
-			foreach(var member in script.ScriptType.GetMembers())
+			foreach(var member in script.Type.GetMembers())
 			{
 				if(member.ContainsAttribute<PortAttribute>())
 				{
@@ -372,10 +346,10 @@ namespace CryEngine.Initialization
 
 			if(!entityNode)
 			{
-				category = script.ScriptType.Namespace;
+				category = script.Type.Namespace;
 
 				FlowNodeAttribute nodeInfo;
-				if(script.ScriptType.TryGetAttribute<FlowNodeAttribute>(out nodeInfo))
+				if(script.Type.TryGetAttribute<FlowNodeAttribute>(out nodeInfo))
 				{
 					if(nodeInfo.UICategory != null && nodeInfo.UICategory.Length > 0)
 						category = nodeInfo.UICategory;
@@ -390,6 +364,23 @@ namespace CryEngine.Initialization
 				category = "entity";
 
 			FlowNodes.Add(category + ":" + nodeName);
+		}
+
+		void LoadGameRules(ref CryScript script)
+		{
+			string gamemodeName = null;
+
+			GameRulesAttribute gamemodeAttribute;
+			if(script.Type.TryGetAttribute<GameRulesAttribute>(out gamemodeAttribute))
+			{
+				if(!string.IsNullOrEmpty(gamemodeAttribute.Name))
+					gamemodeName = gamemodeAttribute.Name;
+
+				if(gamemodeAttribute.Default)
+					GameRules._SetDefaultGameMode(gamemodeName);
+			}
+
+			GameRules._RegisterGameMode(gamemodeName ?? script.ScriptName);
 		}
 
 		public void GenerateDebugDatabaseForAssembly(string assemblyPath)

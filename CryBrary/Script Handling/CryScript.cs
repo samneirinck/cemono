@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using CryEngine.Extensions;
+
 namespace CryEngine.Initialization
 {
 	/// <summary>
@@ -11,11 +13,26 @@ namespace CryEngine.Initialization
 		public CryScript(Type type)
 			: this()
 		{
-			ScriptType = type;
+			Type = type;
 			ScriptName = type.Name;
+
+			if(type.Implements(typeof(Actor)))
+				ScriptType = ScriptType.Actor;
+			else if(type.Implements(typeof(Entity)))
+				ScriptType = ScriptType.Entity;
+			else if(type.Implements(typeof(FlowNode)))
+				ScriptType = ScriptType.FlowNode;
+			else if(type.Implements(typeof(GameRules)))
+				ScriptType = ScriptType.GameRules;
+			else if(type.Implements(typeof(ScriptCompiler)))
+				ScriptType = ScriptType.ScriptCompiler;
+			else
+				ScriptType = ScriptType.Unknown;
 		}
 
-		public Type ScriptType { get; private set; }
+		public ScriptType ScriptType { get; private set; }
+
+		public Type Type { get; private set; }
 		/// <summary>
 		/// The script's name, not always type name!
 		/// </summary>
@@ -29,12 +46,12 @@ namespace CryEngine.Initialization
 		#region Operators
 		public static bool operator ==(CryScript script1, CryScript script2)
 		{
-			return script1.ScriptType == script2.ScriptType;
+			return script1.Type == script2.Type;
 		}
 
 		public static bool operator !=(CryScript script1, CryScript script2)
 		{
-			return script1.ScriptType != script2.ScriptType;
+			return script1.Type != script2.Type;
 		}
 
 		public override bool Equals(object obj)
@@ -47,7 +64,7 @@ namespace CryEngine.Initialization
 
 		public override int GetHashCode()
 		{
-			return ScriptType.GetHashCode();
+			return Type.GetHashCode();
 		}
 
 		#endregion
@@ -81,5 +98,6 @@ namespace CryEngine.Initialization
 		/// <summary>
 		/// </summary>
 		EditorForm,
+		ScriptCompiler,
 	}
 }
