@@ -52,7 +52,7 @@ namespace CryEngine
 		{
 			var entId = new EntityId(_SpawnEntity(new EntitySpawnParams { Name = name, Class = typeof(T).Name, Pos = pos, Rot = rot ?? Vec3.Zero, Scale = scale ?? new Vec3(1, 1, 1), Flags = flags }, autoInit));
 
-			return ScriptCompiler.AddScriptInstance(Get(entId)) as T;
+			return ScriptManager.AddScriptInstance(Get(entId)) as T;
 		}
 
 		public static void Remove(EntityId id)
@@ -69,7 +69,7 @@ namespace CryEngine
 
 		internal static void RemoveInternalEntity(EntityId id)
 		{
-			foreach(var script in ScriptCompiler.CompiledScripts)
+			foreach(var script in ScriptManager.CompiledScripts)
 			{
 				if(script.ScriptInstances != null)
 					script.ScriptInstances.RemoveAll(instance => instance is Entity && (instance as Entity).Id == id);
@@ -96,9 +96,9 @@ namespace CryEngine
 			if(entityId != 0)
 			{
 				Entity ent = null;
-				for(int i = 0; i < ScriptCompiler.CompiledScripts.Length; i++)
+				for(int i = 0; i < ScriptManager.CompiledScripts.Count; i++)
 				{
-					var script = ScriptCompiler.CompiledScripts[i];
+					var script = ScriptManager.CompiledScripts[i];
 					if((script.ScriptType.Equals(typeof(T)) || script.ScriptType.Implements(typeof(T))) && script.ScriptInstances != null)
 					{
 						ent = script.ScriptInstances.Find(x => x is Entity && (x as Entity).Id == entityId) as Entity;
@@ -128,14 +128,14 @@ namespace CryEngine
 			if(_EntityExists(entityId))
 			{
 				int scriptIndex;
-				var script = ScriptCompiler.GetScriptByType(typeof(NativeEntity), out scriptIndex);
+				var script = ScriptManager.GetScriptByType(typeof(NativeEntity), out scriptIndex);
 
 				if(script.ScriptInstances == null)
 					script.ScriptInstances = new List<CryScriptInstance>();
 
 				script.ScriptInstances.Add(new NativeEntity(entityId));
 
-				ScriptCompiler.CompiledScripts[scriptIndex] = script;
+				ScriptManager.CompiledScripts[scriptIndex] = script;
 
 				return script.ScriptInstances.Last() as Entity;
 			}

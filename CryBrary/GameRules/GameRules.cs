@@ -36,7 +36,7 @@ namespace CryEngine
 				return null;
 			}
 
-			var player = ScriptCompiler.AddScriptInstance(new T()) as T;
+			var player = ScriptManager.AddScriptInstance(new T()) as T;
 			if(player == null)
 			{
 				Debug.LogAlways("[GameRules.SpawnPlayer] Failed to add script instance");

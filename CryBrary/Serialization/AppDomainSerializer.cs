@@ -37,7 +37,7 @@ namespace CryEngine.Serialization
 			string compiledScriptsDirectory = Path.Combine(scriptDumpFolder, "ScriptCompiler.CompiledScripts");
 			Directory.CreateDirectory(compiledScriptsDirectory);
 
-			foreach(var script in ScriptCompiler.CompiledScripts)
+			foreach(var script in ScriptManager.CompiledScripts)
 			{
 				if(script.ScriptInstances != null)
 					SerializeTypes(script.ScriptInstances, script.ScriptType, compiledScriptsDirectory);
@@ -70,9 +70,9 @@ namespace CryEngine.Serialization
 
 			string compiledScriptsDirectory = Path.Combine(PathUtils.GetScriptDumpFolder(), "ScriptCompiler.CompiledScripts");
 
-			for(int i = 0; i < ScriptCompiler.CompiledScripts.Length; i++)
+			for(int i = 0; i < ScriptManager.CompiledScripts.Count; i++)
 			{
-				var script = ScriptCompiler.CompiledScripts[i];
+				var script = ScriptManager.CompiledScripts[i];
 
 				string directoryName = Path.Combine(compiledScriptsDirectory, (script.ScriptType.Namespace + "." + script.ScriptType.Name));
 				if(Directory.Exists(directoryName))
@@ -89,12 +89,12 @@ namespace CryEngine.Serialization
 						if(scriptInstance != null)
 							script.ScriptInstances.Add(scriptInstance);
 
-						if(ScriptCompiler.LastScriptId <= script.ScriptInstances.Last().ScriptId)
-							ScriptCompiler.LastScriptId = script.ScriptInstances.Last().ScriptId + 1;
+						if(ScriptManager.LastScriptId <= script.ScriptInstances.Last().ScriptId)
+							ScriptManager.LastScriptId = script.ScriptInstances.Last().ScriptId + 1;
 					}
 				}
 
-				ScriptCompiler.CompiledScripts[i] = script;
+				ScriptManager.CompiledScripts[i] = script;
 			}
 
 			stopwatch.Stop();

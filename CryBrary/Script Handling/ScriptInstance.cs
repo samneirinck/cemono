@@ -1,5 +1,4 @@
-﻿
-namespace CryEngine
+﻿namespace CryEngine
 {
 	/// <summary>
 	/// This interface permits derived classes to be used for script compilation recognition.

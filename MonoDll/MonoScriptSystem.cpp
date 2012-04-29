@@ -57,7 +57,7 @@ CScriptSystem::CScriptSystem()
 	, m_pCryBraryAssembly(NULL)
 	, m_pCallbackHandler(NULL)
 	, m_pPdb2MdbAssembly(NULL)
-	, m_pScriptCompiler(NULL)
+	, m_pScriptManager(NULL)
 	, m_AppDomainSerializer(NULL)
 	, m_pInput(NULL)
 	, m_bLastCompilationSuccess(true)
@@ -176,7 +176,7 @@ void CScriptSystem::PostInit()
 {
 	//GetFlowManager()->Reset();
 
-	m_pScriptCompiler->CallMethod("PostInit");
+	m_pScriptManager->CallMethod("PostInit");
 }
 
 bool CScriptSystem::Reload(bool initialLoad)
@@ -198,7 +198,7 @@ bool CScriptSystem::Reload(bool initialLoad)
  	
 		mono_domain_set(mono_get_root_domain(), false);
 
-		SAFE_RELEASE(m_pScriptCompiler);
+		SAFE_RELEASE(m_pScriptManager);
 		SAFE_RELEASE(m_AppDomainSerializer);
 	}
 
@@ -213,10 +213,10 @@ bool CScriptSystem::Reload(bool initialLoad)
 	CryLogAlways("		Initializing subsystems...");
 	InitializeSystems();
 
-	m_pScriptCompiler = m_pCryBraryAssembly->InstantiateClass("ScriptCompiler", "CryEngine.Initialization");
+	m_pScriptManager = m_pCryBraryAssembly->InstantiateClass("ScriptManager", "CryEngine.Initialization");
 
 	CryLogAlways("		Compiling scripts...");
-	IMonoObject *pInitializationResult = m_pScriptCompiler->CallMethod("Initialize");
+	IMonoObject *pInitializationResult = m_pScriptManager->CallMethod("Initialize");
 
 	m_bLastCompilationSuccess = pInitializationResult->Unbox<bool>();
 
@@ -237,10 +237,10 @@ bool CScriptSystem::Reload(bool initialLoad)
 		m_pCryBraryAssembly = pPrevCryBraryAssembly;
 		
 		SAFE_RELEASE(m_AppDomainSerializer);
-		SAFE_RELEASE(m_pScriptCompiler);
+		SAFE_RELEASE(m_pScriptManager);
 
 		//m_AppDomainSerializer = m_pCryBraryAssembly->InstantiateClass("AppDomainSerializer", "CryEngine.Serialization");
-		m_pScriptCompiler = m_pCryBraryAssembly->InstantiateClass("ScriptCompiler", "CryEngine.Initialization");
+		m_pScriptManager = m_pCryBraryAssembly->InstantiateClass("ScriptManager", "CryEngine.Initialization");
 	}
 
 	m_AppDomainSerializer = m_pCryBraryAssembly->InstantiateClass("AppDomainSerializer", "CryEngine.Serialization");
@@ -261,7 +261,7 @@ bool CScriptSystem::Reload(bool initialLoad)
 		{
 			IMonoArray *pParams = CreateMonoArray(1);
 			pParams->Insert(script.second);
-			if(IMonoObject *pScriptInstance = m_pScriptCompiler->CallMethod("GetScriptInstanceById", pParams))
+			if(IMonoObject *pScriptInstance = m_pScriptManager->CallMethod("GetScriptInstanceById", pParams))
 			{
 				mono::object monoObject = pScriptInstance->GetMonoObject();
 
@@ -371,7 +371,7 @@ void CScriptSystem::OnPostUpdate(float fDeltaTime)
 	// Updates all scripts and sets Time.FrameTime.
 	IMonoArray *pArgs = CreateMonoArray(1);
 	pArgs->Insert(fDeltaTime);
-	m_pScriptCompiler->CallMethod("OnUpdate", pArgs);
+	m_pScriptManager->CallMethod("OnUpdate", pArgs);
 	SAFE_RELEASE(pArgs);
 }
 
@@ -412,7 +412,7 @@ int CScriptSystem::InstantiateScript(const char *scriptName, IMonoArray *pConstr
 	pArgs->Insert(pConstructorParameters);
 
 	int scriptId = -1; // Always returns -1 if unsuccessful, mayhaps change this to 0 and uint?
-	if(IMonoObject *pScriptInstance = m_pScriptCompiler->CallMethod("InstantiateScript", pArgs))
+	if(IMonoObject *pScriptInstance = m_pScriptManager->CallMethod("InstantiateScript", pArgs))
 	{
 		IMonoClass *pScript = pScriptInstance->Unbox<IMonoClass *>();
 		scriptId = pScript->GetScriptId();
@@ -436,7 +436,7 @@ void CScriptSystem::RemoveScriptInstance(int id)
 			IMonoArray *pArgs = CreateMonoArray(1);
 			pArgs->Insert(id);
 
-			m_pScriptCompiler->CallMethod("RemoveInstance", pArgs);
+			m_pScriptManager->CallMethod("RemoveInstance", pArgs);
 			SAFE_RELEASE(pArgs);
 
 			m_scripts.erase(it);

@@ -134,7 +134,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActorSystem\Actor.cs" />
-    <Compile Include="Compiler\IScriptCompiler.cs" />
+    <Compile Include="Script Handling\CryScript.cs" />
+    <Compile Include="Script Handling\ScriptCompiler.cs" />
     <Compile Include="Engine\Material.cs" />
     <Compile Include="Engine\ParticleEffect.cs" />
     <Compile Include="Engine\Terrain.cs" />
@@ -168,7 +169,7 @@
     <Compile Include="Utils\AssemblyReferenceHandler.cs" />
     <Compile Include="Math\Quat.cs" />
     <Compile Include="EntitySystem\Interface.cs" />
-    <Compile Include="ScriptInstance.cs" />
+    <Compile Include="Script Handling\ScriptInstance.cs" />
     <Compile Include="Misc\CompilationAttributes.cs" />
     <Compile Include="CallbackHandler.cs" />
     <Compile Include="Console\CCommand.cs" />
@@ -189,7 +190,7 @@
     <Compile Include="Math\Vec3.cs" />
     <Compile Include="Utils\PathUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Compiler\ScriptCompiler.cs" />
+    <Compile Include="Script Handling\ScriptManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
