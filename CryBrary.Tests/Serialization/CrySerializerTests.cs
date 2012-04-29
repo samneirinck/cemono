@@ -39,24 +39,27 @@ namespace CryBrary.Tests.Serialization
 			public NestedClass nestedClass { get; set; }
 		}
 
+		static TestClass SetupTestClass()
+		{
+			var testClass = new TestClass();
+			testClass.Integer = 3;
+			testClass.String = "testString";
+			testClass.Boolean = true;
+
+			testClass.nestedClass = new TestClass.NestedClass(TestClass.NestedEnum.Nested_NotQuite);
+
+			return testClass;
+		}
+
 		[Test]
-		public void SerializeDeserializeTestClassWithMemoryStream()
+		public void TestClass_With_MemoryStream()
 		{
 			using(var stream = new MemoryStream())
 			{
-				var testClass = new TestClass();
-				testClass.Integer = 3;
-				testClass.String = "testString";
-				testClass.Boolean = true;
-
-				testClass.nestedClass = new TestClass.NestedClass(TestClass.NestedEnum.Nested_NotQuite);
-
 				var serializer = new CrySerializer();
-				serializer.Serialize(stream, testClass);
+				serializer.Serialize(stream, SetupTestClass());
 
-				testClass = null;
-
-				testClass = serializer.Deserialize(stream) as TestClass;
+				var testClass = serializer.Deserialize(stream) as TestClass;
 				Assert.IsNotNull(testClass);
 
 				Assert.IsTrue(testClass.Boolean);
@@ -70,7 +73,7 @@ namespace CryBrary.Tests.Serialization
 		}
 
 		[Test]
-		public void SerializeDeserializeStringWithMemoryStream()
+		public void String_With_MemoryStream()
 		{
 			using(var stream = new MemoryStream())
 			{
@@ -84,7 +87,7 @@ namespace CryBrary.Tests.Serialization
 		}
 
 		[Test]
-		public void SerializeDeserializeListWithMemoryStream()
+		public void List_With_MemoryStream()
 		{
 			using(var stream = new MemoryStream())
 			{
@@ -107,7 +110,7 @@ namespace CryBrary.Tests.Serialization
 		}
 
 		[Test]
-		public void SerializeDeserializeDictionaryWithMemoryStream()
+		public void Dictionary_With_MemoryStream()
 		{
 			using(var stream = new MemoryStream())
 			{
@@ -136,7 +139,7 @@ namespace CryBrary.Tests.Serialization
 		}
 
 		[Test]
-		public void SerializeDeserializeObjectArrayWithMemoryStream()
+		public void Object_Array_With_MemoryStream()
 		{
 			using(var stream = new MemoryStream())
 			{
@@ -156,6 +159,41 @@ namespace CryBrary.Tests.Serialization
 				Assert.AreEqual("testString", array.ElementAt(0));
 				Assert.AreEqual(1337, array.ElementAt(1));
 				Assert.AreEqual(true, array.ElementAt(2));
+			}
+		}
+
+		class Class_Containing_Reference
+		{
+			public Class_Containing_Reference()
+			{
+				TestClass = SetupTestClass();
+			}
+
+			public TestClass TestClass { get; set; }
+		}
+
+		[Test]
+		public void ObjectReference_Storage_Validation()
+		{
+			using(var stream = new MemoryStream())
+			{
+				var classWithRef = new Class_Containing_Reference();
+
+				var serializer = new CrySerializer();
+				serializer.Serialize(stream, classWithRef);
+
+				object testClass = null;
+
+				using(var stream2 = new MemoryStream())
+				{
+					serializer.Serialize(stream2, classWithRef.TestClass);
+
+					testClass = serializer.Deserialize(stream2) as TestClass;
+				}
+
+				var testClassFromRef = serializer.Deserialize(stream) as Class_Containing_Reference;
+
+				Assert.AreSame(testClass, testClassFromRef.TestClass);
 			}
 		}
 	}

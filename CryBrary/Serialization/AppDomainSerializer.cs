@@ -34,7 +34,7 @@ namespace CryEngine.Serialization
 
 			Directory.CreateDirectory(scriptDumpFolder);
 
-			string compiledScriptsDirectory = Path.Combine(scriptDumpFolder, "ScriptCompiler.CompiledScripts");
+			string compiledScriptsDirectory = Path.Combine(scriptDumpFolder, "ScriptManager.CompiledScripts");
 			Directory.CreateDirectory(compiledScriptsDirectory);
 
 			foreach(var script in ScriptManager.CompiledScripts)
@@ -44,7 +44,6 @@ namespace CryEngine.Serialization
 			}
 
 			stopwatch.Stop();
-
 			Debug.LogAlways("Serializer took {0}ms to dump script data", stopwatch.ElapsedMilliseconds);
 
 			Formatter = null;
@@ -68,7 +67,7 @@ namespace CryEngine.Serialization
 		{
 			Stopwatch stopwatch = Stopwatch.StartNew();
 
-			string compiledScriptsDirectory = Path.Combine(PathUtils.GetScriptDumpFolder(), "ScriptCompiler.CompiledScripts");
+			string compiledScriptsDirectory = Path.Combine(PathUtils.GetScriptDumpFolder(), "ScriptManager.CompiledScripts");
 
 			for(int i = 0; i < ScriptManager.CompiledScripts.Count; i++)
 			{
