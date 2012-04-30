@@ -17,28 +17,8 @@ namespace CryEngine.Serialization
 			Value = value;
 		}
 
-		public ObjectReference(string name, object value, ObjectReference owner)
-			: this(name, value)
-		{
-			FullName = owner.FullName + "." + Name;
-		}
+		public string Name { get; set; }
 
-		string name;
-		public string Name
-		{
-			get { return name; }
-			set
-			{
-				name = value;
-
-				if(FullName == null)
-					FullName = value;
-			}
-		}
-		/// <summary>
-		/// The full name including owner objects seperated by '.'
-		/// </summary>
-		public string FullName { get; set; }
 		public object Value { get; set; }
 
 		public override int GetHashCode()

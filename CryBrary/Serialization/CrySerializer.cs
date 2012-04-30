@@ -130,12 +130,11 @@ namespace CryEngine.Serialization
 			var array = (objectReference.Value as IEnumerable).Cast<object>();
 			WriteLine(array.Count());
 			WriteLine(objectReference.Name);
-			WriteLine(objectReference.FullName);
 
 			WriteLine(GetIEnumerableElementType(array.GetType()));
 
 			for(int i = 0; i < array.Count(); i++)
-				StartWrite(new ObjectReference(i.ToString(), array.ElementAt(i), objectReference));
+				StartWrite(new ObjectReference(i.ToString(), array.ElementAt(i)));
 		}
 
 		void WriteGenericEnumerable(ObjectReference objectReference)
@@ -144,7 +143,6 @@ namespace CryEngine.Serialization
 			var array = (objectReference.Value as IEnumerable).Cast<object>();
 			WriteLine(array.Count());
 			WriteLine(objectReference.Name);
-			WriteLine(objectReference.FullName);
 
 			WriteLine(objectReference.Value.GetType().GetGenericTypeDefinition().FullName);
 
@@ -154,14 +152,13 @@ namespace CryEngine.Serialization
 				WriteLine(genericArg.FullName);
 
 			for(int i = 0; i < array.Count(); i++)
-				StartWrite(new ObjectReference(i.ToString(), array.ElementAt(i), objectReference));
+				StartWrite(new ObjectReference(i.ToString(), array.ElementAt(i)));
 		}
 
 		void WriteEnum(ObjectReference objectReference)
 		{
 			WriteLine("enum");
 			WriteLine(objectReference.Name);
-			WriteLine(objectReference.FullName);
 			WriteLine(objectReference.Value.GetType().FullName);
 			WriteLine(objectReference.Value);
 		}
@@ -181,14 +178,13 @@ namespace CryEngine.Serialization
 			WriteLine("object");
 			WriteLine(fields.Count);
 			WriteLine(objectReference.Name);
-			WriteLine(objectReference.FullName);
 			WriteLine(objectReference.Value.GetType().FullName);
 
 			foreach(var field in fields)
 			{
 				object fieldValue = field.GetValue(objectReference.Value);
 
-				StartWrite(new ObjectReference(field.Name, fieldValue, objectReference));
+				StartWrite(new ObjectReference(field.Name, fieldValue));
 			}
 		}
 
@@ -247,7 +243,6 @@ namespace CryEngine.Serialization
 
 			int numFields = int.Parse(ReadLine());
 			objReference.Name = ReadLine();
-			objReference.FullName = ReadLine();
 			string typeName = ReadLine();
 
 			object objectInstance = CreateObjectInstance(typeName);
@@ -277,12 +272,10 @@ namespace CryEngine.Serialization
 
 		void ReadEnumerable(ref ObjectReference objReference)
 		{
-			Debug.LogAlways("[Read] Adding reference at line {0}", CurrentLine - 1);
 			ObjectReferences.Add(CurrentLine - 1, objReference);
 
 			var numElements = int.Parse(ReadLine());
 			objReference.Name = ReadLine();
-			objReference.FullName = ReadLine();
 			var typeName = ReadLine();
 
 			var array = Array.CreateInstance(GetType(typeName), numElements);
@@ -295,12 +288,10 @@ namespace CryEngine.Serialization
 
 		void ReadGenericEnumerable(ref ObjectReference objReference)
 		{
-			Debug.LogAlways("[Read] Adding reference at line {0}", CurrentLine - 1);
 			ObjectReferences.Add(CurrentLine - 1, objReference);
 
 			int elements = int.Parse(ReadLine());
 			objReference.Name = ReadLine();
-			objReference.FullName = ReadLine();
 			string typeName = ReadLine();
 
 			var type = GetType(typeName);
@@ -363,7 +354,6 @@ namespace CryEngine.Serialization
 		void ReadEnum(ref ObjectReference objReference)
 		{
 			objReference.Name = ReadLine();
-			objReference.FullName = ReadLine();
 			string typeName = ReadLine();
 			string valueString = ReadLine();
 
