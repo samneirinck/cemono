@@ -162,38 +162,48 @@ namespace CryBrary.Tests.Serialization
 			}
 		}
 
-		class Class_Containing_Reference
+		class Multiple_Reference_Test_Class
 		{
-			public Class_Containing_Reference()
+			public Multiple_Reference_Test_Class()
 			{
-				TestClass = SetupTestClass();
+				classWithTestClassReference = new Class_Containing_Reference();
+				testClassReference = classWithTestClassReference.TestClass;
+
+				testClassSeperate = SetupTestClass();
 			}
 
-			public TestClass TestClass { get; set; }
+			public class Class_Containing_Reference
+			{
+				public Class_Containing_Reference()
+				{
+					TestClass = SetupTestClass();
+				}
+
+				public TestClass TestClass { get; set; }
+			}
+
+			public Class_Containing_Reference classWithTestClassReference;
+			public TestClass testClassReference;
+
+			public TestClass testClassSeperate;
 		}
 
 		[Test]
-		public void ObjectReference_Storage_Validation()
+		public void Reference_Object_Serialization()
 		{
 			using(var stream = new MemoryStream())
 			{
-				var classWithRef = new Class_Containing_Reference();
+				var referenceTestClass = new Multiple_Reference_Test_Class();
 
 				var serializer = new CrySerializer();
-				serializer.Serialize(stream, classWithRef);
+				serializer.Serialize(stream, referenceTestClass);
 
-				object testClass = null;
+				referenceTestClass = null;
 
-				using(var stream2 = new MemoryStream())
-				{
-					serializer.Serialize(stream2, classWithRef.TestClass);
+				referenceTestClass = serializer.Deserialize(stream) as Multiple_Reference_Test_Class;
 
-					testClass = serializer.Deserialize(stream2) as TestClass;
-				}
-
-				var testClassFromRef = serializer.Deserialize(stream) as Class_Containing_Reference;
-
-				Assert.AreSame(testClass, testClassFromRef.TestClass);
+				Assert.AreNotSame(referenceTestClass.classWithTestClassReference, referenceTestClass.testClassSeperate);
+				Assert.AreSame(referenceTestClass.classWithTestClassReference.TestClass, referenceTestClass.testClassReference, "ObjectReference validation failed; deserialized objects were not the same!");
 			}
 		}
 	}
