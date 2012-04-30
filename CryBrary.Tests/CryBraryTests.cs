@@ -8,7 +8,7 @@ using NUnit.Framework;
 
 namespace CryBrary.Tests
 {
-	public class CryBraryTests
+	public abstract class CryBraryTests
 	{
 		[SetUp]
 		public void Init()
