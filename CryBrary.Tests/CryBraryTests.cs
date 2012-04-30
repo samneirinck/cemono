@@ -8,7 +8,6 @@ using NUnit.Framework;
 
 namespace CryBrary.Tests
 {
-	[TestFixture]
 	public class CryBraryTests
 	{
 		[SetUp]
