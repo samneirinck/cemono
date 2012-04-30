@@ -35,7 +35,7 @@ public:
 	virtual IMonoArray *GetItemArray(int index) override { return new CScriptArray((mono::array)mono_array_get((MonoArray *)m_pArray, MonoArray *, index)); }
 
 	virtual void Insert(IMonoObject *pObject) override;
-	virtual void Insert(IMonoArray *pArray) override { pArray ? InsertArray(*pArray) : 0; }
+	virtual void Insert(IMonoArray *pArray) override { InsertArray(pArray ? *pArray : (mono::array)NULL); }
 
 	virtual void InsertString(mono::string string) override;
 	virtual void InsertObject(mono::object obj) override;
