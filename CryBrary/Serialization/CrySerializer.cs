@@ -19,9 +19,15 @@ namespace CryEngine.Serialization
 		Assembly CallingAssembly { get; set; }
 		FormatterConverter Converter { get; set; }
 
+		/// <summary>
+		/// We store a dictionary of all serialized objects in order to not create new instances of types with identical hash codes. (same objects)
+		/// </summary>
+		Dictionary<int, ObjectReference> ObjectReferences { get; set; }
+
 		public CrySerializer()
 		{
 			Converter = new FormatterConverter();
+			ObjectReferences = new Dictionary<int, ObjectReference>();
 		}
 
 		public void Serialize(Stream stream, object graph)
@@ -29,12 +35,15 @@ namespace CryEngine.Serialization
 			Writer = new StreamWriter(stream);
 			Writer.AutoFlush = true;
 
+			CurrentLine = 0;
+
 			StartWrite(new ObjectReference("root", graph));
 			stream.Seek(0, SeekOrigin.Begin);
 		}
 
 		void WriteLine(object value)
 		{
+			CurrentLine++;
 			Writer.WriteLine(value);
 		}
 
@@ -47,6 +56,23 @@ namespace CryEngine.Serialization
 			}
 
 			Type valueType = objectReference.Value.GetType();
+
+			bool isString = valueType == typeof(string);
+			if(!valueType.IsValueType && !isString)
+			{
+				foreach(var pair in ObjectReferences)
+				{
+					if(pair.Value.GetHashCode() == objectReference.GetHashCode())
+					{
+						WriteReference(pair.Key);
+						return;
+					}
+				}
+
+				Debug.LogAlways("[Write] Adding reference {0} at line {1}", objectReference.Name, CurrentLine);
+				ObjectReferences.Add(CurrentLine, objectReference);
+			}
+
 			if(!IsTypeAllowed(valueType))
 				WriteNull(objectReference);
 			else if(valueType.IsPrimitive)
@@ -56,7 +82,7 @@ namespace CryEngine.Serialization
 				else
 					WriteAny(objectReference);
 			}
-			else if(valueType == typeof(string))
+			else if(isString)
 				WriteString(objectReference);
 			else if(valueType.Implements(typeof(IEnumerable)))
 			{
@@ -75,6 +101,12 @@ namespace CryEngine.Serialization
 		{
 			WriteLine("null");
 			WriteLine(objectReference.Name);
+		}
+
+		void WriteReference(int line)
+		{
+			WriteLine("reference");
+			WriteLine(line);
 		}
 
 		void WriteAny(ObjectReference objectReference)
@@ -165,11 +197,15 @@ namespace CryEngine.Serialization
 			Reader = new StreamReader(stream);
 			CallingAssembly = Assembly.GetCallingAssembly();
 
+			ObjectReferences.Clear();
+			CurrentLine = 0;
+
 			return StartRead().Value;
 		}
 
 		string ReadLine()
 		{
+			CurrentLine++;
 			return Reader.ReadLine();
 		}
 
@@ -180,6 +216,7 @@ namespace CryEngine.Serialization
 			switch(ReadLine())
 			{
 				case "null": ReadNull(ref objReference); break;
+				case "reference": ReadReference(ref objReference); break;
 				case "object": ReadObject(ref objReference); break;
 				case "generic_enumerable": ReadGenericEnumerable(ref objReference); break;
 				case "enumerable": ReadEnumerable(ref objReference); break;
@@ -197,8 +234,17 @@ namespace CryEngine.Serialization
 			objReference.Name = ReadLine();
 		}
 
+		void ReadReference(ref ObjectReference objReference)
+		{
+			int referenceLine = int.Parse(ReadLine());
+			objReference = ObjectReferences[referenceLine];
+		}
+
 		void ReadObject(ref ObjectReference objReference)
 		{
+			Debug.LogAlways("[Read] Adding reference at line {0}", CurrentLine - 1);
+			ObjectReferences.Add(CurrentLine - 1, objReference);
+
 			int numFields = int.Parse(ReadLine());
 			objReference.Name = ReadLine();
 			objReference.FullName = ReadLine();
@@ -223,7 +269,7 @@ namespace CryEngine.Serialization
 				if(fieldInfo != null)
 					fieldInfo.SetValue(objectInstance, fieldReference.Value);
 				else
-					Debug.LogAlways("failed to find field {0} in type {1}!", fieldReference.Name, typeName);
+					throw new Exception(string.Format("Failed to find field {0} in type {1}", fieldReference.Name, typeName));
 			}
 
 			objReference.Value = objectInstance;
@@ -231,6 +277,9 @@ namespace CryEngine.Serialization
 
 		void ReadEnumerable(ref ObjectReference objReference)
 		{
+			Debug.LogAlways("[Read] Adding reference at line {0}", CurrentLine - 1);
+			ObjectReferences.Add(CurrentLine - 1, objReference);
+
 			var numElements = int.Parse(ReadLine());
 			objReference.Name = ReadLine();
 			objReference.FullName = ReadLine();
@@ -246,6 +295,9 @@ namespace CryEngine.Serialization
 
 		void ReadGenericEnumerable(ref ObjectReference objReference)
 		{
+			Debug.LogAlways("[Read] Adding reference at line {0}", CurrentLine - 1);
+			ObjectReferences.Add(CurrentLine - 1, objReference);
+
 			int elements = int.Parse(ReadLine());
 			objReference.Name = ReadLine();
 			objReference.FullName = ReadLine();
@@ -315,14 +367,7 @@ namespace CryEngine.Serialization
 			string typeName = ReadLine();
 			string valueString = ReadLine();
 
-			object value = null;
-			var type = GetType(typeName);
-			if(type != null)
-				value = Enum.Parse(type, valueString);
-			else
-				Debug.LogAlways("Failed to get type {0}", typeName);
-
-			objReference.Value = value;
+			objReference.Value = Enum.Parse(GetType(typeName), valueString);
 		}
 
 		static System.Type[] forbiddenTypes = new System.Type[] { typeof(MethodInfo) };
@@ -362,10 +407,7 @@ namespace CryEngine.Serialization
 					return type;
 			}
 
-			if(type == null)
-				throw new Exception(string.Format("Could not localize type with name {0}", typeName));
-
-			return type;
+			throw new Exception(string.Format("Could not localize type with name {0}", typeName));
 		}
 
 		Type GetIEnumerableElementType(Type enumerableType)
@@ -373,7 +415,6 @@ namespace CryEngine.Serialization
 			Type type = enumerableType.GetElementType();
 			if(type != null)
 				return type;
-
 
 			// Not an array type, we've got to use an alternate method to get the type of elements contained within.
 			if(enumerableType.IsGenericType && enumerableType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
@@ -398,6 +439,11 @@ namespace CryEngine.Serialization
 
 		object CreateObjectInstance(string typeName)
 		{
+			if(typeName == null)
+				throw new ArgumentNullException("typeName");
+			else if(typeName.Length <= 0)
+				throw new ArgumentException("typeName was empty");
+
 			Type type = GetType(typeName);
 
 			if(type.GetConstructor(System.Type.EmptyTypes) != null || type.IsValueType)
@@ -405,6 +451,8 @@ namespace CryEngine.Serialization
 
 			throw new Exception(string.Format("Could not serialize type {0} since it did not containg a parameterless constructor", type.Name));
 		}
+
+		int CurrentLine { get; set; }
 
 		public SerializationBinder Binder { get { return null; } set { } }
 		public ISurrogateSelector SurrogateSelector { get { return null; } set { } }

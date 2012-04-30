@@ -183,9 +183,9 @@ namespace CryBrary.Tests.Serialization
 			}
 
 			public Class_Containing_Reference classWithTestClassReference;
-			public TestClass testClassReference;
+			public TestClass testClassReference { get; set; }
 
-			public TestClass testClassSeperate;
+			public TestClass testClassSeperate { get; set; }
 		}
 
 		[Test]
