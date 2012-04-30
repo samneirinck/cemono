@@ -245,7 +245,7 @@
             <param name="autoInit">Should the entity automatically be initialised?</param>
             <returns></returns>
         </member>
-        <member name="M:CryEngine.Entity.RegisterEntityClass(CryEngine.EntityConfig)">
+        <member name="M:CryEngine.Entity.RegisterClass(CryEngine.EntityConfig)">
             <summary>
             Register a new entity type.
             </summary>
@@ -3041,19 +3041,6 @@
             <param name="threshold"></param>
             <returns></returns>
         </member>
-        <member name="M:CryEngine.Serialization.CrySerializer.ObjectReference.op_Equality(CryEngine.Serialization.CrySerializer.ObjectReference,CryEngine.Serialization.CrySerializer.ObjectReference)">
-            <summary>
-            Special behaviour; unlike Equals the operator methods do not compare Value!
-            </summary>
-            <param name="ref1"></param>
-            <param name="ref2"></param>
-            <returns></returns>
-        </member>
-        <member name="P:CryEngine.Serialization.CrySerializer.ObjectReference.FullName">
-            <summary>
-            The full name including owner objects seperated by '.'
-            </summary>
-        </member>
         <member name="M:CryEngine.Initialization.ScriptManager.InstantiateScript(System.String,System.Object[])">
             <summary>
             Instantiates a script using its name and interface.
@@ -4433,11 +4420,6 @@
             This is the base GameRules interface. All game rules must implement this.
             </summary>
             <remarks>For most use cases, deriving from CryGameCode's BaseGameRules is a more efficient solution.</remarks>
-        </member>
-        <member name="P:CryEngine.GameRules.CurrentRules">
-            <summary>
-            Accesses the currently active game rules.
-            </summary>
         </member>
         <member name="P:CryEngine.GameRulesAttribute.Name">
             <summary>
@@ -5879,6 +5861,11 @@
             <param name="x"></param>
             <param name="y"></param>
             <returns></returns>
+        </member>
+        <member name="P:CryEngine.Serialization.ObjectReference.FullName">
+            <summary>
+            The full name including owner objects seperated by '.'
+            </summary>
         </member>
     </members>
 </doc>

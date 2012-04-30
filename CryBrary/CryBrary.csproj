@@ -134,6 +134,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActorSystem\Actor.cs" />
+    <Compile Include="Extensions\IDictionary.cs" />
     <Compile Include="Script Handling\CryScript.cs" />
     <Compile Include="Script Handling\ScriptCompiler.cs" />
     <Compile Include="Engine\Material.cs" />
@@ -155,6 +156,7 @@
     <Compile Include="Math\Ray.cs" />
     <Compile Include="Math\Vec2.cs" />
     <Compile Include="Math\Vec4.cs" />
+    <Compile Include="Serialization\SerializedObjectReference.cs" />
     <Compile Include="UI\UI.cs" />
     <Compile Include="Serialization\AppDomainSerializer.cs" />
     <Compile Include="Misc\Convert.cs" />

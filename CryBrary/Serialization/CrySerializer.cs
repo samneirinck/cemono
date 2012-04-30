@@ -19,76 +19,9 @@ namespace CryEngine.Serialization
 		Assembly CallingAssembly { get; set; }
 		FormatterConverter Converter { get; set; }
 
-		Dictionary<string, ObjectReference> ObjectReferences { get; set; }
-
 		public CrySerializer()
 		{
 			Converter = new FormatterConverter();
-			ObjectReferences = new Dictionary<string, ObjectReference>();
-		}
-
-		struct ObjectReference
-		{
-			public ObjectReference(string name, object value) 
-				: this() 
-			{ 
-				Name = name;
-				Value = value;
-				FullName = Name;
-			}
-
-			public ObjectReference(string name, object value, ObjectReference owner)
-				: this(name, value)
-			{
-				FullName = owner.FullName + "." + Name;
-			}
-
-			public ObjectReference(string name, object value, string fullName)
-				: this(name, value)
-			{
-				FullName = fullName;
-			}
-
-			public string Name { get; set; }
-			/// <summary>
-			/// The full name including owner objects seperated by '.'
-			/// </summary>
-			public string FullName { get; set; }
-			public object Value { get; set; }
-
-			public override bool Equals(object obj)
-			{
-				if(obj is ObjectReference)
-					return this.Equals(obj);
-
-				return false;
-			}
-
-			public override int GetHashCode()
-			{
-				return base.GetHashCode();
-			}
-
-			public bool Equals(ObjectReference other)
-			{
-				return (this.Value != null && this.Value.Equals(other.Value)) && (this.FullName.Equals(other.FullName));
-			}
-
-			/// <summary>
-			/// Special behaviour; unlike Equals the operator methods do not compare Value!
-			/// </summary>
-			/// <param name="ref1"></param>
-			/// <param name="ref2"></param>
-			/// <returns></returns>
-			public static bool operator ==(ObjectReference ref1, ObjectReference ref2)
-			{
-				return ref1.FullName.Equals(ref2.FullName);
-			}
-
-			public static bool operator !=(ObjectReference ref1, ObjectReference ref2)
-			{
-				return !(ref1 == ref2);
-			}
 		}
 
 		public void Serialize(Stream stream, object graph)
@@ -98,6 +31,11 @@ namespace CryEngine.Serialization
 
 			StartWrite(new ObjectReference("root", graph));
 			stream.Seek(0, SeekOrigin.Begin);
+		}
+
+		void WriteLine(object value)
+		{
+			Writer.WriteLine(value);
 		}
 
 		void StartWrite(ObjectReference objectReference)
@@ -113,7 +51,7 @@ namespace CryEngine.Serialization
 				WriteNull(objectReference);
 			else if(valueType.IsPrimitive)
 			{
-				if(valueType != typeof(object)&& valueType != typeof(bool) && System.Convert.ToInt32(objectReference.Value) == 0)
+				if(valueType != typeof(object) && valueType != typeof(bool) && System.Convert.ToInt32(objectReference.Value) == 0)
 					WriteNull(objectReference);
 				else
 					WriteAny(objectReference);
@@ -133,6 +71,69 @@ namespace CryEngine.Serialization
 				WriteObject(objectReference);
 		}
 
+		void WriteNull(ObjectReference objectReference)
+		{
+			WriteLine("null");
+			WriteLine(objectReference.Name);
+		}
+
+		void WriteAny(ObjectReference objectReference)
+		{
+			WriteLine("any");
+			WriteLine(objectReference.Name);
+			WriteLine(objectReference.Value.GetType().FullName);
+			WriteLine(Converter.ToString(objectReference.Value));
+		}
+
+		void WriteString(ObjectReference objectReference)
+		{
+			WriteLine("string");
+			WriteLine(objectReference.Name);
+			WriteLine(objectReference.Value);
+		}
+
+		void WriteEnumerable(ObjectReference objectReference)
+		{
+			WriteLine("enumerable");
+			var array = (objectReference.Value as IEnumerable).Cast<object>();
+			WriteLine(array.Count());
+			WriteLine(objectReference.Name);
+			WriteLine(objectReference.FullName);
+
+			WriteLine(GetIEnumerableElementType(array.GetType()));
+
+			for(int i = 0; i < array.Count(); i++)
+				StartWrite(new ObjectReference(i.ToString(), array.ElementAt(i), objectReference));
+		}
+
+		void WriteGenericEnumerable(ObjectReference objectReference)
+		{
+			WriteLine("generic_enumerable");
+			var array = (objectReference.Value as IEnumerable).Cast<object>();
+			WriteLine(array.Count());
+			WriteLine(objectReference.Name);
+			WriteLine(objectReference.FullName);
+
+			WriteLine(objectReference.Value.GetType().GetGenericTypeDefinition().FullName);
+
+			var genericArguments = objectReference.Value.GetType().GetGenericArguments();
+			WriteLine(genericArguments.Count());
+			foreach(var genericArg in genericArguments)
+				WriteLine(genericArg.FullName);
+
+			for(int i = 0; i < array.Count(); i++)
+				StartWrite(new ObjectReference(i.ToString(), array.ElementAt(i), objectReference));
+		}
+
+		void WriteEnum(ObjectReference objectReference)
+		{
+			WriteLine("enum");
+			WriteLine(objectReference.Name);
+			WriteLine(objectReference.FullName);
+			WriteLine(objectReference.Value.GetType().FullName);
+			WriteLine(objectReference.Value);
+		}
+
 		void WriteObject(ObjectReference objectReference)
 		{
 			List<FieldInfo> fields = new List<FieldInfo>();
@@ -145,11 +146,11 @@ namespace CryEngine.Serialization
 				type = type.BaseType;
 			}
 
-			Writer.WriteLine("object");
-			Writer.WriteLine(fields.Count);
-			Writer.WriteLine(objectReference.Name);
-			Writer.WriteLine(objectReference.FullName);
-			Writer.WriteLine(objectReference.Value.GetType().FullName);
+			WriteLine("object");
+			WriteLine(fields.Count);
+			WriteLine(objectReference.Name);
+			WriteLine(objectReference.FullName);
+			WriteLine(objectReference.Value.GetType().FullName);
 
 			foreach(var field in fields)
 			{
@@ -159,120 +160,49 @@ namespace CryEngine.Serialization
 			}
 		}
 
-		void WriteEnumerable(ObjectReference objectReference)
-		{
-			Writer.WriteLine("enumerable");
-			var array = (objectReference.Value as IEnumerable).Cast<object>();
-			Writer.WriteLine(array.Count());
-			Writer.WriteLine(objectReference.Name);
-			Writer.WriteLine(objectReference.FullName);
-
-			Writer.WriteLine(GetIEnumerableElementType(array.GetType()));
-
-			for(int i = 0; i < array.Count(); i++)
-				StartWrite(new ObjectReference(i.ToString(), array.ElementAt(i), objectReference));
-		}
-
-		void WriteGenericEnumerable(ObjectReference objectReference)
-		{
-			Writer.WriteLine("generic_enumerable");
-			var array = (objectReference.Value as IEnumerable).Cast<object>();
-			Writer.WriteLine(array.Count());
-			Writer.WriteLine(objectReference.Name);
-			Writer.WriteLine(objectReference.FullName);
-
-			Writer.WriteLine(objectReference.Value.GetType().GetGenericTypeDefinition().FullName);
-
-			var genericArguments = objectReference.Value.GetType().GetGenericArguments();
-			Writer.WriteLine(genericArguments.Count());
-			foreach(var genericArg in genericArguments)
-				Writer.WriteLine(genericArg.FullName);
-
-			for(int i = 0; i < array.Count(); i++)
-				StartWrite(new ObjectReference(i.ToString(), array.ElementAt(i), objectReference));
-		}
-
-		void WriteNull(ObjectReference objectReference)
-		{
-			Writer.WriteLine("null");
-			Writer.WriteLine(objectReference.Name);
-		}
-
-		void WriteAny(ObjectReference objectReference)
-		{
-			Writer.WriteLine("any");
-			Writer.WriteLine(objectReference.Name);
-			Writer.WriteLine(objectReference.Value.GetType().FullName);
-			Writer.WriteLine(Converter.ToString(objectReference.Value));
-		}
-
-		void WriteString(ObjectReference objectReference)
-		{
-			Writer.WriteLine("string");
-			Writer.WriteLine(objectReference.Name);
-			Writer.WriteLine(objectReference.Value);
-		}
-
-		void WriteEnum(ObjectReference objectReference)
-		{
-			Writer.WriteLine("enum");
-			Writer.WriteLine(objectReference.Name);
-			Writer.WriteLine(objectReference.FullName);
-			Writer.WriteLine(objectReference.Value.GetType().FullName);
-			Writer.WriteLine(objectReference.Value);
-		}
-
 		public object Deserialize(Stream stream)
 		{
 			Reader = new StreamReader(stream);
 			CallingAssembly = Assembly.GetCallingAssembly();
-			ObjectReferences.Clear();
 
 			return StartRead().Value;
 		}
 
+		string ReadLine()
+		{
+			return Reader.ReadLine();
+		}
+
 		ObjectReference StartRead()
 		{
-			ObjectReference result = default(ObjectReference);
+			ObjectReference objReference = new ObjectReference();
 
-			switch(Reader.ReadLine())
+			switch(ReadLine())
 			{
-				case "null": result = ReadNull(); break;
-				case "object": result = ReadObject(); break;
-				case "generic_enumerable": result = ReadGenericEnumerable(); break;
-				case "enumerable": result = ReadEnumerable(); break;
-				case "enum": result = ReadEnum(); break;
-				case "any": result = ReadAny(); break;
-				case "string": result = ReadString(); break;
+				case "null": ReadNull(ref objReference); break;
+				case "object": ReadObject(ref objReference); break;
+				case "generic_enumerable": ReadGenericEnumerable(ref objReference); break;
+				case "enumerable": ReadEnumerable(ref objReference); break;
+				case "enum": ReadEnum(ref objReference); break;
+				case "any": ReadAny(ref objReference); break;
+				case "string": ReadString(ref objReference); break;
 				default: break;
 			}
 
-			if(result.Equals(default(ObjectReference)))
-				throw new Exception(string.Format("Could not deserialize object!"));
-			
-			return result;
+			return objReference;
 		}
 
-		ObjectReference ReadNull()
+		void ReadNull(ref ObjectReference objReference)
 		{
-			return new ObjectReference(Reader.ReadLine(), null);
+			objReference.Name = ReadLine();
 		}
 
-		ObjectReference ReadObject()
+		void ReadObject(ref ObjectReference objReference)
 		{
-			int numFields = int.Parse(Reader.ReadLine());
-			string name = Reader.ReadLine();
-			string fullName = Reader.ReadLine();
-			string typeName = Reader.ReadLine();
-
-			if(ObjectReferences.ContainsKey(fullName))
-			{
-				// We have to read anyway, in order to get to the correct line for the next object.
-				for(int i = 0; i < numFields; ++i)
-					StartRead();
-
-				return ObjectReferences[fullName];
-			}
+			int numFields = int.Parse(ReadLine());
+			objReference.Name = ReadLine();
+			objReference.FullName = ReadLine();
+			string typeName = ReadLine();
 
 			object objectInstance = CreateObjectInstance(typeName);
 			for(int i = 0; i < numFields; ++i)
@@ -296,57 +226,37 @@ namespace CryEngine.Serialization
 					Debug.LogAlways("failed to find field {0} in type {1}!", fieldReference.Name, typeName);
 			}
 
-			ObjectReferences.Add(fullName, new ObjectReference(name, objectInstance, fullName));
-			return ObjectReferences.Last().Value;
+			objReference.Value = objectInstance;
 		}
 
-		ObjectReference ReadEnumerable()
+		void ReadEnumerable(ref ObjectReference objReference)
 		{
-			var numElements = int.Parse(Reader.ReadLine());
-			var name = Reader.ReadLine();
-			var fullName = Reader.ReadLine();
-			var typeName = Reader.ReadLine();
-
-			if(ObjectReferences.ContainsKey(fullName))
-			{
-				// We have to read anyway, in order to get to the correct line for the next object.
-				for(int i = 0; i != numElements; ++i)
-					StartRead();
-
-				return ObjectReferences[fullName];
-			}
+			var numElements = int.Parse(ReadLine());
+			objReference.Name = ReadLine();
+			objReference.FullName = ReadLine();
+			var typeName = ReadLine();
 
 			var array = Array.CreateInstance(GetType(typeName), numElements);
 
 			for(int i = 0; i != numElements; ++i)
 				array.SetValue(StartRead().Value, i);
 
-			ObjectReferences.Add(fullName, new ObjectReference(name, array, fullName));
-			return ObjectReferences.Last().Value;
+			objReference.Value = array;
 		}
 
-		ObjectReference ReadGenericEnumerable()
+		void ReadGenericEnumerable(ref ObjectReference objReference)
 		{
-			int elements = int.Parse(Reader.ReadLine());
-			string name = Reader.ReadLine();
-			string fullName = Reader.ReadLine();
-			string typeName = Reader.ReadLine();
+			int elements = int.Parse(ReadLine());
+			objReference.Name = ReadLine();
+			objReference.FullName = ReadLine();
+			string typeName = ReadLine();
 
 			var type = GetType(typeName);
 
-			if(ObjectReferences.ContainsKey(fullName))
-			{
-				// We have to read anyway, in order to get to the correct line for the next object.
-				for(int i = 0; i != elements; ++i)
-					StartRead();
-
-				return ObjectReferences[fullName];
-			}
-
-			var numGenericArgs = int.Parse(Reader.ReadLine());
+			var numGenericArgs = int.Parse(ReadLine());
 			var genericArgs = new Type[numGenericArgs];
 			for(int i = 0; i < numGenericArgs; i++)
-				genericArgs[i] = GetType(Reader.ReadLine());
+				genericArgs[i] = GetType(ReadLine());
 
 			var enumerable = CreateGenericObjectInstance(type, genericArgs) as IEnumerable;
 
@@ -375,36 +285,35 @@ namespace CryEngine.Serialization
 				enumerable = list;
 			}
 
-			ObjectReferences.Add(fullName, new ObjectReference(name, enumerable, fullName));
-			return ObjectReferences.Last().Value;
+			objReference.Value = enumerable;
 		}
 
-		ObjectReference ReadAny()
+		void ReadAny(ref ObjectReference objReference)
 		{
-			string name = Reader.ReadLine();
-			string typeName = Reader.ReadLine();
-			string valueString = Reader.ReadLine();
+			objReference.Name = ReadLine();
+			string typeName = ReadLine();
+			string valueString = ReadLine();
 
 			object value = null;
 			var type = GetType(typeName);
 			if(type != null)
 				value = Converter.Convert(valueString, type);
 
-			return new ObjectReference(name, value);
+			objReference.Value = value;
 		}
 
-		ObjectReference ReadString()
+		void ReadString(ref ObjectReference objReference)
 		{
-			string name = Reader.ReadLine();
-			return new ObjectReference(name, Reader.ReadLine());
+			objReference.Name = ReadLine();
+			objReference.Value = ReadLine();
 		}
 
-		ObjectReference ReadEnum()
+		void ReadEnum(ref ObjectReference objReference)
 		{
-			string name = Reader.ReadLine();
-			string fullName = Reader.ReadLine();
-			string typeName = Reader.ReadLine();
-			string valueString = Reader.ReadLine();
+			objReference.Name = ReadLine();
+			objReference.FullName = ReadLine();
+			string typeName = ReadLine();
+			string valueString = ReadLine();
 
 			object value = null;
 			var type = GetType(typeName);
@@ -413,7 +322,7 @@ namespace CryEngine.Serialization
 			else
 				Debug.LogAlways("Failed to get type {0}", typeName);
 
-			return new ObjectReference(name, value, fullName);
+			objReference.Value = value;
 		}
 
 		static System.Type[] forbiddenTypes = new System.Type[] { typeof(MethodInfo) };
