@@ -10,8 +10,6 @@ CGameRules::CGameRules()
 	REGISTER_METHOD(AddGameModeAlias);
 	REGISTER_METHOD(AddGameModeLevelLocation);
 	REGISTER_METHOD(SetDefaultGameMode);
-
-	REGISTER_METHOD(SpawnPlayer);
 }
 
 //-----------------------------------------------------------------------------
@@ -47,16 +45,4 @@ void CGameRules::SetDefaultGameMode(mono::string gamemode)
 EntityId CGameRules::GetPlayer()
 {
 	return gEnv->pGameFramework->GetClientActorId();
-}
-
-//-----------------------------------------------------------------------------
-EntityId CGameRules::SpawnPlayer(int channelId, mono::string name, mono::string className, Vec3 pos, Vec3 angles, Vec3 scale)
-{
-	if(gEnv->bServer)
-	{
-		if(IActor *pActor = gEnv->pGameFramework->GetIActorSystem()->CreateActor(channelId, ToCryString(name), ToCryString(className), pos, Quat(Ang3(angles)), scale))
-			return pActor->GetEntityId();
-	}
-
-	return 0;
 }

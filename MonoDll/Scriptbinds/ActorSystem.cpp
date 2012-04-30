@@ -13,6 +13,8 @@ CActorSystem::CActorSystem()
 	REGISTER_METHOD(SetPlayerMaxHealth);
 
 	REGISTER_METHOD(GetEntityIdForChannelId);
+
+	REGISTER_METHOD(CreateActor);
 	REGISTER_METHOD(RemoveActor);
 
 	REGISTER_METHOD(GetClientActor);
@@ -24,6 +26,17 @@ EntityId CActorSystem::GetEntityIdForChannelId(uint16 channelId)
 {
 	if(IActor *pActor = gEnv->pGameFramework->GetIActorSystem()->GetActorByChannelId(channelId))
 		return pActor->GetEntityId();
+
+	return 0;
+}
+
+EntityId CActorSystem::CreateActor(int channelId, mono::string name, mono::string className, Vec3 pos, Vec3 angles, Vec3 scale)
+{
+	if(gEnv->bServer)
+	{
+		if(IActor *pActor = gEnv->pGameFramework->GetIActorSystem()->CreateActor(channelId, ToCryString(name), ToCryString(className), pos, Quat(Ang3(angles)), scale))
+			return pActor->GetEntityId();
+	}
 
 	return 0;
 }

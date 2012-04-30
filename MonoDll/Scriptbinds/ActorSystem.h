@@ -30,6 +30,8 @@ protected:
 	static void SetPlayerMaxHealth(EntityId, float);
 
 	static EntityId GetEntityIdForChannelId(uint16 channelId);
+
+	static EntityId CreateActor(int channelId, mono::string name, mono::string className, Vec3 pos, Vec3 angles, Vec3 scale);
 	static void RemoveActor(EntityId id);
 
 	static EntityId GetClientActor();
