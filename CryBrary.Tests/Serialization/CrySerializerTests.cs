@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace CryBrary.Tests.Serialization
 {
 	[TestFixture]
-	public class CrySerializerTests
+	public class CrySerializerTests : CryBraryTests
 	{
 		public class TestClass
 		{
