@@ -97,9 +97,8 @@ CScriptSystem::CScriptSystem()
 	if(!CompleteInit())
 		CryFatalError("Failed to initialize CryMono, aborting..");
 
-	// I'm really not sure if the IFileChangeMonitor works outside the Editor, but developers shouldn't use script reloading there anyway.
-	if(gEnv->IsEditor())
-		gEnv->pFileChangeMonitor->RegisterListener(this, "scripts\\");
+	if(IFileChangeMonitor *pFileChangeMonitor = gEnv->pFileChangeMonitor)
+		pFileChangeMonitor->RegisterListener(this, "scripts\\");
 }
 
 CScriptSystem::~CScriptSystem()
@@ -107,7 +106,8 @@ CScriptSystem::~CScriptSystem()
 	// Force garbage collection of all generations.
 	mono_gc_collect(mono_gc_max_generation());
 
-	gEnv->pFileChangeMonitor->UnregisterListener(this);
+	if(IFileChangeMonitor *pFileChangeMonitor = gEnv->pFileChangeMonitor)
+		pFileChangeMonitor->UnregisterListener(this);
 
 	m_methodBindings.clear();
 
