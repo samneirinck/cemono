@@ -15,6 +15,7 @@ namespace CryEngine
     /// </summary>
     public class ItemSystem
     {
+        #region Native Methods
         private static INativeItemSystemMethods _methods;
         internal static INativeItemSystemMethods Methods
         {
@@ -42,6 +43,7 @@ namespace CryEngine
             [MethodImplAttribute(MethodImplOptions.InternalCall)]
             public extern void _GiveEquipmentPack(uint entityId, string equipmentPack);
         }
+        #endregion
 
         public static void GiveItem(EntityId actorId, string itemClass)
         {

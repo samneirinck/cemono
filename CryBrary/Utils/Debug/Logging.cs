@@ -16,8 +16,9 @@ namespace CryEngine
 	}
 
 	public static partial class Debug
-	{
-		private static INativeLoggingMethods _methods;
+    {
+        #region Native Methods
+        private static INativeLoggingMethods _methods;
 		internal static INativeLoggingMethods Methods
 		{
 			get
@@ -47,8 +48,9 @@ namespace CryEngine
 				NativeMethods._Warning(msg);
 			}
 		}
+        #endregion
 
-		/// <summary>
+        /// <summary>
 		/// Logs a message to the console
 		/// </summary>
 		/// <param name="format"></param>
