@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 
 namespace CryEngine
 {
-	internal interface ILoggingMethods
+	internal interface INativeLoggingMethods
 	{
 		void _LogAlways(string msg);
 		void _Log(string msg);
@@ -17,8 +17,8 @@ namespace CryEngine
 
 	public static partial class Debug
 	{
-		private static ILoggingMethods _methods;
-		internal static ILoggingMethods Methods
+		private static INativeLoggingMethods _methods;
+		internal static INativeLoggingMethods Methods
 		{
 			get
 			{
@@ -30,7 +30,7 @@ namespace CryEngine
 			}
 		}
 
-		class LoggingMethods : ILoggingMethods
+		class LoggingMethods : INativeLoggingMethods
 		{
 			// Logging is using DllImport, which requires a static extern method
 			public void _LogAlways(string msg)
