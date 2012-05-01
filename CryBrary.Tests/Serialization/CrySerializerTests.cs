@@ -287,8 +287,9 @@ namespace CryBrary.Tests.Serialization
 				var memberInfoClass = serializer.Deserialize(stream) as Class_With_MemberInfo_Member;
 
 				Assert.IsNotNull(memberInfoClass);
-				Assert.IsNotNull(memberInfoClass.MethodInfo);
-				Assert.IsNotNull(memberInfoClass.FieldInfo);
+
+				Assert.AreSame(memberInfoClass.GetType().GetMethod("Method"), memberInfoClass.MethodInfo);
+				Assert.AreSame(memberInfoClass.GetType().GetField("booleanField"), memberInfoClass.FieldInfo);
 
 				Assert.IsTrue(memberInfoClass.booleanField);
 			}
