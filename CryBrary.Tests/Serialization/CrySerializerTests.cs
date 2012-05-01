@@ -36,6 +36,8 @@ namespace CryBrary.Tests.Serialization
 			public int Integer { get; set; }
 			public bool Boolean { get; set; }
 
+			public string NullString { get; set; }
+
 			public NestedClass nestedClass { get; set; }
 		}
 
@@ -78,11 +80,11 @@ namespace CryBrary.Tests.Serialization
 			using(var stream = new MemoryStream())
 			{
 				var serializer = new CrySerializer();
-				serializer.Serialize(stream, "test string is very testy");
+				serializer.Serialize(stream, "Test str1ng_I5 V37y tEsTy%‹Œm´ð!");
 
 				string testString = serializer.Deserialize(stream) as string;
 
-				Assert.AreEqual("test string is very testy", testString);
+				Assert.AreEqual("Test str1ng_I5 V37y tEsTy%‹Œm´ð!", testString);
 			}
 		}
 
@@ -162,14 +164,38 @@ namespace CryBrary.Tests.Serialization
 			}
 		}
 
+		[Test]
+		public void String_Array_With_MemoryStream()
+		{
+			using(var stream = new MemoryStream())
+			{
+				var list = new List<object>();
+
+				list.Add("first_string");
+				list.Add("second_string");
+				list.Add("third_string");
+
+				var serializer = new CrySerializer();
+				serializer.Serialize(stream, list.ToArray());
+
+				var array = serializer.Deserialize(stream) as object[];
+				Assert.IsNotNull(array);
+				Assert.IsNotEmpty(array);
+
+				Assert.AreEqual("first_string", array.ElementAt(0));
+				Assert.AreEqual("second_string", array.ElementAt(1));
+				Assert.AreEqual("third_string", array.ElementAt(2));
+			}
+		}
+
 		class Multiple_Reference_Test_Class
 		{
 			public Multiple_Reference_Test_Class()
 			{
-				classWithTestClassReference = new Class_Containing_Reference();
-				testClassReference = classWithTestClassReference.TestClass;
+				ClassWithTestClassReference = new Class_Containing_Reference();
+				TestClassReference = ClassWithTestClassReference.TestClass;
 
-				testClassSeperate = SetupTestClass();
+				TestClassSeperate = SetupTestClass();
 			}
 
 			public class Class_Containing_Reference
@@ -182,12 +208,12 @@ namespace CryBrary.Tests.Serialization
 				public TestClass TestClass { get; set; }
 			}
 
-			public Class_Containing_Reference classWithTestClassReference;
-			public TestClass testClassReference { get; set; }
+			public Class_Containing_Reference ClassWithTestClassReference { get; set; }
+			public TestClass TestClassReference { get; set; }
 
-			public TestClass testClassSeperate { get; set; }
+			public TestClass TestClassSeperate { get; set; }
 		}
-
+		
 		[Test]
 		public void Reference_Object_Serialization()
 		{
@@ -202,8 +228,81 @@ namespace CryBrary.Tests.Serialization
 
 				referenceTestClass = serializer.Deserialize(stream) as Multiple_Reference_Test_Class;
 
-				Assert.AreNotSame(referenceTestClass.classWithTestClassReference, referenceTestClass.testClassSeperate);
-				Assert.AreSame(referenceTestClass.classWithTestClassReference.TestClass, referenceTestClass.testClassReference, "ObjectReference validation failed; deserialized objects were not the same!");
+				Assert.AreNotSame(referenceTestClass.ClassWithTestClassReference, referenceTestClass.TestClassSeperate);
+				Assert.AreSame(referenceTestClass.ClassWithTestClassReference.TestClass, referenceTestClass.TestClassReference, "Objects were not the same; expected hash code: {0} but was: {1}", 
+					referenceTestClass.ClassWithTestClassReference.GetHashCode(), referenceTestClass.TestClassReference.GetHashCode());
+			}
+		}
+		
+		[Test]
+		public void ObjectReference_Storage_Validation()
+		{
+			using(var stream = new MemoryStream())
+			{
+				var classWithRef = new Multiple_Reference_Test_Class.Class_Containing_Reference();
+
+				var serializer = new CrySerializer();
+				serializer.Serialize(stream, classWithRef);
+
+				object testClass = null;
+
+				using(var stream2 = new MemoryStream())
+				{
+					serializer.Serialize(stream2, classWithRef.TestClass);
+
+					testClass = serializer.Deserialize(stream2) as TestClass;
+				}
+
+				var testClassFromRef = serializer.Deserialize(stream) as Multiple_Reference_Test_Class.Class_Containing_Reference;
+
+				Assert.AreSame(testClass, testClassFromRef.TestClass);
+			}
+		}
+		
+		[Test]
+		public void Deserialize_Empty_Stream()
+		{
+			using(var stream = new MemoryStream())
+			{
+				var serializer = new CrySerializer();
+				var obj = serializer.Deserialize(stream);
+
+				Assert.IsNull(obj);
+			}
+		}
+
+		class Class_With_MemberInfo_Member
+		{
+			public Class_With_MemberInfo_Member()
+			{
+				MethodInfo = GetType().GetMethod("Method");
+				FieldInfo = GetType().GetField("booleanField");
+			}
+
+			public void Method() {}
+
+			public System.Reflection.MethodInfo MethodInfo { get; set; }
+			public System.Reflection.FieldInfo FieldInfo { get; set; }
+
+			public bool booleanField = true;
+		}
+
+		[Test]
+		public void Class_With_MemberInfo_Members()
+		{
+			using(var stream = new MemoryStream())
+			{
+				var serializer = new CrySerializer();
+
+				serializer.Serialize(stream, new Class_With_MemberInfo_Member());
+
+				var memberInfoClass = serializer.Deserialize(stream) as Class_With_MemberInfo_Member;
+
+				Assert.IsNotNull(memberInfoClass);
+				Assert.IsNotNull(memberInfoClass.MethodInfo);
+				Assert.IsNotNull(memberInfoClass.FieldInfo);
+
+				Assert.IsTrue(memberInfoClass.booleanField);
 			}
 		}
 	}
