@@ -305,5 +305,70 @@ namespace CryBrary.Tests.Serialization
 				Assert.IsTrue(memberInfoClass.booleanField);
 			}
 		}
+
+		public interface Interface
+		{
+			void PureVirtualMethod();
+		}
+
+		public abstract class BaseClass : Interface
+		{
+			public virtual void NonoverriddenMethod()
+			{
+			}
+
+			public virtual void OverriddenMethod()
+			{
+			}
+
+			public void PureVirtualMethod()
+			{
+			}
+
+			public bool BooleanProperty { get; set; }
+			public int IntegerProperty { get; set; }
+		}
+
+		public class Class_Inherit_From_BaseClass : BaseClass
+		{
+			public override void OverriddenMethod()
+			{
+			}
+
+			public string StringProperty { get; set; }
+		}
+
+		public class Class_Inherit_From_Class : Class_Inherit_From_BaseClass
+		{
+			public Class_Inherit_From_Class()
+			{
+				BooleanProperty = true;
+				IntegerProperty = 13;
+				StringProperty = "TestString";
+
+				Vec3Property = new CryEngine.Vec3(1, 2, 3);
+			}
+
+			public CryEngine.Vec3 Vec3Property { get; set; }
+		}
+
+		[Test]
+		public void Derivation()
+		{
+			using(var stream = new MemoryStream())
+			{
+				var serializer = new CrySerializer();
+
+				serializer.Serialize(stream, new Class_Inherit_From_Class());
+
+				var inheritClass = serializer.Deserialize(stream) as Class_Inherit_From_Class;
+
+				Assert.IsNotNull(inheritClass);
+				Assert.IsTrue(inheritClass.BooleanProperty);
+				Assert.AreEqual(13, inheritClass.IntegerProperty);
+				Assert.AreEqual("TestString", inheritClass.StringProperty);
+				Assert.AreEqual(new CryEngine.Vec3(1, 2, 3), inheritClass.Vec3Property);
+			}
+		}
 	}
 }
