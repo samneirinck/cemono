@@ -35,6 +35,7 @@ namespace CryEngine.Serialization
 			Writer = new StreamWriter(stream);
 			Writer.AutoFlush = true;
 
+			ObjectReferences.Clear();
 			CurrentLine = 0;
 
 			StartWrite(new ObjectReference("root", graph));
@@ -57,32 +58,14 @@ namespace CryEngine.Serialization
 
 			Type valueType = objectReference.Value.GetType();
 
-			bool isString = valueType == typeof(string);
-			if(!valueType.IsValueType && !isString)
-			{
-				foreach(var pair in ObjectReferences)
-				{
-					if(pair.Value.GetHashCode() == objectReference.GetHashCode())
-					{
-						WriteReference(pair.Key);
-						return;
-					}
-				}
-
-				Debug.LogAlways("[Write] Adding reference {0} at line {1}", objectReference.Name, CurrentLine);
-				ObjectReferences.Add(CurrentLine, objectReference);
-			}
-
-			if(!IsTypeAllowed(valueType))
-				WriteNull(objectReference);
-			else if(valueType.IsPrimitive)
+			if(valueType.IsPrimitive)
 			{
 				if(valueType != typeof(object) && valueType != typeof(bool) && System.Convert.ToInt32(objectReference.Value) == 0)
 					WriteNull(objectReference);
 				else
 					WriteAny(objectReference);
 			}
-			else if(isString)
+			else if(valueType == typeof(string))
 				WriteString(objectReference);
 			else if(valueType.Implements(typeof(IEnumerable)))
 			{
@@ -126,6 +109,9 @@ namespace CryEngine.Serialization
 
 		void WriteEnumerable(ObjectReference objectReference)
 		{
+			if(TryWriteReference(objectReference))
+				return;
+
 			WriteLine("enumerable");
 			var array = (objectReference.Value as IEnumerable).Cast<object>();
 			WriteLine(array.Count());
@@ -139,6 +125,9 @@ namespace CryEngine.Serialization
 
 		void WriteGenericEnumerable(ObjectReference objectReference)
 		{
+			if(TryWriteReference(objectReference))
+				return;
+
 			WriteLine("generic_enumerable");
 			var array = (objectReference.Value as IEnumerable).Cast<object>();
 			WriteLine(array.Count());
@@ -165,20 +154,40 @@ namespace CryEngine.Serialization
 
 		void WriteObject(ObjectReference objectReference)
 		{
-			List<FieldInfo> fields = new List<FieldInfo>();
-			var type = objectReference.Value.GetType();
-			while(type != null)
-			{
-				foreach(var field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
-					fields.Add(field);
+			if(TryWriteReference(objectReference))
+				return;
 
-				type = type.BaseType;
+			var type = objectReference.Value.GetType();
+
+			if(type.Implements(typeof(MemberInfo)))
+			{
+				WriteLine("memberinfo");
+				WriteLine(objectReference.Name);
+
+				var memberInfo = objectReference.Value as MemberInfo;
+				WriteLine(memberInfo.Name);
+				WriteLine(memberInfo.DeclaringType);
+				WriteLine(memberInfo.MemberType);
+
+				return;
 			}
 
 			WriteLine("object");
-			WriteLine(fields.Count);
 			WriteLine(objectReference.Name);
-			WriteLine(objectReference.Value.GetType().FullName);
+			WriteLine(type.FullName);
+
+			var fields = new List<FieldInfo>();
+			while(type != null)
+			{
+				foreach(var field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
+				{
+					fields.Add(field);
+				}
+
+				type = type.BaseType;
+			}
+			
+			WriteLine(fields.Count);
 
 			foreach(var field in fields)
 			{
@@ -186,6 +195,26 @@ namespace CryEngine.Serialization
 
 				StartWrite(new ObjectReference(field.Name, fieldValue));
 			}
+		}
+
+		/// <summary>
+		/// Checks if this object has already been serialized.
+		/// </summary>
+		/// <param name="objectReference"></param>
+		/// <returns>true if object had already been serialized.</returns>
+		bool TryWriteReference(ObjectReference objectReference)
+		{
+			foreach(var pair in ObjectReferences)
+			{
+				if(pair.Value.Value.GetHashCode() == objectReference.Value.GetHashCode())
+				{
+					WriteReference(pair.Key);
+					return true;
+				}
+			}
+
+			ObjectReferences.Add(CurrentLine, objectReference);
+			return false;
 		}
 
 		public object Deserialize(Stream stream)
@@ -219,6 +248,7 @@ namespace CryEngine.Serialization
 				case "enum": ReadEnum(ref objReference); break;
 				case "any": ReadAny(ref objReference); break;
 				case "string": ReadString(ref objReference); break;
+				case "memberinfo": ReadMemberInfo(ref objReference); break;
 				default: break;
 			}
 
@@ -238,12 +268,11 @@ namespace CryEngine.Serialization
 
 		void ReadObject(ref ObjectReference objReference)
 		{
-			Debug.LogAlways("[Read] Adding reference at line {0}", CurrentLine - 1);
 			ObjectReferences.Add(CurrentLine - 1, objReference);
 
-			int numFields = int.Parse(ReadLine());
 			objReference.Name = ReadLine();
 			string typeName = ReadLine();
+			int numFields = int.Parse(ReadLine());
 
 			object objectInstance = CreateObjectInstance(typeName);
 			for(int i = 0; i < numFields; ++i)
@@ -268,6 +297,34 @@ namespace CryEngine.Serialization
 			}
 
 			objReference.Value = objectInstance;
+		}
+
+		void ReadMemberInfo(ref ObjectReference objReference)
+		{
+			ObjectReferences.Add(CurrentLine - 1, objReference);
+
+			objReference.Name = ReadLine();
+			var memberName = ReadLine();
+
+			var declaringType = GetType(ReadLine());
+			var memberType = (MemberTypes)Enum.Parse(typeof(MemberTypes), ReadLine());
+
+			MemberInfo memberInfo = null;
+
+			switch(memberType)
+			{
+				case MemberTypes.Method:
+					memberInfo = declaringType.GetMethod(memberName);
+					break;
+				case MemberTypes.Field:
+					memberInfo = declaringType.GetField(memberName);
+					break;
+				case MemberTypes.Property:
+					memberInfo = declaringType.GetProperty(memberName);
+					break;
+			}
+
+			objReference.Value = memberInfo;
 		}
 
 		void ReadEnumerable(ref ObjectReference objReference)
@@ -358,22 +415,6 @@ namespace CryEngine.Serialization
 			string valueString = ReadLine();
 
 			objReference.Value = Enum.Parse(GetType(typeName), valueString);
-		}
-
-		static System.Type[] forbiddenTypes = new System.Type[] { typeof(MethodInfo) };
-
-		bool IsTypeAllowed(System.Type type)
-		{
-			foreach(var forbiddenType in forbiddenTypes)
-			{
-				if(type == forbiddenType || (type.HasElementType && type.GetElementType() == forbiddenType))
-					return false;
-
-				if(type.Implements(forbiddenType))
-					return false;
-			}
-
-			return true;
 		}
 
 		Type GetType(string typeName)

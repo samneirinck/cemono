@@ -20,10 +20,5 @@ namespace CryEngine.Serialization
 		public string Name { get; set; }
 
 		public object Value { get; set; }
-
-		public override int GetHashCode()
-		{
-			return Value.GetHashCode();
-		}
 	}
 }
