@@ -38,3 +38,4 @@ using System.Runtime.CompilerServices;
 
 [assembly: CLSCompliant(true)]
 [assembly: InternalsVisibleTo("CryBrary.Tests")]
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]

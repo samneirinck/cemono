@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 
 namespace CryEngine
 {
-	public interface ILoggingMethods
+	internal interface ILoggingMethods
 	{
 		void _LogAlways(string msg);
 		void _Log(string msg);
