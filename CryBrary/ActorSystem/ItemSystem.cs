@@ -2,29 +2,55 @@
 
 namespace CryEngine
 {
-	/// <summary>
-	/// ItemSystem contains scriptbinds used in relation to the item system.
-	/// </summary>
+    internal interface INativeItemSystemMethods
+    {
+        void CacheItemGeometry(string itemClass);
+        void CacheItemSound(string itemClass);
+        void _GiveItem(uint entityId, string itemClass);
+        void _GiveEquipmentPack(uint entityId, string equipmentPack);
+    }
+
+    /// <summary>
+    /// ItemSystem contains scriptbinds used in relation to the item system.
+    /// </summary>
     public class ItemSystem
     {
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern public static void CacheItemGeometry(string itemClass);
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern public static void CacheItemSound(string itemClass);
+        private static INativeItemSystemMethods _methods;
+        internal static INativeItemSystemMethods Methods
+        {
+            get
+            {
+                return _methods ?? (_methods = new NativeItemSystemMethods());
+            }
+            set
+            {
+                _methods = value;
+            }
+        }
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _GiveItem(uint entityId, string itemClass);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _GiveEquipmentPack(uint entityId, string equipmentPack);
+        class NativeItemSystemMethods : INativeItemSystemMethods
+        {
+            [MethodImplAttribute(MethodImplOptions.InternalCall)]
+            public extern void CacheItemGeometry(string itemClass);
 
-		public static void GiveItem(EntityId actorId, string itemClass)
-		{
-			_GiveItem(actorId, itemClass);
-		}
+            [MethodImplAttribute(MethodImplOptions.InternalCall)]
+            public extern void CacheItemSound(string itemClass);
 
-		public static void GiveEquipmentPack(EntityId actorId, string equipmentPack)
-		{
-			_GiveEquipmentPack(actorId, equipmentPack);
-		}
+            [MethodImplAttribute(MethodImplOptions.InternalCall)]
+            public extern void _GiveItem(uint entityId, string itemClass);
+
+            [MethodImplAttribute(MethodImplOptions.InternalCall)]
+            public extern void _GiveEquipmentPack(uint entityId, string equipmentPack);
+        }
+
+        public static void GiveItem(EntityId actorId, string itemClass)
+        {
+            Methods._GiveItem(actorId, itemClass);
+        }
+
+        public static void GiveEquipmentPack(EntityId actorId, string equipmentPack)
+        {
+            Methods._GiveEquipmentPack(actorId, equipmentPack);
+        }
     }
 }
