@@ -313,11 +313,11 @@ namespace CryBrary.Tests.Serialization
 
 		public abstract class BaseClass : Interface
 		{
-			void NonoverriddenMethod()
+			public virtual void NonoverriddenMethod()
 			{
 			}
 
-			void OverriddenMethod()
+			public virtual void OverriddenMethod()
 			{
 			}
 
@@ -331,6 +331,10 @@ namespace CryBrary.Tests.Serialization
 
 		public class Class_Inherit_From_BaseClass : BaseClass
 		{
+			public override void OverriddenMethod()
+			{
+			}
+
 			public string StringProperty { get; set; }
 		}
 
