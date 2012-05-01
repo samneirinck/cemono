@@ -1,7 +1,7 @@
 ﻿
 namespace CryEngine
 {
-    public static partial class CryNetwork
+    public static class CryNetwork
     {
         /// <summary>
         /// Initializes static variables which never change, i.e. IsEditor.

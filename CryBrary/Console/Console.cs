@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace CryEngine
 {
-	public partial class Console
+	public class Console
     {
         // Console commands
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
