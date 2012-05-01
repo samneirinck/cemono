@@ -176,19 +176,8 @@ namespace CryEngine.Serialization
 			WriteLine(objectReference.Name);
 			WriteLine(type.FullName);
 
-			var fields = new List<FieldInfo>();
-			while(type != null)
-			{
-				foreach(var field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
-				{
-					fields.Add(field);
-				}
-
-				type = type.BaseType;
-			}
-			
-			WriteLine(fields.Count);
-
+			var fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+			WriteLine(fields.Length);
 			foreach(var field in fields)
 			{
 				object fieldValue = field.GetValue(objectReference.Value);
@@ -278,17 +267,8 @@ namespace CryEngine.Serialization
 			for(int i = 0; i < numFields; ++i)
 			{
 				ObjectReference fieldReference = StartRead();
-				FieldInfo fieldInfo = null;
 
-				var type = objectInstance.GetType();
-				while(type != null)
-				{
-					fieldInfo = type.GetField(fieldReference.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-					if(fieldInfo != null)
-						break;
-
-					type = type.BaseType;
-				}
+				var fieldInfo = objectInstance.GetType().GetField(fieldReference.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
 				if(fieldInfo != null)
 					fieldInfo.SetValue(objectInstance, fieldReference.Value);
