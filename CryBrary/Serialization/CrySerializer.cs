@@ -91,9 +91,10 @@ namespace CryEngine.Serialization
 			WriteLine(objectReference.Name);
 		}
 
-		void WriteReference(int line)
+		void WriteReference(ObjectReference objReference, int line)
 		{
 			WriteLine("reference");
+			WriteLine(objReference.Name);
 			WriteLine(line);
 		}
 
@@ -202,7 +203,7 @@ namespace CryEngine.Serialization
 			{
 				if(pair.Value.Value.GetHashCode() == objectReference.Value.GetHashCode())
 				{
-					WriteReference(pair.Key);
+					WriteReference(objectReference, pair.Key);
 					return true;
 				}
 			}
@@ -263,8 +264,9 @@ namespace CryEngine.Serialization
 
 		void ReadReference(ref ObjectReference objReference)
 		{
+			objReference.Name = ReadLine();
 			int referenceLine = int.Parse(ReadLine());
-			objReference = ObjectReferences[referenceLine];
+			objReference.Value = ObjectReferences[referenceLine].Value;
 		}
 
 		void ReadObject(ref ObjectReference objReference)
