@@ -234,31 +234,6 @@ namespace CryBrary.Tests.Serialization
 			}
 		}
 		
-		[Test]
-		public void ObjectReference_Storage_Validation()
-		{
-			using(var stream = new MemoryStream())
-			{
-				var classWithRef = new Multiple_Reference_Test_Class.Class_Containing_Reference();
-
-				var serializer = new CrySerializer();
-				serializer.Serialize(stream, classWithRef);
-
-				object testClass = null;
-
-				using(var stream2 = new MemoryStream())
-				{
-					serializer.Serialize(stream2, classWithRef.TestClass);
-
-					testClass = serializer.Deserialize(stream2) as TestClass;
-				}
-
-				var testClassFromRef = serializer.Deserialize(stream) as Multiple_Reference_Test_Class.Class_Containing_Reference;
-
-				Assert.AreSame(testClass, testClassFromRef.TestClass);
-			}
-		}
-
 		class Class_With_MemberInfo_Member
 		{
 			public Class_With_MemberInfo_Member()
