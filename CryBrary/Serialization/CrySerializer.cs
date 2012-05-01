@@ -32,6 +32,11 @@ namespace CryEngine.Serialization
 
 		public void Serialize(Stream stream, object graph)
 		{
+			if(stream == null)
+				throw new ArgumentNullException("stream");
+			else if(graph == null)
+				throw new ArgumentNullException("graph");
+
 			Writer = new StreamWriter(stream);
 			Writer.AutoFlush = true;
 
@@ -208,6 +213,9 @@ namespace CryEngine.Serialization
 
 		public object Deserialize(Stream stream)
 		{
+			if(stream == null || stream.Length == 0)
+				throw new ArgumentNullException("stream");
+
 			Reader = new StreamReader(stream);
 			CallingAssembly = Assembly.GetCallingAssembly();
 
@@ -227,7 +235,8 @@ namespace CryEngine.Serialization
 		{
 			ObjectReference objReference = new ObjectReference();
 
-			switch(ReadLine())
+			string type = ReadLine();
+			switch(type)
 			{
 				case "null": ReadNull(ref objReference); break;
 				case "reference": ReadReference(ref objReference); break;
@@ -240,6 +249,9 @@ namespace CryEngine.Serialization
 				case "memberinfo": ReadMemberInfo(ref objReference); break;
 				default: break;
 			}
+
+			if(objReference.Value == null && type != "null")
+				throw new Exception(string.Format("Failed to deserialize object {0}!", objReference.Name));
 
 			return objReference;
 		}
