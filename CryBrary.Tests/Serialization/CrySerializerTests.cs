@@ -258,18 +258,6 @@ namespace CryBrary.Tests.Serialization
 				Assert.AreSame(testClass, testClassFromRef.TestClass);
 			}
 		}
-		
-		[Test]
-		public void Deserialize_Empty_Stream()
-		{
-			using(var stream = new MemoryStream())
-			{
-				var serializer = new CrySerializer();
-				var obj = serializer.Deserialize(stream);
-
-				Assert.IsNull(obj);
-			}
-		}
 
 		class Class_With_MemberInfo_Member
 		{
