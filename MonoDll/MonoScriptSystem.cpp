@@ -177,7 +177,7 @@ void CScriptSystem::PostInit()
 {
 	//GetFlowManager()->Reset();
 
-	if(m_pScriptManager == NULL)
+	if(!m_pScriptManager)
 		gEnv->pSystem->Quit();
 	else
 		m_pScriptManager->CallMethod("PostInit");
