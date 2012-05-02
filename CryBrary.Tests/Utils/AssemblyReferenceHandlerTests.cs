@@ -10,7 +10,7 @@ namespace CryBrary.Tests.Utilities
 {
     // We want to test protected methods, the public interface relies on file IO
     // This is not a good practice, but we don't want to pollute the actual class with IO abstractions
-    /*[TestFixture]
+    [TestFixture]
     public class AssemblyReferenceHandlerTests : AssemblyReferenceHandler
     {
 
@@ -119,5 +119,5 @@ class MyClass {
 "));
         }
 
-    }*/
+    }
 }
