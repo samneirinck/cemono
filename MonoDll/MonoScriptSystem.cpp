@@ -58,6 +58,7 @@ CScriptSystem::CScriptSystem()
 	, m_pCallbackHandler(NULL)
 	, m_pPdb2MdbAssembly(NULL)
 	, m_pScriptManager(NULL)
+	, m_pScriptDomain(NULL)
 	, m_AppDomainSerializer(NULL)
 	, m_pInput(NULL)
 	, m_bLastCompilationSuccess(true)
@@ -95,7 +96,7 @@ CScriptSystem::CScriptSystem()
 	g_pMonoCVars = m_pCVars;
 
 	if(!CompleteInit())
-		CryFatalError("Failed to initialize CryMono, aborting..");
+		return;
 
 	if(IFileChangeMonitor *pFileChangeMonitor = gEnv->pFileChangeMonitor)
 		pFileChangeMonitor->RegisterListener(this, "scripts\\");
@@ -176,12 +177,16 @@ void CScriptSystem::PostInit()
 {
 	//GetFlowManager()->Reset();
 
-	m_pScriptManager->CallMethod("PostInit");
+	if(m_pScriptManager == NULL)
+		gEnv->pSystem->Quit();
+	else
+		m_pScriptManager->CallMethod("PostInit");
 }
 
 bool CScriptSystem::Reload(bool initialLoad)
 {
-	MonoDomain *pPrevScriptDomain = NULL;
+	// Store the previous script domain so we can either restore to it (in case of compilation failure) or fully destruct it.
+	MonoDomain *pPrevScriptDomain = m_pScriptDomain;
 	IMonoAssembly *pPrevCryBraryAssembly = m_pCryBraryAssembly;
 
 	// Store the state of current instances to apply them to the reloaded scripts at the end.
@@ -193,10 +198,7 @@ bool CScriptSystem::Reload(bool initialLoad)
 		if(m_bLastCompilationSuccess)
 			m_AppDomainSerializer->CallMethod("DumpScriptData");
 
-		// Store the previous script domain so we can either restore to it (in case of compilation failure) or fully destruct it.
-		pPrevScriptDomain = mono_domain_get();
- 	
-		mono_domain_set(mono_get_root_domain(), false);
+		mono_domain_set(m_pMonoDomain, false);
 
 		SAFE_RELEASE(m_pScriptManager);
 		SAFE_RELEASE(m_AppDomainSerializer);
@@ -208,7 +210,10 @@ bool CScriptSystem::Reload(bool initialLoad)
 
 	m_pCryBraryAssembly = LoadAssembly(PathUtils::GetBinaryPath() + "CryBrary.dll");
 	if (!m_pCryBraryAssembly)
+	{
+		CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "Failed to load CryBrary.dll");
 		return false;
+	}
 
 	CryLogAlways("		Initializing subsystems...");
 	InitializeSystems();
@@ -216,9 +221,7 @@ bool CScriptSystem::Reload(bool initialLoad)
 	m_pScriptManager = m_pCryBraryAssembly->InstantiateClass("ScriptManager", "CryEngine.Initialization");
 
 	CryLogAlways("		Compiling scripts...");
-	IMonoObject *pInitializationResult = m_pScriptManager->CallMethod("Initialize");
-
-	m_bLastCompilationSuccess = pInitializationResult->Unbox<bool>();
+	InitializeScriptManager();
 
 	if(m_bLastCompilationSuccess)
 	{
@@ -226,7 +229,7 @@ bool CScriptSystem::Reload(bool initialLoad)
 
 		UnloadDomain(pPrevScriptDomain);
 	}
-	else if(!initialLoad && g_pMonoCVars->mono_revertScriptsOnError)
+	else if(!initialLoad && g_pMonoCVars->mono_revertScriptsOnError && pPrevScriptDomain != NULL)
 	{
 		// Compilation failed or something, revert to the old script domain.
 		UnloadDomain(m_pScriptDomain);
@@ -239,8 +242,21 @@ bool CScriptSystem::Reload(bool initialLoad)
 		SAFE_RELEASE(m_AppDomainSerializer);
 		SAFE_RELEASE(m_pScriptManager);
 
-		//m_AppDomainSerializer = m_pCryBraryAssembly->InstantiateClass("AppDomainSerializer", "CryEngine.Serialization");
 		m_pScriptManager = m_pCryBraryAssembly->InstantiateClass("ScriptManager", "CryEngine.Initialization");
+	}
+	else
+	{
+		mono_domain_set(m_pMonoDomain, true);
+
+		SAFE_RELEASE(pPrevCryBraryAssembly);
+		UnloadDomain(pPrevScriptDomain);
+
+		SAFE_RELEASE(m_pScriptManager);
+		SAFE_RELEASE(m_pCryBraryAssembly);
+
+		UnloadDomain(m_pScriptDomain);
+
+		return false;
 	}
 
 	m_AppDomainSerializer = m_pCryBraryAssembly->InstantiateClass("AppDomainSerializer", "CryEngine.Serialization");
@@ -275,6 +291,23 @@ bool CScriptSystem::Reload(bool initialLoad)
 	}
 
 	return true;
+}
+
+void CScriptSystem::InitializeScriptManager()
+{
+	IMonoObject *pInitializationResult = m_pScriptManager->CallMethod("Initialize");
+	if(!pInitializationResult)
+	{
+		if(CryMessageBox("CryMono has failed to initialize. This was probably caused by a syntax error in compiled script code, check your log for more information.", "Script compilation failed!", 0x00000005L) == 2)
+		{
+			m_bLastCompilationSuccess = false;
+			return;// gEnv->pGameFramework->Shutdown();
+		}
+		else
+			return InitializeScriptManager();
+	}
+
+	m_bLastCompilationSuccess = pInitializationResult->Unbox<bool>();
 }
 
 void CScriptSystem::UnloadDomain(MonoDomain *pDomain)
@@ -315,7 +348,7 @@ bool CScriptSystem::InitializeDomain()
 		return false;
 	}
 
-	return m_pMonoDomain != NULL;
+	return true;
 }
 
 void CScriptSystem::RegisterDefaultBindings()

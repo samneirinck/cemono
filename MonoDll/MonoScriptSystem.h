@@ -89,8 +89,10 @@ public:
 
 protected:
 	bool CompleteInit();
+
 	bool InitializeDomain();
 	bool InitializeSystems();
+	void InitializeScriptManager();
 
 	void RegisterDefaultBindings();
 
