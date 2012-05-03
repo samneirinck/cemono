@@ -62,6 +62,7 @@ CScriptSystem::CScriptSystem()
 	, m_AppDomainSerializer(NULL)
 	, m_pInput(NULL)
 	, m_pUIScriptBind(NULL)
+	, m_bReloading(false)
 {
 	CryLogAlways("Initializing Mono Script System");
 
@@ -184,6 +185,8 @@ void CScriptSystem::PostInit()
 
 bool CScriptSystem::Reload(bool initialLoad)
 {
+	m_bReloading = true;
+
 	// Store the state of current instances to apply them to the reloaded scripts at the end.
 	if(!initialLoad)
 	{
@@ -207,7 +210,9 @@ bool CScriptSystem::Reload(bool initialLoad)
 		return false;
 	}
 
-	CryLogAlways("		Initializing subsystems...");
+	if(initialLoad)
+		CryLogAlways("		Initializing subsystems...");
+
 	InitializeSystems(pNewCryBraryAssembly);
 
 	IMonoClass *pNewScriptManager = pNewCryBraryAssembly->InstantiateClass("ScriptManager", "CryEngine.Initialization");
@@ -215,7 +220,9 @@ bool CScriptSystem::Reload(bool initialLoad)
 	for each(auto listener in m_scriptReloadListeners)
 		listener->OnPreScriptCompilation(!initialLoad);
 
-	CryLogAlways("		Compiling scripts...");
+	if(initialLoad)
+		CryLogAlways("		Compiling scripts...");
+
 	IMonoObject *pInitializationResult = pNewScriptManager->CallMethod("Initialize");
 
 	m_bLastCompilationSuccess = pInitializationResult ? pInitializationResult->Unbox<bool>() : false;
@@ -302,6 +309,8 @@ bool CScriptSystem::Reload(bool initialLoad)
 			SAFE_RELEASE(pParams);
 		}
 	}
+
+	m_bReloading = false;
 
 	return true;
 }
@@ -406,6 +415,9 @@ void CScriptSystem::OnPostUpdate(float fDeltaTime)
 
 void CScriptSystem::OnFileChange(const char *sFilename)
 {
+	if(m_bReloading)
+		return;
+
 	string fileName = sFilename;
 	const char *fileExt = fileName.substr(fileName.find_last_of(".") + 1);
 

@@ -56,6 +56,11 @@ struct IMonoScriptSystem : ICryUnknown
 	virtual bool Reload(bool initialLoad = false) = 0;
 
 	/// <summary>
+	/// Used to check whether the script domain is currently being reloaded.
+	/// </summary>
+	virtual bool IsReloading() = 0;
+
+	/// <summary>
 	/// Deletes script system instance; cleans up mono objects etc.
 	/// Called from the dll which implements CryMono on engine shutdown (CGameStartup destructor within the sample project)
 	/// </summary>

@@ -52,6 +52,7 @@ public:
 	virtual void PostInit() override;
 
 	virtual bool Reload(bool initialLoad = false) override;
+	virtual bool IsReloading() override { return m_bReloading; }
 
 	virtual void Release() override { delete this; }
 
@@ -137,6 +138,8 @@ protected:
 
 	// If true, the last script reload was successful. This is necessary to make sure we don't override with invalid script dumps.
 	bool m_bLastCompilationSuccess;
+	// True when currently recompiling scripts / serializing app domain.
+	bool m_bReloading;
 };
 
 #endif //__MONO_H__
