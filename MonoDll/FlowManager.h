@@ -29,8 +29,6 @@ struct SNodeType
 			scriptName = typeName.substr(7);
 		else 
 			scriptName = typeName;
-
-		CryLogAlways("typeName: %s scriptName: %s", typeName.c_str(), scriptName.c_str());
 	}
 
 	void ReloadPorts(IMonoClass *pScript);
