@@ -61,7 +61,6 @@ CScriptSystem::CScriptSystem()
 	, m_pScriptDomain(NULL)
 	, m_AppDomainSerializer(NULL)
 	, m_pInput(NULL)
-	, m_bLastCompilationSuccess(true)
 	, m_pUIScriptBind(NULL)
 {
 	CryLogAlways("Initializing Mono Script System");
@@ -185,10 +184,6 @@ void CScriptSystem::PostInit()
 
 bool CScriptSystem::Reload(bool initialLoad)
 {
-	// Store the previous script domain so we can either restore to it (in case of compilation failure) or fully destruct it.
-	MonoDomain *pPrevScriptDomain = m_pScriptDomain;
-	IMonoAssembly *pPrevCryBraryAssembly = m_pCryBraryAssembly;
-
 	// Store the state of current instances to apply them to the reloaded scripts at the end.
 	if(!initialLoad)
 	{
@@ -199,64 +194,82 @@ bool CScriptSystem::Reload(bool initialLoad)
 			m_AppDomainSerializer->CallMethod("DumpScriptData");
 
 		mono_domain_set(m_pMonoDomain, false);
-
-		SAFE_RELEASE(m_pScriptManager);
-		SAFE_RELEASE(m_AppDomainSerializer);
 	}
 
 	// This will lead to all ScriptDomains using the same friendly name, but doesn't look like it's causing any issues. TODO: Investigate to be sure.
-	m_pScriptDomain = mono_domain_create_appdomain("ScriptDomain", NULL);
-	mono_domain_set(m_pScriptDomain, false);
+	MonoDomain *pNewScriptDomain = mono_domain_create_appdomain("ScriptDomain", NULL);
+	mono_domain_set(pNewScriptDomain, false);
 
-	m_pCryBraryAssembly = LoadAssembly(PathUtils::GetBinaryPath() + "CryBrary.dll");
-	if (!m_pCryBraryAssembly)
+	IMonoAssembly *pNewCryBraryAssembly = LoadAssembly(PathUtils::GetBinaryPath() + "CryBrary.dll");
+	if(!pNewCryBraryAssembly)
 	{
 		CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "Failed to load CryBrary.dll");
 		return false;
 	}
 
 	CryLogAlways("		Initializing subsystems...");
-	InitializeSystems();
+	InitializeSystems(pNewCryBraryAssembly);
 
-	m_pScriptManager = m_pCryBraryAssembly->InstantiateClass("ScriptManager", "CryEngine.Initialization");
+	IMonoClass *pNewScriptManager = pNewCryBraryAssembly->InstantiateClass("ScriptManager", "CryEngine.Initialization");
+
+	for each(auto listener in m_scriptReloadListeners)
+		listener->OnPreScriptCompilation(!initialLoad);
 
 	CryLogAlways("		Compiling scripts...");
-	InitializeScriptManager();
+	IMonoObject *pInitializationResult = pNewScriptManager->CallMethod("Initialize");
+
+	m_bLastCompilationSuccess = pInitializationResult ? pInitializationResult->Unbox<bool>() : false;
+
+	for each(auto listener in m_scriptReloadListeners)
+		listener->OnPostScriptCompilation(!initialLoad, m_bLastCompilationSuccess);
 
 	if(m_bLastCompilationSuccess)
 	{
-		SAFE_RELEASE(pPrevCryBraryAssembly);
-
-		UnloadDomain(pPrevScriptDomain);
-	}
-	else if(!initialLoad && g_pMonoCVars->mono_revertScriptsOnError && pPrevScriptDomain != NULL)
-	{
-		// Compilation failed or something, revert to the old script domain.
-		UnloadDomain(m_pScriptDomain);
-
-		mono_domain_set(pPrevScriptDomain, false);
-
-		SAFE_RELEASE(m_pCryBraryAssembly);
-		m_pCryBraryAssembly = pPrevCryBraryAssembly;
-		
 		SAFE_RELEASE(m_AppDomainSerializer);
 		SAFE_RELEASE(m_pScriptManager);
+		SAFE_RELEASE(m_pCryBraryAssembly);
 
-		m_pScriptManager = m_pCryBraryAssembly->InstantiateClass("ScriptManager", "CryEngine.Initialization");
+		UnloadDomain(m_pScriptDomain);
+
+		m_pScriptDomain = pNewScriptDomain;
+		m_pCryBraryAssembly = pNewCryBraryAssembly;
+		m_pScriptManager = pNewScriptManager;
 	}
 	else
 	{
+		SAFE_RELEASE(pNewScriptManager);
+		SAFE_RELEASE(pNewCryBraryAssembly);
+		SAFE_RELEASE(m_AppDomainSerializer);
+
 		mono_domain_set(m_pMonoDomain, true);
+		UnloadDomain(pNewScriptDomain);
 
-		SAFE_RELEASE(pPrevCryBraryAssembly);
-		UnloadDomain(pPrevScriptDomain);
-
-		SAFE_RELEASE(m_pScriptManager);
-		SAFE_RELEASE(m_pCryBraryAssembly);
-
-		UnloadDomain(m_pScriptDomain);
-
-		return false;
+		if(m_pScriptDomain != NULL)
+		{
+			//Cancel, Try Again, Continue
+			switch(CryMessageBox("Script compilation failed, check log for more information. Do you want to continue by reloading the last successful script compilation?", "Script compilation failed!", 0x00000006L))
+			{
+			case 2: // cancel (quit)
+				gEnv->pSystem->Quit();
+				return false;
+			case 10: // try again (recompile)
+				return Reload(initialLoad);
+			case 11: // continue (load previously functional script domain)
+				mono_domain_set(m_pScriptDomain, false);
+				break;
+			}
+		}
+		else
+		{
+			//Cancel, Try Again, Continue
+			switch(CryMessageBox("Script compilation failed, check log for more information.", "Script compilation failed!", 0x00000005L))
+			{
+			case 2: // cancel (quit)
+				return false;
+			case 4: // retry (recompile)
+				return Reload(initialLoad);
+			}
+		}
 	}
 
 	m_AppDomainSerializer = m_pCryBraryAssembly->InstantiateClass("AppDomainSerializer", "CryEngine.Serialization");
@@ -291,23 +304,6 @@ bool CScriptSystem::Reload(bool initialLoad)
 	}
 
 	return true;
-}
-
-void CScriptSystem::InitializeScriptManager()
-{
-	IMonoObject *pInitializationResult = m_pScriptManager->CallMethod("Initialize");
-	if(!pInitializationResult)
-	{
-		if(CryMessageBox("CryMono has failed to initialize. This was probably caused by a syntax error in compiled script code, check your log for more information.", "Script compilation failed!", 0x00000005L) == 2)
-		{
-			m_bLastCompilationSuccess = false;
-			return;// gEnv->pGameFramework->Shutdown();
-		}
-		else
-			return InitializeScriptManager();
-	}
-
-	m_bLastCompilationSuccess = pInitializationResult->Unbox<bool>();
 }
 
 void CScriptSystem::UnloadDomain(MonoDomain *pDomain)
@@ -386,9 +382,9 @@ void CScriptSystem::RegisterDefaultBindings()
 #undef RegisterBinding
 }
 
-bool CScriptSystem::InitializeSystems()
+bool CScriptSystem::InitializeSystems(IMonoAssembly *pCryBraryAssembly)
 {
-	IMonoClass *pClass = m_pCryBraryAssembly->GetCustomClass("CryNetwork");
+	IMonoClass *pClass = pCryBraryAssembly->GetCustomClass("CryNetwork");
 	IMonoArray *pArray = CreateMonoArray(2);
 	pArray->Insert(gEnv->IsEditor());
 	pArray->Insert(gEnv->IsDedicated());

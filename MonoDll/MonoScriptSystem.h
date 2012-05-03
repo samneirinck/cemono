@@ -45,6 +45,7 @@ class CScriptSystem
 
 	typedef std::map<const void *, const char *> TMethodBindings;
 	typedef std::map<IMonoClass *, int> TScripts;
+	typedef std::vector<IMonoScriptCompilationListener *> TScriptCompilationListeners;
 
 public:
 	// IMonoScriptSystem
@@ -66,6 +67,9 @@ public:
 	virtual IMonoAssembly *LoadAssembly(const char *assemblyPath) override;
 
 	virtual IMonoConverter *GetConverter() override { return m_pConverter; }
+
+	virtual void RegisterScriptReloadListener(IMonoScriptCompilationListener *pListener) override { stl::push_back_unique(m_scriptReloadListeners, pListener); }
+	virtual void UnregisterScriptReloadListener(IMonoScriptCompilationListener *pListener) override { stl::find_and_erase(m_scriptReloadListeners, pListener); }
 	// ~IMonoScriptSystem
 
 	// IFileChangeMonitor
@@ -91,8 +95,7 @@ protected:
 	bool CompleteInit();
 
 	bool InitializeDomain();
-	bool InitializeSystems();
-	void InitializeScriptManager();
+	bool InitializeSystems(IMonoAssembly *pCryBraryAssembly);
 
 	void RegisterDefaultBindings();
 
@@ -129,6 +132,8 @@ protected:
 
 	// ScriptBinds declared in this project are stored here to make sure they are destructed on shutdown.
 	std::vector<IMonoScriptBind *> m_localScriptBinds;
+
+	TScriptCompilationListeners m_scriptReloadListeners;
 
 	// If true, the last script reload was successful. This is necessary to make sure we don't override with invalid script dumps.
 	bool m_bLastCompilationSuccess;

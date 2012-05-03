@@ -3,7 +3,6 @@
 
 struct SCVars
 {
-	int mono_revertScriptsOnError;
 	int mono_exceptionsTriggerMessageBoxes;
 	int mono_exceptionsTriggerFatalErrors;
 
