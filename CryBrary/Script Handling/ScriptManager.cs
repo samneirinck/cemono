@@ -174,18 +174,7 @@ namespace CryEngine.Initialization
 					{
 						try
 						{
-							var newPath = Path.Combine(Path.GetTempPath(), Path.GetFileName(plugin));
-
-							File.Copy(plugin, newPath, true);
-#if !RELEASE
-							GenerateDebugDatabaseForAssembly(plugin);
-
-							var mdbFile = plugin + ".mdb";
-							if(File.Exists(mdbFile)) // success
-								File.Copy(mdbFile, Path.Combine(Path.GetTempPath(), Path.GetFileName(mdbFile)), true);
-#endif
-
-							LoadAssembly(Assembly.LoadFrom(newPath));
+							LoadAssembly(plugin);
 						}
 						//This exception tells us that the assembly isn't a valid .NET assembly for whatever reason
 						catch(BadImageFormatException)
@@ -200,11 +189,43 @@ namespace CryEngine.Initialization
 		}
 
 		/// <summary>
-		/// Loads an C# assembly and adds all found types to ScriptCompiler.CompiledScripts
+		/// Loads a C# assembly and adds all found types to ScriptCompiler.CompiledScripts
 		/// </summary>
-		public void LoadAssembly(Assembly assembly, ScriptType[] allowedTypes = null)
+		public void LoadAssembly(Assembly assembly)
 		{
 			ProcessTypes(assembly.GetTypes());
+		}
+
+		/// <summary>
+		/// Loads a C# assembly by location, creates a shadow-copy & generates debug database (mdb).
+		/// </summary>
+		/// <param name="currentLocation"></param>
+		public void LoadAssembly(string assemblyPath)
+		{
+			var newPath = Path.Combine(Path.GetTempPath(), Path.GetFileName(assemblyPath));
+
+			if(File.Exists(newPath))
+			{
+				try
+				{
+					File.Delete(newPath);
+				}
+				catch(Exception ex) 
+				{
+					newPath = newPath.Replace(".dll", "_.dll");
+				}
+			}
+
+			File.Copy(assemblyPath, newPath, true);
+#if !RELEASE
+			GenerateDebugDatabaseForAssembly(assemblyPath);
+
+			var mdbFile = assemblyPath + ".mdb";
+			if(File.Exists(mdbFile)) // success
+				File.Copy(mdbFile, Path.Combine(Path.GetTempPath(), Path.GetFileName(mdbFile)), true);
+#endif
+
+			LoadAssembly(Assembly.LoadFrom(newPath));
 		}
 
 		/// <summary>
@@ -323,7 +344,7 @@ namespace CryEngine.Initialization
 			}
 		}
 
-		internal List<string> FlowNodes;
+		List<string> FlowNodes { get; set; }
 
 		#region Statics
 		internal static CryScript GetScriptByType(Type type, out int scriptIndex)
