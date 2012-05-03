@@ -276,7 +276,7 @@ void CScriptClass::HandleException(MonoObject *pException)
 	if(g_pMonoCVars->mono_exceptionsTriggerFatalErrors)
 		CryFatalError(ToCryString((mono::string)exceptionString));
 	if(g_pMonoCVars->mono_exceptionsTriggerMessageBoxes)
-		CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, ToCryString((mono::string)exceptionString));
+		CryMessageBox(ToCryString((mono::string)exceptionString), "CryMono exception was raised", 0x00000000L);
 	else
 		CryLogAlways(ToCryString((mono::string)exceptionString));
 }
