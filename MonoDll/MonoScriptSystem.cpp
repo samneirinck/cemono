@@ -64,6 +64,7 @@ CScriptSystem::CScriptSystem()
 	, m_pInput(NULL)
 	, m_pUIScriptBind(NULL)
 	, m_bReloading(false)
+	, m_bLastCompilationSuccess(false)
 {
 	CryLogAlways("Initializing Mono Script System");
 
@@ -175,29 +176,31 @@ bool CScriptSystem::CompleteInit()
 
 void CScriptSystem::PostInit()
 {
-	//GetFlowManager()->Reset();
-
 	if(!m_pScriptManager)
 		gEnv->pSystem->Quit();
 	else
+	{
+		//GetFlowManager()->Reset();
+
 		m_pScriptManager->CallMethod("PostInit");
+	}
+}
+
+void CScriptSystem::PreReload()
+{
+	// Don't allow another reload to commence while we're already reloading.
+	m_bReloading = true;
+
+	// Force dump of instance data if last script reload was successful. (Otherwise we'd override the existing script dump with an invalid one)
+	if(m_bLastCompilationSuccess)
+		m_AppDomainSerializer->CallMethod("DumpScriptData");
+
+	m_pRootDomain->SetActive(true);
 }
 
 bool CScriptSystem::Reload(bool initialLoad)
 {
-	m_bReloading = true;
-
-	// Store the state of current instances to apply them to the reloaded scripts at the end.
-	if(!initialLoad)
-	{
-		CryLogAlways("C# modifications detected on disk, initializing CryBrary reload");
-
-		 // Force dump of instance data if last script reload was successful. (Otherwise we'd override the existing script dump with an invalid one)
-		if(m_bLastCompilationSuccess)
-			m_AppDomainSerializer->CallMethod("DumpScriptData");
-
-		m_pRootDomain->SetActive();
-	}
+	PreReload();
 
 	// The script domain as to which all loaded assemblies and scripts will be contained within.
 	auto *pNewScriptDomain = new CScriptDomain("ScriptDomain", true);
@@ -235,11 +238,16 @@ bool CScriptSystem::Reload(bool initialLoad)
 		SAFE_RELEASE(m_pScriptManager);
 		SAFE_RELEASE(m_pCryBraryAssembly);
 
-		SAFE_DELETE(m_pScriptDomain);
+		SAFE_RELEASE(m_pScriptDomain);
 
 		m_pScriptDomain = pNewScriptDomain;
+
 		m_pCryBraryAssembly = pNewCryBraryAssembly;
 		m_pScriptManager = pNewScriptManager;
+
+		m_AppDomainSerializer = m_pCryBraryAssembly->InstantiateClass("AppDomainSerializer", "CryEngine.Serialization");
+
+		PostReload(initialLoad);
 	}
 	else
 	{
@@ -251,7 +259,7 @@ bool CScriptSystem::Reload(bool initialLoad)
 		
 		SAFE_DELETE(pNewScriptDomain);
 
-		if(m_pScriptDomain != NULL)
+		if(!initialLoad)
 		{
 			//Cancel, Try Again, Continue
 			switch(CryMessageBox("Script compilation failed, check log for more information. Do you want to continue by reloading the last successful script compilation?", "Script compilation failed!", 0x00000006L))
@@ -279,8 +287,11 @@ bool CScriptSystem::Reload(bool initialLoad)
 		}
 	}
 
-	m_AppDomainSerializer = m_pCryBraryAssembly->InstantiateClass("AppDomainSerializer", "CryEngine.Serialization");
+	return true;
+}
 
+void CScriptSystem::PostReload(bool initialLoad)
+{
 	m_pInput->Reset();
 	m_pConverter->Reset();
 	m_pUIScriptBind->OnReset();
@@ -292,7 +303,8 @@ bool CScriptSystem::Reload(bool initialLoad)
 
 		m_AppDomainSerializer->CallMethod("TrySetScriptData");
 
-		// All CScriptClass objects now contain invalid pointers, this will force an update.
+		// Since we've destructed all previous scripts, assemblies and script domains, pointers to these are now invalid.
+		// Iterate through all scripts and get the new script instance objects.
 		for each(auto script in m_scripts)
 		{
 			IMonoArray *pParams = CreateMonoArray(1);
@@ -311,8 +323,6 @@ bool CScriptSystem::Reload(bool initialLoad)
 	}
 
 	m_bReloading = false;
-
-	return true;
 }
 
 void CScriptSystem::RegisterDefaultBindings()

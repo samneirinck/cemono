@@ -94,8 +94,10 @@ public:
 
 protected:
 	bool CompleteInit();
-
 	bool InitializeSystems(IMonoAssembly *pCryBraryAssembly);
+
+	void PreReload();
+	void PostReload(bool initialLoad);
 
 	void RegisterDefaultBindings();
 
