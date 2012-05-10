@@ -19,6 +19,7 @@ struct IMonoScriptManager;
 struct IMonoClass;
 struct IMonoArray;
 struct IMonoAssembly;
+struct IMonoDomain;
 
 struct IMonoEntityManager;
 
@@ -96,6 +97,11 @@ struct IMonoScriptSystem : ICryUnknown
 	/// Loads an Mono assembly and returns a fully initialized IMonoAssembly.
 	/// </summary>
 	virtual IMonoAssembly *LoadAssembly(const char *assemblyPath) = 0;
+
+	/// <summary>
+	/// Gets the root domain created on script system initialization.
+	/// </summary>
+	virtual IMonoDomain *GetRootDomain() = 0;
 
 	/// <summary>
 	/// Retrieves an instance of the IMonoConverter; a class used to easily convert C# types to C++ and the other way around.

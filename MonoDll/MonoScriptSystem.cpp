@@ -54,7 +54,7 @@ SCVars *g_pMonoCVars = 0;
 CRYREGISTER_CLASS(CScriptSystem)
 
 CScriptSystem::CScriptSystem() 
-	: m_pMonoDomain(NULL)
+	: m_pRootDomain(NULL)
 	, m_pCryBraryAssembly(NULL)
 	, m_pCallbackHandler(NULL)
 	, m_pPdb2MdbAssembly(NULL)
@@ -122,7 +122,7 @@ CScriptSystem::~CScriptSystem()
 
 	m_localScriptBinds.clear();
 
-	SAFE_RELEASE(m_pMonoDomain);
+	SAFE_RELEASE(m_pRootDomain);
 
 	gEnv->pMonoScriptSystem = NULL;
 }
@@ -149,7 +149,7 @@ bool CScriptSystem::CompleteInit()
 	CryLogAlways("		Initializing CryMono...");
 	
 	// Create root domain and determine the runtime version we'll be using.
-	m_pMonoDomain = new CScriptDomain(eRV_4_30319);
+	m_pRootDomain = new CScriptDomain(eRV_4_30319);
 
 #ifndef _RELEASE
 	m_pPdb2MdbAssembly = new CScriptAssembly(PathUtils::GetMonoPath() + "bin\\pdb2mdb.dll");
@@ -196,7 +196,7 @@ bool CScriptSystem::Reload(bool initialLoad)
 		if(m_bLastCompilationSuccess)
 			m_AppDomainSerializer->CallMethod("DumpScriptData");
 
-		m_pMonoDomain->SetActive();
+		m_pRootDomain->SetActive();
 	}
 
 	// The script domain as to which all loaded assemblies and scripts will be contained within.
@@ -243,7 +243,7 @@ bool CScriptSystem::Reload(bool initialLoad)
 	}
 	else
 	{
-		m_pMonoDomain->SetActive();
+		m_pRootDomain->SetActive();
 
 		SAFE_RELEASE(pNewCryBraryAssembly);
 		SAFE_RELEASE(m_AppDomainSerializer);

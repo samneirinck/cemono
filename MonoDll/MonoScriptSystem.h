@@ -65,6 +65,8 @@ public:
 	virtual IMonoAssembly *GetCryBraryAssembly() override { return m_pCryBraryAssembly; }
 	virtual IMonoAssembly *LoadAssembly(const char *assemblyPath) override;
 
+	virtual IMonoDomain *GetRootDomain() override { return m_pRootDomain; }
+
 	virtual IMonoConverter *GetConverter() override { return m_pConverter; }
 
 	virtual void RegisterScriptReloadListener(IMonoScriptCompilationListener *pListener) override { stl::push_back_unique(m_scriptReloadListeners, pListener); }
@@ -88,7 +90,7 @@ public:
 	CCallbackHandler *GetCallbackHandler() const { return m_pCallbackHandler; }
 	CFlowManager *GetFlowManager() const { return m_pFlowManager; }
 
-	bool IsInitialized() { return m_pMonoDomain != NULL; }
+	bool IsInitialized() { return m_pRootDomain != NULL; }
 
 protected:
 	bool CompleteInit();
@@ -98,7 +100,7 @@ protected:
 	void RegisterDefaultBindings();
 
 	// The primary app domain, not really used for anything besides holding the script domain. Do *not* unload this at runtime, we cannot execute another root domain again without restarting.
-	IMonoDomain *m_pMonoDomain;
+	IMonoDomain *m_pRootDomain;
 
 	// The app domain in which we load scripts into. Killed and reloaded on script reload.
 	IMonoDomain *m_pScriptDomain;
