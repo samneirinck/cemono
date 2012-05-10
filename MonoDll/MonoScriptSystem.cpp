@@ -186,6 +186,14 @@ void CScriptSystem::PostInit()
 	}
 }
 
+bool CScriptSystem::Reload(bool initialLoad)
+{
+	PreReload();
+
+	// Reload is split into Reload & DoReload to make sure we don't call PreReload multiple times.
+	return DoReload(initialLoad);
+}
+
 void CScriptSystem::PreReload()
 {
 	// Don't allow another reload to commence while we're already reloading.
@@ -194,16 +202,16 @@ void CScriptSystem::PreReload()
 	// Force dump of instance data if last script reload was successful. (Otherwise we'd override the existing script dump with an invalid one)
 	if(m_bLastCompilationSuccess)
 		m_AppDomainSerializer->CallMethod("DumpScriptData");
-
-	m_pRootDomain->SetActive(true);
 }
 
-bool CScriptSystem::Reload(bool initialLoad)
+bool CScriptSystem::DoReload(bool initialLoad)
 {
-	PreReload();
+	// Make sure the new script domain is created under root
+	m_pRootDomain->SetActive(true);
 
 	// The script domain as to which all loaded assemblies and scripts will be contained within.
-	auto *pNewScriptDomain = new CScriptDomain("ScriptDomain", true);
+	IMonoDomain *pNewScriptDomain = new CScriptDomain("ScriptDomain");
+	pNewScriptDomain->SetActive(true);
 
 	IMonoAssembly *pNewCryBraryAssembly = LoadAssembly(PathUtils::GetBinaryPath() + "CryBrary.dll");
 	if(!pNewCryBraryAssembly)
@@ -245,8 +253,6 @@ bool CScriptSystem::Reload(bool initialLoad)
 		m_pCryBraryAssembly = pNewCryBraryAssembly;
 		m_pScriptManager = pNewScriptManager;
 
-		m_AppDomainSerializer = m_pCryBraryAssembly->InstantiateClass("AppDomainSerializer", "CryEngine.Serialization");
-
 		PostReload(initialLoad);
 	}
 	else
@@ -268,7 +274,7 @@ bool CScriptSystem::Reload(bool initialLoad)
 				gEnv->pSystem->Quit();
 				return false;
 			case 10: // try again (recompile)
-				return Reload(initialLoad);
+				return DoReload(initialLoad);
 			case 11: // continue (load previously functional script domain)
 				m_pScriptDomain->SetActive();
 				break;
@@ -276,22 +282,22 @@ bool CScriptSystem::Reload(bool initialLoad)
 		}
 		else
 		{
-			//Cancel, Try Again, Continue
+			//Cancel, Retry
 			switch(CryMessageBox("Script compilation failed, check log for more information.", "Script compilation failed!", 0x00000005L))
 			{
 			case 2: // cancel (quit)
 				return false;
 			case 4: // retry (recompile)
-				return Reload(initialLoad);
+				return DoReload(initialLoad);
 			}
 		}
 	}
-
-	return true;
 }
 
 void CScriptSystem::PostReload(bool initialLoad)
 {
+	m_AppDomainSerializer = m_pCryBraryAssembly->InstantiateClass("AppDomainSerializer", "CryEngine.Serialization");
+
 	m_pInput->Reset();
 	m_pConverter->Reset();
 	m_pUIScriptBind->OnReset();
