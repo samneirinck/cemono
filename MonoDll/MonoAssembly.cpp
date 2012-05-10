@@ -10,7 +10,7 @@
 #include "PathUtils.h"
 #include "MonoScriptSystem.h"
 
-#include <IMonoClass.h>
+#include <MonoClass.h>
 
 CScriptAssembly::CScriptAssembly(const char *assemblyPath)
 {

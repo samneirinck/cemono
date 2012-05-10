@@ -9,9 +9,8 @@
 #ifndef __MONO_H__
 #define __MONO_H__
 
-#include "MonoArray.h"
-
 #include <IMonoScriptSystem.h>
+#include <IMonoDomain.h>
 
 #include <MonoCommon.h>
 
@@ -19,7 +18,6 @@
 #include <IFileChangeMonitor.h>
 #include <IGameFramework.h>
 
-struct IMonoMethodBinding;
 struct IMonoScriptBind;
 
 struct IMonoScriptManager;
@@ -95,18 +93,15 @@ public:
 protected:
 	bool CompleteInit();
 
-	bool InitializeDomain();
 	bool InitializeSystems(IMonoAssembly *pCryBraryAssembly);
 
 	void RegisterDefaultBindings();
 
-	void UnloadDomain(MonoDomain *pDomain);
-
 	// The primary app domain, not really used for anything besides holding the script domain. Do *not* unload this at runtime, we cannot execute another root domain again without restarting.
-	MonoDomain *m_pMonoDomain;
+	IMonoDomain *m_pMonoDomain;
 
 	// The app domain in which we load scripts into. Killed and reloaded on script reload.
-	MonoDomain *m_pScriptDomain;
+	IMonoDomain *m_pScriptDomain;
 
 	IMonoClass *m_pScriptManager;
 	// Hard pointer to the AppDomainSerializer class to quickly dump and restore scripts.

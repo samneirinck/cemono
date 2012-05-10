@@ -81,9 +81,6 @@
     <ClInclude Include="Headers\IMonoInput.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="MonoInput.h">
-      <Filter>Mono</Filter>
-    </ClInclude>
     <ClInclude Include="Scriptbinds\PhysicalWorld.h">
       <Filter>ScriptBinds</Filter>
     </ClInclude>
@@ -138,6 +135,13 @@
     <ClInclude Include="ScriptManager.h">
       <Filter>Mono</Filter>
     </ClInclude>
+    <ClInclude Include="Headers\IMonoDomain.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="MonoDomain.h" />
+    <ClInclude Include="MonoInput.h">
+      <Filter>ScriptBinds</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -180,9 +184,6 @@
     </ClCompile>
     <ClCompile Include="MonoEntity.cpp">
       <Filter>EntitySystem</Filter>
-    </ClCompile>
-    <ClCompile Include="MonoInput.cpp">
-      <Filter>Mono</Filter>
     </ClCompile>
     <ClCompile Include="Scriptbinds\PhysicalWorld.cpp">
       <Filter>ScriptBinds</Filter>
@@ -232,6 +233,10 @@
     <ClCompile Include="ScriptManager.cpp">
       <Filter>Mono</Filter>
     </ClCompile>
+    <ClCompile Include="MonoDomain.cpp" />
+    <ClCompile Include="MonoInput.cpp">
+      <Filter>ScriptBinds</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ScriptBinds">
@@ -240,14 +245,8 @@
     <Filter Include="Wrappers">
       <UniqueIdentifier>{399bdcdf-4fb8-4ed3-83c1-f29f83c7c09b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Interfaces">
-      <UniqueIdentifier>{2274758e-72ad-46e0-8409-df6cebf00772}</UniqueIdentifier>
-    </Filter>
     <Filter Include="EntitySystem">
       <UniqueIdentifier>{f5c2f1b4-f7f2-4f27-be93-8c656a23cdb2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Interfaces\Subsystems">
-      <UniqueIdentifier>{c8d89b01-9d52-4b04-b3e0-3b66f52199f0}</UniqueIdentifier>
     </Filter>
     <Filter Include="FlowSystem">
       <UniqueIdentifier>{e86e83fb-fa9c-4662-9e45-e9f845946fc0}</UniqueIdentifier>
@@ -272,6 +271,12 @@
     </Filter>
     <Filter Include="ScriptBinds\Game Logic">
       <UniqueIdentifier>{55fd45df-3f95-4840-8eab-7d7170031ae0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfaces">
+      <UniqueIdentifier>{2274758e-72ad-46e0-8409-df6cebf00772}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfaces\Subsystems">
+      <UniqueIdentifier>{c8d89b01-9d52-4b04-b3e0-3b66f52199f0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

@@ -7,6 +7,7 @@
 #include "MonoArray.h"
 #include "MonoClass.h"
 #include "MonoObject.h"
+#include "MonoDomain.h"
 
 #include <mono/mini/jit.h>
 #include <mono/metadata/assembly.h>
@@ -121,8 +122,7 @@ CScriptSystem::~CScriptSystem()
 
 	m_localScriptBinds.clear();
 
-	if (m_pMonoDomain)
-		mono_jit_cleanup(m_pMonoDomain);
+	SAFE_RELEASE(m_pMonoDomain);
 
 	gEnv->pMonoScriptSystem = NULL;
 }
@@ -148,8 +148,8 @@ bool CScriptSystem::CompleteInit()
 {
 	CryLogAlways("		Initializing CryMono...");
 	
-	if (!InitializeDomain())
-		return false;
+	// Create root domain and determine the runtime version we'll be using.
+	m_pMonoDomain = new CScriptDomain(eRV_4_30319);
 
 #ifndef _RELEASE
 	m_pPdb2MdbAssembly = new CScriptAssembly(PathUtils::GetMonoPath() + "bin\\pdb2mdb.dll");
@@ -196,12 +196,11 @@ bool CScriptSystem::Reload(bool initialLoad)
 		if(m_bLastCompilationSuccess)
 			m_AppDomainSerializer->CallMethod("DumpScriptData");
 
-		mono_domain_set(m_pMonoDomain, false);
+		m_pMonoDomain->SetActive();
 	}
 
-	// This will lead to all ScriptDomains using the same friendly name, but doesn't look like it's causing any issues. TODO: Investigate to be sure.
-	MonoDomain *pNewScriptDomain = mono_domain_create_appdomain("ScriptDomain", NULL);
-	mono_domain_set(pNewScriptDomain, false);
+	// The script domain as to which all loaded assemblies and scripts will be contained within.
+	auto *pNewScriptDomain = new CScriptDomain("ScriptDomain", true);
 
 	IMonoAssembly *pNewCryBraryAssembly = LoadAssembly(PathUtils::GetBinaryPath() + "CryBrary.dll");
 	if(!pNewCryBraryAssembly)
@@ -236,7 +235,7 @@ bool CScriptSystem::Reload(bool initialLoad)
 		SAFE_RELEASE(m_pScriptManager);
 		SAFE_RELEASE(m_pCryBraryAssembly);
 
-		UnloadDomain(m_pScriptDomain);
+		SAFE_DELETE(m_pScriptDomain);
 
 		m_pScriptDomain = pNewScriptDomain;
 		m_pCryBraryAssembly = pNewCryBraryAssembly;
@@ -244,12 +243,13 @@ bool CScriptSystem::Reload(bool initialLoad)
 	}
 	else
 	{
-		SAFE_RELEASE(pNewScriptManager);
+		m_pMonoDomain->SetActive();
+
 		SAFE_RELEASE(pNewCryBraryAssembly);
 		SAFE_RELEASE(m_AppDomainSerializer);
-
-		mono_domain_set(m_pMonoDomain, true);
-		UnloadDomain(pNewScriptDomain);
+		SAFE_RELEASE(pNewScriptManager);
+		
+		SAFE_DELETE(pNewScriptDomain);
 
 		if(m_pScriptDomain != NULL)
 		{
@@ -262,7 +262,7 @@ bool CScriptSystem::Reload(bool initialLoad)
 			case 10: // try again (recompile)
 				return Reload(initialLoad);
 			case 11: // continue (load previously functional script domain)
-				mono_domain_set(m_pScriptDomain, false);
+				m_pScriptDomain->SetActive();
 				break;
 			}
 		}
@@ -311,47 +311,6 @@ bool CScriptSystem::Reload(bool initialLoad)
 	}
 
 	m_bReloading = false;
-
-	return true;
-}
-
-void CScriptSystem::UnloadDomain(MonoDomain *pDomain)
-{
-	if(pDomain)
-	{
-		mono_domain_finalize(pDomain, -1);
-
-		MonoObject *pException;
-		try
-		{
-			mono_domain_try_unload(pDomain, &pException);
-		}
-		catch(char *ex)
-		{
-			CryLogAlways("[MonoWarning] An exception was raised during ScriptDomain unload: %s", ex);
-		}
-
-		if(pException)	
-		{			
-			CryLogAlways("[MonoWarning] An exception was raised during ScriptDomain unload:");
-			MonoMethod *pExceptionMethod = mono_method_desc_search_in_class(mono_method_desc_new("::ToString()", false),mono_get_exception_class());		
-			MonoString *exceptionString = (MonoString *)mono_runtime_invoke(pExceptionMethod, pException, NULL, NULL);		
-			CryLogAlways(ToCryString((mono::string)exceptionString));
-		}
-	}
-}
-
-bool CScriptSystem::InitializeDomain()
-{
-	// Create root domain and determines the runtime version we'll be using.
-	// Currently supported runtimes; (See domain.c) v2.0.50215, v2.0.50727, v4.0.20506, v4.0.30128, v4.0.30319
-	// In case mono_jit_init is used instead of mono_jit_init_version; default runtime version is v2.0.50727 (most stable version)
-	m_pMonoDomain = mono_jit_init_version("CryMono", "v4.0.30319");
-	if(!m_pMonoDomain)
-	{
-		CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "Mono initialization failed!");
-		return false;
-	}
 
 	return true;
 }
