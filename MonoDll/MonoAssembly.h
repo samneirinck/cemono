@@ -33,7 +33,8 @@ public:
 private:
 	MonoClass *GetClassFromName(const char* nameSpace, const char* className);
 
-protected:
+	const char *RelocateAssembly(const char *originalAssemblyPath);
+
 	const char *m_assemblyPath;
 	MonoAssembly *m_pAssembly;
 
