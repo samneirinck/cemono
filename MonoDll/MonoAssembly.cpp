@@ -45,14 +45,7 @@ const char *CScriptAssembly::RelocateAssembly(const char *originalAssemblyPath)
 {
 	string path = originalAssemblyPath;
 
-	TCHAR tempPath[MAX_PATH];
-	GetTempPath(MAX_PATH, tempPath);
-
-	int lastDirectoryIndex = path.find_last_of("\\");
-		if(path.find_last_of("//") < lastDirectoryIndex)
-			lastDirectoryIndex = path.find_last_of("//");
-
-	string newAssemblyPath = tempPath + path.substr(lastDirectoryIndex + 1);
+	string newAssemblyPath = PathUtils::GetTempPath() + PathUtil::GetFile(originalAssemblyPath);
 
 	CopyFile(originalAssemblyPath, newAssemblyPath, false);
 
