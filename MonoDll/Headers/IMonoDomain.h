@@ -20,6 +20,10 @@ struct IMonoDomain
 	/// Sets this domain as the currently active one.
 	/// </summary>
 	virtual bool SetActive(bool force = false) = 0;
+	/// <summary>
+	/// Determines if this domain is currently active.
+	/// </summary>
+	virtual bool IsActive() = 0;
 
 	/// <summary>
 	/// If true, this is the primary domain.

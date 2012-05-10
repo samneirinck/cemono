@@ -23,6 +23,8 @@ public:
 	virtual void Release() override { delete this; }
 
 	virtual bool SetActive(bool force = false)  override;
+	virtual bool IsActive() override { return m_pDomain == mono_domain_get(); }
+
 	virtual bool IsRoot() override { return m_bRootDomain; }
 	// ~IMonoDomain
 
