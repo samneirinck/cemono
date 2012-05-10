@@ -1,15 +1,40 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 
 using System.Collections.Generic;
 
 namespace CryEngine
 {
-	public static class InputSystem
+	public static class Input
 	{
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static void _RegisterAction(string actionName);
 
+		#region Delegates
 		public delegate void ActionMapEventDelegate(object sender, ActionMapEventArgs e);
+
+		public delegate void KeyEventDelegate(object sender, KeyEventArgs e);
+		public delegate void MouseEventDelegate(object sender, MouseEventArgs e);
+		#endregion
+
+		#region Events
+		static void OnActionTriggered(string action, KeyEvent keyEvent, float value)
+		{
+			actionmapDelegates[action](null, new ActionMapEventArgs(keyEvent, action, value));
+		}
+
+		static void OnKeyEvent(string keyName, float value)
+		{
+			if(KeyEvents != null)
+				KeyEvents(null, new KeyEventArgs(keyName, value));
+		}
+
+		static void OnMouseEvent(int x, int y, MouseEvent mouseEvent, int wheelDelta)
+		{
+			if(MouseEvents != null)
+				MouseEvents(null, new MouseEventArgs(x, y, wheelDelta, mouseEvent));
+		}
+		#endregion
 
 		/// <summary>
 		/// Registers an event declared in the players actionmap. Without invoking this, Your KeyEventDelegate will never be invoked with the new action.
@@ -23,35 +48,14 @@ namespace CryEngine
 			actionmapDelegates.Add(actionName, eventDelegate);
 		}
 
-		public static void OnActionTriggered(string action, KeyEvent keyEvent, float value)
-		{
-			actionmapDelegates[action](null, new ActionMapEventArgs(keyEvent, action, value));
-		}
-
 		static Dictionary<string, ActionMapEventDelegate> actionmapDelegates = new Dictionary<string, ActionMapEventDelegate>();
 
-		public delegate void KeyEventDelegate(object sender, KeyEventArgs e);
-
-		public static void OnKeyEvent(string keyName, float value)
-		{
-			if(KeyEvents != null)
-				KeyEvents(null, new KeyEventArgs(keyName, value));
-		}
-
 		public static event KeyEventDelegate KeyEvents;
-
-		public delegate void MouseEventDelegate(object sender, MouseEventArgs e);
-
-		public static void OnMouseEvent(int x, int y, MouseEvent mouseEvent, int wheelDelta)
-		{
-			if(MouseEvents != null)
-				MouseEvents(null, new MouseEventArgs(x, y, wheelDelta, mouseEvent));
-		}
 
 		public static event MouseEventDelegate MouseEvents;
 	}
 
-	public class ActionMapEventArgs : System.EventArgs
+	public class ActionMapEventArgs : EventArgs
 	{
 		public ActionMapEventArgs(KeyEvent keyEvent, string actionName, float value)
 		{
@@ -65,7 +69,7 @@ namespace CryEngine
 		public float Value { get; set; }
 	}
 
-	public class KeyEventArgs : System.EventArgs
+	public class KeyEventArgs : EventArgs
 	{
 		public KeyEventArgs(string actionName, float value)
 		{
@@ -77,7 +81,7 @@ namespace CryEngine
 		public float Value { get; set; }
 	}
 
-	public class MouseEventArgs : System.EventArgs
+	public class MouseEventArgs : EventArgs
 	{
 		public MouseEventArgs(int x, int y, int wheelDelta, MouseEvent mouseEvent)
 		{

@@ -29,7 +29,7 @@ public:
 	~CInput();
 
 	// IMonoScriptBind
-	virtual const char *GetClassName() { return "InputSystem"; }
+	virtual const char *GetClassName() { return "Input"; }
 	// ~IMonoScriptBind
 
 	// IActionListener
