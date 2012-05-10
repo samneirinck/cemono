@@ -202,7 +202,7 @@ namespace CryEngine.Initialization
 		/// <param name="currentLocation"></param>
 		public void LoadAssembly(string assemblyPath)
 		{
-			var newPath = Path.Combine(Path.GetTempPath(), Path.GetFileName(assemblyPath));
+			var newPath = Path.Combine(Path.GetTempPath(), "CryMono", Path.GetFileName(assemblyPath));
 
 			if(File.Exists(newPath))
 			{
