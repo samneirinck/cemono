@@ -231,9 +231,9 @@ bool CScriptSystem::DoReload(bool initialLoad)
 		listener->OnPreScriptCompilation(!initialLoad);
 
 	if(initialLoad)
-		CryLogAlways("		Compiling scripts...");
+		CryLogAlways("		Loading plugins...");
 
-	IMonoObject *pInitializationResult = pNewScriptManager->CallMethod("Initialize");
+	IMonoObject *pInitializationResult = pNewScriptManager->CallMethod("LoadPlugins");
 
 	m_bLastCompilationSuccess = pInitializationResult ? pInitializationResult->Unbox<bool>() : false;
 
@@ -292,6 +292,8 @@ bool CScriptSystem::DoReload(bool initialLoad)
 			}
 		}
 	}
+
+	return true;
 }
 
 void CScriptSystem::PostReload(bool initialLoad)

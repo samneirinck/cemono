@@ -19,14 +19,14 @@ namespace CryEngine.Initialization
 		internal ScriptManager()
 		{
 			FlowNodes = new List<string>();
-		}
 
-		public bool Initialize()
-		{
 			Type[] specialTypes = { typeof(NativeEntity) };
 			foreach(var type in specialTypes)
 				CompiledScripts.Add(new CryScript(type));
+		}
 
+		bool LoadPlugins()
+		{
 			LoadLibrariesInFolder(Path.Combine(PathUtils.GetScriptsFolder(), "Plugins"));
 
 			return true;
@@ -256,6 +256,7 @@ namespace CryEngine.Initialization
 							break;
 						case ScriptType.ScriptCompiler:
 							{
+								Debug.LogAlways("		Compiling scripts using {0}...", type.Name);
 								var compiler = Activator.CreateInstance(type) as ScriptCompiler;
 								LoadAssembly(compiler.Compile());
 							}
