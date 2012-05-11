@@ -14,6 +14,28 @@
 
 CScriptAssembly::CScriptAssembly(const char *assemblyPath, bool shadowCopy)
 {
+	string sAssemblyPath = string(assemblyPath);
+
+	#ifndef _RELEASE
+	if(sAssemblyPath.find("pdb2mdb")==-1)
+	{
+		if(IMonoAssembly *pDebugDatabaseCreator = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetDebugDatabaseCreator())
+		{
+			if(IMonoClass *pDriverClass = pDebugDatabaseCreator->GetCustomClass("Driver", ""))
+			{
+				IMonoArray *pArgs = CreateMonoArray(1);
+				pArgs->Insert(assemblyPath);
+				pDriverClass->CallMethod("Convert", pArgs, true);
+
+				SAFE_RELEASE(pArgs);
+				SAFE_RELEASE(pDriverClass);
+			}
+
+			SAFE_RELEASE(pDebugDatabaseCreator);
+		}
+	}
+#endif
+
 	m_assemblyPath = shadowCopy ? RelocateAssembly(assemblyPath) : assemblyPath;
 
 	m_pAssembly = mono_domain_assembly_open(mono_domain_get(), m_assemblyPath);
@@ -42,30 +64,12 @@ CScriptAssembly::~CScriptAssembly()
 
 const char *CScriptAssembly::RelocateAssembly(const char *originalAssemblyPath)
 {
-	string path = originalAssemblyPath;
-
 	string newAssemblyPath = PathUtils::GetTempPath() + PathUtil::GetFile(originalAssemblyPath);
 
 	CopyFile(originalAssemblyPath, newAssemblyPath, false);
 
 #ifndef _RELEASE
-	if(path.find("pdb2mdb")==-1)
-	{
-		if(IMonoAssembly *pDebugDatabaseCreator = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetDebugDatabaseCreator())
-		{
-			if(IMonoClass *pDriverClass = pDebugDatabaseCreator->GetCustomClass("Driver", ""))
-			{
-				IMonoArray *pArgs = CreateMonoArray(1);
-				pArgs->Insert(originalAssemblyPath);
-				pDriverClass->CallMethod("Convert", pArgs, true);
-
-				SAFE_RELEASE(pArgs);
-				SAFE_RELEASE(pDriverClass);
-			}
-		}
-
-		CopyFile(path.append(".mdb"), newAssemblyPath + ".mdb", false);
-	}
+	CopyFile(string(originalAssemblyPath).append(".mdb"), newAssemblyPath.append(".mdb"), false);
 #endif
 
 	return newAssemblyPath.c_str();
