@@ -93,10 +93,6 @@ struct IMonoScriptSystem : ICryUnknown
 	/// Gets a pointer to the CryBrary assembly containing all default CryMono types.
 	/// </summary>
 	virtual IMonoAssembly *GetCryBraryAssembly() = 0;
-	/// <summary>
-	/// Loads an Mono assembly and returns a fully initialized IMonoAssembly.
-	/// </summary>
-	virtual IMonoAssembly *LoadAssembly(const char *assemblyPath) = 0;
 
 	/// <summary>
 	/// Gets the root domain created on script system initialization.

@@ -1,5 +1,4 @@
-﻿
-namespace CryEngine
+﻿namespace CryEngine
 {
     enum EntityMoveType
     {

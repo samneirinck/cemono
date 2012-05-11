@@ -120,9 +120,6 @@
     <ClInclude Include="Scriptbinds\ItemSystem.h">
       <Filter>ScriptBinds\Game Logic</Filter>
     </ClInclude>
-    <ClInclude Include="ScriptBinds\StaticEntity.h">
-      <Filter>ScriptBinds\Game Logic</Filter>
-    </ClInclude>
     <ClInclude Include="Scriptbinds\ActorSystem.h">
       <Filter>ScriptBinds\Game Logic</Filter>
     </ClInclude>
@@ -143,6 +140,9 @@
     </ClInclude>
     <ClInclude Include="MonoDomain.h">
       <Filter>Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptBinds\Entity.h">
+      <Filter>ScriptBinds\Game Logic</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -223,9 +223,6 @@
     <ClCompile Include="Scriptbinds\ItemSystem.cpp">
       <Filter>ScriptBinds\Game Logic</Filter>
     </ClCompile>
-    <ClCompile Include="ScriptBinds\StaticEntity.cpp">
-      <Filter>ScriptBinds\Game Logic</Filter>
-    </ClCompile>
     <ClCompile Include="Scriptbinds\ActorSystem.cpp">
       <Filter>ScriptBinds\Game Logic</Filter>
     </ClCompile>
@@ -240,6 +237,9 @@
     </ClCompile>
     <ClCompile Include="MonoDomain.cpp">
       <Filter>Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptBinds\Entity.cpp">
+      <Filter>ScriptBinds\Game Logic</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

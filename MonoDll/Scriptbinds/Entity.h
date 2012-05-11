@@ -2,12 +2,12 @@
 //Ink Studios Source File.
 //Copyright (C), Ink Studios, 2011.
 //////////////////////////////////////////////////////////////////////////
-// StaticEntity scriptbind.
+// Entity scriptbind.
 //////////////////////////////////////////////////////////////////////////
 // 23/01/2013 : Created by Filip 'i59' Lundgren
 ////////////////////////////////////////////////////////////////////////*/
-#ifndef __SCRIPTBIND_STATICENTITY_H__
-#define __SCRIPTBIND_STATICENTITY_H__
+#ifndef __SCRIPTBIND_ENTITY_H__
+#define __SCRIPTBIND_ENTITY_H__
 
 #include <IMonoScriptBind.h>
 
@@ -20,15 +20,15 @@ struct MovementRequest;
 struct MonoPhysicalizationParams;
 struct ActionImpulse;
 
-class CScriptbind_StaticEntity : public IMonoScriptBind
+class CScriptbind_Entity : public IMonoScriptBind
 {
 public:
-	CScriptbind_StaticEntity();
-	virtual ~CScriptbind_StaticEntity() {}
+	CScriptbind_Entity();
+	virtual ~CScriptbind_Entity() {}
 
 protected:
 	// IMonoScriptBind
-	virtual const char *GetClassName() { return "Entity"; }
+	virtual const char *GetClassName() { return "EntityBase"; }
 	// ~IMonoScriptBind
 
 	static mono::string GetPropertyValue(EntityId, mono::string);
@@ -135,4 +135,4 @@ struct MonoPhysicalizationParams
 	MonoPlayerDynamics playerDynamics;
 };
 
-#endif //__SCRIPTBIND_STATICENTITY_H__
+#endif //__SCRIPTBIND_ENTITY_H__

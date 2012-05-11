@@ -63,7 +63,6 @@ public:
 	virtual void RemoveScriptInstance(int id) override;
 	
 	virtual IMonoAssembly *GetCryBraryAssembly() override { return m_pCryBraryAssembly; }
-	virtual IMonoAssembly *LoadAssembly(const char *assemblyPath) override;
 
 	virtual IMonoDomain *GetRootDomain() override { return m_pRootDomain; }
 

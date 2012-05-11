@@ -2,7 +2,7 @@
 #include "MonoConverter.h"
 
 #include <MonoArray.h>
-#include <IMonoAssembly.h>
+#include <MonoAssembly.h>
 
 #include <MonoAnyValue.h>
 
@@ -116,4 +116,9 @@ IMonoObject *CConverter::CreateObject(MonoAnyValue &any)
 	}
 
 	return NULL;
+}
+
+IMonoAssembly *CConverter::LoadAssembly(const char *assemblyPath)
+{
+	return new CScriptAssembly(assemblyPath);
 }
