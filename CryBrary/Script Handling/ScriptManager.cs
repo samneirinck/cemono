@@ -20,7 +20,7 @@ namespace CryEngine.Initialization
 		{
 			FlowNodes = new List<string>();
 
-			Type[] specialTypes = { typeof(NativeEntity) };
+			Type[] specialTypes = { typeof(NativeEntity), typeof(NativeActor) };
 			foreach(var type in specialTypes)
 				CompiledScripts.Add(new CryScript(type));
 		}
