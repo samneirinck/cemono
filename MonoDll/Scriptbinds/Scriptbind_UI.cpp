@@ -62,8 +62,6 @@ CUICallback::CUICallback(const char *_name, CScriptbind_UI *pParent, IUIEventSys
 	//Only listen for UI to system events
 	if (m_type == IUIEventSystem::eEST_UI_TO_SYSTEM)
 		m_pSystem->RegisterListener(this, "CUICallback");
-
-
 }
 
 CUICallback::~CUICallback()
@@ -164,11 +162,6 @@ CScriptbind_UI::~CScriptbind_UI()
 	m_EventMapUI2S.clear();
 }
 
-void CScriptbind_UI::OnReset()
-{
-	m_pUIClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("UI");
-}
-
 void CScriptbind_UI::OnEvent(const char *SystemName, const char *EventName, const SUIEvent& event)
 {
 	IMonoArray *pArgs = CreateMonoArray(event.args.GetArgCount());
@@ -188,7 +181,7 @@ void CScriptbind_UI::OnEvent(const char *SystemName, const char *EventName, cons
 	pArray->Insert(EventName);
 	pArray->Insert((int)event.event);
 	pArray->Insert(pArgs);
-	m_pUIClass->CallMethod("OnEvent", pArray, true);
+	GetClass()->CallMethod("OnEvent", pArray, true);
 	pArray->Release();
 	pArgs->Release();
 }

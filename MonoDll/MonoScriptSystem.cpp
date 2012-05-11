@@ -300,9 +300,7 @@ void CScriptSystem::PostReload(bool initialLoad)
 {
 	m_AppDomainSerializer = m_pCryBraryAssembly->InstantiateClass("AppDomainSerializer", "CryEngine.Serialization");
 
-	m_pInput->Reset();
 	m_pConverter->Reset();
-	m_pUIScriptBind->OnReset();
 
 	// Nodes won't get recompiled if we forget this.
 	if(!initialLoad)
