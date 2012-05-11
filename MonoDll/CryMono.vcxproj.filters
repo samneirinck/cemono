@@ -138,9 +138,11 @@
     <ClInclude Include="Headers\IMonoDomain.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="MonoDomain.h" />
     <ClInclude Include="MonoInput.h">
       <Filter>ScriptBinds</Filter>
+    </ClInclude>
+    <ClInclude Include="MonoDomain.h">
+      <Filter>Wrappers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -233,9 +235,11 @@
     <ClCompile Include="ScriptManager.cpp">
       <Filter>Mono</Filter>
     </ClCompile>
-    <ClCompile Include="MonoDomain.cpp" />
     <ClCompile Include="MonoInput.cpp">
       <Filter>ScriptBinds</Filter>
+    </ClCompile>
+    <ClCompile Include="MonoDomain.cpp">
+      <Filter>Wrappers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
