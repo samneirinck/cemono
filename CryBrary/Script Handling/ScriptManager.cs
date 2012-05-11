@@ -1,16 +1,10 @@
 ﻿using System;
-using System.Linq;
-using System.IO;
-
 using System.Collections.Generic;
-
-using System.Reflection;
-
-using CryEngine.Extensions;
-
 using System.ComponentModel;
-
-using System.Threading.Tasks;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using CryEngine.Extensions;
 
 namespace CryEngine.Initialization
 {
@@ -26,6 +20,12 @@ namespace CryEngine.Initialization
 			Type[] specialTypes = { typeof(NativeEntity) };
 			foreach(var type in specialTypes)
 				CompiledScripts.Add(new CryScript(type));
+
+			if(!Directory.Exists(PathUtils.GetTempFolder()))
+				Directory.CreateDirectory(PathUtils.GetTempFolder());
+
+			foreach(var file in Directory.GetFiles(PathUtils.GetTempFolder()))
+				File.Delete(file);
 
 			LoadLibrariesInFolder(Path.Combine(PathUtils.GetScriptsFolder(), "Plugins"));
 
@@ -189,9 +189,9 @@ namespace CryEngine.Initialization
 		}
 
 		/// <summary>
-		/// Loads a C# assembly and adds all found types to ScriptCompiler.CompiledScripts
+		/// Processes a C# assembly and adds all found types to ScriptCompiler.CompiledScripts
 		/// </summary>
-		public void LoadAssembly(Assembly assembly)
+		public void ProcessAssembly(Assembly assembly)
 		{
 			ProcessTypes(assembly.GetTypes());
 		}
@@ -202,21 +202,9 @@ namespace CryEngine.Initialization
 		/// <param name="currentLocation"></param>
 		public void LoadAssembly(string assemblyPath)
 		{
-			var newPath = Path.Combine(Path.GetTempPath(), "CryMono", Path.GetFileName(assemblyPath));
-
-			if(File.Exists(newPath))
-			{
-				try
-				{
-					File.Delete(newPath);
-				}
-				catch(Exception ex) 
-				{
-					newPath = newPath.Replace(".dll", "_.dll");
-				}
-			}
-
+			var newPath = Path.Combine(PathUtils.GetTempFolder(), Path.GetFileName(assemblyPath));
 			File.Copy(assemblyPath, newPath, true);
+
 #if !RELEASE
 			GenerateDebugDatabaseForAssembly(assemblyPath);
 
@@ -225,7 +213,7 @@ namespace CryEngine.Initialization
 				File.Copy(mdbFile, Path.Combine(Path.GetTempPath(), Path.GetFileName(mdbFile)), true);
 #endif
 
-			LoadAssembly(Assembly.LoadFrom(newPath));
+			ProcessAssembly(Assembly.LoadFrom(newPath));
 		}
 
 		/// <summary>
@@ -257,7 +245,7 @@ namespace CryEngine.Initialization
 						case ScriptType.ScriptCompiler:
 							{
 								var compiler = Activator.CreateInstance(type) as ScriptCompiler;
-								LoadAssembly(compiler.Compile());
+								ProcessAssembly(compiler.Compile());
 							}
 							break;
 					}

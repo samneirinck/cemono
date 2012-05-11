@@ -18,7 +18,7 @@ struct IMonoArray;
 class CScriptAssembly : public IMonoAssembly
 {
 public:
-	CScriptAssembly(const char *assemblyPath);
+	CScriptAssembly(const char *assemblyPath, bool shadowCopy = true);
 	virtual ~CScriptAssembly();
 
 	// IMonoAssembly

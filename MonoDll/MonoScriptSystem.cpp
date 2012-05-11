@@ -153,7 +153,7 @@ bool CScriptSystem::CompleteInit()
 	m_pRootDomain = new CScriptDomain(eRV_4_30319);
 
 #ifndef _RELEASE
-	m_pPdb2MdbAssembly = new CScriptAssembly(PathUtils::GetMonoPath() + "bin\\pdb2mdb.dll");
+	m_pPdb2MdbAssembly = new CScriptAssembly(PathUtils::GetMonoPath() + "bin\\pdb2mdb.dll", false);
 #endif
 	
 	// WIP ScriptManager game object, to be used for CryMono RMI support etc in the future.
@@ -213,7 +213,7 @@ bool CScriptSystem::DoReload(bool initialLoad)
 	IMonoDomain *pNewScriptDomain = new CScriptDomain("ScriptDomain");
 	pNewScriptDomain->SetActive(true);
 
-	IMonoAssembly *pNewCryBraryAssembly = LoadAssembly(PathUtils::GetBinaryPath() + "CryBrary.dll");
+	IMonoAssembly *pNewCryBraryAssembly = new CScriptAssembly(PathUtils::GetBinaryPath() + "CryBrary.dll", false);
 	if(!pNewCryBraryAssembly)
 	{
 		CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "Failed to load CryBrary.dll");
@@ -292,6 +292,8 @@ bool CScriptSystem::DoReload(bool initialLoad)
 			}
 		}
 	}
+
+	return false;
 }
 
 void CScriptSystem::PostReload(bool initialLoad)
@@ -474,9 +476,4 @@ IMonoClass *CScriptSystem::GetScriptById(int id)
 	}
 
 	return NULL;
-}
-
-IMonoAssembly *CScriptSystem::LoadAssembly(const char *assemblyPath)
-{
-	return new CScriptAssembly(assemblyPath);
 }

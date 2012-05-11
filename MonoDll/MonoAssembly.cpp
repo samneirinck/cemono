@@ -12,15 +12,15 @@
 
 #include <MonoClass.h>
 
-CScriptAssembly::CScriptAssembly(const char *assemblyPath)
+CScriptAssembly::CScriptAssembly(const char *assemblyPath, bool shadowCopy)
 {
-	m_assemblyPath = RelocateAssembly(assemblyPath);
+	m_assemblyPath = shadowCopy ? RelocateAssembly(assemblyPath) : assemblyPath;
 
 	m_pAssembly = mono_domain_assembly_open(mono_domain_get(), m_assemblyPath);
+
 	if (!m_pAssembly)
 	{
 		gEnv->pLog->LogError("Failed to create assembly from %s", assemblyPath);
-		
 		Release();
 	}
 
@@ -28,7 +28,6 @@ CScriptAssembly::CScriptAssembly(const char *assemblyPath)
 	if (!m_pImage)
 	{
 		gEnv->pLog->LogError("Failed to get image from assembly %s", assemblyPath);
-		
 		Release();
 	}
 }
