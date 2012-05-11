@@ -36,10 +36,7 @@ CScriptDomain::CScriptDomain(ERuntimeVersion runtimeVersion)
 
 CScriptDomain::CScriptDomain(const char *name, bool setActive)
 {
-	char *domainName = new char[sizeof(name)];
-	strcpy(domainName, name);
-
-	m_pDomain = mono_domain_create_appdomain(domainName, NULL);
+	m_pDomain = mono_domain_create_appdomain(const_cast<char *>(name), NULL);
 
 	if(setActive)
 		SetActive();
