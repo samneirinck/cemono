@@ -74,7 +74,7 @@ namespace CryEngine
 			if(entityId == 0)
 				throw new ArgumentException("entityId cannot be 0!");
 
-			return Get(ent => ent is T && ent.Id == entityId) as T;
+			return ScriptManager.FindScriptInstance<T>(x => x.Id == entityId);
 		}
 
 		/// <summary>
@@ -104,28 +104,6 @@ namespace CryEngine
 				ScriptManager.CompiledScripts[scriptIndex] = script;
 
 				return script.ScriptInstances.Last() as Entity;
-			}
-
-			return null;
-		}
-
-		/// <summary>
-		/// Searches for an entity that matches the conditions defined by the specified predicate.
-		/// </summary>
-		/// <param name="match">The System.Predicate<Entity> that defines the conditions of the element to search for.</param>
-		/// <returns>The first element matching the specified predicate.</returns>
-		public static Entity Get(Predicate<Entity> match)
-		{
-			Entity actor = null;
-			for(int i = 0; i < ScriptManager.CompiledScripts.Count; i++)
-			{
-				var script = ScriptManager.CompiledScripts[i];
-				if(script.Type.Implements(typeof(Actor)) && script.ScriptInstances != null)
-				{
-					actor = script.ScriptInstances.Find(x => match(x as Entity)) as Entity;
-					if(actor != null)
-						return actor;
-				}
 			}
 
 			return null;

@@ -55,7 +55,7 @@ namespace CryEngine
 
 		public static T Get<T>(int channelId) where T : Actor
 		{
-			return Get(x => x.ChannelId == channelId && x is T) as T;
+			return ScriptManager.FindScriptInstance<T>(x => x.ChannelId == channelId);
 		}
 
 		public static Actor Get(EntityId actorId)
@@ -76,29 +76,7 @@ namespace CryEngine
 			if(actorId == 0)
 				throw new ArgumentException("actorId cannot be 0!");
 
-			return Get(x => x is T && x.Id == actorId) as T;
-		}
-
-		/// <summary>
-		/// Searches for an actor that matches the conditions defined by the specified predicate.
-		/// </summary>
-		/// <param name="match">The System.Predicate<Actor> that defines the conditions of the element to search for.</param>
-		/// <returns>The first element matching the specified predicate.</returns>
-		public static Actor Get(Predicate<Actor> match)
-		{
-			Actor actor = null;
-			for(int i = 0; i < ScriptManager.CompiledScripts.Count; i++)
-			{
-				var script = ScriptManager.CompiledScripts[i];
-				if(script.Type.Implements(typeof(Actor)) && script.ScriptInstances != null)
-				{
-					actor = script.ScriptInstances.Find(x => match(x as Actor)) as Actor;
-					if(actor != null)
-						return actor;
-				}
-			}
-
-			return null;
+			return ScriptManager.FindScriptInstance<T>(x => x.Id == actorId);
 		}
 
 		static Actor CreateNativeActor(EntityId actorId)

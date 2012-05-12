@@ -336,6 +336,22 @@ namespace CryEngine.Initialization
 		List<string> FlowNodes { get; set; }
 
 		#region Statics
+		internal static T FindScriptInstance<T>(Predicate<T> match) where T : CryScriptInstance
+		{
+			T result;
+			foreach(var script in CompiledScripts)
+			{
+				if((script.Type.Equals(typeof(T)) || script.Type.Implements(typeof(T))) && script.ScriptInstances != null)
+				{
+					result = script.ScriptInstances.Find(x => match(x as T)) as T;
+					if(result != null)
+						return result;
+				}
+			}
+
+			return null;
+		}
+
 		internal static CryScript GetScriptByType(Type type, out int scriptIndex)
 		{
 			var script = default(CryScript);
