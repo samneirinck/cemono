@@ -81,30 +81,26 @@ public:
 	virtual void SetField(const char *fieldName, IMonoObject *pNewValue) = 0;
 
 	template <typename TResult>
-	static TResult CallMethod(int scriptId, const char *funcName, IMonoArray *pArgs = NULL, bool releaseArgs = false)
+	static TResult CallMethod(IMonoClass *pClass, const char *funcName, IMonoArray *pArgs = NULL, bool releaseArgs = false)
 	{
-		if(IMonoClass *pClass = gEnv->pMonoScriptSystem->GetScriptById(scriptId))
+		if(IMonoObject *pResult = pClass->CallMethod(funcName, pArgs))
 		{
-			if(IMonoObject *pResult = pClass->CallMethod(funcName, pArgs))
-			{
-				TResult result = pResult->Unbox<TResult>();
+			TResult result = pResult->Unbox<TResult>();
 
-				SAFE_RELEASE(pResult);
-				if(releaseArgs)
-					SAFE_RELEASE(pArgs);
+			SAFE_RELEASE(pResult);
+			if(releaseArgs)
+				SAFE_RELEASE(pArgs);
 
-				return result;
-			}
+			return result;
 		}
 
 		return (TResult)0;
 	}
 
 	template <>
-	static void CallMethod(int scriptId, const char *funcName, IMonoArray *pArgs, bool releaseArgs)
+	static void CallMethod(IMonoClass *pClass, const char *funcName, IMonoArray *pArgs, bool releaseArgs)
 	{
-		if(IMonoClass *pClass = gEnv->pMonoScriptSystem->GetScriptById(scriptId))
-			pClass->CallMethod(funcName, pArgs);
+		pClass->CallMethod(funcName, pArgs);
 
 		if(releaseArgs)
 			SAFE_RELEASE(pArgs);

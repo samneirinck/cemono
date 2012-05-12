@@ -114,67 +114,67 @@ namespace mono
 }; 
 
 template <typename TResult>
-static TResult CallMonoScript(int scriptId, const char *funcName) { return IMonoClass::CallMethod<TResult>(scriptId, funcName); }
+inline TResult CallMonoScript(IMonoClass *pScriptClass, const char *funcName) { return IMonoClass::CallMethod<TResult>(pScriptClass, funcName); }
 
 template<typename TResult, typename P1> 
-static TResult CallMonoScript(int scriptId, const char *funcName, const P1 &p1)
+inline TResult CallMonoScript(IMonoClass *pScriptClass, const char *funcName, const P1 &p1)
 {
-	IMonoArray *pArgs = gEnv->pMonoScriptSystem->GetConverter()->CreateArray(1);
+	IMonoArray *pArgs = CreateMonoArray(1);
 	pArgs->Insert(p1);
 
-	return IMonoClass::CallMethod<TResult>(scriptId, funcName, pArgs, true);
+	return IMonoClass::CallMethod<TResult>(pScriptClass, funcName, pArgs, true);
 };
 
 template<typename TResult, typename P1, typename P2> 
-static TResult CallMonoScript(int scriptId, const char *funcName, const P1 &p1, const P2 &p2)
+inline TResult CallMonoScript(IMonoClass *pScriptClass, const char *funcName, const P1 &p1, const P2 &p2)
 {
-	IMonoArray *pArgs = gEnv->pMonoScriptSystem->GetConverter()->CreateArray(2);
+	IMonoArray *pArgs = CreateMonoArray(2);
 	pArgs->Insert(p1);
 	pArgs->Insert(p2);
 
-	return IMonoClass::CallMethod<TResult>(scriptId, funcName, pArgs);
+	return IMonoClass::CallMethod<TResult>(pScriptClass, funcName, pArgs);
 };
 
 template<typename TResult, typename P1, typename P2, typename P3> 
-static TResult CallMonoScript(int scriptId, const char *funcName, const P1 &p1, const P2 &p2, const P3 &p3)
+inline TResult CallMonoScript(IMonoClass *pScriptClass, const char *funcName, const P1 &p1, const P2 &p2, const P3 &p3)
 {
-	IMonoArray *pArgs = gEnv->pMonoScriptSystem->GetConverter()->CreateArray(3);
+	IMonoArray *pArgs = CreateMonoArray(3);
 	pArgs->Insert(p1);
 	pArgs->Insert(p2);
 	pArgs->Insert(p3);
 	
-	return IMonoClass::CallMethod<TResult>(scriptId, funcName, pArgs, true);
+	return IMonoClass::CallMethod<TResult>(pScriptClass, funcName, pArgs, true);
 };
 
 template<typename TResult, typename P1, typename P2, typename P3, typename P4> 
-static TResult CallMonoScript(int scriptId, const char *funcName, const P1 &p1, const P2 &p2, const P3 &p3, const P4 &p4)
+inline TResult CallMonoScript(IMonoClass *pScriptClass, const char *funcName, const P1 &p1, const P2 &p2, const P3 &p3, const P4 &p4)
 {
-	IMonoArray *pArgs = gEnv->pMonoScriptSystem->GetConverter()->CreateArray(4);
+	IMonoArray *pArgs = CreateMonoArray(4);
 	pArgs->Insert(p1);
 	pArgs->Insert(p2);
 	pArgs->Insert(p3);
 	pArgs->Insert(p4);
 	
-	return IMonoClass::CallMethod<TResult>(scriptId, funcName, pArgs, true);
+	return IMonoClass::CallMethod<TResult>(pScriptClass, funcName, pArgs, true);
 };
 
 template<typename TResult, typename P1, typename P2, typename P3, typename P4, typename P5> 
-static TResult CallMonoScript(int scriptId, const char *funcName, const P1 &p1, const P2 &p2, const P3 &p3, const P4 &p4, const P5 &p5)
+inline TResult CallMonoScript(IMonoClass *pScriptClass, const char *funcName, const P1 &p1, const P2 &p2, const P3 &p3, const P4 &p4, const P5 &p5)
 {
-	IMonoArray *pArgs = gEnv->pMonoScriptSystem->GetConverter()->CreateArray(5);
+	IMonoArray *pArgs = CreateMonoArray(5);
 	pArgs->Insert(p1);
 	pArgs->Insert(p2);
 	pArgs->Insert(p3);
 	pArgs->Insert(p4);
 	pArgs->Insert(p5);
 	
-	return IMonoClass::CallMethod<TResult>(scriptId, funcName, pArgs, true);
+	return IMonoClass::CallMethod<TResult>(pScriptClass, funcName, pArgs, true);
 };
 
 template<typename TResult, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6>
-static TResult CallMonoScript(int scriptId, const char *funcName, const P1 &p1, const P2 &p2, const P3 &p3, const P4 &p4, const P5 &p5, const P6 &p6)
+inline TResult CallMonoScript(IMonoClass *pScriptClass, const char *funcName, const P1 &p1, const P2 &p2, const P3 &p3, const P4 &p4, const P5 &p5, const P6 &p6)
 {
-	IMonoArray *pArgs = gEnv->pMonoScriptSystem->GetConverter()->CreateArray(6);
+	IMonoArray *pArgs = CreateMonoArray(6);
 	pArgs->Insert(p1);
 	pArgs->Insert(p2);
 	pArgs->Insert(p3);
@@ -182,7 +182,7 @@ static TResult CallMonoScript(int scriptId, const char *funcName, const P1 &p1, 
 	pArgs->Insert(p5);
 	pArgs->Insert(p6);
 	
-	return IMonoClass::CallMethod<TResult>(scriptId, funcName, pArgs, true);
+	return IMonoClass::CallMethod<TResult>(pScriptClass, funcName, pArgs, true);
 };
 
 #endif //__MONO_COMMON_H__
