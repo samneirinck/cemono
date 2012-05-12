@@ -211,18 +211,7 @@ namespace CryEngine
 		/// </summary>
 		public EntityFlags Flags { get { return _GetFlags(EntityPointer); } set { _SetFlags(EntityPointer, value); } }
 
-		IntPtr entityPointer;
-		internal IntPtr EntityPointer
-		{
-			get
-			{
-				if(entityPointer == IntPtr.Zero)
-					entityPointer = Entity._GetEntity(Id);
-
-				return entityPointer;
-			}
-			set { entityPointer = value; }
-		}
+		internal IntPtr EntityPointer { get; set; }
 
 		public EntityId Id { get; set; }
 	}

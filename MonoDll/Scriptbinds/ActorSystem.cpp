@@ -38,6 +38,7 @@ mono::object CActorSystem::CreateActor(int channelId, mono::string name, mono::s
 		if(IActor *pActor = gEnv->pGameFramework->GetIActorSystem()->CreateActor(channelId, ToCryString(name), ToCryString(className), pos, Quat(Ang3(angles)), scale))
 		{
 			actorInfo.pActor = pActor;
+			actorInfo.pEntity = pActor->GetEntity();
 			actorInfo.id = pActor->GetEntityId();
 		}
 	}

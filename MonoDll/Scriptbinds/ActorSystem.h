@@ -19,6 +19,7 @@ struct SMonoActorInfo
 {
 	SMonoActorInfo() : id(0) {}
 
+	IEntity *pEntity;
 	IActor *pActor;
 	EntityId id;
 };

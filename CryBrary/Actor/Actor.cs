@@ -171,8 +171,7 @@ namespace CryEngine
         {
 			Id = new EntityId(actorInfo.Id);
 			ActorPointer = actorInfo.ActorPtr;
-
-			EntityPointer = IntPtr.Zero;
+			EntityPointer = actorInfo.EntityPtr;
 
 			ChannelId = channelId;
 
@@ -196,6 +195,7 @@ namespace CryEngine
 
 	internal struct ActorInfo
 	{
+		public IntPtr EntityPtr;
 		public IntPtr ActorPtr;
 		public uint Id;
 	}
