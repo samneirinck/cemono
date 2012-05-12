@@ -48,7 +48,7 @@ namespace CryEngine
 
 			var entityId = _GetEntityIdForChannelId((ushort)channelId);
 			if(entityId != 0)
-				return AddNewActor(entityId);
+				return CreateNativeActor(entityId);
 
 			return null;
 		}
@@ -66,7 +66,7 @@ namespace CryEngine
 
 			// Couldn't find a CryMono entity, check if a non-managed one exists.
 			if(_EntityExists(actorId))
-				return AddNewActor(actorId);
+				return CreateNativeActor(actorId);
 
 			return null;
 		}
@@ -96,7 +96,7 @@ namespace CryEngine
 			return null;
 		}
 
-		static Actor AddNewActor(EntityId actorId)
+		static Actor CreateNativeActor(EntityId actorId)
 		{
 			int scriptIndex;
 			var script = ScriptManager.GetScriptByType(typeof(NativeActor), out scriptIndex);
@@ -104,7 +104,7 @@ namespace CryEngine
 			if(script.ScriptInstances == null)
 				script.ScriptInstances = new List<CryScriptInstance>();
 
-			script.ScriptInstances.Add(new NativeEntity(actorId));
+			script.ScriptInstances.Add(new NativeActor(actorId));
 
 			ScriptManager.CompiledScripts[scriptIndex] = script;
 
