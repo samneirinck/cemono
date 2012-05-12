@@ -197,9 +197,9 @@ namespace CryEngine.Initialization
 		}
 
 		/// <summary>
-		/// Loads a C# assembly by location, creates a shadow-copy & generates debug database (mdb).
+		/// Loads a C# assembly by location, creates a shadow-copy and generates debug database (mdb).
 		/// </summary>
-		/// <param name="currentLocation"></param>
+		/// <param name="assemblyPath"></param>
 		public void LoadAssembly(string assemblyPath)
 		{
 			var newPath = Path.Combine(PathUtils.GetTempFolder(), Path.GetFileName(assemblyPath));

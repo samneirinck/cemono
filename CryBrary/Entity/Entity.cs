@@ -23,7 +23,7 @@ namespace CryEngine
 		/// <summary>
 		/// Initializes the entity, not recommended to set manually.
 		/// </summary>
-		/// <param name="entInfo">Struct containing the IEntity pointer & EntityId.</param>
+		/// <param name="entInfo">Struct containing the IEntity pointer and EntityId.</param>
 		/// <returns>IsEntityFlowNode</returns>
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		internal virtual bool InternalSpawn(EntityInfo entInfo)

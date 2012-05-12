@@ -174,7 +174,7 @@ namespace CryEngine
         /// <summary>
         /// Initializes the player.
         /// </summary>
-        /// <param name="entityId"></param>
+		/// <param name="actorInfo"></param>
         /// <param name="channelId"></param>
 		internal void InternalSpawn(ActorInfo actorInfo, int channelId)
         {

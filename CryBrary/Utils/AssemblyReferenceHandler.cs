@@ -65,7 +65,7 @@ namespace CryEngine.Utilities
 		/// Gets the required assemblies for the source file passed to the method.
 		/// Note: Does NOT exclude assemblies already loaded by CryMono.
 		/// </summary>
-		/// <param name="scriptFilePaths"></param>
+		/// <param name="sources"></param>
 		/// <returns></returns>
 		public string[] GetRequiredAssembliesFromSource(string[] sources)
 		{

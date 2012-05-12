@@ -452,9 +452,9 @@ namespace CryEngine
 		/// <param name="value">The vector to restrict</param>
 		/// <param name="max">The maximum value</param>
 		/// <returns>Restricted vector</returns>
-		public static Vec3 MaxXYZ(Vec3 value, float min)
+		public static Vec3 MaxXYZ(Vec3 value, float max)
 		{
-			return new Vec3(Math.Max(value.X, min), Math.Max(value.Y, min), Math.Max(value.Z, min));
+			return new Vec3(Math.Max(value.X, max), Math.Max(value.Y, max), Math.Max(value.Z, max));
 		}
 
 		/// <summary>
