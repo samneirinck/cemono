@@ -88,11 +88,7 @@ struct IMonoScriptSystem : ICryUnknown
 	/// Instantiates a script (with constructor parameters if supplied) of type and name
 	/// This assumes that the script was present in a .dll in Plugins or within a .cs file when PostInit was called.
 	/// </summary>
-	virtual int InstantiateScript(const char *scriptName, IMonoArray *pConstructorParameters = nullptr) = 0;
-	/// <summary>
-	/// Gets the instantied script with the supplied id.
-	/// </summary>
-	virtual IMonoClass *GetScriptById(int id) = 0;
+	virtual IMonoClass *InstantiateScript(const char *scriptName, IMonoArray *pConstructorParameters = nullptr) = 0;
 	/// <summary>
 	/// Removes and destructs an instantiated script with the supplied id if found.
 	/// </summary>

@@ -178,11 +178,7 @@ void CScriptSystem::PostInit()
 	if(!m_pScriptManager)
 		gEnv->pSystem->Quit();
 	else
-	{
-		//GetFlowManager()->Reset();
-
 		m_pScriptManager->CallMethod("PostInit");
-	}
 }
 
 bool CScriptSystem::Reload(bool initialLoad)
@@ -386,10 +382,7 @@ bool CScriptSystem::InitializeSystems(IMonoAssembly *pCryBraryAssembly)
 void CScriptSystem::OnPostUpdate(float fDeltaTime)
 {
 	// Updates all scripts and sets Time.FrameTime.
-	IMonoArray *pArgs = CreateMonoArray(1);
-	pArgs->Insert(fDeltaTime);
-	m_pScriptManager->CallMethod("OnUpdate", pArgs);
-	SAFE_RELEASE(pArgs);
+	CallMonoScript<void>(m_pScriptManager, "OnUpdate", fDeltaTime);
 }
 
 void CScriptSystem::OnFileChange(const char *fileName)
@@ -410,7 +403,7 @@ void CScriptSystem::RegisterMethodBinding(const void *method, const char *fullMe
 		mono_add_internal_call(fullMethodName, method);
 }
 
-int CScriptSystem::InstantiateScript(const char *scriptName, IMonoArray *pConstructorParameters)
+IMonoClass *CScriptSystem::InstantiateScript(const char *scriptName, IMonoArray *pConstructorParameters)
 {
 	// TODO: Find a new and better way to set Network.IsMultiplayer, IsClient & IsServer. Currently always false!
 	/*if(scriptType==EMonoScriptType_GameRules)
@@ -425,21 +418,13 @@ int CScriptSystem::InstantiateScript(const char *scriptName, IMonoArray *pConstr
 		SAFE_RELEASE(pClass);
 	}*/
 
-	IMonoArray *pArgs = CreateMonoArray(2);
-	pArgs->Insert(scriptName);
-	pArgs->Insert(pConstructorParameters);
-
-	int scriptId = -1; // Always returns -1 if unsuccessful, mayhaps change this to 0 and uint?
-	if(IMonoObject *pScriptInstance = m_pScriptManager->CallMethod("InstantiateScript", pArgs))
-	{
-		IMonoClass *pScript = pScriptInstance->Unbox<IMonoClass *>();
-		scriptId = pScript->GetScriptId();
-		m_scripts.insert(TScripts::value_type(pScript, scriptId));
-	}
-		
-	SAFE_RELEASE(pArgs);
 	
-	return scriptId;
+	auto *pScript = CallMonoScript<IMonoClass *>(m_pScriptManager, "InstantiateScript", scriptName, pConstructorParameters);
+
+	if(pScript)
+		m_scripts.insert(TScripts::value_type(pScript, pScript->GetScriptId()));
+
+	return pScript;
 }
 
 void CScriptSystem::RemoveScriptInstance(int id)
@@ -451,29 +436,11 @@ void CScriptSystem::RemoveScriptInstance(int id)
 	{
 		if((*it).second==id)
 		{
-			IMonoArray *pArgs = CreateMonoArray(1);
-			pArgs->Insert(id);
-
-			m_pScriptManager->CallMethod("RemoveInstance", pArgs);
-			SAFE_RELEASE(pArgs);
-
 			m_scripts.erase(it);
 
 			break;
 		}
 	}
-}
 
-IMonoClass *CScriptSystem::GetScriptById(int id)
-{
-	if(id==-1)
-		return NULL;
-
-	for(TScripts::iterator it=m_scripts.begin(); it != m_scripts.end(); ++it)
-	{
-		if((*it).second==id)
-			return (*it).first;
-	}
-
-	return NULL;
+	CallMonoScript<void>(m_pScriptManager, "RemoveInstance", id);
 }
