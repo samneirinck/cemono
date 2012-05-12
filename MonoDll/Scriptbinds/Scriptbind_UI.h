@@ -84,8 +84,6 @@ public:
 
 	static CScriptbind_UI *s_pInstance;
 
-	void OnReset();
-	
 	void OnEvent(const char *systemName, const char *eventName, const SUIEvent& event);
 	
 	//Exposed to CryMono
@@ -100,7 +98,6 @@ protected:
 	virtual const char *GetClassName() override { return "UI"; }
 	// ~IMonoScriptBind
 
-	IMonoClass *m_pUIClass;
 	TEventMap	m_EventMapS2UI;
 	TEventMap	m_EventMapUI2S;
 };

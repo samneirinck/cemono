@@ -77,7 +77,7 @@ void CScriptArray::InsertArray(mono::array arr)
 
 void CScriptArray::Insert(IMonoObject *pObject) 
 { 
-	InsertObject(static_cast<CScriptObject *>(pObject)->GetMonoObject()); 
+	InsertObject(pObject->GetMonoObject()); 
 }
 
 void CScriptArray::Insert(MonoAnyValue value)

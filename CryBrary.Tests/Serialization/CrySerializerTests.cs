@@ -234,43 +234,6 @@ namespace CryBrary.Tests.Serialization
 			}
 		}
 		
-		[Test]
-		public void ObjectReference_Storage_Validation()
-		{
-			using(var stream = new MemoryStream())
-			{
-				var classWithRef = new Multiple_Reference_Test_Class.Class_Containing_Reference();
-
-				var serializer = new CrySerializer();
-				serializer.Serialize(stream, classWithRef);
-
-				object testClass = null;
-
-				using(var stream2 = new MemoryStream())
-				{
-					serializer.Serialize(stream2, classWithRef.TestClass);
-
-					testClass = serializer.Deserialize(stream2) as TestClass;
-				}
-
-				var testClassFromRef = serializer.Deserialize(stream) as Multiple_Reference_Test_Class.Class_Containing_Reference;
-
-				Assert.AreSame(testClass, testClassFromRef.TestClass);
-			}
-		}
-		
-		[Test]
-		public void Deserialize_Empty_Stream()
-		{
-			using(var stream = new MemoryStream())
-			{
-				var serializer = new CrySerializer();
-				var obj = serializer.Deserialize(stream);
-
-				Assert.IsNull(obj);
-			}
-		}
-
 		class Class_With_MemberInfo_Member
 		{
 			public Class_With_MemberInfo_Member()
@@ -299,8 +262,9 @@ namespace CryBrary.Tests.Serialization
 				var memberInfoClass = serializer.Deserialize(stream) as Class_With_MemberInfo_Member;
 
 				Assert.IsNotNull(memberInfoClass);
-				Assert.IsNotNull(memberInfoClass.MethodInfo);
-				Assert.IsNotNull(memberInfoClass.FieldInfo);
+
+				Assert.AreSame(memberInfoClass.GetType().GetMethod("Method"), memberInfoClass.MethodInfo);
+				Assert.AreSame(memberInfoClass.GetType().GetField("booleanField"), memberInfoClass.FieldInfo);
 
 				Assert.IsTrue(memberInfoClass.booleanField);
 			}

@@ -188,7 +188,7 @@ void SNodeType::ReloadPorts(IMonoClass *pScriptClass)
 		SInputPortConfig nullConfig = {0};
 		SOutputPortConfig nullOutputConfig = {0};
 
-		IMonoArray *pInputPorts = new CScriptArray(monoConfig.inputs);
+		IMonoArray *pInputPorts = *monoConfig.inputs;
 
 		pInputs = new SInputPortConfig[MAX_NODE_PORT_COUNT];
 
@@ -201,7 +201,7 @@ void SNodeType::ReloadPorts(IMonoClass *pScriptClass)
 		SAFE_RELEASE(pInputPorts);
 
 		// Convert MonoArray type to our custom CScriptArray for easier handling.
-		IMonoArray *pOutputPorts = new CScriptArray(monoConfig.outputs);
+		IMonoArray *pOutputPorts = *monoConfig.outputs;
 
 		pOutputs = new SOutputPortConfig[MAX_NODE_PORT_COUNT];
 

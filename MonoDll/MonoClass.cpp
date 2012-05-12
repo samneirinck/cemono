@@ -244,7 +244,7 @@ void CScriptClass::SetProperty(const char *propertyName, IMonoObject *pNewValue)
 	if(MonoProperty *pProperty = mono_class_get_property_from_name(m_pClass, propertyName))
 	{
 		void *args[1];
-		args[0] = static_cast<CScriptObject *>(pNewValue)->GetMonoObject();
+		args[0] = pNewValue->GetMonoObject();
 
 		return mono_property_set_value(pProperty, m_pInstance, args, NULL);
 	}
@@ -266,7 +266,7 @@ IMonoObject *CScriptClass::GetField(const char *fieldName)
 void CScriptClass::SetField(const char *fieldName, IMonoObject *pNewValue)
 {
 	if(MonoClassField *pField = mono_class_get_field_from_name(m_pClass, fieldName))
-		return mono_field_set_value((MonoObject *)m_pInstance, pField, static_cast<CScriptObject *>(pNewValue)->GetMonoObject());
+		return mono_field_set_value((MonoObject *)m_pInstance, pField, pNewValue->GetMonoObject());
 }
 
 void CScriptClass::HandleException(MonoObject *pException)
@@ -276,7 +276,7 @@ void CScriptClass::HandleException(MonoObject *pException)
 	if(g_pMonoCVars->mono_exceptionsTriggerFatalErrors)
 		CryFatalError(ToCryString((mono::string)exceptionString));
 	if(g_pMonoCVars->mono_exceptionsTriggerMessageBoxes)
-		CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, ToCryString((mono::string)exceptionString));
+		CryMessageBox(ToCryString((mono::string)exceptionString), "CryMono exception was raised", 0x00000000L);
 	else
 		CryLogAlways(ToCryString((mono::string)exceptionString));
 }

@@ -32,6 +32,11 @@ namespace CryEngine.Serialization
 
 		public void Serialize(Stream stream, object graph)
 		{
+			if(stream == null)
+				throw new ArgumentNullException("stream");
+			else if(graph == null)
+				throw new ArgumentNullException("graph");
+
 			Writer = new StreamWriter(stream);
 			Writer.AutoFlush = true;
 
@@ -86,9 +91,10 @@ namespace CryEngine.Serialization
 			WriteLine(objectReference.Name);
 		}
 
-		void WriteReference(int line)
+		void WriteReference(ObjectReference objReference, int line)
 		{
 			WriteLine("reference");
+			WriteLine(objReference.Name);
 			WriteLine(line);
 		}
 
@@ -197,7 +203,7 @@ namespace CryEngine.Serialization
 			{
 				if(pair.Value.Value.GetHashCode() == objectReference.Value.GetHashCode())
 				{
-					WriteReference(pair.Key);
+					WriteReference(objectReference, pair.Key);
 					return true;
 				}
 			}
@@ -208,6 +214,9 @@ namespace CryEngine.Serialization
 
 		public object Deserialize(Stream stream)
 		{
+			if(stream == null || stream.Length == 0)
+				throw new ArgumentNullException("stream");
+
 			Reader = new StreamReader(stream);
 			CallingAssembly = Assembly.GetCallingAssembly();
 
@@ -227,7 +236,8 @@ namespace CryEngine.Serialization
 		{
 			ObjectReference objReference = new ObjectReference();
 
-			switch(ReadLine())
+			string type = ReadLine();
+			switch(type)
 			{
 				case "null": ReadNull(ref objReference); break;
 				case "reference": ReadReference(ref objReference); break;
@@ -241,6 +251,9 @@ namespace CryEngine.Serialization
 				default: break;
 			}
 
+			if(objReference.Value == null && type != "null")
+				throw new Exception(string.Format("Failed to deserialize object {0}!", objReference.Name));
+
 			return objReference;
 		}
 
@@ -251,8 +264,9 @@ namespace CryEngine.Serialization
 
 		void ReadReference(ref ObjectReference objReference)
 		{
+			objReference.Name = ReadLine();
 			int referenceLine = int.Parse(ReadLine());
-			objReference = ObjectReferences[referenceLine];
+			objReference.Value = ObjectReferences[referenceLine].Value;
 		}
 
 		void ReadObject(ref ObjectReference objReference)

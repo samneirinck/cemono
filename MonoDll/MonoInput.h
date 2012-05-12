@@ -29,7 +29,7 @@ public:
 	~CInput();
 
 	// IMonoScriptBind
-	virtual const char *GetClassName() { return "InputSystem"; }
+	virtual const char *GetClassName() { return "Input"; }
 	// ~IMonoScriptBind
 
 	// IActionListener
@@ -44,14 +44,10 @@ public:
 	virtual bool OnInputEvent(const SInputEvent &event);
 	// ~IInputEventListener
 
-	void Reset();
-
 private:
 	static void RegisterAction(mono::string);
 
 	bool OnActionTriggered(EntityId entityId, const ActionId& actionId, int activationMode, float value);
-
-	IMonoClass *m_pClass;
 	
 	static TActionHandler<CInput>	s_actionHandler;
 };

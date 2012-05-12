@@ -140,8 +140,12 @@ void CEntityManager::RemoveEntity(EntityId id)
 
 bool CEntityManager::RegisterEntityClass(EntityRegisterParams params, mono::array Properties)
 {
-	if(gEnv->pEntitySystem->GetClassRegistry()->FindClass(ToCryString(params.Name)))
+	const char *className = ToCryString(params.Name);
+	if(gEnv->pEntitySystem->GetClassRegistry()->FindClass(className))
+	{
+		CryLogAlways("Aborting registration of entity class %s, a class with the same name already exists", className); 
 		return false;
+	}
 
 	CScriptArray *propertiesArray = new CScriptArray(Properties);
 
@@ -166,7 +170,7 @@ bool CEntityManager::RegisterEntityClass(EntityRegisterParams params, mono::arra
 
 	IEntityClassRegistry::SEntityClassDesc entityClassDesc;	
 	entityClassDesc.flags = params.Flags;
-	entityClassDesc.sName = ToCryString(params.Name);
+	entityClassDesc.sName = className;
 	entityClassDesc.editorClassInfo.sCategory = ToCryString(params.Category);
 	entityClassDesc.editorClassInfo.sHelper = ToCryString(params.EditorHelper);
 	entityClassDesc.editorClassInfo.sIcon = ToCryString(params.EditorIcon);
@@ -174,6 +178,7 @@ bool CEntityManager::RegisterEntityClass(EntityRegisterParams params, mono::arra
 	CEntityClass *entityClass = new CEntityClass(entityClassDesc, properties);
 
 	m_monoEntityClasses.push_back(entityClassDesc.sName);
+
 	return gEnv->pEntitySystem->GetClassRegistry()->RegisterClass(entityClass);
 }
 

@@ -37,6 +37,8 @@ public:
 	virtual IMonoObject *ToManagedType(IMonoClass *pTo, void *object) override;
 
 	virtual IMonoClass *ToClass(IMonoObject *pObject) override;
+
+	virtual IMonoAssembly *LoadAssembly(const char *assemblyPath) override;
 	// ~IMonoConverter
 
 	// Store commonly accessed types for quick access.

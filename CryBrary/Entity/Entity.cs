@@ -16,92 +16,9 @@ namespace CryEngine
 	/// <summary>
 	/// The base class for all entities in the game world.
 	/// </summary>
-	public abstract partial class Entity : FlowNode
+	public abstract partial class Entity : EntityBase
 	{
-		#region Externals
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static string _GetPropertyValue(uint entityId, string propertyName);
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _SetPropertyValue(uint entityId, string property, string value);
-
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _SetWorldPos(uint entityId, Vec3 newPos);
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static Vec3 _GetWorldPos(uint entityId);
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _SetRotation(uint entityId, Quat newAngles);
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static Quat _GetRotation(uint entityId);
-
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _LoadObject(uint entityId, string fileName, int slot);
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static string _GetStaticObjectFilePath(uint entityId, int slot);
-
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static BoundingBox _GetBoundingBox(uint entityId, int slot);
-
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static EntitySlotFlags _GetSlotFlags(uint entityId, int slot);
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _SetSlotFlags(uint entityId, int slot, EntitySlotFlags slotFlags);
-
-		public EntitySlotFlags GetSlotFlags(int slot = 0)
-		{
-			return _GetSlotFlags(Id, slot);
-		}
-
-		public void SetSlotFlags(EntitySlotFlags flags, int slot = 0)
-		{
-			_SetSlotFlags(Id, slot, flags);
-		}
-
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _SetWorldTM(uint entityId, Matrix34 tm);
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static Matrix34 _GetWorldTM(uint entityId);
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _SetLocalTM(uint entityId, Matrix34 tm);
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static Matrix34 _GetLocalTM(uint entityId);
-
-		public Matrix34 WorldTM { get { return _GetWorldTM(Id); } set { _SetWorldTM(Id, value); } }
-		public Matrix34 LocalTM { get { return _GetLocalTM(Id); } set { _SetLocalTM(Id, value); } }
-
-		public BoundingBox BoundingBox { get { return _GetBoundingBox(Id, 0); } }
-
-		/// <summary>
-		/// Loads an non-static model on the object (.chr, .cdf, .cga)
-		/// </summary>
-		/// <param name="entityId"></param>
-		/// <param name="fileName"></param>
-		/// <param name="slot"></param>
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _LoadCharacter(uint entityId, string fileName, int slot);
-
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _CreateGameObjectForEntity(uint entityId);
-
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _AddMovement(uint entityId, ref EntityMovementRequest request);
-
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static Vec3 _GetVelocity(uint entityId);
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _SetVelocity(uint entityId, Vec3 velocity);
-
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static string _GetMaterial(uint entityId);
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _SetMaterial(uint entityId, string material);
-		#endregion
-
 		public Entity() { }
-
-		internal Entity(EntityId entityId)
-		{
-			Id = entityId;
-		}
 
 		/// <summary>
 		/// Initializes the entity, not recommended to set manually.
@@ -111,7 +28,46 @@ namespace CryEngine
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		internal virtual bool InternalSpawn(EntityId entityId)
 		{
-			SpawnCommon(entityId);
+			Id = entityId;
+
+			Spawned = true;
+
+			//Do this before the property overwrites
+			InitPhysics();
+
+			//TODO: Make sure that mutators are only called once on startup
+			//var storedPropertyNames = storedProperties.Keys.Select(key => key[0]);
+
+			foreach(var property in GetType().GetProperties())
+			{
+				EditorPropertyAttribute attr;
+				try
+				{
+					if(property.TryGetAttribute(out attr) && attr.DefaultValue != null)// && !storedPropertyNames.Contains(property.Name))
+						property.SetValue(this, attr.DefaultValue, null);
+				}
+				catch(Exception ex)
+				{
+					Debug.LogException(ex);
+				}
+			}
+
+			foreach(var field in GetType().GetFields())
+			{
+				EditorPropertyAttribute attr;
+				if(field.TryGetAttribute(out attr) && attr.DefaultValue != null)// && !storedPropertyNames.Contains(field.Name))
+					field.SetValue(this, attr.DefaultValue);
+			}
+
+			if(storedProperties != null)
+			{
+				foreach(var storedProperty in storedProperties.Where(prop => !string.IsNullOrEmpty(prop.Key[1])))
+					SetPropertyValue(storedProperty.Key[0], storedProperty.Value, storedProperty.Key[1]);
+
+				storedProperties.Clear();
+				storedProperties = null;
+			}
+
 			OnSpawn();
 
 			return IsEntityFlowNode();
@@ -138,61 +94,7 @@ namespace CryEngine
 			return members.Any(member => member.ContainsAttribute<PortAttribute>());
 		}
 
-		internal void SpawnCommon(EntityId entityId)
-		{
-			Id = entityId;
-
-			Spawned = true;
-
-			//Do this before the property overwrites
-			InitPhysics();
-
-			if(CanContainEditorProperties)
-			{
-				//TODO: Make sure that mutators are only called once on startup
-				//var storedPropertyNames = storedProperties.Keys.Select(key => key[0]);
-
-				foreach(var property in GetType().GetProperties())
-				{
-					EditorPropertyAttribute attr;
-					try
-					{
-						if(property.TryGetAttribute(out attr) && attr.DefaultValue != null)// && !storedPropertyNames.Contains(property.Name))
-							property.SetValue(this, attr.DefaultValue, null);
-					}
-					catch(Exception ex)
-					{
-						Debug.LogException(ex);
-					}
-				}
-
-				foreach(var field in GetType().GetFields())
-				{
-					EditorPropertyAttribute attr;
-					if(field.TryGetAttribute(out attr) && attr.DefaultValue != null)// && !storedPropertyNames.Contains(field.Name))
-						field.SetValue(this, attr.DefaultValue);
-				}
-
-				if(storedProperties == null)
-					return;
-
-				foreach(var storedProperty in storedProperties.Where(prop => !string.IsNullOrEmpty(prop.Key[1])))
-					SetPropertyValue(storedProperty.Key[0], storedProperty.Value, storedProperty.Key[1]);
-
-				storedProperties.Clear();
-				storedProperties = null;
-			}
-		}
-
-		internal virtual bool CanContainEditorProperties { get { return true; } }
-
 		#region Methods & Fields
-		public Vec3 Position { get { return _GetWorldPos(Id); } set { _SetWorldPos(Id, value); } }
-		public Quat Rotation { get { return _GetRotation(Id); } set { _SetRotation(Id, value); } }
-
-		public EntityId Id { get; set; }
-		public string Name { get; set; }
-		public EntityFlags Flags { get; set; }
 		internal bool Spawned;
 		#endregion
 
@@ -416,11 +318,11 @@ namespace CryEngine
 			else
 				throw new EntityException("Invalid property type specified.");
 		}
-		
+		/*
 		internal override NodeConfig GetNodeConfig()
 		{
 			return new NodeConfig(FlowNodeCategory.Approved, "", FlowNodeFlags.HideUI | FlowNodeFlags.TargetEntity);
-		}
+		}*/
 
 		internal static EntityRegisterParams GetRegistrationConfig(Type type)
 		{

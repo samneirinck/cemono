@@ -18,7 +18,7 @@ struct IMonoArray;
 class CScriptAssembly : public IMonoAssembly
 {
 public:
-	CScriptAssembly(const char *assemblyPath);
+	CScriptAssembly(const char *assemblyPath, bool shadowCopy = true);
 	virtual ~CScriptAssembly();
 
 	// IMonoAssembly
@@ -33,7 +33,8 @@ public:
 private:
 	MonoClass *GetClassFromName(const char* nameSpace, const char* className);
 
-protected:
+	const char *RelocateAssembly(const char *originalAssemblyPath);
+
 	const char *m_assemblyPath;
 	MonoAssembly *m_pAssembly;
 

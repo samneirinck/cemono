@@ -19,10 +19,23 @@ struct IMonoScriptManager;
 struct IMonoClass;
 struct IMonoArray;
 struct IMonoAssembly;
+struct IMonoDomain;
 
 struct IMonoEntityManager;
 
 struct IMonoConverter;
+
+struct IMonoScriptCompilationListener
+{
+	/// <summary>
+	/// Called just prior to scripts are compiled.
+	/// </summary>
+	virtual void OnPreScriptCompilation(bool isReload) = 0;
+	/// <summary>
+	/// Called just after scripts have been compiled.
+	/// </summary>
+	virtual void OnPostScriptCompilation(bool isReload, bool compilationSuccess) = 0;
+};
 
 /// <summary>
 /// The main module in CryMono; initializes mono domain and handles calls to C# scripts.
@@ -42,6 +55,11 @@ struct IMonoScriptSystem : ICryUnknown
 	/// Automatically called when a script, plugin or CryBrary itself is modified.
 	/// </summary>
 	virtual bool Reload(bool initialLoad = false) = 0;
+
+	/// <summary>
+	/// Used to check whether the script domain is currently being reloaded.
+	/// </summary>
+	virtual bool IsReloading() = 0;
 
 	/// <summary>
 	/// Deletes script system instance; cleans up mono objects etc.
@@ -75,15 +93,25 @@ struct IMonoScriptSystem : ICryUnknown
 	/// Gets a pointer to the CryBrary assembly containing all default CryMono types.
 	/// </summary>
 	virtual IMonoAssembly *GetCryBraryAssembly() = 0;
+
 	/// <summary>
-	/// Loads an Mono assembly and returns a fully initialized IMonoAssembly.
+	/// Gets the root domain created on script system initialization.
 	/// </summary>
-	virtual IMonoAssembly *LoadAssembly(const char *assemblyPath) = 0;
+	virtual IMonoDomain *GetRootDomain() = 0;
 
 	/// <summary>
 	/// Retrieves an instance of the IMonoConverter; a class used to easily convert C# types to C++ and the other way around.
 	/// </summary>
 	virtual IMonoConverter *GetConverter() = 0;
+
+	/// <summary>
+	/// Registers a listener to receive compilation events.
+	/// </summary>
+	virtual void RegisterScriptReloadListener(IMonoScriptCompilationListener *pListener) = 0;
+	/// <summary>
+	/// Unregisters a script compilation event listener.
+	/// </summary>
+	virtual void UnregisterScriptReloadListener(IMonoScriptCompilationListener *pListener) = 0;
 
 	/// <summary>
 	/// Entry point of the dll, used to set up CryMono.

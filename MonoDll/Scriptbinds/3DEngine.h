@@ -30,6 +30,8 @@ public:
 	static int GetTerrainSize();
 	static int GetTerrainSectorSize();
 	static int GetTerrainUnitSize();
+
+	static void Asplode(Vec3 pos, Vec3 dir, float minRadius, float maxRadius, float pressure);
 };
 
 #endif //__SCRIPTBIND_3DENGINE__

@@ -108,7 +108,7 @@ public:
 
 protected:
 	// IMonoScriptBind
-	virtual const char *GetClassName() { return "Entity"; }
+	virtual const char *GetClassName() { return "EntityBase"; }
 	// ~IMonoScriptBind
 
 	// ScriptBinds

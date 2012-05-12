@@ -9,9 +9,8 @@
 #ifndef __MONO_H__
 #define __MONO_H__
 
-#include "MonoArray.h"
-
 #include <IMonoScriptSystem.h>
+#include <IMonoDomain.h>
 
 #include <MonoCommon.h>
 
@@ -19,7 +18,6 @@
 #include <IFileChangeMonitor.h>
 #include <IGameFramework.h>
 
-struct IMonoMethodBinding;
 struct IMonoScriptBind;
 
 struct IMonoScriptManager;
@@ -45,12 +43,14 @@ class CScriptSystem
 
 	typedef std::map<const void *, const char *> TMethodBindings;
 	typedef std::map<IMonoClass *, int> TScripts;
+	typedef std::vector<IMonoScriptCompilationListener *> TScriptCompilationListeners;
 
 public:
 	// IMonoScriptSystem
 	virtual void PostInit() override;
 
 	virtual bool Reload(bool initialLoad = false) override;
+	virtual bool IsReloading() override { return m_bReloading; }
 
 	virtual void Release() override { delete this; }
 
@@ -63,9 +63,13 @@ public:
 	virtual void RemoveScriptInstance(int id) override;
 	
 	virtual IMonoAssembly *GetCryBraryAssembly() override { return m_pCryBraryAssembly; }
-	virtual IMonoAssembly *LoadAssembly(const char *assemblyPath) override;
+
+	virtual IMonoDomain *GetRootDomain() override { return m_pRootDomain; }
 
 	virtual IMonoConverter *GetConverter() override { return m_pConverter; }
+
+	virtual void RegisterScriptReloadListener(IMonoScriptCompilationListener *pListener) override { stl::push_back_unique(m_scriptReloadListeners, pListener); }
+	virtual void UnregisterScriptReloadListener(IMonoScriptCompilationListener *pListener) override { stl::find_and_erase(m_scriptReloadListeners, pListener); }
 	// ~IMonoScriptSystem
 
 	// IFileChangeMonitor
@@ -85,22 +89,23 @@ public:
 	CCallbackHandler *GetCallbackHandler() const { return m_pCallbackHandler; }
 	CFlowManager *GetFlowManager() const { return m_pFlowManager; }
 
-	bool IsInitialized() { return m_pMonoDomain != NULL; }
+	bool IsInitialized() { return m_pRootDomain != NULL; }
 
 protected:
 	bool CompleteInit();
-	bool InitializeDomain();
-	bool InitializeSystems();
+	bool InitializeSystems(IMonoAssembly *pCryBraryAssembly);
+
+	void PreReload();
+	bool DoReload(bool initialLoad);
+	void PostReload(bool initialLoad);
 
 	void RegisterDefaultBindings();
 
-	void UnloadDomain(MonoDomain *pDomain);
-
 	// The primary app domain, not really used for anything besides holding the script domain. Do *not* unload this at runtime, we cannot execute another root domain again without restarting.
-	MonoDomain *m_pMonoDomain;
+	IMonoDomain *m_pRootDomain;
 
 	// The app domain in which we load scripts into. Killed and reloaded on script reload.
-	MonoDomain *m_pScriptDomain;
+	IMonoDomain *m_pScriptDomain;
 
 	IMonoClass *m_pScriptManager;
 	// Hard pointer to the AppDomainSerializer class to quickly dump and restore scripts.
@@ -128,8 +133,12 @@ protected:
 	// ScriptBinds declared in this project are stored here to make sure they are destructed on shutdown.
 	std::vector<IMonoScriptBind *> m_localScriptBinds;
 
+	TScriptCompilationListeners m_scriptReloadListeners;
+
 	// If true, the last script reload was successful. This is necessary to make sure we don't override with invalid script dumps.
 	bool m_bLastCompilationSuccess;
+	// True when currently recompiling scripts / serializing app domain.
+	bool m_bReloading;
 };
 
 #endif //__MONO_H__

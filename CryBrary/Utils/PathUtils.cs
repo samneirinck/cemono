@@ -110,5 +110,10 @@ namespace CryEngine
 
             return Path.Combine(PathUtils.GetScriptsFolder(), folder);
         }
+
+		public static string GetTempFolder()
+		{
+			return Path.Combine(Path.GetTempPath(), "CryMono");
+		}
     }
 }

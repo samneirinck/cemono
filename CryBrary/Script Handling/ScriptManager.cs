@@ -1,16 +1,10 @@
 ﻿using System;
-using System.Linq;
-using System.IO;
-
 using System.Collections.Generic;
-
-using System.Reflection;
-
-using CryEngine.Extensions;
-
 using System.ComponentModel;
-
-using System.Threading.Tasks;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using CryEngine.Extensions;
 
 namespace CryEngine.Initialization
 {
@@ -18,15 +12,21 @@ namespace CryEngine.Initialization
 	{
 		internal ScriptManager()
 		{
-			FlowNodes = new List<string>();
-		}
+			if(!Directory.Exists(PathUtils.GetTempFolder()))
+				Directory.CreateDirectory(PathUtils.GetTempFolder());
 
-		public bool Initialize()
-		{
-			Type[] specialTypes = { typeof(NativeEntity) };
+			foreach(var file in Directory.GetFiles(PathUtils.GetTempFolder()))
+				File.Delete(file);
+
+			FlowNodes = new List<string>();
+
+			Type[] specialTypes = { typeof(NativeEntity), typeof(NativeActor) };
 			foreach(var type in specialTypes)
 				CompiledScripts.Add(new CryScript(type));
+		}
 
+		bool LoadPlugins()
+		{
 			LoadLibrariesInFolder(Path.Combine(PathUtils.GetScriptsFolder(), "Plugins"));
 
 			return true;
@@ -174,18 +174,7 @@ namespace CryEngine.Initialization
 					{
 						try
 						{
-							var newPath = Path.Combine(Path.GetTempPath(), Path.GetFileName(plugin));
-
-							File.Copy(plugin, newPath, true);
-#if !RELEASE
-							GenerateDebugDatabaseForAssembly(plugin);
-
-							var mdbFile = plugin + ".mdb";
-							if(File.Exists(mdbFile)) // success
-								File.Copy(mdbFile, Path.Combine(Path.GetTempPath(), Path.GetFileName(mdbFile)), true);
-#endif
-
-							LoadAssembly(Assembly.LoadFrom(newPath));
+							LoadAssembly(plugin);
 						}
 						//This exception tells us that the assembly isn't a valid .NET assembly for whatever reason
 						catch(BadImageFormatException)
@@ -200,11 +189,31 @@ namespace CryEngine.Initialization
 		}
 
 		/// <summary>
-		/// Loads an C# assembly and adds all found types to ScriptCompiler.CompiledScripts
+		/// Processes a C# assembly and adds all found types to ScriptCompiler.CompiledScripts
 		/// </summary>
-		public void LoadAssembly(Assembly assembly, ScriptType[] allowedTypes = null)
+		public void ProcessAssembly(Assembly assembly)
 		{
 			ProcessTypes(assembly.GetTypes());
+		}
+
+		/// <summary>
+		/// Loads a C# assembly by location, creates a shadow-copy & generates debug database (mdb).
+		/// </summary>
+		/// <param name="currentLocation"></param>
+		public void LoadAssembly(string assemblyPath)
+		{
+			var newPath = Path.Combine(PathUtils.GetTempFolder(), Path.GetFileName(assemblyPath));
+			File.Copy(assemblyPath, newPath, true);
+
+#if !RELEASE
+			GenerateDebugDatabaseForAssembly(assemblyPath);
+
+			var mdbFile = assemblyPath + ".mdb";
+			if(File.Exists(mdbFile)) // success
+				File.Copy(mdbFile, Path.Combine(Path.GetTempPath(), Path.GetFileName(mdbFile)), true);
+#endif
+
+			ProcessAssembly(Assembly.LoadFrom(newPath));
 		}
 
 		/// <summary>
@@ -235,8 +244,9 @@ namespace CryEngine.Initialization
 							break;
 						case ScriptType.ScriptCompiler:
 							{
+								Debug.LogAlways("		Compiling scripts using {0}...", type.Name);
 								var compiler = Activator.CreateInstance(type) as ScriptCompiler;
-								LoadAssembly(compiler.Compile());
+								ProcessAssembly(compiler.Compile());
 							}
 							break;
 					}
@@ -248,7 +258,7 @@ namespace CryEngine.Initialization
 
 		void LoadEntity(ref CryScript script)
 		{
-			LoadFlowNode(ref script);
+			//LoadFlowNode(ref script);
 
 			Entity.RegisterClass(Entity.GetEntityConfig(script.Type));
 		}
@@ -323,7 +333,7 @@ namespace CryEngine.Initialization
 			}
 		}
 
-		internal List<string> FlowNodes;
+		List<string> FlowNodes { get; set; }
 
 		#region Statics
 		internal static CryScript GetScriptByType(Type type, out int scriptIndex)

@@ -10,24 +10,15 @@
 #include "PathUtils.h"
 #include "MonoScriptSystem.h"
 
-#include <IMonoClass.h>
+#include <MonoClass.h>
 
-CScriptAssembly::CScriptAssembly(const char *assemblyPath)
+CScriptAssembly::CScriptAssembly(const char *assemblyPath, bool shadowCopy)
 {
-#ifndef _RELEASE
-	string path = assemblyPath;
-	if(path.find("pdb2mdb")==-1)
+	string sAssemblyPath = string(assemblyPath);
+
+	#ifndef _RELEASE
+	if(sAssemblyPath.find("pdb2mdb")==-1)
 	{
-		TCHAR tempPath[MAX_PATH];
-		GetTempPath(MAX_PATH, tempPath);
-
-		int lastDirectoryIndex = path.find_last_of("\\");
-		if(path.find_last_of("//") < lastDirectoryIndex)
-			lastDirectoryIndex = path.find_last_of("//");
-
-		string newAssemblyPath = tempPath + path.substr(lastDirectoryIndex + 1);
-		CopyFile(assemblyPath, newAssemblyPath, false);
-
 		if(IMonoAssembly *pDebugDatabaseCreator = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetDebugDatabaseCreator())
 		{
 			if(IMonoClass *pDriverClass = pDebugDatabaseCreator->GetCustomClass("Driver", ""))
@@ -39,21 +30,19 @@ CScriptAssembly::CScriptAssembly(const char *assemblyPath)
 				SAFE_RELEASE(pArgs);
 				SAFE_RELEASE(pDriverClass);
 			}
+
+			SAFE_RELEASE(pDebugDatabaseCreator);
 		}
-
-		CopyFile(path.append(".mdb"), newAssemblyPath + ".mdb", false);
-
-		assemblyPath = newAssemblyPath;
 	}
 #endif
 
-	m_assemblyPath = assemblyPath;
+	m_assemblyPath = shadowCopy ? RelocateAssembly(assemblyPath) : assemblyPath;
 
 	m_pAssembly = mono_domain_assembly_open(mono_domain_get(), m_assemblyPath);
+
 	if (!m_pAssembly)
 	{
 		gEnv->pLog->LogError("Failed to create assembly from %s", assemblyPath);
-		
 		Release();
 	}
 
@@ -61,7 +50,6 @@ CScriptAssembly::CScriptAssembly(const char *assemblyPath)
 	if (!m_pImage)
 	{
 		gEnv->pLog->LogError("Failed to get image from assembly %s", assemblyPath);
-		
 		Release();
 	}
 }
@@ -74,13 +62,26 @@ CScriptAssembly::~CScriptAssembly()
 	m_pImage = 0;
 }
 
+const char *CScriptAssembly::RelocateAssembly(const char *originalAssemblyPath)
+{
+	string newAssemblyPath = PathUtils::GetTempPath() + PathUtil::GetFile(originalAssemblyPath);
+
+	CopyFile(originalAssemblyPath, newAssemblyPath, false);
+
+#ifndef _RELEASE
+	CopyFile(string(originalAssemblyPath).append(".mdb"), newAssemblyPath.append(".mdb"), false);
+#endif
+
+	return newAssemblyPath.c_str();
+}
+
 IMonoClass *CScriptAssembly::InstantiateClass(const char *className, const char *nameSpace, IMonoArray *pConstructorArguments)
 {
 	// Get class
 	MonoClass *pClass = GetClassFromName(nameSpace, className);
 	if (!pClass)
 	{
-		gEnv->pLog->LogError("Tried to create an instance of non-existent class %s in namespace %s", className, nameSpace);
+		gEnv->pLog->LogError("Tried to create an instance of non-existent class %s.%s", nameSpace, className);
 		return NULL;
 	}
 
@@ -92,6 +93,7 @@ IMonoClass *CScriptAssembly::GetCustomClass(const char *className, const char *n
 	if(MonoClass *monoClass = GetClassFromName(nameSpace, className))
 		return new CScriptClass(monoClass);
 
+	gEnv->pLog->LogError("Failed to get class %s.%s", nameSpace, className);
 	return NULL;
 }
 
