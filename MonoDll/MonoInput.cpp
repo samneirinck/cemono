@@ -10,6 +10,7 @@
 TActionHandler<CInput>	CInput::s_actionHandler;
 
 CInput::CInput()
+	: m_pClass(NULL)
 {
 	REGISTER_METHOD(RegisterAction);
 
@@ -24,6 +25,11 @@ CInput::~CInput()
 	gEnv->pHardwareMouse->RemoveListener(this);
 }
 
+void CInput::Reset()
+{
+	m_pClass = GetClass();
+}
+
 void CInput::OnHardwareMouseEvent(int iX,int iY,EHARDWAREMOUSEEVENT eHardwareMouseEvent, int wheelDelta)
 {
 	IMonoArray *pParams = CreateMonoArray(4);
@@ -32,7 +38,7 @@ void CInput::OnHardwareMouseEvent(int iX,int iY,EHARDWAREMOUSEEVENT eHardwareMou
 	pParams->Insert(eHardwareMouseEvent);
 	pParams->Insert(wheelDelta);
 
-	GetClass()->CallMethod("OnMouseEvent", pParams, true);
+	m_pClass->CallMethod("OnMouseEvent", pParams, true);
 	SAFE_RELEASE(pParams);
 }
 
@@ -42,7 +48,7 @@ bool CInput::OnInputEvent(const SInputEvent &event)
 	pParams->Insert(event.keyName.c_str());
 	pParams->Insert(event.value);
 
-	GetClass()->CallMethod("OnKeyEvent", pParams, true);
+	m_pClass->CallMethod("OnKeyEvent", pParams, true);
 	SAFE_RELEASE(pParams);
 
 	return false;
@@ -60,7 +66,7 @@ bool CInput::OnActionTriggered(EntityId entityId, const ActionId& actionId, int 
 	pParams->Insert(activationMode);
 	pParams->Insert(value);
 
-	GetClass()->CallMethod("OnActionTriggered", pParams, true);
+	m_pClass->CallMethod("OnActionTriggered", pParams, true);
 	SAFE_RELEASE(pParams);
 
 	return false;

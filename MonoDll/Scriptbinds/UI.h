@@ -93,6 +93,8 @@ public:
 	static void SendEvent(mono::string eventsystem, int event, mono::array args);
 	static void SendNamedEvent(mono::string eventsystem, mono::string event, mono::array args);
 
+	void Reset();
+
 protected:
 	// IMonoScriptBind
 	virtual const char *GetClassName() override { return "UI"; }
@@ -100,6 +102,8 @@ protected:
 
 	TEventMap	m_EventMapS2UI;
 	TEventMap	m_EventMapUI2S;
+
+	IMonoClass							*m_pUIClass;
 };
 
 #endif //__SCRIPTBIND_UI_H__

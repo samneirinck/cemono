@@ -1,5 +1,5 @@
 #include "StdAfx.h"
-#include "Scriptbind_UI.h"
+#include "UI.h"
 
 #include <IMonoAssembly.h>
 #include <MonoAnyValue.h>
@@ -68,6 +68,11 @@ CUICallback::~CUICallback()
 {
 	if (m_type == IUIEventSystem::eEST_UI_TO_SYSTEM)
 		m_pSystem->UnregisterListener(this);
+}
+
+void CScriptbind_UI::Reset()
+{
+	m_pUIClass = GetClass();
 }
 
 const char* CUICallback::FindEvent(uint ID)
@@ -181,7 +186,7 @@ void CScriptbind_UI::OnEvent(const char *SystemName, const char *EventName, cons
 	pArray->Insert(EventName);
 	pArray->Insert((int)event.event);
 	pArray->Insert(pArgs);
-	GetClass()->CallMethod("OnEvent", pArray, true);
+	m_pUIClass->CallMethod("OnEvent", pArray, true);
 	pArray->Release();
 	pArgs->Release();
 }

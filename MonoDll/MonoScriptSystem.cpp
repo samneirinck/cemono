@@ -36,7 +36,7 @@
 #include "Scriptbinds\Renderer.h"
 #include "Scriptbinds\Entity.h"
 #include "Scriptbinds\Debug.h"
-#include "Scriptbinds\Scriptbind_UI.h"
+#include "Scriptbinds\UI.h"
 #include "Scriptbinds\MaterialManager.h"
 #include "Scriptbinds\ParticleSystem.h"
 #include "Scriptbinds\ViewSystem.h"
@@ -300,7 +300,9 @@ void CScriptSystem::PostReload(bool initialLoad)
 {
 	m_AppDomainSerializer = m_pCryBraryAssembly->InstantiateClass("AppDomainSerializer", "CryEngine.Serialization");
 
+	m_pInput->Reset();
 	m_pConverter->Reset();
+	m_pUIScriptBind->Reset();
 
 	// Nodes won't get recompiled if we forget this.
 	if(!initialLoad)
