@@ -156,7 +156,7 @@ namespace CryEngine
 		{
 			_RemoveActor(id);
 
-			Entity.RemoveInternalEntity(id);
+			InternalRemove(id);
 		}
 
 		public static void Remove(Actor actor)
@@ -167,6 +167,15 @@ namespace CryEngine
 		public static void Remove(int channelId)
 		{
 			Remove(_GetEntityIdForChannelId((ushort)channelId));
+		}
+
+		internal static void InternalRemove(EntityId id)
+		{
+			foreach(var script in ScriptManager.CompiledScripts)
+			{
+				if(script.ScriptInstances != null)
+					script.ScriptInstances.RemoveAll(instance => instance is Actor && (instance as Actor).Id == id);
+			}
 		}
 		#endregion
 

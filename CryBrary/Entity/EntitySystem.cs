@@ -45,7 +45,7 @@ namespace CryEngine
 		{
 			_RemoveEntity(id);
 
-			RemoveInternalEntity(id);
+			InternalRemove(id);
 		}
 
 		public void Remove()
@@ -53,7 +53,7 @@ namespace CryEngine
 			Entity.Remove(Id);
 		}
 
-		internal static void RemoveInternalEntity(EntityId id)
+		internal static void InternalRemove(EntityId id)
 		{
 			foreach(var script in ScriptManager.CompiledScripts)
 			{
