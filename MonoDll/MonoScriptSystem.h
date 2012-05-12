@@ -73,7 +73,7 @@ public:
 	// ~IMonoScriptSystem
 
 	// IFileChangeMonitor
-	virtual void OnFileChange(const char* sFilename);
+	virtual void OnFileChange(const char *fileName);
 	// ~IFileChangeMonitor
 
 	// ~IGameFrameworkListener	  	

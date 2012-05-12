@@ -388,14 +388,12 @@ void CScriptSystem::OnPostUpdate(float fDeltaTime)
 	SAFE_RELEASE(pArgs);
 }
 
-void CScriptSystem::OnFileChange(const char *sFilename)
+void CScriptSystem::OnFileChange(const char *fileName)
 {
 	if(m_bReloading)
 		return;
 
-	string fileName = sFilename;
-	const char *fileExt = fileName.substr(fileName.find_last_of(".") + 1);
-
+	const char *fileExt = PathUtil::GetExt(fileName);
 	if(!strcmp(fileExt, "cs") || !strcmp(fileExt, "dll"))
 		Reload();
 }
