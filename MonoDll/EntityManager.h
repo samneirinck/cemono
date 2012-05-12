@@ -120,7 +120,7 @@ public:
 	// ~IEntitySystemSink
 
 	// IMonoEntityManager
-	virtual int GetScriptId(EntityId entityId, bool returnBackIfInvalid = false) override;
+	virtual IMonoClass *GetScript(EntityId entityId, bool returnBackIfInvalid = false) override;
 	// ~IMonoEntityManager
 
 	std::shared_ptr<CEntity> GetMonoEntity(EntityId entityId);

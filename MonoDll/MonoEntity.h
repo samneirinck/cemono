@@ -18,7 +18,7 @@
 class CEntity : public IEntityEventListener
 {
 public:
-	CEntity(int scriptId);
+	CEntity(IMonoClass *pScriptClass);
 	~CEntity();
 
 	void OnSpawn(EntityId id);
@@ -33,11 +33,11 @@ public:
 	IGameObject *GetGameObject() { return m_pGameObject; }
 
 	EntityId GetEntityId() { return m_entityId; }
-	int GetScriptId() { return m_scriptId; }
+	IMonoClass *GetScript() { return m_pScriptClass; }
 
 protected:
 	EntityId m_entityId;
-	int m_scriptId;
+	IMonoClass *m_pScriptClass;
 
 	IGameObject *m_pGameObject;
 	IAnimatedCharacter *m_pAnimatedCharacter;

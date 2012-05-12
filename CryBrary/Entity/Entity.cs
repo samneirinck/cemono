@@ -75,11 +75,17 @@ namespace CryEngine
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		internal virtual void InternalRemove()
+		internal virtual bool InternalRemove()
 		{
-			OnRemove();
+			if(OnRemove())
+			{
+				Entity.InternalRemove(Id);
 
-			Entity.InternalRemove(Id);
+				return true;
+			}
+
+			// Abort removal
+			return false;
 		}
 
 		/// <summary>

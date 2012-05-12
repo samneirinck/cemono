@@ -132,11 +132,14 @@ bool CEntityManager::OnRemove(IEntity *pEntity)
 	{
 		if((*it)->GetEntityId()==pEntity->GetId())
 		{
-			bool doRemove = CallMonoScript<bool>((*it)->GetScriptId(), "InternalRemove");
+			if((*it)->GetScript()->CallMethod("InternalRemove")->Unbox<bool>())
+			{
+				m_monoEntities.erase(it);
 
-			m_monoEntities.erase(it);
+				return true;
+			}
 			
-			return doRemove;
+			return false;
 		}
 	}
 
@@ -176,15 +179,15 @@ std::shared_ptr<CEntity> CEntityManager::GetMonoEntity(EntityId entityId)
 	return NULL;
 }
 
-int CEntityManager::GetScriptId(EntityId entityId, bool returnBackIfInvalid)
+IMonoClass *CEntityManager::GetScript(EntityId entityId, bool returnBackIfInvalid)
 {
 	if(auto& entity = GetMonoEntity(entityId))
-		return entity->GetScriptId();
+		return entity->GetScript();
 
 	if(returnBackIfInvalid)
-		return m_monoEntities.back()->GetScriptId();
+		return m_monoEntities.back()->GetScript();
 
-	return -1;
+	return NULL;
 }
 
 SMonoEntityInfo CEntityManager::SpawnEntity(EntitySpawnParams params, bool bAutoInit)
