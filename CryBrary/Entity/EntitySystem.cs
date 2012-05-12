@@ -34,11 +34,24 @@ namespace CryEngine
 		/// <param name="scale"></param>
 		/// <param name="autoInit"></param>
 		/// <returns></returns>
-		public static T Spawn<T>(string name, Vec3 pos, Vec3? rot = null, Vec3? scale = null, bool autoInit = true, EntityFlags flags = EntityFlags.CastShadow) where T : Entity
+		public static T Spawn<T>(string name, Vec3 pos, Vec3? rot = null, Vec3? scale = null, bool autoInit = true, EntityFlags flags = EntityFlags.CastShadow) where T : Entity, new()
 		{
-			var entId = new EntityId(_SpawnEntity(new EntitySpawnParams { Name = name, Class = typeof(T).Name, Pos = pos, Rot = rot ?? Vec3.Zero, Scale = scale ?? new Vec3(1, 1, 1), Flags = flags }, autoInit));
+			var entInfo = _SpawnEntity(new EntitySpawnParams { Name = name, Class = typeof(T).Name, Pos = pos, Rot = rot ?? Vec3.Zero, Scale = scale ?? new Vec3(1, 1, 1), Flags = flags }, autoInit);
+			if(entInfo.Id != 0)
+			{
+				var ent = ScriptManager.AddScriptInstance(new T()) as T;
+				if(ent == null)
+				{
+					Debug.LogAlways("[Entity.Spawn] Failed to add script instance");
+					return null;
+				}
 
-			return ScriptManager.AddScriptInstance(Get(entId)) as T;
+				ent.InternalSpawn(entInfo);
+
+				return ent as T;
+			}
+
+			return null;
 		}
 
 		public static void Remove(EntityId id)
@@ -153,8 +166,19 @@ namespace CryEngine
 			foreach(EntityId id in entitiesByClass)
 				yield return Get<T>(id);
 		}
-
     }
+
+	internal struct EntityInfo
+	{
+		public EntityInfo(IntPtr ptr, EntityId id)
+		{
+			IEntityPtr = ptr;
+			Id = id;
+		}
+
+		public IntPtr IEntityPtr;
+		public uint Id;
+	}
 
 	/// <summary>
 	/// These flags control entity instance behaviour.

@@ -81,6 +81,20 @@ struct SMonoEntityProperty
 	IEntityPropertyHandler::SPropertyInfo::SLimits limits;
 };
 
+struct SMonoEntityInfo
+{
+	SMonoEntityInfo() { id = 0; }
+
+	SMonoEntityInfo(IEntity *pEnt)
+		: pEntity(pEnt)
+	{
+		id = pEntity->GetId();
+	}
+
+	IEntity *pEntity;
+	EntityId id;
+};
+
 class CEntityManager 
 	: public IMonoEntityManager
 	, public IMonoScriptBind
@@ -103,7 +117,7 @@ public:
 	virtual int GetScriptId(EntityId entityId, bool returnBackIfInvalid = false) override;
 	// ~IMonoEntityManager
 
-	std::shared_ptr<CEntity> GetEntity(EntityId entityId);
+	std::shared_ptr<CEntity> GetMonoEntity(EntityId entityId);
 	bool IsMonoEntity(const char *entityClassName);
 
 protected:
@@ -112,8 +126,10 @@ protected:
 	// ~IMonoScriptBind
 
 	// ScriptBinds
-	static EntityId SpawnEntity(EntitySpawnParams, bool);
+	static SMonoEntityInfo SpawnEntity(EntitySpawnParams, bool);
 	static void RemoveEntity(EntityId);
+
+	static IEntity *GetEntity(EntityId id);
 
 	static bool RegisterEntityClass(EntityRegisterParams, mono::array);
 

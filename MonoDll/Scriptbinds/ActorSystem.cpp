@@ -2,7 +2,6 @@
 #include "ActorSystem.h"
 
 #include <IGameFramework.h>
-#include <IActorSystem.h>
 
 CActorSystem::CActorSystem()
 {
@@ -30,15 +29,21 @@ EntityId CActorSystem::GetEntityIdForChannelId(uint16 channelId)
 	return 0;
 }
 
-EntityId CActorSystem::CreateActor(int channelId, mono::string name, mono::string className, Vec3 pos, Vec3 angles, Vec3 scale)
+mono::object CActorSystem::CreateActor(int channelId, mono::string name, mono::string className, Vec3 pos, Vec3 angles, Vec3 scale)
 {
+	SMonoActorInfo actorInfo = SMonoActorInfo();
+
 	if(gEnv->bServer)
 	{
 		if(IActor *pActor = gEnv->pGameFramework->GetIActorSystem()->CreateActor(channelId, ToCryString(name), ToCryString(className), pos, Quat(Ang3(angles)), scale))
-			return pActor->GetEntityId();
+		{
+			actorInfo.pActor = pActor;
+			actorInfo.id = pActor->GetEntityId();
+		}
 	}
 
-	return 0;
+	IMonoClass *pActorInfoClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("ActorInfo");
+	return gEnv->pMonoScriptSystem->GetConverter()->ToManagedType(pActorInfoClass, &actorInfo)->GetMonoObject();
 }
 
 void CActorSystem::RemoveActor(EntityId id)
@@ -56,30 +61,22 @@ void CActorSystem::RegisterActorClass(mono::string className, bool isAI)
 	//gEnv->pGameFramework->RegisterFactory(ToCryString(className), (CActorClass *)0, isAI, (CActorClass *)0);
 }
 
-float CActorSystem::GetPlayerHealth(EntityId playerId)
+float CActorSystem::GetPlayerHealth(IActor *pActor)
 {
-	if(IActor *pActor = gEnv->pGameFramework->GetIActorSystem()->GetActor(playerId))
-		return pActor->GetHealth();
-
-	return 0.0f;
+	return pActor->GetHealth();
 }
 
-void CActorSystem::SetPlayerHealth(EntityId playerId, float newHealth)
+void CActorSystem::SetPlayerHealth(IActor *pActor, float newHealth)
 {
-	if(IActor *pActor = gEnv->pGameFramework->GetIActorSystem()->GetActor(playerId))
-		pActor->SetHealth(newHealth);
+	pActor->SetHealth(newHealth);
 }
 
-float CActorSystem::GetPlayerMaxHealth(EntityId playerId)
+float CActorSystem::GetPlayerMaxHealth(IActor *pActor)
 {
-	if(IActor *pActor = gEnv->pGameFramework->GetIActorSystem()->GetActor(playerId))
-		return pActor->GetMaxHealth();
-
-	return 0.0f;
+	return pActor->GetMaxHealth();
 }
 
-void CActorSystem::SetPlayerMaxHealth(EntityId playerId, float newMaxHealth)
+void CActorSystem::SetPlayerMaxHealth(IActor *pActor, float newMaxHealth)
 {
-	if(IActor *pActor = gEnv->pGameFramework->GetIActorSystem()->GetActor(playerId))
-		pActor->SetMaxHealth(newMaxHealth);
+	pActor->SetMaxHealth(newMaxHealth);
 }

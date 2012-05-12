@@ -13,6 +13,16 @@
 
 #include <MonoCommon.h>
 
+#include <IActorSystem.h>
+
+struct SMonoActorInfo
+{
+	SMonoActorInfo() : id(0) {}
+
+	IActor *pActor;
+	EntityId id;
+};
+
 class CActorSystem : public IMonoScriptBind
 {
 public:
@@ -24,14 +34,14 @@ protected:
 	virtual const char *GetClassName() { return "Actor"; }
 	// ~IMonoScriptBind
 
-	static float GetPlayerHealth(EntityId);
-	static void SetPlayerHealth(EntityId, float);
-	static float GetPlayerMaxHealth(EntityId);
-	static void SetPlayerMaxHealth(EntityId, float);
+	static float GetPlayerHealth(IActor *pActor);
+	static void SetPlayerHealth(IActor *pActor, float);
+	static float GetPlayerMaxHealth(IActor *pActor);
+	static void SetPlayerMaxHealth(IActor *pActor, float);
 
 	static EntityId GetEntityIdForChannelId(uint16 channelId);
 
-	static EntityId CreateActor(int channelId, mono::string name, mono::string className, Vec3 pos, Vec3 angles, Vec3 scale);
+	static mono::object CreateActor(int channelId, mono::string name, mono::string className, Vec3 pos, Vec3 angles, Vec3 scale);
 	static void RemoveActor(EntityId id);
 
 	static EntityId GetClientActor();

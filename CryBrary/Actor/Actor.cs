@@ -19,19 +19,19 @@ namespace CryEngine
 		extern internal static void _RegisterActorClass(string className, bool isAI);
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static float _GetPlayerHealth(uint playerId);
+		extern internal static float _GetPlayerHealth(IntPtr actorPtr);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _SetPlayerHealth(uint playerId, float newHealth);
+		extern internal static void _SetPlayerHealth(IntPtr actorPtr, float newHealth);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static float _GetPlayerMaxHealth(uint playerId);
+		extern internal static float _GetPlayerMaxHealth(IntPtr actorPtr);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _SetPlayerMaxHealth(uint playerId, float newMaxHealth);
+		extern internal static void _SetPlayerMaxHealth(IntPtr actorPtr, float newMaxHealth);
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static EntityId _GetEntityIdForChannelId(ushort channelId);
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern private static EntityId _CreateActor(int channelId, string name, string className, Vec3 pos, Vec3 angles, Vec3 scale);
+		extern private static object _CreateActor(int channelId, string name, string className, Vec3 pos, Vec3 angles, Vec3 scale);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static void _RemoveActor(uint id);
 
@@ -101,21 +101,21 @@ namespace CryEngine
 			// just in case
 			Actor.Remove(channelId);
 
-			EntityId entityId = _CreateActor(channelId, name, "Player", pos, angles, scale);
-			if(entityId == 0)
+			var info = (ActorInfo)_CreateActor(channelId, name, "Player", pos, angles, scale);
+			if(info.Id == 0)
 			{
 				Debug.LogAlways("[Actor.Create] New entityId was invalid");
 				return null;
 			}
 
-			var player = Initialization.ScriptManager.AddScriptInstance(new T()) as T;
+			var player = ScriptManager.AddScriptInstance(new T()) as T;
 			if(player == null)
 			{
 				Debug.LogAlways("[Actor.Create] Failed to add script instance");
 				return null;
 			}
 
-			player.InternalSpawn(entityId, channelId);
+			player.InternalSpawn(info, channelId);
 
 			return player;
 		}
@@ -167,9 +167,13 @@ namespace CryEngine
         /// </summary>
         /// <param name="entityId"></param>
         /// <param name="channelId"></param>
-		internal void InternalSpawn(EntityId entityId, int channelId)
+		internal void InternalSpawn(ActorInfo actorInfo, int channelId)
         {
-			Id = entityId;
+			Id = new EntityId(actorInfo.Id);
+			ActorPointer = actorInfo.ActorPtr;
+
+			EntityPointer = IntPtr.Zero;
+
 			ChannelId = channelId;
 
 			InitPhysics();
@@ -181,11 +185,18 @@ namespace CryEngine
 		public void OnSpawn() { }
 		#endregion
 
+		internal IntPtr ActorPointer { get; set; }
 		public int ChannelId { get; set; }
 
-		public float Health { get { return _GetPlayerHealth(Id); } set { _SetPlayerHealth(Id, value); } }
-		public float MaxHealth { get { return _GetPlayerMaxHealth(Id); } set { _SetPlayerMaxHealth(Id, value); } }
+		public float Health { get { return _GetPlayerHealth(ActorPointer); } set { _SetPlayerHealth(ActorPointer, value); } }
+		public float MaxHealth { get { return _GetPlayerMaxHealth(ActorPointer); } set { _SetPlayerMaxHealth(ActorPointer, value); } }
 
         public bool IsDead() { return Health <= 0; }
     }
+
+	internal struct ActorInfo
+	{
+		public IntPtr ActorPtr;
+		public uint Id;
+	}
 }

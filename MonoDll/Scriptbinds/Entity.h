@@ -31,52 +31,57 @@ protected:
 	virtual const char *GetClassName() { return "EntityBase"; }
 	// ~IMonoScriptBind
 
-	static mono::string GetPropertyValue(EntityId, mono::string);
-	static void SetPropertyValue(EntityId, mono::string, mono::string);
+	static mono::string GetPropertyValue(IEntity *pEnt, mono::string);
 
-	static void SetWorldPos(EntityId, Vec3);
-	static Vec3 GetWorldPos(EntityId);
-	static void SetRotation(EntityId, Quat);
-	static Quat GetRotation(EntityId);
+	static void SetWorldPos(IEntity *pEnt, Vec3);
+	static Vec3 GetWorldPos(IEntity *pEnt);
+	static void SetPos(IEntity *pEnt, Vec3);
+	static Vec3 GetPos(IEntity *pEnt);
 
-	static AABB GetBoundingBox(EntityId, int slot);
+	static void SetWorldRotation(IEntity *pEnt, Quat);
+	static Quat GetWorldRotation(IEntity *pEnt);
+	static void SetRotation(IEntity *pEnt, Quat);
+	static Quat GetRotation(IEntity *pEnt);
 
-	static void LoadObject(EntityId, mono::string, int);
-	static void LoadCharacter(EntityId, mono::string, int);
+	static AABB GetBoundingBox(IEntity *pEnt);
+	static AABB GetWorldBoundingBox(IEntity *pEnt);
 
-	static EEntitySlotFlags GetSlotFlags(EntityId, int);
-	static void SetSlotFlags(EntityId, int, EEntitySlotFlags);
+	static void LoadObject(IEntity *pEnt, mono::string, int);
+	static void LoadCharacter(IEntity *pEnt, mono::string, int);
 
-	static void Physicalize(EntityId, MonoPhysicalizationParams);
+	static EEntitySlotFlags GetSlotFlags(IEntity *pEnt, int);
+	static void SetSlotFlags(IEntity *pEnt, int, EEntitySlotFlags);
+
+	static void Physicalize(IEntity *pEnt, MonoPhysicalizationParams);
 	
-	static void Sleep(EntityId, bool);
+	static void Sleep(IEntity *pEnt, bool);
 
-	static void BreakIntoPieces(EntityId, int, int, IBreakableManager::BreakageParams);
+	static void BreakIntoPieces(IEntity *pEnt, int, int, IBreakableManager::BreakageParams);
 
-	static void CreateGameObjectForEntity(EntityId);
-	static void BindGameObjectToNetwork(EntityId);
+	static void CreateGameObjectForEntity(IEntity *pEnt);
+	static void BindGameObjectToNetwork(IEntity *pEnt);
 
-	static mono::string GetStaticObjectFilePath(EntityId, int);
+	static mono::string GetStaticObjectFilePath(IEntity *pEnt, int);
 
-	static void AddImpulse(EntityId, ActionImpulse);
-	static void AddMovement(EntityId, MovementRequest&);
+	static void AddImpulse(IEntity *pEnt, ActionImpulse);
+	static void AddMovement(IEntity *pEnt, MovementRequest&);
 
-	static Vec3 GetVelocity(EntityId);
-	static void SetVelocity(EntityId, Vec3);
+	static Vec3 GetVelocity(IEntity *pEnt);
+	static void SetVelocity(IEntity *pEnt, Vec3);
 
-	static void SetWorldTM(EntityId id, Matrix34 tm);
-	static Matrix34 GetWorldTM(EntityId id);
-	static void SetLocalTM(EntityId id, Matrix34 tm);
-	static Matrix34 GetLocalTM(EntityId id);
+	static void SetWorldTM(IEntity *pEnt, Matrix34 tm);
+	static Matrix34 GetWorldTM(IEntity *pEnt);
+	static void SetLocalTM(IEntity *pEnt, Matrix34 tm);
+	static Matrix34 GetLocalTM(IEntity *pEnt);
 
-	static mono::string GetMaterial(EntityId id);
-	static void SetMaterial(EntityId id, mono::string material);
+	static mono::string GetMaterial(IEntity *pEnt);
+	static void SetMaterial(IEntity *pEnt, mono::string material);
 
-	static mono::string GetName(EntityId id);
-	static void SetName(EntityId id, mono::string name);
+	static mono::string GetName(IEntity *pEnt);
+	static void SetName(IEntity *pEnt, mono::string name);
 
-	static EEntityFlags GetFlags(EntityId id);
-	static void SetFlags(EntityId id, EEntityFlags flags);
+	static EEntityFlags GetFlags(IEntity *pEnt);
+	static void SetFlags(IEntity *pEnt, EEntityFlags flags);
 };
 
 struct ActionImpulse

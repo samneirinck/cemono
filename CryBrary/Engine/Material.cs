@@ -1,42 +1,45 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace CryEngine
 {
 	public class Material
 	{
+		#region Statics
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static int _CreateMaterial(string name);
+		extern internal static IntPtr _CreateMaterial(string name);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static int _LoadMaterial(string name, bool makeIfNotFound = true, bool nonRemovable = false);
+		extern internal static IntPtr _LoadMaterial(string name, bool makeIfNotFound = true, bool nonRemovable = false);
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static string _GetSurfaceTypeName(int Id);
+		extern internal static string _GetSurfaceTypeName(IntPtr ptr);
 
 		public static Material Load(string name, bool makeIfNotFound = true, bool nonRemovable = false)
 		{
-			int id = _LoadMaterial(name, makeIfNotFound, nonRemovable);
-			if(id != -1)
-				return new Material(id);
+			var ptr = _LoadMaterial(name, makeIfNotFound, nonRemovable);
+			if(ptr != null)
+				return new Material(ptr);
 
 			return null;
 		}
 
 		public static Material Create(string name, bool makeIfNotFound = true, bool nonRemovable = false)
 		{
-			int id = _CreateMaterial(name);
-			if(id != -1)
-				return new Material(id);
+			var ptr = _CreateMaterial(name);
+			if(ptr != null)
+				return new Material(ptr);
 
 			return null;
 		}
+		#endregion
 
-		internal Material(int id)
+		internal Material(IntPtr ptr)
 		{
-			Id = id;
+			Pointer = ptr;
 		}
 
-		public string SurfaceType { get { return _GetSurfaceTypeName(Id); } }
+		public string SurfaceType { get { return _GetSurfaceTypeName(Pointer); } }
 
-		public int Id { get; private set; }
+		internal IntPtr Pointer { get; set; }
 	}
 }

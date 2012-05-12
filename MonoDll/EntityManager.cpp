@@ -27,6 +27,8 @@ CEntityManager::CEntityManager()
 
 	REGISTER_METHOD(RegisterEntityClass);
 
+	REGISTER_METHOD(GetEntity);
+
 	REGISTER_METHOD(FindEntity);
 	REGISTER_METHOD(GetEntitiesByClass);
 
@@ -115,7 +117,7 @@ bool CEntityManager::IsMonoEntity(const char *entityClassName)
 	return false;
 }
 
-std::shared_ptr<CEntity> CEntityManager::GetEntity(EntityId entityId)
+std::shared_ptr<CEntity> CEntityManager::GetMonoEntity(EntityId entityId)
 {
 	for each(auto& monoEntity in m_monoEntities)
 	{
@@ -128,7 +130,7 @@ std::shared_ptr<CEntity> CEntityManager::GetEntity(EntityId entityId)
 
 int CEntityManager::GetScriptId(EntityId entityId, bool returnBackIfInvalid)
 {
-	if(auto& entity = GetEntity(entityId))
+	if(auto& entity = GetMonoEntity(entityId))
 		return entity->GetScriptId();
 
 	if(returnBackIfInvalid)
@@ -137,12 +139,12 @@ int CEntityManager::GetScriptId(EntityId entityId, bool returnBackIfInvalid)
 	return -1;
 }
 
-EntityId CEntityManager::SpawnEntity(EntitySpawnParams params, bool bAutoInit)
+SMonoEntityInfo CEntityManager::SpawnEntity(EntitySpawnParams params, bool bAutoInit)
 {
 	if(IEntity *pEntity = gEnv->pEntitySystem->SpawnEntity(params.Convert(), bAutoInit))
-		return pEntity->GetId();
+		return SMonoEntityInfo(pEntity);
 
-	return 0;
+	return SMonoEntityInfo();
 }
 
 bool CEntityManager::RegisterEntityClass(EntityRegisterParams params, mono::array Properties)
@@ -187,6 +189,11 @@ bool CEntityManager::RegisterEntityClass(EntityRegisterParams params, mono::arra
 	m_monoEntityClasses.push_back(entityClassDesc.sName);
 
 	return gEnv->pEntitySystem->GetClassRegistry()->RegisterClass(entityClass);
+}
+
+IEntity *CEntityManager::GetEntity(EntityId id)
+{
+	return gEnv->pEntitySystem->GetEntity(id);
 }
 
 EntityId CEntityManager::FindEntity(mono::string name)

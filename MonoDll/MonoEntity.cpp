@@ -35,7 +35,8 @@ void CEntity::OnSpawn(EntityId id)
 	ADD_EVENTLISTENER(ENTITY_EVENT_LEAVEAREA);
 #undef ADD_EVENTLISTENER
 
-	CallMonoScript<bool>(m_scriptId, "InternalSpawn", m_entityId);
+	IMonoClass *pEntityInfoClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("EntityInfo");
+	CallMonoScript<bool>(m_scriptId, "InternalSpawn", gEnv->pMonoScriptSystem->GetConverter()->ToManagedType(pEntityInfoClass, &SMonoEntityInfo(gEnv->pEntitySystem->GetEntity(id))));
 }
 
 void CEntity::OnEntityEvent(IEntity *pEntity,SEntityEvent &event)

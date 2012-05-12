@@ -6,17 +6,22 @@
 CScriptbind_Entity::CScriptbind_Entity()
 {
 	REGISTER_METHOD(GetPropertyValue);
-	REGISTER_METHOD(SetPropertyValue);
 
+	REGISTER_METHOD(SetPos);
+	REGISTER_METHOD(GetPos);
 	REGISTER_METHOD(SetWorldPos);
 	REGISTER_METHOD(GetWorldPos);
+
 	REGISTER_METHOD(SetRotation);
 	REGISTER_METHOD(GetRotation);
+	REGISTER_METHOD(SetWorldRotation);
+	REGISTER_METHOD(GetWorldRotation);
 
 	REGISTER_METHOD(LoadObject);
 	REGISTER_METHOD(LoadCharacter);
 
 	REGISTER_METHOD(GetBoundingBox);
+	REGISTER_METHOD(GetWorldBoundingBox);
 
 	REGISTER_METHOD(GetSlotFlags);
 	REGISTER_METHOD(SetSlotFlags);
@@ -49,138 +54,111 @@ CScriptbind_Entity::CScriptbind_Entity()
 	REGISTER_METHOD(SetFlags);
 }
 
-mono::string CScriptbind_Entity::GetPropertyValue(EntityId entityId, mono::string propertyName)
+mono::string CScriptbind_Entity::GetPropertyValue(IEntity *pEnt, mono::string propertyName)
 {
-	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(entityId))
-	{
-		IEntityPropertyHandler *pPropertyHandler = pEntity->GetClass()->GetPropertyHandler();
+	IEntityPropertyHandler *pPropertyHandler = pEnt->GetClass()->GetPropertyHandler();
 
-		return ToMonoString(pPropertyHandler->GetProperty(pEntity, 0));
-	}
-
-	return ToMonoString("");
+	return ToMonoString(pPropertyHandler->GetProperty(pEnt, 0));
 }
 
-void CScriptbind_Entity::SetWorldTM(EntityId id, Matrix34 tm)
+void CScriptbind_Entity::SetWorldTM(IEntity *pEntity, Matrix34 tm)
 {
-	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id))
-		pEntity->SetWorldTM(tm);
+	pEntity->SetWorldTM(tm);
 }
 
-Matrix34 CScriptbind_Entity::GetWorldTM(EntityId id)
+Matrix34 CScriptbind_Entity::GetWorldTM(IEntity *pEntity)
 {
-	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id))
-		return pEntity->GetWorldTM();
-
-	return Matrix34(IDENTITY);
+	return pEntity->GetWorldTM();
 }
 
-void CScriptbind_Entity::SetLocalTM(EntityId id, Matrix34 tm)
+void CScriptbind_Entity::SetLocalTM(IEntity *pEntity, Matrix34 tm)
 {
-	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id))
-		pEntity->SetLocalTM(tm);
+	pEntity->SetLocalTM(tm);
 }
 
-Matrix34 CScriptbind_Entity::GetLocalTM(EntityId id)
+Matrix34 CScriptbind_Entity::GetLocalTM(IEntity *pEntity)
 {
-	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id))
-		return pEntity->GetLocalTM();
-
-	return Matrix34(IDENTITY);
+	return pEntity->GetLocalTM();
 }
 
-AABB CScriptbind_Entity::GetBoundingBox(EntityId entityId, int slot)
+AABB CScriptbind_Entity::GetWorldBoundingBox(IEntity *pEntity)
 {
-	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(entityId))
-	{
-		return pEntity->GetStatObj(slot)->GetAABB();
-	}
+	AABB boundingBox;
+	pEntity->GetWorldBounds(boundingBox);
 
-	return AABB(ZERO);
+	return boundingBox;
 }
 
-void CScriptbind_Entity::SetPropertyValue(EntityId entityId, mono::string propertyName, mono::string value)
+AABB CScriptbind_Entity::GetBoundingBox(IEntity *pEntity)
 {
-	IEntity *pEntity = gEnv->pEntitySystem->GetEntity(entityId);
-	//CEntityPropertyHandler *pPropertyHandler = static_cast<CEntityPropertyHandler *>(pEntity->GetClass()->GetPropertyHandler());
+	AABB boundingBox;
+	pEntity->GetLocalBounds(boundingBox);
 
-	//pPropertyHandler->SetProperty(pEntity, propertyName, value);
+	return boundingBox;
 }
 
-void CScriptbind_Entity::SetWorldPos(EntityId id, Vec3 newPos)
+void CScriptbind_Entity::SetPos(IEntity *pEntity, Vec3 newPos)
 {
-	IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id);
-	if(!pEntity)
-		return;
-
 	pEntity->SetPos(newPos);
 }
 
-Vec3 CScriptbind_Entity::GetWorldPos(EntityId id)
+Vec3 CScriptbind_Entity::GetPos(IEntity *pEntity)
 {
-	IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id);
-	if(!pEntity)
-		return Vec3(ZERO);
+	return pEntity->GetPos();
+}
 
+void CScriptbind_Entity::SetWorldPos(IEntity *pEntity, Vec3 newPos)
+{
+	pEntity->SetWorldTM(Matrix34::Create(pEntity->GetScale(), pEntity->GetWorldRotation(), newPos));
+}
+
+Vec3 CScriptbind_Entity::GetWorldPos(IEntity *pEntity)
+{
 	return pEntity->GetWorldPos();
 }
 
-void CScriptbind_Entity::SetRotation(EntityId id, Quat newAngles)
+void CScriptbind_Entity::SetRotation(IEntity *pEntity, Quat newAngles)
 {
-	IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id);
-	if(!pEntity)
-		return;
-
 	pEntity->SetRotation(newAngles);
 }
 
-Quat CScriptbind_Entity::GetRotation(EntityId id)
+Quat CScriptbind_Entity::GetRotation(IEntity *pEntity)
 {
-	IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id);
-	if(!pEntity)
-		return Quat(ZERO);
-
 	return pEntity->GetRotation();
 }
 
-void CScriptbind_Entity::LoadObject(EntityId entityId, mono::string fileName, int slot)
+void CScriptbind_Entity::SetWorldRotation(IEntity *pEntity, Quat newAngles)
 {
-	IEntity *pEntity = gEnv->pEntitySystem->GetEntity(entityId);
-	if(!pEntity)
-		return;
+	pEntity->SetWorldTM(Matrix34::Create(pEntity->GetScale(), newAngles, pEntity->GetWorldPos()));
+}
 
+Quat CScriptbind_Entity::GetWorldRotation(IEntity *pEntity)
+{
+	return pEntity->GetWorldRotation();
+}
+
+void CScriptbind_Entity::LoadObject(IEntity *pEntity, mono::string fileName, int slot)
+{
 	pEntity->SetStatObj(gEnv->p3DEngine->LoadStatObj(ToCryString(fileName)), slot, true);
 }
 
-void CScriptbind_Entity::LoadCharacter(EntityId entityId, mono::string fileName, int slot)
+void CScriptbind_Entity::LoadCharacter(IEntity *pEntity, mono::string fileName, int slot)
 {
-	IEntity *pEntity = gEnv->pEntitySystem->GetEntity(entityId);
-	if(!pEntity)
-		return;
-
 	pEntity->LoadCharacter(slot, ToCryString(fileName));
 }
 
-EEntitySlotFlags CScriptbind_Entity::GetSlotFlags(EntityId id, int slot)
+EEntitySlotFlags CScriptbind_Entity::GetSlotFlags(IEntity *pEntity, int slot)
 {
-	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id))
-		return (EEntitySlotFlags)pEntity->GetSlotFlags(slot);
-
-	return (EEntitySlotFlags)0;
+	return (EEntitySlotFlags)pEntity->GetSlotFlags(slot);
 }
 
-void CScriptbind_Entity::SetSlotFlags(EntityId id, int slot, EEntitySlotFlags slotFlags)
+void CScriptbind_Entity::SetSlotFlags(IEntity *pEntity, int slot, EEntitySlotFlags slotFlags)
 {
-	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id))
-		pEntity->SetSlotFlags(slot, slotFlags);
+	pEntity->SetSlotFlags(slot, slotFlags);
 }
 
-void CScriptbind_Entity::Physicalize(EntityId id, MonoPhysicalizationParams params)
+void CScriptbind_Entity::Physicalize(IEntity *pEntity, MonoPhysicalizationParams params)
 {
-	IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id);
-	if(!pEntity)
-		return;
-
 	// Unphysicalize
 	{
 		const Ang3 oldRotation = pEntity->GetWorldAngles();
@@ -226,156 +204,123 @@ void CScriptbind_Entity::Physicalize(EntityId id, MonoPhysicalizationParams para
 	}
 }
 
-void CScriptbind_Entity::Sleep(EntityId entityId, bool sleep)
+void CScriptbind_Entity::Sleep(IEntity *pEntity, bool sleep)
 {
-	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(entityId))
+	if(IPhysicalEntity *pPhysicalEntity = pEntity->GetPhysics())
 	{
-		if(IPhysicalEntity *pPhysicalEntity = pEntity->GetPhysics())
-		{
-			pe_action_awake awake;
-			awake.bAwake = !sleep;
+		pe_action_awake awake;
+		awake.bAwake = !sleep;
 
-			pPhysicalEntity->Action(&awake);
-		}
+		pPhysicalEntity->Action(&awake);
 	}
 }
 
-void CScriptbind_Entity::BreakIntoPieces(EntityId entityId, int slot, int piecesSlot, IBreakableManager::BreakageParams breakageParams)
+void CScriptbind_Entity::BreakIntoPieces(IEntity *pEntity, int slot, int piecesSlot, IBreakableManager::BreakageParams breakageParams)
 {
-	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(entityId))
-		gEnv->pEntitySystem->GetBreakableManager()->BreakIntoPieces(pEntity, slot, piecesSlot, breakageParams);
+	gEnv->pEntitySystem->GetBreakableManager()->BreakIntoPieces(pEntity, slot, piecesSlot, breakageParams);
 }
 
-void CScriptbind_Entity::CreateGameObjectForEntity(EntityId id)
+void CScriptbind_Entity::CreateGameObjectForEntity(IEntity *pEntity)
 {
-	IGameObject *pGameObject = gEnv->pGameFramework->GetIGameObjectSystem()->CreateGameObjectForEntity(id);
+	IGameObject *pGameObject = gEnv->pGameFramework->GetIGameObjectSystem()->CreateGameObjectForEntity(pEntity->GetId());
 	if(!pGameObject)
 		return;
 
-	if(auto& entity = static_cast<CEntityManager *>(gEnv->pMonoScriptSystem->GetEntityManager())->GetEntity(id))
+	if(auto& entity = static_cast<CEntityManager *>(gEnv->pMonoScriptSystem->GetEntityManager())->GetMonoEntity(pEntity->GetId()))
 		entity->RegisterGameObject(pGameObject);
 }
 
-void CScriptbind_Entity::BindGameObjectToNetwork(EntityId id)
+void CScriptbind_Entity::BindGameObjectToNetwork(IEntity *pEntity)
 {
-	if(auto& entity = static_cast<CEntityManager *>(gEnv->pMonoScriptSystem->GetEntityManager())->GetEntity(id))
+	if(auto& entity = static_cast<CEntityManager *>(gEnv->pMonoScriptSystem->GetEntityManager())->GetMonoEntity(pEntity->GetId()))
 		entity->GetGameObject()->BindToNetwork();
 }
 
-mono::string CScriptbind_Entity::GetStaticObjectFilePath(EntityId id, int slot)
+mono::string CScriptbind_Entity::GetStaticObjectFilePath(IEntity *pEntity, int slot)
 {
-	IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id);
-	if(pEntity)
-	{
-		if(IStatObj *pStatObj = pEntity->GetStatObj(slot))
-			return ToMonoString(pStatObj->GetFilePath());
-	}
+	if(IStatObj *pStatObj = pEntity->GetStatObj(slot))
+		return ToMonoString(pStatObj->GetFilePath());
 
 	return ToMonoString("");
 }
 
-void CScriptbind_Entity::AddImpulse(EntityId id, ActionImpulse actionImpulse)
+void CScriptbind_Entity::AddImpulse(IEntity *pEntity, ActionImpulse actionImpulse)
 {
-	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id))
-	{
-		pe_action_impulse impulse;
+	pe_action_impulse impulse;
 
-		impulse.angImpulse = actionImpulse.angImpulse;
-		impulse.iApplyTime = actionImpulse.iApplyTime;
-		impulse.impulse = actionImpulse.impulse;
-		impulse.ipart = actionImpulse.ipart;
-		impulse.iSource = actionImpulse.iSource;
-		impulse.partid = actionImpulse.partid;
-		impulse.point = actionImpulse.point;
+	impulse.angImpulse = actionImpulse.angImpulse;
+	impulse.iApplyTime = actionImpulse.iApplyTime;
+	impulse.impulse = actionImpulse.impulse;
+	impulse.ipart = actionImpulse.ipart;
+	impulse.iSource = actionImpulse.iSource;
+	impulse.partid = actionImpulse.partid;
+	impulse.point = actionImpulse.point;
 
-		if(IPhysicalEntity *pPhysEnt = pEntity->GetPhysics())
-			pPhysEnt->Action(&impulse);
-	}
+	if(IPhysicalEntity *pPhysEnt = pEntity->GetPhysics())
+		pPhysEnt->Action(&impulse);
 }
 
-void CScriptbind_Entity::AddMovement(EntityId id, MovementRequest &movementRequest)
+void CScriptbind_Entity::AddMovement(IEntity *pEntity, MovementRequest &movementRequest)
 {
-	if(auto &entity = static_cast<CEntityManager *>(gEnv->pMonoScriptSystem->GetEntityManager())->GetEntity(id))
+	if(auto &entity = static_cast<CEntityManager *>(gEnv->pMonoScriptSystem->GetEntityManager())->GetMonoEntity(pEntity->GetId()))
 		entity->AddMovement(movementRequest);
 }
 
-Vec3 CScriptbind_Entity::GetVelocity(EntityId id)
+Vec3 CScriptbind_Entity::GetVelocity(IEntity *pEntity)
 {
-	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id))
+	if(IPhysicalEntity *pPhysEnt = pEntity->GetPhysics())
 	{
-		if(IPhysicalEntity *pPhysEnt = pEntity->GetPhysics())
-		{
-			pe_status_dynamics sd;
-			if(pPhysEnt->GetStatus(&sd) != 0)
-				return sd.v;
-		}
+		pe_status_dynamics sd;
+		if(pPhysEnt->GetStatus(&sd) != 0)
+			return sd.v;
 	}
 
 	return Vec3(0,0,0);
 }
 
-void CScriptbind_Entity::SetVelocity(EntityId id, Vec3 vel)
+void CScriptbind_Entity::SetVelocity(IEntity *pEntity, Vec3 vel)
 {
-	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id))
+	if(IPhysicalEntity *pPhysEnt = pEntity->GetPhysics())
 	{
-		if(IPhysicalEntity *pPhysEnt = pEntity->GetPhysics())
-		{
-			pe_action_set_velocity asv;
-			asv.v = vel;
+		pe_action_set_velocity asv;
+		asv.v = vel;
 
-			pPhysEnt->Action(&asv);
-		}
+		pPhysEnt->Action(&asv);
 	}
 }
 
-mono::string CScriptbind_Entity::GetMaterial(EntityId id)
+mono::string CScriptbind_Entity::GetMaterial(IEntity *pEntity)
 {
 	const char *material = "";
 
-	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id))
-	{
-		if(IMaterial *pMaterial = pEntity->GetMaterial())
-			material = pMaterial->GetName();
-	}
+	if(IMaterial *pMaterial = pEntity->GetMaterial())
+		material = pMaterial->GetName();
 	
 	return ToMonoString(material);
 }
 
-void CScriptbind_Entity::SetMaterial(EntityId id, mono::string material)
+void CScriptbind_Entity::SetMaterial(IEntity *pEntity, mono::string material)
 {
-	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id))
-	{
-		if(IMaterial *pMaterial = gEnv->p3DEngine->GetMaterialManager()->FindMaterial(ToCryString(material)))
-			pEntity->SetMaterial(pMaterial);
-	}
+	if(IMaterial *pMaterial = gEnv->p3DEngine->GetMaterialManager()->FindMaterial(ToCryString(material)))
+		pEntity->SetMaterial(pMaterial);
 }
 
-mono::string CScriptbind_Entity::GetName(EntityId id)
+mono::string CScriptbind_Entity::GetName(IEntity *pEntity)
 {
-	const char *name = "";
-
-	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id))
-		name = pEntity->GetName();
-
-	return ToMonoString(name);
+	return ToMonoString(pEntity->GetName());
 }
 
-void CScriptbind_Entity::SetName(EntityId id, mono::string name)
+void CScriptbind_Entity::SetName(IEntity *pEntity, mono::string name)
 {
-	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id))
-		pEntity->SetName(ToCryString(name));
+	pEntity->SetName(ToCryString(name));
 }
 
-EEntityFlags CScriptbind_Entity::GetFlags(EntityId id)
+EEntityFlags CScriptbind_Entity::GetFlags(IEntity *pEntity)
 {
-	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id))
-		return (EEntityFlags)pEntity->GetFlags();
-
-	return (EEntityFlags)0;
+	return (EEntityFlags)pEntity->GetFlags();
 }
 
-void CScriptbind_Entity::SetFlags(EntityId id, EEntityFlags flags)
+void CScriptbind_Entity::SetFlags(IEntity *pEntity, EEntityFlags flags)
 {
-	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id))
-		pEntity->SetFlags(flags);
+	pEntity->SetFlags(flags);
 }

@@ -4,7 +4,6 @@
 #include <IGameFramework.h>
 
 IMaterialManager *CScriptbind_MaterialManager::m_pMaterialManager = NULL;
-CScriptbind_MaterialManager::TMaterialMap CScriptbind_MaterialManager::m_materials = CScriptbind_MaterialManager::TMaterialMap();
 
 CScriptbind_MaterialManager::CScriptbind_MaterialManager()
 {
@@ -16,43 +15,21 @@ CScriptbind_MaterialManager::CScriptbind_MaterialManager()
 	REGISTER_METHOD(GetSurfaceTypeName);
 }
 
-int CScriptbind_MaterialManager::CreateMaterial(mono::string name)
+IMaterial *CScriptbind_MaterialManager::CreateMaterial(mono::string name)
 {
-	if(IMaterial *pMaterial = m_pMaterialManager->CreateMaterial(ToCryString(name)))
-	{
-		int index = m_materials.size();
-		m_materials.insert(TMaterialMap::value_type(index, pMaterial));
-
-		return index;
-	}
-
-	return -1;
+	return m_pMaterialManager->CreateMaterial(ToCryString(name));
 }
 
-int CScriptbind_MaterialManager::LoadMaterial(mono::string name, bool makeIfNotFound, bool nonRemovable)
+IMaterial *CScriptbind_MaterialManager::LoadMaterial(mono::string name, bool makeIfNotFound, bool nonRemovable)
 {
-	for each(auto material in m_materials)
-	{
-		if(!strcmp(material.second->GetName(), ToCryString(name)))
-			return material.first;
-	}
-
-	if(IMaterial *pMaterial = m_pMaterialManager->LoadMaterial(ToCryString(name), makeIfNotFound, nonRemovable))
-	{
-		int index = m_materials.size();
-		m_materials.insert(TMaterialMap::value_type(index, pMaterial));
-
-		return index;
-	}
-
-	return -1;
+	return m_pMaterialManager->LoadMaterial(ToCryString(name), makeIfNotFound, nonRemovable);
 }
 
-mono::string CScriptbind_MaterialManager::GetSurfaceTypeName(int matId)
+mono::string CScriptbind_MaterialManager::GetSurfaceTypeName(IMaterial *pMaterial)
 {
 	const char *surfaceType = "";
 
-	if(ISurfaceType *pSurfaceType = m_materials[matId]->GetSurfaceType())
+	if(ISurfaceType *pSurfaceType = pMaterial->GetSurfaceType())
 		surfaceType = pSurfaceType->GetName();
 
 	return ToMonoString(surfaceType);

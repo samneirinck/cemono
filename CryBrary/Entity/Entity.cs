@@ -23,12 +23,13 @@ namespace CryEngine
 		/// <summary>
 		/// Initializes the entity, not recommended to set manually.
 		/// </summary>
-		/// <param name="entityId"></param>
+		/// <param name="entInfo">Struct containing the IEntity pointer & EntityId.</param>
 		/// <returns>IsEntityFlowNode</returns>
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		internal virtual bool InternalSpawn(EntityId entityId)
+		internal virtual bool InternalSpawn(EntityInfo entInfo)
 		{
-			Id = entityId;
+			EntityPointer = entInfo.IEntityPtr;
+			Id = new EntityId(entInfo.Id);
 
 			Spawned = true;
 
@@ -182,7 +183,7 @@ namespace CryEngine
 
 		protected virtual string GetPropertyValue(string propertyName)
 		{
-			return _GetPropertyValue(Id, propertyName);
+			return _GetPropertyValue(EntityPointer, propertyName);
 		}
 
 		/// <summary>
@@ -229,9 +230,9 @@ namespace CryEngine
 		public bool LoadObject(string name, int slotNumber = 0)
 		{
 			if(name.EndsWith("cgf"))
-				_LoadObject(Id, name, slotNumber);
+				_LoadObject(EntityPointer, name, slotNumber);
 			else if(name.EndsWith("cdf") || name.EndsWith("cga") || name.EndsWith("cga"))
-				_LoadCharacter(Id, name, slotNumber);
+				_LoadCharacter(EntityPointer, name, slotNumber);
 			else
 				return false;
 
@@ -240,7 +241,7 @@ namespace CryEngine
 
 		protected string GetObjectFilePath(int slot = 0)
 		{
-			return _GetStaticObjectFilePath(Id, slot);
+			return _GetStaticObjectFilePath(EntityPointer, slot);
 		}
 
 		internal static EntityConfig GetEntityConfig(Type type)

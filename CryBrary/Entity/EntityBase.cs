@@ -19,95 +19,107 @@ namespace CryEngine
 		/// <param name="autoInit">Should the entity automatically be initialised?</param>
 		/// <returns></returns>
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static uint _SpawnEntity(EntitySpawnParams spawnParams, bool autoInit = true);
+		extern internal static EntityInfo _SpawnEntity(EntitySpawnParams spawnParams, bool autoInit = true);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static void _RemoveEntity(uint entityId);
+
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static IntPtr _GetEntity(uint entityId);
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static bool _RegisterEntityClass(EntityRegisterParams registerParams, object[] properties);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _Physicalize(uint entityId, PhysicalizationParams physicalizationParams);
+		extern internal static void _Physicalize(IntPtr ptr, PhysicalizationParams physicalizationParams);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _Sleep(uint entityId, bool sleep);
+		extern internal static void _Sleep(IntPtr ptr, bool sleep);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _BreakIntoPieces(uint entityId, int slot, int piecesSlot, BreakageParameters breakageParams);
+		extern internal static void _BreakIntoPieces(IntPtr ptr, int slot, int piecesSlot, BreakageParameters breakageParams);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _AddImpulse(uint entityId, ActionImpulse actionImpulse);
+		extern internal static void _AddImpulse(IntPtr ptr, ActionImpulse actionImpulse);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static Vec3 _GetVelocity(uint entityId);
+		extern internal static Vec3 _GetVelocity(IntPtr ptr);
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _SetVelocity(uint entityId, Vec3 velocity);
+		extern internal static void _SetVelocity(IntPtr ptr, Vec3 velocity);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static string _GetMaterial(uint entityId);
+		extern internal static string _GetMaterial(IntPtr ptr);
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _SetMaterial(uint entityId, string material);
+		extern internal static void _SetMaterial(IntPtr ptr, string material);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static string _GetName(uint entityId);
+		extern internal static string _GetName(IntPtr ptr);
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _SetName(uint entityId, string name);
+		extern internal static void _SetName(IntPtr ptr, string name);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static EntityFlags _GetFlags(uint entityId);
+		extern internal static EntityFlags _GetFlags(IntPtr ptr);
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _SetFlags(uint entityId, EntityFlags name);
+		extern internal static void _SetFlags(IntPtr ptr, EntityFlags name);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _AddMovement(uint entityId, ref EntityMovementRequest request);
+		extern internal static void _AddMovement(IntPtr ptr, ref EntityMovementRequest request);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _SetWorldTM(uint entityId, Matrix34 tm);
+		extern internal static void _SetWorldTM(IntPtr ptr, Matrix34 tm);
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static Matrix34 _GetWorldTM(uint entityId);
+		extern internal static Matrix34 _GetWorldTM(IntPtr ptr);
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _SetLocalTM(uint entityId, Matrix34 tm);
+		extern internal static void _SetLocalTM(IntPtr ptr, Matrix34 tm);
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static Matrix34 _GetLocalTM(uint entityId);
+		extern internal static Matrix34 _GetLocalTM(IntPtr ptr);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static BoundingBox _GetBoundingBox(uint entityId, int slot);
+		extern internal static BoundingBox _GetWorldBoundingBox(IntPtr ptr);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static BoundingBox _GetBoundingBox(IntPtr ptr);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static EntitySlotFlags _GetSlotFlags(uint entityId, int slot);
+		extern internal static EntitySlotFlags _GetSlotFlags(IntPtr ptr, int slot);
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _SetSlotFlags(uint entityId, int slot, EntitySlotFlags slotFlags);
+		extern internal static void _SetSlotFlags(IntPtr ptr, int slot, EntitySlotFlags slotFlags);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _SetWorldPos(uint entityId, Vec3 newPos);
+		extern internal static void _SetWorldPos(IntPtr ptr, Vec3 newPos);
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static Vec3 _GetWorldPos(uint entityId);
+		extern internal static Vec3 _GetWorldPos(IntPtr ptr);
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _SetRotation(uint entityId, Quat newAngles);
+		extern internal static void _SetPos(IntPtr ptr, Vec3 newPos);
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static Quat _GetRotation(uint entityId);
+		extern internal static Vec3 _GetPos(IntPtr ptr);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static string _GetPropertyValue(uint entityId, string propertyName);
+		extern internal static void _SetWorldRotation(IntPtr ptr, Quat newAngles);
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _SetPropertyValue(uint entityId, string property, string value);
+		extern internal static Quat _GetWorldRotation(IntPtr ptr);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static void _SetRotation(IntPtr ptr, Quat newAngles);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static Quat _GetRotation(IntPtr ptr);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _LoadObject(uint entityId, string fileName, int slot);
+		extern internal static string _GetPropertyValue(IntPtr ptr, string propertyName);
+
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static string _GetStaticObjectFilePath(uint entityId, int slot);
+		extern internal static void _LoadObject(IntPtr ptr, string fileName, int slot);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static string _GetStaticObjectFilePath(IntPtr ptr, int slot);
 
 		/// <summary>
 		/// Loads an non-static model on the object (.chr, .cdf, .cga)
 		/// </summary>
-		/// <param name="entityId"></param>
+		/// <param name="ptr"></param>
 		/// <param name="fileName"></param>
 		/// <param name="slot"></param>
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _LoadCharacter(uint entityId, string fileName, int slot);
+		extern internal static void _LoadCharacter(IntPtr ptr, string fileName, int slot);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _CreateGameObjectForEntity(uint entityId);
+		extern internal static void _CreateGameObjectForEntity(IntPtr ptr);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static uint _FindEntity(string name);
@@ -115,45 +127,102 @@ namespace CryEngine
 		extern internal static object[] _GetEntitiesByClass(string className);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static bool _EntityExists(uint entityId);
+		extern internal static bool _EntityExists(EntityId id);
 		#endregion
 
 		internal void InitPhysics()
 		{
-			_physics = new PhysicsParams(Id);
+			_physics = new PhysicsParams(new EntityInfo(EntityPointer, Id));
 			_physics.Slot = 0;
 		}
 
 		public EntitySlotFlags GetSlotFlags(int slot = 0)
 		{
-			return _GetSlotFlags(Id, slot);
+			return _GetSlotFlags(EntityPointer, slot);
 		}
 
 		public void SetSlotFlags(EntitySlotFlags flags, int slot = 0)
 		{
-			_SetSlotFlags(Id, slot, flags);
+			_SetSlotFlags(EntityPointer, slot, flags);
 		}
 
 		public Vec3 Velocity
 		{
-			get { return _GetVelocity(Id); }
+			get { return _GetVelocity(EntityPointer); }
 
-			set { _SetVelocity(Id, value); }
+			set { _SetVelocity(EntityPointer, value); }
 		}
 
 		PhysicsParams _physics;
-		public PhysicsParams Physics { get { return _physics; } set { _physics = value; _physics._entityId = Id; } }
+		public PhysicsParams Physics 
+		{
+			get { return _physics; } 
+			set 
+			{
+				_physics = value; 
+				
+				_physics._entityId = Id; 
+				_physics._entityPtr = EntityPointer; 
+			}
+		}
 
-		public Vec3 Position { get { return _GetWorldPos(Id); } set { _SetWorldPos(Id, value); } }
-		public Quat Rotation { get { return _GetRotation(Id); } set { _SetRotation(Id, value); } }
+		/// <summary>
+		/// Sets / gets the world space entity position.
+		/// </summary>
+		public Vec3 Position { get { return _GetWorldPos(EntityPointer); } set { _SetWorldPos(EntityPointer, value); } }
+		/// <summary>
+		/// Sets / gets the world space entity orientation quaternion.
+		/// </summary>
+		public Quat Rotation { get { return _GetWorldRotation(EntityPointer); } set { _SetWorldRotation(EntityPointer, value); } }
 
-		public Matrix34 WorldTM { get { return _GetWorldTM(Id); } set { _SetWorldTM(Id, value); } }
-		public Matrix34 LocalTM { get { return _GetLocalTM(Id); } set { _SetLocalTM(Id, value); } }
+		/// <summary>
+		/// Sets / gets the local space entity position.
+		/// </summary>
+		public Vec3 LocalPosition { get { return _GetPos(EntityPointer); } set { _SetPos(EntityPointer, value); } }
+		/// <summary>
+		/// Sets / gets the local space entity orientation quaternion.
+		/// </summary>
+		public Quat LocalRotation { get { return _GetRotation(EntityPointer); } set { _SetRotation(EntityPointer, value); } }
 
-		public BoundingBox BoundingBox { get { return _GetBoundingBox(Id, 0); } }
+		/// <summary>
+		/// Sets / gets the world space entity transformation matrix.
+		/// </summary>
+		public Matrix34 Transform { get { return _GetWorldTM(EntityPointer); } set { _SetWorldTM(EntityPointer, value); } }
+		/// <summary>
+		/// Sets / gets the local space entity transformation matrix.
+		/// </summary>
+		public Matrix34 LocalTransform { get { return _GetLocalTM(EntityPointer); } set { _SetLocalTM(EntityPointer, value); } }
 
-		public string Name { get { return _GetName(Id); } set { _SetName(Id, value); } }
-		public EntityFlags Flags { get { return _GetFlags(Id); } set { _SetFlags(Id, value); } }
+		/// <summary>
+		/// Gets the entity axis aligned bounding box in the world space.
+		/// </summary>
+		public BoundingBox BoundingBox { get { return _GetWorldBoundingBox(EntityPointer); } }
+		/// <summary>
+		/// Gets the entity axis aligned bounding box in the world space.
+		/// </summary>
+		public BoundingBox LocalBoundingBox { get { return _GetBoundingBox(EntityPointer); } }
+
+		/// <summary>
+		/// Gets / sets the entity name.
+		/// </summary>
+		public string Name { get { return _GetName(EntityPointer); } set { _SetName(EntityPointer, value); } }
+		/// <summary>
+		/// Gets / sets the entity flags.
+		/// </summary>
+		public EntityFlags Flags { get { return _GetFlags(EntityPointer); } set { _SetFlags(EntityPointer, value); } }
+
+		IntPtr entityPointer;
+		internal IntPtr EntityPointer
+		{
+			get
+			{
+				if(entityPointer == IntPtr.Zero)
+					entityPointer = Entity._GetEntity(Id);
+
+				return entityPointer;
+			}
+			set { entityPointer = value; }
+		}
 
 		public EntityId Id { get; set; }
 	}
