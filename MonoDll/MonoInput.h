@@ -48,6 +48,6 @@ private:
 	static void RegisterAction(mono::string);
 
 	bool OnActionTriggered(EntityId entityId, const ActionId& actionId, int activationMode, float value);
-	
+
 	static TActionHandler<CInput>	s_actionHandler;
 };

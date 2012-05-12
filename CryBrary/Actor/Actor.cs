@@ -48,14 +48,14 @@ namespace CryEngine
 
 			var entityId = _GetEntityIdForChannelId((ushort)channelId);
 			if(entityId != 0)
-				return AddNewActor(entityId);
+				return CreateNativeActor(entityId);
 
 			return null;
 		}
 
 		public static T Get<T>(int channelId) where T : Actor
 		{
-			return Get(x => x.ChannelId == channelId && x is T) as T;
+			return ScriptManager.FindScriptInstance<T>(x => x.ChannelId == channelId);
 		}
 
 		public static Actor Get(EntityId actorId)
@@ -66,7 +66,7 @@ namespace CryEngine
 
 			// Couldn't find a CryMono entity, check if a non-managed one exists.
 			if(_EntityExists(actorId))
-				return AddNewActor(actorId);
+				return CreateNativeActor(actorId);
 
 			return null;
 		}
@@ -76,27 +76,10 @@ namespace CryEngine
 			if(actorId == 0)
 				throw new ArgumentException("actorId cannot be 0!");
 
-			return Get(x => x.Id == actorId && x is T) as T;
+			return ScriptManager.FindScriptInstance<T>(x => x.Id == actorId);
 		}
 
-		public static Actor Get(Predicate<Actor> match)
-		{
-			Actor actor = null;
-			for(int i = 0; i < ScriptManager.CompiledScripts.Count; i++)
-			{
-				var script = ScriptManager.CompiledScripts[i];
-				if(script.Type.Implements(typeof(Actor)) && script.ScriptInstances != null)
-				{
-					actor = script.ScriptInstances.Find(x => match(x as Actor)) as Actor;
-					if(actor != null)
-						return actor;
-				}
-			}
-
-			return null;
-		}
-
-		static Actor AddNewActor(EntityId actorId)
+		static Actor CreateNativeActor(EntityId actorId)
 		{
 			int scriptIndex;
 			var script = ScriptManager.GetScriptByType(typeof(NativeActor), out scriptIndex);
@@ -104,7 +87,7 @@ namespace CryEngine
 			if(script.ScriptInstances == null)
 				script.ScriptInstances = new List<CryScriptInstance>();
 
-			script.ScriptInstances.Add(new NativeEntity(actorId));
+			script.ScriptInstances.Add(new NativeActor(actorId));
 
 			ScriptManager.CompiledScripts[scriptIndex] = script;
 
@@ -156,7 +139,7 @@ namespace CryEngine
 		{
 			_RemoveActor(id);
 
-			Entity.RemoveInternalEntity(id);
+			InternalRemove(id);
 		}
 
 		public static void Remove(Actor actor)
@@ -167,6 +150,15 @@ namespace CryEngine
 		public static void Remove(int channelId)
 		{
 			Remove(_GetEntityIdForChannelId((ushort)channelId));
+		}
+
+		internal static void InternalRemove(EntityId id)
+		{
+			foreach(var script in ScriptManager.CompiledScripts)
+			{
+				if(script.ScriptInstances != null)
+					script.ScriptInstances.RemoveAll(instance => instance is Actor && (instance as Actor).Id == id);
+			}
 		}
 		#endregion
 

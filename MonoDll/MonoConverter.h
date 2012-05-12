@@ -11,7 +11,8 @@
 
 #include <IMonoConverter.h>
 
-class CConverter : public IMonoConverter
+class CConverter 
+	: public IMonoConverter
 {
 	typedef std::map<ECommonManagedTypes, IMonoClass *> TPreStoredTypes;
 public:
@@ -40,6 +41,7 @@ public:
 
 	virtual IMonoAssembly *LoadAssembly(const char *assemblyPath) override;
 	// ~IMonoConverter
+
 
 	// Store commonly accessed types for quick access.
 	TPreStoredTypes m_preStoredTypes;

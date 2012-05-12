@@ -25,7 +25,7 @@ struct IMonoEntityManager;
 
 struct IMonoConverter;
 
-struct IMonoScriptCompilationListener
+struct IMonoScriptSystemListener
 {
 	/// <summary>
 	/// Called just prior to scripts are compiled.
@@ -35,6 +35,15 @@ struct IMonoScriptCompilationListener
 	/// Called just after scripts have been compiled.
 	/// </summary>
 	virtual void OnPostScriptCompilation(bool isReload, bool compilationSuccess) = 0;
+
+	/// <summary>
+	/// Called just prior to a script reload.
+	/// </summary>
+	virtual void OnPreScriptReload(bool initialLoad) = 0;
+	/// <summary>
+	/// Called after scripts have been reloaded. All script pointers are now invalid and should be recollected.
+	/// </summary>
+	virtual void OnPostScriptReload(bool initialLoad) = 0;
 };
 
 /// <summary>
@@ -107,11 +116,11 @@ struct IMonoScriptSystem : ICryUnknown
 	/// <summary>
 	/// Registers a listener to receive compilation events.
 	/// </summary>
-	virtual void RegisterScriptReloadListener(IMonoScriptCompilationListener *pListener) = 0;
+	virtual void RegisterListener(IMonoScriptSystemListener *pListener) = 0;
 	/// <summary>
 	/// Unregisters a script compilation event listener.
 	/// </summary>
-	virtual void UnregisterScriptReloadListener(IMonoScriptCompilationListener *pListener) = 0;
+	virtual void UnregisterListener(IMonoScriptSystemListener *pListener) = 0;
 
 	/// <summary>
 	/// Entry point of the dll, used to set up CryMono.

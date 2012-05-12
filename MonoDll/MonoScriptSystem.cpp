@@ -36,7 +36,7 @@
 #include "Scriptbinds\Renderer.h"
 #include "Scriptbinds\Entity.h"
 #include "Scriptbinds\Debug.h"
-#include "Scriptbinds\Scriptbind_UI.h"
+#include "Scriptbinds\UI.h"
 #include "Scriptbinds\MaterialManager.h"
 #include "Scriptbinds\ParticleSystem.h"
 #include "Scriptbinds\ViewSystem.h"
@@ -153,7 +153,7 @@ bool CScriptSystem::CompleteInit()
 	m_pRootDomain = new CScriptDomain(eRV_4_30319);
 
 #ifndef _RELEASE
-	m_pPdb2MdbAssembly = new CScriptAssembly(PathUtils::GetMonoPath() + "bin\\pdb2mdb.dll", false);
+	m_pPdb2MdbAssembly = new CScriptAssembly(PathUtils::GetMonoPath() + "bin\\pdb2mdb.dll");
 #endif
 	
 	// WIP ScriptManager game object, to be used for CryMono RMI support etc in the future.
@@ -190,6 +190,9 @@ bool CScriptSystem::Reload(bool initialLoad)
 {
 	PreReload();
 
+	for each(auto listener in m_scriptReloadListeners)
+		listener->OnPreScriptReload(initialLoad);
+
 	// Reload is split into Reload & DoReload to make sure we don't call PreReload multiple times.
 	return DoReload(initialLoad);
 }
@@ -213,7 +216,7 @@ bool CScriptSystem::DoReload(bool initialLoad)
 	IMonoDomain *pNewScriptDomain = new CScriptDomain("ScriptDomain");
 	pNewScriptDomain->SetActive(true);
 
-	IMonoAssembly *pNewCryBraryAssembly = new CScriptAssembly(PathUtils::GetBinaryPath() + "CryBrary.dll", false);
+	IMonoAssembly *pNewCryBraryAssembly = new CScriptAssembly(PathUtils::GetBinaryPath() + "CryBrary.dll");
 	if(!pNewCryBraryAssembly)
 	{
 		CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "Failed to load CryBrary.dll");
@@ -329,6 +332,9 @@ void CScriptSystem::PostReload(bool initialLoad)
 	}
 
 	m_bReloading = false;
+
+	for each(auto listener in m_scriptReloadListeners)
+		listener->OnPostScriptReload(initialLoad);
 }
 
 void CScriptSystem::RegisterDefaultBindings()
@@ -388,14 +394,12 @@ void CScriptSystem::OnPostUpdate(float fDeltaTime)
 	SAFE_RELEASE(pArgs);
 }
 
-void CScriptSystem::OnFileChange(const char *sFilename)
+void CScriptSystem::OnFileChange(const char *fileName)
 {
 	if(m_bReloading)
 		return;
 
-	string fileName = sFilename;
-	const char *fileExt = fileName.substr(fileName.find_last_of(".") + 1);
-
+	const char *fileExt = PathUtil::GetExt(fileName);
 	if(!strcmp(fileExt, "cs") || !strcmp(fileExt, "dll"))
 		Reload();
 }

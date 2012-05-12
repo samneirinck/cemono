@@ -78,7 +78,7 @@ namespace CryEngine
 		{
 			OnRemove();
 
-			Entity.RemoveInternalEntity(Id);
+			Entity.InternalRemove(Id);
 		}
 
 		/// <summary>

@@ -10,6 +10,7 @@
 #ifndef __SCRIPTBIND_UI_H__
 #define __SCRIPTBIND_UI_H__
 
+#include <IMonoScriptSystem.h>
 #include <IMonoScriptBind.h>
 #include <MonoCommon.h>
 
@@ -49,7 +50,6 @@ public:
 	virtual void OnEvent(const SUIEvent& event);
 	// ~IUIEventListener
 
-
 	const char *FindEvent(uint ID);
 	int FindEvent(const char *name);
 
@@ -59,16 +59,13 @@ public:
 	IUIEventSystem *GetEventSystem() { return m_pSystem; }
 
 protected:
-	string								m_name;
-
-	CScriptbind_UI						*m_pParent;
-	IUIEventSystem						*m_pSystem;
-
-	IUIEventSystem::EEventSystemType	m_type;
+	string m_name;
+	CScriptbind_UI *m_pParent;
+	IUIEventSystem *m_pSystem;
+	IUIEventSystem::EEventSystemType m_type;
 };
 
-class CScriptbind_UI
-	: public IMonoScriptBind
+class CScriptbind_UI : public IMonoScriptBind
 {
 	typedef std::map<string, CUICallback *> TEventMap;
 
@@ -86,20 +83,21 @@ public:
 
 	void OnEvent(const char *systemName, const char *eventName, const SUIEvent& event);
 	
-	//Exposed to CryMono
+	// Exposed C# methods
 	static int RegisterEvent(mono::string eventsystem, IUIEventSystem::EEventSystemType direction, SMonoUIEventDesc desc);
 	static bool RegisterToEventSystem(mono::string eventsystem, IUIEventSystem::EEventSystemType type);
 	static void UnregisterFromEventSystem(mono::string eventsystem, IUIEventSystem::EEventSystemType type);
 	static void SendEvent(mono::string eventsystem, int event, mono::array args);
 	static void SendNamedEvent(mono::string eventsystem, mono::string event, mono::array args);
+	// ~Exposed C# methods
 
 protected:
 	// IMonoScriptBind
 	virtual const char *GetClassName() override { return "UI"; }
 	// ~IMonoScriptBind
 
-	TEventMap	m_EventMapS2UI;
-	TEventMap	m_EventMapUI2S;
+	TEventMap m_EventMapS2UI;
+	TEventMap m_EventMapUI2S;
 };
 
 #endif //__SCRIPTBIND_UI_H__

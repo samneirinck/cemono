@@ -45,7 +45,7 @@ namespace CryEngine
 		{
 			_RemoveEntity(id);
 
-			RemoveInternalEntity(id);
+			InternalRemove(id);
 		}
 
 		public void Remove()
@@ -53,7 +53,7 @@ namespace CryEngine
 			Entity.Remove(Id);
 		}
 
-		internal static void RemoveInternalEntity(EntityId id)
+		internal static void InternalRemove(EntityId id)
 		{
 			foreach(var script in ScriptManager.CompiledScripts)
 			{
@@ -74,19 +74,7 @@ namespace CryEngine
 			if(entityId == 0)
 				throw new ArgumentException("entityId cannot be 0!");
 
-			T ent = null;
-			for(int i = 0; i < ScriptManager.CompiledScripts.Count; i++)
-			{
-				var script = ScriptManager.CompiledScripts[i];
-				if((script.Type.Equals(typeof(T)) || script.Type.Implements(typeof(T))) && script.ScriptInstances != null)
-				{
-					ent = script.ScriptInstances.Find(x => (x as T).Id == entityId) as T;
-					if(ent != null)
-						return ent;
-				}
-			}
-
-			return null;
+			return ScriptManager.FindScriptInstance<T>(x => x.Id == entityId);
 		}
 
 		/// <summary>
