@@ -258,7 +258,7 @@ namespace CryEngine.Initialization
 
 		void LoadEntity(ref CryScript script)
 		{
-			LoadFlowNode(ref script);
+			//LoadFlowNode(ref script);
 
 			Entity.RegisterClass(Entity.GetEntityConfig(script.Type));
 		}
