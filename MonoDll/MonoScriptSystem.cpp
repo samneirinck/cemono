@@ -34,7 +34,6 @@
 #include "Scriptbinds\3DEngine.h"
 #include "Scriptbinds\PhysicalWorld.h"
 #include "Scriptbinds\Renderer.h"
-#include "Scriptbinds\Entity.h"
 #include "Scriptbinds\Debug.h"
 #include "Scriptbinds\UI.h"
 #include "Scriptbinds\MaterialManager.h"
@@ -354,7 +353,6 @@ void CScriptSystem::RegisterDefaultBindings()
 	RegisterBinding(CScriptbind_Console);
 	RegisterBinding(CScriptbind_ItemSystem);
 	RegisterBinding(CGameRules);
-	RegisterBinding(CScriptbind_Entity);
 	RegisterBinding(CScriptbind_Debug);
 	RegisterBinding(CTime);
 	RegisterBinding(CScriptbind_MaterialManager);

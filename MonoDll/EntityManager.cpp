@@ -34,6 +34,54 @@ CEntityManager::CEntityManager()
 
 	REGISTER_METHOD(EntityExists);
 
+	REGISTER_METHOD(GetPropertyValue);
+
+	REGISTER_METHOD(SetPos);
+	REGISTER_METHOD(GetPos);
+	REGISTER_METHOD(SetWorldPos);
+	REGISTER_METHOD(GetWorldPos);
+
+	REGISTER_METHOD(SetRotation);
+	REGISTER_METHOD(GetRotation);
+	REGISTER_METHOD(SetWorldRotation);
+	REGISTER_METHOD(GetWorldRotation);
+
+	REGISTER_METHOD(LoadObject);
+	REGISTER_METHOD(LoadCharacter);
+
+	REGISTER_METHOD(GetBoundingBox);
+	REGISTER_METHOD(GetWorldBoundingBox);
+
+	REGISTER_METHOD(GetSlotFlags);
+	REGISTER_METHOD(SetSlotFlags);
+
+	REGISTER_METHOD(Physicalize);
+	REGISTER_METHOD(Sleep);
+	REGISTER_METHOD(BreakIntoPieces);
+
+	REGISTER_METHOD(CreateGameObjectForEntity);
+	REGISTER_METHOD(GetStaticObjectFilePath);
+
+	REGISTER_METHOD(AddImpulse);
+	REGISTER_METHOD(AddMovement);
+
+	REGISTER_METHOD(GetVelocity);
+	REGISTER_METHOD(SetVelocity);
+
+	REGISTER_METHOD(SetWorldTM);
+	REGISTER_METHOD(GetWorldTM);
+	REGISTER_METHOD(SetLocalTM);
+	REGISTER_METHOD(GetLocalTM);
+
+	REGISTER_METHOD(GetMaterial);
+	REGISTER_METHOD(SetMaterial);
+
+	REGISTER_METHOD(GetName);
+	REGISTER_METHOD(SetName);
+
+	REGISTER_METHOD(GetFlags);
+	REGISTER_METHOD(SetFlags);
+
 	gEnv->pEntitySystem->AddSink(this, IEntitySystem::OnBeforeSpawn | IEntitySystem::OnSpawn | IEntitySystem::OnRemove, 0);
 }
 
@@ -235,4 +283,275 @@ mono::array CEntityManager::GetEntitiesByClass(mono::string _class)
 		pArray->Insert(*it);
 
 	return *pArray;
+}
+
+mono::string CEntityManager::GetPropertyValue(IEntity *pEnt, mono::string propertyName)
+{
+	IEntityPropertyHandler *pPropertyHandler = pEnt->GetClass()->GetPropertyHandler();
+
+	return ToMonoString(pPropertyHandler->GetProperty(pEnt, 0));
+}
+
+void CEntityManager::SetWorldTM(IEntity *pEntity, Matrix34 tm)
+{
+	pEntity->SetWorldTM(tm);
+}
+
+Matrix34 CEntityManager::GetWorldTM(IEntity *pEntity)
+{
+	return pEntity->GetWorldTM();
+}
+
+void CEntityManager::SetLocalTM(IEntity *pEntity, Matrix34 tm)
+{
+	pEntity->SetLocalTM(tm);
+}
+
+Matrix34 CEntityManager::GetLocalTM(IEntity *pEntity)
+{
+	return pEntity->GetLocalTM();
+}
+
+AABB CEntityManager::GetWorldBoundingBox(IEntity *pEntity)
+{
+	AABB boundingBox;
+	pEntity->GetWorldBounds(boundingBox);
+
+	return boundingBox;
+}
+
+AABB CEntityManager::GetBoundingBox(IEntity *pEntity)
+{
+	AABB boundingBox;
+	pEntity->GetLocalBounds(boundingBox);
+
+	return boundingBox;
+}
+
+void CEntityManager::SetPos(IEntity *pEntity, Vec3 newPos)
+{
+	pEntity->SetPos(newPos);
+}
+
+Vec3 CEntityManager::GetPos(IEntity *pEntity)
+{
+	return pEntity->GetPos();
+}
+
+void CEntityManager::SetWorldPos(IEntity *pEntity, Vec3 newPos)
+{
+	pEntity->SetWorldTM(Matrix34::Create(pEntity->GetScale(), pEntity->GetWorldRotation(), newPos));
+}
+
+Vec3 CEntityManager::GetWorldPos(IEntity *pEntity)
+{
+	return pEntity->GetWorldPos();
+}
+
+void CEntityManager::SetRotation(IEntity *pEntity, Quat newAngles)
+{
+	pEntity->SetRotation(newAngles);
+}
+
+Quat CEntityManager::GetRotation(IEntity *pEntity)
+{
+	return pEntity->GetRotation();
+}
+
+void CEntityManager::SetWorldRotation(IEntity *pEntity, Quat newAngles)
+{
+	pEntity->SetWorldTM(Matrix34::Create(pEntity->GetScale(), newAngles, pEntity->GetWorldPos()));
+}
+
+Quat CEntityManager::GetWorldRotation(IEntity *pEntity)
+{
+	return pEntity->GetWorldRotation();
+}
+
+void CEntityManager::LoadObject(IEntity *pEntity, mono::string fileName, int slot)
+{
+	pEntity->SetStatObj(gEnv->p3DEngine->LoadStatObj(ToCryString(fileName)), slot, true);
+}
+
+void CEntityManager::LoadCharacter(IEntity *pEntity, mono::string fileName, int slot)
+{
+	pEntity->LoadCharacter(slot, ToCryString(fileName));
+}
+
+EEntitySlotFlags CEntityManager::GetSlotFlags(IEntity *pEntity, int slot)
+{
+	return (EEntitySlotFlags)pEntity->GetSlotFlags(slot);
+}
+
+void CEntityManager::SetSlotFlags(IEntity *pEntity, int slot, EEntitySlotFlags slotFlags)
+{
+	pEntity->SetSlotFlags(slot, slotFlags);
+}
+
+void CEntityManager::Physicalize(IEntity *pEntity, MonoPhysicalizationParams params)
+{
+	// Unphysicalize
+	{
+		const Ang3 oldRotation = pEntity->GetWorldAngles();
+		const Quat newRotation = Quat::CreateRotationZ( oldRotation.z );
+		pEntity->SetRotation( newRotation );
+
+		SEntityPhysicalizeParams pp;
+		pp.type = PE_NONE;
+		pEntity->Physicalize( pp );
+	}
+	// ~Unphysicalize
+	
+	SEntityPhysicalizeParams pp;
+
+	pp.type = params.type;
+	pp.nSlot = params.slot;
+	pp.mass = params.mass;
+	pp.nFlagsOR = pef_monitor_poststep;
+	pp.fStiffnessScale = params.stiffnessScale;
+
+	if(IPhysicalEntity *pPhysicalEntity = pEntity->GetPhysics())
+	{
+		Ang3 rot(pEntity->GetWorldAngles());
+		pEntity->SetRotation(Quat::CreateRotationZ(rot.z));
+
+		SEntityPhysicalizeParams nop;
+		nop.type = PE_NONE;
+		pEntity->Physicalize(nop);
+	}
+
+	pEntity->Physicalize(pp);
+
+	if(IPhysicalEntity *pPhysicalEntity = pEntity->GetPhysics())
+	{
+		pe_action_awake awake;
+		awake.bAwake=0;
+
+		pPhysicalEntity->Action(&awake);
+
+		pe_action_move actionMove;
+		actionMove.dir = Vec3(0,0,0);
+		pPhysicalEntity->Action(&actionMove);
+	}
+}
+
+void CEntityManager::Sleep(IEntity *pEntity, bool sleep)
+{
+	if(IPhysicalEntity *pPhysicalEntity = pEntity->GetPhysics())
+	{
+		pe_action_awake awake;
+		awake.bAwake = !sleep;
+
+		pPhysicalEntity->Action(&awake);
+	}
+}
+
+void CEntityManager::BreakIntoPieces(IEntity *pEntity, int slot, int piecesSlot, IBreakableManager::BreakageParams breakageParams)
+{
+	gEnv->pEntitySystem->GetBreakableManager()->BreakIntoPieces(pEntity, slot, piecesSlot, breakageParams);
+}
+
+void CEntityManager::CreateGameObjectForEntity(IEntity *pEntity)
+{
+	IGameObject *pGameObject = gEnv->pGameFramework->GetIGameObjectSystem()->CreateGameObjectForEntity(pEntity->GetId());
+	if(!pGameObject)
+		return;
+
+	if(auto& entity = static_cast<CEntityManager *>(gEnv->pMonoScriptSystem->GetEntityManager())->GetMonoEntity(pEntity->GetId()))
+		entity->RegisterGameObject(pGameObject);
+}
+
+void CEntityManager::BindGameObjectToNetwork(IEntity *pEntity)
+{
+	if(auto& entity = static_cast<CEntityManager *>(gEnv->pMonoScriptSystem->GetEntityManager())->GetMonoEntity(pEntity->GetId()))
+		entity->GetGameObject()->BindToNetwork();
+}
+
+mono::string CEntityManager::GetStaticObjectFilePath(IEntity *pEntity, int slot)
+{
+	if(IStatObj *pStatObj = pEntity->GetStatObj(slot))
+		return ToMonoString(pStatObj->GetFilePath());
+
+	return ToMonoString("");
+}
+
+void CEntityManager::AddImpulse(IEntity *pEntity, ActionImpulse actionImpulse)
+{
+	pe_action_impulse impulse;
+
+	impulse.angImpulse = actionImpulse.angImpulse;
+	impulse.iApplyTime = actionImpulse.iApplyTime;
+	impulse.impulse = actionImpulse.impulse;
+	impulse.ipart = actionImpulse.ipart;
+	impulse.iSource = actionImpulse.iSource;
+	impulse.partid = actionImpulse.partid;
+	impulse.point = actionImpulse.point;
+
+	if(IPhysicalEntity *pPhysEnt = pEntity->GetPhysics())
+		pPhysEnt->Action(&impulse);
+}
+
+void CEntityManager::AddMovement(IEntity *pEntity, MovementRequest &movementRequest)
+{
+	if(auto &entity = static_cast<CEntityManager *>(gEnv->pMonoScriptSystem->GetEntityManager())->GetMonoEntity(pEntity->GetId()))
+		entity->AddMovement(movementRequest);
+}
+
+Vec3 CEntityManager::GetVelocity(IEntity *pEntity)
+{
+	if(IPhysicalEntity *pPhysEnt = pEntity->GetPhysics())
+	{
+		pe_status_dynamics sd;
+		if(pPhysEnt->GetStatus(&sd) != 0)
+			return sd.v;
+	}
+
+	return Vec3(0,0,0);
+}
+
+void CEntityManager::SetVelocity(IEntity *pEntity, Vec3 vel)
+{
+	if(IPhysicalEntity *pPhysEnt = pEntity->GetPhysics())
+	{
+		pe_action_set_velocity asv;
+		asv.v = vel;
+
+		pPhysEnt->Action(&asv);
+	}
+}
+
+mono::string CEntityManager::GetMaterial(IEntity *pEntity)
+{
+	const char *material = "";
+
+	if(IMaterial *pMaterial = pEntity->GetMaterial())
+		material = pMaterial->GetName();
+	
+	return ToMonoString(material);
+}
+
+void CEntityManager::SetMaterial(IEntity *pEntity, mono::string material)
+{
+	if(IMaterial *pMaterial = gEnv->p3DEngine->GetMaterialManager()->FindMaterial(ToCryString(material)))
+		pEntity->SetMaterial(pMaterial);
+}
+
+mono::string CEntityManager::GetName(IEntity *pEntity)
+{
+	return ToMonoString(pEntity->GetName());
+}
+
+void CEntityManager::SetName(IEntity *pEntity, mono::string name)
+{
+	pEntity->SetName(ToCryString(name));
+}
+
+EEntityFlags CEntityManager::GetFlags(IEntity *pEntity)
+{
+	return (EEntityFlags)pEntity->GetFlags();
+}
+
+void CEntityManager::SetFlags(IEntity *pEntity, EEntityFlags flags)
+{
+	pEntity->SetFlags(flags);
 }

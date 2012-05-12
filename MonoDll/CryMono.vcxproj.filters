@@ -138,9 +138,6 @@
     <ClInclude Include="MonoDomain.h">
       <Filter>Wrappers</Filter>
     </ClInclude>
-    <ClInclude Include="ScriptBinds\Entity.h">
-      <Filter>ScriptBinds\Game Logic</Filter>
-    </ClInclude>
     <ClInclude Include="Scriptbinds\UI.h">
       <Filter>ScriptBinds\Viewport</Filter>
     </ClInclude>
@@ -234,9 +231,6 @@
     </ClCompile>
     <ClCompile Include="MonoDomain.cpp">
       <Filter>Wrappers</Filter>
-    </ClCompile>
-    <ClCompile Include="ScriptBinds\Entity.cpp">
-      <Filter>ScriptBinds\Game Logic</Filter>
     </ClCompile>
     <ClCompile Include="Scriptbinds\UI.cpp">
       <Filter>ScriptBinds\Viewport</Filter>
