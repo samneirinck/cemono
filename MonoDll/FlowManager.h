@@ -21,8 +21,6 @@ class CFlowNode;
 
 struct SNodeType
 {
-	typedef std::vector<CFlowNode *> TFlowNodes;
-
 	SNodeType(const char *name) : typeName(name), pInputs(NULL), pOutputs(NULL)
 	{
 		if(bEntityNode = typeName.find("entity:") != string::npos)
@@ -48,10 +46,6 @@ struct SNodeType
 	SOutputPortConfig *GetOutputPorts(IMonoClass *pScript) { if(!pOutputs) ReloadPorts(pScript); return pOutputs; }
 	SInputPortConfig *GetInputPorts(IMonoClass *pScript) { if(!pInputs) ReloadPorts(pScript); return pInputs; }
 
-	TFlowNodes nodes;
-
-	void RemoveNode(CFlowNode *pNode) { nodes.erase(std::remove(nodes.begin(), nodes.end(), pNode), nodes.end()); }
-
 private:
 
 	string typeName;
@@ -62,9 +56,10 @@ private:
 	SInputPortConfig *pInputs;
 };
 
-class CFlowManager : 
-	public IMonoScriptBind,
-	public IFlowNodeFactory
+class CFlowManager
+	: public IMonoScriptBind
+	, public IFlowNodeFactory
+	, public IMonoScriptSystemListener
 {
 public:
 	CFlowManager();
@@ -86,38 +81,42 @@ public:
 	virtual void Reset() override;
 	// ~IFlowNodeFactory
 
-	static std::shared_ptr<SNodeType> InstantiateNode(CFlowNode *pNode, const char *typeName);
-	static void UnregisterNode(CFlowNode *pNode);
+	// IMonoScriptSystemListener
+	virtual void OnPreScriptCompilation(bool isReload) {}
+	virtual void OnPostScriptCompilation(bool isReload, bool compilationSuccess) {}
 
-	static CFlowNode *GetNodeById(int scriptId);
+	virtual void OnPreScriptReload(bool initialLoad) {}
+	virtual void OnPostScriptReload(bool initialLoad) { if(initialLoad) Reset(); }
+	// ~IMonoScriptSystemListener
+
+	static std::shared_ptr<SNodeType> InstantiateNode(CFlowNode *pNode, const char *typeName);
 
 protected:
 	// IMonoScriptBind
 	virtual const char *GetClassName() { return "FlowNode"; }
 	// ~IMonoScriptBind
 
-
 	static void RegisterNode(mono::string typeName);
 
-	static bool IsPortActive(int, int);
+	static bool IsPortActive(CFlowNode *pNode, int);
 
 	template <class T>
-	static void ActivateOutputOnNode(int scriptId, int index, const T &value);
+	static void ActivateOutputOnNode(CFlowNode *pNode, int index, const T &value);
 	
-	static int GetPortValueInt(int, int);
-	static float GetPortValueFloat(int, int);
-	static EntityId GetPortValueEntityId(int, int);
-	static mono::string GetPortValueString(int, int);
-	static bool GetPortValueBool(int, int);
-	static mono::object GetPortValueVec3(int, int);
+	static int GetPortValueInt(CFlowNode *pNode, int);
+	static float GetPortValueFloat(CFlowNode *pNode, int);
+	static EntityId GetPortValueEntityId(CFlowNode *pNode, int);
+	static mono::string GetPortValueString(CFlowNode *pNode, int);
+	static bool GetPortValueBool(CFlowNode *pNode, int);
+	static mono::object GetPortValueVec3(CFlowNode *pNode, int);
 
-	static void ActivateOutput(int, int);
-	static void ActivateOutputInt(int, int, int);
-	static void ActivateOutputFloat(int, int, float);
-	static void ActivateOutputEntityId(int, int, EntityId);
-	static void ActivateOutputString(int, int, mono::string);
-	static void ActivateOutputBool(int, int, bool);
-	static void ActivateOutputVec3(int, int, Vec3);
+	static void ActivateOutput(CFlowNode *pNode, int);
+	static void ActivateOutputInt(CFlowNode *pNode, int, int);
+	static void ActivateOutputFloat(CFlowNode *pNode, int, float);
+	static void ActivateOutputEntityId(CFlowNode *pNode, int, EntityId);
+	static void ActivateOutputString(CFlowNode *pNode, int, mono::string);
+	static void ActivateOutputBool(CFlowNode *pNode, int, bool);
+	static void ActivateOutputVec3(CFlowNode *pNode, int, Vec3);
 
 	static TFlowTypes m_nodeTypes;
 

@@ -20,39 +20,44 @@ namespace CryEngine
 		}
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _SetRegularlyUpdated(int scriptId, bool updated);
+		extern internal static void _SetRegularlyUpdated(IntPtr nodePtr, bool updated);
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static bool _IsPortActive(int scriptId, int port);
+		extern internal static bool _IsPortActive(IntPtr nodePtr, int port);
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _ActivateOutput(int scriptId, int port);
+		extern internal static void _ActivateOutput(IntPtr nodePtr, int port);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _ActivateOutputInt(int scriptId, int port, int value);
+		extern internal static void _ActivateOutputInt(IntPtr nodePtr, int port, int value);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _ActivateOutputFloat(int scriptId, int port, float value);
+		extern internal static void _ActivateOutputFloat(IntPtr nodePtr, int port, float value);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _ActivateOutputEntityId(int scriptId, int port, uint value);
+		extern internal static void _ActivateOutputEntityId(IntPtr nodePtr, int port, uint value);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _ActivateOutputString(int scriptId, int port, string value);
+		extern internal static void _ActivateOutputString(IntPtr nodePtr, int port, string value);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _ActivateOutputBool(int scriptId, int port, bool value);
+		extern internal static void _ActivateOutputBool(IntPtr nodePtr, int port, bool value);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _ActivateOutputVec3(int scriptId, int port, Vec3 value);
+		extern internal static void _ActivateOutputVec3(IntPtr nodePtr, int port, Vec3 value);
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static int _GetPortValueInt(int scriptId, int port);
+		extern internal static int _GetPortValueInt(IntPtr nodePtr, int port);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static float _GetPortValueFloat(int scriptId, int port);
+		extern internal static float _GetPortValueFloat(IntPtr nodePtr, int port);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static uint _GetPortValueEntityId(int scriptId, int port);
+		extern internal static uint _GetPortValueEntityId(IntPtr nodePtr, int port);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static string _GetPortValueString(int scriptId, int port);
+		extern internal static string _GetPortValueString(IntPtr nodePtr, int port);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static bool _GetPortValueBool(int scriptId, int port);
+		extern internal static bool _GetPortValueBool(IntPtr nodePtr, int port);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static Vec3 _GetPortValueVec3(int scriptId, int port);
+		extern internal static Vec3 _GetPortValueVec3(IntPtr nodePtr, int port);
 		#endregion
+
+		internal void InternalInitialize(IntPtr nodePtr)
+		{
+			NodePointer = nodePtr;
+		}
 
 		internal virtual NodeConfig GetNodeConfig()
         {
@@ -227,7 +232,7 @@ namespace CryEngine
 		/// <returns></returns>
 		protected int GetPortInt(Action<int> port)
 		{
-			return _GetPortValueInt(ScriptId, GetInputPortId(port.Method));
+			return _GetPortValueInt(NodePointer, GetInputPortId(port.Method));
 		}
 
 		/// <summary>
@@ -237,7 +242,7 @@ namespace CryEngine
 		/// <returns></returns>
 		protected float GetPortFloat(Action<float> port)
 		{
-			return _GetPortValueFloat(ScriptId, GetInputPortId(port.Method));
+			return _GetPortValueFloat(NodePointer, GetInputPortId(port.Method));
 		}
 
 		/// <summary>
@@ -247,7 +252,7 @@ namespace CryEngine
 		/// <returns></returns>
 		protected Vec3 GetPortVec3(Action<Vec3> port)
 		{
-			return _GetPortValueVec3(ScriptId, GetInputPortId(port.Method));
+			return _GetPortValueVec3(NodePointer, GetInputPortId(port.Method));
 		}
 
 		/// <summary>
@@ -257,7 +262,7 @@ namespace CryEngine
 		/// <returns></returns>
 		protected string GetPortString(Action<string> port)
 		{
-			return _GetPortValueString(ScriptId, GetInputPortId(port.Method));
+			return _GetPortValueString(NodePointer, GetInputPortId(port.Method));
 		}
 
 		/// <summary>
@@ -267,7 +272,7 @@ namespace CryEngine
 		/// <returns></returns>
 		protected bool GetPortBool(Action<bool> port)
 		{
-			return _GetPortValueBool(ScriptId, GetInputPortId(port.Method));
+			return _GetPortValueBool(NodePointer, GetInputPortId(port.Method));
 		}
 
 		int GetInputPortId(MethodInfo method)
@@ -286,10 +291,11 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="port"></param>
 		/// <returns></returns>
-		protected bool IsPortActive(int port) { return _IsPortActive(ScriptId, port); }
+		protected bool IsPortActive(int port) { return _IsPortActive(NodePointer, port); }
 		#endregion
 
-		internal bool Initialized;
+		internal IntPtr NodePointer { get; set; }
+		internal bool Initialized { get; set; }
 	}
 
 	[AttributeUsage(AttributeTargets.Class)]
@@ -323,51 +329,51 @@ namespace CryEngine
 	{
 		public OutputPort() { }
 
-		public OutputPort(int scriptId, int portId)
+		public OutputPort(IntPtr nodePtr, int portId)
 		{
-			ParentScriptId = scriptId;
+			ParentNodePointer = nodePtr;
 			PortId = portId;
 		}
 
 		public void Activate()
 		{
-			FlowNode._ActivateOutput(ParentScriptId, PortId);
+			FlowNode._ActivateOutput(ParentNodePointer, PortId);
 		}
 
-		int ParentScriptId;
-		int PortId;
+		IntPtr ParentNodePointer { get; set; }
+		int PortId { get; set; }
 	}
 
 	public sealed class OutputPort<T>
 	{
 		public OutputPort() { }
 
-		public OutputPort(int scriptId, int portId)
+		public OutputPort(IntPtr nodePtr, int portId)
 		{
-			ParentScriptId = scriptId;
+			ParentNodePointer = nodePtr;
 			PortId = portId;
 		}
 
 		public void Activate(T value)
 		{
 			if (value is int)
-				FlowNode._ActivateOutputInt(ParentScriptId, PortId, System.Convert.ToInt32(value));
+				FlowNode._ActivateOutputInt(ParentNodePointer, PortId, System.Convert.ToInt32(value));
 			else if (value is float || value is double)
-				FlowNode._ActivateOutputFloat(ParentScriptId, PortId, System.Convert.ToSingle(value));
+				FlowNode._ActivateOutputFloat(ParentNodePointer, PortId, System.Convert.ToSingle(value));
 			else if (value is uint)
-				FlowNode._ActivateOutputEntityId(ParentScriptId, PortId, System.Convert.ToUInt32(value));
+				FlowNode._ActivateOutputEntityId(ParentNodePointer, PortId, System.Convert.ToUInt32(value));
 			else if (value is string)
-				FlowNode._ActivateOutputString(ParentScriptId, PortId, System.Convert.ToString(value));
+				FlowNode._ActivateOutputString(ParentNodePointer, PortId, System.Convert.ToString(value));
 			else if (value is bool)
-				FlowNode._ActivateOutputBool(ParentScriptId, PortId, System.Convert.ToBoolean(value));
+				FlowNode._ActivateOutputBool(ParentNodePointer, PortId, System.Convert.ToBoolean(value));
 			else if (value is Vec3)
-				FlowNode._ActivateOutputVec3(ParentScriptId, PortId, (Vec3)(object)value);
+				FlowNode._ActivateOutputVec3(ParentNodePointer, PortId, (Vec3)(object)value);
 			else
 				throw new ArgumentException("Attempted to activate output with invalid value!");
 		}
 
-		int ParentScriptId;
-		int PortId;
+		IntPtr ParentNodePointer { get; set; }
+		int PortId { get; set; }
 	}
 
     [Flags]

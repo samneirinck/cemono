@@ -56,7 +56,7 @@ public:
 	virtual void CancelCreatedNode(TFlowNodeId id, const char * name, TFlowNodeTypeId typeId, IFlowNodePtr pNode) override {}
 
 	virtual void AddRef() override { CFlowBaseNodeInternal::AddRef(); }
-	virtual void Release() override;
+	virtual void Release() override { delete this; }
 
 	virtual IFlowGraphHook::EActivation PerformActivation(IFlowGraphPtr pFlowgraph, TFlowNodeId srcNode, TFlowPortId srcPort, TFlowNodeId toNode, TFlowPortId toPort, const TFlowInputData* value) override { return eFGH_Pass; }
 	// ~IFlowGraphHook
