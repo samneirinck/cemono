@@ -139,7 +139,7 @@ namespace CryEngine
 		{
 			_RemoveActor(id);
 
-			InternalRemove(id);
+			InternalRemove(actor => actor.Id == id);
 		}
 
 		public static void Remove(Actor actor)
@@ -149,15 +149,24 @@ namespace CryEngine
 
 		public static void Remove(int channelId)
 		{
-			Remove(_GetEntityIdForChannelId((ushort)channelId));
+			_RemoveActor(_GetEntityIdForChannelId((ushort)channelId));
+
+			InternalRemove(actor => actor.ChannelId == channelId);
 		}
 
-		internal static void InternalRemove(EntityId id)
+		internal static void InternalRemove(Predicate<Actor> match)
 		{
 			foreach(var script in ScriptManager.CompiledScripts)
 			{
 				if(script.ScriptInstances != null)
-					script.ScriptInstances.RemoveAll(instance => instance is Actor && (instance as Actor).Id == id);
+				{
+					for(int i = 0; i < script.ScriptInstances.Count; i++)
+					{
+						var scriptInstance = script.ScriptInstances[i] as Actor;
+						if(scriptInstance != null && match(scriptInstance))
+							script.ScriptInstances.RemoveAt(i);
+					}
+				}
 			}
 		}
 		#endregion
