@@ -17,6 +17,7 @@
 #include <IGameFramework.h>
 
 std::vector<const char *> CEntityManager::m_monoEntityClasses = std::vector<const char *>();
+CEntityManager::TMonoEntities CEntityManager::m_monoEntities = CEntityManager::TMonoEntities();
 
 CEntityManager::CEntityManager()
 	: m_refs(0)
@@ -92,6 +93,17 @@ bool CEntityManager::OnRemove(IEntity *pEntity)
 	return true;
 }
 
+void CEntityManager::RemoveEntity(EntityId id)
+{
+	for(TMonoEntities::iterator it = m_monoEntities.begin(); it != m_monoEntities.end(); ++it)
+	{
+		if((*it)->GetEntityId()==id)
+			m_monoEntities.erase(it);
+	}
+
+	gEnv->pEntitySystem->RemoveEntity(id);
+}
+
 bool CEntityManager::IsMonoEntity(const char *entityClassName)
 {
 	for(std::vector<const char *>::iterator it = m_monoEntityClasses.begin(); it != m_monoEntityClasses.end(); ++it)
@@ -131,11 +143,6 @@ EntityId CEntityManager::SpawnEntity(EntitySpawnParams params, bool bAutoInit)
 		return pEntity->GetId();
 
 	return 0;
-}
-
-void CEntityManager::RemoveEntity(EntityId id)
-{
-	gEnv->pEntitySystem->RemoveEntity(id);
 }
 
 bool CEntityManager::RegisterEntityClass(EntityRegisterParams params, mono::array Properties)

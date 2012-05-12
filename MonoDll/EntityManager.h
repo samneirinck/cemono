@@ -126,7 +126,7 @@ protected:
 	// ~ScriptBinds
 	
 	typedef std::vector<std::shared_ptr<CEntity>> TMonoEntities;
-	TMonoEntities m_monoEntities;
+	static TMonoEntities m_monoEntities;
 
 	static std::vector<const char *> m_monoEntityClasses;
 
