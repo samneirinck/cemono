@@ -76,9 +76,14 @@ namespace CryEngine
 			if(actorId == 0)
 				throw new ArgumentException("actorId cannot be 0!");
 
-			return Get(x => x.Id == actorId && x is T) as T;
+			return Get(x => x is T && x.Id == actorId) as T;
 		}
 
+		/// <summary>
+		/// Searches for an actor that matches the conditions defined by the specified predicate.
+		/// </summary>
+		/// <param name="match">The System.Predicate<Actor> that defines the conditions of the element to search for.</param>
+		/// <returns>The first element matching the specified predicate.</returns>
 		public static Actor Get(Predicate<Actor> match)
 		{
 			Actor actor = null;
