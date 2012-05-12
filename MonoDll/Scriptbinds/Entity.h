@@ -71,6 +71,12 @@ protected:
 
 	static mono::string GetMaterial(EntityId id);
 	static void SetMaterial(EntityId id, mono::string material);
+
+	static mono::string GetName(EntityId id);
+	static void SetName(EntityId id, mono::string name);
+
+	static EEntityFlags GetFlags(EntityId id);
+	static void SetFlags(EntityId id, EEntityFlags flags);
 };
 
 struct ActionImpulse

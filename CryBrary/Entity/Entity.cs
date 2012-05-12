@@ -95,8 +95,6 @@ namespace CryEngine
 		}
 
 		#region Methods & Fields
-		public string Name { get; set; }
-		public EntityFlags Flags { get; set; }
 		internal bool Spawned;
 		#endregion
 

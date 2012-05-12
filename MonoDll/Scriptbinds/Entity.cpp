@@ -41,6 +41,12 @@ CScriptbind_Entity::CScriptbind_Entity()
 
 	REGISTER_METHOD(GetMaterial);
 	REGISTER_METHOD(SetMaterial);
+
+	REGISTER_METHOD(GetName);
+	REGISTER_METHOD(SetName);
+
+	REGISTER_METHOD(GetFlags);
+	REGISTER_METHOD(SetFlags);
 }
 
 mono::string CScriptbind_Entity::GetPropertyValue(EntityId entityId, mono::string propertyName)
@@ -342,4 +348,34 @@ void CScriptbind_Entity::SetMaterial(EntityId id, mono::string material)
 		if(IMaterial *pMaterial = gEnv->p3DEngine->GetMaterialManager()->FindMaterial(ToCryString(material)))
 			pEntity->SetMaterial(pMaterial);
 	}
+}
+
+mono::string CScriptbind_Entity::GetName(EntityId id)
+{
+	const char *name = "";
+
+	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id))
+		name = pEntity->GetName();
+
+	return ToMonoString(name);
+}
+
+void CScriptbind_Entity::SetName(EntityId id, mono::string name)
+{
+	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id))
+		pEntity->SetName(ToCryString(name));
+}
+
+EEntityFlags CScriptbind_Entity::GetFlags(EntityId id)
+{
+	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id))
+		return (EEntityFlags)pEntity->GetFlags();
+
+	return (EEntityFlags)0;
+}
+
+void CScriptbind_Entity::SetFlags(EntityId id, EEntityFlags flags)
+{
+	if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id))
+		pEntity->SetFlags(flags);
 }

@@ -49,6 +49,16 @@ namespace CryEngine
 		extern internal static void _SetMaterial(uint entityId, string material);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static string _GetName(uint entityId);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static void _SetName(uint entityId, string name);
+
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static EntityFlags _GetFlags(uint entityId);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static void _SetFlags(uint entityId, EntityFlags name);
+
+		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static void _AddMovement(uint entityId, ref EntityMovementRequest request);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
@@ -141,6 +151,9 @@ namespace CryEngine
 		public Matrix34 LocalTM { get { return _GetLocalTM(Id); } set { _SetLocalTM(Id, value); } }
 
 		public BoundingBox BoundingBox { get { return _GetBoundingBox(Id, 0); } }
+
+		public string Name { get { return _GetName(Id); } set { _SetName(Id, value); } }
+		public EntityFlags Flags { get { return _GetFlags(Id); } set { _SetFlags(Id, value); } }
 
 		public EntityId Id { get; set; }
 	}
