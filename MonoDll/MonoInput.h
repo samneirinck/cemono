@@ -23,7 +23,6 @@ class CInput
 	, public IActionListener
 	, public IHardwareMouseEventListener
 	, public IInputEventListener
-	, public IMonoScriptSystemListener
 {
 public:
 	CInput();
@@ -45,20 +44,10 @@ public:
 	virtual bool OnInputEvent(const SInputEvent &event);
 	// ~IInputEventListener
 
-	// IMonoScriptSystemListener
-	virtual void OnPreScriptCompilation(bool isReload) {}
-	virtual void OnPostScriptCompilation(bool isReload, bool compilationSuccess) {}
-
-	virtual void OnPreScriptReload(bool initialLoad) {}
-	virtual void OnPostScriptReload(bool initialLoad);
-	// ~IMonoScriptSystemListener
-
 private:
 	static void RegisterAction(mono::string);
 
 	bool OnActionTriggered(EntityId entityId, const ActionId& actionId, int activationMode, float value);
 
 	static TActionHandler<CInput>	s_actionHandler;
-
-	IMonoClass *m_pClass;
 };

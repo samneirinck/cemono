@@ -24,6 +24,8 @@
 /// </summary>
 struct IMonoScriptBind
 {
+	IMonoScriptBind() : m_pClass(NULL) { }
+
 	/// <summary>
 	/// The namespace in which the Mono class this scriptbind is tied to resides in; returns "CryEngine" by default if not overridden.
 	/// </summary>
@@ -37,8 +39,14 @@ struct IMonoScriptBind
 	/// </summary>
 	IMonoClass *GetClass()
 	{
-		return gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass(GetClassName(), GetNamespace());
+		if(!m_pClass)
+			m_pClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass(GetClassName(), GetNamespace());
+
+		return m_pClass;
 	}
+
+private:
+	IMonoClass *m_pClass;
 };
 
 #endif //__IMONOSCRIPTBIND_H__
