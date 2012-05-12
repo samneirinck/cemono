@@ -180,6 +180,8 @@ namespace CryEngine
 			Id = entityId;
 			ChannelId = channelId;
 
+			InitPhysics();
+
 			OnSpawn();
         }
 
