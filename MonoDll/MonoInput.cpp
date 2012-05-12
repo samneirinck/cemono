@@ -10,25 +10,18 @@
 TActionHandler<CInput>	CInput::s_actionHandler;
 
 CInput::CInput()
-	: m_pClass(NULL)
 {
 	REGISTER_METHOD(RegisterAction);
 
 	gEnv->pGameFramework->GetIActionMapManager()->AddExtraActionListener(this);
 	gEnv->pHardwareMouse->AddListener(this);
 	gEnv->pInput->AddEventListener(this);
-	gEnv->pMonoScriptSystem->RegisterListener(this);
 }
 
 CInput::~CInput()
 {
 	gEnv->pGameFramework->GetIActionMapManager()->RemoveExtraActionListener(this);
 	gEnv->pHardwareMouse->RemoveListener(this);
-}
-
-void CInput::OnPostScriptReload(bool initialLoad)
-{
-	m_pClass = GetClass();
 }
 
 void CInput::OnHardwareMouseEvent(int iX,int iY,EHARDWAREMOUSEEVENT eHardwareMouseEvent, int wheelDelta)
@@ -39,7 +32,7 @@ void CInput::OnHardwareMouseEvent(int iX,int iY,EHARDWAREMOUSEEVENT eHardwareMou
 	pParams->Insert(eHardwareMouseEvent);
 	pParams->Insert(wheelDelta);
 
-	m_pClass->CallMethod("OnMouseEvent", pParams, true);
+	GetClass()->CallMethod("OnMouseEvent", pParams, true);
 	SAFE_RELEASE(pParams);
 }
 
@@ -49,7 +42,7 @@ bool CInput::OnInputEvent(const SInputEvent &event)
 	pParams->Insert(event.keyName.c_str());
 	pParams->Insert(event.value);
 
-	m_pClass->CallMethod("OnKeyEvent", pParams, true);
+	GetClass()->CallMethod("OnKeyEvent", pParams, true);
 	SAFE_RELEASE(pParams);
 
 	return false;
@@ -67,7 +60,7 @@ bool CInput::OnActionTriggered(EntityId entityId, const ActionId& actionId, int 
 	pParams->Insert(activationMode);
 	pParams->Insert(value);
 
-	m_pClass->CallMethod("OnActionTriggered", pParams, true);
+	GetClass()->CallMethod("OnActionTriggered", pParams, true);
 	SAFE_RELEASE(pParams);
 
 	return false;

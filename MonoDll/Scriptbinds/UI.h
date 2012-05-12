@@ -50,7 +50,6 @@ public:
 	virtual void OnEvent(const SUIEvent& event);
 	// ~IUIEventListener
 
-
 	const char *FindEvent(uint ID);
 	int FindEvent(const char *name);
 
@@ -60,17 +59,13 @@ public:
 	IUIEventSystem *GetEventSystem() { return m_pSystem; }
 
 protected:
-	string								m_name;
-
-	CScriptbind_UI						*m_pParent;
-	IUIEventSystem						*m_pSystem;
-
-	IUIEventSystem::EEventSystemType	m_type;
+	string m_name;
+	CScriptbind_UI *m_pParent;
+	IUIEventSystem *m_pSystem;
+	IUIEventSystem::EEventSystemType m_type;
 };
 
-class CScriptbind_UI
-	: public IMonoScriptBind
-	, public IMonoScriptSystemListener
+class CScriptbind_UI : public IMonoScriptBind
 {
 	typedef std::map<string, CUICallback *> TEventMap;
 
@@ -96,23 +91,13 @@ public:
 	static void SendNamedEvent(mono::string eventsystem, mono::string event, mono::array args);
 	// ~Exposed C# methods
 
-	// IMonoScriptSystemListener
-	virtual void OnPreScriptCompilation(bool isReload) {}
-	virtual void OnPostScriptCompilation(bool isReload, bool compilationSuccess) {}
-
-	virtual void OnPreScriptReload(bool initialLoad) {}
-	virtual void OnPostScriptReload(bool initialLoad);
-	// ~IMonoScriptSystemListener
-
 protected:
 	// IMonoScriptBind
 	virtual const char *GetClassName() override { return "UI"; }
 	// ~IMonoScriptBind
 
-	TEventMap	m_EventMapS2UI;
-	TEventMap	m_EventMapUI2S;
-
-	IMonoClass							*m_pUIClass;
+	TEventMap m_EventMapS2UI;
+	TEventMap m_EventMapUI2S;
 };
 
 #endif //__SCRIPTBIND_UI_H__

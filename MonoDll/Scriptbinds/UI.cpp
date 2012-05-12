@@ -106,8 +106,6 @@ CScriptbind_UI::CScriptbind_UI()
 	REGISTER_METHOD(SendEvent);
 	REGISTER_METHOD(SendNamedEvent);
 
-	gEnv->pMonoScriptSystem->RegisterListener(this);
-
 	s_pInstance = this;
 }
 
@@ -118,11 +116,6 @@ CScriptbind_UI::~CScriptbind_UI()
 	
 	m_EventMapS2UI.clear();
 	m_EventMapUI2S.clear();
-}
-
-void CScriptbind_UI::OnPostScriptReload(bool initialLoad)
-{
-	m_pUIClass = GetClass();
 }
 
 CUICallback *CScriptbind_UI::GetOrCreateSystem(const char *s, IUIEventSystem::EEventSystemType type)
@@ -187,7 +180,7 @@ void CScriptbind_UI::OnEvent(const char *SystemName, const char *EventName, cons
 	pArray->Insert(EventName);
 	pArray->Insert((int)event.event);
 	pArray->Insert(pArgs);
-	m_pUIClass->CallMethod("OnEvent", pArray, true);
+	GetClass()->CallMethod("OnEvent", pArray, true);
 	pArray->Release();
 	pArgs->Release();
 }
