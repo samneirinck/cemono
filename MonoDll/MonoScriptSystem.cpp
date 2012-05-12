@@ -190,6 +190,9 @@ bool CScriptSystem::Reload(bool initialLoad)
 {
 	PreReload();
 
+	for each(auto listener in m_scriptReloadListeners)
+		listener->OnPreScriptReload(initialLoad);
+
 	// Reload is split into Reload & DoReload to make sure we don't call PreReload multiple times.
 	return DoReload(initialLoad);
 }
@@ -300,9 +303,7 @@ void CScriptSystem::PostReload(bool initialLoad)
 {
 	m_AppDomainSerializer = m_pCryBraryAssembly->InstantiateClass("AppDomainSerializer", "CryEngine.Serialization");
 
-	m_pInput->Reset();
 	m_pConverter->Reset();
-	m_pUIScriptBind->Reset();
 
 	// Nodes won't get recompiled if we forget this.
 	if(!initialLoad)
@@ -331,6 +332,9 @@ void CScriptSystem::PostReload(bool initialLoad)
 	}
 
 	m_bReloading = false;
+
+	for each(auto listener in m_scriptReloadListeners)
+		listener->OnPostScriptReload(initialLoad);
 }
 
 void CScriptSystem::RegisterDefaultBindings()

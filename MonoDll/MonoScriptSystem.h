@@ -43,7 +43,7 @@ class CScriptSystem
 
 	typedef std::map<const void *, const char *> TMethodBindings;
 	typedef std::map<IMonoClass *, int> TScripts;
-	typedef std::vector<IMonoScriptCompilationListener *> TScriptCompilationListeners;
+	typedef std::vector<IMonoScriptSystemListener *> TScriptCompilationListeners;
 
 public:
 	// IMonoScriptSystem
@@ -68,8 +68,8 @@ public:
 
 	virtual IMonoConverter *GetConverter() override { return m_pConverter; }
 
-	virtual void RegisterScriptReloadListener(IMonoScriptCompilationListener *pListener) override { stl::push_back_unique(m_scriptReloadListeners, pListener); }
-	virtual void UnregisterScriptReloadListener(IMonoScriptCompilationListener *pListener) override { stl::find_and_erase(m_scriptReloadListeners, pListener); }
+	virtual void RegisterListener(IMonoScriptSystemListener *pListener) override { stl::push_back_unique(m_scriptReloadListeners, pListener); }
+	virtual void UnregisterListener(IMonoScriptSystemListener *pListener) override { stl::find_and_erase(m_scriptReloadListeners, pListener); }
 	// ~IMonoScriptSystem
 
 	// IFileChangeMonitor

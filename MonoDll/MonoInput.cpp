@@ -17,6 +17,7 @@ CInput::CInput()
 	gEnv->pGameFramework->GetIActionMapManager()->AddExtraActionListener(this);
 	gEnv->pHardwareMouse->AddListener(this);
 	gEnv->pInput->AddEventListener(this);
+	gEnv->pMonoScriptSystem->RegisterListener(this);
 }
 
 CInput::~CInput()
@@ -25,7 +26,7 @@ CInput::~CInput()
 	gEnv->pHardwareMouse->RemoveListener(this);
 }
 
-void CInput::Reset()
+void CInput::OnPostScriptReload(bool initialLoad)
 {
 	m_pClass = GetClass();
 }

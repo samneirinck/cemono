@@ -10,6 +10,7 @@
 #ifndef __SCRIPTBIND_UI_H__
 #define __SCRIPTBIND_UI_H__
 
+#include <IMonoScriptSystem.h>
 #include <IMonoScriptBind.h>
 #include <MonoCommon.h>
 
@@ -69,6 +70,7 @@ protected:
 
 class CScriptbind_UI
 	: public IMonoScriptBind
+	, public IMonoScriptSystemListener
 {
 	typedef std::map<string, CUICallback *> TEventMap;
 
@@ -86,14 +88,21 @@ public:
 
 	void OnEvent(const char *systemName, const char *eventName, const SUIEvent& event);
 	
-	//Exposed to CryMono
+	// Exposed C# methods
 	static int RegisterEvent(mono::string eventsystem, IUIEventSystem::EEventSystemType direction, SMonoUIEventDesc desc);
 	static bool RegisterToEventSystem(mono::string eventsystem, IUIEventSystem::EEventSystemType type);
 	static void UnregisterFromEventSystem(mono::string eventsystem, IUIEventSystem::EEventSystemType type);
 	static void SendEvent(mono::string eventsystem, int event, mono::array args);
 	static void SendNamedEvent(mono::string eventsystem, mono::string event, mono::array args);
+	// ~Exposed C# methods
 
-	void Reset();
+	// IMonoScriptSystemListener
+	virtual void OnPreScriptCompilation(bool isReload) {}
+	virtual void OnPostScriptCompilation(bool isReload, bool compilationSuccess) {}
+
+	virtual void OnPreScriptReload(bool initialLoad) {}
+	virtual void OnPostScriptReload(bool initialLoad);
+	// ~IMonoScriptSystemListener
 
 protected:
 	// IMonoScriptBind

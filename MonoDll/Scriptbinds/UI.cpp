@@ -70,11 +70,6 @@ CUICallback::~CUICallback()
 		m_pSystem->UnregisterListener(this);
 }
 
-void CScriptbind_UI::Reset()
-{
-	m_pUIClass = GetClass();
-}
-
 const char* CUICallback::FindEvent(uint ID)
 {
 	const SUIEventDesc *pDesc;
@@ -103,6 +98,32 @@ void CUICallback::OnEvent(const SUIEvent& event)
 	m_pParent->OnEvent(m_name.c_str(), eventName, event);
 }
 
+CScriptbind_UI::CScriptbind_UI()
+{
+	REGISTER_METHOD(RegisterEvent);
+	REGISTER_METHOD(RegisterToEventSystem);
+	REGISTER_METHOD(UnregisterFromEventSystem);
+	REGISTER_METHOD(SendEvent);
+	REGISTER_METHOD(SendNamedEvent);
+
+	gEnv->pMonoScriptSystem->RegisterListener(this);
+
+	s_pInstance = this;
+}
+
+CScriptbind_UI::~CScriptbind_UI()
+{
+	if(s_pInstance == this)
+		s_pInstance = NULL;
+	
+	m_EventMapS2UI.clear();
+	m_EventMapUI2S.clear();
+}
+
+void CScriptbind_UI::OnPostScriptReload(bool initialLoad)
+{
+	m_pUIClass = GetClass();
+}
 
 CUICallback *CScriptbind_UI::GetOrCreateSystem(const char *s, IUIEventSystem::EEventSystemType type)
 {
@@ -145,26 +166,6 @@ void CScriptbind_UI::RemoveSystem(CUICallback *pCB)
 	(pCB->GetEventSystemType() == IUIEventSystem::eEST_UI_TO_SYSTEM ? m_EventMapUI2S : m_EventMapS2UI).erase(pCB->GetEventSystemName());
 
 	delete pCB;
-}
-
-CScriptbind_UI::CScriptbind_UI()
-{
-	REGISTER_METHOD(RegisterEvent);
-	REGISTER_METHOD(RegisterToEventSystem);
-	REGISTER_METHOD(UnregisterFromEventSystem);
-	REGISTER_METHOD(SendEvent);
-	REGISTER_METHOD(SendNamedEvent);
-
-	s_pInstance = this;
-}
-
-CScriptbind_UI::~CScriptbind_UI()
-{
-	if(s_pInstance == this)
-		s_pInstance = NULL;
-	
-	m_EventMapS2UI.clear();
-	m_EventMapUI2S.clear();
 }
 
 void CScriptbind_UI::OnEvent(const char *SystemName, const char *EventName, const SUIEvent& event)
