@@ -75,40 +75,38 @@ IMonoClass *CConverter::ToClass(IMonoObject *pObject)
 
 IMonoObject *CConverter::CreateObject(MonoAnyValue &any)
 {
-	IMonoObject *pObject = NULL;
-
 	switch(any.type)
 	{
-	case MONOTYPE_BOOL:
+	case eMonoAnyType_Boolean:
 		{
 			return CreateMonoObject<bool>(any.b);
 		}
 		break;
-	case MONOTYPE_INT:
+	case eMonoAnyType_Integer:
 		{
 			return CreateMonoObject<int>((int)any.i);
 		}
 		break;
-	case MONOTYPE_SHORT:
-		{
-			return CreateMonoObject<short>((short)any.i);
-		}
-	case MONOTYPE_USHORT:
-		{
-			return CreateMonoObject<unsigned short>((unsigned short)any.u);
-		}
-		break;
-	case MONOTYPE_UINT:
+	case eMonoAnyType_UnsignedInteger:
 		{
 			return ToManagedType(eCMT_EntityId, new mono::entityId((EntityId)any.u));
 		}
 		break;
-	case MONOTYPE_FLOAT:
+	case eMonoAnyType_Short:
+		{
+			return CreateMonoObject<short>((short)any.i);
+		}
+	case eMonoAnyType_UnsignedShort:
+		{
+			return CreateMonoObject<unsigned short>((unsigned short)any.u);
+		}
+		break;
+	case eMonoAnyType_Float:
 		{
 			return CreateMonoObject<float>(any.f);
 		}
 		break;
-	case MONOTYPE_VEC3:
+	case eMonoAnyType_Vec3:
 		{
 			return ToManagedType(eCMT_Vec3, Vec3(any.vec3.x, any.vec3.y, any.vec3.z));
 		}

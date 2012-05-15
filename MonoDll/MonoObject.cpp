@@ -10,49 +10,50 @@ CScriptObject::CScriptObject(mono::object object)
 	m_objectHandle = mono_gchandle_new((MonoObject *)object, false); 
 }
 
-MonoAnyType CScriptObject::GetType()
+EMonoAnyType CScriptObject::GetType()
 {
-	MonoAnyType type = MONOTYPE_NULL;
-
-	// :eek:
 	MonoClass *pClass = GetMonoClass();
-	if(pClass==mono_get_single_class())
-		type = MONOTYPE_FLOAT;
-	else if(pClass==mono_get_boolean_class())
-		type = MONOTYPE_BOOL;
-	else if(pClass==mono_get_uint16_class())
-		type = MONOTYPE_USHORT;
+	if(pClass==mono_get_boolean_class())
+		return eMonoAnyType_Boolean;
 	else if(pClass==mono_get_int32_class())
-		type = MONOTYPE_INT;
+		return eMonoAnyType_Integer;
 	else if(pClass==mono_get_uint32_class())
-		type = MONOTYPE_UINT;
+		return eMonoAnyType_UnsignedInteger;
+	else if(pClass==mono_get_int16_class())
+		return eMonoAnyType_Short;
+	else if(pClass==mono_get_uint16_class())
+		return eMonoAnyType_UnsignedShort;
+	else if(pClass==mono_get_single_class())
+		return eMonoAnyType_Float;
 	else if(pClass==mono_get_string_class())
-		type = MONOTYPE_STRING;
-	else if(pClass==static_cast<CScriptClass *>(gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("Vec3"))->GetMonoClass())
-		type = MONOTYPE_VEC3;
+		return eMonoAnyType_String;
+	else if(pClass==static_cast<CScriptClass *>(gEnv->pMonoScriptSystem->GetConverter()->GetCommonClass(eCMT_Vec3))->GetMonoClass())
+		return eMonoAnyType_Vec3;
 
-	return type;
+	return eMonoAnyType_NULL;
 }
 
 MonoAnyValue CScriptObject::GetAnyValue()
 {
 	switch(GetType())
 	{
-	case MONOTYPE_BOOL:
+	case eMonoAnyType_Boolean:
 		return MonoAnyValue(Unbox<bool>());
-	case MONOTYPE_INT:
+	case eMonoAnyType_Integer:
 		return MonoAnyValue(Unbox<int>());
-	case MONOTYPE_USHORT:
-		return MonoAnyValue(Unbox<unsigned short>());
-	case MONOTYPE_UINT:
+	case eMonoAnyType_UnsignedInteger:
 		return MonoAnyValue(Unbox<unsigned int>());
-	case MONOTYPE_FLOAT:
+	case eMonoAnyType_Short:
+		return MonoAnyValue(Unbox<short>());
+	case eMonoAnyType_UnsignedShort:
+		return MonoAnyValue(Unbox<unsigned short>());
+	case eMonoAnyType_Float:
 		return MonoAnyValue(Unbox<float>());
-	case MONOTYPE_VEC3:
+	case eMonoAnyType_Vec3:
 		return MonoAnyValue(Unbox<Vec3>());
-	case MONOTYPE_STRING:
+	case eMonoAnyType_String:
 		return MonoAnyValue(ToCryString((mono::string)m_pObject));
 	}
 
-	return (MonoAnyValue)0;
+	return MonoAnyValue();
 }

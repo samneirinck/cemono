@@ -29,7 +29,7 @@ public:
 	// IMonoObject
 	virtual void Release() override { delete this; }
 
-	virtual MonoAnyType GetType() override;
+	virtual EMonoAnyType GetType() override;
 	virtual MonoAnyValue GetAnyValue() override;
 
 	virtual mono::object GetMonoObject() override { return m_pObject; }

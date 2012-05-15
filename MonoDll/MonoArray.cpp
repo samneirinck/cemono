@@ -82,7 +82,7 @@ void CScriptArray::Insert(IMonoObject *pObject)
 
 void CScriptArray::Insert(MonoAnyValue value)
 { 
-	if(value.type==MONOTYPE_STRING)
+	if(value.type==eMonoAnyType_String)
 		InsertString(ToMonoString(value.str));
 	else
 		Insert(gEnv->pMonoScriptSystem->GetConverter()->CreateObject(value)); 

@@ -56,7 +56,7 @@ public:
 	/// <summary>
 	/// Gets the type of this Mono object.
 	/// </summary>
-	virtual MonoAnyType GetType() = 0;
+	virtual EMonoAnyType GetType() = 0;
 	/// <summary>
 	/// Gets the value of this object as an MonoAnyValue.
 	/// </summary>

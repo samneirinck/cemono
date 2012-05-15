@@ -165,20 +165,20 @@ MonoMethod *CScriptClass::GetMethod(const char *methodName, IMonoArray *pArgs, b
 
 					if(IMonoObject *pItem = pArgs->GetItem(i))
 					{
-						MonoAnyType anyType = pItem->GetType();
+						EMonoAnyType anyType = pItem->GetType();
 						MonoTypeEnum monoType = (MonoTypeEnum)mono_type_get_type(pType);
 
-						if(monoType == MONO_TYPE_BOOLEAN && anyType != MONOTYPE_BOOL)
+						if(monoType == MONO_TYPE_BOOLEAN && anyType != eMonoAnyType_Boolean)
 							break;
-						else if(monoType == MONO_TYPE_I4 && anyType != MONOTYPE_INT)
+						else if(monoType == MONO_TYPE_I4 && anyType != eMonoAnyType_Integer)
 							break;
-						else if(monoType == MONO_TYPE_U4 && anyType != MONOTYPE_UINT)
+						else if(monoType == MONO_TYPE_U4 && anyType != eMonoAnyType_UnsignedInteger)
 							break;
-						else if(monoType == MONO_TYPE_I2 && anyType != MONOTYPE_SHORT)
+						else if(monoType == MONO_TYPE_I2 && anyType != eMonoAnyType_Short)
 							break;
-						else if(monoType == MONO_TYPE_U2 && anyType != MONOTYPE_USHORT)
+						else if(monoType == MONO_TYPE_U2 && anyType != eMonoAnyType_UnsignedShort)
 							break;
-						else if(monoType == MONO_TYPE_STRING && anyType != MONOTYPE_STRING && anyType != MONOTYPE_WSTRING)
+						else if(monoType == MONO_TYPE_STRING && anyType != eMonoAnyType_String)
 							break;
 					}
 					else if(suppliedArgsCount - 1 < i)

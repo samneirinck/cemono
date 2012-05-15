@@ -13,23 +13,22 @@
 /// <summary>
 /// Used within MonoAnyValue and IMonoObject to easily get the object type contained within.
 /// </summary>
-enum MonoAnyType
+enum EMonoAnyType
 {
-	MONOTYPE_NULL = -1,
+	eMonoAnyType_NULL = -1,
 
-	MONOTYPE_BOOL,
+	eMonoAnyType_Boolean,
 
-	MONOTYPE_INT,
-	MONOTYPE_UINT,
-	MONOTYPE_SHORT,
-	MONOTYPE_USHORT,
-	MONOTYPE_FLOAT,
-	MONOTYPE_VEC3,
+	eMonoAnyType_Integer,
+	eMonoAnyType_UnsignedInteger,
+	eMonoAnyType_Short,
+	eMonoAnyType_UnsignedShort,
+	eMonoAnyType_Float,
+	eMonoAnyType_Vec3,
 
-	MONOTYPE_STRING,
-	MONOTYPE_WSTRING,
+	eMonoAnyType_String,
 
-	MONOTYPE_LAST
+	eMonoAnyType_Last
 };
 
 /// <summary>
@@ -38,58 +37,76 @@ enum MonoAnyType
 /// </summary>
 struct MonoAnyValue
 {
-	MonoAnyValue() : type(MONOTYPE_NULL) { };
-	MonoAnyValue(bool value) : type(MONOTYPE_BOOL) { b = value; }
-	MonoAnyValue(int value) : type(MONOTYPE_INT) { i = value; }
-	MonoAnyValue(unsigned int value) : type(MONOTYPE_UINT) { u = value; }
-	MonoAnyValue(short value) : type(MONOTYPE_SHORT) { i = value; }
-	MonoAnyValue(unsigned short value) : type(MONOTYPE_USHORT) { u = value; }
-	MonoAnyValue(float value) : type(MONOTYPE_FLOAT) { f = value; }
-	MonoAnyValue(const char *value) : type(MONOTYPE_STRING) { str = value; }
-	MonoAnyValue(const wchar_t *value) : type(MONOTYPE_WSTRING) { wstr = value; }
-	MonoAnyValue(string value) : type(MONOTYPE_STRING) { str = value.c_str(); }
-	MonoAnyValue(Vec3 value) : type(MONOTYPE_VEC3) { vec3.x = value.x; vec3.y = value.y; vec3.z = value.z; }
-	MonoAnyValue(Ang3 value) : type(MONOTYPE_VEC3) { vec3.x = value.x; vec3.y = value.y; vec3.z = value.z; }
+	MonoAnyValue() : type(eMonoAnyType_NULL) { };
+	MonoAnyValue(bool value) : type(eMonoAnyType_Boolean) { b = value; }
+	MonoAnyValue(int value) : type(eMonoAnyType_Integer) { i = value; }
+	MonoAnyValue(unsigned int value) : type(eMonoAnyType_UnsignedInteger) { u = value; }
+	MonoAnyValue(short value) : type(eMonoAnyType_Short) { i = value; }
+	MonoAnyValue(unsigned short value) : type(eMonoAnyType_UnsignedShort) { u = value; }
+	MonoAnyValue(float value) : type(eMonoAnyType_Float) { f = value; }
+	MonoAnyValue(const char *value) : type(eMonoAnyType_String) { str = value; }
+	MonoAnyValue(string value) : type(eMonoAnyType_String) { str = value.c_str(); }
+	MonoAnyValue(Vec3 value) : type(eMonoAnyType_Vec3) { vec3.x = value.x; vec3.y = value.y; vec3.z = value.z; }
+	MonoAnyValue(Ang3 value) : type(eMonoAnyType_Vec3) { vec3.x = value.x; vec3.y = value.y; vec3.z = value.z; }
 
 	void Serialize(TSerialize ser)
 	{
 		ser.BeginGroup("MonoAnyValue");
 		switch(type)
 		{
-		case MONOTYPE_BOOL:
+		case eMonoAnyType_Boolean:
 			ser.Value("monoValueBool", b);
 			break;
 
-		case MONOTYPE_UINT:
-		case MONOTYPE_USHORT:
+		case eMonoAnyType_UnsignedInteger:
+		case eMonoAnyType_UnsignedShort:
 			ser.Value("monoValueUIntNum", u);
 			break;
-		case MONOTYPE_INT:
-		case MONOTYPE_SHORT:
+		case eMonoAnyType_Integer:
+		case eMonoAnyType_Short:
 			ser.Value("monoValueIntNum", i);
 			break;
-		case MONOTYPE_FLOAT:
+		case eMonoAnyType_Float:
 			ser.Value("monoValueFloatNum", f);
 			break;
-		case MONOTYPE_VEC3:
+		case eMonoAnyType_Vec3:
 			{
 				ser.Value("monoValueVec3x", vec3.x);
 				ser.Value("monoValueVec3y", vec3.y);
 				ser.Value("monoValueVec3z", vec3.z);
 			}
 			break;
-		case MONOTYPE_STRING:
+		case eMonoAnyType_String:
 			ser.ValueChar("monoValueString", const_cast<char *>(str), strlen(str));
-			break;
-		case MONOTYPE_WSTRING:
 			break;
 		}
 
-		ser.EnumValue("monoValueType", type, MONOTYPE_NULL, MONOTYPE_LAST);
+		ser.EnumValue("monoValueType", type, eMonoAnyType_NULL, eMonoAnyType_Last);
 		ser.EndGroup();
 	};
 
-	MonoAnyType type;
+	void *GetValue()
+	{
+		switch(type)
+		{
+		case eMonoAnyType_Boolean:
+			return &b;
+		case eMonoAnyType_UnsignedInteger:
+		case eMonoAnyType_UnsignedShort:
+			return &u;
+		case eMonoAnyType_Integer:
+		case eMonoAnyType_Short:
+			return &i;
+		case eMonoAnyType_Float:
+			return &f;
+		case eMonoAnyType_Vec3:
+			return Vec3(vec3.x, vec3.y, vec3.z);
+		case eMonoAnyType_String:
+			return &str;
+		}
+	}
+
+	EMonoAnyType type;
 	union
 	{
 		bool			b;
@@ -97,7 +114,6 @@ struct MonoAnyValue
 		int				i;
 		unsigned int	u;
 		const char*		str;
-		const wchar_t*	wstr;
 		struct { float x,y,z; } vec3;
 	};
 };
