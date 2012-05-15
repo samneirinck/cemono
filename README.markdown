@@ -7,7 +7,7 @@ CryMono brings the power of C# into the world of CryENGINE3, allowing game logic
 ## Using CryMono 
 In order to use CryMono, you'll need to download one of our publicly available samples;
 
-* <a href="http://docs.inkdev.net/display/CryMono/Angry+Boids">Angry Boids sample</a> - A C# CryENGINE minigame sample built using a skeleton game dll
+* <a href="https://github.com/inkdev/AngryBoids">Angry Boids sample</a> - A C# CryENGINE minigame sample built using a skeleton game dll
 * <a href="http://docs.inkdev.net/display/CryMono/First-Person+Shooter">First-Person Shooter sample</a> - The default CryENGINE project with CryMono built-in.
 
 ### Documentation
