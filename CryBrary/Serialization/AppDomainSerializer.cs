@@ -86,10 +86,12 @@ namespace CryEngine.Serialization
 							scriptInstance = Formatter.Deserialize(stream) as CryScriptInstance;
 
 						if(scriptInstance != null)
+						{
 							script.ScriptInstances.Add(scriptInstance);
 
-						if(ScriptManager.LastScriptId <= script.ScriptInstances.Last().ScriptId)
-							ScriptManager.LastScriptId = script.ScriptInstances.Last().ScriptId + 1;
+							if(ScriptManager.LastScriptId <= scriptInstance.ScriptId)
+								ScriptManager.LastScriptId = scriptInstance.ScriptId + 1;
+						}
 					}
 				}
 
