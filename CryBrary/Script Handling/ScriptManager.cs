@@ -46,20 +46,19 @@ namespace CryEngine.Initialization
 		/// <param name="constructorParams"></param>
 		/// <returns>New instance scriptId or -1 if instantiation failed.</returns>
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public CryScriptInstance InstantiateScript(string scriptName, object[] constructorParams = null)
+		public object InstantiateScript(string scriptName, object[] constructorParams = null)
 		{
 			if(scriptName.Length < 1)
 				throw new ArgumentException("Empty script name passed to InstantiateClass");
 
 			var script = default(CryScript);
 			var scriptIndex = 0;
-			for(; scriptIndex < CompiledScripts.Count; scriptIndex++)
-			{
-				var foundScript = CompiledScripts[scriptIndex];
 
-				if(foundScript.ScriptName.Equals(scriptName) || (foundScript.ScriptName.Contains(scriptName) && foundScript.Type.Name.Equals(scriptName)))
+			foreach(var compiledScript in CompiledScripts)
+			{
+				if(compiledScript.ScriptName.Equals(scriptName) || (compiledScript.ScriptName.Contains(scriptName) && compiledScript.Type.Name.Equals(scriptName)))
 				{
-					script = foundScript;
+					script = compiledScript;
 					break;
 				}
 			}
@@ -394,7 +393,7 @@ namespace CryEngine.Initialization
 		/// Adds an script instance to the script collection and returns its new id.
 		/// </summary>
 		/// <param name="instance"></param>
-		public static CryScriptInstance AddScriptInstance(CryScriptInstance instance)
+		public static object AddScriptInstance(CryScriptInstance instance)
 		{
 			if(instance == null)
 				return null;
@@ -405,19 +404,18 @@ namespace CryEngine.Initialization
 			return AddScriptInstance(instance, script, scriptIndex);
 		}
 
-		static CryScriptInstance AddScriptInstance(CryScriptInstance instance, CryScript script, int scriptIndex)
+		static object AddScriptInstance(CryScriptInstance instance, CryScript script, int scriptIndex)
 		{
 			if(instance == null)
 				return null;
 
+			instance.ScriptId = LastScriptId++;
+
 			if(script.ScriptInstances == null)
 				script.ScriptInstances = new List<CryScriptInstance>();
 			else if(script.ScriptInstances.Contains(instance))
-				return null;
+				return script.ScriptInstances.First(x => x.Equals(instance));
 
-			LastScriptId++;
-
-			instance.ScriptId = LastScriptId;
 			script.ScriptInstances.Add(instance);
 
 			CompiledScripts[scriptIndex] = script;
