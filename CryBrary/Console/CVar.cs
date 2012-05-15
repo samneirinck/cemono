@@ -13,7 +13,7 @@ namespace CryEngine
 		/// <summary>
 		/// Invoked by a CVar after its creation. Should <b>not</b> be visible outside this assembly.
 		/// </summary>
-		public static CVar Register<T>(string name, T value, string help = "", CVarFlags flags = CVarFlags.Null)
+		public static CVar Register<T>(string name, T value, string help = "", CVarFlags flags = CVarFlags.None)
 		{
 			internalCVars.Add(new CVar(name, value, flags, help));
 
@@ -201,7 +201,7 @@ namespace CryEngine
 		/// <summary>
 		/// just to have one recognizable spot where the flags are located in the Register call
 		/// </summary>
-		Null = 0x00000000,
+		None = 0x00000000,
 		/// <summary>
 		/// stays in the default state when cheats are disabled
 		/// </summary>

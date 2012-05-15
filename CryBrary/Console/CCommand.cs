@@ -5,7 +5,7 @@ namespace CryEngine
 	public static class CCommand
 	{
 		public delegate void CCommandDelegate(string[] args, string fullCommandLine);
-		public static void Register(string name, CCommandDelegate func, string comment = "", CVarFlags flags = CVarFlags.Null)
+		public static void Register(string name, CCommandDelegate func, string comment = "", CVarFlags flags = CVarFlags.None)
 		{
 			Console._RegisterCommand(name, comment, flags);
 
