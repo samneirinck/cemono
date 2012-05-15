@@ -616,7 +616,7 @@
         </member>
         <member name="T:CryEngine.EntityBase">
             <summary>
-            
+            Contains common entity functionality.
             </summary>
         </member>
         <member name="T:CryEngine.CryScriptInstance">
@@ -649,6 +649,11 @@
             <param name="ptr"></param>
             <param name="fileName"></param>
             <param name="slot"></param>
+        </member>
+        <member name="M:CryEngine.EntityBase.OnSpawn">
+            <summary>
+            This callback is called when this entity has finished spawning. The entity has been created and added to the list of entities.
+            </summary>
         </member>
         <member name="P:CryEngine.EntityBase.Position">
             <summary>
@@ -712,11 +717,6 @@
             Returns true if this entity contains input or output ports.
             </summary>
             <returns></returns>
-        </member>
-        <member name="M:CryEngine.Entity.OnSpawn">
-            <summary>
-            This callback is called when this entity has finished spawning. The entity has been created and added to the list of entities.
-            </summary>
         </member>
         <member name="M:CryEngine.Entity.OnRemove">
             <summary>
@@ -1429,6 +1429,18 @@
             </summary>
             <param name="actorInfo"></param>
             <param name="channelId"></param>
+        </member>
+        <member name="P:CryEngine.ActorAttribute.UseMonoActor">
+            <summary>
+            Utilize the C++ Actor class contained within CryMono.dll
+            Otherwise the engine will require one created in the game dll. 
+            </summary>
+        </member>
+        <member name="P:CryEngine.ActorAttribute.IsAI">
+            <summary>
+            Determines if this is an AI actor class.
+            Only applied when UseMonoActor is set to true.
+            </summary>
         </member>
         <member name="T:CryEngine.Quat">
             <summary>

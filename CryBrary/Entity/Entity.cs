@@ -23,7 +23,6 @@ namespace CryEngine
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		internal virtual bool InternalSpawn(EntityInfo entInfo)
 		{
-
 			EntityPointer = entInfo.IEntityPtr;
 			Id = new EntityId(entInfo.Id);
 
@@ -102,11 +101,6 @@ namespace CryEngine
 		#endregion
 
 		#region Callbacks
-		/// <summary>
-		/// This callback is called when this entity has finished spawning. The entity has been created and added to the list of entities.
-		/// </summary>
-		public virtual void OnSpawn() { }
-
 		/// <summary>
 		/// Called when the entity is being removed.
 		/// </summary>
