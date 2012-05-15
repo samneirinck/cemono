@@ -132,7 +132,7 @@ namespace CryEngine
 		/// <summary>
 		/// Who we're watching. 0 == nobody.
 		/// </summary>
-		public EntityId TargetId { get; set; }
+		public uint TargetId { get; set; }
 		/// <summary>
 		/// Where the target was.
 		/// </summary>
