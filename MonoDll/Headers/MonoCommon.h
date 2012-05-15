@@ -19,6 +19,7 @@ namespace mono
 
 	struct entityId
 	{
+		entityId() : id(0) {}
 		entityId(EntityId Id) : id(Id) {}
 
 		EntityId id;
