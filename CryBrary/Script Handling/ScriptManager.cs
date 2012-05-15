@@ -230,7 +230,7 @@ namespace CryEngine.Initialization
 					switch(script.ScriptType)
 					{
 						case ScriptType.Actor:
-							Actor._RegisterActorClass(script.ScriptName, false);
+							LoadActor(ref script);
 							break;
 						case ScriptType.Entity:
 							LoadEntity(ref script);
@@ -252,6 +252,16 @@ namespace CryEngine.Initialization
 				}
 
 				CompiledScripts.Add(script);
+			}
+		}
+
+		void LoadActor(ref CryScript script)
+		{
+			ActorAttribute attr;
+			if(script.Type.TryGetAttribute<ActorAttribute>(out attr))
+			{
+				if(attr.UseMonoActor)
+					Actor._RegisterActorClass(script.ScriptName, attr.IsAI);
 			}
 		}
 

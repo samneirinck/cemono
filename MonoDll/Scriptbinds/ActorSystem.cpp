@@ -1,11 +1,12 @@
 #include "StdAfx.h"
 #include "ActorSystem.h"
 
+#include "Actor.h"
+
 #include <IGameFramework.h>
 
 CActorSystem::CActorSystem()
 {
-	// TODO: Use the CallbackHandler for this.
 	REGISTER_METHOD(GetPlayerHealth);
 	REGISTER_METHOD(SetPlayerHealth);
 	REGISTER_METHOD(GetPlayerMaxHealth);
@@ -59,7 +60,7 @@ EntityId CActorSystem::GetClientActor()
 
 void CActorSystem::RegisterActorClass(mono::string className, bool isAI)
 {
-	//gEnv->pGameFramework->RegisterFactory(ToCryString(className), (CActorClass *)0, isAI, (CActorClass *)0);
+	REGISTER_FACTORY(gEnv->pGameFramework, ToCryString(className), CActor, isAI);
 }
 
 float CActorSystem::GetPlayerHealth(IActor *pActor)

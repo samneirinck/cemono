@@ -138,6 +138,9 @@
     <ClInclude Include="MonoDomain.h">
       <Filter>Wrappers</Filter>
     </ClInclude>
+    <ClInclude Include="Actor.h">
+      <Filter>ActorSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -229,6 +232,9 @@
     <ClCompile Include="MonoDomain.cpp">
       <Filter>Wrappers</Filter>
     </ClCompile>
+    <ClCompile Include="Actor.cpp">
+      <Filter>ActorSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ScriptBinds">
@@ -269,6 +275,9 @@
     </Filter>
     <Filter Include="Interfaces\Subsystems">
       <UniqueIdentifier>{c8d89b01-9d52-4b04-b3e0-3b66f52199f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ActorSystem">
+      <UniqueIdentifier>{7519e88b-de7a-4729-919b-85c4612989e9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

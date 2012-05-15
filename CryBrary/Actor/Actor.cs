@@ -91,14 +91,24 @@ namespace CryEngine
 			return script.ScriptInstances.Last() as Actor;
 		}
 
-		public static Actor LocalPlayer { get { return Get(_GetClientActor()); } }
+		public static Actor Client
+		{
+			get 
+			{
+				var clientActorId = _GetClientActor();
+				if(clientActorId != 0)
+					return Get(clientActorId);
 
-		public static T Create<T>(int channelId, string name, Vec3 pos, Vec3 angles, Vec3 scale) where T : Actor, new()
+				throw new Exception("Failed to get the client actor, id was 0");
+			}
+		}
+
+		public static T Create<T>(int channelId, string name, string className,  Vec3 pos, Vec3 angles, Vec3 scale) where T : Actor, new()
 		{
 			// just in case
 			Actor.Remove(channelId);
 
-			var info = (ActorInfo)_CreateActor(channelId, name, "Player", pos, angles, scale);
+			var info = (ActorInfo)_CreateActor(channelId, name, className, pos, angles, scale);
 			if(info.Id == 0)
 			{
 				Debug.LogAlways("[Actor.Create] New entityId was invalid");
@@ -115,6 +125,11 @@ namespace CryEngine
 			player.InternalSpawn(info, channelId);
 
 			return player;
+		}
+
+		public static T Create<T>(int channelId, string name, Vec3 pos, Vec3 angles, Vec3 scale) where T : Actor, new()
+		{
+			return Create<T>(channelId, name, typeof(T).Name, pos, angles, scale);
 		}
 
 		public static T Create<T>(int channelId, string name, Vec3 pos, Vec3 angles) where T : Actor, new()
@@ -197,6 +212,26 @@ namespace CryEngine
 		public float MaxHealth { get { return _GetPlayerMaxHealth(ActorPointer); } set { _SetPlayerMaxHealth(ActorPointer, value); } }
 
 		public bool IsDead() { return Health <= 0; }
+	}
+
+	[AttributeUsage(AttributeTargets.Class)]
+	public class ActorAttribute : Attribute
+	{
+		public ActorAttribute()
+		{
+		}
+
+		/// <summary>
+		/// Utilize the C++ Actor class contained within CryMono.dll
+		/// Otherwise the engine will require one created in the game dll. 
+		/// </summary>
+		public bool UseMonoActor { get; set; }
+
+		/// <summary>
+		/// Determines if this is an AI actor class.
+		/// Only applied when UseMonoActor is set to true.
+		/// </summary>
+		public bool IsAI { get; set; }
 	}
 
 	internal struct ActorInfo
