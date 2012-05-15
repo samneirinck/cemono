@@ -98,8 +98,9 @@ namespace CryEngine
 				var clientActorId = _GetClientActor();
 				if(clientActorId != 0)
 					return Get(clientActorId);
-
-				throw new Exception("Failed to get the client actor, id was 0");
+				
+				Debug.LogAlways("[Warning] Failed to get the client actor, id was 0");
+				return null;
 			}
 		}
 
