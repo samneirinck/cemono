@@ -201,10 +201,6 @@ namespace CryEngine
 			OnSpawn();
 		}
 
-		#region Callbacks
-		public void OnSpawn() { }
-		#endregion
-
 		internal IntPtr ActorPointer { get; set; }
 		public int ChannelId { get; set; }
 
@@ -217,9 +213,10 @@ namespace CryEngine
 	[AttributeUsage(AttributeTargets.Class)]
 	public class ActorAttribute : Attribute
 	{
-		public ActorAttribute()
+		public ActorAttribute(bool useMonoActor = true, bool isAI = true)
 		{
-			UseMonoActor = true;
+			UseMonoActor = useMonoActor;
+			IsAI = isAI;
 		}
 
 		/// <summary>

@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 namespace CryEngine
 {
 	/// <summary>
-	/// 
+	/// Contains common entity functionality.
 	/// </summary>
 	public abstract class EntityBase : CryScriptInstance
 	{
@@ -125,6 +125,13 @@ namespace CryEngine
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static bool _EntityExists(EntityId id);
+		#endregion
+
+		#region Callbacks
+		/// <summary>
+		/// This callback is called when this entity has finished spawning. The entity has been created and added to the list of entities.
+		/// </summary>
+		public virtual void OnSpawn() { }
 		#endregion
 
 		internal void InitPhysics()
