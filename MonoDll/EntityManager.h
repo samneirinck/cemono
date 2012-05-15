@@ -89,16 +89,16 @@ struct SMonoEntityProperty
 
 struct SMonoEntityInfo
 {
-	SMonoEntityInfo() { id = 0; }
+	SMonoEntityInfo() { }
 
-	SMonoEntityInfo(IEntity *pEnt)
+	SMonoEntityInfo(IEntity *pEnt, EntityId entId)
 		: pEntity(pEnt)
 	{
-		id = pEntity->GetId();
+		id = mono::entityId(entId);
 	}
 
 	IEntity *pEntity;
-	EntityId id;
+	mono::entityId id;
 };
 
 class CEntityManager 

@@ -21,7 +21,7 @@ public:
 	CEntity(IMonoClass *pScriptClass);
 	~CEntity();
 
-	void OnSpawn(EntityId id);
+	void OnSpawn(IEntity *pEntity, EntityId id);
 
 	virtual void OnEntityEvent( IEntity *pEntity,SEntityEvent &event );
 

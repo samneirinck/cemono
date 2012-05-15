@@ -177,7 +177,7 @@ namespace CryEngine
 		}
 
 		public IntPtr IEntityPtr;
-		public uint Id;
+		public EntityId Id;
 	}
 
 	/// <summary>

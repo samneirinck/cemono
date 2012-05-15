@@ -97,7 +97,9 @@ bool CEntityManager::OnBeforeSpawn(SEntitySpawnParams &params)
 	if(!IsMonoEntity(className))
 		return true;
 
-	m_monoEntities.push_back(std::shared_ptr<CEntity>(new CEntity(gEnv->pMonoScriptSystem->InstantiateScript(className))));
+	IMonoClass *pScript = gEnv->pMonoScriptSystem->InstantiateScript(className);
+
+	m_monoEntities.push_back(std::shared_ptr<CEntity>(new CEntity(pScript)));
 
 	return true;
 }
@@ -109,14 +111,7 @@ void CEntityManager::OnSpawn(IEntity *pEntity,SEntitySpawnParams &params)
 	if(!IsMonoEntity(className))
 		return;
 
-	EntityId id = pEntity->GetId();
-	if(id == 0)
-	{
-		CryLogAlways("Failed to spawn entity %s of class %s", params.sName, params.pClass ? params.pClass->GetName() : "[Invalid Class]");
-		m_monoEntities.erase(std::remove(m_monoEntities.begin(), m_monoEntities.end(), m_monoEntities.back()), m_monoEntities.end());
-	}
-
-	m_monoEntities.back()->OnSpawn(id);
+	m_monoEntities.back()->OnSpawn(pEntity, params.id);
 }
 
 bool CEntityManager::OnRemove(IEntity *pEntity)
@@ -193,7 +188,7 @@ IMonoClass *CEntityManager::GetScript(EntityId entityId, bool returnBackIfInvali
 SMonoEntityInfo CEntityManager::SpawnEntity(EntitySpawnParams params, bool bAutoInit)
 {
 	if(IEntity *pEntity = gEnv->pEntitySystem->SpawnEntity(params.Convert(), bAutoInit))
-		return SMonoEntityInfo(pEntity);
+		return SMonoEntityInfo(pEntity, pEntity->GetId());
 
 	return SMonoEntityInfo();
 }

@@ -20,10 +20,8 @@ CEntity::~CEntity()
 	SAFE_RELEASE(m_pScriptClass);
 }
 
-void CEntity::OnSpawn(EntityId id)
+void CEntity::OnSpawn(IEntity *pEntity, EntityId id)
 {
-	m_entityId = id;
-
 #define ADD_EVENTLISTENER(event) gEnv->pEntitySystem->AddEntityEventListener(id, event, this);
 	ADD_EVENTLISTENER(ENTITY_EVENT_LEVEL_LOADED);
 	ADD_EVENTLISTENER(ENTITY_EVENT_RESET);
@@ -37,7 +35,7 @@ void CEntity::OnSpawn(EntityId id)
 
 	IMonoClass *pEntityInfoClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("EntityInfo");
 
-	CallMonoScript<void>(m_pScriptClass, "InternalSpawn", gEnv->pMonoScriptSystem->GetConverter()->ToManagedType(pEntityInfoClass, &SMonoEntityInfo(gEnv->pEntitySystem->GetEntity(id))));
+	CallMonoScript<void>(m_pScriptClass, "InternalSpawn", gEnv->pMonoScriptSystem->GetConverter()->ToManagedType(pEntityInfoClass, &SMonoEntityInfo(pEntity, id)));
 }
 
 void CEntity::OnEntityEvent(IEntity *pEntity,SEntityEvent &event)
