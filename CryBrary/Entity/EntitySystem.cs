@@ -164,7 +164,11 @@ namespace CryEngine
 				yield break;
 
 			foreach(EntityId id in entitiesByClass)
-				yield return Get<T>(id);
+			{
+				var ent = Get<T>(id);
+				if(ent != null)
+					yield return ent;
+			}
 		}
     }
 
