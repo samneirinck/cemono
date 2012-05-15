@@ -4,11 +4,11 @@
 	{
 		public static object FromString(EntityPropertyType type, string value)
 		{
-            if (value == null)
-                throw new System.ArgumentNullException("value");
+			if(value == null)
+				throw new System.ArgumentNullException("value");
 
-			switch (type)
- 			{
+			switch(type)
+			{
 				case EntityPropertyType.Bool:
 					return ChangeType(value, typeof(bool));
 				case EntityPropertyType.Int:
@@ -19,10 +19,10 @@
 					return value;
 				case EntityPropertyType.Vec3:
 					return ChangeType(value, typeof(Vec3));
- 			}
- 
+			}
+
 			return null;
- 		}
+		}
 
 		public static object ChangeType(object value, System.Type conversionType)
 		{

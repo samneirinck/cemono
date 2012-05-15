@@ -1,22 +1,22 @@
 ﻿namespace CryEngine
 {
-    enum EntityMoveType
-    {
-        None = 0,
-        Normal,
-        Fly,
-        Swim,
-        ZeroG,
+	enum EntityMoveType
+	{
+		None = 0,
+		Normal,
+		Fly,
+		Swim,
+		ZeroG,
 
-        Impulse,
-        JumpInstant,
-        JumpAccumulate
-    }
+		Impulse,
+		JumpInstant,
+		JumpAccumulate
+	}
 
-    struct EntityMovementRequest
-    {
-        public EntityMoveType type;
+	struct EntityMovementRequest
+	{
+		public EntityMoveType type;
 
-        public Vec3 velocity;
-    }
+		public Vec3 velocity;
+	}
 }

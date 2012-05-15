@@ -60,49 +60,49 @@ namespace CryEngine
 		}
 
 		internal virtual NodeConfig GetNodeConfig()
-        {
-            var nodeInfo = GetType().GetAttribute<FlowNodeAttribute>();
+		{
+			var nodeInfo = GetType().GetAttribute<FlowNodeAttribute>();
 
-            return new NodeConfig(nodeInfo.Category, nodeInfo.Description);
-        }
+			return new NodeConfig(nodeInfo.Category, nodeInfo.Description);
+		}
 
 		internal virtual NodePortConfig GetPortConfig()
-        {
-            if (inputMethods == null)
-                inputMethods = new List<MethodInfo>();
+		{
+			if(inputMethods == null)
+				inputMethods = new List<MethodInfo>();
 
-            Type type = GetType();
+			Type type = GetType();
 
-            var inputs = new List<object>();
-            var outputs = new List<object>();
+			var inputs = new List<object>();
+			var outputs = new List<object>();
 
-			foreach (var member in type.GetMembers())
+			foreach(var member in type.GetMembers())
 				ProcessMemberForPort(member, ref inputs, ref outputs);
 
-            return new NodePortConfig(inputs.ToArray(), outputs.ToArray());
-        }
+			return new NodePortConfig(inputs.ToArray(), outputs.ToArray());
+		}
 
 		public void ProcessMemberForPort(MemberInfo member, ref List<object> inputs, ref List<object> outputs)
 		{
 			PortAttribute portAttribute;
-			if (member.TryGetAttribute(out portAttribute))
+			if(member.TryGetAttribute(out portAttribute))
 			{
 				MethodInfo method = member as MethodInfo;
-				if (method != null)
+				if(method != null)
 				{
 					NodePortType portType;
 					object defaultVal = null;
 
-					if (method.GetParameters().Length > 0)
+					if(method.GetParameters().Length > 0)
 					{
 						ParameterInfo parameter = method.GetParameters()[0];
 						portType = GetPortType(parameter.ParameterType);
 
-						if (parameter.IsOptional)
+						if(parameter.IsOptional)
 							defaultVal = parameter.DefaultValue;
 						else
 						{
-							switch (portType)
+							switch(portType)
 							{
 								case NodePortType.Bool:
 									defaultVal = false;
@@ -134,13 +134,13 @@ namespace CryEngine
 
 				FieldInfo field = member as FieldInfo;
 				PropertyInfo property = member as PropertyInfo;
-				if (field != null || property != null)
+				if(field != null || property != null)
 				{
 					NodePortType portType = 0;
 
-					if (field != null)
+					if(field != null)
 					{
-						if (field.FieldType.Name.StartsWith("OutputPort"))
+						if(field.FieldType.Name.StartsWith("OutputPort"))
 						{
 							bool isGenericType = field.FieldType.IsGenericType;
 							Type genericType = isGenericType ? field.FieldType.GetGenericArguments()[0] : typeof(void);
@@ -156,7 +156,7 @@ namespace CryEngine
 					}
 					else
 					{
-						if (property.PropertyType.Name.StartsWith("OutputPort"))
+						if(property.PropertyType.Name.StartsWith("OutputPort"))
 						{
 							bool isGenericType = property.PropertyType.IsGenericType;
 							Type genericType = isGenericType ? property.PropertyType.GetGenericArguments()[0] : typeof(void);
@@ -301,10 +301,10 @@ namespace CryEngine
 	[AttributeUsage(AttributeTargets.Class)]
 	public class FlowNodeAttribute : Attribute
 	{
-        /// <summary>
-        /// Name of the node, if not set will use the node class name.
-        /// </summary>
-        public string Name { get; set; }
+		/// <summary>
+		/// Name of the node, if not set will use the node class name.
+		/// </summary>
+		public string Name { get; set; }
 		/// <summary>
 		/// Category in which the node will appear when right-clicking in the Flowgraph Editor.
 		/// </summary>
@@ -356,17 +356,17 @@ namespace CryEngine
 
 		public void Activate(T value)
 		{
-			if (value is int)
+			if(value is int)
 				FlowNode._ActivateOutputInt(ParentNodePointer, PortId, System.Convert.ToInt32(value));
-			else if (value is float || value is double)
+			else if(value is float || value is double)
 				FlowNode._ActivateOutputFloat(ParentNodePointer, PortId, System.Convert.ToSingle(value));
-			else if (value is uint)
+			else if(value is uint)
 				FlowNode._ActivateOutputEntityId(ParentNodePointer, PortId, System.Convert.ToUInt32(value));
-			else if (value is string)
+			else if(value is string)
 				FlowNode._ActivateOutputString(ParentNodePointer, PortId, System.Convert.ToString(value));
-			else if (value is bool)
+			else if(value is bool)
 				FlowNode._ActivateOutputBool(ParentNodePointer, PortId, System.Convert.ToBoolean(value));
-			else if (value is Vec3)
+			else if(value is Vec3)
 				FlowNode._ActivateOutputVec3(ParentNodePointer, PortId, (Vec3)(object)value);
 			else
 				throw new ArgumentException("Attempted to activate output with invalid value!");
@@ -376,7 +376,7 @@ namespace CryEngine
 		int PortId { get; set; }
 	}
 
-    [Flags]
+	[Flags]
 	public enum FlowNodeFlags
 	{
 		/// <summary>
@@ -431,7 +431,7 @@ namespace CryEngine
 
 	public struct InputPortConfig
 	{
-        public InputPortConfig(string _name, NodePortType _type, string desc = "", string _humanName = "", string UIConfig = "")
+		public InputPortConfig(string _name, NodePortType _type, string desc = "", string _humanName = "", string UIConfig = "")
 			: this()
 		{
 			name = _name;
@@ -442,14 +442,14 @@ namespace CryEngine
 
 			type = _type;
 
-            defaultValue = null;
+			defaultValue = null;
 		}
 
-        public InputPortConfig(string _name, NodePortType _type, object defaultVal = null, string desc = "", string _humanName = "", string UIConfig = "")
-            : this(_name, _type, desc, _humanName, UIConfig)
-        {
-            defaultValue = defaultVal;
-        }
+		public InputPortConfig(string _name, NodePortType _type, object defaultVal = null, string desc = "", string _humanName = "", string UIConfig = "")
+			: this(_name, _type, desc, _humanName, UIConfig)
+		{
+			defaultValue = defaultVal;
+		}
 
 		public string name;
 		public string humanName;
@@ -459,7 +459,7 @@ namespace CryEngine
 
 		public string uiConfig;
 
-        public object defaultValue;
+		public object defaultValue;
 	}
 
 	public struct OutputPortConfig
@@ -495,9 +495,9 @@ namespace CryEngine
 		string description;
 	}
 
-    public struct NodePortConfig
-    {
-        public NodePortConfig(object[] inputPorts, object[] outputPorts)
+	public struct NodePortConfig
+	{
+		public NodePortConfig(object[] inputPorts, object[] outputPorts)
 			: this()
 		{
 			inputs = inputPorts;
@@ -506,5 +506,5 @@ namespace CryEngine
 
 		public object[] inputs;
 		public object[] outputs;
-    }
+	}
 }

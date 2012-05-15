@@ -76,14 +76,14 @@ namespace CryEngine
 	/// Defines the list of supported editor types.
 	/// Bool is not currently functioning.
 	/// </summary>
-    public enum EntityPropertyType
-    {
-        Bool,
-        Int,
-        Float,
-        Vec3,
-        String,
-        Entity,
+	public enum EntityPropertyType
+	{
+		Bool,
+		Int,
+		Float,
+		Vec3,
+		String,
+		Entity,
 		Object,
 		Texture,
 		File,
@@ -91,26 +91,26 @@ namespace CryEngine
 		Dialogue,
 		Color,
 		Sequence
-    }
+	}
 
-    public struct EntityPropertyLimits
-    {
-        public EntityPropertyLimits(float min, float max)
-            : this()
-        {
+	public struct EntityPropertyLimits
+	{
+		public EntityPropertyLimits(float min, float max)
+			: this()
+		{
 			this.min = min;
 			this.max = max;
-        }
+		}
 
-        public float min;
-        public float max;
-    }
+		public float min;
+		public float max;
+	}
 
-    public struct EntityProperty
-    {
-        public EntityProperty(string Name, string Desc, EntityPropertyType Type, EntityPropertyLimits Limits, int Flags = 0)
-            : this(Name, Desc, Type)
-        {
+	public struct EntityProperty
+	{
+		public EntityProperty(string Name, string Desc, EntityPropertyType Type, EntityPropertyLimits Limits, int Flags = 0)
+			: this(Name, Desc, Type)
+		{
 			if(Limits.max == 0 && Limits.min == 0)
 			{
 				limits.max = Sandbox.UIConstants.MAX_SLIDER_VALUE;
@@ -121,52 +121,52 @@ namespace CryEngine
 				limits.min = Limits.min;
 			}
 
-            flags = Flags;
-        }
+			flags = Flags;
+		}
 
-        public EntityProperty(string Name, string Desc, EntityPropertyType Type)
-            : this()
-        {
-            name = Name;
-            description = Desc;
-            type = Type;
-        }
+		public EntityProperty(string Name, string Desc, EntityPropertyType Type)
+			: this()
+		{
+			name = Name;
+			description = Desc;
+			type = Type;
+		}
 
-        public string name;
-        public string description;
+		public string name;
+		public string description;
 
 #pragma warning disable 414
 		private string editType;
 #pragma warning restore 414
 
-        public EntityPropertyType type 
-        {
-            get
-            {
-                return _type;
-            }
-            set
-            {
-                _type = value;
+		public EntityPropertyType type
+		{
+			get
+			{
+				return _type;
+			}
+			set
+			{
+				_type = value;
 
-                switch (value)
-                {
+				switch(value)
+				{
 					//VALUE TYPES
-                    case EntityPropertyType.Bool:
-                        {
-                            editType = "b"; // Start automagically working right now or I'll roundhouse kick you to the Pegasus galaxy >:(
-                        }
-                        break;
-                    case EntityPropertyType.Int:
-                        {
-                            editType = "i";
-                        }
-                        break;
-                    case EntityPropertyType.Float:
-                        {
-                            editType = "f";
-                        }
-                        break;
+					case EntityPropertyType.Bool:
+						{
+							editType = "b"; // Start automagically working right now or I'll roundhouse kick you to the Pegasus galaxy >:(
+						}
+						break;
+					case EntityPropertyType.Int:
+						{
+							editType = "i";
+						}
+						break;
+					case EntityPropertyType.Float:
+						{
+							editType = "f";
+						}
+						break;
 
 
 					//FILE SELECTORS
@@ -222,13 +222,13 @@ namespace CryEngine
 						}
 						break;
 
-                }
-            }
-        }
+				}
+			}
+		}
 
-        private EntityPropertyType _type;
-        public int flags;
+		private EntityPropertyType _type;
+		public int flags;
 
-        public EntityPropertyLimits limits;
-    }
+		public EntityPropertyLimits limits;
+	}
 }

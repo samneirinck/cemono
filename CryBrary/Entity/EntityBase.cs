@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Linq;
-using System.Text;
 
 namespace CryEngine
 {
@@ -154,15 +151,15 @@ namespace CryEngine
 		}
 
 		PhysicsParams _physics;
-		public PhysicsParams Physics 
+		public PhysicsParams Physics
 		{
-			get { return _physics; } 
-			set 
+			get { return _physics; }
+			set
 			{
-				_physics = value; 
-				
-				_physics._entityId = Id; 
-				_physics._entityPtr = EntityPointer; 
+				_physics = value;
+
+				_physics._entityId = Id;
+				_physics._entityPtr = EntityPointer;
 			}
 		}
 

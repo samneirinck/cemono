@@ -1,10 +1,7 @@
-﻿using System.IO;
-using System.Collections.Generic;
-
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-
 using CryEngine.Serialization;
-
 using NUnit.Framework;
 
 namespace CryBrary.Tests.Serialization
@@ -22,7 +19,7 @@ namespace CryBrary.Tests.Serialization
 				{
 					NestedEnum = enumVal;
 				}
-				 
+
 				public NestedEnum NestedEnum { get; set; }
 			}
 
@@ -213,7 +210,7 @@ namespace CryBrary.Tests.Serialization
 
 			public TestClass TestClassSeperate { get; set; }
 		}
-		
+
 		[Test]
 		public void Reference_Object_Serialization()
 		{
@@ -229,11 +226,11 @@ namespace CryBrary.Tests.Serialization
 				referenceTestClass = serializer.Deserialize(stream) as Multiple_Reference_Test_Class;
 
 				Assert.AreNotSame(referenceTestClass.ClassWithTestClassReference, referenceTestClass.TestClassSeperate);
-				Assert.AreSame(referenceTestClass.ClassWithTestClassReference.TestClass, referenceTestClass.TestClassReference, "Objects were not the same; expected hash code: {0} but was: {1}", 
+				Assert.AreSame(referenceTestClass.ClassWithTestClassReference.TestClass, referenceTestClass.TestClassReference, "Objects were not the same; expected hash code: {0} but was: {1}",
 					referenceTestClass.ClassWithTestClassReference.GetHashCode(), referenceTestClass.TestClassReference.GetHashCode());
 			}
 		}
-		
+
 		class Class_With_MemberInfo_Member
 		{
 			public Class_With_MemberInfo_Member()
@@ -242,7 +239,7 @@ namespace CryBrary.Tests.Serialization
 				FieldInfo = GetType().GetField("booleanField");
 			}
 
-			public void Method() {}
+			public void Method() { }
 
 			public System.Reflection.MethodInfo MethodInfo { get; set; }
 			public System.Reflection.FieldInfo FieldInfo { get; set; }

@@ -21,10 +21,8 @@
 */
 using System;
 using System.Globalization;
-using System.Runtime.InteropServices;
-using System.ComponentModel;
-
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace CryEngine
 {

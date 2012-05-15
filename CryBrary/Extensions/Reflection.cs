@@ -6,8 +6,8 @@ namespace CryEngine.Extensions
 	/// <summary>
 	/// Useful extensions when working with reflection.
 	/// </summary>
-    public static class ReflectionExtensions
-    {
+	public static class ReflectionExtensions
+	{
 		/// <summary>
 		/// Determines whether this member is decorated with at least one instance of a given attribute.
 		/// </summary>
@@ -36,10 +36,10 @@ namespace CryEngine.Extensions
 		/// <param name="thisType">The child type.</param>
 		/// <param name="baseType">The possible parent type.</param>
 		/// <returns>True if thisType is a child of baseType.</returns>
-        public static bool Implements(this Type thisType, Type baseType)
-        {
-            return baseType.IsAssignableFrom(thisType) && !thisType.Equals(baseType);
-        }
+		public static bool Implements(this Type thisType, Type baseType)
+		{
+			return baseType.IsAssignableFrom(thisType) && !thisType.Equals(baseType);
+		}
 
 		/// <summary>
 		/// Gets the first instance of a given attribute on the selected member.
@@ -109,20 +109,20 @@ namespace CryEngine.Extensions
 		/// <param name="member">The member on which the search is performed.</param>
 		/// <param name="attribute">The out parameter to which the attribute will be assigned.</param>
 		/// <returns>True if the attribute exists.</returns>
-        public static bool TryGetAttribute<T>(this MemberInfo member, out T attribute) where T : Attribute
-        {
-            var attributes = member.GetCustomAttributes(typeof(T), true);
+		public static bool TryGetAttribute<T>(this MemberInfo member, out T attribute) where T : Attribute
+		{
+			var attributes = member.GetCustomAttributes(typeof(T), true);
 
-            if (attributes.Length > 0)
-            {
-                attribute = attributes[0] as T;
-                return true;
-            }
-            else
-            {
-                attribute = null;
-                return false;
-            }
-        }
-    }
+			if(attributes.Length > 0)
+			{
+				attribute = attributes[0] as T;
+				return true;
+			}
+			else
+			{
+				attribute = null;
+				return false;
+			}
+		}
+	}
 }

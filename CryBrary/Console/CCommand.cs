@@ -21,7 +21,7 @@ namespace CryEngine
 			for(int i = 1; i < argsWithName.Length; i++)
 				args[i - 1] = argsWithName[i];
 
-			commands[name](args, fullCommandLine); 
+			commands[name](args, fullCommandLine);
 		}
 
 		static Dictionary<string, CCommandDelegate> commands = new Dictionary<string, CCommandDelegate>();

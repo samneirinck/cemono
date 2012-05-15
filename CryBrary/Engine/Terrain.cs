@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-
+﻿
 namespace CryEngine
 {
 	public static class Terrain

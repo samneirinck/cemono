@@ -1,28 +1,24 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
-using System.Reflection;
 
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 using System.Linq;
 
 using CryEngine.Initialization;
-using CryEngine.Extensions;
 
 namespace CryEngine
 {
-    public partial class Entity
+	public partial class Entity
 	{
 		/// <summary>
 		/// Register a new entity type.
 		/// </summary>
 		/// <param name="config">The Entity configuration.</param>
 		/// <returns>True if registration succeeded, otherwise false.</returns>
-        internal static bool RegisterClass(EntityConfig config)
-        {
-            return _RegisterEntityClass(config.registerParams, config.properties);
-        }
+		internal static bool RegisterClass(EntityConfig config)
+		{
+			return _RegisterEntityClass(config.registerParams, config.properties);
+		}
 
 		/// <summary>
 		/// Spawn a new instance of entity type T.
@@ -129,20 +125,20 @@ namespace CryEngine
 		/// <returns>A reference to the entity.</returns>
 		/// <remarks>If multiple entities have the same name, it will return the first found.
 		/// Consider using IDs where necessary.</remarks>
-        public static Entity Find(string name)
-        {
-            return Get(new EntityId(_FindEntity(name)));
-        }
+		public static Entity Find(string name)
+		{
+			return Get(new EntityId(_FindEntity(name)));
+		}
 
 		/// <summary>
 		/// Gets an array of entities that are of a given class.
 		/// </summary>
 		/// <param name="className">The entity class to search for.</param>
 		/// <returns>An array of entities.</returns>
-        public static IEnumerable<Entity> GetEntities(string className)
-        {
+		public static IEnumerable<Entity> GetEntities(string className)
+		{
 			return GetEntitiesCommon<Entity>(className);
-        }
+		}
 
 		/// <summary>
 		/// Gets an array of entities that are of a given class.
@@ -170,7 +166,7 @@ namespace CryEngine
 					yield return ent;
 			}
 		}
-    }
+	}
 
 	internal struct EntityInfo
 	{
@@ -188,91 +184,91 @@ namespace CryEngine
 	/// These flags control entity instance behaviour.
 	/// </summary>
 	[Flags]
-    public enum EntityFlags
-    {
-        CastShadow = (1 << 1),
-        Unremovable = (1 << 2),
+	public enum EntityFlags
+	{
+		CastShadow = (1 << 1),
+		Unremovable = (1 << 2),
 
-        ClientOnly = (1 << 8),
-        ServerOnly = (1 << 9),
-    }
+		ClientOnly = (1 << 8),
+		ServerOnly = (1 << 9),
+	}
 
-    public struct EntitySpawnParams
-    {
-        public string Name;
-        public string Class;
+	public struct EntitySpawnParams
+	{
+		public string Name;
+		public string Class;
 
-        public Vec3 Pos;
+		public Vec3 Pos;
 		public Vec3 Rot;
 		public Vec3 Scale;
 
-        public EntityFlags Flags;
-    }
+		public EntityFlags Flags;
+	}
 
 	/// <summary>
 	/// These flags define behaviour for entity classes.
 	/// </summary>
 	[Flags]
-    public enum EntityClassFlags
-    {
-        /// <summary>
-        /// If set this class will not be visible in editor,and entity of this class cannot be placed manually in editor.
-        /// </summary>
-        Invisible = 0x0001,
-        /// <summary>
-        /// If this is default entity class.
-        /// </summary>
-        Default = 0x0002,
-    }
+	public enum EntityClassFlags
+	{
+		/// <summary>
+		/// If set this class will not be visible in editor,and entity of this class cannot be placed manually in editor.
+		/// </summary>
+		Invisible = 0x0001,
+		/// <summary>
+		/// If this is default entity class.
+		/// </summary>
+		Default = 0x0002,
+	}
 
-    struct EntityConfig
-    {
-        public EntityConfig(EntityRegisterParams _params, object[] props)
-            : this()
-        {
-            registerParams = _params;
-            properties = props;
-        }
+	struct EntityConfig
+	{
+		public EntityConfig(EntityRegisterParams _params, object[] props)
+			: this()
+		{
+			registerParams = _params;
+			properties = props;
+		}
 
 		/// <summary>
 		/// The registration information.
 		/// </summary>
-        public EntityRegisterParams registerParams;
+		public EntityRegisterParams registerParams;
 		/// <summary>
 		/// The properties that will be displayed inside Sandbox.
 		/// </summary>
-        public object[] properties;
-    }
+		public object[] properties;
+	}
 
-    struct EntityRegisterParams
-    {
-        public EntityRegisterParams(string helper, string icon, EntityClassFlags flags)
-            : this()
-        {
-            EditorHelper = helper;
-            EditorIcon = icon;
+	struct EntityRegisterParams
+	{
+		public EntityRegisterParams(string helper, string icon, EntityClassFlags flags)
+			: this()
+		{
+			EditorHelper = helper;
+			EditorIcon = icon;
 
-            Flags = flags;
-        }
+			Flags = flags;
+		}
 
-        public EntityRegisterParams(string name, string category, string helper, string icon, EntityClassFlags flags)
-            : this()
-        {
-            Name = name;
-            Category = category;
+		public EntityRegisterParams(string name, string category, string helper, string icon, EntityClassFlags flags)
+			: this()
+		{
+			Name = name;
+			Category = category;
 
-            EditorHelper = helper;
-            EditorIcon = icon;
+			EditorHelper = helper;
+			EditorIcon = icon;
 
-            Flags = flags;
-        }
+			Flags = flags;
+		}
 
-        public string Name;
-        public string Category;
+		public string Name;
+		public string Category;
 
-        public string EditorHelper;
-        public string EditorIcon;
+		public string EditorHelper;
+		public string EditorIcon;
 
-        public EntityClassFlags Flags;
-    }
+		public EntityClassFlags Flags;
+	}
 }

@@ -101,7 +101,7 @@ namespace CryEngine
 		/// view orientation
 		/// </summary>
 		public Quat Rotation { get; set; }
-        public Quat LastLocalRotation { get; set; }
+		public Quat LastLocalRotation { get; set; }
 
 		/// <summary>
 		/// custom near clipping plane, 0 means use engine defaults
@@ -164,9 +164,9 @@ namespace CryEngine
 		public float BlendFieldOfViewOffset { get; set; }
 		public bool JustActivated { get; set; }
 
-        private byte LastViewID { get; set; }
-        private Vec3 LastPosition { get; set; }
-        private Quat LastRotation { get; set; }
+		private byte LastViewID { get; set; }
+		private Vec3 LastPosition { get; set; }
+		private Quat LastRotation { get; set; }
 		private float LastFieldOfView { get; set; }
 	}
 }

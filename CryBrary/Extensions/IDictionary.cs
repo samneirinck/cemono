@@ -12,7 +12,7 @@ namespace CryEngine.Extensions
 
 			foreach(KeyValuePair<TKey, TValue> pair in dictionary)
 			{
-				if(value.Equals(pair.Value)) 
+				if(value.Equals(pair.Value))
 				{
 					key = pair.Key;
 					return true;

@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
-
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Runtime.CompilerServices;
 using CryEngine.Initialization;
-using CryEngine.Extensions;
 
 namespace CryEngine
 {
 	/// <summary>
 	/// WIP Player class. TODO: Redo, currently very limited in terms of callbacks + interoperability with C++ backend
 	/// </summary>
-    public abstract class Actor : EntityBase
+	public abstract class Actor : EntityBase
 	{
 		#region Externals
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
@@ -171,13 +168,13 @@ namespace CryEngine
 		}
 		#endregion
 
-        /// <summary>
-        /// Initializes the player.
-        /// </summary>
+		/// <summary>
+		/// Initializes the player.
+		/// </summary>
 		/// <param name="actorInfo"></param>
-        /// <param name="channelId"></param>
+		/// <param name="channelId"></param>
 		internal void InternalSpawn(ActorInfo actorInfo, int channelId)
-        {
+		{
 			Id = new EntityId(actorInfo.Id);
 			ActorPointer = actorInfo.ActorPtr;
 			EntityPointer = actorInfo.EntityPtr;
@@ -187,7 +184,7 @@ namespace CryEngine
 			InitPhysics();
 
 			OnSpawn();
-        }
+		}
 
 		#region Callbacks
 		public void OnSpawn() { }
@@ -199,8 +196,8 @@ namespace CryEngine
 		public float Health { get { return _GetPlayerHealth(ActorPointer); } set { _SetPlayerHealth(ActorPointer, value); } }
 		public float MaxHealth { get { return _GetPlayerMaxHealth(ActorPointer); } set { _SetPlayerMaxHealth(ActorPointer, value); } }
 
-        public bool IsDead() { return Health <= 0; }
-    }
+		public bool IsDead() { return Health <= 0; }
+	}
 
 	internal struct ActorInfo
 	{

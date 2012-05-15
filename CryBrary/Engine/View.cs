@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace CryEngine
 {
-    public class View
+	public class View
 	{
 		#region Externals
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
@@ -69,26 +69,26 @@ namespace CryEngine
 		#endregion
 
 		internal View(uint viewId)
-        {
-            Id = new EntityId(viewId);
-        }
+		{
+			Id = new EntityId(viewId);
+		}
 
-        internal View(EntityId viewId)
-        {
-            Id = viewId;
-        }
+		internal View(EntityId viewId)
+		{
+			Id = viewId;
+		}
 
-        public Vec3 Position { get { return ViewParams.Position; } set { var viewParams = ViewParams; viewParams.Position = value; ViewParams = viewParams; } }
-        public Quat Rotation { get { return ViewParams.Rotation; } set { var viewParams = ViewParams; viewParams.Rotation = value; ViewParams = viewParams; } }
+		public Vec3 Position { get { return ViewParams.Position; } set { var viewParams = ViewParams; viewParams.Position = value; ViewParams = viewParams; } }
+		public Quat Rotation { get { return ViewParams.Rotation; } set { var viewParams = ViewParams; viewParams.Rotation = value; ViewParams = viewParams; } }
 
 		/// <summary>
 		/// The current field of view.
 		/// </summary>
-        public float FoV { get { return ViewParams.FieldOfView; } set { var viewParams = ViewParams; viewParams.FieldOfView = value; ViewParams = viewParams; } }
+		public float FoV { get { return ViewParams.FieldOfView; } set { var viewParams = ViewParams; viewParams.FieldOfView = value; ViewParams = viewParams; } }
 
-        internal ViewParams ViewParams { get { return _GetViewParams(Id); } set { _SetViewParams(Id, value); } }
-        public EntityId Id;
+		internal ViewParams ViewParams { get { return _GetViewParams(Id); } set { _SetViewParams(Id, value); } }
+		public EntityId Id;
 
 		static List<View> Views = new List<View>();
-    }
+	}
 }

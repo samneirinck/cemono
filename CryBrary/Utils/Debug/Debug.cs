@@ -1,6 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
 
-using CryEngine;
 
 namespace CryEngine
 {

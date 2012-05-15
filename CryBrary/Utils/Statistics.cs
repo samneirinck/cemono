@@ -10,9 +10,9 @@ namespace CryEngine.Utilities
 		/// <summary>
 		/// The current approximate memory usage in megabytes.
 		/// </summary>
-        public static long MemoryUsageMB
+		public static long MemoryUsageMB
 		{
-			get { return MemoryUsageKB / 1024; } 
+			get { return MemoryUsageKB / 1024; }
 		}
 
 		/// <summary>

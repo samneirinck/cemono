@@ -22,7 +22,6 @@
 using System;
 using System.Globalization;
 using System.Runtime.InteropServices;
-using System.ComponentModel;
 
 namespace CryEngine
 {
@@ -139,7 +138,7 @@ namespace CryEngine
 		public bool Contains(ref Vec3 point)
 		{
 			return Collision.SphereContainsPoint(ref this, ref point);
-		} 
+		}
 
 		/// <summary>
 		/// Determines whether the current objects contains a triangle.

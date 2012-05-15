@@ -1,31 +1,30 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-using System.Linq;
 
 namespace CryEngine
 {
-    class PhysicalWorld
-    {
+	class PhysicalWorld
+	{
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static int _RayWorldIntersection(Vec3 origin, Vec3 dir, EntityQueryFlags objFlags, RayWorldIntersectionFlags flags, ref RayHit rayHit, int maxHits, object[] skipEnts);
 
-        internal struct RayHit
-        {
-            internal float dist;
-	        internal int colliderId;
-	        internal int ipart;
-	        internal int partid;
-	        internal short surface_idx;
-	        internal short idmatOrg;	// original material index, not mapped with material mapping
-	        internal int foreignIdx;
-	        internal int iNode; // BV tree node that had the intersection; can be used for "warm start" next time
-	        internal Vec3 pt;
-	        internal Vec3 n;	// surface normal
-	        internal int bTerrain;	// global terrain hit
-	        internal int iPrim; // hit triangle index
-        };
-    }
+		internal struct RayHit
+		{
+			internal float dist;
+			internal int colliderId;
+			internal int ipart;
+			internal int partid;
+			internal short surface_idx;
+			internal short idmatOrg;	// original material index, not mapped with material mapping
+			internal int foreignIdx;
+			internal int iNode; // BV tree node that had the intersection; can be used for "warm start" next time
+			internal Vec3 pt;
+			internal Vec3 n;	// surface normal
+			internal int bTerrain;	// global terrain hit
+			internal int iPrim; // hit triangle index
+		};
+	}
 
 	public struct RaycastHit
 	{

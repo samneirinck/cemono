@@ -1,23 +1,19 @@
 ﻿using System;
-using System.Linq;
-
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-
-using System.Xml.Linq;
-
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 
 namespace CryEngine.Utilities
 {
-    /// <summary>
-    /// Handles retrieval of required assemblies for compiled scripts etc.
-    /// </summary>
-    public class AssemblyReferenceHandler
-    {
-        public AssemblyReferenceHandler()
-        {
+	/// <summary>
+	/// Handles retrieval of required assemblies for compiled scripts etc.
+	/// </summary>
+	public class AssemblyReferenceHandler
+	{
+		public AssemblyReferenceHandler()
+		{
 			var gacDirectory = Path.Combine(PathUtils.GetEngineFolder(), "Mono", "lib", "mono", "gac");
 			if(!Directory.Exists(gacDirectory))
 			{
@@ -26,7 +22,7 @@ namespace CryEngine.Utilities
 			}
 
 			assemblies = Directory.GetFiles(gacDirectory, "*.dll", SearchOption.AllDirectories);
-        }
+		}
 
 		/// <summary>
 		/// Gets the required assemblies for the scripts passed to the method.
@@ -92,22 +88,22 @@ namespace CryEngine.Utilities
 		}
 
 
-        /// <summary>
-        /// Gets the required assemblies for the script passed to the method.
-        /// Note: Does NOT exclude assemblies already loaded by CryMono.
-        /// </summary>
-        /// <param name="scriptFilePath"></param>
-        /// <returns></returns>
-        private IEnumerable<string> GetNamespacesFromScriptFile(string scriptFilePath)
-        {
-            if (string.IsNullOrEmpty(scriptFilePath))
-                return null;
+		/// <summary>
+		/// Gets the required assemblies for the script passed to the method.
+		/// Note: Does NOT exclude assemblies already loaded by CryMono.
+		/// </summary>
+		/// <param name="scriptFilePath"></param>
+		/// <returns></returns>
+		private IEnumerable<string> GetNamespacesFromScriptFile(string scriptFilePath)
+		{
+			if(string.IsNullOrEmpty(scriptFilePath))
+				return null;
 
-            using (var stream = new FileStream(scriptFilePath, FileMode.Open))
-            {
-                return GetNamespacesFromStream(stream);
-            }
-        }
+			using(var stream = new FileStream(scriptFilePath, FileMode.Open))
+			{
+				return GetNamespacesFromStream(stream);
+			}
+		}
 
 		protected IEnumerable<string> GetNamespacesFromStream(Stream stream)
 		{
@@ -135,14 +131,14 @@ namespace CryEngine.Utilities
 			return namespaces;
 		}
 
-        private string GetAssemblyPathFromNamespace(string name)
-        {
-            // Avoid reloading the xml file for every call
-            if (assemblyLookupDocument == null)
-                assemblyLookupDocument = XDocument.Load(Path.Combine(PathUtils.GetEngineFolder(), "Mono", "assemblylookup.xml"));
+		private string GetAssemblyPathFromNamespace(string name)
+		{
+			// Avoid reloading the xml file for every call
+			if(assemblyLookupDocument == null)
+				assemblyLookupDocument = XDocument.Load(Path.Combine(PathUtils.GetEngineFolder(), "Mono", "assemblylookup.xml"));
 
-            foreach (var node in assemblyLookupDocument.Descendants("Namespace"))
-            {
+			foreach(var node in assemblyLookupDocument.Descendants("Namespace"))
+			{
 				if(node.Attribute("name").Value.Equals(name))
 				{
 					string assemblyName = node.Parent.Attribute("name").Value;
@@ -156,12 +152,12 @@ namespace CryEngine.Utilities
 						}
 					}
 				}
-            }
+			}
 
-            return null;
-        }
+			return null;
+		}
 
-        private XDocument assemblyLookupDocument;
+		private XDocument assemblyLookupDocument;
 		string[] assemblies;
-    }
+	}
 }

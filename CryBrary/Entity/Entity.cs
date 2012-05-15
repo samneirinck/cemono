@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-
-using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
-
 using System.ComponentModel;
-using System.Reflection;
-
 using System.Linq;
-
+using System.Reflection;
+using System.Runtime.Serialization;
 using CryEngine.Extensions;
 
 namespace CryEngine
@@ -157,7 +152,7 @@ namespace CryEngine
 		/// <param name="materialId"></param>
 		/// <param name="contactNormal"></param>
 		protected virtual void OnCollision(EntityId targetEntityId, Vec3 hitPos, Vec3 dir, short materialId, Vec3 contactNormal) { }
-		
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -325,31 +320,31 @@ namespace CryEngine
 					entityAttribute.Icon, entityAttribute.Flags);
 		}
 
-        [Serializable]
-        public class EntityException : Exception
-        {
-            public EntityException()
-            {
-            }
+		[Serializable]
+		public class EntityException : Exception
+		{
+			public EntityException()
+			{
+			}
 
-            public EntityException(string message)
-                : base(message)
-            {
-            }
+			public EntityException(string message)
+				: base(message)
+			{
+			}
 
-            public EntityException(string message, Exception inner)
-                : base(message, inner)
-            {
-            }
+			public EntityException(string message, Exception inner)
+				: base(message, inner)
+			{
+			}
 
-            protected EntityException(
-                SerializationInfo info,
-                StreamingContext context)
-                : base(info, context)
-            {
-            }
-        }
-        #endregion
+			protected EntityException(
+				SerializationInfo info,
+				StreamingContext context)
+				: base(info, context)
+			{
+			}
+		}
+		#endregion
 	}
 
 	public enum EntitySlotFlags

@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 
-using System.ComponentModel;
-using System.Security;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 
 namespace CryEngine
 {
