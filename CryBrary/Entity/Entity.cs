@@ -28,6 +28,7 @@ namespace CryEngine
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		internal virtual bool InternalSpawn(EntityInfo entInfo)
 		{
+
 			EntityPointer = entInfo.IEntityPtr;
 			Id = new EntityId(entInfo.Id);
 
@@ -167,21 +168,6 @@ namespace CryEngine
 		/// </summary>
 		protected virtual void OnInit()
 		{
-		}
-		#endregion
-
-		#region Overrides
-		// The stash; hide all internal code we don't want anyone to see down here. *sweep sweep*
-		public override bool Equals(object obj)
-		{
-			Entity ent = obj as Entity;
-
-			return ent != null && this.Id == ent.Id;
-		}
-
-		public override int GetHashCode()
-		{
-			return base.GetHashCode();
 		}
 		#endregion
 
