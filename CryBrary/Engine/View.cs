@@ -8,7 +8,7 @@ namespace CryEngine
 	{
 		#region Externals
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static uint _CreateView();
+		extern internal static uint _GetView(uint linkedEntityId, bool forceCreate = false);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static void _RemoveView(uint viewId);
 
@@ -25,11 +25,23 @@ namespace CryEngine
 
 		#region Statics
 		/// <summary>
-		/// Creates a new, empty view.
+		/// Gets a view linked to a specific entity id.
 		/// </summary>
-		public static View Create()
+		public static View Get(EntityBase linkedEntity, bool forceCreate = false)
 		{
-			Views.Add(new View(_CreateView()));
+			return Get(linkedEntity.Id, forceCreate);
+		}
+
+		/// <summary>
+		/// Gets a view linked to a specific entity id.
+		/// </summary>
+		public static View Get(EntityId linkedEntity, bool forceCreate = false)
+		{
+			var viewId = _GetView(linkedEntity, forceCreate);
+			if(viewId == 0)
+				return null;
+
+			Views.Add(new View(viewId));
 
 			return Views.Last();
 		}
@@ -72,11 +84,6 @@ namespace CryEngine
 
 		internal View(uint viewId)
 		{
-			Id = new EntityId(viewId);
-		}
-
-		internal View(EntityId viewId)
-		{
 			Id = viewId;
 		}
 
@@ -88,8 +95,11 @@ namespace CryEngine
 		/// </summary>
 		public float FoV { get { return ViewParams.FieldOfView; } set { var viewParams = ViewParams; viewParams.FieldOfView = value; ViewParams = viewParams; } }
 
+		public EntityId TargetId { get { return new EntityId(ViewParams.TargetId); } set { var viewParams = ViewParams; viewParams.TargetId = (uint)value._value; ViewParams = viewParams; } }
+
 		internal ViewParams ViewParams { get { return _GetViewParams(Id); } set { _SetViewParams(Id, value); } }
-		public EntityId Id;
+		
+		internal uint Id;
 
 		static List<View> Views = new List<View>();
 	}

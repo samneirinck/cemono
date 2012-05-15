@@ -26,14 +26,14 @@ protected:
 	// ~IMonoScriptBind
 
 	// Externals
-	static EntityId CreateView();
-	static void RemoveView(EntityId viewId);
+	static unsigned int GetView(unsigned int linkedId, bool forceCreate = false);
+	static void RemoveView(unsigned int viewId);
 
 	static EntityId GetActiveView();
-	static void SetActiveView(EntityId viewId);
+	static void SetActiveView(unsigned int viewId);
 
-	static SViewParams GetViewParams(EntityId viewId);
-	static void SetViewParams(EntityId viewId, SViewParams);
+	static SViewParams GetViewParams(unsigned int viewId);
+	static void SetViewParams(unsigned int viewId, SViewParams);
 	// ~Externals
 };
 
