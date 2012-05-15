@@ -257,12 +257,18 @@ namespace CryEngine.Initialization
 
 		void LoadActor(ref CryScript script)
 		{
+			bool registerActorClass = true;
+			bool isAI = false;
+
 			ActorAttribute attr;
 			if(script.Type.TryGetAttribute<ActorAttribute>(out attr))
 			{
-				if(attr.UseMonoActor)
-					Actor._RegisterActorClass(script.ScriptName, attr.IsAI);
+				registerActorClass = attr.UseMonoActor;
+				isAI = attr.IsAI;
 			}
+
+			if(registerActorClass)
+				Actor._RegisterActorClass(script.ScriptName, isAI);
 		}
 
 		void LoadEntity(ref CryScript script)

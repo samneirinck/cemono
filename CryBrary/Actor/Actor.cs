@@ -219,6 +219,7 @@ namespace CryEngine
 	{
 		public ActorAttribute()
 		{
+			UseMonoActor = true;
 		}
 
 		/// <summary>
