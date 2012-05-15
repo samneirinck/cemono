@@ -138,9 +138,6 @@
     <ClInclude Include="MonoDomain.h">
       <Filter>Wrappers</Filter>
     </ClInclude>
-    <ClInclude Include="Scriptbinds\UI.h">
-      <Filter>ScriptBinds\Viewport</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -231,9 +228,6 @@
     </ClCompile>
     <ClCompile Include="MonoDomain.cpp">
       <Filter>Wrappers</Filter>
-    </ClCompile>
-    <ClCompile Include="Scriptbinds\UI.cpp">
-      <Filter>ScriptBinds\Viewport</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

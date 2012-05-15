@@ -35,7 +35,6 @@
 #include "Scriptbinds\PhysicalWorld.h"
 #include "Scriptbinds\Renderer.h"
 #include "Scriptbinds\Debug.h"
-#include "Scriptbinds\UI.h"
 #include "Scriptbinds\MaterialManager.h"
 #include "Scriptbinds\ParticleSystem.h"
 #include "Scriptbinds\ViewSystem.h"
@@ -61,7 +60,6 @@ CScriptSystem::CScriptSystem()
 	, m_pScriptDomain(NULL)
 	, m_AppDomainSerializer(NULL)
 	, m_pInput(NULL)
-	, m_pUIScriptBind(NULL)
 	, m_bReloading(false)
 	, m_bLastCompilationSuccess(false)
 {
@@ -115,7 +113,6 @@ CScriptSystem::~CScriptSystem()
 
 	SAFE_DELETE(m_pConverter);
 	SAFE_DELETE(m_pCallbackHandler);
-	SAFE_DELETE(m_pUIScriptBind);
 
 	SAFE_RELEASE(m_pCryBraryAssembly);
 	SAFE_DELETE(m_pCVars);
@@ -356,7 +353,6 @@ void CScriptSystem::RegisterDefaultBindings()
 	RegisterBinding(CScriptbind_ViewSystem);
 
 #define RegisterBindingAndSet(var, T) RegisterBinding(T); var = (T *)m_localScriptBinds.back();
-	RegisterBindingAndSet(m_pUIScriptBind, CScriptbind_UI);
 	RegisterBindingAndSet(m_pCallbackHandler, CCallbackHandler);
 	RegisterBindingAndSet(m_pEntityManager, CEntityManager);
 	RegisterBindingAndSet(m_pFlowManager, CFlowManager);
@@ -418,11 +414,12 @@ IMonoClass *CScriptSystem::InstantiateScript(const char *scriptName, IMonoArray 
 		SAFE_RELEASE(pClass);
 	}*/
 
-	
 	auto *pScript = CallMonoScript<IMonoClass *>(m_pScriptManager, "InstantiateScript", scriptName, pConstructorParameters);
 
 	if(pScript)
 		m_scripts.insert(TScripts::value_type(pScript, pScript->GetScriptId()));
+	else
+		CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "Failed to instantiate script %s", scriptName);
 
 	return pScript;
 }

@@ -28,7 +28,6 @@ struct SCVars;
 class CFlowManager;
 class CCallbackHandler;
 class CInput;
-class CScriptbind_UI;
 
 class CScriptSystem
 	: public IMonoScriptSystem
@@ -117,7 +116,6 @@ protected:
 	CFlowManager *m_pFlowManager;
 	CInput *m_pInput;
 	CCallbackHandler *m_pCallbackHandler;
-	CScriptbind_UI	*m_pUIScriptBind;
 
 	IMonoConverter *m_pConverter;
 
