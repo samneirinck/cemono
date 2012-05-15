@@ -53,6 +53,8 @@ namespace CryEngine
 			get
 			{
 				var viewId = _GetActiveView();
+				if(viewId == 0)
+					return null;
 
 				var view = Views.FirstOrDefault(x => x.Id == viewId);
 				if(view != default(View))
