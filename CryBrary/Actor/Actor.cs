@@ -214,7 +214,7 @@ namespace CryEngine
 	[AttributeUsage(AttributeTargets.Class)]
 	public sealed class ActorAttribute : Attribute
 	{
-		public ActorAttribute(bool useMonoActor = true, bool isAI = true)
+		public ActorAttribute(bool useMonoActor = true, bool isAI = false)
 		{
 			this.useMonoActor = useMonoActor;
 			this.isAI = isAI;
