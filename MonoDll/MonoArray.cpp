@@ -36,7 +36,7 @@ IMonoObject *CScriptArray::GetItem(int index)
 	return NULL;
 }
 
-void CScriptArray::InsertObject(mono::object object)
+void CScriptArray::InsertMonoObject(mono::object object)
 {
 	if(m_curIndex >= GetSize())
 	{
@@ -49,7 +49,7 @@ void CScriptArray::InsertObject(mono::object object)
 	m_curIndex++;
 }
 
-void CScriptArray::InsertString(mono::string string)
+void CScriptArray::InsertMonoString(mono::string string)
 {
 	if(m_curIndex >= GetSize())
 	{
@@ -62,7 +62,7 @@ void CScriptArray::InsertString(mono::string string)
 	m_curIndex++;
 }
 
-void CScriptArray::InsertArray(mono::array arr)
+void CScriptArray::InsertMonoArray(mono::array arr)
 {
 	if(m_curIndex >= GetSize())
 	{
@@ -75,15 +75,15 @@ void CScriptArray::InsertArray(mono::array arr)
 	m_curIndex++;
 }
 
-void CScriptArray::Insert(IMonoObject *pObject) 
+void CScriptArray::InsertObject(IMonoObject *pObject) 
 { 
-	InsertObject(pObject->GetMonoObject()); 
+	InsertMonoObject(pObject->GetMonoObject()); 
 }
 
-void CScriptArray::Insert(MonoAnyValue value)
+void CScriptArray::InsertAny(MonoAnyValue value)
 { 
 	if(value.type==eMonoAnyType_String)
-		InsertString(ToMonoString(value.str));
+		InsertMonoString(ToMonoString(value.str));
 	else
 		Insert(gEnv->pMonoScriptSystem->GetConverter()->CreateObject(value)); 
 }

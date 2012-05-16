@@ -66,28 +66,27 @@ public:
 	/// </summary>
 	virtual IMonoArray *GetItemArray(int index) = 0;
 
+	template <typename T>
+	void Insert(T value) { InsertAny(MonoAnyValue((T)value)); }
+
+	template <>
+	void Insert(IMonoObject *pObject) { InsertObject(pObject); }
+
+	template <>
+	void Insert(IMonoArray *pArray) { InsertArray(pArray); }
+
 	/// <summary>
 	/// Inserts an MonoAnyValue object into the array.
 	/// </summary>
-	virtual void Insert(MonoAnyValue value) = 0;
+	virtual void InsertAny(MonoAnyValue value) = 0;
 	/// <summary>
 	/// Inserts an IMonoObject into the array
 	/// </summary>
-	virtual void Insert(IMonoObject *pObject) = 0;
+	virtual void InsertObject(IMonoObject *pObject) = 0;
 	/// <summary>
 	/// Inserts an IMonoArray into the array.
 	/// </summary>
-	virtual void Insert(IMonoArray *pArray) = 0;
-
-	/// <summary>
-	/// Inserts a mono string into the array.
-	/// </summary>
-	virtual void InsertString(mono::string string) = 0;
-
-	/// <summary>
-	/// Inserts a mono object into the array.
-	/// </summary>
-	virtual void InsertObject(mono::object obj) = 0;
+	virtual void InsertArray(IMonoArray *pArray) = 0;
 
 	/// <summary>
 	/// Retrieves the mono array, can be passed directly to C#.

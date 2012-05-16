@@ -34,16 +34,14 @@ public:
 	virtual const char *GetItemString(int index) override { return ToCryString(mono_array_get((MonoArray *)m_pArray, mono::string , index)); }
 	virtual IMonoArray *GetItemArray(int index) override { return new CScriptArray((mono::array)mono_array_get((MonoArray *)m_pArray, MonoArray *, index)); }
 
-	virtual void Insert(IMonoObject *pObject) override;
-	virtual void Insert(IMonoArray *pArray) override { InsertArray(pArray ? *pArray : (mono::array)NULL); }
-
-	virtual void InsertString(mono::string string) override;
-	virtual void InsertObject(mono::object obj) override;
-
-	virtual void Insert(MonoAnyValue value) override;
+	virtual void InsertObject(IMonoObject *pObject) override;
+	virtual void InsertArray(IMonoArray *pArray) override { InsertMonoArray(pArray ? *pArray : (mono::array)NULL); }
+	virtual void InsertAny(MonoAnyValue value) override;
 	// ~IMonoArray
 
-	virtual void InsertArray(mono::array arr);
+	virtual void InsertMonoArray(mono::array arr);
+	virtual void InsertMonoObject(mono::object object);
+	virtual void InsertMonoString(mono::string string);
 
 	virtual mono::array GetMonoArray() override { return m_pArray; }
 
