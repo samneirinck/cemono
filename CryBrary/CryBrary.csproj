@@ -22,7 +22,7 @@
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>CryBrary.xml</DocumentationFile>
     <RunCodeAnalysis>false</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>ExtendedDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisIgnoreGeneratedCode>true</CodeAnalysisIgnoreGeneratedCode>
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
@@ -34,8 +34,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>CryBrary.xml</DocumentationFile>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>MixedRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>BasicDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
@@ -146,7 +146,7 @@
     <Compile Include="Entity\EntityId.cs" />
     <Compile Include="Entity\NativeEntity.cs" />
     <Compile Include="Engine\Physics.cs" />
-    <Compile Include="Lua\LuaScript.cs" />
+    <Compile Include="Lua\ScriptTable.cs" />
     <Compile Include="Math\Collision.cs" />
     <Compile Include="Misc\NativeMethods.cs" />
     <Compile Include="Serialization\CrySerializer.cs" />
@@ -169,7 +169,6 @@
     <Compile Include="Entity\EntityMovement.cs" />
     <Compile Include="GameRules\Network.cs" />
     <Compile Include="Input\InputSystem.cs" />
-    <Compile Include="Utils\AssemblyReferenceHandler.cs" />
     <Compile Include="Math\Quat.cs" />
     <Compile Include="Entity\Interface.cs" />
     <Compile Include="Script Handling\ScriptInstance.cs" />
@@ -185,7 +184,6 @@
     <Compile Include="Entity\EntitySystem.cs" />
     <Compile Include="Entity\Entity.cs" />
     <Compile Include="FlowSystem\FlowNode.cs" />
-    <Compile Include="Console\Console.cs" />
     <Compile Include="Actor\ItemSystem.cs" />
     <Compile Include="Utils\Debug\Logging.cs" />
     <Compile Include="GameRules\GameRules.cs" />
