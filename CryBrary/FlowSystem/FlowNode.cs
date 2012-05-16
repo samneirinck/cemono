@@ -147,7 +147,7 @@ namespace CryEngine
 
 							portType = GetPortType(genericType);
 
-							object[] outputPortConstructorArgs = { ScriptId, (outputs.Count - 1) };
+							object[] outputPortConstructorArgs = { NodePointer, (outputs.Count - 1) };
 							Type genericOutputPort = typeof(OutputPort<>);
 							object outputPort = Activator.CreateInstance(isGenericType ? genericOutputPort.MakeGenericType(genericType) : field.FieldType, outputPortConstructorArgs);
 
@@ -164,7 +164,7 @@ namespace CryEngine
 							portType = GetPortType(genericType);
 							outputs.Add(new OutputPortConfig(portAttribute.Name, portAttribute.Name, portAttribute.Description, portType));
 
-							object[] outputPortConstructorArgs = { ScriptId, (outputs.Count - 1) };
+							object[] outputPortConstructorArgs = { NodePointer, (outputs.Count - 1) };
 							Type genericOutputPort = typeof(OutputPort<>);
 							object outputPort = Activator.CreateInstance(isGenericType ? genericOutputPort.MakeGenericType(genericType) : property.PropertyType, outputPortConstructorArgs);
 
