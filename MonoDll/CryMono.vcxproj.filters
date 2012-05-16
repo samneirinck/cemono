@@ -141,6 +141,9 @@
     <ClInclude Include="Actor.h">
       <Filter>ActorSystem</Filter>
     </ClInclude>
+    <ClInclude Include="Scriptbinds\LevelSystem.h">
+      <Filter>ScriptBinds</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -234,6 +237,9 @@
     </ClCompile>
     <ClCompile Include="Actor.cpp">
       <Filter>ActorSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Scriptbinds\LevelSystem.cpp">
+      <Filter>ScriptBinds</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -38,6 +38,7 @@
 #include "Scriptbinds\MaterialManager.h"
 #include "Scriptbinds\ParticleSystem.h"
 #include "Scriptbinds\ViewSystem.h"
+#include "Scriptbinds\LevelSystem.h"
 
 #include "EntityManager.h"
 #include "FlowManager.h"
@@ -351,6 +352,7 @@ void CScriptSystem::RegisterDefaultBindings()
 	RegisterBinding(CScriptbind_MaterialManager);
 	RegisterBinding(CScriptbind_ParticleSystem);
 	RegisterBinding(CScriptbind_ViewSystem);
+	RegisterBinding(CLevelSystem);
 
 #define RegisterBindingAndSet(var, T) RegisterBinding(T); var = (T *)m_localScriptBinds.back();
 	RegisterBindingAndSet(m_pCallbackHandler, CCallbackHandler);
