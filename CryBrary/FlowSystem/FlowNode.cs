@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -210,10 +211,12 @@ namespace CryEngine
 		/// </summary>
 		internal void OnPortActivated(int index, object value = null)
 		{
-			if(value != null && inputMethods[index].GetParameters().Length > 0)
-				inputMethods[index].Invoke(this, new object[] { value });
+			var method = inputMethods.ElementAt(index);
+
+			if(value != null && method.GetParameters().Length > 0)
+				method.Invoke(this, new object[] { value });
 			else
-				inputMethods[index].Invoke(this, null);
+				method.Invoke(this, null);
 		}
 
 		/// <summary>
