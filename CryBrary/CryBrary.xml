@@ -1371,9 +1371,14 @@
             Entity ID's store references to game entities as unsigned integers. This class wraps that functionality for CLS compliance.
             </summary>
         </member>
-        <member name="M:CryEngine.View.Create">
+        <member name="M:CryEngine.View.Get(CryEngine.EntityBase,System.Boolean)">
             <summary>
-            Creates a new, empty view.
+            Gets a view linked to a specific entity id.
+            </summary>
+        </member>
+        <member name="M:CryEngine.View.Get(CryEngine.EntityId,System.Boolean)">
+            <summary>
+            Gets a view linked to a specific entity id.
             </summary>
         </member>
         <member name="M:CryEngine.View.Remove(CryEngine.View)">

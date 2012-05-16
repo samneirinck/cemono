@@ -4,10 +4,10 @@ using System.Runtime.CompilerServices;
 
 namespace CryEngine
 {
-	public delegate void ActionMapEventDelegate(object sender, ActionMapEventArgs e);
+	public delegate void ActionMapEventDelegate(ActionMapEventArgs e);
 
-	public delegate void KeyEventDelegate(object sender, KeyEventArgs e);
-	public delegate void MouseEventDelegate(object sender, MouseEventArgs e);
+	public delegate void KeyEventDelegate(KeyEventArgs e);
+	public delegate void MouseEventDelegate(MouseEventArgs e);
 
 	public static class Input
 	{
@@ -17,19 +17,19 @@ namespace CryEngine
 		#region Events
 		static void OnActionTriggered(string action, KeyEvent keyEvent, float value)
 		{
-			actionmapDelegates[action](null, new ActionMapEventArgs(keyEvent, action, value));
+			actionmapDelegates[action](new ActionMapEventArgs(keyEvent, action, value));
 		}
 
 		static void OnKeyEvent(string keyName, float value)
 		{
 			if(KeyEvents != null)
-				KeyEvents(null, new KeyEventArgs(keyName, value));
+				KeyEvents(new KeyEventArgs(keyName, value));
 		}
 
 		static void OnMouseEvent(int x, int y, MouseEvent mouseEvent, int wheelDelta)
 		{
 			if(MouseEvents != null)
-				MouseEvents(null, new MouseEventArgs(x, y, wheelDelta, mouseEvent));
+				MouseEvents(new MouseEventArgs(x, y, wheelDelta, mouseEvent));
 		}
 		#endregion
 
