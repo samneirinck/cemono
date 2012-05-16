@@ -174,7 +174,7 @@ namespace CryEngine
 
 				var portType = GetPortType(genericType);
 
-				object[] outputPortConstructorArgs = { NodePointer, (outputs.Count - 1) };
+				object[] outputPortConstructorArgs = { NodePointer, outputs.Count };
 				Type genericOutputPort = typeof(OutputPort<>);
 				object outputPort = Activator.CreateInstance(isGenericType ? genericOutputPort.MakeGenericType(genericType) : type, outputPortConstructorArgs);
 
