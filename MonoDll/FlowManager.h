@@ -111,9 +111,6 @@ protected:
 
 	static bool IsPortActive(CFlowNode *pNode, int);
 
-	template <class T>
-	static void ActivateOutputOnNode(CFlowNode *pNode, int index, const T &value);
-	
 	static int GetPortValueInt(CFlowNode *pNode, int);
 	static float GetPortValueFloat(CFlowNode *pNode, int);
 	static EntityId GetPortValueEntityId(CFlowNode *pNode, int);

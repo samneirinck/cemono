@@ -86,19 +86,13 @@ std::shared_ptr<SNodeType> CFlowManager::InstantiateNode(CFlowNode *pNode, const
 	return NULL;
 }
 
-void CFlowManager::ActivateOutput(CFlowNode *pNode, int index) { ActivateOutputOnNode(pNode, index, 0); }
-void CFlowManager::ActivateOutputInt(CFlowNode *pNode, int index, int value) { ActivateOutputOnNode(pNode, index, value); }
-void CFlowManager::ActivateOutputFloat(CFlowNode *pNode, int index, float value) { ActivateOutputOnNode(pNode, index, value); }
-void CFlowManager::ActivateOutputEntityId(CFlowNode *pNode, int index, EntityId value) { ActivateOutputOnNode(pNode, index, value); }
-void CFlowManager::ActivateOutputString(CFlowNode *pNode, int index, mono::string value) { ActivateOutputOnNode(pNode, index, (string)ToCryString(value)); }
-void CFlowManager::ActivateOutputBool(CFlowNode *pNode, int index, bool value) { ActivateOutputOnNode(pNode, index, value); }
-void CFlowManager::ActivateOutputVec3(CFlowNode *pNode, int index, Vec3 value) { ActivateOutputOnNode(pNode, index, value); }
-
-template <class T>
-void CFlowManager::ActivateOutputOnNode(CFlowNode *pFlowNode, int index, const T &value)
-{
-	pFlowNode->ActivateOutput(index, value);
-}
+void CFlowManager::ActivateOutput(CFlowNode *pNode, int index) { pNode->ActivateOutput(index, 0); }
+void CFlowManager::ActivateOutputInt(CFlowNode *pNode, int index, int value) { pNode->ActivateOutput(index, value); }
+void CFlowManager::ActivateOutputFloat(CFlowNode *pNode, int index, float value) { pNode->ActivateOutput(index, value); }
+void CFlowManager::ActivateOutputEntityId(CFlowNode *pNode, int index, EntityId value) { pNode->ActivateOutput(index, value); }
+void CFlowManager::ActivateOutputString(CFlowNode *pNode, int index, mono::string value) { pNode->ActivateOutput(index, string(ToCryString(value))); }
+void CFlowManager::ActivateOutputBool(CFlowNode *pNode, int index, bool value) { pNode->ActivateOutput(index, value); }
+void CFlowManager::ActivateOutputVec3(CFlowNode *pNode, int index, Vec3 value) { pNode->ActivateOutput(index, value); }
 
 bool CFlowManager::IsPortActive(CFlowNode *pFlowNode, int port)
 {
