@@ -276,7 +276,7 @@ namespace CryEngine.Initialization
 			return script;
 		}
 
-		static IEnumerable<CryScript> GetScriptList(ScriptType scriptType)
+		public static IEnumerable<CryScript> GetScriptList(ScriptType scriptType)
 		{
 			if(scriptType == ScriptType.Unknown)
 			{
