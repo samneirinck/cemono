@@ -35,13 +35,14 @@ namespace CryEngine
 			var entInfo = _SpawnEntity(new EntitySpawnParams { Name = name, Class = typeof(T).Name, Pos = pos, Rot = rot ?? Vec3.Zero, Scale = scale ?? new Vec3(1, 1, 1), Flags = flags }, autoInit);
 			if(entInfo.Id != 0)
 			{
-				var ent = ScriptManager.AddScriptInstance(new T()) as T;
+				var ent = new T();
 				if(ent == null)
 				{
 					Debug.LogAlways("[Entity.Spawn] Failed to add script instance");
 					return null;
 				}
 
+				ScriptManager.AddScriptInstance(ent, ScriptType.Entity);
 				ent.InternalSpawn(entInfo);
 
 				return ent as T;
@@ -64,7 +65,7 @@ namespace CryEngine
 
 		internal static void InternalRemove(EntityId id)
 		{
-			foreach(var script in ScriptManager.CompiledScripts)
+			foreach(var script in ScriptManager.CompiledScripts[ScriptType.Entity])
 			{
 				if(script.ScriptInstances != null)
 					script.ScriptInstances.RemoveAll(instance => instance is Entity && (instance as Entity).Id == id);
@@ -102,17 +103,14 @@ namespace CryEngine
 			// Couldn't find a CryMono entity, check if a non-managed one exists.
 			if(_EntityExists(entityId))
 			{
-				int scriptIndex;
-				var script = ScriptManager.GetScriptByType(typeof(NativeEntity), out scriptIndex);
+				var script = ScriptManager.CompiledScripts[ScriptType.Entity].First(x => x.Type == typeof(NativeEntity));
+				if(script == null)
+					throw new TypeLoadException("Failed to locate NativeEntity type");
 
-				if(script.ScriptInstances == null)
-					script.ScriptInstances = new List<CryScriptInstance>();
+				var nativeEntity = new NativeEntity(entityId);
+				ScriptManager.AddScriptInstance(nativeEntity, script);
 
-				script.ScriptInstances.Add(new NativeEntity(entityId));
-
-				ScriptManager.CompiledScripts[scriptIndex] = script;
-
-				return script.ScriptInstances.Last() as Entity;
+				return nativeEntity;
 			}
 
 			return null;

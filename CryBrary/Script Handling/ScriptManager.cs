@@ -12,6 +12,14 @@ namespace CryEngine.Initialization
 	{
 		internal ScriptManager()
 		{
+			if(CompiledScripts == null)
+			{
+				CompiledScripts = new Dictionary<ScriptType, List<CryScript>>();
+
+				foreach(ScriptType scriptType in Enum.GetValues(typeof(ScriptType)))
+					CompiledScripts.Add(scriptType, new List<CryScript>());
+			}
+
 			if(!Directory.Exists(PathUtils.TempFolder))
 				Directory.CreateDirectory(PathUtils.TempFolder);
 
@@ -22,7 +30,7 @@ namespace CryEngine.Initialization
 
 			Type[] specialTypes = { typeof(NativeEntity), typeof(NativeActor) };
 			foreach(var type in specialTypes)
-				CompiledScripts.Add(new CryScript(type));
+				CreateScript(type);
 		}
 
 		bool LoadPlugins()
@@ -37,86 +45,6 @@ namespace CryEngine.Initialization
 			// These have to be registered later on due to the flow system being initialized late.
 			foreach(var node in FlowNodes)
 				FlowNode.Register(node);
-		}
-
-		/// <summary>
-		/// Instantiates a script using its name and interface.
-		/// </summary>
-		/// <param name="scriptName"></param>
-		/// <param name="constructorParams"></param>
-		/// <returns>New instance scriptId or -1 if instantiation failed.</returns>
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public static object InstantiateScript(string scriptName, object[] constructorParams = null)
-		{
-			if(scriptName.Length < 1)
-				throw new ArgumentException("Empty script name passed to InstantiateClass");
-
-			var script = default(CryScript);
-			var scriptIndex = 0;
-
-			foreach(var compiledScript in CompiledScripts)
-			{
-				if(compiledScript.ScriptName.Equals(scriptName) || (compiledScript.ScriptName.Contains(scriptName) && compiledScript.Type.Name.Equals(scriptName)))
-				{
-					script = compiledScript;
-					break;
-				}
-			}
-
-			if(script == default(CryScript))
-				throw new ScriptNotFoundException(string.Format("Compiled script {0} could not be found.", scriptName));
-
-			return AddScriptInstance(System.Activator.CreateInstance(script.Type, constructorParams) as CryScriptInstance, script, scriptIndex);
-		}
-
-		public void RemoveInstance(int scriptId)
-		{
-			RemoveInstance(scriptId, null);
-		}
-
-		/// <summary>
-		/// Locates and destructs the script with the assigned scriptId.
-		/// </summary>
-		/// <param name="scriptId"></param>
-		public void RemoveInstance(int scriptId, Type scriptType)
-		{
-			if(scriptType != null)
-			{
-				int scriptIndex;
-				var script = GetScriptByType(scriptType, out scriptIndex);
-
-				RemoveInstanceFromScriptById(ref script, scriptId);
-
-				CompiledScripts[scriptIndex] = script;
-			}
-			else
-			{
-				for(int i = 0; i < CompiledScripts.Count; i++)
-				{
-					var script = CompiledScripts[i];
-
-					RemoveInstanceFromScriptById(ref script, scriptId);
-
-					CompiledScripts[i] = script;
-				}
-			}
-		}
-
-		public static int GetEntityScriptId(EntityId entityId, System.Type scriptType = null)
-		{
-			var scripts = CompiledScripts.Where(script => (scriptType != null ? script.Type.Implements(scriptType) : true) && script.ScriptInstances != null);
-
-			foreach(var compiledScript in scripts)
-			{
-				foreach(var script in compiledScript.ScriptInstances)
-				{
-					var scriptEntity = script as Entity;
-					if(scriptEntity != null && scriptEntity.Id == entityId)
-						return script.ScriptId;
-				}
-			}
-
-			return -1;
 		}
 
 		/// <summary>
@@ -179,7 +107,7 @@ namespace CryEngine.Initialization
 		}
 
 		/// <summary>
-		/// Processes a type and adds all found types to ScriptCompiler.CompiledScripts
+		/// Adds all provided types to ScriptCompiler.CompiledScripts
 		/// </summary>
 		/// <param name="types"></param>
 		void ProcessTypes(IEnumerable<Type> types)
@@ -214,11 +142,11 @@ namespace CryEngine.Initialization
 					}
 				}
 
-				CompiledScripts.Add(script);
+				CompiledScripts[script.ScriptType].Add(script);
 			}
 		}
 
-		static void LoadActor(ref CryScript script)
+		void LoadActor(ref CryScript script)
 		{
 			bool registerActorClass = true;
 			bool isAI = false;
@@ -281,7 +209,7 @@ namespace CryEngine.Initialization
 			FlowNodes.Add(category + ":" + nodeName);
 		}
 
-		static void LoadGameRules(ref CryScript script)
+		void LoadGameRules(ref CryScript script)
 		{
 			string gamemodeName = null;
 
@@ -298,7 +226,7 @@ namespace CryEngine.Initialization
 			GameRules._RegisterGameMode(gamemodeName ?? script.ScriptName);
 		}
 
-		public static void GenerateDebugDatabaseForAssembly(string assemblyPath)
+		public void GenerateDebugDatabaseForAssembly(string assemblyPath)
 		{
 			if(File.Exists(Path.ChangeExtension(assemblyPath, "pdb")))
 			{
@@ -317,44 +245,152 @@ namespace CryEngine.Initialization
 		/// <summary>
 		/// Called once per frame.
 		/// </summary>
-		static public void OnUpdate(float frameTime)
+		public static void OnUpdate(float frameTime)
 		{
 			Time.DeltaTime = frameTime;
 
-			foreach(var script in CompiledScripts)
+			foreach(var scriptList in CompiledScripts)
+			{
+				if(scriptList.Key == ScriptType.Unknown)
+					continue;
+
+				scriptList.Value.ForEach(script => 
+					{
+						if(script.ScriptInstances != null)
+						{
+							script.ScriptInstances.ForEach(instance =>
+								{
+									if(instance.ReceiveUpdates)
+										instance.OnUpdate();
+								});
+						}
+					});
+			}
+		}
+
+		static CryScript CreateScript(Type type)
+		{
+			var script = new CryScript(type);
+			ScriptManager.CompiledScripts[script.ScriptType].Add(script);
+
+			return script;
+		}
+
+		static IEnumerable<CryScript> GetScriptList(ScriptType scriptType)
+		{
+			if(scriptType == ScriptType.Unknown)
+			{
+				var newList = new List<CryScript>();
+
+				foreach(var scriptList in CompiledScripts)
+					newList.AddRange(scriptList.Value);
+
+				return newList;
+			}
+
+			return CompiledScripts[scriptType];
+		}
+
+		/// <summary>
+		/// Instantiates a script using its name and interface.
+		/// </summary>
+		/// <param name="scriptName"></param>
+		/// <param name="constructorParams"></param>
+		/// <returns>New instance scriptId or -1 if instantiation failed.</returns>
+		public static object InstantiateScript(string scriptName, ScriptType scriptType = ScriptType.Unknown, object[] constructorParams = null)
+		{
+			if(scriptName == null)
+				throw new ArgumentNullException("scriptName");
+			else if(scriptName.Length < 1)
+				throw new ArgumentException("Empty script name passed to InstantiateClass");
+
+			var script = GetScriptList(scriptType).FirstOrDefault(x => x.ScriptName.Equals(scriptName) || (x.ScriptName.Contains(scriptName) && x.Type.Name.Equals(scriptName)));
+
+			if(script == default(CryScript))
+				throw new ScriptNotFoundException(string.Format("Script {0} of ScriptType {1} could not be found.", scriptName, scriptType));
+
+			var scriptInstance = Activator.CreateInstance(script.Type, constructorParams);
+			AddScriptInstance(scriptInstance as CryScriptInstance, script);
+
+			return scriptInstance;
+		}
+
+		public static void RemoveInstance(int scriptId, ScriptType scriptType = ScriptType.Unknown)
+		{
+			RemoveInstance(scriptId, scriptType, null);
+		}
+
+		/// <summary>
+		/// Locates and destructs the script with the assigned scriptId.
+		/// </summary>
+		/// <param name="scriptId"></param>
+		public static void RemoveInstance(int scriptId, ScriptType scriptType = ScriptType.Unknown, Type type = null)
+		{
+			if(type != null)
+			{
+				var script = GetScriptList(scriptType).First(x => x.Type == type);
+				if(script == null)
+					throw new TypeLoadException(string.Format("Failed to locate type {0}", type.Name));
+
+				if(script.ScriptInstances != null && script.ScriptInstances.RemoveAll(x => x.ScriptId == scriptId) > 0)
+				{
+					int index = CompiledScripts[script.ScriptType].FindIndex(x => x.Type == script.Type);
+					CompiledScripts[script.ScriptType].Insert(index, script);
+				}
+			}
+			else
+			{
+				foreach(var script in GetScriptList(scriptType))
+				{
+					if(script.ScriptInstances != null && script.ScriptInstances.RemoveAll(x => x.ScriptId == scriptId) > 0)
+					{
+						int index = CompiledScripts[script.ScriptType].FindIndex(x => x.Type == script.Type);
+						CompiledScripts[script.ScriptType].Insert(index, script);
+					}
+				}
+			}
+
+
+		}
+
+		public static int GetEntityScriptId(EntityId entityId, ScriptType scriptType = ScriptType.Unknown, Type type = null)
+		{
+			var scripts = GetScriptList(scriptType).Where(script => (type != null ? script.Type.Implements(type) : true) && script.ScriptInstances != null);
+
+			foreach(var compiledScript in scripts)
+			{
+				foreach(var script in compiledScript.ScriptInstances)
+				{
+					var scriptEntity = script as Entity;
+					if(scriptEntity != null && scriptEntity.Id == entityId)
+						return script.ScriptId;
+				}
+			}
+
+			return -1;
+		}
+
+		public static CryScriptInstance GetScriptInstanceById(int id, ScriptType scriptType = ScriptType.Unknown)
+		{
+			CryScriptInstance scriptInstance = null;
+			foreach(var script in GetScriptList(scriptType))
 			{
 				if(script.ScriptInstances != null)
 				{
-					foreach(var instance in script.ScriptInstances)
-						if(instance.ReceiveUpdates)
-							instance.OnUpdate();
+					scriptInstance = script.ScriptInstances.First(instance => instance.ScriptId == id);
+
+					if(scriptInstance != null)
+						return scriptInstance;
 				}
 			}
+
+			return null;
 		}
 
-		static void RemoveInstanceFromScriptById(ref CryScript script, int scriptId)
-		{
-			if(script.ScriptInstances != null && script.ScriptInstances.Count > 0)
-			{
-				var scriptInstance = script.ScriptInstances.FirstOrDefault(x => x.ScriptId == scriptId);
-				if(scriptInstance == InvalidScriptInstance)
-					return;
-
-				var instanceIndex = script.ScriptInstances.IndexOf(scriptInstance);
-				if(instanceIndex == -1)
-				{
-					Debug.LogAlways("Failed to remove script with id {0}; instance was not found.", scriptId);
-					return;
-				}
-
-				script.ScriptInstances.RemoveAt(instanceIndex);
-			}
-		}
-
-		internal static T FindScriptInstance<T>(Predicate<T> match) where T : CryScriptInstance
+		internal static T FindScriptInstance<T>(Predicate<T> match, ScriptType scriptType = ScriptType.Unknown) where T : CryScriptInstance
 		{
 			T result;
-			foreach(var script in CompiledScripts)
+			foreach(var script in GetScriptList(scriptType))
 			{
 				if((script.Type.Equals(typeof(T)) || script.Type.Implements(typeof(T))) && script.ScriptInstances != null)
 				{
@@ -367,89 +403,44 @@ namespace CryEngine.Initialization
 			return null;
 		}
 
-		internal static CryScript GetScriptByType(Type type, out int scriptIndex)
+		public static void AddScriptInstance(CryScriptInstance instance, ScriptType scriptType)
 		{
-			var script = default(CryScript);
-			scriptIndex = 0;
-			for(; scriptIndex < CompiledScripts.Count; scriptIndex++)
-			{
-				var foundScript = CompiledScripts[scriptIndex];
+			if(instance == null)
+				throw new ArgumentNullException("instance");
 
-				if(foundScript.Type == type)
-				{
-					script = foundScript;
-					break;
-				}
-			}
+			var script = GetScriptList(scriptType).First(x => x.Type == instance.GetType());
+			if(script == null)
+				script = CreateScript(instance.GetType());
 
-			if(script == default(CryScript))
-				throw new ScriptNotFoundException(string.Format("Failed to find script by name {0}", type.Name));
-
-			return script;
-		}
-
-		public static CryScriptInstance GetScriptInstanceById(int id)
-		{
-			CryScriptInstance scriptInstance = null;
-			foreach(var script in CompiledScripts)
-			{
-				if(script.ScriptInstances != null && script.ScriptInstances.Count > 0)
-				{
-					scriptInstance = script.ScriptInstances.FirstOrDefault(instance => instance.ScriptId == id);
-
-					if(scriptInstance != InvalidScriptInstance)
-						return scriptInstance;
-				}
-			}
-
-			return null;
+			AddScriptInstance(instance, script);
 		}
 
 		/// <summary>
 		/// Adds an script instance to the script collection and returns its new id.
 		/// </summary>
 		/// <param name="instance"></param>
-		public static object AddScriptInstance(CryScriptInstance instance)
+		public static void AddScriptInstance(CryScriptInstance instance, CryScript script)
 		{
 			if(instance == null)
-				return null;
-
-			int scriptIndex;
-			var script = GetScriptByType(instance.GetType(), out scriptIndex);
-
-			return AddScriptInstance(instance, script, scriptIndex);
-		}
-
-		static object AddScriptInstance(CryScriptInstance instance, CryScript script, int scriptIndex)
-		{
-			if(instance == null)
-				return null;
+				throw new ArgumentNullException("instance");
 
 			instance.ScriptId = LastScriptId++;
 
 			if(script.ScriptInstances == null)
 				script.ScriptInstances = new List<CryScriptInstance>();
-			else if(script.ScriptInstances.Contains(instance))
-				return script.ScriptInstances.First(x => x.Equals(instance));
 
 			script.ScriptInstances.Add(instance);
 
-			CompiledScripts[scriptIndex] = script;
-
-			return script.ScriptInstances.Last();
+			int index = CompiledScripts[script.ScriptType].FindIndex(x => x.Type == script.Type);
+			CompiledScripts[script.ScriptType].Insert(index, script);
 		}
-
-		/// <summary>
-		/// Avoid creating a new empty CryScriptInstance each time we need to check
-		/// </summary>
-		static CryScriptInstance InvalidScriptInstance = default(CryScriptInstance);
 
 		/// <summary>
 		/// Last assigned ScriptId, next = + 1
 		/// </summary>
 		public static int LastScriptId = 0;
 
-		internal static List<CryScript> CompiledScripts = new List<CryScript>();
+		internal static Dictionary<ScriptType, List<CryScript>> CompiledScripts { get; set; }
 		#endregion
 	}
 

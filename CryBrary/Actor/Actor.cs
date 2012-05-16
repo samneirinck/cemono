@@ -78,17 +78,17 @@ namespace CryEngine
 
 		static Actor CreateNativeActor(EntityId actorId)
 		{
-			int scriptIndex;
-			var script = ScriptManager.GetScriptByType(typeof(NativeActor), out scriptIndex);
+			var script = ScriptManager.CompiledScripts[ScriptType.Actor].First(x => x.Type == typeof(NativeActor));
+			if(script == null)
+				throw new TypeLoadException("Failed to locate NativeActor type");
 
 			if(script.ScriptInstances == null)
 				script.ScriptInstances = new List<CryScriptInstance>();
 
-			script.ScriptInstances.Add(new NativeActor(actorId));
+			var nativeActor = new NativeActor(actorId);
+			script.ScriptInstances.Add(nativeActor);
 
-			ScriptManager.CompiledScripts[scriptIndex] = script;
-
-			return script.ScriptInstances.Last() as Actor;
+			return nativeActor;
 		}
 
 		public static Actor Client
@@ -116,13 +116,14 @@ namespace CryEngine
 				return null;
 			}
 
-			var player = ScriptManager.AddScriptInstance(new T()) as T;
+			var player = new T();
 			if(player == null)
 			{
 				Debug.LogAlways("[Actor.Create] Failed to add script instance");
 				return null;
 			}
 
+			ScriptManager.AddScriptInstance(player, ScriptType.Actor);
 			player.InternalSpawn(info, channelId);
 
 			return player;
@@ -169,17 +170,12 @@ namespace CryEngine
 
 		internal static void InternalRemove(Predicate<Actor> match)
 		{
-			foreach(var script in ScriptManager.CompiledScripts)
+			foreach(var script in ScriptManager.CompiledScripts[ScriptType.Actor])
 			{
-				if(script.ScriptInstances != null)
-				{
-					for(int i = 0; i < script.ScriptInstances.Count; i++)
-					{
-						var scriptInstance = script.ScriptInstances[i] as Actor;
-						if(scriptInstance != null && match(scriptInstance))
-							script.ScriptInstances.RemoveAt(i);
-					}
-				}
+				if(script.ScriptInstances == null)
+					continue;
+
+				script.ScriptInstances.RemoveAll(instance => match(instance as Actor));
 			}
 		}
 		#endregion

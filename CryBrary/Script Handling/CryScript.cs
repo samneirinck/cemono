@@ -26,6 +26,8 @@ namespace CryEngine.Initialization
 				ScriptType = ScriptType.GameRules;
 			else if(type.Implements(typeof(ScriptCompiler)))
 				ScriptType = ScriptType.ScriptCompiler;
+			else if(type.Implements(typeof(CryScriptInstance)))
+				ScriptType = ScriptType.CryScriptInstance;
 			else
 				ScriptType = ScriptType.Unknown;
 		}
@@ -73,9 +75,13 @@ namespace CryEngine.Initialization
 	public enum ScriptType
 	{
 		/// <summary>
-		/// Scripts will be linked to this type if they inherit from CryScriptInstance, but not any other script base.
+		/// Scripts not inheriting from CryScriptInstance will utilize this script type.
 		/// </summary>
-		Unknown = 0,
+		Unknown = -1,
+		/// <summary>
+		/// Scripts inheriting from CryScriptInstance, but no other CryMono base script will be linked to this script type.
+		/// </summary>
+		CryScriptInstance,
 		/// <summary>
 		/// Scripts directly inheriting from BaseGameRules will utilize this script type.
 		/// </summary>

@@ -25,6 +25,41 @@ struct IMonoEntityManager;
 
 struct IMonoConverter;
 
+enum EMonoScriptType
+{
+	/// <summary>
+	/// Scripts not inheriting from CryScriptInstance will utilize this script type.
+	/// </summary>
+	eScriptType_Unknown = -1,
+	/// <summary>
+	/// Scripts inheriting from CryScriptInstance, but no other CryMono base script will be linked to this script type.
+	/// </summary>
+	eScriptType_CryScriptInstance,
+	/// <summary>
+	/// Scripts directly inheriting from BaseGameRules will utilize this script type.
+	/// </summary>
+	eScriptType_GameRules,
+	/// <summary>
+	/// Scripts directly inheriting from FlowNode will utilize this script type.
+	/// </summary>
+	eScriptType_FlowNode,
+	/// <summary>
+	/// Scripts directly inheriting from Entity will utilize this script type.
+	/// </summary>
+	eScriptType_Entity,
+	/// <summary>
+	/// Scripts directly inheriting from Actor will utilize this script type.
+	/// </summary>
+	eScriptType_Actor,
+	/// <summary>
+	/// </summary>
+	eScriptType_UIEvent,
+	/// <summary>
+	/// </summary>
+	eScriptType_EditorForm,
+	eScriptType_ScriptCompiler,
+};
+
 struct IMonoScriptSystemListener
 {
 	/// <summary>
@@ -88,11 +123,11 @@ struct IMonoScriptSystem : ICryUnknown
 	/// Instantiates a script (with constructor parameters if supplied) of type and name
 	/// This assumes that the script was present in a .dll in Plugins or within a .cs file when PostInit was called.
 	/// </summary>
-	virtual IMonoClass *InstantiateScript(const char *scriptName, IMonoArray *pConstructorParameters = nullptr) = 0;
+	virtual IMonoClass *InstantiateScript(const char *scriptName, EMonoScriptType scriptType = eScriptType_Unknown, IMonoArray *pConstructorParameters = nullptr) = 0;
 	/// <summary>
 	/// Removes and destructs an instantiated script with the supplied id if found.
 	/// </summary>
-	virtual void RemoveScriptInstance(int id) = 0;
+	virtual void RemoveScriptInstance(int id, EMonoScriptType scriptType = eScriptType_Unknown) = 0;
 
 	/// <summary>
 	/// Gets a pointer to the CryBrary assembly containing all default CryMono types.

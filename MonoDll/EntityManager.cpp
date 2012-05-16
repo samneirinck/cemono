@@ -97,7 +97,7 @@ bool CEntityManager::OnBeforeSpawn(SEntitySpawnParams &params)
 	if(!IsMonoEntity(className))
 		return true;
 
-	IMonoClass *pScript = gEnv->pMonoScriptSystem->InstantiateScript(className);
+	IMonoClass *pScript = gEnv->pMonoScriptSystem->InstantiateScript(className, eScriptType_Entity);
 
 	m_monoEntities.push_back(std::shared_ptr<CEntity>(new CEntity(pScript)));
 

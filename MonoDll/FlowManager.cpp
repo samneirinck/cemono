@@ -38,7 +38,7 @@ void CFlowManager::Reset()
 {
 	for each(auto nodeType in m_nodeTypes)
 	{
-		IMonoClass *pScript = gEnv->pMonoScriptSystem->InstantiateScript(nodeType->GetScriptName());
+		IMonoClass *pScript = gEnv->pMonoScriptSystem->InstantiateScript(nodeType->GetScriptName(), eScriptType_FlowNode);
 		nodeType->ReloadPorts(pScript);
 		SAFE_RELEASE(pScript);
 	}
@@ -72,7 +72,7 @@ std::shared_ptr<SNodeType> CFlowManager::InstantiateNode(CFlowNode *pNode, const
 	{
 		if(!strcmp(nodeType->GetTypeName(), name))
 		{
-			IMonoClass *pScriptClass = gEnv->pMonoScriptSystem->InstantiateScript(nodeType->GetScriptName());
+			IMonoClass *pScriptClass = gEnv->pMonoScriptSystem->InstantiateScript(nodeType->GetScriptName(), nodeType->IsEntityNode() ? eScriptType_Entity : eScriptType_FlowNode);
 
 			IMonoClass *pNodeInfo = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("NodeInfo");
 			CallMonoScript<void>(pScriptClass, "InternalInitialize", gEnv->pMonoScriptSystem->GetConverter()->ToManagedType(pNodeInfo, &SMonoNodeInfo(pNode)));

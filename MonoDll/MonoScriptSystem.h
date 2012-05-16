@@ -57,8 +57,8 @@ public:
 
 	virtual void RegisterMethodBinding(const void *method, const char *fullMethodName) override;
 
-	virtual IMonoClass *InstantiateScript(const char *scriptName, IMonoArray *pConstructorParameters = nullptr) override;
-	virtual void RemoveScriptInstance(int id) override;
+	virtual IMonoClass *InstantiateScript(const char *scriptName, EMonoScriptType scriptType = eScriptType_Unknown, IMonoArray *pConstructorParameters = nullptr) override;
+	virtual void RemoveScriptInstance(int id, EMonoScriptType scriptType = eScriptType_Unknown) override;
 	
 	virtual IMonoAssembly *GetCryBraryAssembly() override { return m_pCryBraryAssembly; }
 

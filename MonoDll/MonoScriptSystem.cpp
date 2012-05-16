@@ -311,7 +311,7 @@ void CScriptSystem::PostReload(bool initialLoad)
 		{
 			IMonoArray *pParams = CreateMonoArray(1);
 			pParams->Insert(script.second);
-			if(IMonoObject *pScriptInstance = m_pScriptManager->CallMethod("GetScriptInstanceById", pParams))
+			if(IMonoObject *pScriptInstance = m_pScriptManager->CallMethod("GetScriptInstanceById", pParams, true))
 			{
 				mono::object monoObject = pScriptInstance->GetMonoObject();
 
@@ -404,7 +404,7 @@ void CScriptSystem::RegisterMethodBinding(const void *method, const char *fullMe
 		mono_add_internal_call(fullMethodName, method);
 }
 
-IMonoClass *CScriptSystem::InstantiateScript(const char *scriptName, IMonoArray *pConstructorParameters)
+IMonoClass *CScriptSystem::InstantiateScript(const char *scriptName, EMonoScriptType scriptType, IMonoArray *pConstructorParameters)
 {
 	// TODO: Find a new and better way to set Network.IsMultiplayer, IsClient & IsServer. Currently always false!
 	/*if(scriptType==EMonoScriptType_GameRules)
@@ -419,13 +419,12 @@ IMonoClass *CScriptSystem::InstantiateScript(const char *scriptName, IMonoArray 
 		SAFE_RELEASE(pClass);
 	}*/
 
-	IMonoArray *pArray = CreateMonoArray(2);
+	IMonoArray *pArray = CreateMonoArray(3);
 	pArray->Insert(scriptName);
+	pArray->Insert(scriptType);
 	pArray->Insert(pConstructorParameters);
 	IMonoObject *pResult = m_pScriptManager->CallMethod("InstantiateScript", pArray, true);
 	SAFE_RELEASE(pArray);
-
-
 
 	auto *pScript = pResult ? pResult->Unbox<IMonoClass *>() : NULL;
 
@@ -437,7 +436,7 @@ IMonoClass *CScriptSystem::InstantiateScript(const char *scriptName, IMonoArray 
 	return pScript;
 }
 
-void CScriptSystem::RemoveScriptInstance(int id)
+void CScriptSystem::RemoveScriptInstance(int id, EMonoScriptType scriptType)
 {
 	if(id==-1)
 		return;
@@ -452,5 +451,5 @@ void CScriptSystem::RemoveScriptInstance(int id)
 		}
 	}
 
-	CallMonoScript<void>(m_pScriptManager, "RemoveInstance", id);
+	CallMonoScript<void>(m_pScriptManager, "RemoveInstance", id, scriptType);
 }
