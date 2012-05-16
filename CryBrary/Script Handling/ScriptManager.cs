@@ -234,9 +234,9 @@ namespace CryEngine.Initialization
 				Actor._RegisterActorClass(script.ScriptName, isAI);
 		}
 
-		static void LoadEntity(ref CryScript script)
+		void LoadEntity(ref CryScript script)
 		{
-			//LoadFlowNode(ref script);
+			LoadFlowNode(ref script, true);
 
 			Entity.RegisterClass(Entity.GetEntityConfig(script.Type));
 		}
