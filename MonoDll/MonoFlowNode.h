@@ -61,13 +61,24 @@ public:
 	virtual IFlowGraphHook::EActivation PerformActivation(IFlowGraphPtr pFlowgraph, TFlowNodeId srcNode, TFlowPortId srcPort, TFlowNodeId toNode, TFlowPortId toPort, const TFlowInputData* value) override { return eFGH_Pass; }
 	// ~IFlowGraphHook
 
-	SActivationInfo *GetActivationInfo() { return m_pActInfo; }
 	TFlowNodeId GetId() const { return m_pActInfo->myID; }
 
 	IMonoClass *GetScript() const { return m_pScriptClass; }
 	void SetScript(IMonoClass *pScript) { m_pScriptClass = pScript; }
 
 	inline void SetRegularlyUpdated(bool update) { m_pActInfo->pGraph->SetRegularlyUpdated(m_pActInfo->myID, update); }
+
+	template <class T>
+	void ActivateOutput(int nPort, const T &value) { return CFlowBaseNodeInternal::ActivateOutput<T>(m_pActInfo, nPort, value); }
+
+	bool IsPortActive(int nPort) { return CFlowBaseNodeInternal::IsPortActive(m_pActInfo, nPort); }
+
+	bool GetPortBool(int nPort) { return CFlowBaseNodeInternal::GetPortBool(m_pActInfo, nPort); }
+	int GetPortInt(int nPort) { return CFlowBaseNodeInternal::GetPortInt(m_pActInfo, nPort); }
+	float GetPortFloat(int nPort) { return CFlowBaseNodeInternal::GetPortFloat(m_pActInfo, nPort); }
+	Vec3 GetPortVec3(int nPort) { return CFlowBaseNodeInternal::GetPortVec3(m_pActInfo, nPort); }
+	EntityId GetPortEntityId(int nPort) { return CFlowBaseNodeInternal::GetPortEntityId(m_pActInfo, nPort); }
+	string GetPortString(int nPort) { return CFlowBaseNodeInternal::GetPortString(m_pActInfo, nPort); }
 
 private:
 

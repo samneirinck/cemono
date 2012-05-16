@@ -97,42 +97,42 @@ void CFlowManager::ActivateOutputVec3(CFlowNode *pNode, int index, Vec3 value) {
 template <class T>
 void CFlowManager::ActivateOutputOnNode(CFlowNode *pFlowNode, int index, const T &value)
 {
-	pFlowNode->ActivateOutput(pFlowNode->GetActivationInfo(), index, value);
+	pFlowNode->ActivateOutput(index, value);
 }
 
 bool CFlowManager::IsPortActive(CFlowNode *pFlowNode, int port)
 {
-	return pFlowNode->IsPortActive(pFlowNode->GetActivationInfo(), port);
+	return pFlowNode->IsPortActive(port);
 }
 
 int CFlowManager::GetPortValueInt(CFlowNode *pFlowNode, int index)
 {
-	return pFlowNode->GetPortInt(pFlowNode->GetActivationInfo(), index);
+	return pFlowNode->GetPortInt(index);
 }
 
 float CFlowManager::GetPortValueFloat(CFlowNode *pFlowNode, int index)
 {
-	return pFlowNode->GetPortFloat(pFlowNode->GetActivationInfo(), index);
+	return pFlowNode->GetPortFloat(index);
 }
 
 EntityId CFlowManager::GetPortValueEntityId(CFlowNode *pFlowNode, int index)
 {
-	return pFlowNode->GetPortEntityId(pFlowNode->GetActivationInfo(), index);
+	return pFlowNode->GetPortEntityId(index);
 }
 
 mono::string CFlowManager::GetPortValueString(CFlowNode *pFlowNode, int index)
 {
-	return (mono::string)ToMonoString(pFlowNode->GetPortString(pFlowNode->GetActivationInfo(), index));
+	return (mono::string)ToMonoString(pFlowNode->GetPortString(index));
 }
 
 bool CFlowManager::GetPortValueBool(CFlowNode *pFlowNode, int index)
 {
-	return pFlowNode->GetPortBool(pFlowNode->GetActivationInfo(), index);
+	return pFlowNode->GetPortBool(index);
 }
 
 mono::object CFlowManager::GetPortValueVec3(CFlowNode *pFlowNode, int index)
 {
-	return *gEnv->pMonoScriptSystem->GetConverter()->ToManagedType(eCMT_Vec3, pFlowNode->GetPortVec3(pFlowNode->GetActivationInfo(), index));
+	return *gEnv->pMonoScriptSystem->GetConverter()->ToManagedType(eCMT_Vec3, pFlowNode->GetPortVec3(index));
 }
 
 static const int MAX_NODE_PORT_COUNT = 20;
