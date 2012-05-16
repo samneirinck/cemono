@@ -54,9 +54,9 @@ namespace CryEngine
 		extern internal static Vec3 _GetPortValueVec3(IntPtr nodePtr, int port);
 		#endregion
 
-		internal void InternalInitialize(IntPtr nodePtr)
+		internal void InternalInitialize(NodeInfo nodeInfo)
 		{
-			NodePointer = nodePtr;
+			NodePointer = nodeInfo.nodePtr;
 		}
 
 		internal virtual NodeConfig GetNodeConfig()
@@ -296,6 +296,11 @@ namespace CryEngine
 
 		internal IntPtr NodePointer { get; set; }
 		internal bool Initialized { get; set; }
+	}
+
+	struct NodeInfo
+	{
+		public IntPtr nodePtr;
 	}
 
 	[AttributeUsage(AttributeTargets.Class)]

@@ -46,7 +46,7 @@ void CFlowManager::Reset()
 
 void CFlowManager::RegisterNode(mono::string monoTypeName)
 {
-	IFlowSystem *pFlowSystem = NULL;//gEnv->pFlowSystem;
+	IFlowSystem *pFlowSystem = gEnv->pFlowSystem;
 	if(!pFlowSystem)
 	{
 		CryLogAlways("[Warning] Failed to register node %s, gEnv->pFlowSystem was null!", ToCryString(monoTypeName));
@@ -74,7 +74,8 @@ std::shared_ptr<SNodeType> CFlowManager::InstantiateNode(CFlowNode *pNode, const
 		{
 			IMonoClass *pScriptClass = gEnv->pMonoScriptSystem->InstantiateScript(nodeType->GetScriptName());
 
-			CallMonoScript<void>(pScriptClass, "InternalInitialize", (mono::object)pNode);
+			IMonoClass *pNodeInfo = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("NodeInfo");
+			CallMonoScript<void>(pScriptClass, "InternalInitialize", gEnv->pMonoScriptSystem->GetConverter()->ToManagedType(pNodeInfo, &SMonoNodeInfo(pNode)));
 
 			pNode->SetScript(pScriptClass);
 

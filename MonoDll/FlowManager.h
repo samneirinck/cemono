@@ -56,6 +56,17 @@ private:
 	SInputPortConfig *pInputs;
 };
 
+// Passed down to node script when initializing
+struct SMonoNodeInfo
+{
+	SMonoNodeInfo(CFlowNode *node)
+		: pNode(node)
+	{
+	}
+
+	CFlowNode *pNode;
+};
+
 class CFlowManager
 	: public IMonoScriptBind
 	, public IFlowNodeFactory
