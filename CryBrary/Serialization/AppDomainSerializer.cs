@@ -22,7 +22,7 @@ namespace CryEngine.Serialization
 		{
 			Stopwatch stopwatch = Stopwatch.StartNew();
 
-			string scriptDumpFolder = PathUtils.GetScriptDumpFolder();
+			string scriptDumpFolder = PathUtils.ScriptDumpFolder;
 
 			if(Directory.Exists(scriptDumpFolder))
 				Directory.Delete(scriptDumpFolder, true);
@@ -62,7 +62,7 @@ namespace CryEngine.Serialization
 		{
 			Stopwatch stopwatch = Stopwatch.StartNew();
 
-			string compiledScriptsDirectory = Path.Combine(PathUtils.GetScriptDumpFolder(), "ScriptManager.CompiledScripts");
+			string compiledScriptsDirectory = Path.Combine(PathUtils.ScriptDumpFolder, "ScriptManager.CompiledScripts");
 
 			for(int i = 0; i < ScriptManager.CompiledScripts.Count; i++)
 			{

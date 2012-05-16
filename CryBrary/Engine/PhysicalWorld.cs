@@ -35,6 +35,26 @@ namespace CryEngine
 			_info = hit;
 		}
 
+		public override bool Equals(object obj)
+		{
+			if(obj is RaycastHit)
+				return obj.GetHashCode() == GetHashCode();
+
+			return false;
+		}
+
+		public override int GetHashCode()
+		{
+			int hash = 17;
+
+			hash = hash * 29 + Distance.GetHashCode();
+			hash = hash * 29 + ColliderId.GetHashCode();
+			hash = hash * 29 + Point.GetHashCode();
+			hash = hash * 29 + Normal.GetHashCode();
+
+			return hash;
+		}
+
 		public float Distance { get { return _info.dist; } }
 		/// <summary>
 		/// PhysicalEntityId, not yet implemented.
@@ -62,7 +82,7 @@ namespace CryEngine
 		IgnoreBackfaces = 0x80,
 		IgnoreSolidBackfaces = 0x100,
 		PierceabilityMask = 0x0F,
-		Pierceabiltiy = 0,
+		Pierceability = 0,
 		StopAtPierceable = 0x0F,
 		/// <summary>
 		/// among pierceble hits, materials with sf_important will have priority

@@ -54,7 +54,6 @@
     <Compile Include="Misc\ConvertTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serialization\CrySerializerTests.cs" />
-    <Compile Include="Utils\AssemblyReferenceHandlerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

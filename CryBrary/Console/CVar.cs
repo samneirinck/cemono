@@ -3,11 +3,44 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace CryEngine
 {
 	public class CVar
 	{
+		#region Externals
+		// Console commands
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static void _RegisterCommand(string name, string description, CVarFlags flags);
+
+		// CVars
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static void _RegisterCVarFloat(string name, ref float val, float defaultVal, CVarFlags flags, string description);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static void _RegisterCVarInt(string name, ref int val, int defaultVal, CVarFlags flags, string description);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static void _RegisterCVarString(string name, [MarshalAs(UnmanagedType.LPStr)] string val, string defaultVal, CVarFlags flags, string description);
+
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static float _GetCVarFloat(string name);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static int _GetCVarInt(string name);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static string _GetCVarString(string name);
+
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static void _SetCVarFloat(string name, float value);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static void _SetCVarInt(string name, int value);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static void _SetCVarString(string name, string value);
+
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static bool _HasCVar(string name);
+		#endregion
+
 		static List<CVar> internalCVars = new List<CVar>();
 
 		/// <summary>
@@ -31,7 +64,7 @@ namespace CryEngine
 			if(cvar != default(CVar))
 				return cvar;
 
-			if(Console._HasCVar(name))
+			if(CVar._HasCVar(name))
 				return new CVar(name);
 
 			return null;
@@ -69,14 +102,14 @@ namespace CryEngine
 				Type = CVarType.Int;
 				IVal = (int)value;
 
-				Console._RegisterCVarInt(Name, ref IntValue, IVal, Flags, Help);
+				CVar._RegisterCVarInt(Name, ref IntValue, IVal, Flags, Help);
 			}
 			else if(value is float || value is double)
 			{
 				Type = CVarType.Float;
 				FVal = (float)value;
 
-				Console._RegisterCVarFloat(Name, ref FloatValue, FVal, Flags, Help);
+				CVar._RegisterCVarFloat(Name, ref FloatValue, FVal, Flags, Help);
 			}
 			else if(value is string)
 			{
@@ -113,14 +146,14 @@ namespace CryEngine
 			get
 			{
 				if(ExternallyRegistered)
-					return Console._GetCVarString(Name);
+					return CVar._GetCVarString(Name);
 
 				return StringValue;
 			}
 			set
 			{
 				if(ExternallyRegistered)
-					Console._SetCVarString(Name, value);
+					CVar._SetCVarString(Name, value);
 				else
 					StringValue = value;
 			}
@@ -130,14 +163,14 @@ namespace CryEngine
 			get
 			{
 				if(ExternallyRegistered)
-					return Console._GetCVarFloat(Name);
+					return CVar._GetCVarFloat(Name);
 
 				return FloatValue;
 			}
 			set
 			{
 				if(ExternallyRegistered)
-					Console._SetCVarFloat(Name, value);
+					CVar._SetCVarFloat(Name, value);
 				else
 					FloatValue = value;
 			}
@@ -147,14 +180,14 @@ namespace CryEngine
 			get
 			{
 				if(ExternallyRegistered)
-					return Console._GetCVarInt(Name);
+					return CVar._GetCVarInt(Name);
 
 				return IntValue;
 			}
 			set
 			{
 				if(ExternallyRegistered)
-					Console._SetCVarInt(Name, value);
+					CVar._SetCVarInt(Name, value);
 				else
 					IntValue = value;
 			}

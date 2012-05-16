@@ -2,12 +2,13 @@
 
 namespace CryEngine
 {
+	public delegate void CCommandDelegate(string[] args, string fullCommandLine);
+
 	public static class CCommand
 	{
-		public delegate void CCommandDelegate(string[] args, string fullCommandLine);
 		public static void Register(string name, CCommandDelegate func, string comment = "", CVarFlags flags = CVarFlags.None)
 		{
-			Console._RegisterCommand(name, comment, flags);
+			CVar._RegisterCommand(name, comment, flags);
 
 			commands.Add(name, func);
 		}

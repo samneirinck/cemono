@@ -19,6 +19,6 @@ namespace CryEngine
 
 		[SuppressUnmanagedCodeSecurity]
 		[SuppressMessage("Microsoft.Globalization", "CA2101:SpecifyMarshalingForPInvokeStringArguments", MessageId = "1"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA2101:SpecifyMarshalingForPInvokeStringArguments", MessageId = "0"), DllImport("CryMono.dll")]
-		public extern static void _RegisterCallback(string func, string className, CallbackHandler.Callback cb);
+		public extern static void _RegisterCallback(string func, string className, Callback cb);
 	}
 }

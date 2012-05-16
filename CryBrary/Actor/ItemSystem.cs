@@ -5,7 +5,7 @@ namespace CryEngine
 	/// <summary>
 	/// ItemSystem contains scriptbinds used in relation to the item system.
 	/// </summary>
-	public class ItemSystem
+	public static class ItemSystem
 	{
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern public static void CacheItemGeometry(string itemClass);

@@ -70,7 +70,7 @@ namespace CryEngine
 	}
 
 	[AttributeUsage(AttributeTargets.Class)]
-	public class GameRulesAttribute : Attribute
+	public sealed class GameRulesAttribute : Attribute
 	{
 		public GameRulesAttribute()
 		{

@@ -37,17 +37,19 @@ namespace CryEngine.Initialization
 		#endregion
 
 		public abstract Assembly Compile();
+	}
 
-		[Serializable]
-		public class ScriptCompilationException : Exception
-		{
-			public ScriptCompilationException(string errorMessage)
-				: base(errorMessage) { }
+	[Serializable]
+	public class ScriptCompilationException : Exception
+	{
+		public ScriptCompilationException() { }
 
-			public ScriptCompilationException(string errorMessage, Exception innerEx)
-				: base(errorMessage, innerEx) { }
+		public ScriptCompilationException(string errorMessage)
+			: base(errorMessage) { }
 
-			public override string Message { get { return base.Message.ToString(); } }
-		}
+		public ScriptCompilationException(string errorMessage, Exception innerEx)
+			: base(errorMessage, innerEx) { }
+
+		public override string Message { get { return base.Message.ToString(); } }
 	}
 }

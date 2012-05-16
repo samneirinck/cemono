@@ -13,7 +13,6 @@ namespace CryEngine.Serialization
 	{
 		StreamWriter Writer { get; set; }
 		StreamReader Reader { get; set; }
-		Assembly CallingAssembly { get; set; }
 		FormatterConverter Converter { get; set; }
 
 		/// <summary>
@@ -215,7 +214,6 @@ namespace CryEngine.Serialization
 				throw new ArgumentNullException("stream");
 
 			Reader = new StreamReader(stream);
-			CallingAssembly = Assembly.GetCallingAssembly();
 
 			ObjectReferences.Clear();
 			CurrentLine = 0;
@@ -249,7 +247,7 @@ namespace CryEngine.Serialization
 			}
 
 			if(objReference.Value == null && type != "null")
-				throw new Exception(string.Format("Failed to deserialize object {0}!", objReference.Name));
+				throw new SerializationException(string.Format("Failed to deserialize object {0}!", objReference.Name));
 
 			return objReference;
 		}
@@ -284,7 +282,7 @@ namespace CryEngine.Serialization
 				if(fieldInfo != null)
 					fieldInfo.SetValue(objectInstance, fieldReference.Value);
 				else
-					throw new Exception(string.Format("Failed to find field {0} in type {1}", fieldReference.Name, typeName));
+					throw new MissingFieldException(string.Format("Failed to find field {0} in type {1}", fieldReference.Name, typeName));
 			}
 
 			objReference.Value = objectInstance;
@@ -429,10 +427,10 @@ namespace CryEngine.Serialization
 					return type;
 			}
 
-			throw new Exception(string.Format("Could not localize type with name {0}", typeName));
+			throw new TypeLoadException(string.Format("Could not localize type with name {0}", typeName));
 		}
 
-		Type GetIEnumerableElementType(Type enumerableType)
+		static Type GetIEnumerableElementType(Type enumerableType)
 		{
 			Type type = enumerableType.GetElementType();
 			if(type != null)
@@ -452,7 +450,7 @@ namespace CryEngine.Serialization
 			return type;
 		}
 
-		object CreateGenericObjectInstance(Type type, params Type[] genericArguments)
+		static object CreateGenericObjectInstance(Type type, params Type[] genericArguments)
 		{
 			Type genericType = type.MakeGenericType(genericArguments);
 
@@ -471,7 +469,7 @@ namespace CryEngine.Serialization
 			if(type.GetConstructor(System.Type.EmptyTypes) != null || type.IsValueType)
 				return System.Activator.CreateInstance(type);
 
-			throw new Exception(string.Format("Could not serialize type {0} since it did not containg a parameterless constructor", type.Name));
+			throw new SerializationException(string.Format("Could not serialize type {0} since it did not containg a parameterless constructor", type.Name));
 		}
 
 		int CurrentLine { get; set; }

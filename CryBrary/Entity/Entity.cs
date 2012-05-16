@@ -13,7 +13,7 @@ namespace CryEngine
 	/// </summary>
 	public abstract partial class Entity : EntityBase
 	{
-		public Entity() { }
+		protected Entity() { }
 
 		/// <summary>
 		/// Initializes the entity, not recommended to set manually.
@@ -313,32 +313,32 @@ namespace CryEngine
 			return new EntityRegisterParams(entityAttribute.Name ?? type.Name, entityAttribute.Category, entityAttribute.EditorHelper,
 					entityAttribute.Icon, entityAttribute.Flags);
 		}
-
-		[Serializable]
-		public class EntityException : Exception
-		{
-			public EntityException()
-			{
-			}
-
-			public EntityException(string message)
-				: base(message)
-			{
-			}
-
-			public EntityException(string message, Exception inner)
-				: base(message, inner)
-			{
-			}
-
-			protected EntityException(
-				SerializationInfo info,
-				StreamingContext context)
-				: base(info, context)
-			{
-			}
-		}
 		#endregion
+	}
+
+	[Serializable]
+	public class EntityException : Exception
+	{
+		public EntityException()
+		{
+		}
+
+		public EntityException(string message)
+			: base(message)
+		{
+		}
+
+		public EntityException(string message, Exception inner)
+			: base(message, inner)
+		{
+		}
+
+		protected EntityException(
+			SerializationInfo info,
+			StreamingContext context)
+			: base(info, context)
+		{
+		}
 	}
 
 	public enum EntitySlotFlags

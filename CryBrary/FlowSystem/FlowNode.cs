@@ -184,7 +184,7 @@ namespace CryEngine
 		List<MethodInfo> inputMethods;
 
 		//DON'T LOOK AT ME
-		NodePortType GetPortType(Type type)
+		static NodePortType GetPortType(Type type)
 		{
 			if(type == typeof(void))
 				return NodePortType.Void;
@@ -299,7 +299,7 @@ namespace CryEngine
 	}
 
 	[AttributeUsage(AttributeTargets.Class)]
-	public class FlowNodeAttribute : Attribute
+	public sealed class FlowNodeAttribute : Attribute
 	{
 		/// <summary>
 		/// Name of the node, if not set will use the node class name.
@@ -318,7 +318,7 @@ namespace CryEngine
 	}
 
 	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field)]
-	public class PortAttribute : Attribute
+	public sealed class PortAttribute : Attribute
 	{
 		public string Name { get; set; }
 		public string Description { get; set; }

@@ -3,51 +3,35 @@
 
 #include <IEntitySystem.h>
 
-CScriptbind_ScriptInterface::TScriptTables CScriptbind_ScriptInterface::m_scriptTables = CScriptbind_ScriptInterface::TScriptTables();
-
 CScriptbind_ScriptInterface::CScriptbind_ScriptInterface()
 {
 	REGISTER_METHOD(GetScriptTable);
-	REGISTER_METHOD(InvokeMethod);
+
+	REGISTER_METHOD(CallMethod);
+	REGISTER_METHOD(CallMethodVoid);
 }
 
-int CScriptbind_ScriptInterface::GetScriptTable(EntityId entityId)
+IScriptTable *CScriptbind_ScriptInterface::GetScriptTable(EntityId entityId)
 {
 	IEntity *pEntity = gEnv->pEntitySystem->GetEntity(entityId);
 	if(pEntity)
-	{
-		IScriptTable *pScriptTable = pEntity->GetScriptTable();
-		if(!pScriptTable)
-			return -1;
+		return pEntity->GetScriptTable();
 
-		for each(auto scriptTable in m_scriptTables)
-		{
-			if(scriptTable.second == pScriptTable)
-				return scriptTable.first;
-		}
-
-		m_scriptTables.insert(TScriptTables::value_type(m_scriptTables.size(), pScriptTable));
-		return m_scriptTables.size() - 1;
-	}
-
-	return -1;
+	return NULL;
 }
 
-mono::object CScriptbind_ScriptInterface::InvokeMethod(int scriptTable, mono::string methodName, mono::array args)
-{/*
-	IScriptTable *pScriptTable = m_scriptTables[scriptTable];
-
-	HSCRIPTFUNCTION pfnScriptFunction = 0;
-	if(pScriptTable && pScriptTable->GetValue(ToCryString(methodName), pfnScriptFunction))
+mono::object CScriptbind_ScriptInterface::CallMethod(IScriptTable *pScriptTable, mono::string methodName, ELuaVariableType returnType, mono::array args)
+{
+	/*HSCRIPTFUNCTION pfnScriptFunction = 0;
+	if(pScriptTable->GetValue(ToCryString(methodName), pfnScriptFunction))
 	{
 		void *result = NULL;
 		if(gEnv->pScriptSystem->BeginCall(pfnScriptFunction))
 		{
-			IMonoArray *pArgs = *args;
-			if(pArgs)
+			if(IMonoArray *pArgs = *args)
 			{
-				for(int i = 0; i < pArgs->GetSize(); i++)
-					gEnv->pScriptSystem->PushFuncParam(pArgs->GetItem(i)->Unbox<void *>());
+				//for(int i = 0; i < pArgs->GetSize(); i++)
+					//gEnv->pScriptSystem->PushFuncParam(pArgs->GetItem(i)->GetAnyValue().GetValue());
 			}
 
 			gEnv->pScriptSystem->EndCall(result);
@@ -58,4 +42,23 @@ mono::object CScriptbind_ScriptInterface::InvokeMethod(int scriptTable, mono::st
 	}*/
 
 	return NULL;
+}
+
+void CScriptbind_ScriptInterface::CallMethodVoid(IScriptTable *pScriptTable, mono::string funcName, mono::array args)
+{
+	const char *methodName = ToCryString(funcName);
+
+	if(pScriptTable->GetValueType(methodName) == svtFunction)
+	{
+		if(gEnv->pScriptSystem->BeginCall(pScriptTable, methodName))
+		{
+			if(IMonoArray *pArgs = *args)
+			{
+				//for(int i = 0; i < pArgs->GetSize(); i++)
+					//gEnv->pScriptSystem->PushFuncParam(pArgs->GetItem(i)->GetAnyValue().GetValue());
+			}
+
+			gEnv->pScriptSystem->EndCall();
+		}
+	}
 }

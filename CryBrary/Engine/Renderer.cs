@@ -96,77 +96,77 @@ namespace CryEngine
 		/// <summary>
 		/// view position
 		/// </summary>
-		public Vec3 Position { get; set; }
+		public Vec3 Position;
 		/// <summary>
 		/// view orientation
 		/// </summary>
-		public Quat Rotation { get; set; }
-		public Quat LastLocalRotation { get; set; }
+		public Quat Rotation;
+		public Quat LastLocalRotation;
 
 		/// <summary>
 		/// custom near clipping plane, 0 means use engine defaults
 		/// </summary>
-		public float Nearplane { get; set; }
-		public float FieldOfView { get; set; }
+		public float Nearplane;
+		public float FieldOfView;
 
-		public byte ViewID { get; set; }
+		public byte ViewID;
 
 		/// <summary>
 		/// view shake status
 		/// </summary>
-		public bool GroundOnly { get; set; }
+		public bool GroundOnly;
 		/// <summary>
 		/// whats the amount of shake, from 0.0 to 1.0
 		/// </summary>
-		public float ShakingRatio { get; set; }
+		public float ShakingRatio;
 		/// <summary>
 		/// what the current angular shake
 		/// </summary>
-		public Quat CurrentShakeQuat { get; set; }
+		public Quat CurrentShakeQuat;
 		/// <summary>
 		/// what is the current translational shake
 		/// </summary>
-		public Vec3 CurrentShakeShift { get; set; }
+		public Vec3 CurrentShakeShift;
 
 		// For damping camera movement.
 		/// <summary>
 		/// Who we're watching. 0 == nobody.
 		/// </summary>
-		public uint TargetId { get; set; }
+		public uint TargetId;
 		/// <summary>
 		/// Where the target was.
 		/// </summary>
-		public Vec3 TargetPosition { get; set; }
+		public Vec3 TargetPosition;
 		/// <summary>
 		/// current dt.
 		/// </summary>
-		public float FrameTime { get; set; }
+		public float FrameTime;
 		/// <summary>
 		/// previous rate of change of angle.
 		/// </summary>
-		public float AngleVelocity { get; set; }
+		public float AngleVelocity;
 		/// <summary>
 		/// previous rate of change of dist between target and camera.
 		/// </summary>
-		public float Velocity { get; set; }
+		public float Velocity;
 		/// <summary>
 		/// previous dist of cam from target
 		/// </summary>
-		public float Distance { get; set; }
+		public float Distance;
 
 		// blending
-		public bool Blend { get; set; }
-		public float BlendPositionSpeed { get; set; }
-		public float BlendRotationSpeed { get; set; }
-		public float BlendFieldOfViewSpeed { get; set; }
-		public Vec3 BlendPositionOffset { get; set; }
-		public Quat BlendRotationOffset { get; set; }
-		public float BlendFieldOfViewOffset { get; set; }
-		public bool JustActivated { get; set; }
+		public bool Blend;
+		public float BlendPositionSpeed;
+		public float BlendRotationSpeed;
+		public float BlendFieldOfViewSpeed;
+		public Vec3 BlendPositionOffset;
+		public Quat BlendRotationOffset;
+		public float BlendFieldOfViewOffset;
+		public bool JustActivated;
 
-		private byte LastViewID { get; set; }
-		private Vec3 LastPosition { get; set; }
-		private Quat LastRotation { get; set; }
-		private float LastFieldOfView { get; set; }
+		private byte LastViewID;
+		private Vec3 LastPosition;
+		private Quat LastRotation;
+		private float LastFieldOfView;
 	}
 }

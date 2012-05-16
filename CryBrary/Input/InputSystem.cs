@@ -4,17 +4,15 @@ using System.Runtime.CompilerServices;
 
 namespace CryEngine
 {
+	public delegate void ActionMapEventDelegate(object sender, ActionMapEventArgs e);
+
+	public delegate void KeyEventDelegate(object sender, KeyEventArgs e);
+	public delegate void MouseEventDelegate(object sender, MouseEventArgs e);
+
 	public static class Input
 	{
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static void _RegisterAction(string actionName);
-
-		#region Delegates
-		public delegate void ActionMapEventDelegate(object sender, ActionMapEventArgs e);
-
-		public delegate void KeyEventDelegate(object sender, KeyEventArgs e);
-		public delegate void MouseEventDelegate(object sender, MouseEventArgs e);
-		#endregion
 
 		#region Events
 		static void OnActionTriggered(string action, KeyEvent keyEvent, float value)

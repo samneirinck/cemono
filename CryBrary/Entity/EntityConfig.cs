@@ -7,7 +7,7 @@ namespace CryEngine
 	/// Defines additional information used by the entity registration system.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class)]
-	public class EntityAttribute : Attribute
+	public sealed class EntityAttribute : Attribute
 	{
 		public EntityAttribute()
 		{
@@ -46,7 +46,7 @@ namespace CryEngine
 	/// Defines a property that is displayed and editable inside Sandbox.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
-	public class EditorPropertyAttribute : Attribute
+	public sealed class EditorPropertyAttribute : Attribute
 	{
 		//This isn't nice, but attributes don't support custom classes
 		/// <summary>

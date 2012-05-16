@@ -378,7 +378,10 @@ bool CScriptSystem::InitializeSystems(IMonoAssembly *pCryBraryAssembly)
 void CScriptSystem::OnPostUpdate(float fDeltaTime)
 {
 	// Updates all scripts and sets Time.FrameTime.
-	CallMonoScript<void>(m_pScriptManager, "OnUpdate", fDeltaTime);
+	IMonoArray *pArray = CreateMonoArray(1);
+	pArray->Insert(fDeltaTime);
+	m_pScriptManager->CallMethod("OnUpdate", pArray, true);
+	SAFE_RELEASE(pArray);
 }
 
 void CScriptSystem::OnFileChange(const char *fileName)
@@ -414,7 +417,15 @@ IMonoClass *CScriptSystem::InstantiateScript(const char *scriptName, IMonoArray 
 		SAFE_RELEASE(pClass);
 	}*/
 
-	auto *pScript = CallMonoScript<IMonoClass *>(m_pScriptManager, "InstantiateScript", scriptName, pConstructorParameters);
+	IMonoArray *pArray = CreateMonoArray(2);
+	pArray->Insert(scriptName);
+	pArray->Insert(pConstructorParameters);
+	IMonoObject *pResult = m_pScriptManager->CallMethod("InstantiateScript", pArray, true);
+	SAFE_RELEASE(pArray);
+
+
+
+	auto *pScript = pResult ? pResult->Unbox<IMonoClass *>() : NULL;
 
 	if(pScript)
 		m_scripts.insert(TScripts::value_type(pScript, pScript->GetScriptId()));

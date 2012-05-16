@@ -12,10 +12,10 @@ namespace CryEngine.Initialization
 	{
 		internal ScriptManager()
 		{
-			if(!Directory.Exists(PathUtils.GetTempFolder()))
-				Directory.CreateDirectory(PathUtils.GetTempFolder());
+			if(!Directory.Exists(PathUtils.TempFolder))
+				Directory.CreateDirectory(PathUtils.TempFolder);
 
-			foreach(var file in Directory.GetFiles(PathUtils.GetTempFolder()))
+			foreach(var file in Directory.GetFiles(PathUtils.TempFolder))
 				File.Delete(file);
 
 			FlowNodes = new List<string>();
@@ -27,7 +27,7 @@ namespace CryEngine.Initialization
 
 		bool LoadPlugins()
 		{
-			LoadLibrariesInFolder(Path.Combine(PathUtils.GetScriptsFolder(), "Plugins"));
+			LoadLibrariesInFolder(Path.Combine(PathUtils.ScriptsFolder, "Plugins"));
 
 			return true;
 		}
@@ -46,7 +46,7 @@ namespace CryEngine.Initialization
 		/// <param name="constructorParams"></param>
 		/// <returns>New instance scriptId or -1 if instantiation failed.</returns>
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public object InstantiateScript(string scriptName, object[] constructorParams = null)
+		public static object InstantiateScript(string scriptName, object[] constructorParams = null)
 		{
 			if(scriptName.Length < 1)
 				throw new ArgumentException("Empty script name passed to InstantiateClass");
@@ -102,26 +102,7 @@ namespace CryEngine.Initialization
 			}
 		}
 
-		void RemoveInstanceFromScriptById(ref CryScript script, int scriptId)
-		{
-			if(script.ScriptInstances != null && script.ScriptInstances.Count > 0)
-			{
-				var scriptInstance = script.ScriptInstances.FirstOrDefault(x => x.ScriptId == scriptId);
-				if(scriptInstance == InvalidScriptInstance)
-					return;
-
-				var instanceIndex = script.ScriptInstances.IndexOf(scriptInstance);
-				if(instanceIndex == -1)
-				{
-					Debug.LogAlways("Failed to remove script with id {0}; instance was not found.", scriptId);
-					return;
-				}
-
-				script.ScriptInstances.RemoveAt(instanceIndex);
-			}
-		}
-
-		public int GetEntityScriptId(EntityId entityId, System.Type scriptType = null)
+		public static int GetEntityScriptId(EntityId entityId, System.Type scriptType = null)
 		{
 			var scripts = CompiledScripts.Where(script => (scriptType != null ? script.Type.Implements(scriptType) : true) && script.ScriptInstances != null);
 
@@ -136,24 +117,6 @@ namespace CryEngine.Initialization
 			}
 
 			return -1;
-		}
-
-		/// <summary>
-		/// Called once per frame.
-		/// </summary>
-		public void OnUpdate(float frameTime)
-		{
-			Time.DeltaTime = frameTime;
-
-			foreach(var script in CompiledScripts)
-			{
-				if(script.ScriptInstances != null)
-				{
-					foreach(var instance in script.ScriptInstances)
-						if(instance.ReceiveUpdates)
-							instance.OnUpdate();
-				}
-			}
 		}
 
 		/// <summary>
@@ -201,7 +164,7 @@ namespace CryEngine.Initialization
 		/// <param name="assemblyPath"></param>
 		public void LoadAssembly(string assemblyPath)
 		{
-			var newPath = Path.Combine(PathUtils.GetTempFolder(), Path.GetFileName(assemblyPath));
+			var newPath = Path.Combine(PathUtils.TempFolder, Path.GetFileName(assemblyPath));
 			File.Copy(assemblyPath, newPath, true);
 
 #if !RELEASE
@@ -255,7 +218,7 @@ namespace CryEngine.Initialization
 			}
 		}
 
-		void LoadActor(ref CryScript script)
+		static void LoadActor(ref CryScript script)
 		{
 			bool registerActorClass = true;
 			bool isAI = false;
@@ -263,15 +226,15 @@ namespace CryEngine.Initialization
 			ActorAttribute attr;
 			if(script.Type.TryGetAttribute<ActorAttribute>(out attr))
 			{
-				registerActorClass = attr.UseMonoActor;
-				isAI = attr.IsAI;
+				registerActorClass = attr.useMonoActor;
+				isAI = attr.isAI;
 			}
 
 			if(registerActorClass)
 				Actor._RegisterActorClass(script.ScriptName, isAI);
 		}
 
-		void LoadEntity(ref CryScript script)
+		static void LoadEntity(ref CryScript script)
 		{
 			//LoadFlowNode(ref script);
 
@@ -318,7 +281,7 @@ namespace CryEngine.Initialization
 			FlowNodes.Add(category + ":" + nodeName);
 		}
 
-		void LoadGameRules(ref CryScript script)
+		static void LoadGameRules(ref CryScript script)
 		{
 			string gamemodeName = null;
 
@@ -335,11 +298,11 @@ namespace CryEngine.Initialization
 			GameRules._RegisterGameMode(gamemodeName ?? script.ScriptName);
 		}
 
-		public void GenerateDebugDatabaseForAssembly(string assemblyPath)
+		public static void GenerateDebugDatabaseForAssembly(string assemblyPath)
 		{
 			if(File.Exists(Path.ChangeExtension(assemblyPath, "pdb")))
 			{
-				var assembly = Assembly.LoadFrom(Path.Combine(PathUtils.GetEngineFolder(), "Mono", "bin", "pdb2mdb.dll"));
+				var assembly = Assembly.LoadFrom(Path.Combine(PathUtils.EngineFolder, "Mono", "bin", "pdb2mdb.dll"));
 				var driver = assembly.GetType("Driver");
 				var convertMethod = driver.GetMethod("Convert", BindingFlags.Static | BindingFlags.Public);
 
@@ -351,6 +314,43 @@ namespace CryEngine.Initialization
 		List<string> FlowNodes { get; set; }
 
 		#region Statics
+		/// <summary>
+		/// Called once per frame.
+		/// </summary>
+		static public void OnUpdate(float frameTime)
+		{
+			Time.DeltaTime = frameTime;
+
+			foreach(var script in CompiledScripts)
+			{
+				if(script.ScriptInstances != null)
+				{
+					foreach(var instance in script.ScriptInstances)
+						if(instance.ReceiveUpdates)
+							instance.OnUpdate();
+				}
+			}
+		}
+
+		static void RemoveInstanceFromScriptById(ref CryScript script, int scriptId)
+		{
+			if(script.ScriptInstances != null && script.ScriptInstances.Count > 0)
+			{
+				var scriptInstance = script.ScriptInstances.FirstOrDefault(x => x.ScriptId == scriptId);
+				if(scriptInstance == InvalidScriptInstance)
+					return;
+
+				var instanceIndex = script.ScriptInstances.IndexOf(scriptInstance);
+				if(instanceIndex == -1)
+				{
+					Debug.LogAlways("Failed to remove script with id {0}; instance was not found.", scriptId);
+					return;
+				}
+
+				script.ScriptInstances.RemoveAt(instanceIndex);
+			}
+		}
+
 		internal static T FindScriptInstance<T>(Predicate<T> match) where T : CryScriptInstance
 		{
 			T result;
@@ -454,7 +454,7 @@ namespace CryEngine.Initialization
 	}
 
 	[Serializable]
-	class ScriptNotFoundException : Exception
+	public class ScriptNotFoundException : Exception
 	{
 		public ScriptNotFoundException(string error)
 		{

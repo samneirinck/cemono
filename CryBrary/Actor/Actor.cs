@@ -212,25 +212,25 @@ namespace CryEngine
 	}
 
 	[AttributeUsage(AttributeTargets.Class)]
-	public class ActorAttribute : Attribute
+	public sealed class ActorAttribute : Attribute
 	{
 		public ActorAttribute(bool useMonoActor = true, bool isAI = true)
 		{
-			UseMonoActor = useMonoActor;
-			IsAI = isAI;
+			this.useMonoActor = useMonoActor;
+			this.isAI = isAI;
 		}
 
 		/// <summary>
 		/// Utilize the C++ Actor class contained within CryMono.dll
 		/// Otherwise the engine will require one created in the game dll. 
 		/// </summary>
-		public bool UseMonoActor { get; set; }
+		public bool useMonoActor;
 
 		/// <summary>
 		/// Determines if this is an AI actor class.
 		/// Only applied when UseMonoActor is set to true.
 		/// </summary>
-		public bool IsAI { get; set; }
+		public bool isAI;
 	}
 
 	internal struct ActorInfo

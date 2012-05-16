@@ -15,9 +15,16 @@
 
 struct IScriptTable;
 
+enum ELuaVariableType
+{
+	eLVT_Boolean,
+	eLVT_Integer,
+	eLVT_Float,
+	eLVT_String
+};
+
 class CScriptbind_ScriptInterface : public IMonoScriptBind
 {
-	typedef std::map<int, IScriptTable *> TScriptTables;
 public:
 	CScriptbind_ScriptInterface();
 	~CScriptbind_ScriptInterface() {}
@@ -28,12 +35,11 @@ public:
 	// ~IMonoScriptBind
 
 	// Externals
-	static int GetScriptTable(EntityId entity);
+	static IScriptTable *GetScriptTable(EntityId entity);
 
-	static mono::object InvokeMethod(int scriptTable, mono::string methodName, mono::array args);
+	static mono::object CallMethod(IScriptTable *pScriptTable, mono::string methodName, ELuaVariableType returnType, mono::array args);
+	static void CallMethodVoid(IScriptTable *pScriptTable, mono::string methodName, mono::array args);
 	// ~Externals
-
-	static TScriptTables m_scriptTables;
 };
 
 #endif //__SCRIPTBIND_PHYSICALWORLD__
