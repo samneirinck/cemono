@@ -126,7 +126,7 @@ void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 		{
 			m_pActInfo = pActInfo;
 
-			CallMonoScript<void>(m_pScriptClass, "OnInitialized");
+			CallMonoScript<void>(m_pScriptClass, "OnInit");
 		}
 		break;
 	case eFE_SetEntityId:
