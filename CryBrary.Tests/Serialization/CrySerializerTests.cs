@@ -58,6 +58,9 @@ namespace CryBrary.Tests.Serialization
 				var serializer = new CrySerializer();
 				serializer.Serialize(stream, SetupTestClass());
 
+				serializer = null;
+				serializer = new CrySerializer();
+
 				var testClass = serializer.Deserialize(stream) as TestClass;
 				Assert.IsNotNull(testClass);
 
@@ -79,6 +82,9 @@ namespace CryBrary.Tests.Serialization
 				var serializer = new CrySerializer();
 				serializer.Serialize(stream, "Test str1ng_I5 V37y tEsTy%‹Œm´ð!");
 
+				serializer = null;
+				serializer = new CrySerializer();
+
 				string testString = serializer.Deserialize(stream) as string;
 
 				Assert.AreEqual("Test str1ng_I5 V37y tEsTy%‹Œm´ð!", testString);
@@ -96,6 +102,9 @@ namespace CryBrary.Tests.Serialization
 
 				var serializer = new CrySerializer();
 				serializer.Serialize(stream, list);
+
+				serializer = null;
+				serializer = new CrySerializer();
 
 				list = null;
 				var deserialized = serializer.Deserialize(stream) as List<string>;
@@ -119,6 +128,9 @@ namespace CryBrary.Tests.Serialization
 
 				var serializer = new CrySerializer();
 				serializer.Serialize(stream, dictionary);
+
+				serializer = null;
+				serializer = new CrySerializer();
 
 				var deserializedDictionary = serializer.Deserialize(stream) as Dictionary<string, int>;
 				Assert.IsNotNull(deserializedDictionary);
@@ -151,6 +163,9 @@ namespace CryBrary.Tests.Serialization
 				var serializer = new CrySerializer();
 				serializer.Serialize(stream, list.ToArray());
 
+				serializer = null;
+				serializer = new CrySerializer();
+
 				var array = serializer.Deserialize(stream) as object[];
 				Assert.IsNotNull(array);
 				Assert.IsNotEmpty(array);
@@ -174,6 +189,9 @@ namespace CryBrary.Tests.Serialization
 
 				var serializer = new CrySerializer();
 				serializer.Serialize(stream, list.ToArray());
+
+				serializer = null;
+				serializer = new CrySerializer();
 
 				var array = serializer.Deserialize(stream) as object[];
 				Assert.IsNotNull(array);
@@ -223,6 +241,9 @@ namespace CryBrary.Tests.Serialization
 
 				referenceTestClass = null;
 
+				serializer = null;
+				serializer = new CrySerializer();
+
 				referenceTestClass = serializer.Deserialize(stream) as Multiple_Reference_Test_Class;
 
 				Assert.AreNotSame(referenceTestClass.ClassWithTestClassReference, referenceTestClass.TestClassSeperate);
@@ -256,6 +277,9 @@ namespace CryBrary.Tests.Serialization
 
 				serializer.Serialize(stream, new Class_With_MemberInfo_Member());
 
+				serializer = null;
+				serializer = new CrySerializer();
+
 				var memberInfoClass = serializer.Deserialize(stream) as Class_With_MemberInfo_Member;
 
 				Assert.IsNotNull(memberInfoClass);
@@ -271,7 +295,7 @@ namespace CryBrary.Tests.Serialization
 		{
 			void PureVirtualMethod();
 		}
-
+		
 		public abstract class BaseClass : Interface
 		{
 			public virtual void NonoverriddenMethod()
@@ -322,6 +346,9 @@ namespace CryBrary.Tests.Serialization
 
 				serializer.Serialize(stream, new Class_Inherit_From_Class());
 
+				serializer = null;
+				serializer = new CrySerializer();
+
 				var inheritClass = serializer.Deserialize(stream) as Class_Inherit_From_Class;
 
 				Assert.IsNotNull(inheritClass);
@@ -329,6 +356,35 @@ namespace CryBrary.Tests.Serialization
 				Assert.AreEqual(13, inheritClass.IntegerProperty);
 				Assert.AreEqual("TestString", inheritClass.StringProperty);
 				Assert.AreEqual(new CryEngine.Vec3(1, 2, 3), inheritClass.Vec3Property);
+			}
+		}
+
+		[Test]
+		public void GenericEnumerableception()
+		{
+			var dictionary = new Dictionary<int, List<TestClass>>();
+			for(int i = 0; i < 10; i++)
+			{
+				var list = new List<TestClass>();
+				list.Add(SetupTestClass());
+				list.Add(null);
+
+				dictionary.Add(i, list);
+			}
+
+			using(var stream = new MemoryStream())
+			{
+				var serializer = new CrySerializer();
+
+				serializer.Serialize(stream, dictionary);
+				dictionary = null;
+
+				serializer = null;
+				serializer = new CrySerializer();
+
+				var deserializedDictionary = serializer.Deserialize(stream) as Dictionary<int, List<TestClass>>;
+
+				Assert.IsNotNull(deserializedDictionary);
 			}
 		}
 	}
