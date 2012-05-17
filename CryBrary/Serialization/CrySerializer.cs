@@ -98,7 +98,7 @@ namespace CryEngine.Serialization
 		{
 			WriteLine("any");
 			WriteLine(objectReference.Name);
-			WriteLine(objectReference.Value.GetType().FullName);
+			WriteType(objectReference.Value.GetType());
 			WriteLine(Converter.ToString(objectReference.Value));
 		}
 
@@ -119,7 +119,7 @@ namespace CryEngine.Serialization
 			WriteLine(array.Count());
 			WriteLine(objectReference.Name);
 
-			WriteLine(GetIEnumerableElementType(array.GetType()));
+			WriteType(GetIEnumerableElementType(array.GetType()));
 
 			for(int i = 0; i < array.Count(); i++)
 				StartWrite(new ObjectReference(i.ToString(), array.ElementAt(i)));
@@ -135,17 +135,7 @@ namespace CryEngine.Serialization
 			WriteLine(array.Count());
 			WriteLine(objectReference.Name);
 
-			WriteLine(objectReference.Value.GetType().GetGenericTypeDefinition().FullName);
-
-			var genericArguments = objectReference.Value.GetType().GetGenericArguments();
-			WriteLine(genericArguments.Count());
-			foreach(var genericArg in genericArguments)
-			{
-				if(genericArg.IsGenericType)
-					WriteLine(genericArg.GetGenericTypeDefinition().FullName);
-				else
-					WriteLine(genericArg.FullName);
-			}
+			WriteType(objectReference.Value.GetType());
 
 			for(int i = 0; i < array.Count(); i++)
 				StartWrite(new ObjectReference(i.ToString(), array.ElementAt(i)));
@@ -155,7 +145,7 @@ namespace CryEngine.Serialization
 		{
 			WriteLine("enum");
 			WriteLine(objectReference.Name);
-			WriteLine(objectReference.Value.GetType().FullName);
+			WriteType(objectReference.Value.GetType());
 			WriteLine(objectReference.Value);
 		}
 
@@ -173,7 +163,7 @@ namespace CryEngine.Serialization
 
 				var memberInfo = objectReference.Value as MemberInfo;
 				WriteLine(memberInfo.Name);
-				WriteLine(memberInfo.DeclaringType);
+				WriteType(memberInfo.DeclaringType);
 				WriteLine(memberInfo.MemberType);
 
 				return;
@@ -181,7 +171,7 @@ namespace CryEngine.Serialization
 
 			WriteLine("object");
 			WriteLine(objectReference.Name);
-			WriteLine(type.FullName);
+			WriteType(type);
 
 			var fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 			WriteLine(fields.Length);
@@ -191,6 +181,23 @@ namespace CryEngine.Serialization
 
 				StartWrite(new ObjectReference(field.Name, fieldValue));
 			}
+		}
+
+		void WriteType(Type type)
+		{
+			WriteLine(type.IsGenericType);
+
+			if(type.IsGenericType)
+			{
+				WriteLine(type.GetGenericTypeDefinition().FullName);
+
+				var genericArgs = type.GetGenericArguments();
+				WriteLine(genericArgs.Length);
+				foreach(var genericArg in genericArgs)
+					WriteType(genericArg);
+			}
+			else
+				WriteLine(type.FullName);
 		}
 
 		/// <summary>
@@ -276,10 +283,10 @@ namespace CryEngine.Serialization
 			ObjectReferences.Add(CurrentLine - 1, objReference);
 
 			objReference.Name = ReadLine();
-			string typeName = ReadLine();
+			var type = ReadType();
 			int numFields = int.Parse(ReadLine());
 
-			object objectInstance = CreateObjectInstance(typeName);
+			object objectInstance = Activator.CreateInstance(type);
 			for(int i = 0; i < numFields; ++i)
 			{
 				ObjectReference fieldReference = StartRead();
@@ -289,7 +296,7 @@ namespace CryEngine.Serialization
 				if(fieldInfo != null)
 					fieldInfo.SetValue(objectInstance, fieldReference.Value);
 				else
-					throw new MissingFieldException(string.Format("Failed to find field {0} in type {1}", fieldReference.Name, typeName));
+					throw new MissingFieldException(string.Format("Failed to find field {0} in type {1}", fieldReference.Name, type != null ? type.Name : "[Unknown]"));
 			}
 
 			objReference.Value = objectInstance;
@@ -302,7 +309,7 @@ namespace CryEngine.Serialization
 			objReference.Name = ReadLine();
 			var memberName = ReadLine();
 
-			var declaringType = GetType(ReadLine());
+			var declaringType = ReadType();
 			var memberType = (MemberTypes)Enum.Parse(typeof(MemberTypes), ReadLine());
 
 			MemberInfo memberInfo = null;
@@ -329,9 +336,9 @@ namespace CryEngine.Serialization
 
 			var numElements = int.Parse(ReadLine());
 			objReference.Name = ReadLine();
-			var typeName = ReadLine();
+			var type = ReadType();
 
-			var array = Array.CreateInstance(GetType(typeName), numElements);
+			var array = Array.CreateInstance(type, numElements);
 
 			for(int i = 0; i != numElements; ++i)
 				array.SetValue(StartRead().Value, i);
@@ -345,16 +352,10 @@ namespace CryEngine.Serialization
 
 			int elements = int.Parse(ReadLine());
 			objReference.Name = ReadLine();
-			string typeName = ReadLine();
 
-			var type = GetType(typeName);
+			var type = ReadType();
 
-			var numGenericArgs = int.Parse(ReadLine());
-			var genericArgs = new Type[numGenericArgs];
-			for(int i = 0; i < numGenericArgs; i++)
-				genericArgs[i] = GetType(ReadLine());
-
-			var enumerable = CreateGenericObjectInstance(type, genericArgs) as IEnumerable;
+			var enumerable = Activator.CreateInstance(type) as IEnumerable;
 
 			if(enumerable.GetType().Implements(typeof(IDictionary)))
 			{
@@ -387,15 +388,10 @@ namespace CryEngine.Serialization
 		void ReadAny(ref ObjectReference objReference)
 		{
 			objReference.Name = ReadLine();
-			string typeName = ReadLine();
+			var type = ReadType();
 			string valueString = ReadLine();
 
-			object value = null;
-			var type = GetType(typeName);
-			if(type != null)
-				value = Converter.Convert(valueString, type);
-
-			objReference.Value = value;
+			objReference.Value = Converter.Convert(valueString, type);
 		}
 
 		void ReadString(ref ObjectReference objReference)
@@ -407,10 +403,28 @@ namespace CryEngine.Serialization
 		void ReadEnum(ref ObjectReference objReference)
 		{
 			objReference.Name = ReadLine();
-			string typeName = ReadLine();
+			var type = ReadType();
 			string valueString = ReadLine();
 
-			objReference.Value = Enum.Parse(GetType(typeName), valueString);
+			objReference.Value = Enum.Parse(type, valueString);
+		}
+
+		Type ReadType()
+		{
+			bool isGeneric = bool.Parse(ReadLine());
+			var type = GetType(ReadLine());
+
+			if(isGeneric)
+			{
+				var numGenericArgs = int.Parse(ReadLine());
+				var genericArgs = new Type[numGenericArgs];
+				for(int i = 0; i < numGenericArgs; i++)
+					genericArgs[i] = ReadType();
+
+				return type.MakeGenericType(genericArgs);
+			}
+
+			return type;
 		}
 
 		Type GetType(string typeName)
@@ -455,13 +469,6 @@ namespace CryEngine.Serialization
 			}
 
 			return type;
-		}
-
-		static object CreateGenericObjectInstance(Type type, params Type[] genericArguments)
-		{
-			Type genericType = type.MakeGenericType(genericArguments);
-
-			return Activator.CreateInstance(genericType);
 		}
 
 		object CreateObjectInstance(string typeName)
