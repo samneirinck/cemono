@@ -316,7 +316,10 @@ namespace CryEngine.Initialization
 				var newList = new List<CryScript>();
 
 				foreach(var scriptList in CompiledScripts)
-					newList.AddRange(scriptList.Value);
+				{
+					if(scriptList.Value != null)
+						newList.AddRange(scriptList.Value);
+				}
 
 				return newList;
 			}
