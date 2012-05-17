@@ -112,14 +112,31 @@ CScriptSystem::~CScriptSystem()
 
 	m_methodBindings.clear();
 
+	for each(auto script in m_scripts)
+	{
+		if(script.first)
+			script.first->Release();
+	}
+
+	m_scripts.clear();
+
 	SAFE_DELETE(m_pConverter);
 	SAFE_DELETE(m_pCallbackHandler);
 
+	SAFE_RELEASE(m_AppDomainSerializer);
+	SAFE_RELEASE(m_pScriptManager);
+
 	SAFE_RELEASE(m_pCryBraryAssembly);
+
 	SAFE_DELETE(m_pCVars);
 
-	m_localScriptBinds.clear();
+	for each(auto scriptbind in m_localScriptBinds)
+		SAFE_DELETE(scriptbind);
 
+	m_localScriptBinds.clear();
+	m_scriptReloadListeners.clear();
+
+	SAFE_RELEASE(m_pScriptDomain);
 	SAFE_RELEASE(m_pRootDomain);
 
 	gEnv->pMonoScriptSystem = NULL;
@@ -406,19 +423,6 @@ void CScriptSystem::RegisterMethodBinding(const void *method, const char *fullMe
 
 IMonoClass *CScriptSystem::InstantiateScript(const char *scriptName, EMonoScriptType scriptType, IMonoArray *pConstructorParameters)
 {
-	// TODO: Find a new and better way to set Network.IsMultiplayer, IsClient & IsServer. Currently always false!
-	/*if(scriptType==EMonoScriptType_GameRules)
-	{
-		IMonoClass *pClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("CryNetwork");
-		IMonoArray *pArray = CreateMonoArray(3);
-		pArray->Insert(gEnv->bMultiplayer);
-		pArray->Insert(gEnv->IsClient());
-		pArray->Insert(gEnv->bServer);
-		pClass->CallMethod("InitializeNetwork", pArray, true);
-		SAFE_RELEASE(pArray);
-		SAFE_RELEASE(pClass);
-	}*/
-
 	IMonoArray *pArray = CreateMonoArray(3);
 	pArray->Insert(scriptName);
 	pArray->Insert(scriptType);
