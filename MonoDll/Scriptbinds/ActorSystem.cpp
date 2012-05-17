@@ -60,7 +60,10 @@ EntityId CActorSystem::GetClientActor()
 
 void CActorSystem::RegisterActorClass(mono::string className, bool isAI)
 {
-	REGISTER_FACTORY(gEnv->pGameFramework, ToCryString(className), CActor, isAI);
+	if(gEnv->pGameFramework->GetIGameObjectSystem()->GetID(ToCryString(className)) != IGameObjectSystem::InvalidExtensionID)
+		return; // already registered
+
+	gEnv->pGameFramework->RegisterFactory(ToCryString(className), (CActor *)0, (isAI), (CActor *)0);
 }
 
 float CActorSystem::GetPlayerHealth(IActor *pActor)
