@@ -140,7 +140,12 @@ namespace CryEngine.Serialization
 			var genericArguments = objectReference.Value.GetType().GetGenericArguments();
 			WriteLine(genericArguments.Count());
 			foreach(var genericArg in genericArguments)
-				WriteLine(genericArg.FullName);
+			{
+				if(genericArg.IsGenericType)
+					WriteLine(genericArg.GetGenericTypeDefinition().FullName);
+				else
+					WriteLine(genericArg.FullName);
+			}
 
 			for(int i = 0; i < array.Count(); i++)
 				StartWrite(new ObjectReference(i.ToString(), array.ElementAt(i)));
@@ -232,6 +237,8 @@ namespace CryEngine.Serialization
 			ObjectReference objReference = new ObjectReference();
 
 			string type = ReadLine();
+			int line = CurrentLine;
+
 			switch(type)
 			{
 				case "null": ReadNull(ref objReference); break;
@@ -247,7 +254,7 @@ namespace CryEngine.Serialization
 			}
 
 			if(objReference.Value == null && type != "null")
-				throw new SerializationException(string.Format("Failed to deserialize object {0}!", objReference.Name));
+				throw new SerializationException(string.Format("Failed to deserialize object {0} at line {1}!", objReference.Name, line));
 
 			return objReference;
 		}
@@ -454,7 +461,7 @@ namespace CryEngine.Serialization
 		{
 			Type genericType = type.MakeGenericType(genericArguments);
 
-			return System.Activator.CreateInstance(genericType);
+			return Activator.CreateInstance(genericType);
 		}
 
 		object CreateObjectInstance(string typeName)
