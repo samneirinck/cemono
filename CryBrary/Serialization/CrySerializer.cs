@@ -78,7 +78,12 @@ namespace CryEngine.Serialization
 			else if(valueType.IsEnum)
 				WriteEnum(objectReference);
 			else if(!valueType.IsPrimitive && !valueType.IsEnum)
-				WriteObject(objectReference);
+			{
+				if(valueType.Implements(typeof(MemberInfo)))
+					WriteMemberInfo(objectReference);
+				else
+					WriteObject(objectReference);
+			}
 		}
 
 		void WriteNull(ObjectReference objectReference)
@@ -156,19 +161,6 @@ namespace CryEngine.Serialization
 
 			var type = objectReference.Value.GetType();
 
-			if(type.Implements(typeof(MemberInfo)))
-			{
-				WriteLine("memberinfo");
-				WriteLine(objectReference.Name);
-
-				var memberInfo = objectReference.Value as MemberInfo;
-				WriteLine(memberInfo.Name);
-				WriteType(memberInfo.DeclaringType);
-				WriteLine(memberInfo.MemberType);
-
-				return;
-			}
-
 			WriteLine("object");
 			WriteLine(objectReference.Name);
 			WriteType(type);
@@ -181,6 +173,20 @@ namespace CryEngine.Serialization
 
 				StartWrite(new ObjectReference(field.Name, fieldValue));
 			}
+		}
+
+		void WriteMemberInfo(ObjectReference objectReference)
+		{
+			if(TryWriteReference(objectReference))
+				return;
+
+			WriteLine("memberinfo");
+			WriteLine(objectReference.Name);
+
+			var memberInfo = objectReference.Value as MemberInfo;
+			WriteLine(memberInfo.Name);
+			WriteType(memberInfo.DeclaringType);
+			WriteLine(memberInfo.MemberType);
 		}
 
 		void WriteType(Type type)
