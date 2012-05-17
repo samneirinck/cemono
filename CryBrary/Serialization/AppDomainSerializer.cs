@@ -22,12 +22,7 @@ namespace CryEngine.Serialization
 		{
 			Stopwatch stopwatch = Stopwatch.StartNew();
 
-			if(Directory.Exists(PathUtils.ScriptDumpFolder))
-				Directory.Delete(PathUtils.ScriptDumpFolder, true);
-
-			Directory.CreateDirectory(PathUtils.ScriptDumpFolder);
-
-			using(var stream = File.Create(Path.Combine(PathUtils.ScriptDumpFolder, "ScriptManager.CompiledScripts.scriptdump")))
+			using(var stream = File.Create(Path.Combine(PathUtils.TempFolder, "ScriptManager.CompiledScripts.scriptdump")))
 				Formatter.Serialize(stream, ScriptManager.CompiledScripts);
 
 			stopwatch.Stop();
@@ -40,7 +35,7 @@ namespace CryEngine.Serialization
 		{
 			Stopwatch stopwatch = Stopwatch.StartNew();
 
-			using(var stream = File.Open(Path.Combine(PathUtils.ScriptDumpFolder, "ScriptManager.CompiledScripts.scriptdump"), FileMode.Open))
+			using(var stream = File.Open(Path.Combine(PathUtils.TempFolder, "ScriptManager.CompiledScripts.scriptdump"), FileMode.Open))
 				ScriptManager.CompiledScripts = Formatter.Deserialize(stream) as Dictionary<ScriptType, List<CryScript>>;
 
 			// TODO: Get highest script id and set LastScriptId to that + 1.
