@@ -52,12 +52,6 @@ namespace CryEngine
 		static string RootFolder { get { return Directory.GetCurrentDirectory(); } }
 
 		/// <summary>
-		/// Gets the folder in which script dumps are stored.
-		/// </summary>
-		/// <returns></returns>
-		internal static string ScriptDumpFolder { get { return Path.Combine(RootFolder, "Temp", "ScriptDumps"); } }
-
-		/// <summary>
 		/// Gets the current folder containing binaries relevant to current build type (Bin32 / Bin64).
 		/// </summary>
 		/// <returns>The filepath to the Binary folder as a string, ex:
