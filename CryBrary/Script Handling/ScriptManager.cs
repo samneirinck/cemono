@@ -312,6 +312,9 @@ namespace CryEngine.Initialization
 			var scriptInstance = Activator.CreateInstance(script.Type, constructorParams);
 			AddScriptInstance(scriptInstance as CryScriptInstance, script);
 
+			if(scriptType == ScriptType.GameRules)
+				GameRules.Current = (GameRules)scriptInstance;
+
 			return scriptInstance;
 		}
 

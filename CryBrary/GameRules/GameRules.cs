@@ -21,6 +21,10 @@ namespace CryEngine
 		extern internal static void _SetDefaultGameMode(string gamemode);
 		#endregion
 
+		#region Statics
+		public static GameRules Current { get; internal set; }
+		#endregion
+
 		// Shared
 		public virtual void PrecacheLevel() { }
 		public virtual void RequestSpawnGroup(EntityId spawnGroupId) { }
