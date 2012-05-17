@@ -12,7 +12,9 @@
 
 #include <IActorSystem.h>
 
-class CActor : public CGameObjectExtensionHelper<CActor, IActor>
+class CActor 
+	: public CGameObjectExtensionHelper<CActor, IActor>
+	, public IGameObjectView
 {
 public:
 	CActor();
@@ -151,6 +153,11 @@ public:
 	virtual void PostUpdate( float frameTime ) override {}
 	virtual void PostRemoteSpawn() override {}
 	// ~IGameObjectExtension
+
+	// IGameObjectView
+	virtual void UpdateView(SViewParams& params);
+	virtual void PostUpdateView(SViewParams& params) {}
+	// ~IGameObjectView
 
 protected:
 

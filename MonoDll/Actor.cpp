@@ -2,6 +2,7 @@
 #include "Actor.h"
 
 #include <IGameRulesSystem.h>
+#include <IViewSystem.h>
 
 CActor::CActor()
 	: m_bClient(false)
@@ -18,6 +19,9 @@ CActor::~CActor()
 bool CActor::Init( IGameObject * pGameObject ) 
 { 
 	SetGameObject(pGameObject);
+
+	if(!GetGameObject()->CaptureView(this))
+		return false;
 
 	gEnv->pGameFramework->GetIActorSystem()->AddActor(GetEntityId(), this);
 	GetGameObject()->BindToNetwork();
@@ -42,4 +46,12 @@ void CActor::HandleEvent(const SGameObjectEvent &event)
 		m_bClient = true;
 		GetGameObject()->EnablePrePhysicsUpdate( ePPU_Always );
 	}
+}
+
+void CActor::UpdateView(SViewParams &viewParams)
+{
+	//viewParams.position = GetEntity()->GetWorldPos();
+	//viewParams.rotation = Quat(GetEntity()->GetWorldAngles());
+
+	//viewParams.fov = DEG2RAD(60);
 }
