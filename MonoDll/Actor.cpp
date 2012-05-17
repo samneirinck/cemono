@@ -30,6 +30,16 @@ bool CActor::Init( IGameObject * pGameObject )
 	return true; 
 }
 
+void CActor::PostInit(IGameObject *pGameObject)
+{
+	if(IViewSystem *pViewSystem = gEnv->pGameFramework->GetIViewSystem())
+	{
+		if(IView *pView = pViewSystem->GetViewByEntityId(GetEntityId(), true))
+		{
+		}
+	}
+}
+
 void CActor::HandleEvent(const SGameObjectEvent &event)
 {
 	if (event.event == 276 /* Ragdoll, defined in GameDll ._. */)
@@ -50,8 +60,9 @@ void CActor::HandleEvent(const SGameObjectEvent &event)
 
 void CActor::UpdateView(SViewParams &viewParams)
 {
-	//viewParams.position = GetEntity()->GetWorldPos();
-	//viewParams.rotation = Quat(GetEntity()->GetWorldAngles());
-
-	//viewParams.fov = DEG2RAD(60);
+	if(IViewSystem *pViewSystem = gEnv->pGameFramework->GetIViewSystem())
+	{
+		if(IView *pView = pViewSystem->GetViewByEntityId(GetEntityId()))
+			viewParams = *pView->GetCurrentParams();
+	}
 }

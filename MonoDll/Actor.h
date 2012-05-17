@@ -133,8 +133,8 @@ public:
 
 	// IGameObjectExtension
   	virtual void GetMemoryUsage(ICrySizer *pSizer) const override {}
-	virtual bool Init( IGameObject * pGameObject ) override;
-	virtual void PostInit( IGameObject * pGameObject ) override {}
+	virtual bool Init( IGameObject *pGameObject ) override;
+	virtual void PostInit(IGameObject *pGameObject) override;
 	virtual void InitClient(int channelId) override {}
 	virtual void PostInitClient(int channelId) override {}
 	virtual bool ReloadExtension( IGameObject * pGameObject, const SEntitySpawnParams &params ) override { return true; }
