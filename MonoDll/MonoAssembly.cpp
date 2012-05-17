@@ -16,7 +16,7 @@ CScriptAssembly::CScriptAssembly(const char *assemblyPath, bool shadowCopy)
 {
 	string sAssemblyPath = string(assemblyPath);
 
-	#ifndef _RELEASE
+#ifndef _RELEASE
 	if(sAssemblyPath.find("pdb2mdb")==-1)
 	{
 		if(IMonoAssembly *pDebugDatabaseCreator = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetDebugDatabaseCreator())
@@ -30,8 +30,6 @@ CScriptAssembly::CScriptAssembly(const char *assemblyPath, bool shadowCopy)
 				SAFE_RELEASE(pArgs);
 				SAFE_RELEASE(pDriverClass);
 			}
-
-			SAFE_RELEASE(pDebugDatabaseCreator);
 		}
 	}
 #endif
