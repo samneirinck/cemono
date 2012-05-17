@@ -267,7 +267,7 @@ namespace CryEngine.Serialization
 			}
 
 			if(objReference.Value == null && type != "null")
-				throw new SerializationException(string.Format("Failed to deserialize object {0} at line {1}!", objReference.Name, line));
+				throw new SerializationException(string.Format("Failed to deserialize {0} {1} at line {2}!", type, objReference.Name, line));
 
 			return objReference;
 		}
@@ -282,6 +282,9 @@ namespace CryEngine.Serialization
 			objReference.Name = ReadLine();
 			int referenceLine = int.Parse(ReadLine());
 			objReference.Value = ObjectReferences[referenceLine].Value;
+
+			if(objReference.Value == null)
+				throw new SerializationException(string.Format("Failed to obtain reference {0} at line {1}", objReference.Name, referenceLine));
 		}
 
 		void ReadObject(ref ObjectReference objReference)
