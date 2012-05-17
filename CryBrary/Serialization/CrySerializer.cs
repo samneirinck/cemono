@@ -254,16 +254,16 @@ namespace CryEngine.Serialization
 
 			switch(type)
 			{
-				case "null": ReadNull(ref objReference); break;
-				case "reference": ReadReference(ref objReference); break;
-				case "object": ReadObject(ref objReference); break;
-				case "generic_enumerable": ReadGenericEnumerable(ref objReference); break;
-				case "enumerable": ReadEnumerable(ref objReference); break;
-				case "enum": ReadEnum(ref objReference); break;
-				case "any": ReadAny(ref objReference); break;
-				case "string": ReadString(ref objReference); break;
-				case "memberinfo": ReadMemberInfo(ref objReference); break;
-				default: break;
+				case "null": ReadNull(objReference); break;
+				case "reference": ReadReference(objReference); break;
+				case "object": ReadObject(objReference); break;
+				case "generic_enumerable": ReadGenericEnumerable(objReference); break;
+				case "enumerable": ReadEnumerable(objReference); break;
+				case "enum": ReadEnum(objReference); break;
+				case "any": ReadAny(objReference); break;
+				case "string": ReadString(objReference); break;
+				case "memberinfo": ReadMemberInfo(objReference); break;
+				default: throw new SerializationException("Invalid object type {0} was serialized");
 			}
 
 			if(objReference.Value == null && type != "null")
@@ -272,12 +272,12 @@ namespace CryEngine.Serialization
 			return objReference;
 		}
 
-		void ReadNull(ref ObjectReference objReference)
+		void ReadNull(ObjectReference objReference)
 		{
 			objReference.Name = ReadLine();
 		}
 
-		void ReadReference(ref ObjectReference objReference)
+		void ReadReference(ObjectReference objReference)
 		{
 			objReference.Name = ReadLine();
 			int referenceLine = int.Parse(ReadLine());
@@ -287,33 +287,31 @@ namespace CryEngine.Serialization
 				throw new SerializationException(string.Format("Failed to obtain reference {0} at line {1}", objReference.Name, referenceLine));
 		}
 
-		void ReadObject(ref ObjectReference objReference)
+		void ReadObject(ObjectReference objReference)
 		{
-			ObjectReferences.Add(CurrentLine - 1, objReference);
+			AddReferenceToObject(objReference);
 
 			objReference.Name = ReadLine();
 			var type = ReadType();
 			int numFields = int.Parse(ReadLine());
 
-			object objectInstance = Activator.CreateInstance(type);
+			objReference.Value = Activator.CreateInstance(type);
 			for(int i = 0; i < numFields; ++i)
 			{
 				ObjectReference fieldReference = StartRead();
 
-				var fieldInfo = objectInstance.GetType().GetField(fieldReference.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+				var fieldInfo = type.GetField(fieldReference.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
 				if(fieldInfo != null)
-					fieldInfo.SetValue(objectInstance, fieldReference.Value);
+					fieldInfo.SetValue(objReference.Value, fieldReference.Value);
 				else
 					throw new MissingFieldException(string.Format("Failed to find field {0} in type {1}", fieldReference.Name, type != null ? type.Name : "[Unknown]"));
 			}
-
-			objReference.Value = objectInstance;
 		}
 
-		void ReadMemberInfo(ref ObjectReference objReference)
+		void ReadMemberInfo(ObjectReference objReference)
 		{
-			ObjectReferences.Add(CurrentLine - 1, objReference);
+			AddReferenceToObject(objReference);
 
 			objReference.Name = ReadLine();
 			var memberName = ReadLine();
@@ -339,36 +337,35 @@ namespace CryEngine.Serialization
 			objReference.Value = memberInfo;
 		}
 
-		void ReadEnumerable(ref ObjectReference objReference)
+		void ReadEnumerable(ObjectReference objReference)
 		{
-			ObjectReferences.Add(CurrentLine - 1, objReference);
+			AddReferenceToObject(objReference);
 
 			var numElements = int.Parse(ReadLine());
 			objReference.Name = ReadLine();
 			var type = ReadType();
 
-			var array = Array.CreateInstance(type, numElements);
+			objReference.Value = Array.CreateInstance(type, numElements);
+			var array = objReference.Value as Array;
 
 			for(int i = 0; i != numElements; ++i)
 				array.SetValue(StartRead().Value, i);
-
-			objReference.Value = array;
 		}
 
-		void ReadGenericEnumerable(ref ObjectReference objReference)
+		void ReadGenericEnumerable(ObjectReference objReference)
 		{
-			ObjectReferences.Add(CurrentLine - 1, objReference);
+			AddReferenceToObject(objReference);
 
 			int elements = int.Parse(ReadLine());
 			objReference.Name = ReadLine();
 
 			var type = ReadType();
 
-			var enumerable = Activator.CreateInstance(type) as IEnumerable;
+			objReference.Value = Activator.CreateInstance(type);
 
-			if(enumerable.GetType().Implements(typeof(IDictionary)))
+			if(type.Implements(typeof(IDictionary)))
 			{
-				var dict = enumerable as IDictionary;
+				var dict = objReference.Value as IDictionary;
 
 				for(int i = 0; i < elements; i++)
 				{
@@ -378,23 +375,17 @@ namespace CryEngine.Serialization
 
 					dict.Add(keyMethod.GetValue(keyPair, null), valueMethod.GetValue(keyPair, null));
 				}
-
-				enumerable = dict;
 			}
 			else
 			{
-				var list = enumerable as IList;
+				var list = objReference.Value as IList;
 
 				for(int i = 0; i < elements; i++)
 					list.Add(StartRead().Value);
-
-				enumerable = list;
 			}
-
-			objReference.Value = enumerable;
 		}
 
-		void ReadAny(ref ObjectReference objReference)
+		void ReadAny(ObjectReference objReference)
 		{
 			objReference.Name = ReadLine();
 			var type = ReadType();
@@ -403,13 +394,13 @@ namespace CryEngine.Serialization
 			objReference.Value = Converter.Convert(valueString, type);
 		}
 
-		void ReadString(ref ObjectReference objReference)
+		void ReadString(ObjectReference objReference)
 		{
 			objReference.Name = ReadLine();
 			objReference.Value = ReadLine();
 		}
 
-		void ReadEnum(ref ObjectReference objReference)
+		void ReadEnum(ObjectReference objReference)
 		{
 			objReference.Name = ReadLine();
 			var type = ReadType();
@@ -418,9 +409,15 @@ namespace CryEngine.Serialization
 			objReference.Value = Enum.Parse(type, valueString);
 		}
 
+		void AddReferenceToObject(ObjectReference objReference)
+		{
+			ObjectReferences.Add(CurrentLine - 1, objReference);
+		}
+
 		Type ReadType()
 		{
 			bool isGeneric = bool.Parse(ReadLine());
+
 			var type = GetType(ReadLine());
 
 			if(isGeneric)
