@@ -198,7 +198,7 @@ bool CEntityManager::RegisterEntityClass(EntityRegisterParams params, mono::arra
 	const char *className = ToCryString(params.Name);
 	if(gEnv->pEntitySystem->GetClassRegistry()->FindClass(className))
 	{
-		CryLogAlways("Aborting registration of entity class %s, a class with the same name already exists", className); 
+		CryLog("Aborting registration of entity class %s, a class with the same name already exists", className); 
 		return false;
 	}
 
