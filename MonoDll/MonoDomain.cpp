@@ -6,6 +6,7 @@
 #include <mono/metadata/debug-helpers.h>
 
 CScriptDomain::CScriptDomain(ERuntimeVersion runtimeVersion)
+	: m_bRootDomain(true)
 {
 	const char *version = "v2.0.50727";
 	switch(runtimeVersion)
@@ -30,11 +31,10 @@ CScriptDomain::CScriptDomain(ERuntimeVersion runtimeVersion)
 	m_pDomain = mono_jit_init_version("CryMono", version);
 	if(!m_pDomain)
 		CryFatalError("Failed to initialize root domain with runtime version %!", runtimeVersion);
-
-	m_bRootDomain = true;
 }
 
 CScriptDomain::CScriptDomain(const char *name, bool setActive)
+	: m_bRootDomain(false)
 {
 	m_pDomain = mono_domain_create_appdomain(const_cast<char *>(name), NULL);
 
@@ -45,7 +45,11 @@ CScriptDomain::CScriptDomain(const char *name, bool setActive)
 CScriptDomain::~CScriptDomain()
 {
 	if(m_bRootDomain)
-		mono_jit_cleanup(m_pDomain);
+	{
+		// cleanup currently crashes in Launcher
+		if(gEnv->IsEditor())
+			mono_jit_cleanup(m_pDomain);
+	}
 	else
 	{
 		if(m_pDomain == mono_domain_get())
