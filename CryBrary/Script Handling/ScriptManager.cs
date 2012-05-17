@@ -22,9 +22,15 @@ namespace CryEngine.Initialization
 
 			if(!Directory.Exists(PathUtils.TempFolder))
 				Directory.CreateDirectory(PathUtils.TempFolder);
-
-			foreach(var file in Directory.GetFiles(PathUtils.TempFolder))
-				File.Delete(file);
+			else
+			{
+				try
+				{
+					foreach(var file in Directory.GetFiles(PathUtils.TempFolder))
+						File.Delete(file);
+				}
+				catch(UnauthorizedAccessException ex) { }
+			}
 
 			FlowNodes = new List<string>();
 
@@ -93,17 +99,44 @@ namespace CryEngine.Initialization
 		public void LoadAssembly(string assemblyPath)
 		{
 			var newPath = Path.Combine(PathUtils.TempFolder, Path.GetFileName(assemblyPath));
-			File.Copy(assemblyPath, newPath, true);
+			
+			TryCopyFile(assemblyPath, ref newPath, true);
 
 #if !RELEASE
 			GenerateDebugDatabaseForAssembly(assemblyPath);
 
 			var mdbFile = assemblyPath + ".mdb";
 			if(File.Exists(mdbFile)) // success
-				File.Copy(mdbFile, Path.Combine(Path.GetTempPath(), Path.GetFileName(mdbFile)), true);
+			{
+				var newMdbPath = Path.Combine(Path.GetTempPath(), Path.GetFileName(mdbFile));
+				TryCopyFile(mdbFile, ref newMdbPath);
+			}
 #endif
 
 			ProcessAssembly(Assembly.LoadFrom(newPath));
+		}
+
+		void TryCopyFile(string currentPath, ref string newPath, bool overwrite = true)
+		{
+			if(!File.Exists(newPath))
+				File.Copy(currentPath, newPath, overwrite);
+			else
+			{
+				try
+				{
+					File.Copy(currentPath, newPath, overwrite);
+				}
+				catch(Exception ex)
+				{
+					if(ex is UnauthorizedAccessException || ex is IOException)
+					{
+						newPath = Path.ChangeExtension(newPath, "_" + Path.GetExtension(newPath));
+						TryCopyFile(currentPath, ref newPath);
+					}
+					else
+						throw;
+				}
+			}
 		}
 
 		/// <summary>
