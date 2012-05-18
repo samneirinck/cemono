@@ -77,9 +77,11 @@ namespace CryEngine.Serialization
 			}
 			else if(valueType.IsEnum)
 				WriteEnum(objectReference);
-			else if(!valueType.IsPrimitive && !valueType.IsEnum)
+			else
 			{
-				if(valueType.Implements(typeof(MemberInfo)))
+				if(objectReference.Value is Type)
+					WriteType(objectReference);
+				else if(valueType.Implements(typeof(MemberInfo)))
 					WriteMemberInfo(objectReference);
 				else
 					WriteObject(objectReference);
@@ -189,6 +191,18 @@ namespace CryEngine.Serialization
 			WriteLine(memberInfo.MemberType);
 		}
 
+		void WriteType(ObjectReference objectReference)
+		{
+			if(TryWriteReference(objectReference))
+				return;
+
+			WriteLine("type");
+			WriteLine(objectReference.Name);
+
+			var type = objectReference.Value as Type;
+			WriteLine(type.FullName);
+		}
+
 		void WriteType(Type type)
 		{
 			WriteLine(type.IsGenericType);
@@ -263,6 +277,7 @@ namespace CryEngine.Serialization
 				case "any": ReadAny(objReference); break;
 				case "string": ReadString(objReference); break;
 				case "memberinfo": ReadMemberInfo(objReference); break;
+				case "type": ReadType(objReference); break;
 				default: throw new SerializationException("Invalid object type {0} was serialized");
 			}
 
@@ -303,38 +318,15 @@ namespace CryEngine.Serialization
 				var fieldInfo = type.GetField(fieldReference.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
 				if(fieldInfo != null)
-					fieldInfo.SetValue(objReference.Value, fieldReference.Value);
+				{
+					if(fieldInfo.FieldType == fieldReference.Value.GetType())
+						fieldInfo.SetValue(objReference.Value, fieldReference.Value);
+					else
+						throw new SerializationException(string.Format("object type {0} can not be converted to type {1}", fieldReference.Value.GetType(), fieldInfo.FieldType));
+				}
 				else
 					throw new MissingFieldException(string.Format("Failed to find field {0} in type {1}", fieldReference.Name, type != null ? type.Name : "[Unknown]"));
 			}
-		}
-
-		void ReadMemberInfo(ObjectReference objReference)
-		{
-			AddReferenceToObject(objReference);
-
-			objReference.Name = ReadLine();
-			var memberName = ReadLine();
-
-			var declaringType = ReadType();
-			var memberType = (MemberTypes)Enum.Parse(typeof(MemberTypes), ReadLine());
-
-			MemberInfo memberInfo = null;
-
-			switch(memberType)
-			{
-				case MemberTypes.Method:
-					memberInfo = declaringType.GetMethod(memberName);
-					break;
-				case MemberTypes.Field:
-					memberInfo = declaringType.GetField(memberName);
-					break;
-				case MemberTypes.Property:
-					memberInfo = declaringType.GetProperty(memberName);
-					break;
-			}
-
-			objReference.Value = memberInfo;
 		}
 
 		void ReadEnumerable(ObjectReference objReference)
@@ -381,7 +373,7 @@ namespace CryEngine.Serialization
 				var list = objReference.Value as IList;
 
 				for(int i = 0; i < elements; i++)
-					list.Add(StartRead().Value);
+					list[i] = StartRead().Value;
 			}
 		}
 
@@ -409,9 +401,40 @@ namespace CryEngine.Serialization
 			objReference.Value = Enum.Parse(type, valueString);
 		}
 
-		void AddReferenceToObject(ObjectReference objReference)
+		void ReadMemberInfo(ObjectReference objReference)
 		{
-			ObjectReferences.Add(CurrentLine - 1, objReference);
+			AddReferenceToObject(objReference);
+
+			objReference.Name = ReadLine();
+			var memberName = ReadLine();
+
+			var declaringType = ReadType();
+			var memberType = (MemberTypes)Enum.Parse(typeof(MemberTypes), ReadLine());
+
+			MemberInfo memberInfo = null;
+
+			switch(memberType)
+			{
+				case MemberTypes.Method:
+					memberInfo = declaringType.GetMethod(memberName);
+					break;
+				case MemberTypes.Field:
+					memberInfo = declaringType.GetField(memberName);
+					break;
+				case MemberTypes.Property:
+					memberInfo = declaringType.GetProperty(memberName);
+					break;
+			}
+
+			objReference.Value = memberInfo;
+		}
+
+		void ReadType(ObjectReference objReference)
+		{
+			AddReferenceToObject(objReference);
+
+			objReference.Name = ReadLine();
+			objReference.Value = ReadType();
 		}
 
 		Type ReadType()
@@ -477,19 +500,9 @@ namespace CryEngine.Serialization
 			return type;
 		}
 
-		object CreateObjectInstance(string typeName)
+		void AddReferenceToObject(ObjectReference objReference)
 		{
-			if(typeName == null)
-				throw new ArgumentNullException("typeName");
-			else if(typeName.Length <= 0)
-				throw new ArgumentException("typeName was empty");
-
-			Type type = GetType(typeName);
-
-			if(type.GetConstructor(System.Type.EmptyTypes) != null || type.IsValueType)
-				return System.Activator.CreateInstance(type);
-
-			throw new SerializationException(string.Format("Could not serialize type {0} since it did not containg a parameterless constructor", type.Name));
+			ObjectReferences.Add(CurrentLine - 1, objReference);
 		}
 
 		int CurrentLine { get; set; }
