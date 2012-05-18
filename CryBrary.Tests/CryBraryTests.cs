@@ -23,6 +23,10 @@ namespace CryBrary.Tests
 			loggingMethodsMock.Setup(m => m._Warning(It.IsAny<string>())).Callback(loggingMethod);
 
 			Debug.Methods = loggingMethodsMock.Object;
+
+			var entityMethodsMock = new Mock<INativeEntityMethods>();
+
+			Entity.Methods = entityMethodsMock.Object;
 		}
 	}
 }
