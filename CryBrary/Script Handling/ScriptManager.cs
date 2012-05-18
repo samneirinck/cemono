@@ -10,7 +10,7 @@ namespace CryEngine.Initialization
 {
 	class ScriptManager
 	{
-		internal ScriptManager()
+		public ScriptManager()
 		{
 			if(CompiledScripts == null)
 			{
@@ -89,7 +89,8 @@ namespace CryEngine.Initialization
 		/// </summary>
 		public void ProcessAssembly(Assembly assembly)
 		{
-			ProcessTypes(assembly.GetTypes());
+			foreach(var type in assembly.GetTypes())
+				ProcessType(type);
 		}
 
 		/// <summary>
@@ -140,43 +141,40 @@ namespace CryEngine.Initialization
 		}
 
 		/// <summary>
-		/// Adds all provided types to ScriptCompiler.CompiledScripts
+		/// Adds the type to CompiledScripts
 		/// </summary>
-		/// <param name="types"></param>
-		void ProcessTypes(IEnumerable<Type> types)
+		/// <param name="type"></param>
+		internal void ProcessType(Type type)
 		{
-			foreach(var type in types)
+			var script = new CryScript(type);
+
+			if(!type.IsAbstract && !type.ContainsAttribute<ExcludeFromCompilationAttribute>())
 			{
-				var script = new CryScript(type);
-
-				if(!type.IsAbstract && !type.ContainsAttribute<ExcludeFromCompilationAttribute>())
+				switch(script.ScriptType)
 				{
-					switch(script.ScriptType)
-					{
-						case ScriptType.Actor:
-							LoadActor(ref script);
-							break;
-						case ScriptType.Entity:
-							LoadEntity(ref script);
-							break;
-						case ScriptType.FlowNode:
-							LoadFlowNode(ref script);
-							break;
-						case ScriptType.GameRules:
-							LoadGameRules(ref script);
-							break;
-						case ScriptType.ScriptCompiler:
-							{
-								Debug.LogAlways("		Compiling scripts using {0}...", type.Name);
-								var compiler = Activator.CreateInstance(type) as ScriptCompiler;
-								ProcessAssembly(compiler.Compile());
-							}
-							break;
-					}
+					case ScriptType.Actor:
+						LoadActor(ref script);
+						break;
+					case ScriptType.Entity:
+						LoadEntity(ref script);
+						break;
+					case ScriptType.FlowNode:
+						LoadFlowNode(ref script);
+						break;
+					case ScriptType.GameRules:
+						LoadGameRules(ref script);
+						break;
+					case ScriptType.ScriptCompiler:
+						{
+							Debug.LogAlways("		Compiling scripts using {0}...", type.Name);
+							var compiler = Activator.CreateInstance(type) as ScriptCompiler;
+							ProcessAssembly(compiler.Compile());
+						}
+						break;
 				}
-
-				CompiledScripts[script.ScriptType].Add(script);
 			}
+
+			CompiledScripts[script.ScriptType].Add(script);
 		}
 
 		void LoadActor(ref CryScript script)
@@ -199,7 +197,7 @@ namespace CryEngine.Initialization
 		{
 			//LoadFlowNode(ref script, true);
 
-			Entity.RegisterClass(Entity.GetEntityConfig(script.Type));
+			Entity.Methods.RegisterClass(Entity.GetEntityConfig(script.Type));
 		}
 
 		void LoadFlowNode(ref CryScript script, bool entityNode = false)

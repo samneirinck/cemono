@@ -11,16 +11,6 @@ namespace CryEngine
 	public partial class Entity
 	{
 		/// <summary>
-		/// Register a new entity type.
-		/// </summary>
-		/// <param name="config">The Entity configuration.</param>
-		/// <returns>True if registration succeeded, otherwise false.</returns>
-		internal static bool RegisterClass(EntityConfig config)
-		{
-			return _RegisterEntityClass(config.registerParams, config.properties);
-		}
-
-		/// <summary>
 		/// Spawn a new instance of entity type T.
 		/// </summary>
 		/// <typeparam name="T">The entity type</typeparam>

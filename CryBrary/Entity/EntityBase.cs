@@ -3,11 +3,36 @@ using System.Runtime.CompilerServices;
 
 namespace CryEngine
 {
+	internal interface INativeEntityMethods
+	{
+		bool RegisterClass(EntityConfig config);
+	}
+
 	/// <summary>
 	/// Contains common entity functionality.
 	/// </summary>
 	public abstract class EntityBase : CryScriptInstance
 	{
+		private static INativeEntityMethods _methods;
+		internal static INativeEntityMethods Methods
+		{
+			get { return _methods ?? (_methods = new EntityMethods()); }
+			set { _methods = value; }
+		}
+
+		class EntityMethods : INativeEntityMethods
+		{
+			/// <summary>
+			/// Register a new entity type.
+			/// </summary>
+			/// <param name="config">The Entity configuration.</param>
+			/// <returns>True if registration succeeded, otherwise false.</returns>
+			public bool RegisterClass(EntityConfig config)
+			{
+				return EntityBase._RegisterEntityClass(config.registerParams, config.properties);
+			}
+		}
+
 		#region Externals
 		/// <summary>
 		/// Spawns an entity with the specified parameters.
