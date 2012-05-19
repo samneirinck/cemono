@@ -37,11 +37,11 @@ public:
 	virtual void InsertObject(IMonoObject *pObject) override;
 	virtual void InsertArray(IMonoArray *pArray) override { InsertMonoArray(pArray ? *pArray : (mono::array)NULL); }
 	virtual void InsertAny(MonoAnyValue value) override;
+	virtual void InsertMonoString(mono::string string);
 	// ~IMonoArray
 
 	virtual void InsertMonoArray(mono::array arr);
 	virtual void InsertMonoObject(mono::object object);
-	virtual void InsertMonoString(mono::string string);
 
 	virtual mono::array GetMonoArray() override { return m_pArray; }
 

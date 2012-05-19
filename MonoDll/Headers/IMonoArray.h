@@ -75,6 +75,9 @@ public:
 	template <>
 	void Insert(IMonoArray *pArray) { InsertArray(pArray); }
 
+	template<>
+	void Insert(mono::string monoString) { InsertMonoString(monoString); }
+
 	/// <summary>
 	/// Inserts an MonoAnyValue object into the array.
 	/// </summary>
@@ -87,6 +90,11 @@ public:
 	/// Inserts an IMonoArray into the array.
 	/// </summary>
 	virtual void InsertArray(IMonoArray *pArray) = 0;
+
+	/// <summary>
+	/// Inserts an mono string into the array.
+	/// </summary>
+	virtual void InsertMonoString(mono::string string) = 0;
 
 	/// <summary>
 	/// Retrieves the mono array, can be passed directly to C#.
