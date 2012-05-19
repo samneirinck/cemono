@@ -74,7 +74,7 @@ namespace CryEngine
 			if(entityId == 0)
 				throw new ArgumentException("entityId cannot be 0!");
 
-			return ScriptManager.FindScriptInstance<T>(x => x.Id == entityId);
+			return ScriptManager.FindScriptInstance<T>(x => x.Id == entityId, ScriptType.Entity);
 		}
 
 		/// <summary>
