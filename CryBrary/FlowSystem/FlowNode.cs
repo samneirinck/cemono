@@ -70,8 +70,7 @@ namespace CryEngine
 		internal virtual NodeConfig GetNodeConfig()
 		{
 			var nodeInfo = GetType().GetAttribute<FlowNodeAttribute>();
-
-			return new NodeConfig(nodeInfo.Category, nodeInfo.Description);
+			return new NodeConfig(nodeInfo.Category, nodeInfo.Description, nodeInfo.HasTargetEntity ? FlowNodeFlags.TargetEntity : 0);
 		}
 
 		internal virtual NodePortConfig GetPortConfig()
@@ -308,6 +307,16 @@ namespace CryEngine
 		protected bool IsPortActive(int port) { return _IsPortActive(NodePointer, port); }
 		#endregion
 
+		protected Entity TargetEntity
+		{
+			get
+			{
+				var info = _GetTargetEntity(NodePointer);
+				Debug.LogAlways("{0} | {1}", info.Id, info.IEntityPtr);
+				return Entity.Get(info.Id, info.IEntityPtr);
+			}
+		}
+
 		internal IntPtr NodePointer { get; set; }
 		internal bool Initialized { get; set; }
 	}
@@ -333,7 +342,8 @@ namespace CryEngine
 		/// </summary>
 		public FlowNodeCategory Category { get; set; }
 		public string Description { get; set; }
-		public FlowNodeFlags Flags { get; set; }
+		public bool HasTargetEntity { get; set; }
+		internal FlowNodeFlags Flags { get; set; }
 	}
 
 	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field)]
@@ -341,7 +351,7 @@ namespace CryEngine
 	{
 		public string Name { get; set; }
 		public string Description { get; set; }
-		public FlowNodeFlags Flags { get; set; }
+		internal FlowNodeFlags Flags { get; set; }
 	}
 
 	public sealed class OutputPort
@@ -396,7 +406,7 @@ namespace CryEngine
 	}
 
 	[Flags]
-	public enum FlowNodeFlags
+	internal enum FlowNodeFlags
 	{
 		/// <summary>
 		/// This node targets an entity, entity id must be provided.
@@ -499,7 +509,7 @@ namespace CryEngine
 		public NodePortType type;
 	}
 
-	public struct NodeConfig
+	internal struct NodeConfig
 	{
 		public NodeConfig(FlowNodeCategory cat, string desc, FlowNodeFlags nodeFlags = 0)
 			: this()

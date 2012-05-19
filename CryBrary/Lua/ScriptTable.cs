@@ -97,7 +97,7 @@ namespace CryEngine.Lua
 		/// <summary>
 		/// Gets a table within this table.
 		/// </summary>
-		/// <param name="?"></param>
+		/// <param name="name"></param>
 		/// <returns></returns>
 		public ScriptTable GetTable(string name)
 		{

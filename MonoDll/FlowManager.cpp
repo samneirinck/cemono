@@ -133,7 +133,10 @@ mono::object CFlowManager::GetPortValueVec3(CFlowNode *pFlowNode, int index)
 
 SMonoEntityInfo CFlowManager::GetTargetEntity(CFlowNode *pNode)
 {
-	return SMonoEntityInfo(pNode->GetTargetEntity());
+	if(auto ent = pNode->GetTargetEntity())
+		return SMonoEntityInfo(ent);
+	else
+		return SMonoEntityInfo();
 }
 
 static const int MAX_NODE_PORT_COUNT = 20;

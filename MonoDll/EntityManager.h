@@ -89,7 +89,7 @@ struct SMonoEntityProperty
 
 struct SMonoEntityInfo
 {
-	SMonoEntityInfo() { }
+	SMonoEntityInfo() : pEntity(NULL), id(0) { }
 
 	SMonoEntityInfo(IEntity *pEnt)
 		: pEntity(pEnt)
