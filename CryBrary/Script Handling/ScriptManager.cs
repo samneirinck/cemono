@@ -331,7 +331,7 @@ namespace CryEngine.Initialization
 		/// <param name="scriptName"></param>
 		/// <param name="constructorParams"></param>
 		/// <returns>New instance scriptId or -1 if instantiation failed.</returns>
-		public static object InstantiateScript(string scriptName, ScriptType scriptType = ScriptType.Unknown, object[] constructorParams = null)
+		public static object InstantiateScript(string scriptName, ScriptType scriptType, object[] constructorParams = null)
 		{
 			if(scriptName == null)
 				throw new ArgumentNullException("scriptName");
@@ -352,7 +352,7 @@ namespace CryEngine.Initialization
 			return scriptInstance;
 		}
 
-		public static void RemoveInstance(int scriptId, ScriptType scriptType = ScriptType.Unknown)
+		public static void RemoveInstance(int scriptId, ScriptType scriptType)
 		{
 			RemoveInstance(scriptId, scriptType, null);
 		}
@@ -361,7 +361,7 @@ namespace CryEngine.Initialization
 		/// Locates and destructs the script with the assigned scriptId.
 		/// </summary>
 		/// <param name="scriptId"></param>
-		public static void RemoveInstance(int scriptId, ScriptType scriptType = ScriptType.Unknown, Type type = null)
+		public static void RemoveInstance(int scriptId, ScriptType scriptType, Type type = null)
 		{
 			if(type != null)
 			{
@@ -390,7 +390,7 @@ namespace CryEngine.Initialization
 
 		}
 
-		public static int GetEntityScriptId(EntityId entityId, ScriptType scriptType = ScriptType.Unknown, Type type = null)
+		public static int GetEntityScriptId(EntityId entityId, ScriptType scriptType, Type type = null)
 		{
 			var scripts = GetScriptList(scriptType).Where(script => (type != null ? script.Type.Implements(type) : true) && script.ScriptInstances != null);
 
@@ -407,7 +407,7 @@ namespace CryEngine.Initialization
 			return -1;
 		}
 
-		public static CryScriptInstance GetScriptInstanceById(int id, ScriptType scriptType = ScriptType.Unknown)
+		public static CryScriptInstance GetScriptInstanceById(int id, ScriptType scriptType)
 		{
 			CryScriptInstance scriptInstance = null;
 			foreach(var script in GetScriptList(scriptType))
@@ -424,7 +424,7 @@ namespace CryEngine.Initialization
 			return null;
 		}
 
-		internal static T FindScriptInstance<T>(Predicate<T> match, ScriptType scriptType = ScriptType.Unknown) where T : CryScriptInstance
+		internal static T FindScriptInstance<T>(Predicate<T> match, ScriptType scriptType) where T : CryScriptInstance
 		{
 			T result;
 			foreach(var script in GetScriptList(scriptType))
