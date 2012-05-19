@@ -69,11 +69,6 @@ namespace CryEngine
 		extern internal static void _SetVelocity(IntPtr ptr, Vec3 velocity);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static string _GetMaterial(IntPtr ptr);
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _SetMaterial(IntPtr ptr, string material);
-
-		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static string _GetName(IntPtr ptr);
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static void _SetName(IntPtr ptr, string name);
@@ -240,8 +235,9 @@ namespace CryEngine
 		/// </summary>
 		public EntityFlags Flags { get { return _GetFlags(EntityPointer); } set { _SetFlags(EntityPointer, value); } }
 
-		internal IntPtr EntityPointer { get; set; }
+		public Material Material { get { return Material.Get(this); } set { Material.Set(this, value); } }
 
+		internal IntPtr EntityPointer { get; set; }
 		public EntityId Id { get; set; }
 	}
 }

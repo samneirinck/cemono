@@ -187,9 +187,6 @@ protected:
 	static void SetLocalTM(IEntity *pEnt, Matrix34 tm);
 	static Matrix34 GetLocalTM(IEntity *pEnt);
 
-	static mono::string GetMaterial(IEntity *pEnt);
-	static void SetMaterial(IEntity *pEnt, mono::string material);
-
 	static mono::string GetName(IEntity *pEnt);
 	static void SetName(IEntity *pEnt, mono::string name);
 

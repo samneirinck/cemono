@@ -27,7 +27,15 @@ protected:
 	static IMaterial *CreateMaterial(mono::string name);
 	static IMaterial *LoadMaterial(mono::string name, bool makeIfNotFound, bool nonRemovable);
 
+	static IMaterial *GetSubMaterial(IMaterial *pMaterial, int slot);
+
+	static IMaterial *GetMaterial(IEntity *pEnt);
+	static void SetMaterial(IEntity *pEnt, IMaterial *pMaterial);
+
 	static mono::string GetSurfaceTypeName(IMaterial *pMaterial);
+
+	static bool SetGetMaterialParamFloat(IMaterial *pMaterial, mono::string paramName, float &v, bool get);
+	static bool SetGetMaterialParamVec3(IMaterial *pMaterial, mono::string paramName, Vec3 &v, bool get);
 	// ~Externals
 
 	// IMonoScriptBind

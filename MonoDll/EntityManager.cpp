@@ -73,9 +73,6 @@ CEntityManager::CEntityManager()
 	REGISTER_METHOD(SetLocalTM);
 	REGISTER_METHOD(GetLocalTM);
 
-	REGISTER_METHOD(GetMaterial);
-	REGISTER_METHOD(SetMaterial);
-
 	REGISTER_METHOD(GetName);
 	REGISTER_METHOD(SetName);
 
@@ -516,22 +513,6 @@ void CEntityManager::SetVelocity(IEntity *pEntity, Vec3 vel)
 
 		pPhysEnt->Action(&asv);
 	}
-}
-
-mono::string CEntityManager::GetMaterial(IEntity *pEntity)
-{
-	const char *material = "";
-
-	if(IMaterial *pMaterial = pEntity->GetMaterial())
-		material = pMaterial->GetName();
-	
-	return ToMonoString(material);
-}
-
-void CEntityManager::SetMaterial(IEntity *pEntity, mono::string material)
-{
-	if(IMaterial *pMaterial = gEnv->p3DEngine->GetMaterialManager()->FindMaterial(ToCryString(material)))
-		pEntity->SetMaterial(pMaterial);
 }
 
 mono::string CEntityManager::GetName(IEntity *pEntity)
