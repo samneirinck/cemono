@@ -54,7 +54,7 @@ namespace CryEngine
 
 		public static T Get<T>(int channelId) where T : Actor
 		{
-			return ScriptManager.FindScriptInstance<T>(x => x.ChannelId == channelId);
+			return ScriptManager.FindScriptInstance<T>(x => x.ChannelId == channelId, ScriptType.Actor);
 		}
 
 		public static Actor Get(EntityId actorId)
@@ -76,7 +76,7 @@ namespace CryEngine
 			if(actorId == 0)
 				throw new ArgumentException("actorId cannot be 0!");
 
-			return ScriptManager.FindScriptInstance<T>(x => x.Id == actorId);
+			return ScriptManager.FindScriptInstance<T>(x => x.Id == actorId, ScriptType.Actor);
 		}
 
 		static Actor CreateNativeActor(ActorInfo actorInfo)
