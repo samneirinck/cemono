@@ -5,24 +5,24 @@
 #include <IMonoConverter.h>
 #include <IMonoObject.h>
 
-CEntity::CEntity(IMonoClass *pScriptClass)
-	: m_pScriptClass(pScriptClass)
-	, m_pGameObject(NULL)
-	, m_pAnimatedCharacter(NULL)
+
+CEntity::CEntity(SEntitySpawnParams &spawnParams)
+	: m_pGameObject(NULL)
+	, m_pScriptClass(NULL)
+	, m_entityGUID(spawnParams.guid)
 {
 }
 
 CEntity::~CEntity()
 {
-	if(m_pAnimatedCharacter != NULL)
-		m_pGameObject->ReleaseExtension("AnimatedCharacter");
-
 	SAFE_RELEASE(m_pScriptClass);
 }
 
-void CEntity::OnSpawn(IEntity *pEntity, EntityId id)
+void CEntity::OnSpawn(IEntity *pEntity, SEntitySpawnParams &spawnParams)
 {
-#define ADD_EVENTLISTENER(event) gEnv->pEntitySystem->AddEntityEventListener(id, event, this);
+	m_entityId = spawnParams.id;
+
+#define ADD_EVENTLISTENER(event) gEnv->pEntitySystem->AddEntityEventListener(m_entityId, event, this);
 	ADD_EVENTLISTENER(ENTITY_EVENT_LEVEL_LOADED);
 	ADD_EVENTLISTENER(ENTITY_EVENT_RESET);
 	ADD_EVENTLISTENER(ENTITY_EVENT_COLLISION);
@@ -33,9 +33,19 @@ void CEntity::OnSpawn(IEntity *pEntity, EntityId id)
 	ADD_EVENTLISTENER(ENTITY_EVENT_LEAVEAREA);
 #undef ADD_EVENTLISTENER
 
+	m_pScriptClass = gEnv->pMonoScriptSystem->InstantiateScript(spawnParams.pClass->GetName(), eScriptType_Entity);
+
 	IMonoClass *pEntityInfoClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("EntityInfo");
 
-	CallMonoScript<void>(m_pScriptClass, "InternalSpawn", gEnv->pMonoScriptSystem->GetConverter()->ToManagedType(pEntityInfoClass, &SMonoEntityInfo(pEntity, id)));
+	CallMonoScript<void>(m_pScriptClass, "InternalSpawn", gEnv->pMonoScriptSystem->GetConverter()->ToManagedType(pEntityInfoClass, &SMonoEntityInfo(pEntity, m_entityId)));
+
+	for each(auto propertyCall in m_propertyQueue)
+		CallMonoScript<void>(m_pScriptClass, "SetPropertyValue", propertyCall.propertyInfo.name, propertyCall.propertyInfo.type, propertyCall.value);
+
+	m_propertyQueue.clear();
+
+	if(auto pMaterial = gEnv->p3DEngine->GetMaterialManager()->FindMaterial("Objects/Brushy/Trees/Ash/tree_ash_autumn"))
+		pEntity->SetMaterial(pMaterial);
 }
 
 void CEntity::OnEntityEvent(IEntity *pEntity,SEntityEvent &event)
@@ -81,15 +91,10 @@ void CEntity::OnEntityEvent(IEntity *pEntity,SEntityEvent &event)
 	}
 }
 
-void CEntity::AddMovement(const MovementRequest &request)
+void CEntity::SetPropertyValue(IEntityPropertyHandler::SPropertyInfo propertyInfo, const char *value)
 {
-	SCharacterMoveRequest moveRequest;
-	moveRequest.type = request.type;
-
-	moveRequest.velocity = request.velocity;
-
-	if(!m_pAnimatedCharacter)
-		m_pAnimatedCharacter = static_cast<IAnimatedCharacter *>(m_pGameObject->AcquireExtension("AnimatedCharacter"));
-
-	m_pAnimatedCharacter->AddMovement(moveRequest);
+	if(IsSpawned())
+		CallMonoScript<void>(m_pScriptClass, "SetPropertyValue", propertyInfo.name, propertyInfo.type, value);
+	else
+		m_propertyQueue.push_back(SQueuedProperty(propertyInfo, value));
 }

@@ -124,6 +124,7 @@ public:
 	// ~IMonoEntityManager
 
 	std::shared_ptr<CEntity> GetMonoEntity(EntityId entityId);
+	std::shared_ptr<CEntity> GetMonoEntity(EntityGUID entityGUID);
 	bool IsMonoEntity(const char *entityClassName);
 
 protected:
@@ -177,7 +178,6 @@ protected:
 	static mono::string GetStaticObjectFilePath(IEntity *pEnt, int);
 
 	static void AddImpulse(IEntity *pEnt, ActionImpulse);
-	static void AddMovement(IEntity *pEnt, MovementRequest&);
 
 	static Vec3 GetVelocity(IEntity *pEnt);
 	static void SetVelocity(IEntity *pEnt, Vec3);

@@ -63,7 +63,6 @@ CEntityManager::CEntityManager()
 	REGISTER_METHOD(GetStaticObjectFilePath);
 
 	REGISTER_METHOD(AddImpulse);
-	REGISTER_METHOD(AddMovement);
 
 	REGISTER_METHOD(GetVelocity);
 	REGISTER_METHOD(SetVelocity);
@@ -94,21 +93,18 @@ bool CEntityManager::OnBeforeSpawn(SEntitySpawnParams &params)
 	if(!IsMonoEntity(className))
 		return true;
 
-	IMonoClass *pScript = gEnv->pMonoScriptSystem->InstantiateScript(className, eScriptType_Entity);
-
-	m_monoEntities.push_back(std::shared_ptr<CEntity>(new CEntity(pScript)));
+	m_monoEntities.push_back(std::shared_ptr<CEntity>(new CEntity(params)));
 
 	return true;
 }
 
 void CEntityManager::OnSpawn(IEntity *pEntity,SEntitySpawnParams &params)
 {
-	const char *className = params.pClass->GetName();
-
-	if(!IsMonoEntity(className))
+	if(!IsMonoEntity(params.pClass->GetName()))
 		return;
 
-	m_monoEntities.back()->OnSpawn(pEntity, params.id);
+	if(auto monoEnt = GetMonoEntity(pEntity->GetGuid()))
+		monoEnt->OnSpawn(pEntity, params);
 }
 
 bool CEntityManager::OnRemove(IEntity *pEntity)
@@ -165,6 +161,17 @@ std::shared_ptr<CEntity> CEntityManager::GetMonoEntity(EntityId entityId)
 	for each(auto& monoEntity in m_monoEntities)
 	{
 		if(monoEntity->GetEntityId()==entityId)
+			return monoEntity;
+	}
+
+	return NULL;
+}
+
+std::shared_ptr<CEntity> CEntityManager::GetMonoEntity(EntityGUID guid)
+{
+	for each(auto& monoEntity in m_monoEntities)
+	{
+		if(monoEntity->GetEntityGUID()==guid)
 			return monoEntity;
 	}
 
@@ -484,12 +491,6 @@ void CEntityManager::AddImpulse(IEntity *pEntity, ActionImpulse actionImpulse)
 
 	if(IPhysicalEntity *pPhysEnt = pEntity->GetPhysics())
 		pPhysEnt->Action(&impulse);
-}
-
-void CEntityManager::AddMovement(IEntity *pEntity, MovementRequest &movementRequest)
-{
-	if(auto &entity = static_cast<CEntityManager *>(gEnv->pMonoScriptSystem->GetEntityManager())->GetMonoEntity(pEntity->GetId()))
-		entity->AddMovement(movementRequest);
 }
 
 Vec3 CEntityManager::GetVelocity(IEntity *pEntity)

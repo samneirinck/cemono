@@ -5,7 +5,6 @@
 #include "MonoEntityEventHandler.h"
 
 CEntityClass::CEntityClass(IEntityClassRegistry::SEntityClassDesc desc, std::vector<IEntityPropertyHandler::SPropertyInfo> properties)
-	: m_pPropertyHandler(NULL)
 {
 	m_flags = desc.flags;
 	m_name = desc.sName;

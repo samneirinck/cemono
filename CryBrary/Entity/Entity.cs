@@ -31,15 +31,12 @@ namespace CryEngine
 			//Do this before the property overwrites
 			InitPhysics();
 
-			//TODO: Make sure that mutators are only called once on startup
-			//var storedPropertyNames = storedProperties.Keys.Select(key => key[0]);
-
 			foreach(var property in GetType().GetProperties())
 			{
 				EditorPropertyAttribute attr;
 				try
 				{
-					if(property.TryGetAttribute(out attr) && attr.DefaultValue != null)// && !storedPropertyNames.Contains(property.Name))
+					if(property.TryGetAttribute(out attr) && attr.DefaultValue != null && !HasEditorPropertyBeenSet(property.GetValue(this, null), property.PropertyType))// && !storedPropertyNames.Contains(property.Name))
 						property.SetValue(this, attr.DefaultValue, null);
 				}
 				catch(Exception ex)
@@ -51,22 +48,22 @@ namespace CryEngine
 			foreach(var field in GetType().GetFields())
 			{
 				EditorPropertyAttribute attr;
-				if(field.TryGetAttribute(out attr) && attr.DefaultValue != null)// && !storedPropertyNames.Contains(field.Name))
+				if(field.TryGetAttribute(out attr) && attr.DefaultValue != null && !HasEditorPropertyBeenSet(field.GetValue(this), field.FieldType))// && !storedPropertyNames.Contains(field.Name))
 					field.SetValue(this, attr.DefaultValue);
-			}
-
-			if(storedProperties != null)
-			{
-				foreach(var storedProperty in storedProperties.Where(prop => !string.IsNullOrEmpty(prop.Key[1])))
-					SetPropertyValue(storedProperty.Key[0], storedProperty.Value, storedProperty.Key[1]);
-
-				storedProperties.Clear();
-				storedProperties = null;
 			}
 
 			OnSpawn();
 
 			return IsEntityFlowNode();
+		}
+
+		bool HasEditorPropertyBeenSet(object value, Type type)
+		{
+			object defaultVal = null;
+			if(type.IsValueType)
+				defaultVal = Activator.CreateInstance(type);
+
+			return value != defaultVal;
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
@@ -167,11 +164,6 @@ namespace CryEngine
 			return _GetPropertyValue(EntityPointer, propertyName);
 		}
 
-		/// <summary>
-		/// Temporarily stored so we can set them properly on spawn.
-		/// </summary>
-		Dictionary<string[], EntityPropertyType> storedProperties;
-
 		internal virtual void SetPropertyValue(string propertyName, EntityPropertyType propertyType, string valueString)
 		{
 			if(valueString == null)
@@ -189,17 +181,6 @@ namespace CryEngine
 			var property = GetType().GetProperty(propertyName);
 			if(property != null)
 			{
-				// Store properties so we can utilize the get set functionality after opening a saved level.
-				if(!Spawned)
-				{
-					if(storedProperties == null)
-						storedProperties = new Dictionary<string[], EntityPropertyType>();
-
-					storedProperties.Add(new string[] { propertyName, valueString }, propertyType);
-
-					return;
-				}
-
 				property.SetValue(this, value, null);
 
 				return;
