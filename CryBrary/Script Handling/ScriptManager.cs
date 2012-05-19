@@ -109,7 +109,7 @@ namespace CryEngine.Initialization
 			var mdbFile = assemblyPath + ".mdb";
 			if(File.Exists(mdbFile)) // success
 			{
-				var newMdbPath = Path.Combine(Path.GetTempPath(), Path.GetFileName(mdbFile));
+				var newMdbPath = Path.Combine(PathUtils.TempFolder, Path.GetFileName(mdbFile));
 				TryCopyFile(mdbFile, ref newMdbPath);
 			}
 #endif
