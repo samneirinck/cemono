@@ -126,6 +126,8 @@ protected:
 	static void ActivateOutputBool(CFlowNode *pNode, int, bool);
 	static void ActivateOutputVec3(CFlowNode *pNode, int, Vec3);
 
+	static IEntity *GetTargetEntity(CFlowNode *pNode);
+
 	static TFlowTypes m_nodeTypes;
 
 	int m_refs;

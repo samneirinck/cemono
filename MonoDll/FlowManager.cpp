@@ -32,6 +32,8 @@ CFlowManager::CFlowManager()
 	REGISTER_METHOD(GetPortValueString);
 	REGISTER_METHOD(GetPortValueBool);
 	REGISTER_METHOD(GetPortValueVec3);
+
+	REGISTER_METHOD(GetTargetEntity);
 }
 
 void CFlowManager::Reset()
@@ -127,6 +129,11 @@ bool CFlowManager::GetPortValueBool(CFlowNode *pFlowNode, int index)
 mono::object CFlowManager::GetPortValueVec3(CFlowNode *pFlowNode, int index)
 {
 	return *gEnv->pMonoScriptSystem->GetConverter()->ToManagedType(eCMT_Vec3, pFlowNode->GetPortVec3(index));
+}
+
+IEntity *CFlowManager::GetTargetEntity(CFlowNode *pNode)
+{
+	return pNode->GetTargetEntity();
 }
 
 static const int MAX_NODE_PORT_COUNT = 20;

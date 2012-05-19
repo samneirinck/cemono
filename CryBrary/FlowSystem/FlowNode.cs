@@ -53,6 +53,9 @@ namespace CryEngine
 		extern internal static bool _GetPortValueBool(IntPtr nodePtr, int port);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static Vec3 _GetPortValueVec3(IntPtr nodePtr, int port);
+
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static IntPtr _GetTargetEntity(IntPtr nodePtr);
 		#endregion
 
 		internal void InternalInitialize(NodeInfo nodeInfo)
