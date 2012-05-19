@@ -4,40 +4,34 @@
 	{
 		public static object FromString(EntityPropertyType type, string value)
 		{
+			if(type == EntityPropertyType.String)
+				return value;
+
 			if(value == null)
 				throw new System.ArgumentNullException("value");
+			else if(value.Length < 1)
+				throw new System.ArgumentException("value string was empty");
 
 			switch(type)
 			{
 				case EntityPropertyType.Bool:
-					return ChangeType(value, typeof(bool));
+					{
+						if(value == "0")
+							value = "false";
+						else if(value == "1")
+							value = "true";
+
+						return bool.Parse(value);
+					}
 				case EntityPropertyType.Int:
-					return ChangeType(value, typeof(int));
+					return int.Parse(value);
 				case EntityPropertyType.Float:
-					return ChangeType(value, typeof(float));
-				case EntityPropertyType.String:
-					return value;
+					return float.Parse(value);
 				case EntityPropertyType.Vec3:
-					return ChangeType(value, typeof(Vec3));
+					return Vec3.Parse(value);
 			}
 
 			return null;
-		}
-
-		public static object ChangeType(object value, System.Type conversionType)
-		{
-			var valueType = value.GetType();
-
-			if(conversionType.IsEnum && valueType == typeof(string))
-				return System.Enum.Parse(conversionType, (string)value);
-			else if(conversionType == typeof(Vec3) && valueType == typeof(string))
-			{
-				string[] split = ((string)value).Split(',');
-
-				return new Vec3(System.Convert.ToSingle(split[0]), System.Convert.ToSingle(split[1]), System.Convert.ToSingle(split[2]));
-			}
-
-			return System.Convert.ChangeType(value, conversionType);
 		}
 	}
 }
