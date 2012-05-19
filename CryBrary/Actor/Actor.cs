@@ -25,15 +25,17 @@ namespace CryEngine
 		extern internal static void _SetPlayerMaxHealth(IntPtr actorPtr, float newMaxHealth);
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static EntityId _GetEntityIdForChannelId(ushort channelId);
+		extern internal static ActorInfo _GetActorInfoByChannelId(ushort channelId);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static ActorInfo _GetActorInfoById(uint entId);
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern private static object _CreateActor(int channelId, string name, string className, Vec3 pos, Vec3 angles, Vec3 scale);
+		extern private static ActorInfo _CreateActor(int channelId, string name, string className, Vec3 pos, Vec3 angles, Vec3 scale);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static void _RemoveActor(uint id);
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static EntityId _GetClientActor();
+		extern internal static uint _GetClientActorId();
 		#endregion
 
 		#region Statics
@@ -43,9 +45,9 @@ namespace CryEngine
 			if(actor != null)
 				return actor;
 
-			var entityId = _GetEntityIdForChannelId((ushort)channelId);
-			if(entityId != 0)
-				return CreateNativeActor(entityId);
+			var entityInfo = _GetActorInfoByChannelId((ushort)channelId);
+			if(entityInfo.Id != 0)
+				return CreateNativeActor(entityInfo);
 
 			return null;
 		}
@@ -62,8 +64,9 @@ namespace CryEngine
 				return actor;
 
 			// Couldn't find a CryMono entity, check if a non-managed one exists.
-			if(_EntityExists(actorId))
-				return CreateNativeActor(actorId);
+			var actorInfo = _GetActorInfoById(actorId);
+			if(actorInfo.Id != 0)
+				return CreateNativeActor(actorInfo);
 
 			return null;
 		}
@@ -76,8 +79,11 @@ namespace CryEngine
 			return ScriptManager.FindScriptInstance<T>(x => x.Id == actorId);
 		}
 
-		static Actor CreateNativeActor(EntityId actorId)
+		static Actor CreateNativeActor(ActorInfo actorInfo)
 		{
+			if(actorInfo.Id == 0)
+				throw new ArgumentException("actorInfo.Id cannot be 0!");
+
 			var script = ScriptManager.CompiledScripts[ScriptType.Actor].First(x => x.Type == typeof(NativeActor));
 			if(script == null)
 				throw new TypeLoadException("Failed to locate NativeActor type");
@@ -85,23 +91,22 @@ namespace CryEngine
 			if(script.ScriptInstances == null)
 				script.ScriptInstances = new List<CryScriptInstance>();
 
-			var nativeActor = new NativeActor(actorId);
+			var nativeActor = new NativeActor(actorInfo);
 			script.ScriptInstances.Add(nativeActor);
 
 			return nativeActor;
 		}
 
-		public static Actor Client
+		public static Actor Client 
 		{
-			get 
+			get
 			{
-				var clientActorId = _GetClientActor();
-				if(clientActorId != 0)
-					return Get(clientActorId);
-				
-				Debug.LogAlways("[Warning] Failed to get the client actor, id was 0");
-				return null;
-			}
+				var clientActorId = _GetClientActorId();
+				if(clientActorId == 0)
+					return null;
+
+				return Get(new EntityId(clientActorId)); 
+			} 
 		}
 
 		public static T Create<T>(int channelId, string name, string className,  Vec3 pos, Vec3 angles, Vec3 scale) where T : Actor, new()
@@ -109,7 +114,7 @@ namespace CryEngine
 			// just in case
 			Actor.Remove(channelId);
 
-			var info = (ActorInfo)_CreateActor(channelId, name, className, pos, angles, scale);
+			var info = _CreateActor(channelId, name, className, pos, angles, scale);
 			if(info.Id == 0)
 			{
 				Debug.LogAlways("[Actor.Create] New entityId was invalid");
@@ -163,7 +168,9 @@ namespace CryEngine
 
 		public static void Remove(int channelId)
 		{
-			_RemoveActor(_GetEntityIdForChannelId((ushort)channelId));
+			var actorInfo = _GetActorInfoByChannelId((ushort)channelId);
+			if(actorInfo.Id != 0)
+				_RemoveActor(actorInfo.Id);
 
 			InternalRemove(actor => actor.ChannelId == channelId);
 		}

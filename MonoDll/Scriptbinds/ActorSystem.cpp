@@ -12,40 +12,42 @@ CActorSystem::CActorSystem()
 	REGISTER_METHOD(GetPlayerMaxHealth);
 	REGISTER_METHOD(SetPlayerMaxHealth);
 
-	REGISTER_METHOD(GetEntityIdForChannelId);
+	REGISTER_METHOD(GetActorInfoByChannelId);
+	REGISTER_METHOD(GetActorInfoById);
 
 	REGISTER_METHOD(CreateActor);
 	REGISTER_METHOD(RemoveActor);
 
-	REGISTER_METHOD(GetClientActor);
+	REGISTER_METHOD(GetClientActorId);
 
 	REGISTER_METHOD(RegisterActorClass);
 }
 
-EntityId CActorSystem::GetEntityIdForChannelId(uint16 channelId)
+SMonoActorInfo CActorSystem::GetActorInfoByChannelId(uint16 channelId)
 {
 	if(IActor *pActor = gEnv->pGameFramework->GetIActorSystem()->GetActorByChannelId(channelId))
-		return pActor->GetEntityId();
+		return SMonoActorInfo(pActor);
 
-	return 0;
+	return SMonoActorInfo();
 }
 
-mono::object CActorSystem::CreateActor(int channelId, mono::string name, mono::string className, Vec3 pos, Vec3 angles, Vec3 scale)
+SMonoActorInfo CActorSystem::GetActorInfoById(EntityId id)
 {
-	SMonoActorInfo actorInfo = SMonoActorInfo();
+	if(IActor *pActor = gEnv->pGameFramework->GetIActorSystem()->GetActor(id))
+		return SMonoActorInfo(pActor);
 
+	return SMonoActorInfo();
+}
+
+SMonoActorInfo CActorSystem::CreateActor(int channelId, mono::string name, mono::string className, Vec3 pos, Vec3 angles, Vec3 scale)
+{
 	if(gEnv->bServer)
 	{
 		if(IActor *pActor = gEnv->pGameFramework->GetIActorSystem()->CreateActor(channelId, ToCryString(name), ToCryString(className), pos, Quat(Ang3(angles)), scale))
-		{
-			actorInfo.pActor = pActor;
-			actorInfo.pEntity = pActor->GetEntity();
-			actorInfo.id = pActor->GetEntityId();
-		}
+			return SMonoActorInfo(pActor);
 	}
 
-	IMonoClass *pActorInfoClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("ActorInfo");
-	return gEnv->pMonoScriptSystem->GetConverter()->ToManagedType(pActorInfoClass, &actorInfo)->GetMonoObject();
+	return SMonoActorInfo();
 }
 
 void CActorSystem::RemoveActor(EntityId id)
@@ -53,7 +55,7 @@ void CActorSystem::RemoveActor(EntityId id)
 	gEnv->pGameFramework->GetIActorSystem()->RemoveActor(id);
 }
 
-EntityId CActorSystem::GetClientActor()
+EntityId CActorSystem::GetClientActorId()
 {
 	return gEnv->pGameFramework->GetClientActorId();
 }

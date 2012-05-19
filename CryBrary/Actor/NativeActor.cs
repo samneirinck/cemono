@@ -7,6 +7,11 @@ namespace CryEngine
 	class NativeActor : Actor
 	{
 		public NativeActor() { }
-		public NativeActor(EntityId id) { Id = id; }
+		public NativeActor(ActorInfo actorInfo)
+		{
+			Id = new EntityId(actorInfo.Id);
+			EntityPointer = actorInfo.EntityPtr;
+			ActorPointer = actorInfo.ActorPtr;
+		}
 	}
 }

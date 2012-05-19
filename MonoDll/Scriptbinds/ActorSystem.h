@@ -18,6 +18,12 @@
 struct SMonoActorInfo
 {
 	SMonoActorInfo() : id(0) {}
+	SMonoActorInfo(IActor *pIActor)
+		: pActor(pIActor)
+	{
+		pEntity = pIActor->GetEntity();
+		id = pEntity->GetId();
+	}
 
 	IEntity *pEntity;
 	IActor *pActor;
@@ -40,12 +46,13 @@ protected:
 	static float GetPlayerMaxHealth(IActor *pActor);
 	static void SetPlayerMaxHealth(IActor *pActor, float);
 
-	static EntityId GetEntityIdForChannelId(uint16 channelId);
+	static SMonoActorInfo GetActorInfoByChannelId(uint16 channelId);
+	static SMonoActorInfo GetActorInfoById(EntityId id);
 
-	static mono::object CreateActor(int channelId, mono::string name, mono::string className, Vec3 pos, Vec3 angles, Vec3 scale);
+	static SMonoActorInfo CreateActor(int channelId, mono::string name, mono::string className, Vec3 pos, Vec3 angles, Vec3 scale);
 	static void RemoveActor(EntityId id);
 
-	static EntityId GetClientActor();
+	static EntityId GetClientActorId();
 
 	static void RegisterActorClass(mono::string, bool);
 };
