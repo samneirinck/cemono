@@ -32,8 +32,6 @@ CEntityManager::CEntityManager()
 	REGISTER_METHOD(FindEntity);
 	REGISTER_METHOD(GetEntitiesByClass);
 
-	REGISTER_METHOD(EntityExists);
-
 	REGISTER_METHOD(GetPropertyValue);
 
 	REGISTER_METHOD(SetPos);
@@ -252,14 +250,6 @@ EntityId CEntityManager::FindEntity(mono::string name)
 		return pEntity->GetId();
 
 	return 0;
-}
-
-bool CEntityManager::EntityExists(EntityId entityId)
-{
-	if(entityId == 0)
-		return false;
-
-	return gEnv->pEntitySystem->GetEntity(entityId) != NULL;
 }
 
 mono::array CEntityManager::GetEntitiesByClass(mono::string _class)

@@ -142,9 +142,6 @@ namespace CryEngine
 		extern internal static uint _FindEntity(string name);
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static object[] _GetEntitiesByClass(string className);
-
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static bool _EntityExists(EntityId id);
 		#endregion
 
 		#region Callbacks

@@ -149,8 +149,6 @@ protected:
 	static EntityId FindEntity(mono::string);
 	static mono::array GetEntitiesByClass(mono::string);
 
-	static bool EntityExists(EntityId);
-
 	static mono::string GetPropertyValue(IEntity *pEnt, mono::string);
 
 	static void SetWorldPos(IEntity *pEnt, Vec3);

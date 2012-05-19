@@ -91,13 +91,14 @@ namespace CryEngine
 				return ent;
 
 			// Couldn't find a CryMono entity, check if a non-managed one exists.
-			if(_EntityExists(entityId))
+			var entPointer = _GetEntity(entityId);
+			if(entPointer != null)
 			{
 				var script = ScriptManager.CompiledScripts[ScriptType.Entity].First(x => x.Type == typeof(NativeEntity));
 				if(script == null)
 					throw new TypeLoadException("Failed to locate NativeEntity type");
 
-				var nativeEntity = new NativeEntity(entityId);
+				var nativeEntity = new NativeEntity(entityId, entPointer);
 				ScriptManager.AddScriptInstance(nativeEntity, script);
 
 				return nativeEntity;
