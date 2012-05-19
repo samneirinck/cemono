@@ -172,10 +172,18 @@ namespace CryEngine
 		/// </summary>
 		Dictionary<string[], EntityPropertyType> storedProperties;
 
-		internal virtual void SetPropertyValue(string propertyName, EntityPropertyType propertyType, string value)
+		internal virtual void SetPropertyValue(string propertyName, EntityPropertyType propertyType, string valueString)
 		{
-			if(value.Length <= 0 && propertyType != EntityPropertyType.String)
-				return;
+			if(valueString == null)
+				throw new ArgumentNullException("value");
+			else if(propertyName == null)
+				throw new ArgumentNullException("propertyName");
+			else if(valueString.Length < 1 && propertyType != EntityPropertyType.String)
+				throw new ArgumentException("value was empty!");
+			else if(propertyName.Length < 1 && propertyType != EntityPropertyType.String)
+				throw new ArgumentException("propertyName was empty!");
+
+			var value = Convert.FromString(propertyType, valueString);
 
 			// Perhaps we should exclude properties entirely, and just utilize fields (including backing fields)
 			var property = GetType().GetProperty(propertyName);
@@ -187,19 +195,19 @@ namespace CryEngine
 					if(storedProperties == null)
 						storedProperties = new Dictionary<string[], EntityPropertyType>();
 
-					storedProperties.Add(new string[] { propertyName, value }, propertyType);
+					storedProperties.Add(new string[] { propertyName, valueString }, propertyType);
 
 					return;
 				}
 
-				property.SetValue(this, Convert.FromString(propertyType, value), null);
+				property.SetValue(this, value, null);
 
 				return;
 			}
 
 			var field = GetType().GetField(propertyName);
 			if(field != null)
-				field.SetValue(this, Convert.FromString(propertyType, value));
+				field.SetValue(this, value);
 		}
 
 		/// <summary>
