@@ -43,9 +43,6 @@ void CEntity::OnSpawn(IEntity *pEntity, SEntitySpawnParams &spawnParams)
 		CallMonoScript<void>(m_pScriptClass, "SetPropertyValue", propertyCall.propertyInfo.name, propertyCall.propertyInfo.type, propertyCall.value);
 
 	m_propertyQueue.clear();
-
-	if(auto pMaterial = gEnv->p3DEngine->GetMaterialManager()->FindMaterial("Objects/Brushy/Trees/Ash/tree_ash_autumn"))
-		pEntity->SetMaterial(pMaterial);
 }
 
 void CEntity::OnEntityEvent(IEntity *pEntity,SEntityEvent &event)
