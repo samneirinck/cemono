@@ -148,7 +148,11 @@ mach_exception_thread (void *arg)
 				   MACH_MSG_TIMEOUT_NONE,
 				   MACH_PORT_NULL);
 
-		g_assert (result == MACH_MSG_SUCCESS);
+		/*
+		If we try to abort the thread while delivering an exception. The port will be gone since the kernel
+		setup a send once port to deliver the resume message and thread_abort will consume it.
+		*/
+		g_assert (result == MACH_MSG_SUCCESS || result == MACH_SEND_INVALID_DEST);
 	}
 	return NULL;
 }
@@ -226,16 +230,15 @@ mono_runtime_syscall_fork ()
 	return (pid_t) fork ();
 }
 
-gboolean
+void
 mono_gdb_render_native_backtraces (pid_t crashed_pid)
 {
-	return FALSE; // disable for now due to #2548.
 	const char *argv [5];
 	char gdb_template [] = "/tmp/mono-gdb-commands.XXXXXX";
 
 	argv [0] = g_find_program_in_path ("gdb");
 	if (argv [0] == NULL) {
-		return FALSE;
+		return;
 	}
 
 	if (mkstemp (gdb_template) != -1) {
@@ -257,6 +260,4 @@ mono_gdb_render_native_backtraces (pid_t crashed_pid)
 
 		unlink (gdb_template);
 	}
-
-	return TRUE;
 }

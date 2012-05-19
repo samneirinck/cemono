@@ -1,10 +1,5 @@
 #! /bin/sh
 
-SED="sed"
-if [ `which gsed 2> /dev/null` ] ; then 
-	SED="gsed"
-fi
-
 TEST_NAME=$1
 TEST_VALIDITY=$2
 TEST_OP=$3
@@ -13,7 +8,7 @@ TEST_TYPE=$4
 TEST_FILE=`echo ${TEST_VALIDITY}_${TEST_NAME}_generated.il`
 echo $TEST_FILE
 
-$SED -e "s/TYPE/${TEST_TYPE}/g"  -e "s/OP/${TEST_OP}/g" > $TEST_FILE <<//EOF
+sed -e "s/TYPE/${TEST_TYPE}/g"  -e "s/OP/${TEST_OP}/g" > $TEST_FILE <<//EOF
 
 .assembly extern mscorlib
 {

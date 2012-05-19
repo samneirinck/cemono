@@ -104,6 +104,7 @@ struct _SgenThreadInfo {
 	int signal;
 	int skip;
 	volatile int in_critical_region;
+	gboolean gc_disabled;
 	void *stack_end;
 	void *stack_start;
 	void *stack_start_limit;
@@ -587,6 +588,13 @@ struct _SgenGrayQueue {
 void mono_sgen_gray_object_enqueue (SgenGrayQueue *queue, char *obj) MONO_INTERNAL;
 char* mono_sgen_gray_object_dequeue (SgenGrayQueue *queue) MONO_INTERNAL;
 
+/*
+List of what each bit on of the vtable gc bits means. 
+*/
+enum {
+	SGEN_GC_BIT_BRIDGE_OBJECT = 1,
+};
+
 typedef void (*IterateObjectCallbackFunc) (char*, size_t, void*);
 
 void* mono_sgen_alloc_os_memory (size_t size, int activate) MONO_INTERNAL;
@@ -804,10 +812,12 @@ gboolean mono_sgen_object_is_live (void *obj) MONO_INTERNAL;
 
 gboolean mono_sgen_need_bridge_processing (void) MONO_INTERNAL;
 void mono_sgen_bridge_processing_register_objects (int num_objs, MonoObject **objs) MONO_INTERNAL;
+void mono_sgen_bridge_reset_data (void) MONO_INTERNAL;
 void mono_sgen_bridge_processing_stw_step (void) MONO_INTERNAL;
 void mono_sgen_bridge_processing_finish (void) MONO_INTERNAL;
 void mono_sgen_register_test_bridge_callbacks (void) MONO_INTERNAL;
 gboolean mono_sgen_is_bridge_object (MonoObject *obj) MONO_INTERNAL;
+gboolean mono_sgen_is_bridge_class (MonoClass *class) MONO_INTERNAL;
 void mono_sgen_mark_bridge_object (MonoObject *obj) MONO_INTERNAL;
 
 typedef void (*CopyOrMarkObjectFunc) (void**, SgenGrayQueue*);

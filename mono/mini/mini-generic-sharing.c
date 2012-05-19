@@ -752,7 +752,7 @@ mono_class_get_runtime_generic_context_template (MonoClass *class)
 				}
 			}
 		} else {
-			MonoRuntimeGenericContextOtherInfoTemplate *oti;
+			guint32 num_entries;
 			int max_argc, type_argc;
 
 			parent_template = mono_class_get_runtime_generic_context_template (class->parent);
@@ -760,13 +760,19 @@ mono_class_get_runtime_generic_context_template (MonoClass *class)
 			max_argc = template_get_max_argc (parent_template);
 
 			for (type_argc = 0; type_argc <= max_argc; ++type_argc) {
+				num_entries = rgctx_template_num_other_infos (parent_template, type_argc);
+
 				/* FIXME: quadratic! */
-				for (i = 0, oti = parent_template->other_infos; oti; ++i, oti = oti->next) {
-					if (oti->data && oti->data != MONO_RGCTX_SLOT_USED_MARKER) {
+				for (i = 0; i < num_entries; ++i) {
+					MonoRuntimeGenericContextOtherInfoTemplate oti;
+
+					oti = class_get_rgctx_template_oti (class->parent, type_argc, i, FALSE, FALSE, NULL);
+					if (oti.data && oti.data != MONO_RGCTX_SLOT_USED_MARKER) {
 						rgctx_template_set_other_slot (class->image, template, type_argc, i,
-							oti->data, oti->info_type);
+							oti.data, oti.info_type);
 					}
 				}
+
 			}
 		}
 	}
@@ -1878,4 +1884,15 @@ mono_generic_sharing_cleanup (void)
 
 	if (generic_subclass_hash)
 		g_hash_table_destroy (generic_subclass_hash);
+}
+
+gboolean
+mini_type_is_reference (MonoCompile *cfg, MonoType *type)
+{
+	if (mono_type_is_reference (type))
+		return TRUE;
+	if (!cfg->generic_sharing_context)
+		return FALSE;
+	/*FIXME the probably needs better handle under partial sharing*/
+	return type->type == MONO_TYPE_VAR || type->type == MONO_TYPE_MVAR;
 }

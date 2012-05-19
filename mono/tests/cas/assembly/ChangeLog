@@ -1,7 +1,3 @@
-2011-01-25  Zoltan Varga  <vargaz@gmail.com>
-
-	Fix up CAS tests a bit.
-
 2007-08-01  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* all.net_1_1.txt, min.net_1_1.txt, none.net_1_1.txt, opt.net_1_1.txt,

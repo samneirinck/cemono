@@ -4896,6 +4896,13 @@ set_var (MonoType *t, MonoDebugVarInfo *var, MonoContext *ctx, MonoDomain *domai
 
 		//printf ("[R%d+%d] = %p\n", reg, var->offset, addr);
 
+		if (t->byref) {
+			addr = *(guint8**)addr;
+
+			if (!addr)
+				break;
+		}
+			
 		// FIXME: Write barriers
 		memcpy (addr, val, size);
 		break;
@@ -5859,7 +5866,7 @@ assembly_commands (int command, guint8 *p, guint8 *end, Buffer *buf)
 		break;
 	}
 	case CMD_ASSEMBLY_GET_OBJECT: {
-		MonoObject *o = (MonoObject*)mono_assembly_get_object (mono_domain_get (), ass);
+		MonoObject *o = (MonoObject*)mono_assembly_get_object (domain, ass);
 		buffer_add_objid (buf, o);
 		break;
 	}
@@ -6280,7 +6287,7 @@ type_commands_internal (int command, MonoClass *klass, MonoDomain *domain, guint
 		break;
 	}
 	case CMD_TYPE_GET_OBJECT: {
-		MonoObject *o = (MonoObject*)mono_type_get_object (mono_domain_get (), &klass->byval_arg);
+		MonoObject *o = (MonoObject*)mono_type_get_object (domain, &klass->byval_arg);
 		buffer_add_objid (buf, o);
 		break;
 	}

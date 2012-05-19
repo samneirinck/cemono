@@ -111,6 +111,9 @@ mono_string_utf16_to_builder2 (gunichar2 *text);
 static MonoString*
 mono_string_new_len_wrapper (const char *text, guint length);
 
+static MonoString *
+mono_string_from_byvalwstr (gunichar2 *data, int len);
+
 static void
 mono_byvalarray_to_array (MonoArray *arr, gpointer native_arr, MonoClass *eltype, guint32 elnum);
 
@@ -210,6 +213,7 @@ mono_marshal_init (void)
 		register_icall (mono_marshal_string_to_utf16_copy, "mono_marshal_string_to_utf16_copy", "ptr obj", FALSE);
 		register_icall (mono_string_to_utf16, "mono_string_to_utf16", "ptr obj", FALSE);
 		register_icall (mono_string_from_utf16, "mono_string_from_utf16", "obj ptr", FALSE);
+		register_icall (mono_string_from_byvalwstr, "mono_string_from_byvalwstr", "obj ptr int", FALSE);
 		register_icall (mono_string_new_wrapper, "mono_string_new_wrapper", "obj ptr", FALSE);
 		register_icall (mono_string_new_len_wrapper, "mono_string_new_len_wrapper", "obj ptr int", FALSE);
 		register_icall (mono_string_to_utf8, "mono_string_to_utf8", "ptr obj", FALSE);
@@ -525,6 +529,20 @@ mono_delegate_free_ftnptr (MonoDelegate *delegate)
 
 		mono_runtime_free_method (mono_object_domain (delegate), ji->method);
 	}
+}
+
+static MonoString *
+mono_string_from_byvalwstr (gunichar2 *data, int max_len)
+{
+	MonoDomain *domain = mono_domain_get ();
+	int len = 0;
+
+	if (!data)
+		return NULL;
+
+	while (data [len]) len++;
+
+	return mono_string_new_utf16 (domain, data, MIN (len, max_len));
 }
 
 gpointer
@@ -1302,9 +1320,16 @@ emit_ptr_to_object_conv (MonoMethodBuilder *mb, MonoType *type, MonoMarshalConv 
 		mono_mb_emit_byte (mb, CEE_STIND_REF);		
 		break;
 	case MONO_MARSHAL_CONV_STR_BYVALWSTR:
-		mono_mb_emit_ldloc (mb, 1);
-		mono_mb_emit_ldloc (mb, 0);
-		mono_mb_emit_icall (mb, mono_string_from_utf16);
+		if (mspec && mspec->native == MONO_NATIVE_BYVALTSTR && mspec->data.array_data.num_elem) {
+			mono_mb_emit_ldloc (mb, 1);
+			mono_mb_emit_ldloc (mb, 0);
+			mono_mb_emit_icon (mb, mspec->data.array_data.num_elem);
+			mono_mb_emit_icall (mb, mono_string_from_byvalwstr);
+		} else {
+			mono_mb_emit_ldloc (mb, 1);
+			mono_mb_emit_ldloc (mb, 0);
+			mono_mb_emit_icall (mb, mono_string_from_utf16);
+		}
 		mono_mb_emit_byte (mb, CEE_STIND_REF);		
 		break;		
 	case MONO_MARSHAL_CONV_STR_LPTSTR:
@@ -1439,11 +1464,7 @@ conv_to_icall (MonoMarshalConv conv)
 	case MONO_MARSHAL_CONV_LPWSTR_STR:
 		return mono_string_from_utf16;
 	case MONO_MARSHAL_CONV_LPSTR_STR:
-#ifdef TARGET_WIN32
-		return mono_string_from_utf16;
-#else
 		return mono_string_new_wrapper;
-#endif
 	case MONO_MARSHAL_CONV_STR_LPTSTR:
 #ifdef TARGET_WIN32
 		return mono_marshal_string_to_utf16;
@@ -6073,14 +6094,15 @@ emit_marshal_string (EmitMarshalContext *m, int argnum, MonoType *t,
 			mono_mb_emit_managed_call (mb, m, NULL);
 			mono_mb_emit_icall (mb, mono_string_new_len_wrapper);
 			mono_mb_emit_byte (mb, CEE_STIND_REF);
-		} else if (t->byref && (t->attrs & PARAM_ATTRIBUTE_OUT)) {
+		} else if (t->byref && (t->attrs & PARAM_ATTRIBUTE_OUT || !(t->attrs & PARAM_ATTRIBUTE_IN))) {
 			mono_mb_emit_ldarg (mb, argnum);
 			mono_mb_emit_ldloc (mb, conv_arg);
 			mono_mb_emit_icall (mb, conv_to_icall (conv));
 			mono_mb_emit_byte (mb, CEE_STIND_REF);
+			need_free = TRUE;
 		}
 
-		if (need_free || (t->byref && (t->attrs & PARAM_ATTRIBUTE_OUT))) {
+		if (need_free) {
 			mono_mb_emit_ldloc (mb, conv_arg);
 			if (conv == MONO_MARSHAL_CONV_BSTR_STR)
 				mono_mb_emit_icall (mb, mono_free_bstr);
@@ -6423,7 +6445,8 @@ emit_marshal_object (EmitMarshalContext *m, int argnum, MonoType *t,
 		} else if (klass == mono_defaults.stringbuilder_class) {
 			MonoMarshalNative encoding = mono_marshal_get_string_encoding (m->piinfo, spec);
 			MonoMarshalConv conv = mono_marshal_get_stringbuilder_to_ptr_conv (m->piinfo, spec);
-			
+
+#if 0			
 			if (t->byref) {
 				if (!(t->attrs & PARAM_ATTRIBUTE_OUT)) {
 					char *msg = g_strdup_printf ("Byref marshalling of stringbuilders is not implemented.");
@@ -6431,8 +6454,14 @@ emit_marshal_object (EmitMarshalContext *m, int argnum, MonoType *t,
 				}
 				break;
 			}
+#endif
+
+			if (t->byref && !t->attrs & PARAM_ATTRIBUTE_IN && t->attrs & PARAM_ATTRIBUTE_OUT)
+				break;
 
 			mono_mb_emit_ldarg (mb, argnum);
+			if (t->byref)
+				mono_mb_emit_byte (mb, CEE_LDIND_I);
 
 			if (conv != -1)
 				mono_mb_emit_icall (mb, conv_to_icall (conv));
@@ -6522,7 +6551,7 @@ emit_marshal_object (EmitMarshalContext *m, int argnum, MonoType *t,
 			g_assert (encoding != -1);
 
 			if (t->byref) {
-				g_assert ((t->attrs & PARAM_ATTRIBUTE_OUT));
+				//g_assert (!(t->attrs & PARAM_ATTRIBUTE_OUT));
 
 				need_free = TRUE;
 
@@ -8520,6 +8549,13 @@ mono_marshal_emit_managed_wrapper (MonoMethodBuilder *mb, MonoMethodSignature *i
 	mono_mb_emit_icon (mb, 0);
 	mono_mb_emit_stloc (mb, 2);
 
+	/*
+	 * Might need to attach the thread to the JIT or change the
+	 * domain for the callback.
+	 */
+	mono_mb_emit_byte (mb, MONO_CUSTOM_PREFIX);
+	mono_mb_emit_byte (mb, CEE_MONO_JIT_ATTACH);
+
 	/* we first do all conversions */
 	tmp_locals = alloca (sizeof (int) * sig->param_count);
 	for (i = 0; i < sig->param_count; i ++) {
@@ -8645,6 +8681,9 @@ mono_marshal_emit_managed_wrapper (MonoMethodBuilder *mb, MonoMethodSignature *i
 			}
 		}
 	}
+
+	mono_mb_emit_byte (mb, MONO_CUSTOM_PREFIX);
+	mono_mb_emit_byte (mb, CEE_MONO_JIT_DETACH);
 
 	if (m->retobj_var) {
 		mono_mb_emit_ldloc (mb, m->retobj_var);
@@ -8775,7 +8814,8 @@ mono_marshal_get_managed_wrapper (MonoMethod *method, MonoClass *delegate_klass,
 		attr = NULL;
 		if (cinfo) {
 			for (i = 0; i < cinfo->num_attrs; ++i) {
-				if (mono_class_has_parent (cinfo->attrs [i].ctor->klass, UnmanagedFunctionPointerAttribute)) {
+				MonoClass *ctor_class = cinfo->attrs [i].ctor->klass;
+				if (mono_class_has_parent (ctor_class, UnmanagedFunctionPointerAttribute)) {
 					attr = &cinfo->attrs [i];
 					break;
 				}

@@ -1083,6 +1083,22 @@ mono_test_marshal_stringbuilder_out_unicode (gunichar2 **s)
 	return 0;
 }
 
+LIBTEST_API int STDCALL
+mono_test_marshal_stringbuilder_ref (char **s)
+{
+	const char m[] = "This is my message.  Isn't it nice?";
+	char *str;
+
+	if (strcmp (*s, "ABC"))
+		return 1;
+
+	str = marshal_alloc (strlen (m) + 1);
+	memcpy (str, m, strlen (m) + 1);
+	
+	*s = str;
+	return 0;
+}
+
 typedef struct {
 #ifndef __GNUC__
     char a;
@@ -1394,6 +1410,8 @@ string_marshal_test2 (char **str)
 
 	if (strcmp (*str, "TEST1"))
 		return -1;
+
+	*str = marshal_strdup ("TEST2");
 
 	return 0;
 }
@@ -5046,3 +5064,20 @@ mono_test_marshal_thread_attach (SimpleDelegate del)
 	return call_managed_res;
 #endif
 }
+
+typedef int (STDCALL *Callback) (void);
+
+static Callback callback;
+
+LIBTEST_API void STDCALL 
+mono_test_marshal_set_callback (Callback cb)
+{
+	callback = cb;
+}
+
+LIBTEST_API int STDCALL 
+mono_test_marshal_call_callback (void)
+{
+	return callback ();
+}
+

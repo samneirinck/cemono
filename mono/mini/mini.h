@@ -776,6 +776,7 @@ struct MonoInst {
 		MonoInst *spill_var; /* for OP_ICONV_TO_R8_RAW and OP_FCONV_TO_R8_X */
 		guint16 source_opcode; /*OP_XCONV_R8_TO_I4 needs to know which op was used to do proper widening*/
 		int pc_offset; /* OP_GC_LIVERANGE_START/END */
+		int memory_barrier_kind; /* see mono-memory-model.h for valid values */
 	} backend;
 	
 	MonoClass *klass;
@@ -1226,6 +1227,9 @@ typedef struct {
 	guint32 next_vreg;
 
 	MonoGenericSharingContext *generic_sharing_context;
+
+	/* For native-to-managed wrappers, the saved old domain */
+	MonoInst *orig_domain_var;
 
 	unsigned char   *cil_start;
 #ifdef __native_client_codegen__
@@ -1766,7 +1770,8 @@ gpointer  mono_jit_compile_method           (MonoMethod *method) MONO_INTERNAL;
 MonoLMF * mono_get_lmf                      (void) MONO_INTERNAL;
 MonoLMF** mono_get_lmf_addr                 (void) MONO_INTERNAL;
 void      mono_set_lmf                      (MonoLMF *lmf) MONO_INTERNAL;
-void      mono_jit_thread_attach            (MonoDomain *domain);
+MonoDomain *mono_jit_thread_attach          (MonoDomain *domain);
+void      mono_jit_set_domain               (MonoDomain *domain);
 guint32   mono_get_jit_tls_key              (void) MONO_INTERNAL;
 gint32    mono_get_jit_tls_offset           (void) MONO_INTERNAL;
 gint32    mono_get_lmf_tls_offset           (void) MONO_INTERNAL;
@@ -1774,6 +1779,7 @@ gint32    mono_get_lmf_addr_tls_offset      (void) MONO_INTERNAL;
 MonoInst* mono_get_jit_tls_intrinsic        (MonoCompile *cfg) MONO_INTERNAL;
 MonoInst* mono_get_domain_intrinsic         (MonoCompile* cfg) MONO_INTERNAL;
 MonoInst* mono_get_thread_intrinsic         (MonoCompile* cfg) MONO_INTERNAL;
+MonoInst* mono_get_lmf_intrinsic            (MonoCompile* cfg) MONO_INTERNAL;
 GList    *mono_varlist_insert_sorted        (MonoCompile *cfg, GList *list, MonoMethodVar *mv, int sort_type) MONO_INTERNAL;
 GList    *mono_varlist_sort                 (MonoCompile *cfg, GList *list, int sort_type) MONO_INTERNAL;
 void      mono_analyze_liveness             (MonoCompile *cfg) MONO_INTERNAL;
@@ -1914,7 +1920,7 @@ gpointer          mono_create_generic_class_init_trampoline (void) MONO_INTERNAL
 gpointer          mono_create_jit_trampoline (MonoMethod *method) MONO_INTERNAL;
 gpointer          mono_create_jit_trampoline_from_token (MonoImage *image, guint32 token) MONO_INTERNAL;
 gpointer          mono_create_jit_trampoline_in_domain (MonoDomain *domain, MonoMethod *method) MONO_LLVM_INTERNAL;
-gpointer          mono_create_delegate_trampoline (MonoClass *klass) MONO_INTERNAL;
+gpointer          mono_create_delegate_trampoline (MonoDomain *domain, MonoClass *klass) MONO_INTERNAL;
 gpointer          mono_create_rgctx_lazy_fetch_trampoline (guint32 offset) MONO_INTERNAL;
 gpointer          mono_create_monitor_enter_trampoline (void) MONO_INTERNAL;
 gpointer          mono_create_monitor_exit_trampoline (void) MONO_INTERNAL;
@@ -2319,6 +2325,8 @@ guint mono_type_to_regmove (MonoCompile *cfg, MonoType *type) MONO_INTERNAL;
 void mono_cfg_add_try_hole (MonoCompile *cfg, MonoExceptionClause *clause, guint8 *start, MonoBasicBlock *bb) MONO_INTERNAL;
 
 void mono_cfg_set_exception (MonoCompile *cfg, int type) MONO_INTERNAL;
+gboolean mini_type_is_reference (MonoCompile *cfg, MonoType *type) MONO_INTERNAL;
+
 
 /* wapihandles.c */
 int mini_wapi_hps (int argc, char **argv) MONO_INTERNAL;
@@ -2400,7 +2408,7 @@ void mono_runtime_setup_stat_profiler (void) MONO_INTERNAL;
 void mono_runtime_shutdown_stat_profiler (void) MONO_INTERNAL;
 void mono_runtime_posix_install_handlers (void) MONO_INTERNAL;
 pid_t mono_runtime_syscall_fork (void) MONO_INTERNAL;
-gboolean mono_gdb_render_native_backtraces (pid_t crashed_pid) MONO_INTERNAL;
+void mono_gdb_render_native_backtraces (pid_t crashed_pid) MONO_INTERNAL;
 
 /*
  * Signal handling

@@ -420,8 +420,10 @@ common_call_trampoline (mgreg_t *regs, guint8 *code, MonoMethod *m, guint8* tram
 			g_assert (this_argument->vtable->klass->inited);
 			//mono_class_init (this_argument->vtable->klass);
 
-			if (!vtable_slot)
+			if (!vtable_slot) {
+				mono_class_setup_supertypes (this_argument->vtable->klass);
 				klass = this_argument->vtable->klass->supertypes [m->klass->idepth - 1];
+			}
 #else
 			NOT_IMPLEMENTED;
 #endif
@@ -1252,8 +1254,9 @@ mono_create_jump_trampoline (MonoDomain *domain, MonoMethod *method, gboolean ad
 	 * We cannot recover the correct type of a shared generic
 	 * method from its native code address, so we use the
 	 * trampoline instead.
+	 * For synchronized methods, the trampoline adds the wrapper.
 	 */
-	if (code && !ji->has_generic_jit_info)
+	if (code && !ji->has_generic_jit_info && !(method->iflags & METHOD_IMPL_ATTRIBUTE_SYNCHRONIZED))
 		return code;
 
 	mono_domain_lock (domain);
@@ -1342,10 +1345,9 @@ mono_create_jit_trampoline_from_token (MonoImage *image, guint32 token)
 }	
 
 gpointer
-mono_create_delegate_trampoline (MonoClass *klass)
+mono_create_delegate_trampoline (MonoDomain *domain, MonoClass *klass)
 {
 #ifdef MONO_ARCH_HAVE_CREATE_DELEGATE_TRAMPOLINE
-	MonoDomain *domain = mono_domain_get ();
 	gpointer ptr;
 	guint32 code_size = 0;
 	gpointer *tramp_data;
@@ -1366,7 +1368,7 @@ mono_create_delegate_trampoline (MonoClass *klass)
 	tramp_data [1] = mono_arch_get_delegate_invoke_impl (mono_method_signature (invoke), TRUE);
 	tramp_data [2] = mono_arch_get_delegate_invoke_impl (mono_method_signature (invoke), FALSE);
 
-	ptr = mono_create_specific_trampoline (tramp_data, MONO_TRAMPOLINE_DELEGATE, mono_domain_get (), &code_size);
+	ptr = mono_create_specific_trampoline (tramp_data, MONO_TRAMPOLINE_DELEGATE, domain, &code_size);
 	g_assert (code_size);
 
 	/* store trampoline address */

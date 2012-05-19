@@ -42,6 +42,7 @@
 #include <mono/utils/mono-string.h>
 #include <mono/utils/mono-error-internals.h>
 #include <mono/utils/mono-logger-internal.h>
+#include <mono/utils/mono-memory-model.h>
 MonoStats mono_stats;
 
 gboolean mono_print_vtable = FALSE;
@@ -2721,7 +2722,8 @@ get_implicit_generic_array_interfaces (MonoClass *class, int *num, int *is_enume
 			 */
 			eclass = mono_class_from_mono_type (class->generic_class->context.class_inst->type_argv [0]);
 			original_rank = eclass->rank;
-			eclass = eclass->element_class;
+			if (!eclass->rank)
+				eclass = eclass->element_class;
 			internal_enumerator = TRUE;
 			*is_enumerator = TRUE;
 		} else {
@@ -5170,7 +5172,6 @@ mono_class_setup_parent (MonoClass *class, MonoClass *parent)
 			class->valuetype = class->enumtype = 1;
 		}
 		/*class->enumtype = class->parent->enumtype; */
-		mono_class_setup_supertypes (class);
 	} else {
 		/* initialize com types if COM interfaces are present */
 		if (MONO_CLASS_IS_IMPORT (class))
@@ -5197,6 +5198,7 @@ void
 mono_class_setup_supertypes (MonoClass *class)
 {
 	int ms;
+	MonoClass **supertypes;
 
 	if (class->supertypes)
 		return;
@@ -5209,14 +5211,16 @@ mono_class_setup_supertypes (MonoClass *class)
 		class->idepth = 1;
 
 	ms = MAX (MONO_DEFAULT_SUPERTABLE_SIZE, class->idepth);
-	class->supertypes = mono_class_alloc0 (class, sizeof (MonoClass *) * ms);
+	supertypes = mono_class_alloc0 (class, sizeof (MonoClass *) * ms);
 
 	if (class->parent) {
-		class->supertypes [class->idepth - 1] = class;
-		memcpy (class->supertypes, class->parent->supertypes, class->parent->idepth * sizeof (gpointer));
+		supertypes [class->idepth - 1] = class;
+		memcpy (supertypes, class->parent->supertypes, class->parent->idepth * sizeof (gpointer));
 	} else {
-		class->supertypes [0] = class;
+		supertypes [0] = class;
 	}
+
+	mono_atomic_store_release (&class->supertypes, supertypes);
 }
 
 /**
@@ -7189,7 +7193,6 @@ gboolean
 mono_class_is_subclass_of (MonoClass *klass, MonoClass *klassc, 
 			   gboolean check_interfaces)
 {
-	g_assert (klassc->idepth > 0);
 	if (check_interfaces && MONO_CLASS_IS_INTERFACE (klassc) && !MONO_CLASS_IS_INTERFACE (klass)) {
 		if (MONO_CLASS_IMPLEMENTS_INTERFACE (klass, klassc->interface_id))
 			return TRUE;
@@ -7508,10 +7511,6 @@ mono_class_is_assignable_from_slow (MonoClass *target, MonoClass *candidate)
 		return TRUE;
 	if (target == mono_defaults.object_class)
 		return TRUE;
-
-	/*setup_supertypes don't mono_class_init anything */
-	mono_class_setup_supertypes (candidate);
-	mono_class_setup_supertypes (target);
 
 	if (mono_class_has_parent (candidate, target))
 		return TRUE;
@@ -8936,7 +8935,8 @@ mono_class_has_parent_and_ignore_generics (MonoClass *klass, MonoClass *parent)
 	int i;
 	klass = mono_class_get_generic_type_definition (klass);
 	parent = mono_class_get_generic_type_definition (parent);
-	
+	mono_class_setup_supertypes (klass);
+
 	for (i = 0; i < klass->idepth; ++i) {
 		if (parent == mono_class_get_generic_type_definition (klass->supertypes [i]))
 			return TRUE;

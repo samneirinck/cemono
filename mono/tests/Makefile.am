@@ -371,7 +371,11 @@ BASE_TEST_CS_SRC=		\
 	bug-575941.cs	\
 	bug-599469.cs	\
 	bug-389886-3.cs \
-	monitor.cs
+	monitor.cs	\
+	bug-1147.cs	\
+	mono-path.cs	\
+	bug-bxc-795.cs	\
+	bug-3903.cs
 
 TEST_CS_SRC_DIST=	\
 	$(BASE_TEST_CS_SRC)	\
@@ -382,6 +386,7 @@ TEST_CS_SRC_DIST=	\
 TEST_CS_SRC_GEN = \
 	runtime-invoke.gen.cs \
 	imt_big_iface_test.cs
+	
 
 if AMD64
 TEST_CS_SRC = $(BASE_TEST_CS_SRC) $(TEST_CS_SRC_GEN) async-exc-compilation.cs finally_guard.cs
@@ -816,6 +821,9 @@ generic-delegate2-lib.2.dll : generic-delegate2-lib.2.il
 generic-delegate2.2.exe : generic-delegate2.2.cs generic-delegate2-lib.2.dll
 	$(MCS) -r:generic-delegate2-lib.2.dll -out:$@ $(srcdir)/generic-delegate2.2.cs
 
+bug-3903.exe: bug-3903.cs
+	$(MCS) -sdk:2 bug-3903.cs -out:bug-3903.exe
+
 gshared: test-generic-sharing
 
 gshared-aot:
@@ -846,7 +854,8 @@ GSHARED_TESTS = \
 		generic-stack-traces.2.exe generic-stack-traces2.2.exe		\
 		bug-472600.2.exe bug-473482.2.exe bug-473999.2.exe		\
 		bug-479763.2.exe generic-xdomain.2.exe				\
-		generic-type-load-exception.2.exe bug-616463.exe
+		generic-type-load-exception.2.exe bug-616463.exe	\
+		bug-1147.exe
 
 test-generic-sharing-normal: $(GSHARED_TESTS)
 	@for fn in $+ ; do	\

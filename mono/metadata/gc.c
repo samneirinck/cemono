@@ -477,6 +477,13 @@ ves_icall_System_GC_WaitForPendingFinalizers (void)
 		/* Avoid deadlocks */
 		return;
 
+	/*
+	If the finalizer thread is not live, lets pretend no finalizers are pending since the current thread might
+	be the one responsible for starting it up.
+	*/
+	if (gc_thread == NULL)
+		return;
+
 	ResetEvent (pending_done_event);
 	mono_gc_finalize_notify ();
 	/* g_print ("Waiting for pending finalizers....\n"); */
@@ -1005,6 +1012,9 @@ finalize_domain_objects (DomainFinalizationReq *req)
 {
 	MonoDomain *domain = req->domain;
 
+	/* Process finalizers which are already in the queue */
+	mono_gc_invoke_finalizers ();
+
 #ifdef HAVE_BOEHM_GC
 	while (g_hash_table_size (domain->finalizable_objects_hash) > 0) {
 		int i;
@@ -1037,9 +1047,6 @@ finalize_domain_objects (DomainFinalizationReq *req)
 		}
 	}
 #endif
-
-	/* Process finalizers which are already in the queue */
-	mono_gc_invoke_finalizers ();
 
 	/* cleanup the reference queue */
 	reference_queue_clear_for_domain (domain);

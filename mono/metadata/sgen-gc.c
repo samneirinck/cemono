@@ -3,6 +3,7 @@
  *
  * Author:
  * 	Paolo Molaro (lupus@ximian.com)
+ *  Rodrigo Kumpera (kumpera@gmail.com)
  *
  * Copyright 2005-2011 Novell, Inc (http://www.novell.com)
  * Copyright 2011 Xamarin, Inc (http://www.xamarin.com)
@@ -25,6 +26,7 @@
  *
  * Copyright 2001-2003 Ximian, Inc
  * Copyright 2003-2010 Novell, Inc.
+ * Copyright 2011 Xamarin, Inc.
  * 
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -175,7 +177,9 @@
 	A good place to start is add_nursery_frag. The tricky thing here is
 	placing those objects atomically outside of a collection.
 
-
+ *) Allocation should use asymmetric Dekker synchronization:
+ 	http://blogs.oracle.com/dave/resource/Asymmetric-Dekker-Synchronization.txt
+	This should help weak consistency archs.
  */
 #include "config.h"
 #ifdef HAVE_SGEN_GC
@@ -217,6 +221,7 @@
 #include "utils/mono-counters.h"
 #include "utils/mono-proclib.h"
 #include "utils/mono-logger-internal.h"
+#include "utils/mono-memory-model.h"
 
 #include <mono/utils/memcheck.h>
 
@@ -333,6 +338,7 @@ static long long time_major_fragment_creation = 0;
 
 int gc_debug_level = 0;
 FILE* gc_debug_file;
+static gboolean debug_print_allowance = FALSE;
 
 /*
 void
@@ -697,9 +703,18 @@ static pthread_key_t thread_info_key;
 #define IN_CRITICAL_REGION (__thread_info__->in_critical_region)
 #endif
 
-/* we use the memory barrier only to prevent compiler reordering (a memory constraint may be enough) */
-#define ENTER_CRITICAL_REGION do {IN_CRITICAL_REGION = 1;mono_memory_barrier ();} while (0)
-#define EXIT_CRITICAL_REGION  do {IN_CRITICAL_REGION = 0;mono_memory_barrier ();} while (0)
+#ifndef DISABLE_CRITICAL_REGION
+
+/* Enter must be visible before anything is done in the critical region. */
+#define ENTER_CRITICAL_REGION do { mono_atomic_store_acquire (&IN_CRITICAL_REGION, 1); } while (0)
+
+/* Exit must make sure all critical regions stores are visible before it signal the end of the region. 
+ * We don't need to emit a full barrier since we
+ */
+#define EXIT_CRITICAL_REGION  do { mono_atomic_store_release (&IN_CRITICAL_REGION, 0); } while (0)
+
+
+#endif
 
 /*
  * FIXME: What is faster, a TLS variable pointing to a structure, or separate TLS 
@@ -763,6 +778,7 @@ static MonoVTable *array_fill_vtable;
  */
 /*heap limits*/
 static mword max_heap_size = ((mword)0)- ((mword)1);
+static mword soft_heap_limit = ((mword)0) - ((mword)1);
 static mword allocated_heap;
 
 /*Object was pinned during the current collection*/
@@ -791,10 +807,18 @@ mono_sgen_try_alloc_space (mword size, int space)
 }
 
 static void
-init_heap_size_limits (glong max_heap)
+init_heap_size_limits (glong max_heap, glong soft_limit)
 {
+	if (soft_limit)
+		soft_heap_limit = soft_limit;
+
 	if (max_heap == 0)
 		return;
+
+	if (max_heap < soft_limit) {
+		fprintf (stderr, "max-heap-size must be at least as large as soft-heap-limit.\n");
+		exit (1);
+	}
 
 	if (max_heap < nursery_size * 4) {
 		fprintf (stderr, "max-heap-size must be at least 4 times larger than nursery size.\n");
@@ -857,6 +881,7 @@ static void finalize_in_range (CopyOrMarkObjectFunc copy_func, char *start, char
 static void add_or_remove_disappearing_link (MonoObject *obj, void **link, gboolean track, int generation);
 static void null_link_in_range (CopyOrMarkObjectFunc copy_func, char *start, char *end, int generation, gboolean before_finalization, GrayQueue *queue);
 static void null_links_for_domain (MonoDomain *domain, int generation);
+static void remove_finalizers_for_domain (MonoDomain *domain, int generation);
 static gboolean search_fragment_for_size (size_t size);
 static int search_fragment_for_size_range (size_t desired_size, size_t minimum_size);
 static void clear_nursery_fragments (char *next);
@@ -1125,7 +1150,7 @@ is_xdomain_ref_allowed (gpointer *ptr, char *obj, MonoDomain *domain)
 		return TRUE;
 	if (o->vtable->klass == mono_defaults.internal_thread_class && offset == G_STRUCT_OFFSET (MonoInternalThread, current_appcontext))
 		return TRUE;
-	if (mono_class_has_parent (o->vtable->klass, mono_defaults.real_proxy_class) &&
+	if (mono_class_has_parent_fast (o->vtable->klass, mono_defaults.real_proxy_class) &&
 			offset == G_STRUCT_OFFSET (MonoRealProxy, unwrapped_server))
 		return TRUE;
 	/* Thread.cached_culture_info */
@@ -1410,7 +1435,7 @@ process_object_for_domain_clearing (char *start, MonoDomain *domain)
 		g_assert (mono_object_domain (start) == mono_get_root_domain ());
 	/* The object could be a proxy for an object in the domain
 	   we're deleting. */
-	if (mono_class_has_parent (vt->klass, mono_defaults.real_proxy_class)) {
+	if (mono_class_has_parent_fast (vt->klass, mono_defaults.real_proxy_class)) {
 		MonoObject *server = ((MonoRealProxy*)start)->unwrapped_server;
 
 		/* The server could already have been zeroed out, so
@@ -1573,15 +1598,18 @@ mono_gc_clear_domain (MonoDomain * domain)
 		check_for_xdomain_refs ();
 	}
 
-	mono_sgen_scan_area_with_callback (nursery_section->data, nursery_section->end_data,
-			(IterateObjectCallbackFunc)clear_domain_process_minor_object_callback, domain, FALSE);
-
 	/*Ephemerons and dislinks must be processed before LOS since they might end up pointing
 	to memory returned to the OS.*/
 	null_ephemerons_for_domain (domain);
 
 	for (i = GENERATION_NURSERY; i < GENERATION_MAX; ++i)
 		null_links_for_domain (domain, i);
+
+	for (i = GENERATION_NURSERY; i < GENERATION_MAX; ++i)
+		remove_finalizers_for_domain (domain, i);
+
+	mono_sgen_scan_area_with_callback (nursery_section->data, nursery_section->end_data,
+			(IterateObjectCallbackFunc)clear_domain_process_minor_object_callback, domain, FALSE);
 
 	/* We need two passes over major and large objects because
 	   freeing such objects might give their memory back to the OS
@@ -1873,7 +1901,7 @@ pin_objects_from_addresses (GCMemSection *section, void **start, void **end, voi
 		GCRootReport report;
 		report.count = 0;
 		for (idx = 0; idx < count; ++idx)
-			add_profile_gc_root (&report, definitely_pinned [idx], MONO_PROFILE_GC_ROOT_PINNING, 0);
+			add_profile_gc_root (&report, definitely_pinned [idx], MONO_PROFILE_GC_ROOT_PINNING | MONO_PROFILE_GC_ROOT_MISC, 0);
 		notify_gc_roots (&report);
 	}
 	stat_pinned_objects += count;
@@ -2503,14 +2531,12 @@ bridge_register_finalized_object (MonoObject *object)
 static void
 stw_bridge_process (void)
 {
-	g_assert (mono_sgen_need_bridge_processing ());
 	mono_sgen_bridge_processing_stw_step ();
 }
 
 static void
 bridge_process (void)
 {
-	g_assert (mono_sgen_need_bridge_processing ());
 	mono_sgen_bridge_processing_finish ();
 }
 
@@ -2540,6 +2566,15 @@ finish_gray_stack (char *start_addr, char *end_addr, int generation, GrayQueue *
 	drain_gray_stack (queue);
 	TV_GETTIME (atv);
 	DEBUG (2, fprintf (gc_debug_file, "%s generation done\n", generation_name (generation)));
+
+	/*
+	Reset bridge data, we might have lingering data from a previous collection if this is a major
+	collection trigged by minor overflow.
+
+	We must reset the gathered bridges since their original block might be evacuated due to major
+	fragmentation in the meanwhile and the bridge code should not have to deal with that.
+	*/
+	mono_sgen_bridge_reset_data ();
 
 	/*
 	 * Walk the ephemeron tables marking all values with reachable keys. This must be completely done
@@ -2572,8 +2607,13 @@ finish_gray_stack (char *start_addr, char *end_addr, int generation, GrayQueue *
 			mono_sgen_bridge_processing_register_objects (finalized_array_entries, finalized_array);
 			finalized_array_entries = 0;
 		}
-		drain_gray_stack (queue);
 	}
+
+	/*
+	Make sure we drain the gray stack before processing disappearing links and finalizers.
+	If we don't make sure it is empty we might wrongly see a live object as dead.
+	*/
+	drain_gray_stack (queue);
 
 	/*
 	We must clear weak links that don't track resurrection before processing object ready for
@@ -2969,7 +3009,7 @@ static void
 try_calculate_minor_collection_allowance (gboolean overwrite)
 {
 	int num_major_sections, num_major_sections_saved, save_target, allowance_target;
-	mword los_memory_saved;
+	mword los_memory_saved, new_major, new_heap_size;
 
 	if (overwrite)
 		g_assert (need_calculate_minor_collection_allowance);
@@ -2988,7 +3028,16 @@ try_calculate_minor_collection_allowance (gboolean overwrite)
 	num_major_sections_saved = MAX (last_collection_old_num_major_sections - num_major_sections, 0);
 	los_memory_saved = MAX (last_collection_old_los_memory_usage - last_collection_los_memory_usage, 1);
 
-	save_target = ((num_major_sections * major_collector.section_size) + los_memory_saved) / 2;
+	new_major = num_major_sections * major_collector.section_size;
+	new_heap_size = new_major + last_collection_los_memory_usage;
+
+	/*
+	 * FIXME: Why is save_target half the major memory plus half the
+	 * LOS memory saved?  Shouldn't it be half the major memory
+	 * saved plus half the LOS memory saved?  Or half the whole heap
+	 * size?
+	 */
+	save_target = (new_major + los_memory_saved) / 2;
 
 	/*
 	 * We aim to allow the allocation of as many sections as is
@@ -3008,6 +3057,23 @@ try_calculate_minor_collection_allowance (gboolean overwrite)
 	allowance_target = (mword)((double)save_target * (double)(minor_collection_sections_alloced * major_collector.section_size + last_collection_los_memory_alloced) / (double)(num_major_sections_saved * major_collector.section_size + los_memory_saved));
 
 	minor_collection_allowance = MAX (MIN (allowance_target, num_major_sections * major_collector.section_size + los_memory_usage), MIN_MINOR_COLLECTION_ALLOWANCE);
+
+	if (new_heap_size + minor_collection_allowance > soft_heap_limit) {
+		if (new_heap_size > soft_heap_limit)
+			minor_collection_allowance = MIN_MINOR_COLLECTION_ALLOWANCE;
+		else
+			minor_collection_allowance = MAX (soft_heap_limit - new_heap_size, MIN_MINOR_COLLECTION_ALLOWANCE);
+	}
+
+	if (debug_print_allowance) {
+		mword old_major = last_collection_old_num_major_sections * major_collector.section_size;
+
+		fprintf (gc_debug_file, "Before collection: %ld bytes (%ld major, %ld LOS)\n",
+				old_major + last_collection_old_los_memory_usage, old_major, last_collection_old_los_memory_usage);
+		fprintf (gc_debug_file, "After collection: %ld bytes (%ld major, %ld LOS)\n",
+				new_heap_size, new_major, last_collection_los_memory_usage);
+		fprintf (gc_debug_file, "Allowance: %ld bytes\n", minor_collection_allowance);
+	}
 
 	if (major_collector.have_computed_minor_collection_allowance)
 		major_collector.have_computed_minor_collection_allowance ();
@@ -3303,6 +3369,9 @@ major_do_collection (const char *reason)
 	DEBUG (6, fprintf (gc_debug_file, "Pinning from large objects\n"));
 	for (bigobj = los_object_list; bigobj; bigobj = bigobj->next) {
 		int dummy;
+		gboolean profile_roots = mono_profiler_get_events () & MONO_PROFILE_GC_ROOTS;
+		GCRootReport report;
+		report.count = 0;
 		if (mono_sgen_find_optimized_pin_queue_area (bigobj->data, (char*)bigobj->data + bigobj->size, &dummy)) {
 			pin_object (bigobj->data);
 			/* FIXME: only enqueue if object has references */
@@ -3310,7 +3379,12 @@ major_do_collection (const char *reason)
 			if (heap_dump_file)
 				mono_sgen_pin_stats_register_object ((char*) bigobj->data, safe_object_get_size ((MonoObject*) bigobj->data));
 			DEBUG (6, fprintf (gc_debug_file, "Marked large object %p (%s) size: %lu from roots\n", bigobj->data, safe_name (bigobj->data), (unsigned long)bigobj->size));
+			
+			if (profile_roots)
+				add_profile_gc_root (&report, bigobj->data, MONO_PROFILE_GC_ROOT_PINNING | MONO_PROFILE_GC_ROOT_MISC, 0);
 		}
+		if (profile_roots)
+			notify_gc_roots (&report);
 	}
 	/* second pass for the sections */
 	mono_sgen_pin_objects_in_section (nursery_section, WORKERS_DISTRIBUTE_GRAY_QUEUE);
@@ -3769,7 +3843,7 @@ mono_gc_alloc_obj_nolock (MonoVTable *vtable, size_t size)
 			DEBUG (6, fprintf (gc_debug_file, "Allocated object %p, vtable: %p (%s), size: %zd\n", p, vtable, vtable->klass->name, size));
 			binary_protocol_alloc (p , vtable, size);
 			g_assert (*p == NULL);
-			*p = vtable;
+			mono_atomic_store_seq (p, vtable);
 
 			g_assert (TLAB_NEXT == new_next);
 
@@ -3885,7 +3959,7 @@ mono_gc_alloc_obj_nolock (MonoVTable *vtable, size_t size)
 	if (G_LIKELY (p)) {
 		DEBUG (6, fprintf (gc_debug_file, "Allocated object %p, vtable: %p (%s), size: %zd\n", p, vtable, vtable->klass->name, size));
 		binary_protocol_alloc (p, vtable, size);
-		*p = vtable;
+		mono_atomic_store_seq (p, vtable);
 	}
 
 	return p;
@@ -3923,9 +3997,7 @@ mono_gc_try_alloc_obj_nolock (MonoVTable *vtable, size_t size)
 			DEBUG (6, fprintf (gc_debug_file, "Allocated object %p, vtable: %p (%s), size: %zd\n", p, vtable, vtable->klass->name, size));
 			binary_protocol_alloc (p, vtable, size);
 			g_assert (*p == NULL);
-			*p = vtable;
-
-			g_assert (TLAB_NEXT == new_next);
+			mono_atomic_store_seq (p, vtable);
 
 			return p;
 		}
@@ -3964,6 +4036,7 @@ mono_gc_alloc_vector (MonoVTable *vtable, size_t size, uintptr_t max_length)
 	ENTER_CRITICAL_REGION;
 	arr = mono_gc_try_alloc_obj_nolock (vtable, size);
 	if (arr) {
+		/*This doesn't require fencing since EXIT_CRITICAL_REGION already does it for us*/
 		arr->max_length = max_length;
 		EXIT_CRITICAL_REGION;
 		return arr;
@@ -4019,6 +4092,7 @@ mono_gc_alloc_string (MonoVTable *vtable, size_t size, gint32 len)
 	ENTER_CRITICAL_REGION;
 	str = mono_gc_try_alloc_obj_nolock (vtable, size);
 	if (str) {
+		/*This doesn't require fencing since EXIT_CRITICAL_REGION already does it for us*/
 		str->length = len;
 		EXIT_CRITICAL_REGION;
 		return str;
@@ -4062,7 +4136,7 @@ mono_gc_alloc_pinned_obj (MonoVTable *vtable, size_t size)
 	if (G_LIKELY (p)) {
 		DEBUG (6, fprintf (gc_debug_file, "Allocated pinned object %p, vtable: %p (%s), size: %zd\n", p, vtable, vtable->klass->name, size));
 		binary_protocol_alloc_pinned (p, vtable, size);
-		*p = vtable;
+		mono_atomic_store_seq (p, vtable);
 	}
 	UNLOCK_GC;
 	return p;
@@ -4075,7 +4149,7 @@ mono_gc_alloc_mature (MonoVTable *vtable)
 	size_t size = ALIGN_UP (vtable->klass->instance_size);
 	LOCK_GC;
 	res = alloc_degraded (vtable, size);
-	*res = vtable;
+	mono_atomic_store_seq (res, vtable);
 	UNLOCK_GC;
 	if (G_UNLIKELY (vtable->klass->has_finalize))
 		mono_object_register_finalizer ((MonoObject*)res);
@@ -4115,7 +4189,7 @@ is_critical_finalizer (FinalizeEntry *entry)
 	obj = finalize_entry_get_object (entry);
 	class = ((MonoVTable*)LOAD_VTABLE (obj))->klass;
 
-	return mono_class_has_parent (class, mono_defaults.critical_finalizer_object);
+	return mono_class_has_parent_fast (class, mono_defaults.critical_finalizer_object);
 }
 
 static void
@@ -4649,6 +4723,40 @@ null_links_for_domain (MonoDomain *domain, int generation)
 	}
 }
 
+static void
+remove_finalizers_for_domain (MonoDomain *domain, int generation)
+{
+	int i;
+	FinalizeEntryHashTable *hash_table = get_finalize_entry_hash_table (generation);
+	mword finalizable_hash_size = hash_table->size;
+	FinalizeEntry **table = hash_table->table;
+
+	for (i = 0; i < finalizable_hash_size; ++i) {
+		FinalizeEntry *entry, *prev = NULL;
+
+		for (entry = table [i]; entry;) {
+			MonoObject *object = finalize_entry_get_object (entry);
+			if (mono_object_domain (object) == domain) {
+				FinalizeEntry *next = entry->next;
+
+				if (prev)
+					prev->next = next;
+				else
+					table [i] = next;
+				hash_table->num_registered--;
+
+				DEBUG (5, fprintf (gc_debug_file, "Collecting object for finalization: %p (%s) (%d/%d)\n", object, safe_name (object), num_ready_finalizers, hash_table->num_registered));
+				mono_sgen_free_internal (entry, INTERNAL_MEM_FINALIZE_ENTRY);
+				entry = next;
+				continue;
+			}
+			prev = entry;
+			entry = entry->next;
+		}
+	}
+}
+
+
 /* LOCKING: requires that the GC lock is held */
 static int
 finalizers_for_domain (MonoDomain *domain, MonoObject **out_array, int out_size,
@@ -5174,7 +5282,7 @@ mono_sgen_wait_for_suspend_ack (int count)
 	for (i = 0; i < count; ++i) {
 		while ((result = MONO_SEM_WAIT (suspend_ack_semaphore_ptr)) != 0) {
 			if (errno != EINTR) {
-				g_error ("sem_wait ()");
+				g_error ("MONO_SEM_WAIT FAILED with %d errno %d (%s)", result, errno, strerror (errno));
 			}
 		}
 	}
@@ -5195,7 +5303,7 @@ restart_threads_until_none_in_managed_allocator (void)
 			for (info = thread_table [i]; info; info = info->next) {
 				gboolean result;
 
-				if (info->skip)
+				if (info->skip || info->gc_disabled)
 					continue;
 				if (!info->stack_start || info->in_critical_region ||
 						is_ip_in_managed_allocator (info->stopped_domain, info->stopped_ip)) {
@@ -5363,7 +5471,7 @@ static unsigned long max_pause_usec = 0;
 static int
 stop_world (int generation)
 {
-	int count;
+	int count, dead;
 
 	/*XXX this is the right stop, thought might not be the nicest place to put it*/
 	mono_sgen_process_togglerefs ();
@@ -5377,8 +5485,11 @@ stop_world (int generation)
 	DEBUG (3, fprintf (gc_debug_file, "stopping world n %d from %p %p\n", global_stop_count, mono_sgen_thread_info_lookup (ARCH_GET_THREAD ()), (gpointer)ARCH_GET_THREAD ()));
 	TV_GETTIME (stop_world_time);
 	count = mono_sgen_thread_handshake (suspend_signal_num);
-	count -= restart_threads_until_none_in_managed_allocator ();
-	g_assert (count >= 0);
+	dead = restart_threads_until_none_in_managed_allocator ();
+	if (count < dead)
+		g_error ("More threads have died (%d) that been initialy suspended %d", dead, count);
+	count -= dead;
+
 	DEBUG (3, fprintf (gc_debug_file, "world stopped %d thread(s)\n", count));
 	mono_profiler_gc_event (MONO_GC_EVENT_POST_STOP_WORLD, generation);
 
@@ -5502,6 +5613,10 @@ scan_thread_data (void *start_nursery, void *end_nursery, gboolean precise)
 		for (info = thread_table [i]; info; info = info->next) {
 			if (info->skip) {
 				DEBUG (3, fprintf (gc_debug_file, "Skipping dead thread %p, range: %p-%p, size: %td\n", info, info->stack_start, info->stack_end, (char*)info->stack_end - (char*)info->stack_start));
+				continue;
+			}
+			if (info->gc_disabled) {
+				DEBUG (3, fprintf (gc_debug_file, "GC disabled for thread %p, range: %p-%p, size: %td\n", info, info->stack_start, info->stack_end, (char*)info->stack_end - (char*)info->stack_start));
 				continue;
 			}
 			DEBUG (3, fprintf (gc_debug_file, "Scanning thread %p, range: %p-%p, size: %td, pinned=%d\n", info, info->stack_start, info->stack_end, (char*)info->stack_end - (char*)info->stack_start, next_pin_slot));
@@ -6702,7 +6817,7 @@ find_in_remset_loc (mword *p, char *addr, gboolean *found)
 		return p + 1;
 	case REMSET_VTYPE:
 		ptr = (void**)(*p & ~REMSET_TYPE_MASK);
-		desc = ((MonoClass*)p [1])->gc_descr;
+		desc = (mword)((MonoClass*)p [1])->gc_descr;
 		count = p [2];
 
 		switch (desc & 0x7) {
@@ -7219,6 +7334,8 @@ mono_gc_base_init (void)
 	struct sigaction sinfo;
 	glong max_heap = 0;
 
+	glong soft_limit = 0;
+
 	/* the gc_initialized guard seems to imply this method is
 	   idempotent, but LOCK_INIT(gc_mutex) might not be.  It's
 	   defined in sgen-gc.h as nothing, so there's no danger at
@@ -7321,6 +7438,19 @@ mono_gc_base_init (void)
 				}
 				continue;
 			}
+			if (g_str_has_prefix (opt, "soft-heap-limit=")) {
+				opt = strchr (opt, '=') + 1;
+				if (*opt && mono_gc_parse_environment_string_extract_number (opt, &soft_limit)) {
+					if (soft_limit <= 0) {
+						fprintf (stderr, "soft-heap-limit must be positive.\n");
+						exit (1);
+					}
+				} else {
+					fprintf (stderr, "soft-heap-limit must be an integer.\n");
+					exit (1);
+				}
+				continue;
+			}
 			if (g_str_has_prefix (opt, "stack-mark=")) {
 				opt = strchr (opt, '=') + 1;
 				if (!strcmp (opt, "precise")) {
@@ -7359,6 +7489,7 @@ mono_gc_base_init (void)
 			if (!(major_collector.handle_gc_param && major_collector.handle_gc_param (opt))) {
 				fprintf (stderr, "MONO_GC_PARAMS must be a comma-delimited list of one or more of the following:\n");
 				fprintf (stderr, "  max-heap-size=N (where N is an integer, possibly with a k, m or a g suffix)\n");
+				fprintf (stderr, "  soft-heap-limit=n (where N is an integer, possibly with a k, m or a g suffix)\n");
 				fprintf (stderr, "  nursery-size=N (where N is an integer, possibly with a k, m or a g suffix)\n");
 				fprintf (stderr, "  major=COLLECTOR (where COLLECTOR is `marksweep', `marksweep-par' or `copying')\n");
 				fprintf (stderr, "  wbarrier=WBARRIER (where WBARRIER is `remset' or `cardtable')\n");
@@ -7376,7 +7507,7 @@ mono_gc_base_init (void)
 
 	nursery_size = DEFAULT_NURSERY_SIZE;
 	minor_collection_allowance = MIN_MINOR_COLLECTION_ALLOWANCE;
-	init_heap_size_limits (max_heap);
+	init_heap_size_limits (max_heap, soft_limit);
 
 	alloc_nursery ();
 
@@ -7396,6 +7527,8 @@ mono_gc_base_init (void)
 						gc_debug_file = stderr;
 					g_free (rf);
 				}
+			} else if (!strcmp (opt, "print-allowance")) {
+				debug_print_allowance = TRUE;
 			} else if (!strcmp (opt, "collect-before-allocs")) {
 				collect_before_allocs = 1;
 			} else if (g_str_has_prefix (opt, "collect-before-allocs=")) {
@@ -8131,6 +8264,24 @@ void
 mono_sgen_gc_unlock (void)
 {
 	UNLOCK_GC;
+}
+
+
+void mono_gc_set_skip_thread (gboolean skip)
+{
+	SgenThreadInfo *info = mono_sgen_thread_info_lookup (ARCH_GET_THREAD ());
+
+	LOCK_GC;
+	info->gc_disabled = skip;
+	UNLOCK_GC;
+}
+
+guint
+mono_gc_get_vtable_bits (MonoClass *class)
+{
+	if (mono_sgen_need_bridge_processing () && mono_sgen_is_bridge_class (class))
+		return SGEN_GC_BIT_BRIDGE_OBJECT;
+	return 0;
 }
 
 #endif /* HAVE_SGEN_GC */

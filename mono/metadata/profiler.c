@@ -1146,20 +1146,13 @@ mono_profiler_load (const char *desc)
 		} else {
 			mname = g_strdup (desc);
 		}
-		/*if (!load_embedded_profiler (desc, mname)) {
+		if (!load_embedded_profiler (desc, mname)) {
 			libname = g_strdup_printf ("mono-profiler-%s", mname);
 			if (!load_profiler_from_directory (NULL, libname, desc))
 				if (!load_profiler_from_directory (MONO_ASSEMBLIES, libname, desc))
 					g_warning ("The '%s' profiler wasn't found in the main executable nor could it be loaded from '%s'.", mname, libname);
 			g_free (libname);
-		}*/
-		libname = g_strdup_printf ("mono-profiler-%s", mname);
-		if (!load_profiler_from_directory (NULL, libname, desc))
-			if (!load_profiler_from_directory (mono_assembly_getrootdir (), libname, desc))
-				g_warning ("Error loading profiler module '%s'", libname);
-			
-		g_free (libname);
-
+		}
 		g_free (mname);
 	}
 	g_free (cdesc);

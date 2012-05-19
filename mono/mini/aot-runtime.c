@@ -1098,7 +1098,7 @@ load_aot_module (MonoAssembly *assembly, gpointer user_data)
 	}
 
 	if (!sofile && !globals) {
-		if (mono_aot_only) {
+		if (mono_aot_only && assembly->image->tables [MONO_TABLE_METHOD].rows) {
 			fprintf (stderr, "Failed to load AOT module '%s' in aot-only mode.\n", aot_name);
 			exit (1);
 		}
@@ -1456,7 +1456,7 @@ mono_aot_get_method_from_vt_slot (MonoDomain *domain, MonoVTable *vtable, int sl
 	if (ref.no_aot_trampoline)
 		return NULL;
 
-	if (mono_metadata_token_index (ref.token) == 0)
+	if (mono_metadata_token_index (ref.token) == 0 || mono_metadata_token_table (ref.token) != MONO_TABLE_METHOD)
 		return NULL;
 
 	return mono_aot_get_method_from_token (domain, ref.image, ref.token);

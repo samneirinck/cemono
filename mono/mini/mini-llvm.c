@@ -325,7 +325,7 @@ type_to_llvm_type (EmitContext *ctx, MonoType *t)
 	case MONO_TYPE_SZARRAY:
 	case MONO_TYPE_STRING:
 	case MONO_TYPE_PTR:
-		return LLVMPointerType (IntPtrType (), 0);
+		return IntPtrType ();
 	case MONO_TYPE_VAR:
 	case MONO_TYPE_MVAR:
 		/* Because of generic sharing */
@@ -4933,7 +4933,7 @@ add_intrinsics (LLVMModuleRef module)
 
 	/* SSE intrinsics */
 	{
-		LLVMTypeRef ret_type, arg_types [2];
+		LLVMTypeRef ret_type, arg_types [16];
 
 		/* Binary ops */
 		ret_type = type_to_simd_type (MONO_TYPE_I4);

@@ -3,7 +3,7 @@
 
 #ifdef TARGET_X86
 #include "mini-x86.h"
-#elif defined(TARGET_AMD64) || defined(WIN64)
+#elif defined(TARGET_AMD64)
 #include "mini-amd64.h"
 #elif defined(TARGET_POWERPC)
 #include "mini-ppc.h"

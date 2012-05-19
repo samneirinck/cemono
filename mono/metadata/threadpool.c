@@ -397,8 +397,14 @@ threadpool_jobs_inc (MonoObject *obj)
 static gboolean
 threadpool_jobs_dec (MonoObject *obj)
 {
-	MonoDomain *domain = obj->vtable->domain;
-	int remaining_jobs = InterlockedDecrement (&domain->threadpool_jobs);
+	MonoDomain *domain;
+	int remaining_jobs;
+
+	if (obj == NULL)
+		return FALSE;
+
+	domain = obj->vtable->domain;
+	remaining_jobs = InterlockedDecrement (&domain->threadpool_jobs);
 	if (remaining_jobs == 0 && domain->cleanup_semaphore) {
 		ReleaseSemaphore (domain->cleanup_semaphore, 1, NULL);
 		return TRUE;
@@ -1367,7 +1373,7 @@ async_invoke_thread (gpointer data)
 
 	mono_profiler_thread_start (thread->tid);
 	name = (tp->is_io) ? "IO Threadpool worker" : "Threadpool worker";
-	ves_icall_System_Threading_Thread_SetName_internal (thread, mono_string_new (mono_domain_get (), name));
+	mono_thread_set_name_internal (thread, mono_string_new (mono_domain_get (), name), FALSE);
 
 	if (tp_start_func)
 		tp_start_func (tp_hooks_user_data);
@@ -1479,6 +1485,17 @@ async_invoke_thread (gpointer data)
 			gboolean res;
 
 			InterlockedIncrement (&tp->waiting);
+
+			// Another thread may have added a job into its wsq since the last call to dequeue_or_steal
+			// Check all the queues again before entering the wait loop
+			dequeue_or_steal (tp, &data, wsq);
+			if (data) {
+				InterlockedDecrement (&tp->waiting);
+				break;
+			}
+
+			mono_gc_set_skip_thread (TRUE);
+
 #if defined(__OpenBSD__)
 			while (mono_cq_count (tp->queue) == 0 && (res = mono_sem_wait (&tp->new_job, TRUE)) == -1) {// && errno == EINTR) {
 #else
@@ -1490,6 +1507,9 @@ async_invoke_thread (gpointer data)
 					mono_thread_interruption_checkpoint ();
 			}
 			InterlockedDecrement (&tp->waiting);
+
+			mono_gc_set_skip_thread (FALSE);
+
 			if (mono_runtime_is_shutting_down ())
 				break;
 			must_die = should_i_die (tp);

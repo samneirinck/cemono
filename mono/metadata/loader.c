@@ -329,19 +329,18 @@ mono_loader_error_prepare_exception (MonoLoaderError *error)
 	}
 		
 	case MONO_EXCEPTION_MISSING_FIELD: {
-		char *cnspace = g_strdup ((error->klass && *error->klass->name_space) ? error->klass->name_space : "");
-		char *cname = g_strdup (error->klass ? error->klass->name : "");
+		char *class_name;
 		char *cmembername = g_strdup (error->member_name);
-                char *class_name;
+		if (error->klass)
+			class_name = mono_type_get_full_name (error->klass);
+		else
+			class_name = g_strdup ("");
 
 		mono_loader_clear_error ();
-		class_name = g_strdup_printf ("%s%s%s", cnspace, cnspace ? "." : "", cname);
 		
 		ex = mono_get_exception_missing_field (class_name, cmembername);
 		g_free (class_name);
-		g_free (cname);
 		g_free (cmembername);
-		g_free (cnspace);
 		break;
         }
 	
@@ -1284,6 +1283,11 @@ mono_lookup_pinvoke_call (MonoMethod *method, const char **exc_class, const char
 
 	g_assert (method->flags & METHOD_ATTRIBUTE_PINVOKE_IMPL);
 
+	if (exc_class) {
+		*exc_class = NULL;
+		*exc_arg = NULL;
+	}
+
 	if (piinfo->addr)
 		return piinfo->addr;
 
@@ -1316,11 +1320,6 @@ mono_lookup_pinvoke_call (MonoMethod *method, const char **exc_class, const char
 
 	mono_trace (G_LOG_LEVEL_INFO, MONO_TRACE_DLLIMPORT,
 			"DllImport attempting to load: '%s'.", new_scope);
-
-	if (exc_class) {
-		*exc_class = NULL;
-		*exc_arg = NULL;
-	}
 
 	/* we allow a special name to dlopen from the running process namespace */
 	if (strcmp (new_scope, "__Internal") == 0)
@@ -1364,6 +1363,18 @@ mono_lookup_pinvoke_call (MonoMethod *method, const char **exc_class, const char
 #ifndef TARGET_WIN32
 			break;
 #endif
+		}
+
+		if (!module && g_path_is_absolute (file_name)) {
+			mono_trace (G_LOG_LEVEL_INFO, MONO_TRACE_DLLIMPORT,
+					"DllImport loading: '%s'.", file_name);
+			module = cached_module_load (file_name, MONO_DL_LAZY, &error_msg);
+			if (!module) {
+				mono_trace (G_LOG_LEVEL_INFO, MONO_TRACE_DLLIMPORT,
+						"DllImport error loading library '%s'.",
+						error_msg);
+				g_free (error_msg);
+			}
 		}
 
 		if (!module) {

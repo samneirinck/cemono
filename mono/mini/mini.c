@@ -1142,7 +1142,7 @@ mono_compile_create_var_for_vreg (MonoCompile *cfg, MonoType *type, int opcode, 
 			mono_mark_vreg_as_mp (cfg, vreg);
 		} else {
 			MonoType *t = mini_type_get_underlying_type (NULL, type);
-			if ((MONO_TYPE_ISSTRUCT (t) && inst->klass->has_references) || MONO_TYPE_IS_REFERENCE (t)) {
+			if ((MONO_TYPE_ISSTRUCT (t) && inst->klass->has_references) || mini_type_is_reference (cfg, t)) {
 				inst->flags |= MONO_INST_GC_TRACK;
 				mono_mark_vreg_as_ref (cfg, vreg);
 			}
@@ -2581,10 +2581,17 @@ mono_set_lmf_addr (gpointer lmf_addr)
 #endif
 }
 
-/* Called by native->managed wrappers */
-void
+/*
+ * mono_jit_thread_attach:
+ *
+ * Called by native->managed wrappers. Returns the original domain which needs to be
+ * restored, or NULL.
+ */
+MonoDomain*
 mono_jit_thread_attach (MonoDomain *domain)
 {
+	MonoDomain *orig;
+
 	if (!domain)
 		/* 
 		 * Happens when called from AOTed code which is only used in the root
@@ -2604,9 +2611,20 @@ mono_jit_thread_attach (MonoDomain *domain)
 		mono_thread_set_state (mono_thread_internal_current (), ThreadState_Background);
 	}
 #endif
-	if (mono_domain_get () != domain)
-		mono_domain_set (domain, TRUE);
+	orig = mono_domain_get ();
+	if (orig != domain)
+ 		mono_domain_set (domain, TRUE);
+
+	return orig != domain ? orig : NULL;
 }	
+
+/* Called by native->managed wrappers */
+void
+mono_jit_set_domain (MonoDomain *domain)
+{
+	if (domain)
+		mono_domain_set (domain, TRUE);
+}
 
 /**
  * mono_thread_abort:
@@ -2790,6 +2808,12 @@ MonoInst*
 mono_get_thread_intrinsic (MonoCompile* cfg)
 {
 	return mono_create_tls_get (cfg, mono_thread_get_tls_offset ());
+}
+
+MonoInst*
+mono_get_lmf_intrinsic (MonoCompile* cfg)
+{
+	return mono_create_tls_get (cfg, mono_get_lmf_tls_offset ());
 }
 
 void
@@ -3007,7 +3031,7 @@ mono_resolve_patch_target (MonoMethod *method, MonoDomain *domain, guint8 *code,
 			target = code;
 		} else {
 			/* get the trampoline to the method from the domain */
-			target = mono_create_jit_trampoline (patch_info->data.method);
+			target = mono_create_jit_trampoline_in_domain (domain, patch_info->data.method);
 		}
 		break;
 	case MONO_PATCH_INFO_SWITCH: {
@@ -3077,7 +3101,7 @@ mono_resolve_patch_target (MonoMethod *method, MonoDomain *domain, guint8 *code,
 		break;
 	}
 	case MONO_PATCH_INFO_DELEGATE_TRAMPOLINE:
-		target = mono_create_delegate_trampoline (patch_info->data.klass);
+		target = mono_create_delegate_trampoline (domain, patch_info->data.klass);
 		break;
 	case MONO_PATCH_INFO_SFLDA: {
 		MonoVTable *vtable = mono_class_vtable (domain, patch_info->data.field->parent);
@@ -5142,7 +5166,7 @@ mono_jit_compile_method_inner (MonoMethod *method, MonoDomain *target_domain, in
 				return mono_get_addr_from_ftnptr ((gpointer)mono_icall_get_wrapper_full (mi, TRUE));
 			} else if (*name == 'I' && (strcmp (name, "Invoke") == 0)) {
 #ifdef MONO_ARCH_HAVE_CREATE_DELEGATE_TRAMPOLINE
-				return mono_create_delegate_trampoline (method->klass);
+				return mono_create_delegate_trampoline (target_domain, method->klass);
 #else
 				nm = mono_marshal_get_delegate_invoke (method, NULL);
 				return mono_get_addr_from_ftnptr (mono_compile_method (nm));
@@ -5376,6 +5400,13 @@ mono_jit_compile_method_with_opt (MonoMethod *method, guint32 opt, MonoException
 		/* Must be domain neutral since there is only one copy */
 		opt |= MONO_OPT_SHARED;
 	}
+
+	if (method->dynamic)
+		opt &= ~MONO_OPT_SHARED;
+
+	/* These methods can become invalid when a domain is unloaded */
+	if (method->klass->image != mono_get_corlib () || method->is_inflated)
+		opt &= ~MONO_OPT_SHARED;
 
 	if (opt & MONO_OPT_SHARED)
 		target_domain = mono_get_root_domain ();
@@ -6398,7 +6429,8 @@ mini_init (const char *filename, const char *runtime_version)
 	register_icall (mono_trace_enter_method, "mono_trace_enter_method", NULL, TRUE);
 	register_icall (mono_trace_leave_method, "mono_trace_leave_method", NULL, TRUE);
 	register_icall (mono_get_lmf_addr, "mono_get_lmf_addr", "ptr", TRUE);
-	register_icall (mono_jit_thread_attach, "mono_jit_thread_attach", "void", TRUE);
+	register_icall (mono_jit_thread_attach, "mono_jit_thread_attach", "ptr ptr", TRUE);
+	register_icall (mono_jit_set_domain, "mono_jit_set_domain", "void ptr", TRUE);
 	register_icall (mono_domain_get, "mono_domain_get", "ptr", TRUE);
 
 	register_icall (mono_get_throw_exception (), "mono_arch_throw_exception", "void object", TRUE);

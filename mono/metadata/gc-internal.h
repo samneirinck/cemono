@@ -319,6 +319,8 @@ guint8* mono_gc_get_card_table (int *shift_bits, gpointer *card_mask) MONO_INTER
 
 void* mono_gc_get_nursery (int *shift_bits, size_t *size) MONO_INTERNAL;
 
+void mono_gc_set_skip_thread (gboolean skip) MONO_INTERNAL;
+
 /*
  * Return whenever GC is disabled
  */
@@ -362,5 +364,6 @@ void mono_gc_reference_queue_free (MonoReferenceQueue *queue) MONO_INTERNAL;
 gboolean mono_gc_reference_queue_add (MonoReferenceQueue *queue, MonoObject *obj, void *user_data) MONO_INTERNAL;
 
 
+guint mono_gc_get_vtable_bits (MonoClass *class) MONO_INTERNAL;
 #endif /* __MONO_METADATA_GC_INTERNAL_H__ */
 

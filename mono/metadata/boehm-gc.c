@@ -1124,6 +1124,15 @@ mono_gc_get_nursery (int *shift_bits, size_t *size)
 	return NULL;
 }
 
+void
+mono_gc_set_stack_end (void *stack_end)
+{
+}
+
+void mono_gc_set_skip_thread (gboolean value)
+{
+}
+
 /*
  * These will call the redefined versions in libgc.
  */
@@ -1149,5 +1158,11 @@ mono_gc_pthread_detach (pthread_t thread)
 }
 
 #endif
+
+guint
+mono_gc_get_vtable_bits (MonoClass *class)
+{
+	return 0;
+}
 
 #endif /* no Boehm GC */

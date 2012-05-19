@@ -445,6 +445,7 @@ int mono_class_interface_match (const uint8_t *bitmap, int id) MONO_INTERNAL;
 
 #define MONO_CLASS_IMPLEMENTS_INTERFACE(k,uiid) (((uiid) <= (k)->max_interface_id) && mono_class_interface_match ((k)->interface_bitmap, (uiid)))
 
+#define MONO_VTABLE_AVAILABLE_GC_BITS 4
 
 int mono_class_interface_offset (MonoClass *klass, MonoClass *itf);
 int mono_class_interface_offset_with_variance (MonoClass *klass, MonoClass *itf, gboolean *non_exact_match) MONO_INTERNAL;
@@ -468,6 +469,8 @@ struct MonoVTable {
 	guint remote          : 1; /* class is remotely activated */
 	guint initialized     : 1; /* cctor has been run */
 	guint init_failed     : 1; /* cctor execution failed */
+	guint gc_bits         : MONO_VTABLE_AVAILABLE_GC_BITS; /* Those bits are reserved for the usaged of the GC */
+
 	guint32     imt_collisions_bitmap;
 	MonoRuntimeGenericContext *runtime_generic_context;
 	/* do not add any fields after vtable, the structure is dynamically extended */
@@ -669,7 +672,32 @@ typedef struct {
 	char *msg; /* If kind == BAD_IMAGE */
 } MonoLoaderError;
 
-#define mono_class_has_parent(klass,parent) (((klass)->idepth >= (parent)->idepth) && ((klass)->supertypes [(parent)->idepth - 1] == (parent)))
+void
+mono_class_setup_supertypes (MonoClass *klass) MONO_INTERNAL;
+
+/* WARNING
+ * Only call this function if you can ensure both @klass and @parent
+ * have supertype information initialized.
+ * This can be accomplished by mono_class_setup_supertypes or mono_class_init.
+ * If unsure, use mono_class_has_parent.
+ */
+static inline gboolean
+mono_class_has_parent_fast (MonoClass *klass, MonoClass *parent)
+{
+	return (klass->idepth >= parent->idepth) && (klass->supertypes [parent->idepth - 1] == parent);
+}
+
+static inline gboolean
+mono_class_has_parent (MonoClass *klass, MonoClass *parent)
+{
+	if (G_UNLIKELY (!klass->supertypes))
+		mono_class_setup_supertypes (klass);
+
+	if (G_UNLIKELY (!parent->supertypes))
+		mono_class_setup_supertypes (parent);
+
+	return mono_class_has_parent_fast (klass, parent);
+}
 
 typedef struct {
 	MonoVTable *default_vtable;
@@ -851,7 +879,7 @@ extern MonoStats mono_stats MONO_INTERNAL;
 typedef gpointer (*MonoTrampoline)       (MonoMethod *method);
 typedef gpointer (*MonoJumpTrampoline)       (MonoDomain *domain, MonoMethod *method, gboolean add_sync_wrapper);
 typedef gpointer (*MonoRemotingTrampoline)       (MonoDomain *domain, MonoMethod *method, MonoRemotingTarget target);
-typedef gpointer (*MonoDelegateTrampoline)       (MonoClass *klass);
+typedef gpointer (*MonoDelegateTrampoline)       (MonoDomain *domain, MonoClass *klass);
 
 typedef gpointer (*MonoLookupDynamicToken) (MonoImage *image, guint32 token, gboolean valid_token, MonoClass **handle_class, MonoGenericContext *context);
 
@@ -885,9 +913,6 @@ mono_class_setup_mono_type (MonoClass *klass) MONO_INTERNAL;
 
 void
 mono_class_setup_parent    (MonoClass *klass, MonoClass *parent) MONO_INTERNAL;
-
-void
-mono_class_setup_supertypes (MonoClass *klass) MONO_INTERNAL;
 
 MonoMethod*
 mono_class_get_method_by_index (MonoClass *class, int index) MONO_INTERNAL;

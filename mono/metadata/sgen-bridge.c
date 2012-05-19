@@ -279,6 +279,9 @@ static int current_time;
 void
 mono_gc_register_bridge_callbacks (MonoGCBridgeCallbacks *callbacks)
 {
+	if (callbacks->bridge_version != MONO_SGEN_BRIDGE_VERSION)
+		g_error ("Invalid bridge callback version. Expected %d but got %d\n", MONO_SGEN_BRIDGE_VERSION, callbacks->bridge_version);
+
 	bridge_callbacks = *callbacks;
 }
 
@@ -286,6 +289,12 @@ gboolean
 mono_sgen_need_bridge_processing (void)
 {
 	return bridge_callbacks.cross_references != NULL;
+}
+
+gboolean
+mono_sgen_is_bridge_class (MonoClass *class)
+{
+	return bridge_callbacks.is_bridge_class (class);
 }
 
 static HashEntry**
@@ -416,13 +425,12 @@ free_data (void)
 	//g_print ("total srcs %d - max %d\n", total_srcs, max_srcs);
 }
 
-static gboolean
+static HashEntry*
 register_bridge_object (MonoObject *obj)
 {
-	gboolean existing;
-	HashEntry *entry = get_hash_entry (obj, &existing);
+	HashEntry *entry = get_hash_entry (obj, NULL);
 	entry->is_bridge = TRUE;
-	return !existing;
+	return entry;
 }
 
 static void
@@ -574,6 +582,8 @@ compare_hash_entries (const void *ep1, const void *ep2)
 gboolean
 mono_sgen_is_bridge_object (MonoObject *obj)
 {
+	if ((obj->vtable->gc_bits & SGEN_GC_BIT_BRIDGE_OBJECT) != SGEN_GC_BIT_BRIDGE_OBJECT)
+		return FALSE;
 	return bridge_callbacks.is_bridge_object (obj);
 }
 
@@ -594,18 +604,17 @@ mono_sgen_bridge_processing_register_objects (int num_objs, MonoObject **objs)
 	SGEN_TV_GETTIME (atv);
 
 	g_assert (mono_sgen_need_bridge_processing ());
-
-	//g_print ("%d finalized objects\n", num_objs);
-
-	/* The collector step checks for bridge objects already, so we don't need to do it again. */
-	for (i = 0; i < num_objs; ++i) {
-		MonoObject *obj = objs [i];
-		if (register_bridge_object (obj))
-			dyn_array_ptr_push (&registered_bridges, obj);
-	}
+	for (i = 0; i < num_objs; ++i)
+		dyn_array_ptr_push (&registered_bridges, objs [i]);
 
 	SGEN_TV_GETTIME (btv);
 	step_1 += SGEN_TV_ELAPSED (atv, btv);
+}
+
+void
+mono_sgen_bridge_reset_data (void)
+{
+	registered_bridges.size = 0;
 }
 
 void
@@ -627,7 +636,7 @@ mono_sgen_bridge_processing_stw_step (void)
 
 	current_time = 0;
 	for (i = 0; i < registered_bridges.size; ++i)
-		dfs1 (get_hash_entry (DYN_ARRAY_PTR_REF (&registered_bridges, i), NULL), NULL);
+		dfs1 (register_bridge_object (DYN_ARRAY_PTR_REF (&registered_bridges, i)), NULL);
 
 	SGEN_TV_GETTIME (atv);
 	step_2 = SGEN_TV_ELAPSED (btv, atv);
@@ -849,7 +858,13 @@ mono_sgen_bridge_processing_finish (void)
 }
 
 static gboolean
-bridge_test_is_bridge_object (MonoObject *obj)
+bridge_test_is_bridge_class (MonoClass *class)
+{
+	return TRUE;
+}
+
+static gboolean
+bridge_test_is_bridge_object (MonoObject *object)
 {
 	return TRUE;
 }
@@ -876,6 +891,8 @@ void
 mono_sgen_register_test_bridge_callbacks (void)
 {
 	MonoGCBridgeCallbacks callbacks;
+	callbacks.bridge_version = MONO_SGEN_BRIDGE_VERSION;
+	callbacks.is_bridge_class = bridge_test_is_bridge_class;
 	callbacks.is_bridge_object = bridge_test_is_bridge_object;
 	callbacks.cross_references = bridge_test_cross_reference;
 	mono_gc_register_bridge_callbacks (&callbacks);
