@@ -19,9 +19,9 @@ struct SQueuedProperty
 {
 	SQueuedProperty(IEntityPropertyHandler::SPropertyInfo propInfo, const char *val)
 		: propertyInfo(propInfo)
-		, value(ToMonoString(val)) {}
+		, value(string(val)) {}
 
-	mono::string value;
+	string value;
 	IEntityPropertyHandler::SPropertyInfo propertyInfo;
 };
 

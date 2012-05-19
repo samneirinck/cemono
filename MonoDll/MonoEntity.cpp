@@ -40,7 +40,7 @@ void CEntity::OnSpawn(IEntity *pEntity, SEntitySpawnParams &spawnParams)
 	CallMonoScript<void>(m_pScriptClass, "InternalSpawn", gEnv->pMonoScriptSystem->GetConverter()->ToManagedType(pEntityInfoClass, &SMonoEntityInfo(pEntity, m_entityId)));
 
 	for each(auto propertyCall in m_propertyQueue)
-		CallMonoScript<void>(m_pScriptClass, "SetPropertyValue", propertyCall.propertyInfo.name, propertyCall.propertyInfo.type, propertyCall.value);
+		CallMonoScript<void>(m_pScriptClass, "SetPropertyValue", propertyCall.propertyInfo.name, propertyCall.propertyInfo.type, propertyCall.value.c_str());
 
 	m_propertyQueue.clear();
 }
