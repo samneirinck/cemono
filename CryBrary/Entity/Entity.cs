@@ -220,7 +220,7 @@ namespace CryEngine
 		{
 			if(name.EndsWith("cgf"))
 				_LoadObject(EntityPointer, name, slotNumber);
-			else if(name.EndsWith("cdf") || name.EndsWith("cga") || name.EndsWith("cga"))
+			else if(name.EndsWith("cdf") || name.EndsWith("cga") || name.EndsWith("chr"))
 				_LoadCharacter(EntityPointer, name, slotNumber);
 			else
 				return false;
