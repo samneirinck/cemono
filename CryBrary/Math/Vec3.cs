@@ -1209,7 +1209,7 @@ namespace CryEngine
 		/// </returns>
 		public override string ToString()
 		{
-			return string.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1} Z:{2}", X, Y, Z);
+			return string.Format(CultureInfo.CurrentCulture, "{0},{1},{2}", X, Y, Z);
 		}
 
 		/// <summary>
@@ -1224,7 +1224,7 @@ namespace CryEngine
 			if(format == null)
 				return ToString();
 
-			return string.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1} Z:{2}", X.ToString(format, CultureInfo.CurrentCulture),
+			return string.Format(CultureInfo.CurrentCulture, "{0},{1},{2}", X.ToString(format, CultureInfo.CurrentCulture),
 				Y.ToString(format, CultureInfo.CurrentCulture), Z.ToString(format, CultureInfo.CurrentCulture));
 		}
 
@@ -1237,7 +1237,21 @@ namespace CryEngine
 		/// </returns>
 		public string ToString(IFormatProvider formatProvider)
 		{
-			return string.Format(formatProvider, "X:{0} Y:{1} Z:{2}", X, Y, Z);
+			return string.Format(formatProvider, "{0},{1},{2}", X, Y, Z);
+		}
+
+		public static Vec3 Parse(string value)
+		{
+			if(value == null)
+				throw new ArgumentNullException("value");
+			else if(value.Length < 1)
+				throw new ArgumentException("value string was empty");
+
+			string[] split = value.Split(',');
+			if(split.Length != 3)
+				throw new ArgumentException("value string was invalid");
+
+			return new Vec3(System.Convert.ToSingle(split[0]), System.Convert.ToSingle(split[1]), System.Convert.ToSingle(split[2]));
 		}
 
 		/// <summary>
@@ -1253,7 +1267,7 @@ namespace CryEngine
 			if(format == null)
 				return ToString(formatProvider);
 
-			return string.Format(formatProvider, "X:{0} Y:{1} Z:{2}", X.ToString(format, formatProvider),
+			return string.Format(formatProvider, "{0},{1},{2}", X.ToString(format, formatProvider),
 				Y.ToString(format, formatProvider), Z.ToString(format, formatProvider));
 		}
 
