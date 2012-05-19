@@ -91,6 +91,12 @@ struct SMonoEntityInfo
 {
 	SMonoEntityInfo() { }
 
+	SMonoEntityInfo(IEntity *pEnt)
+		: pEntity(pEnt)
+	{
+		id = mono::entityId(pEnt->GetId());
+	}
+
 	SMonoEntityInfo(IEntity *pEnt, EntityId entId)
 		: pEntity(pEnt)
 	{

@@ -131,9 +131,9 @@ mono::object CFlowManager::GetPortValueVec3(CFlowNode *pFlowNode, int index)
 	return *gEnv->pMonoScriptSystem->GetConverter()->ToManagedType(eCMT_Vec3, pFlowNode->GetPortVec3(index));
 }
 
-IEntity *CFlowManager::GetTargetEntity(CFlowNode *pNode)
+SMonoEntityInfo CFlowManager::GetTargetEntity(CFlowNode *pNode)
 {
-	return pNode->GetTargetEntity();
+	return SMonoEntityInfo(pNode->GetTargetEntity());
 }
 
 static const int MAX_NODE_PORT_COUNT = 20;
