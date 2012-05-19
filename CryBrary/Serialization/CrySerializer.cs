@@ -187,7 +187,7 @@ namespace CryEngine.Serialization
 
 			var memberInfo = objectReference.Value as MemberInfo;
 			WriteLine(memberInfo.Name);
-			WriteType(memberInfo.DeclaringType);
+			WriteType(memberInfo.ReflectedType);
 			WriteLine(memberInfo.MemberType);
 		}
 
@@ -314,18 +314,20 @@ namespace CryEngine.Serialization
 			for(int i = 0; i < numFields; ++i)
 			{
 				ObjectReference fieldReference = StartRead();
-
-				var fieldInfo = type.GetField(fieldReference.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-
-				if(fieldInfo != null)
+				if(fieldReference.Value != null)
 				{
-					if(fieldInfo.FieldType == fieldReference.Value.GetType())
-						fieldInfo.SetValue(objReference.Value, fieldReference.Value);
+					var fieldInfo = type.GetField(fieldReference.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+					if(fieldInfo != null)
+					{
+						if(fieldInfo.FieldType == fieldReference.Value.GetType())
+							fieldInfo.SetValue(objReference.Value, fieldReference.Value);
+						else
+							throw new SerializationException(string.Format("object type {0} can not be converted to type {1}", fieldReference.Value.GetType(), fieldInfo.FieldType));
+					}
 					else
-						throw new SerializationException(string.Format("object type {0} can not be converted to type {1}", fieldReference.Value.GetType(), fieldInfo.FieldType));
+						throw new MissingFieldException(string.Format("Failed to find field {0} in type {1}", fieldReference.Name, type != null ? type.Name : "[Unknown]"));
 				}
-				else
-					throw new MissingFieldException(string.Format("Failed to find field {0} in type {1}", fieldReference.Name, type != null ? type.Name : "[Unknown]"));
 			}
 		}
 
@@ -373,7 +375,7 @@ namespace CryEngine.Serialization
 				var list = objReference.Value as IList;
 
 				for(int i = 0; i < elements; i++)
-					list[i] = StartRead().Value;
+					list.Add(StartRead().Value);
 			}
 		}
 
@@ -408,25 +410,21 @@ namespace CryEngine.Serialization
 			objReference.Name = ReadLine();
 			var memberName = ReadLine();
 
-			var declaringType = ReadType();
+			var reflectedType = ReadType();
 			var memberType = (MemberTypes)Enum.Parse(typeof(MemberTypes), ReadLine());
-
-			MemberInfo memberInfo = null;
 
 			switch(memberType)
 			{
 				case MemberTypes.Method:
-					memberInfo = declaringType.GetMethod(memberName);
+					objReference.Value = reflectedType.GetMethod(memberName);
 					break;
 				case MemberTypes.Field:
-					memberInfo = declaringType.GetField(memberName);
+					objReference.Value = reflectedType.GetField(memberName);
 					break;
 				case MemberTypes.Property:
-					memberInfo = declaringType.GetProperty(memberName);
+					objReference.Value = reflectedType.GetProperty(memberName);
 					break;
 			}
-
-			objReference.Value = memberInfo;
 		}
 
 		void ReadType(ObjectReference objReference)
