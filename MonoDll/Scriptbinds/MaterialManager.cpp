@@ -21,6 +21,8 @@ CScriptbind_MaterialManager::CScriptbind_MaterialManager()
 
 	REGISTER_METHOD(SetGetMaterialParamFloat);
 	REGISTER_METHOD(SetGetMaterialParamVec3);
+
+	REGISTER_METHOD(SetShaderParam);
 }
 
 IMaterial *CScriptbind_MaterialManager::CreateMaterial(mono::string name)
@@ -66,4 +68,32 @@ bool CScriptbind_MaterialManager::SetGetMaterialParamFloat(IMaterial *pMaterial,
 bool CScriptbind_MaterialManager::SetGetMaterialParamVec3(IMaterial *pMaterial, mono::string paramName, Vec3 &v, bool get)
 {
 	return pMaterial->SetGetMaterialParamVec3(ToCryString(paramName), v, get);
+}
+
+void CScriptbind_MaterialManager::SetShaderParam(IMaterial *pMaterial, mono::string monoParamName, float newVal)
+{
+	const SShaderItem& shaderItem(pMaterial->GetShaderItem());
+	DynArray<SShaderParam> params;
+	params = shaderItem.m_pShader->GetPublicParams();
+
+	const char *paramName = ToCryString(monoParamName);
+
+	for (DynArray<SShaderParam>::iterator it = params.begin(), end = params.end(); it != end; ++it)
+	{
+		SShaderParam param = *it;
+
+		if(!strcmp(paramName, param.m_Name))
+		{
+			UParamVal par;
+			par.m_Float = newVal;
+
+			param.SetParam(paramName, &params, par);
+
+			SInputShaderResources res;
+			shaderItem.m_pShaderResources->ConvertToInputResource(&res);
+			res.m_ShaderParams = params;
+			shaderItem.m_pShaderResources->SetShaderParams(&res,shaderItem.m_pShader);
+			break;
+		}
+	}
 }

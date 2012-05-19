@@ -36,6 +36,8 @@ protected:
 
 	static bool SetGetMaterialParamFloat(IMaterial *pMaterial, mono::string paramName, float &v, bool get);
 	static bool SetGetMaterialParamVec3(IMaterial *pMaterial, mono::string paramName, Vec3 &v, bool get);
+
+	static void SetShaderParam(IMaterial *pMaterial, mono::string monoParamName, float newVal);
 	// ~Externals
 
 	// IMonoScriptBind
