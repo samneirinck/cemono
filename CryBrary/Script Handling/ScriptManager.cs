@@ -29,7 +29,7 @@ namespace CryEngine.Initialization
 					foreach(var file in Directory.GetFiles(PathUtils.TempFolder))
 						File.Delete(file);
 				}
-				catch(UnauthorizedAccessException ex) { }
+				catch(UnauthorizedAccessException) { }
 			}
 
 			FlowNodes = new List<string>();
