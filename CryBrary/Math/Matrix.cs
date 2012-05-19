@@ -663,17 +663,17 @@ namespace CryEngine
 			float d0 = (float)Math.Abs(GetColumn0() | GetColumn1()); if(d0 > threshold) return 0;
 			float d1 = (float)Math.Abs(GetColumn0() | GetColumn2()); if(d1 > threshold) return 0;
 			float d2 = (float)Math.Abs(GetColumn1() | GetColumn2()); if(d2 > threshold) return 0;
-			int a = (int)Convert.ChangeType((Math.Abs(1 - (GetColumn0() | GetColumn0()))) < threshold, typeof(int));
-			int b = (int)Convert.ChangeType((Math.Abs(1 - (GetColumn1() | GetColumn1()))) < threshold, typeof(int));
-			int c = (int)Convert.ChangeType((Math.Abs(1 - (GetColumn2() | GetColumn2()))) < threshold, typeof(int));
+			int a = (int)System.Convert.ChangeType((Math.Abs(1 - (GetColumn0() | GetColumn0()))) < threshold, typeof(int));
+			int b = (int)System.Convert.ChangeType((Math.Abs(1 - (GetColumn1() | GetColumn1()))) < threshold, typeof(int));
+			int c = (int)System.Convert.ChangeType((Math.Abs(1 - (GetColumn2() | GetColumn2()))) < threshold, typeof(int));
 			return a & b & c;
 		}
 
 		public int IsOrthonormalRH(float threshold = 0.001f)
 		{
-			int a = (int)Convert.ChangeType(GetColumn0().IsEquivalent(GetColumn1() % GetColumn2(), threshold), typeof(int));
-			int b = (int)Convert.ChangeType(GetColumn1().IsEquivalent(GetColumn2() % GetColumn0(), threshold), typeof(int));
-			int c = (int)Convert.ChangeType(GetColumn2().IsEquivalent(GetColumn0() % GetColumn1(), threshold), typeof(int));
+			int a = (int)System.Convert.ChangeType(GetColumn0().IsEquivalent(GetColumn1() % GetColumn2(), threshold), typeof(int));
+			int b = (int)System.Convert.ChangeType(GetColumn1().IsEquivalent(GetColumn2() % GetColumn0(), threshold), typeof(int));
+			int c = (int)System.Convert.ChangeType(GetColumn2().IsEquivalent(GetColumn0() % GetColumn1(), threshold), typeof(int));
 			return a & b & c;
 		}
 
