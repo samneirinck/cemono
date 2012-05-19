@@ -29,6 +29,9 @@ namespace CryEngine
 		extern internal static bool _SetGetMaterialParamFloat(IntPtr ptr, string paramName, ref float v, bool get);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static bool _SetGetMaterialParamVec3(IntPtr ptr, string paramName, ref Vec3 v, bool get);
+
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static void _SetShaderParam(IntPtr ptr, string paramName, float newVal);
 		#endregion
 
 		#region Statics
@@ -48,31 +51,29 @@ namespace CryEngine
 
 		public static Material Get(EntityBase entity)
 		{
-			return TryAdd(_GetMaterial(entity.EntityPointer));
+			var ptr = _GetMaterial(entity.EntityPointer);
+
+			return TryAdd(ptr);
 		}
 
 		public static void Set(EntityBase entity, Material mat)
 		{
-			_SetMaterial(entity.EntityPointer, mat.Pointer);
+			_SetMaterial(entity.EntityPointer, mat.MaterialPointer);
 		}
 
 		internal static Material TryAdd(IntPtr ptr)
 		{
-			if(ptr != null)
-			{
-				var mat = Materials.First(x => x.Pointer == ptr);
-				if(mat != null)
-					return mat;
-				else
-				{
-					mat = new Material(ptr);
-					Materials.Add(mat);
+			if(ptr == null)
+				return null;
 
-					return mat;
-				}
-			}
+			var mat = Materials.FirstOrDefault(x => x.MaterialPointer == ptr);
+			if(mat == default(Material))
+				return null;
 
-			return null;
+			mat = new Material(ptr);
+			Materials.Add(mat);
+
+			return mat;
 		}
 
 		static List<Material> Materials = new List<Material>();
@@ -80,44 +81,54 @@ namespace CryEngine
 
 		internal Material(IntPtr ptr)
 		{
-			Pointer = ptr;
+			MaterialPointer = ptr;
 		}
 
 		public Material GetSubmaterial(int slot)
 		{
-			var ptr = _GetSubMaterial(Pointer, slot);
+			var ptr = _GetSubMaterial(MaterialPointer, slot);
 
 			return TryAdd(ptr);
 		}
 
 		public void SetParam(string paramName, float value)
 		{
-			_SetGetMaterialParamFloat(Pointer, paramName, ref value, false);
+			_SetGetMaterialParamFloat(MaterialPointer, paramName, ref value, false);
 		}
 
 		public float GetParam(string paramName)
 		{
 			float value = 0;
-			_SetGetMaterialParamFloat(Pointer, paramName, ref value, true);
+			_SetGetMaterialParamFloat(MaterialPointer, paramName, ref value, true);
 
 			return value;
 		}
 
 		public void SetParamVec3(string paramName, Vec3 value)
 		{
-			_SetGetMaterialParamVec3(Pointer, paramName, ref value, false);
+			_SetGetMaterialParamVec3(MaterialPointer, paramName, ref value, false);
 		}
 
 		public Vec3 GetParamVec3(string paramName)
 		{
 			Vec3 value = Vec3.Zero;
-			_SetGetMaterialParamVec3(Pointer, paramName, ref value, true);
+			_SetGetMaterialParamVec3(MaterialPointer, paramName, ref value, true);
 
 			return value;
 		}
 
-		public string SurfaceType { get { return _GetSurfaceTypeName(Pointer); } }
+		public void SetShaderParam(string paramName, float newVal)
+		{
+			_SetShaderParam(MaterialPointer, paramName, newVal);
+		}
 
-		internal IntPtr Pointer { get; set; }
+		#region Fields & Properties
+		public float AlphaTest { get { return GetParam("alphatest"); } set { SetParam("alphatest", value); } }
+		public Vec3 DiffuseColor { get { return GetParamVec3("diffuse"); } set { SetParamVec3("diffuse", value); } }
+
+		public string SurfaceType { get { return _GetSurfaceTypeName(MaterialPointer); } }
+
+		internal IntPtr MaterialPointer { get; set; }
+		#endregion
 	}
 }
