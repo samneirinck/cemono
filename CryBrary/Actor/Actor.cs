@@ -83,6 +83,10 @@ namespace CryEngine
 		{
 			if(actorInfo.Id == 0)
 				throw new ArgumentException("actorInfo.Id cannot be 0!");
+			else if(actorInfo.ActorPtr == null)
+				throw new ArgumentException("actorInfo.ActorPtr cannot be 0!");
+			else if(actorInfo.EntityPtr == null)
+				throw new ArgumentException("actorInfo.EntityPtr cannot be 0!");
 
 			var script = ScriptManager.CompiledScripts[ScriptType.Actor].First(x => x.Type == typeof(NativeActor));
 			if(script == null)
