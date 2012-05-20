@@ -98,6 +98,11 @@ namespace CryEngine
 			_SetGetMaterialParamFloat(MaterialPointer, paramName, ref value, false);
 		}
 
+		public void SetParam(MaterialFloatParameter param, float value)
+		{
+			SetParam(param.GetEngineName(), value);
+		}
+
 		public float GetParam(string paramName)
 		{
 			float value = 0;
@@ -106,9 +111,19 @@ namespace CryEngine
 			return value;
 		}
 
+		public float GetParam(MaterialFloatParameter param)
+		{
+			return GetParam(param.GetEngineName());
+		}
+
 		public void SetParamVec3(string paramName, Vec3 value)
 		{
 			_SetGetMaterialParamVec3(MaterialPointer, paramName, ref value, false);
+		}
+
+		public void SetParamVec3(MaterialVec3Parameter param, Vec3 value)
+		{
+			SetParamVec3(param.GetEngineName(), value);
 		}
 
 		public Vec3 GetParamVec3(string paramName)
@@ -117,6 +132,11 @@ namespace CryEngine
 			_SetGetMaterialParamVec3(MaterialPointer, paramName, ref value, true);
 
 			return value;
+		}
+
+		public Vec3 GetParamVec3(MaterialVec3Parameter param)
+		{
+			return GetParamVec3(param.GetEngineName());
 		}
 
 		public void SetShaderParam(string paramName, float newVal)
@@ -132,5 +152,76 @@ namespace CryEngine
 
 		internal IntPtr MaterialPointer { get; set; }
 		#endregion
+	}
+
+	public enum MaterialFloatParameter
+	{
+		Alpha,
+		Glow,
+		Opacity,
+		Shininess
+	}
+
+	public enum MaterialVec3Parameter
+	{
+		DiffuseColor,
+		EmissiveColor,
+		IndirectColor,
+		SpecularColor
+	}
+
+	public enum ShaderFloatParameter
+	{
+		BlendFactor,
+		BlendFalloff,
+		BlendLayerTiling,
+		FresnelBias,
+		FresnelPower,
+		FresnelScale,
+		BendDetailBranchAmplitude,
+		BendDetailFrequency,
+		BendDetailLeafAmplitude
+	}
+
+	public static class MaterialExtensions
+	{
+		public static string GetEngineName(this MaterialFloatParameter param)
+		{
+			switch(param)
+			{
+				case MaterialFloatParameter.Alpha: return "alpha";
+				case MaterialFloatParameter.Glow: return "glow";
+				case MaterialFloatParameter.Opacity: return "opacity";
+				case MaterialFloatParameter.Shininess: return "shininess";
+			}
+
+			return param.ToString();
+		}
+
+		public static string GetEngineName(this MaterialVec3Parameter param)
+		{
+			switch(param)
+			{
+				case MaterialVec3Parameter.DiffuseColor: return "diffuse";
+				case MaterialVec3Parameter.EmissiveColor: return "emissive";
+				case MaterialVec3Parameter.IndirectColor: return "IndirectColor";
+				case MaterialVec3Parameter.SpecularColor: return "specular";
+			}
+
+			return param.ToString();
+		}
+
+		public static string GetEngineName(this ShaderFloatParameter param)
+		{
+			switch(param)
+			{
+				case ShaderFloatParameter.BlendLayerTiling: return "BlendLayer2Tiling";
+				case ShaderFloatParameter.BendDetailBranchAmplitude: return "bendDetailBranchAmplitude";
+				case ShaderFloatParameter.BendDetailFrequency: return "bendDetailFrequency";
+				case ShaderFloatParameter.BendDetailLeafAmplitude: return "bendDetailLeafAmplitude";
+			}
+
+			return param.ToString();
+		}
 	}
 }
