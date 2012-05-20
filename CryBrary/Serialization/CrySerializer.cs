@@ -60,12 +60,7 @@ namespace CryEngine.Serialization
 			Type valueType = objectReference.Value.GetType();
 
 			if(valueType.IsPrimitive)
-			{
-				if(valueType != typeof(object) && valueType != typeof(bool) && System.Convert.ToInt32(objectReference.Value) == 0)
-					WriteNull(objectReference);
-				else
-					WriteAny(objectReference);
-			}
+				WriteAny(objectReference);
 			else if(valueType == typeof(string))
 				WriteString(objectReference);
 			else if(valueType.Implements(typeof(IEnumerable)))
@@ -138,14 +133,32 @@ namespace CryEngine.Serialization
 				return;
 
 			WriteLine("generic_enumerable");
-			var array = (objectReference.Value as IEnumerable).Cast<object>();
-			WriteLine(array.Count());
+			var array = objectReference.Value as ICollection;
+			WriteLine(array.Count);
 			WriteLine(objectReference.Name);
 
-			WriteType(objectReference.Value.GetType());
+			var type = objectReference.Value.GetType();
+			WriteType(type);
 
-			for(int i = 0; i < array.Count(); i++)
-				StartWrite(new ObjectReference(i.ToString(), array.ElementAt(i)));
+			if(type.Implements(typeof(IDictionary)))
+			{
+				int i = 0;
+				foreach(var element in array)
+				{
+					StartWrite(new ObjectReference("key_" + i.ToString(), element.GetType().GetProperty("Key").GetValue(element, null)));
+					StartWrite(new ObjectReference("value_" + i.ToString(), element.GetType().GetProperty("Value").GetValue(element, null)));
+					i++;
+				}
+			}
+			else
+			{
+				int i = 0;
+				foreach(var element in array)
+				{
+					StartWrite(new ObjectReference(i.ToString(), element));
+					i++;
+				}
+			}
 		}
 
 		void WriteEnum(ObjectReference objectReference)
@@ -319,12 +332,7 @@ namespace CryEngine.Serialization
 					var fieldInfo = type.GetField(fieldReference.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
 					if(fieldInfo != null)
-					{
-						if(fieldInfo.FieldType == fieldReference.Value.GetType())
-							fieldInfo.SetValue(objReference.Value, fieldReference.Value);
-						else
-							throw new SerializationException(string.Format("object type {0} can not be converted to type {1}", fieldReference.Value.GetType(), fieldInfo.FieldType));
-					}
+						fieldInfo.SetValue(objReference.Value, fieldReference.Value);
 					else
 						throw new MissingFieldException(string.Format("Failed to find field {0} in type {1}", fieldReference.Name, type != null ? type.Name : "[Unknown]"));
 				}
@@ -363,11 +371,10 @@ namespace CryEngine.Serialization
 
 				for(int i = 0; i < elements; i++)
 				{
-					var keyPair = StartRead().Value;
-					var valueMethod = keyPair.GetType().GetProperty("Value");
-					var keyMethod = keyPair.GetType().GetProperty("Key");
+					var key = StartRead().Value;
+					var value = StartRead().Value;
 
-					dict.Add(keyMethod.GetValue(keyPair, null), valueMethod.GetValue(keyPair, null));
+					dict.Add(key, value);
 				}
 			}
 			else
