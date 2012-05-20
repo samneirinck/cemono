@@ -10,7 +10,7 @@ using CryEngine.Serialization;
 namespace CryBrary.Tests.Serialization
 {
 	[TestFixture]
-	class CompiledScriptsSerializationTests : CryBraryTests
+	public class CompiledScriptsSerializationTests : CryBraryTests
 	{
 		class Player : Actor { }
 
