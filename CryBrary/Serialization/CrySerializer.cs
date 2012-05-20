@@ -291,7 +291,7 @@ namespace CryEngine.Serialization
 				case "string": ReadString(objReference); break;
 				case "memberinfo": ReadMemberInfo(objReference); break;
 				case "type": ReadType(objReference); break;
-				default: throw new SerializationException("Invalid object type {0} was serialized");
+				default: throw new SerializationException(string.Format("Invalid object type {0} was serialized", type));
 			}
 
 			if(objReference.Value == null && type != "null")
