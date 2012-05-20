@@ -111,6 +111,14 @@ namespace CryEngine.Serialization
 			WriteLine(objectReference.Value);
 		}
 
+		void WriteEnum(ObjectReference objectReference)
+		{
+			WriteLine("enum");
+			WriteLine(objectReference.Name);
+			WriteType(objectReference.Value.GetType());
+			WriteLine(objectReference.Value);
+		}
+
 		void WriteEnumerable(ObjectReference objectReference)
 		{
 			if(TryWriteReference(objectReference))
@@ -161,14 +169,6 @@ namespace CryEngine.Serialization
 			}
 		}
 
-		void WriteEnum(ObjectReference objectReference)
-		{
-			WriteLine("enum");
-			WriteLine(objectReference.Name);
-			WriteType(objectReference.Value.GetType());
-			WriteLine(objectReference.Value);
-		}
-
 		void WriteObject(ObjectReference objectReference)
 		{
 			if(TryWriteReference(objectReference))
@@ -212,8 +212,7 @@ namespace CryEngine.Serialization
 			WriteLine("type");
 			WriteLine(objectReference.Name);
 
-			var type = objectReference.Value as Type;
-			WriteLine(type.FullName);
+			WriteType(objectReference.Value as Type);
 		}
 
 		void WriteType(Type type)
@@ -242,7 +241,7 @@ namespace CryEngine.Serialization
 		{
 			foreach(var pair in ObjectReferences)
 			{
-				if(pair.Value.Value.GetHashCode() == objectReference.Value.GetHashCode())
+				if(pair.Value.Value.Equals(objectReference.Value))
 				{
 					WriteReference(objectReference, pair.Key);
 					return true;
