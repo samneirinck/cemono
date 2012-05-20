@@ -95,18 +95,18 @@ namespace CryEngine
 			if(ent != null)
 				return ent;
 
-			var usingPtr = entityPtr != null;
-
 			// Couldn't find a CryMono entity, check if a non-managed one exists
 			// Avoid an extra call into unmanaged code if a pointer has already been supplied
-			var entPointer = usingPtr ? entityPtr : _GetEntity(entityId);
-			if(usingPtr || entPointer != null)
+			if(entityPtr == IntPtr.Zero)
+				entityPtr = _GetEntity(entityId);
+
+			if(entityPtr != IntPtr.Zero)
 			{
 				var script = ScriptManager.CompiledScripts[ScriptType.Entity].First(x => x.Type == typeof(NativeEntity));
 				if(script == null)
 					throw new TypeLoadException("Failed to locate NativeEntity type");
 
-				var nativeEntity = new NativeEntity(entityId, entPointer);
+				var nativeEntity = new NativeEntity(entityId, entityPtr);
 				ScriptManager.AddScriptInstance(nativeEntity, script);
 
 				return nativeEntity;
