@@ -43,6 +43,7 @@ namespace CryBrary.Tests.Serialization
 				serializer = new CrySerializer();
 
 				ScriptManager.CompiledScripts = serializer.Deserialize(stream) as Dictionary<ScriptType, List<CryScript>>;
+				Assert.IsNotNull(ScriptManager.CompiledScripts);
 			}
 		}
 	}
