@@ -18,7 +18,7 @@ namespace CryEngine
 		extern internal static IntPtr _GetSubMaterial(IntPtr materialPtr, int slot);
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static IntPtr _GetMaterial(IntPtr entityPtr);
+		extern internal static IntPtr _GetMaterial(IntPtr entityPtr, int slot);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static void _SetMaterial(IntPtr entityPtr, IntPtr materialPtr);
 
@@ -51,8 +51,10 @@ namespace CryEngine
 
 		public static Material Get(EntityBase entity)
 		{
-			var ptr = _GetMaterial(entity.EntityPointer);
+			if(entity == null)
+				throw new ArgumentNullException("entity");
 
+			var ptr = _GetMaterial(entity.EntityPointer, 0);
 			return TryAdd(ptr);
 		}
 
@@ -67,8 +69,8 @@ namespace CryEngine
 				return null;
 
 			var mat = Materials.FirstOrDefault(x => x.MaterialPointer == ptr);
-			if(mat == default(Material))
-				return null;
+			if(mat != default(Material))
+				return mat;
 
 			mat = new Material(ptr);
 			Materials.Add(mat);

@@ -40,9 +40,13 @@ IMaterial *CScriptbind_MaterialManager::GetSubMaterial(IMaterial *pMaterial, int
 	return pMaterial->GetSubMtl(slot);
 }
 
-IMaterial *CScriptbind_MaterialManager::GetMaterial(IEntity *pEntity)
+IMaterial *CScriptbind_MaterialManager::GetMaterial(IEntity *pEntity, int slot)
 {
-	return pEntity->GetMaterial();
+	SEntitySlotInfo slotInfo;
+	if(pEntity->GetSlotInfo(slot, slotInfo))
+		return slotInfo.pMaterial;
+
+	return NULL;
 }
 
 void CScriptbind_MaterialManager::SetMaterial(IEntity *pEntity, IMaterial *pMaterial)
