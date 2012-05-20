@@ -326,8 +326,9 @@ void CScriptSystem::PostReload(bool initialLoad)
 		// Iterate through all scripts and get the new script instance objects.
 		for each(auto script in m_scripts)
 		{
-			IMonoArray *pParams = CreateMonoArray(1);
+			IMonoArray *pParams = CreateMonoArray(2);
 			pParams->Insert(script.second);
+			pParams->Insert(eScriptType_Unknown);
 			if(IMonoObject *pScriptInstance = m_pScriptManager->CallMethod("GetScriptInstanceById", pParams, true))
 			{
 				mono::object monoObject = pScriptInstance->GetMonoObject();

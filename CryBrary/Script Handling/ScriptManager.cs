@@ -309,6 +309,9 @@ namespace CryEngine.Initialization
 
 		public static IEnumerable<CryScript> GetScriptList(ScriptType scriptType)
 		{
+			if(!Enum.IsDefined(typeof(ScriptType), scriptType))
+				throw new ArgumentException(string.Format("scriptType: value {0} was not defined in the enum", scriptType));
+
 			if(scriptType == ScriptType.Unknown)
 			{
 				var newList = new List<CryScript>();
@@ -337,6 +340,8 @@ namespace CryEngine.Initialization
 				throw new ArgumentNullException("scriptName");
 			else if(scriptName.Length < 1)
 				throw new ArgumentException("Empty script name passed to InstantiateClass");
+			else if(!Enum.IsDefined(typeof(ScriptType), scriptType))
+				throw new ArgumentException(string.Format("scriptType: value {0} was not defined in the enum", scriptType));
 
 			var script = GetScriptList(scriptType).FirstOrDefault(x => x.ScriptName.Equals(scriptName) || (x.ScriptName.Contains(scriptName) && x.Type.Name.Equals(scriptName)));
 
@@ -363,6 +368,9 @@ namespace CryEngine.Initialization
 		/// <param name="scriptId"></param>
 		public static void RemoveInstance(int scriptId, ScriptType scriptType, Type type = null)
 		{
+			if(!Enum.IsDefined(typeof(ScriptType), scriptType))
+				throw new ArgumentException(string.Format("scriptType: value {0} was not defined in the enum", scriptType));
+
 			if(type != null)
 			{
 				var script = GetScriptList(scriptType).First(x => x.Type == type);
@@ -392,6 +400,9 @@ namespace CryEngine.Initialization
 
 		public static int GetEntityScriptId(EntityId entityId, ScriptType scriptType, Type type = null)
 		{
+			if(!Enum.IsDefined(typeof(ScriptType), scriptType))
+				throw new ArgumentException(string.Format("scriptType: value {0} was not defined in the enum", scriptType));
+
 			var scripts = GetScriptList(scriptType).Where(script => (type != null ? script.Type.Implements(type) : true) && script.ScriptInstances != null);
 
 			foreach(var compiledScript in scripts)
@@ -409,14 +420,17 @@ namespace CryEngine.Initialization
 
 		public static CryScriptInstance GetScriptInstanceById(int id, ScriptType scriptType)
 		{
+			if(!Enum.IsDefined(typeof(ScriptType), scriptType))
+				throw new ArgumentException(string.Format("scriptType: value {0} was not defined in the enum", scriptType));
+
 			CryScriptInstance scriptInstance = null;
 			foreach(var script in GetScriptList(scriptType))
 			{
 				if(script.ScriptInstances != null)
 				{
-					scriptInstance = script.ScriptInstances.First(instance => instance.ScriptId == id);
+					scriptInstance = script.ScriptInstances.FirstOrDefault(instance => instance.ScriptId == id);
 
-					if(scriptInstance != null)
+					if(scriptInstance != default(CryScriptInstance))
 						return scriptInstance;
 				}
 			}
@@ -444,6 +458,8 @@ namespace CryEngine.Initialization
 		{
 			if(instance == null)
 				throw new ArgumentNullException("instance");
+			else if(!Enum.IsDefined(typeof(ScriptType), scriptType))
+				throw new ArgumentException(string.Format("scriptType: value {0} was not defined in the enum", scriptType));
 
 			var script = GetScriptList(scriptType).First(x => x.Type == instance.GetType());
 			if(script == null)
