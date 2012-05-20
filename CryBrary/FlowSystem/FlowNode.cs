@@ -55,7 +55,7 @@ namespace CryEngine
 		extern internal static Vec3 _GetPortValueVec3(IntPtr nodePtr, int port);
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static EntityInfo _GetTargetEntity(IntPtr nodePtr);
+		extern internal static IntPtr _GetTargetEntity(IntPtr nodePtr, out uint entId);
 		#endregion
 
 		internal void InternalInitialize(NodeInfo nodeInfo)
@@ -311,9 +311,13 @@ namespace CryEngine
 		{
 			get
 			{
-				var info = _GetTargetEntity(NodePointer);
+				uint entId;
+				var entPtr = _GetTargetEntity(NodePointer, out entId);
 
-				return Entity.Get(new EntityId(info.Id), info.IEntityPtr);
+				if(entPtr != null)
+					return Entity.Get(new EntityId(entId), entPtr);
+
+				return null;
 			}
 		}
 

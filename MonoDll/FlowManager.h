@@ -127,7 +127,7 @@ protected:
 	static void ActivateOutputBool(CFlowNode *pNode, int, bool);
 	static void ActivateOutputVec3(CFlowNode *pNode, int, Vec3);
 
-	static mono::object GetTargetEntity(CFlowNode *pNode);
+	static IEntity *GetTargetEntity(CFlowNode *pNode, EntityId &id);
 
 	static TFlowTypes m_nodeTypes;
 

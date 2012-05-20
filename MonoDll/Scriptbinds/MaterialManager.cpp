@@ -42,10 +42,9 @@ IMaterial *CScriptbind_MaterialManager::GetSubMaterial(IMaterial *pMaterial, int
 
 IMaterial *CScriptbind_MaterialManager::GetMaterial(IEntity *pEntity, int slot)
 {
-	SEntitySlotInfo slotInfo;
-	if(pEntity->GetSlotInfo(slot, slotInfo))
-		return slotInfo.pMaterial;
-
+	if(IEntityRenderProxy *pRenderProxy =  static_cast<IEntityRenderProxy *>(pEntity->GetProxy(ENTITY_PROXY_RENDER)))
+		return pRenderProxy->GetRenderMaterial(slot);
+	
 	return NULL;
 }
 

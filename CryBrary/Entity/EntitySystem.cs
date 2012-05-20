@@ -86,33 +86,41 @@ namespace CryEngine
 		/// a C++ entity with the specified ID></remarks>
 		public static Entity Get(EntityId entityId)
 		{
-			return Get(entityId, IntPtr.Zero);
-		}
-
-		internal static Entity Get(EntityId entityId, IntPtr entityPtr)
-		{
 			var ent = Get<Entity>(entityId);
 			if(ent != null)
 				return ent;
 
-			// Couldn't find a CryMono entity, check if a non-managed one exists
-			// Avoid an extra call into unmanaged code if a pointer has already been supplied
-			if(entityPtr == IntPtr.Zero)
-				entityPtr = _GetEntity(entityId);
-
-			if(entityPtr != IntPtr.Zero)
+			// Couldn't find a CryMono entity, check if a non-managed one exists.
+			var entPointer = _GetEntity(entityId);
+			if(entPointer != null)
 			{
 				var script = ScriptManager.CompiledScripts[ScriptType.Entity].First(x => x.Type == typeof(NativeEntity));
 				if(script == null)
 					throw new TypeLoadException("Failed to locate NativeEntity type");
 
-				var nativeEntity = new NativeEntity(entityId, entityPtr);
+				var nativeEntity = new NativeEntity(entityId, entPointer);
 				ScriptManager.AddScriptInstance(nativeEntity, script);
 
 				return nativeEntity;
 			}
 
 			return null;
+		}
+
+		public static Entity Get(EntityId entityId, IntPtr entPtr)
+		{
+			var ent = Get<Entity>(entityId);
+			if(ent != null)
+				return ent;
+
+			var script = ScriptManager.CompiledScripts[ScriptType.Entity].First(x => x.Type == typeof(NativeEntity));
+			if(script == null)
+				throw new TypeLoadException("Failed to locate NativeEntity type");
+
+			var nativeEntity = new NativeEntity(entityId, entPtr);
+			ScriptManager.AddScriptInstance(nativeEntity, script);
+
+			return nativeEntity;
 		}
 
 		/// <summary>

@@ -122,16 +122,17 @@ mono::object CFlowManager::GetPortValueVec3(CFlowNode *pFlowNode, int index)
 	return *gEnv->pMonoScriptSystem->GetConverter()->ToManagedType(eCMT_Vec3, pFlowNode->GetPortVec3(index));
 }
 
-mono::object CFlowManager::GetTargetEntity(CFlowNode *pNode)
+IEntity *CFlowManager::GetTargetEntity(CFlowNode *pNode, EntityId &id)
 {
 	if(IEntity *pEntity = pNode->GetTargetEntity())
 	{
-		IMonoClass *pEntityInfoClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("EntityInfo");
-		IMonoObject *pEntityInfoObject =  gEnv->pMonoScriptSystem->GetConverter()->ToManagedType(pEntityInfoClass, &SMonoEntityInfo(pEntity));
+		CryLogAlways("[CFlowManager::GetTargetEntity] returning target entity %s with id %i!", pEntity->GetName(), pEntity->GetId());
+		id = pEntity->GetId();
 
-		return pEntityInfoObject->GetMonoObject();
+		return pEntity;
 	}
 
+	CryLogAlways("[CFlowManager::GetTargetEntity] returning null target entity!");
 	return NULL;
 }
 
