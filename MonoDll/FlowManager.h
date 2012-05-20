@@ -101,7 +101,7 @@ public:
 	virtual void OnPostScriptReload(bool initialLoad) { if(initialLoad) Reset(); }
 	// ~IMonoScriptSystemListener
 
-	static std::shared_ptr<SNodeType> InstantiateNode(CFlowNode *pNode, const char *typeName);
+	static std::shared_ptr<SNodeType> GetNodeType(const char *typeName);
 
 protected:
 	// IMonoScriptBind
@@ -127,7 +127,7 @@ protected:
 	static void ActivateOutputBool(CFlowNode *pNode, int, bool);
 	static void ActivateOutputVec3(CFlowNode *pNode, int, Vec3);
 
-	static SMonoEntityInfo GetTargetEntity(CFlowNode *pNode);
+	static mono::object GetTargetEntity(CFlowNode *pNode);
 
 	static TFlowTypes m_nodeTypes;
 

@@ -307,13 +307,13 @@ namespace CryEngine
 		protected bool IsPortActive(int port) { return _IsPortActive(NodePointer, port); }
 		#endregion
 
-		protected Entity TargetEntity
+		public Entity TargetEntity
 		{
 			get
 			{
 				var info = _GetTargetEntity(NodePointer);
-				Debug.LogAlways("{0} | {1}", info.Id, info.IEntityPtr);
-				return Entity.Get(info.Id, info.IEntityPtr);
+
+				return Entity.Get(new EntityId(info.Id), info.IEntityPtr);
 			}
 		}
 

@@ -33,9 +33,15 @@ bool CFlowNode::CreatedNode(TFlowNodeId id, const char *name, TFlowNodeTypeId ty
 { 
 	if(pNode==this)
 	{
-		m_pNodeType = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager()->InstantiateNode(this, gEnv->pFlowSystem->GetTypeName(typeId));
+		m_pNodeType = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager()->GetNodeType(gEnv->pFlowSystem->GetTypeName(typeId));
 
-		// Set by CFlowManager::InstantiateNode.
+		IMonoClass *pScriptClass = gEnv->pMonoScriptSystem->InstantiateScript(m_pNodeType->GetScriptName(), m_pNodeType->IsEntityNode() ? eScriptType_Entity : eScriptType_FlowNode);
+
+		IMonoClass *pNodeInfo = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("NodeInfo");
+		CallMonoScript<void>(pScriptClass, "InternalInitialize", gEnv->pMonoScriptSystem->GetConverter()->ToManagedType(pNodeInfo, &SMonoNodeInfo(this)));
+
+		m_pScriptClass = pScriptClass;
+
 		return m_pScriptClass != NULL;
 	}
 
@@ -55,6 +61,13 @@ IFlowNodePtr CFlowNode::Clone(SActivationInfo *pActInfo)
 	}
 
 	return NULL;
+}
+
+IEntity *CFlowNode::GetTargetEntity()
+{
+	IEntity *pEntity = m_pActInfo->pEntity;
+
+	return pEntity;
 }
 
 void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)

@@ -95,7 +95,7 @@ namespace CryEngine
 			if(ent != null)
 				return ent;
 
-			var usingPtr = entityPtr != IntPtr.Zero;
+			var usingPtr = entityPtr != null;
 
 			// Couldn't find a CryMono entity, check if a non-managed one exists
 			// Avoid an extra call into unmanaged code if a pointer has already been supplied
@@ -174,7 +174,7 @@ namespace CryEngine
 		}
 
 		public IntPtr IEntityPtr;
-		public EntityId Id;
+		public uint Id;
 	}
 
 	/// <summary>

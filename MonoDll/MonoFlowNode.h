@@ -62,7 +62,7 @@ public:
 	// ~IFlowGraphHook
 
 	TFlowNodeId GetId() const { return m_pActInfo->myID; }
-	IEntity *GetTargetEntity() { return m_pActInfo->pEntity; }
+	IEntity *GetTargetEntity();
 
 	IMonoClass *GetScript() const { return m_pScriptClass; }
 	void SetScript(IMonoClass *pScript) { m_pScriptClass = pScript; }

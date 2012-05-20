@@ -68,21 +68,12 @@ IFlowNodePtr CFlowManager::Create(IFlowNode::SActivationInfo *pActInfo)
 	return new CFlowNode(pActInfo);
 }
 
-std::shared_ptr<SNodeType> CFlowManager::InstantiateNode(CFlowNode *pNode, const char *name)
+std::shared_ptr<SNodeType> CFlowManager::GetNodeType(const char *name)
 {
 	for each(auto nodeType in m_nodeTypes)
 	{
 		if(!strcmp(nodeType->GetTypeName(), name))
-		{
-			IMonoClass *pScriptClass = gEnv->pMonoScriptSystem->InstantiateScript(nodeType->GetScriptName(), nodeType->IsEntityNode() ? eScriptType_Entity : eScriptType_FlowNode);
-
-			IMonoClass *pNodeInfo = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("NodeInfo");
-			CallMonoScript<void>(pScriptClass, "InternalInitialize", gEnv->pMonoScriptSystem->GetConverter()->ToManagedType(pNodeInfo, &SMonoNodeInfo(pNode)));
-
-			pNode->SetScript(pScriptClass);
-
 			return nodeType;
-		}
 	}
 
 	return NULL;
@@ -131,12 +122,17 @@ mono::object CFlowManager::GetPortValueVec3(CFlowNode *pFlowNode, int index)
 	return *gEnv->pMonoScriptSystem->GetConverter()->ToManagedType(eCMT_Vec3, pFlowNode->GetPortVec3(index));
 }
 
-SMonoEntityInfo CFlowManager::GetTargetEntity(CFlowNode *pNode)
+mono::object CFlowManager::GetTargetEntity(CFlowNode *pNode)
 {
-	if(auto ent = pNode->GetTargetEntity())
-		return SMonoEntityInfo(ent);
-	else
-		return SMonoEntityInfo();
+	if(IEntity *pEntity = pNode->GetTargetEntity())
+	{
+		IMonoClass *pEntityInfoClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("EntityInfo");
+		IMonoObject *pEntityInfoObject =  gEnv->pMonoScriptSystem->GetConverter()->ToManagedType(pEntityInfoClass, &SMonoEntityInfo(pEntity));
+
+		return pEntityInfoObject->GetMonoObject();
+	}
+
+	return NULL;
 }
 
 static const int MAX_NODE_PORT_COUNT = 20;
