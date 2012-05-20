@@ -92,57 +92,35 @@ private:
 	ENodeCloneType m_cloneType;
 };
 
-template <class T>
-ILINE SInputPortConfig MonoInputPortConfig(mono::string name, mono::object defaultVal, mono::string humanName, mono::string desc, mono::string UIConfig)
-{
-	IMonoObject *pObject = *defaultVal;
-	SInputPortConfig config = InputPortConfig<T>(ToCryString(name), pObject->Unbox<T>(), ToCryString(humanName), _HELP(ToCryString(desc)), ToCryString(UIConfig));
-
-	SAFE_RELEASE(pObject);
-	return config;
-}
-
 struct SMonoInputPortConfig
 {
 	SInputPortConfig Convert()
 	{
+		const char *sName = ToCryString(name);
+		const char *sDesc = ToCryString(description);
+		const char *sHumanName = ToCryString(humanName);
+		const char *sUIConfig = uiConfig ? ToCryString(uiConfig) : NULL;
+
+		IMonoObject *pObject = NULL;
+		if(defaultValue != 0)
+			pObject = *defaultValue;
+
 		switch(type)
 		{
 		case eFDT_Void:
-			{
-				return InputPortConfig_Void(ToCryString(name), _HELP(ToCryString(description)), ToCryString(humanName), ToCryString(uiConfig));
-			}
-			break;
+			return InputPortConfig_Void(sName, _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
 		case eFDT_Int:
-			{
-				return MonoInputPortConfig<int>(name, defaultValue, description, humanName, uiConfig);
-			}
-			break;
+			return InputPortConfig<int>(sName, pObject->Unbox<int>(), _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
 		case eFDT_Float:
-			{
-				return MonoInputPortConfig<float>(name, defaultValue, description, humanName, uiConfig);
-			}
-			break;
-		case eFDT_EntityId:
-			{
-				return MonoInputPortConfig<EntityId>(name, defaultValue, description, humanName, uiConfig);
-			}
-			break;
+			return InputPortConfig<float>(sName, pObject->Unbox<float>(), _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
+		case eFDT_EntityId: 
+			return InputPortConfig<EntityId>(sName, pObject->Unbox<EntityId>(), _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
 		case eFDT_Vec3:
-			{
-				return MonoInputPortConfig<Vec3>(name, defaultValue, description, humanName, uiConfig);
-			}
-			break;
+			return InputPortConfig<Vec3>(sName, pObject->Unbox<Vec3>(), _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
 		case eFDT_String:
-			{
-				return InputPortConfig<string>(ToCryString(name), ToCryString((mono::string)defaultValue), _HELP(ToCryString(description)), ToCryString(humanName), ToCryString(uiConfig));
-			}
-			break;
+			return InputPortConfig<string>(sName, ToCryString((mono::string)defaultValue), _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
 		case eFDT_Bool:
-			{
-				return MonoInputPortConfig<bool>(name, defaultValue, description, humanName, uiConfig);
-			}
-			break;
+			return InputPortConfig<bool>(sName, pObject->Unbox<bool>(), _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
 		}
 
 		return *(SInputPortConfig *)0;

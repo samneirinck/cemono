@@ -153,7 +153,7 @@ namespace CryEngine
 			else
 				portType = NodePortType.Void;
 
-			inputs.Add(new InputPortConfig(portAttribute.Name, portType, defaultVal, portAttribute.Description));
+			inputs.Add(new InputPortConfig(portAttribute.Name, portType, defaultVal, portAttribute.Description, "", portAttribute.UIConfig));
 			InputMethods[GetType()].Add(method);
 		}
 
@@ -356,6 +356,9 @@ namespace CryEngine
 		public string Name { get; set; }
 		public string Description { get; set; }
 		internal FlowNodeFlags Flags { get; set; }
+
+		// Do not expose this directly, needs moar pretty wrap.
+		public string UIConfig { get; set; }
 	}
 
 	public sealed class OutputPort
