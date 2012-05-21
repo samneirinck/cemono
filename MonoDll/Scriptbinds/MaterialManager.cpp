@@ -17,6 +17,8 @@ CScriptbind_MaterialManager::CScriptbind_MaterialManager()
 	REGISTER_METHOD(GetMaterial);
 	REGISTER_METHOD(SetMaterial);
 
+	REGISTER_METHOD(CloneMaterial);
+
 	REGISTER_METHOD(GetSurfaceTypeName);
 
 	REGISTER_METHOD(SetGetMaterialParamFloat);
@@ -51,9 +53,15 @@ IMaterial *CScriptbind_MaterialManager::GetMaterial(IEntity *pEntity, int slot)
 	return NULL;
 }
 
-void CScriptbind_MaterialManager::SetMaterial(IEntity *pEntity, IMaterial *pMaterial)
+void CScriptbind_MaterialManager::SetMaterial(IEntity *pEntity, IMaterial *pMaterial, int slot)
 {
-	pEntity->SetMaterial(pMaterial);
+	if(IEntityRenderProxy *pRenderProxy =  static_cast<IEntityRenderProxy *>(pEntity->GetProxy(ENTITY_PROXY_RENDER)))
+		pRenderProxy->SetSlotMaterial(slot, pMaterial);
+}
+
+IMaterial *CScriptbind_MaterialManager::CloneMaterial(IMaterial *pMaterial, int subMaterial)
+{
+	return pMaterial->GetMaterialManager()->CloneMaterial(pMaterial, subMaterial);
 }
 
 mono::string CScriptbind_MaterialManager::GetSurfaceTypeName(IMaterial *pMaterial)

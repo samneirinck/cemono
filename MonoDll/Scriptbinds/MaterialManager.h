@@ -30,7 +30,9 @@ protected:
 	static IMaterial *GetSubMaterial(IMaterial *pMaterial, int slot);
 
 	static IMaterial *GetMaterial(IEntity *pEnt, int slot);
-	static void SetMaterial(IEntity *pEnt, IMaterial *pMaterial);
+	static void SetMaterial(IEntity *pEnt, IMaterial *pMaterial, int slot);
+
+	static IMaterial *CloneMaterial(IMaterial *pMat, int subMaterial);
 
 	static mono::string GetSurfaceTypeName(IMaterial *pMaterial);
 

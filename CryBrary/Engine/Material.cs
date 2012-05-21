@@ -20,7 +20,10 @@ namespace CryEngine
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static IntPtr _GetMaterial(IntPtr entityPtr, int slot);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _SetMaterial(IntPtr entityPtr, IntPtr materialPtr);
+		extern internal static void _SetMaterial(IntPtr entityPtr, IntPtr materialPtr, int slot);
+
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static IntPtr _CloneMaterial(IntPtr materialPtr, int subMtl);
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static string _GetSurfaceTypeName(IntPtr ptr);
@@ -54,18 +57,23 @@ namespace CryEngine
 			return TryAdd(ptr);
 		}
 
-		public static Material Get(EntityBase entity)
+		public static Material Get(EntityBase entity, int slot = 0)
 		{
 			if(entity == null)
 				throw new ArgumentNullException("entity");
 
-			var ptr = _GetMaterial(entity.EntityPointer, 0);
+			var ptr = _GetMaterial(entity.EntityPointer, slot);
 			return TryAdd(ptr);
 		}
 
-		public static void Set(EntityBase entity, Material mat)
+		public static void Set(EntityBase entity, Material mat, int slot = 0)
 		{
-			_SetMaterial(entity.EntityPointer, mat.MaterialPointer);
+			if(entity == null)
+				throw new ArgumentNullException("entity");
+			else if(mat == null)
+				throw new ArgumentNullException("mat");
+
+			_SetMaterial(entity.EntityPointer, mat.MaterialPointer, slot);
 		}
 
 		internal static Material TryAdd(IntPtr ptr)
@@ -94,6 +102,18 @@ namespace CryEngine
 		public Material GetSubmaterial(int slot)
 		{
 			var ptr = _GetSubMaterial(MaterialPointer, slot);
+
+			return TryAdd(ptr);
+		}
+
+		/// <summary>
+		/// Clones a material
+		/// </summary>
+		/// <param name="subMaterial">If negative, all sub materials are cloned, otherwise only the specified slot is</param>
+		/// <returns></returns>
+		public Material Clone(int subMaterial = -1)
+		{
+			var ptr = _CloneMaterial(MaterialPointer, subMaterial);
 
 			return TryAdd(ptr);
 		}
