@@ -23,6 +23,9 @@ CScriptbind_MaterialManager::CScriptbind_MaterialManager()
 	REGISTER_METHOD(SetGetMaterialParamVec3);
 
 	REGISTER_METHOD(SetShaderParam);
+
+	REGISTER_METHOD(GetFlags);
+	REGISTER_METHOD(SetFlags);
 }
 
 IMaterial *CScriptbind_MaterialManager::CreateMaterial(mono::string name)
@@ -99,4 +102,14 @@ void CScriptbind_MaterialManager::SetShaderParam(IMaterial *pMaterial, mono::str
 			break;
 		}
 	}
+}
+
+EMaterialFlags CScriptbind_MaterialManager::GetFlags(IMaterial *pMaterial)
+{
+	return (EMaterialFlags)pMaterial->GetFlags();
+}
+
+void CScriptbind_MaterialManager::SetFlags(IMaterial *pMaterial, EMaterialFlags flags)
+{
+	pMaterial->SetFlags(flags);
 }
