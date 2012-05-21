@@ -137,6 +137,7 @@
     <Compile Include="Actor\NativeActor.cs" />
     <Compile Include="Engine\Level.cs" />
     <Compile Include="Entity\EntityBase.cs" />
+    <Compile Include="Engine\TimeOfDay.cs" />
     <Compile Include="Extensions\IDictionary.cs" />
     <Compile Include="FlowSystem\Attributes.cs" />
     <Compile Include="FlowSystem\Ports.cs" />

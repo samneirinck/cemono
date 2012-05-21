@@ -5,14 +5,124 @@ using System.Text;
 
 namespace CryEngine
 {
-	public class TimeOfDay
+	public static class TimeOfDay
 	{
+		/// <summary>
+		/// Controls whether Time of Day updates take effect immediately.
+		/// </summary>
+		public static bool ForceUpdates { get; set; }
+
+		/// <summary>
+		/// The hour value for the Time of Day system.
+		/// The value is wrapped, so setting the value to 24 will reset the hour to zero.
+		/// </summary>
+		public static int Hour
+		{
+			get
+			{
+				return (int)Engine._GetTimeOfDay();
+			}
+			set
+			{
+				while(value >= 24)
+				{
+					value -= 24;
+				}
+				while(value < 0)
+				{
+					value += 24;
+				}
+
+				RawEngineTime = CreateEngineTime(value, Minute);
+			}
+		}
+
+		/// <summary>
+		/// The minute value for the Time of Day system.
+		/// The value is wrapped, so setting the value to 60 will increment the hour and reset the minutes to zero.
+		/// </summary>
+		public static int Minute
+		{
+			get
+			{
+				return GetMinutes(Engine._GetTimeOfDay());
+			}
+			set
+			{
+				RawEngineTime = CreateEngineTime(Hour, value);
+			}
+		}
+
+		/// <summary>
+		/// Controls the speed at which the Time of Day passes.
+		/// </summary>
+		public static float Speed
+		{
+			get
+			{
+				return Engine._GetTimeOfDayAdvancedInfo().fAnimSpeed;
+			}
+			set
+			{
+				var info = Engine._GetTimeOfDayAdvancedInfo();
+				info.fAnimSpeed = value;
+				Engine._SetTimeOfDayAdvancedInfo(info);
+			}
+		}
+
+		/// <summary>
+		/// Gets the minute value from a CE-style time float
+		/// </summary>
+		/// <param name="ceTime"></param>
+		/// <returns></returns>
+		internal static int GetMinutes(float ceTime)
+		{
+			return (int)System.Math.Round((ceTime - (int)ceTime) * 60);
+		}
+
+		/// <summary>
+		/// Gets the hour value from a CE-style time float
+		/// </summary>
+		/// <param name="ceTime"></param>
+		/// <returns></returns>
+		internal static int GetHours(float ceTime)
+		{
+			return (int)ceTime;
+		}
+
+		/// <summary>
+		/// Creates a CE-style time from a given number of hours and minutes
+		/// </summary>
+		/// <param name="hours"></param>
+		/// <param name="mins"></param>
+		/// <returns></returns>
+		internal static float CreateEngineTime(int hours, int mins)
+		{
+			return hours + ((float)mins / 60);
+		}
+
+		/// <summary>
+		/// Convenient accessor for the raw time value
+		/// </summary>
+		internal static float RawEngineTime
+		{
+			get
+			{
+				return Engine._GetTimeOfDay();
+			}
+			set
+			{
+				Engine._SetTimeOfDay(value, ForceUpdates);
+			}
+		}
+
 		internal struct AdvancedInfo
 		{
-			float fStartTime;
-			float fEndTime;
-			float fAnimSpeed;
+			public float fStartTime;
+			public float fEndTime;
+			public float fAnimSpeed;
 		}
+
 		internal enum ParamId
 		{
 			PARAM_HDR_DYNAMIC_POWER_FACTOR,

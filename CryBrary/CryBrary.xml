@@ -2402,6 +2402,13 @@
             Used for non-CryMono entities, i.e. Lua / C++ such.
             </summary>
         </member>
+        <member name="M:CryEngine.Material.Clone(System.Int32)">
+            <summary>
+            Clones a material
+            </summary>
+            <param name="subMaterial">If negative, all sub materials are cloned, otherwise only the specified slot is</param>
+            <returns></returns>
+        </member>
         <member name="T:CryEngine.ItemSystem">
             <summary>
             ItemSystem contains scriptbinds used in relation to the item system.
@@ -3085,6 +3092,61 @@
             </summary>
             <param name="results">The results of the compilation that you wish to validate</param>
             <returns>The resulting assembly, if no errors are found.</returns>
+        </member>
+        <member name="P:CryEngine.FlowNodeAttribute.Name">
+            <summary>
+            Name of the node, if not set will use the node class name.
+            </summary>
+        </member>
+        <member name="P:CryEngine.FlowNodeAttribute.UICategory">
+            <summary>
+            Category in which the node will appear when right-clicking in the Flowgraph Editor.
+            </summary>
+        </member>
+        <member name="P:CryEngine.FlowNodeAttribute.Category">
+            <summary>
+            The Sandbox filtering category
+            </summary>
+        </member>
+        <member name="F:CryEngine.FlowNodeFlags.TargetEntity">
+            <summary>
+            This node targets an entity, entity id must be provided.
+            </summary>
+        </member>
+        <member name="F:CryEngine.FlowNodeFlags.HideUI">
+            <summary>
+            This node cannot be selected by user for placement in flow graph UI.
+            </summary>
+        </member>
+        <member name="F:CryEngine.FlowNodeFlags.DynamicOutput">
+            <summary>
+            This node is setup for dynamic output port growth in runtime.
+            </summary>
+        </member>
+        <member name="F:CryEngine.FlowNodeFlags.Unremovable">
+            <summary>
+            This node cannot be deleted by the user.
+            </summary>
+        </member>
+        <member name="F:CryEngine.FlowNodeCategory.Approved">
+            <summary>
+            This node is approved for designers
+            </summary>
+        </member>
+        <member name="F:CryEngine.FlowNodeCategory.Advanced">
+            <summary>
+            This node is slightly advanced and approved.
+            </summary>
+        </member>
+        <member name="F:CryEngine.FlowNodeCategory.Debug">
+            <summary>
+            This node is for debug purpose only.
+            </summary>
+        </member>
+        <member name="F:CryEngine.FlowNodeCategory.Obsolete">
+            <summary>
+            This node is obsolete and is not available in the editor.
+            </summary>
         </member>
         <member name="T:CryEngine.Vec3">
             <summary>
@@ -5947,59 +6009,53 @@
             Used for non-CryMono actors.
             </summary>
         </member>
-        <member name="P:CryEngine.FlowNodeAttribute.Name">
+        <member name="M:CryEngine.TimeOfDay.GetMinutes(System.Single)">
             <summary>
-            Name of the node, if not set will use the node class name.
+            Gets the minute value from a CE-style time float
+            </summary>
+            <param name="ceTime"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CryEngine.TimeOfDay.GetHours(System.Single)">
+            <summary>
+            Gets the hour value from a CE-style time float
+            </summary>
+            <param name="ceTime"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CryEngine.TimeOfDay.CreateEngineTime(System.Int32,System.Int32)">
+            <summary>
+            Creates a CE-style time from a given number of hours and minutes
+            </summary>
+            <param name="hours"></param>
+            <param name="mins"></param>
+            <returns></returns>
+        </member>
+        <member name="P:CryEngine.TimeOfDay.ForceUpdates">
+            <summary>
+            Controls whether Time of Day updates take effect immediately.
             </summary>
         </member>
-        <member name="P:CryEngine.FlowNodeAttribute.UICategory">
+        <member name="P:CryEngine.TimeOfDay.Hour">
             <summary>
-            Category in which the node will appear when right-clicking in the Flowgraph Editor.
+            The hour value for the Time of Day system.
+            The value is wrapped, so setting the value to 24 will reset the hour to zero.
             </summary>
         </member>
-        <member name="P:CryEngine.FlowNodeAttribute.Category">
+        <member name="P:CryEngine.TimeOfDay.Minute">
             <summary>
-            The Sandbox filtering category
+            The minute value for the Time of Day system.
+            The value is wrapped, so setting the value to 60 will increment the hour and reset the minutes to zero.
             </summary>
         </member>
-        <member name="F:CryEngine.FlowNodeFlags.TargetEntity">
+        <member name="P:CryEngine.TimeOfDay.Speed">
             <summary>
-            This node targets an entity, entity id must be provided.
+            Controls the speed at which the Time of Day passes.
             </summary>
         </member>
-        <member name="F:CryEngine.FlowNodeFlags.HideUI">
+        <member name="P:CryEngine.TimeOfDay.RawEngineTime">
             <summary>
-            This node cannot be selected by user for placement in flow graph UI.
-            </summary>
-        </member>
-        <member name="F:CryEngine.FlowNodeFlags.DynamicOutput">
-            <summary>
-            This node is setup for dynamic output port growth in runtime.
-            </summary>
-        </member>
-        <member name="F:CryEngine.FlowNodeFlags.Unremovable">
-            <summary>
-            This node cannot be deleted by the user.
-            </summary>
-        </member>
-        <member name="F:CryEngine.FlowNodeCategory.Approved">
-            <summary>
-            This node is approved for designers
-            </summary>
-        </member>
-        <member name="F:CryEngine.FlowNodeCategory.Advanced">
-            <summary>
-            This node is slightly advanced and approved.
-            </summary>
-        </member>
-        <member name="F:CryEngine.FlowNodeCategory.Debug">
-            <summary>
-            This node is for debug purpose only.
-            </summary>
-        </member>
-        <member name="F:CryEngine.FlowNodeCategory.Obsolete">
-            <summary>
-            This node is obsolete and is not available in the editor.
+            Convenient accessor for the raw time value
             </summary>
         </member>
     </members>
