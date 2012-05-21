@@ -32,6 +32,15 @@ public:
 	static int GetTerrainUnitSize();
 
 	static void Asplode(Vec3 pos, Vec3 dir, float minRadius, float maxRadius, float pressure);
+
+	static void SetTimeOfDay(float hour, bool forceUpdate);
+	static float GetTimeOfDay();
+
+	static ITimeOfDay::SAdvancedInfo GetTimeOfDayAdvancedInfo();
+	static void SetTimeOfDayAdvancedInfo(ITimeOfDay::SAdvancedInfo advancedInfo);
+
+	static void SetTimeOfDayVariableValue(ITimeOfDay::ETimeOfDayParamID id, float value);
+	static void SetTimeOfDayVariableValueColor(ITimeOfDay::ETimeOfDayParamID id, Vec3 value);
 };
 
 #endif //__SCRIPTBIND_3DENGINE__

@@ -9,6 +9,15 @@ CScriptbind_3DEngine::CScriptbind_3DEngine()
 	REGISTER_METHOD(GetTerrainSize);
 	REGISTER_METHOD(GetTerrainSectorSize);
 	REGISTER_METHOD(GetTerrainUnitSize);
+
+	REGISTER_METHOD(SetTimeOfDay);
+	REGISTER_METHOD(GetTimeOfDay);
+
+	REGISTER_METHOD(GetTimeOfDayAdvancedInfo);
+	REGISTER_METHOD(SetTimeOfDayAdvancedInfo);
+
+	REGISTER_METHOD(SetTimeOfDayVariableValue);
+	REGISTER_METHOD(SetTimeOfDayVariableValueColor);
 }
 
 float CScriptbind_3DEngine::GetTerrainElevation(float x, float y, bool includeOutdoorVoxels)
@@ -60,6 +69,44 @@ void CScriptbind_3DEngine::Asplode(Vec3 pos, Vec3 dir, float minRadius, float ma
 	explosion.nOccRes = explosion.rmax>50.0f ? 0:16;
 
 	gEnv->pPhysicalWorld->SimulateExplosion(&explosion, 0, 0, ent_living|ent_rigid|ent_sleeping_rigid|ent_independent|ent_static|ent_delayed_deformations);
+}
 
+void CScriptbind_3DEngine::SetTimeOfDay(float hour, bool forceUpdate)
+{
+	gEnv->p3DEngine->GetTimeOfDay()->SetTime(hour, forceUpdate);
+}
 
+float CScriptbind_3DEngine::GetTimeOfDay()
+{
+	return gEnv->p3DEngine->GetTimeOfDay()->GetTime();
+}
+
+ITimeOfDay::SAdvancedInfo CScriptbind_3DEngine::GetTimeOfDayAdvancedInfo()
+{
+	ITimeOfDay::SAdvancedInfo info;
+	gEnv->p3DEngine->GetTimeOfDay()->GetAdvancedInfo(info);
+
+	return info;
+}
+
+void CScriptbind_3DEngine::SetTimeOfDayAdvancedInfo(ITimeOfDay::SAdvancedInfo advancedInfo)
+{
+	gEnv->p3DEngine->GetTimeOfDay()->SetAdvancedInfo(advancedInfo);
+}
+
+void CScriptbind_3DEngine::SetTimeOfDayVariableValue(ITimeOfDay::ETimeOfDayParamID id, float value)
+{
+	float valueArray[3];
+	valueArray[0] = value;
+	gEnv->p3DEngine->GetTimeOfDay()->SetVariableValue(id, valueArray);
+}
+
+void CScriptbind_3DEngine::SetTimeOfDayVariableValueColor(ITimeOfDay::ETimeOfDayParamID id, Vec3 value)
+{
+	float valueArray[3];
+	valueArray[0] = value.x;
+	valueArray[1] = value.x;
+	valueArray[2] = value.x;
+
+	gEnv->p3DEngine->GetTimeOfDay()->SetVariableValue(id, valueArray);
 }
