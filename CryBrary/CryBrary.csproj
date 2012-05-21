@@ -138,6 +138,8 @@
     <Compile Include="Engine\Level.cs" />
     <Compile Include="Entity\EntityBase.cs" />
     <Compile Include="Extensions\IDictionary.cs" />
+    <Compile Include="FlowSystem\Attributes.cs" />
+    <Compile Include="FlowSystem\Ports.cs" />
     <Compile Include="Script Handling\CryScript.cs" />
     <Compile Include="Script Handling\ScriptCompiler.cs" />
     <Compile Include="Engine\Material.cs" />
