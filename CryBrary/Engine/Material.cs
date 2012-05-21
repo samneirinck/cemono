@@ -118,22 +118,29 @@ namespace CryEngine
 			return TryAdd(ptr);
 		}
 
-		public void SetParam(string paramName, float value)
+		public bool SetParam(string paramName, float value)
 		{
-			_SetGetMaterialParamFloat(MaterialPointer, paramName, ref value, false);
+			return _SetGetMaterialParamFloat(MaterialPointer, paramName, ref value, false);
 		}
 
-		public void SetParam(MaterialFloatParameter param, float value)
+		public bool SetParam(MaterialFloatParameter param, float value)
 		{
-			SetParam(param.GetEngineName(), value);
+			return SetParam(param.GetEngineName(), value);
 		}
 
 		public float GetParam(string paramName)
 		{
-			float value = 0;
-			_SetGetMaterialParamFloat(MaterialPointer, paramName, ref value, true);
+			float value;
+			TryGetParam(paramName, out value);
 
 			return value;
+		}
+
+		public bool TryGetParam(string paramName, out float value)
+		{
+			value = 0;
+
+			return _SetGetMaterialParamFloat(MaterialPointer, paramName, ref value, true);
 		}
 
 		public float GetParam(MaterialFloatParameter param)
@@ -141,20 +148,25 @@ namespace CryEngine
 			return GetParam(param.GetEngineName());
 		}
 
-		public void SetParamVec3(string paramName, Vec3 value)
+		public bool TryGetParam(MaterialFloatParameter param, out float value)
 		{
-			_SetGetMaterialParamVec3(MaterialPointer, paramName, ref value, false);
+			return TryGetParam(param.GetEngineName(), out value);
 		}
 
-		public void SetParamVec3(MaterialVec3Parameter param, Vec3 value)
+		public bool SetParamVec3(string paramName, Vec3 value)
 		{
-			SetParamVec3(param.GetEngineName(), value);
+			return _SetGetMaterialParamVec3(MaterialPointer, paramName, ref value, false);
+		}
+
+		public bool SetParamVec3(MaterialVec3Parameter param, Vec3 value)
+		{
+			return SetParamVec3(param.GetEngineName(), value);
 		}
 
 		public Vec3 GetParamVec3(string paramName)
 		{
-			Vec3 value = Vec3.Zero;
-			_SetGetMaterialParamVec3(MaterialPointer, paramName, ref value, true);
+			Vec3 value;
+			TryGetParam(paramName, out value);
 
 			return value;
 		}
@@ -162,6 +174,13 @@ namespace CryEngine
 		public Vec3 GetParamVec3(MaterialVec3Parameter param)
 		{
 			return GetParamVec3(param.GetEngineName());
+		}
+
+		public bool TryGetParam(string paramName, out Vec3 value)
+		{
+			value = Vec3.Zero;
+
+			return _SetGetMaterialParamVec3(MaterialPointer, paramName, ref value, true);
 		}
 
 		public void SetShaderParam(string paramName, float newVal)
