@@ -101,6 +101,7 @@ void CEntityManager::OnSpawn(IEntity *pEntity,SEntitySpawnParams &params)
 	if(!IsMonoEntity(params.pClass->GetName()))
 		return;
 
+	// Id isn't available in OnBeforeSpawn while running Editor, so we rely on the GUID instead.
 	if(auto monoEnt = GetMonoEntity(pEntity->GetGuid()))
 		monoEnt->OnSpawn(pEntity, params);
 }
