@@ -5770,61 +5770,6 @@
             <param name="port"></param>
             <returns></returns>
         </member>
-        <member name="P:CryEngine.FlowNodeAttribute.Name">
-            <summary>
-            Name of the node, if not set will use the node class name.
-            </summary>
-        </member>
-        <member name="P:CryEngine.FlowNodeAttribute.UICategory">
-            <summary>
-            Category in which the node will appear when right-clicking in the Flowgraph Editor.
-            </summary>
-        </member>
-        <member name="P:CryEngine.FlowNodeAttribute.Category">
-            <summary>
-            The Sandbox filtering category
-            </summary>
-        </member>
-        <member name="F:CryEngine.FlowNodeFlags.TargetEntity">
-            <summary>
-            This node targets an entity, entity id must be provided.
-            </summary>
-        </member>
-        <member name="F:CryEngine.FlowNodeFlags.HideUI">
-            <summary>
-            This node cannot be selected by user for placement in flow graph UI.
-            </summary>
-        </member>
-        <member name="F:CryEngine.FlowNodeFlags.DynamicOutput">
-            <summary>
-            This node is setup for dynamic output port growth in runtime.
-            </summary>
-        </member>
-        <member name="F:CryEngine.FlowNodeFlags.Unremovable">
-            <summary>
-            This node cannot be deleted by the user.
-            </summary>
-        </member>
-        <member name="F:CryEngine.FlowNodeCategory.Approved">
-            <summary>
-            This node is approved for designers
-            </summary>
-        </member>
-        <member name="F:CryEngine.FlowNodeCategory.Advanced">
-            <summary>
-            This node is slightly advanced and approved.
-            </summary>
-        </member>
-        <member name="F:CryEngine.FlowNodeCategory.Debug">
-            <summary>
-            This node is for debug purpose only.
-            </summary>
-        </member>
-        <member name="F:CryEngine.FlowNodeCategory.Obsolete">
-            <summary>
-            This node is obsolete and is not available in the editor.
-            </summary>
-        </member>
         <member name="M:CryEngine.CVar.Register``1(System.String,``0,System.String,CryEngine.CVarFlags)">
             <summary>
             Invoked by a CVar after its creation. Should <b>not</b> be visible outside this assembly.
@@ -6000,6 +5945,61 @@
         <member name="T:CryEngine.NativeActor">
             <summary>
             Used for non-CryMono actors.
+            </summary>
+        </member>
+        <member name="P:CryEngine.FlowNodeAttribute.Name">
+            <summary>
+            Name of the node, if not set will use the node class name.
+            </summary>
+        </member>
+        <member name="P:CryEngine.FlowNodeAttribute.UICategory">
+            <summary>
+            Category in which the node will appear when right-clicking in the Flowgraph Editor.
+            </summary>
+        </member>
+        <member name="P:CryEngine.FlowNodeAttribute.Category">
+            <summary>
+            The Sandbox filtering category
+            </summary>
+        </member>
+        <member name="F:CryEngine.FlowNodeFlags.TargetEntity">
+            <summary>
+            This node targets an entity, entity id must be provided.
+            </summary>
+        </member>
+        <member name="F:CryEngine.FlowNodeFlags.HideUI">
+            <summary>
+            This node cannot be selected by user for placement in flow graph UI.
+            </summary>
+        </member>
+        <member name="F:CryEngine.FlowNodeFlags.DynamicOutput">
+            <summary>
+            This node is setup for dynamic output port growth in runtime.
+            </summary>
+        </member>
+        <member name="F:CryEngine.FlowNodeFlags.Unremovable">
+            <summary>
+            This node cannot be deleted by the user.
+            </summary>
+        </member>
+        <member name="F:CryEngine.FlowNodeCategory.Approved">
+            <summary>
+            This node is approved for designers
+            </summary>
+        </member>
+        <member name="F:CryEngine.FlowNodeCategory.Advanced">
+            <summary>
+            This node is slightly advanced and approved.
+            </summary>
+        </member>
+        <member name="F:CryEngine.FlowNodeCategory.Debug">
+            <summary>
+            This node is for debug purpose only.
+            </summary>
+        </member>
+        <member name="F:CryEngine.FlowNodeCategory.Obsolete">
+            <summary>
+            This node is obsolete and is not available in the editor.
             </summary>
         </member>
     </members>
