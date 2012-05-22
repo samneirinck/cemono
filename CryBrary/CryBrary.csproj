@@ -163,6 +163,7 @@
     <Compile Include="Math\Vec2.cs" />
     <Compile Include="Math\Vec4.cs" />
     <Compile Include="Serialization\SerializedObjectReference.cs" />
+    <Compile Include="UI\EventSystem.cs" />
     <Compile Include="UI\UI.cs" />
     <Compile Include="Serialization\AppDomainSerializer.cs" />
     <Compile Include="Misc\Convert.cs" />
