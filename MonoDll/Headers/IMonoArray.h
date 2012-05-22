@@ -88,11 +88,13 @@ public:
 	virtual void InsertObject(IMonoObject *pObject) = 0;
 	/// <summary>
 	/// Inserts an IMonoArray into the array.
+	/// C# equivalent type: object[]
 	/// </summary>
 	virtual void InsertArray(IMonoArray *pArray) = 0;
 
 	/// <summary>
 	/// Inserts an mono string into the array.
+	//// C# equivalent type: string
 	/// </summary>
 	virtual void InsertMonoString(mono::string string) = 0;
 

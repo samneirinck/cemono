@@ -191,6 +191,7 @@
     <Compile Include="Actor\ItemSystem.cs" />
     <Compile Include="Utils\Debug\Logging.cs" />
     <Compile Include="GameRules\GameRules.cs" />
+    <Compile Include="Utils\PointerWrapper.cs" />
     <Compile Include="Utils\Statistics.cs" />
     <Compile Include="Math\Vec3.cs" />
     <Compile Include="Utils\PathUtils.cs" />

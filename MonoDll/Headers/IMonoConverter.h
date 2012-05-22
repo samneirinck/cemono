@@ -25,12 +25,22 @@ struct MonoAnyValue;
 
 enum ECommonManagedTypes
 {
-	// Vec3 struct
+	/// <summary>
+	/// Vec3 struct
+	/// </summary>
 	eCMT_Vec3 = 0,
-	// unsigned int, do not supply an object of the SMonoEntityId struct.
+	/// <summary>
+	/// unsigned int, do not supply an object of the SMonoEntityId struct.
+	/// </summary>
 	eCMT_EntityId,
-	// Standard hit info struct declared in CryGame.
-	eCMT_HitInfo
+	/// <summary>
+	/// Standard hit info struct declared in CryGame.
+	/// </summary>
+	eCMT_HitInfo,
+	/// <summary>
+	/// Struct containing an IntPtr representing a native pointer object.
+	/// </summary>
+	eCMT_PointerWrapper
 };
 
 /// <summary>

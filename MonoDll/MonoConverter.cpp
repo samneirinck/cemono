@@ -23,6 +23,7 @@ void CConverter::Reset()
 	m_preStoredTypes.insert(TPreStoredTypes::value_type(eCMT_Vec3, pCryBraryAssembly->GetCustomClass("Vec3")));
 	m_preStoredTypes.insert(TPreStoredTypes::value_type(eCMT_EntityId, pCryBraryAssembly->GetCustomClass("EntityId")));
 	m_preStoredTypes.insert(TPreStoredTypes::value_type(eCMT_HitInfo, pCryBraryAssembly->GetCustomClass("HitInfo")));
+	m_preStoredTypes.insert(TPreStoredTypes::value_type(eCMT_PointerWrapper, pCryBraryAssembly->GetCustomClass("PointerWrapper")));
 }
 
 IMonoArray *CConverter::CreateArray(int numArgs)
