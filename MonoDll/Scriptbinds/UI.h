@@ -14,38 +14,55 @@
 
 #include <IFlashUI.h>
 
-typedef void (*UICallback)(void);
+struct SEventSystemHandler;
 
 class CUI 
 	: public IMonoScriptBind
-	, public IUIEventListener
 {
 public:
 	CUI();
-	~CUI();
+	~CUI() {}
+
+	static CUI *GetInstance() { return m_pUI; }
 
 protected:
 	// IMonoScriptBind
 	virtual const char *GetClassName() override { return "UI"; }
 	// ~IMonoScriptBind
 
+	static IUIEventSystem *CreateEventSystem(mono::string name, IUIEventSystem::EEventSystemType eventType);
+
+	static unsigned int RegisterFunction(IUIEventSystem *pEventSystem, mono::string name, mono::string desc, mono::array inputs);
+	static unsigned int RegisterEvent(IUIEventSystem *pEventSystem, mono::string name, mono::string desc, mono::array outputs);
+
+	static void SendEvent(IUIEventSystem *pEventSystem, unsigned int eventId);
+
+private:
+	static CUI *m_pUI;
+};
+
+struct SEventSystemHandler
+	: public IUIEventListener
+{
+	SEventSystemHandler(const char *name, IUIEventSystem::EEventSystemType eventType)
+	{
+		m_pEventSystem = gEnv->pFlashUI->CreateEventSystem(name, eventType);
+
+		if(eventType == IUIEventSystem::eEST_UI_TO_SYSTEM)
+			m_pEventSystem->RegisterListener(this, "SEventSystemHandler");
+	}
+
 	// IUIEventListener
 	virtual void OnEvent(const SUIEvent& event);
 	// ~IUIEventListener
 
-	static IUIEventSystem *CreateEventSystem(mono::string name, IUIEventSystem::EEventSystemType eventType);
+	~SEventSystemHandler() {}
 
-	static void RegisterFunction(IUIEventSystem *pEventSystem, mono::string name, mono::string desc, mono::array inputs, UICallback callback);
-	static void RegisterEvent(IUIEventSystem *pEventSystem, mono::string name, mono::string desc, mono::array outputs);
+	IUIEventSystem *GetEventSystem() { return m_pEventSystem; }
 
 private:
-	typedef std::map<unsigned int, UICallback> TCallbacks;
-	static TCallbacks m_functionCallbacks;
 
-	typedef std::vector<unsigned int> TEvents;
-	static TEvents m_events;
-
-	static CUI *m_pUI;
+	IUIEventSystem  *m_pEventSystem;
 };
 
 #endif //__UI_H__

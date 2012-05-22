@@ -5,9 +5,6 @@
 
 CUI *CUI::m_pUI = NULL;
 
-CUI::TCallbacks CUI::m_functionCallbacks = CUI::TCallbacks();
-CUI::TEvents CUI::m_events = CUI::TEvents();
-
 CUI::CUI()
 {
 	m_pUI = this;
@@ -16,27 +13,34 @@ CUI::CUI()
 
 	REGISTER_METHOD(RegisterFunction);
 	REGISTER_METHOD(RegisterEvent);
+
+	REGISTER_METHOD(SendEvent);
 }
 
-CUI::~CUI()
+void SEventSystemHandler::OnEvent(const SUIEvent& event)
 {
-	// Function = IUIEventSystem::eEST_UI_TO_SYSTEM
-}
+	IMonoArray *pArgs = CreateMonoArray(2);
 
-void CUI::OnEvent(const SUIEvent& event)
-{
-	m_functionCallbacks[event.event]();
+	auto pConverter = gEnv->pMonoScriptSystem->GetConverter();
+
+	pArgs->Insert(pConverter->ToManagedType(pConverter->GetCommonClass(eCMT_PointerWrapper), &mono::pointer(m_pEventSystem)));
+	pArgs->Insert(event.event);
+
+	//IMonoArray *pArray = CreateMonoArray(event.args.GetArgCount());
+//	for(int i = 0; i < pArray->GetSize(); i++)
+		//pArray->Insert(event.args.GetArg(i).
+
+	CUI::GetInstance()->GetClass()->CallMethod("OnEvent", pArgs, true);
 }
 
 IUIEventSystem *CUI::CreateEventSystem(mono::string name, IUIEventSystem::EEventSystemType eventType)
 {
-	auto pEventSystem = gEnv->pFlashUI->CreateEventSystem(ToCryString(name), eventType);
+	auto eventSystemHandler = new SEventSystemHandler(ToCryString(name), eventType);
 
-	pEventSystem->RegisterListener(m_pUI, "CryMonoUI");
-	return pEventSystem;
+	return eventSystemHandler->GetEventSystem();
 }
 
-void CUI::RegisterFunction(IUIEventSystem *pEventSystem, mono::string name, mono::string desc, mono::array inputs, UICallback callback)
+unsigned int CUI::RegisterFunction(IUIEventSystem *pEventSystem, mono::string name, mono::string desc, mono::array inputs)
 {
 	SUIEventDesc eventDesc(ToCryString(name), ToCryString(desc));
 
@@ -67,10 +71,10 @@ void CUI::RegisterFunction(IUIEventSystem *pEventSystem, mono::string name, mono
 		}
 	}
 
-	m_functionCallbacks.insert(TCallbacks::value_type(pEventSystem->RegisterEvent(eventDesc), callback));
+	return pEventSystem->RegisterEvent(eventDesc);
 }
 
-void CUI::RegisterEvent(IUIEventSystem *pEventSystem, mono::string name, mono::string desc, mono::array outputs)
+unsigned int CUI::RegisterEvent(IUIEventSystem *pEventSystem, mono::string name, mono::string desc, mono::array outputs)
 {
 	SUIEventDesc eventDesc(ToCryString(name), ToCryString(desc));
 
@@ -101,5 +105,12 @@ void CUI::RegisterEvent(IUIEventSystem *pEventSystem, mono::string name, mono::s
 		}
 	}
 
-	m_events.push_back(pEventSystem->RegisterEvent(eventDesc));
+	return pEventSystem->RegisterEvent(eventDesc);
+}
+
+void CUI::SendEvent(IUIEventSystem *pEventSystem, unsigned int eventId)
+{
+	SUIEvent event(eventId);
+
+	pEventSystem->SendEvent(event);
 }
