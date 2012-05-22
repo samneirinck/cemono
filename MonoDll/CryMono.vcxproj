@@ -393,6 +393,7 @@
     <ClInclude Include="Scriptbinds\Renderer.h" />
     <ClInclude Include="ScriptBinds\MaterialManager.h" />
     <ClInclude Include="Scriptbinds\ScriptInterface.h" />
+    <ClInclude Include="Scriptbinds\UI.h" />
     <ClInclude Include="Scriptbinds\ViewSystem.h" />
     <ClInclude Include="ScriptManager.h" />
     <ClInclude Include="stdafx.h" />
@@ -428,6 +429,7 @@
     <ClCompile Include="Scriptbinds\Renderer.cpp" />
     <ClCompile Include="ScriptBinds\MaterialManager.cpp" />
     <ClCompile Include="Scriptbinds\ScriptInterface.cpp" />
+    <ClCompile Include="Scriptbinds\UI.cpp" />
     <ClCompile Include="Scriptbinds\ViewSystem.cpp" />
     <ClCompile Include="ScriptManager.cpp" />
     <ClCompile Include="stdafx.cpp">

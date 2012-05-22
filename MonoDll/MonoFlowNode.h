@@ -97,8 +97,8 @@ struct SMonoInputPortConfig
 	SInputPortConfig Convert()
 	{
 		const char *sName = ToCryString(name);
-		const char *sDesc = ToCryString(description);
-		const char *sHumanName = ToCryString(humanName);
+		const char *sDesc = description ? ToCryString(description) : NULL;
+		const char *sHumanName = humanName ? ToCryString(humanName) : NULL;
 		const char *sUIConfig = uiConfig ? ToCryString(uiConfig) : NULL;
 
 		IMonoObject *pObject = NULL;
@@ -110,17 +110,17 @@ struct SMonoInputPortConfig
 		case eFDT_Void:
 			return InputPortConfig_Void(sName, _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
 		case eFDT_Int:
-			return InputPortConfig<int>(sName, pObject->Unbox<int>(), _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
+			return InputPortConfig<int>(sName, pObject ? pObject->Unbox<int>() : 0, _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
 		case eFDT_Float:
-			return InputPortConfig<float>(sName, pObject->Unbox<float>(), _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
+			return InputPortConfig<float>(sName, pObject ? pObject->Unbox<float>() : 0, _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
 		case eFDT_EntityId: 
-			return InputPortConfig<EntityId>(sName, pObject->Unbox<EntityId>(), _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
+			return InputPortConfig<EntityId>(sName, pObject ? pObject->Unbox<EntityId>() : 0, _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
 		case eFDT_Vec3:
-			return InputPortConfig<Vec3>(sName, pObject->Unbox<Vec3>(), _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
+			return InputPortConfig<Vec3>(sName, pObject ? pObject->Unbox<Vec3>() : Vec3(0,0,0), _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
 		case eFDT_String:
-			return InputPortConfig<string>(sName, ToCryString((mono::string)defaultValue), _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
+			return InputPortConfig<string>(sName, defaultValue ? ToCryString((mono::string)defaultValue) : "", _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
 		case eFDT_Bool:
-			return InputPortConfig<bool>(sName, pObject->Unbox<bool>(), _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
+			return InputPortConfig<bool>(sName, pObject ? pObject->Unbox<bool>() : false, _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
 		}
 
 		return *(SInputPortConfig *)0;

@@ -144,6 +144,9 @@
     <ClInclude Include="Scriptbinds\LevelSystem.h">
       <Filter>ScriptBinds</Filter>
     </ClInclude>
+    <ClInclude Include="Scriptbinds\UI.h">
+      <Filter>ScriptBinds\Viewport\UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -241,6 +244,9 @@
     <ClCompile Include="Scriptbinds\LevelSystem.cpp">
       <Filter>ScriptBinds</Filter>
     </ClCompile>
+    <ClCompile Include="Scriptbinds\UI.cpp">
+      <Filter>ScriptBinds\Viewport\UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ScriptBinds">
@@ -284,6 +290,9 @@
     </Filter>
     <Filter Include="ActorSystem">
       <UniqueIdentifier>{7519e88b-de7a-4729-919b-85c4612989e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ScriptBinds\Viewport\UI">
+      <UniqueIdentifier>{35c9343f-03fb-4c50-9c85-fa0b95fafeb7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
