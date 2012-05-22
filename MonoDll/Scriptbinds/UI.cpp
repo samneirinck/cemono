@@ -17,18 +17,53 @@ CUI::CUI()
 	REGISTER_METHOD(SendEvent);
 }
 
+template <typename T>
+T GetValue(const TUIData &arg)
+{
+	T value;
+	arg.GetValueWithConversion(value);
+
+	return value;
+}
+
 void SEventSystemHandler::OnEvent(const SUIEvent& event)
 {
-	IMonoArray *pArgs = CreateMonoArray(2);
+	IMonoArray *pArgs = CreateMonoArray(3);
 
 	auto pConverter = gEnv->pMonoScriptSystem->GetConverter();
 
 	pArgs->Insert(pConverter->ToManagedType(pConverter->GetCommonClass(eCMT_PointerWrapper), &mono::pointer(m_pEventSystem)));
 	pArgs->Insert(event.event);
 
-	//IMonoArray *pArray = CreateMonoArray(event.args.GetArgCount());
-//	for(int i = 0; i < pArray->GetSize(); i++)
-		//pArray->Insert(event.args.GetArg(i).
+	IMonoArray *pArray = CreateMonoArray(event.args.GetArgCount());
+	for(int i = 0; i < pArray->GetSize(); i++)
+	{
+		auto arg = event.args.GetArg(i);
+
+		switch(arg.GetType())
+		{
+			case eUIDT_Int:
+				pArray->Insert(GetValue<int>(arg));
+				break;
+			case eUIDT_Float:
+				pArray->Insert(GetValue<float>(arg));
+				break;
+			case eUIDT_EntityId:
+				pArray->Insert(GetValue<EntityId>(arg));
+				break;
+			case eUIDT_Vec3:
+				pArray->Insert(GetValue<Vec3>(arg));
+				break;
+			case eUIDT_String:
+				pArray->Insert(GetValue<string>(arg));
+				break;
+			case eUIDT_Bool:
+				pArray->Insert(GetValue<bool>(arg));
+				break;
+		}
+	}
+
+	pArgs->InsertArray(pArray);
 
 	CUI::GetInstance()->GetClass()->CallMethod("OnEvent", pArgs, true);
 }

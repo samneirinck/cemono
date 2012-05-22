@@ -26,22 +26,17 @@ namespace CryEngine
 		{
 			var ptr = _CreateEventSystem(name, type);
 
-			Debug.LogAlways("Created event system {0}", ptr);
 			Delegates.Add(ptr, new Dictionary<uint, UIFunctionDelegate>());
 			return ptr;
 		}
 
 		internal static void RegisterFunction(IntPtr eventSystemPtr, string name, string desc, object[] inputs, UIFunctionDelegate funcDelegate)
 		{
-			Debug.LogAlways("Registering method {0}", eventSystemPtr);
-
 			Delegates[eventSystemPtr].Add(_RegisterFunction(eventSystemPtr, name, desc, inputs), funcDelegate);
 		}
 
-		internal static void OnEvent(PointerWrapper ptrWrapper, uint eventId)
+		internal static void OnEvent(PointerWrapper ptrWrapper, uint eventId, object[] args)
 		{
-			Debug.LogAlways("OnEvent: {0}", ptrWrapper.ptr);
-
 			if(!Delegates.ContainsKey(ptrWrapper.ptr))
 				throw new ArgumentException("eventSystemPtr has not been registered with the UI system!");
 
