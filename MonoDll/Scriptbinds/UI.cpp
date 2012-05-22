@@ -143,9 +143,39 @@ unsigned int CUI::RegisterEvent(IUIEventSystem *pEventSystem, mono::string name,
 	return pEventSystem->RegisterEvent(eventDesc);
 }
 
-void CUI::SendEvent(IUIEventSystem *pEventSystem, unsigned int eventId)
+void CUI::SendEvent(IUIEventSystem *pEventSystem, unsigned int eventId, mono::array args)
 {
 	SUIEvent event(eventId);
+
+	if(args)
+	{
+		IMonoArray *pArgs = *args;
+		for(int i = 0; i < pArgs->GetSize(); i++)
+		{
+			auto pItem = pArgs->GetItem(i);
+			switch(pItem->GetType())
+			{
+			case eMonoAnyType_Boolean:
+				event.args.AddArgument(pItem->Unbox<bool>());
+				break;
+			case eMonoAnyType_Integer:
+				event.args.AddArgument(pItem->Unbox<int>());
+				break;
+			case eMonoAnyType_Float:
+				event.args.AddArgument(pItem->Unbox<float>());
+				break;
+			case eMonoAnyType_Vec3:
+				event.args.AddArgument(pItem->Unbox<Vec3>());
+				break;
+			case eMonoAnyType_String:
+				event.args.AddArgument(string(pItem->Unbox<const char *>()));
+				break;
+			default :
+				CryLogAlways("[Warning] Attempted to send event with arg of unsupported type %i at index %i", pItem->GetType(), i);
+				break;
+			}
+		}
+	}
 
 	pEventSystem->SendEvent(event);
 }

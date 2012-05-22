@@ -35,7 +35,7 @@ protected:
 	static unsigned int RegisterFunction(IUIEventSystem *pEventSystem, mono::string name, mono::string desc, mono::array inputs);
 	static unsigned int RegisterEvent(IUIEventSystem *pEventSystem, mono::string name, mono::string desc, mono::array outputs);
 
-	static void SendEvent(IUIEventSystem *pEventSystem, unsigned int eventId);
+	static void SendEvent(IUIEventSystem *pEventSystem, unsigned int eventId, mono::array args);
 
 private:
 	static CUI *m_pUI;

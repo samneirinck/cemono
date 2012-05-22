@@ -20,7 +20,7 @@ namespace CryEngine
 		extern internal static uint _RegisterEvent(IntPtr eventSystemPtr, string name, string desc, object[] outputs);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _SendEvent(IntPtr eventSystemPtr, uint eventId);
+		extern internal static void _SendEvent(IntPtr eventSystemPtr, uint eventId, object[] args);
 
 		internal static IntPtr CreateEventSystem(string name, EventSystemType type)
 		{
