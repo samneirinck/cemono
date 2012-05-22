@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
+using CryEngine.Initialization;
+using CryEngine.Extensions;
 
 namespace CryEngine
 {
@@ -22,6 +24,23 @@ namespace CryEngine
 		#endregion
 
 		#region Statics
+		internal static void Load(ref CryScript script)
+		{
+			string gamemodeName = null;
+
+			GameRulesAttribute gamemodeAttribute;
+			if(script.Type.TryGetAttribute<GameRulesAttribute>(out gamemodeAttribute))
+			{
+				if(!string.IsNullOrEmpty(gamemodeAttribute.Name))
+					gamemodeName = gamemodeAttribute.Name;
+
+				if(gamemodeAttribute.Default)
+					_SetDefaultGameMode(gamemodeName);
+			}
+
+			_RegisterGameMode(gamemodeName ?? script.ScriptName);
+		}
+
 		public static GameRules Current { get; internal set; }
 		#endregion
 

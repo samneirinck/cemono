@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+
 using CryEngine.Extensions;
+using CryEngine.Initialization;
 
 namespace CryEngine
 {
@@ -12,10 +14,10 @@ namespace CryEngine
 	public class UI
 	{
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static IntPtr _CreateEventSystem(string name, EventSystemType type);
+		extern private static IntPtr _CreateEventSystem(string name, EventSystemType type);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static uint _RegisterFunction(IntPtr eventSystemPtr, string name, string desc, object[] inputs);
+		extern private static uint _RegisterFunction(IntPtr eventSystemPtr, string name, string desc, object[] inputs);
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static uint _RegisterEvent(IntPtr eventSystemPtr, string name, string desc, object[] outputs);
 
@@ -26,13 +28,13 @@ namespace CryEngine
 		{
 			var ptr = _CreateEventSystem(name, type);
 
-			Delegates.Add(ptr, new Dictionary<uint, UIFunctionDelegate>());
+			Delegates.Add(ptr, new Dictionary<uint, MethodInfo>());
 			return ptr;
 		}
 
-		internal static void RegisterFunction(IntPtr eventSystemPtr, string name, string desc, object[] inputs, UIFunctionDelegate funcDelegate)
+		internal static void RegisterFunction(IntPtr eventSystemPtr, string name, string desc, object[] inputs, MethodInfo methodInfo)
 		{
-			Delegates[eventSystemPtr].Add(_RegisterFunction(eventSystemPtr, name, desc, inputs), funcDelegate);
+			Delegates[eventSystemPtr].Add(_RegisterFunction(eventSystemPtr, name, desc, inputs), methodInfo);
 		}
 
 		internal static void OnEvent(PointerWrapper ptrWrapper, uint eventId, object[] args)
@@ -44,10 +46,10 @@ namespace CryEngine
 			if(!delegateList.ContainsKey(eventId))
 				throw new ArgumentException(string.Format("eventId {0} has not been registered with the UI system!", eventId));
 
-			delegateList[eventId]();
+			delegateList[eventId].Invoke(null, args);
 		}
 
-		static Dictionary<IntPtr, Dictionary<uint, UIFunctionDelegate>> Delegates = new Dictionary<IntPtr, Dictionary<uint, UIFunctionDelegate>>();
+		static Dictionary<IntPtr, Dictionary<uint, MethodInfo>> Delegates = new Dictionary<IntPtr, Dictionary<uint, MethodInfo>>();
 
 		public enum EventSystemType
 		{

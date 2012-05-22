@@ -24,6 +24,8 @@ namespace CryEngine.Initialization
 				ScriptType = ScriptType.FlowNode;
 			else if(type.Implements(typeof(GameRules)))
 				ScriptType = ScriptType.GameRules;
+			else if(type.Implements(typeof(UIEventSystem)))
+				ScriptType = ScriptType.UIEventSystem;
 			else if(type.Implements(typeof(ScriptCompiler)))
 				ScriptType = ScriptType.ScriptCompiler;
 			else if(type.Implements(typeof(CryScriptInstance)))
@@ -100,7 +102,7 @@ namespace CryEngine.Initialization
 		Actor,
 		/// <summary>
 		/// </summary>
-		UIEvent,
+		UIEventSystem,
 		/// <summary>
 		/// </summary>
 		EditorForm,

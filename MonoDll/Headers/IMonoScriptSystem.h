@@ -53,7 +53,7 @@ enum EMonoScriptType
 	eScriptType_Actor,
 	/// <summary>
 	/// </summary>
-	eScriptType_UIEvent,
+	eScriptType_UIEventSystem,
 	/// <summary>
 	/// </summary>
 	eScriptType_EditorForm,

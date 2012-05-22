@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+
 using CryEngine.Initialization;
+using CryEngine.Extensions;
 
 namespace CryEngine
 {
@@ -39,6 +41,22 @@ namespace CryEngine
 		#endregion
 
 		#region Statics
+		internal static void Load(ref CryScript script)
+		{
+			bool registerActorClass = true;
+			bool isAI = false;
+
+			ActorAttribute attr;
+			if(script.Type.TryGetAttribute<ActorAttribute>(out attr))
+			{
+				registerActorClass = attr.useMonoActor;
+				isAI = attr.isAI;
+			}
+
+			if(registerActorClass)
+				_RegisterActorClass(script.ScriptName, isAI);
+		}
+
 		public static Actor Get(int channelId)
 		{
 			var actor = Get<Actor>(channelId);

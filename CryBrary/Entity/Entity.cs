@@ -6,6 +6,8 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using CryEngine.Extensions;
 
+using CryEngine.Initialization;
+
 namespace CryEngine
 {
 	/// <summary>
@@ -14,6 +16,13 @@ namespace CryEngine
 	public abstract partial class Entity : EntityBase
 	{
 		protected Entity() { }
+		
+		internal static void Load(ref CryScript script)
+		{
+			//LoadFlowNode(ref script, true);
+
+			Methods.RegisterClass(GetEntityConfig(script.Type));
+		}
 
 		/// <summary>
 		/// Initializes the entity, not recommended to set manually.

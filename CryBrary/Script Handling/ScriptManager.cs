@@ -153,16 +153,19 @@ namespace CryEngine.Initialization
 				switch(script.ScriptType)
 				{
 					case ScriptType.Actor:
-						LoadActor(ref script);
+						Actor.Load(ref script);
 						break;
 					case ScriptType.Entity:
-						LoadEntity(ref script);
+						Entity.Load(ref script);
 						break;
 					case ScriptType.FlowNode:
-						LoadFlowNode(ref script);
+						FlowNode.Load(ref script);
 						break;
 					case ScriptType.GameRules:
-						LoadGameRules(ref script);
+						GameRules.Load(ref script);
+						break;
+					case ScriptType.UIEventSystem:
+						UIEventSystem.Load(ref script);
 						break;
 					case ScriptType.ScriptCompiler:
 						{
@@ -175,86 +178,6 @@ namespace CryEngine.Initialization
 			}
 
 			CompiledScripts[script.ScriptType].Add(script);
-		}
-
-		void LoadActor(ref CryScript script)
-		{
-			bool registerActorClass = true;
-			bool isAI = false;
-
-			ActorAttribute attr;
-			if(script.Type.TryGetAttribute<ActorAttribute>(out attr))
-			{
-				registerActorClass = attr.useMonoActor;
-				isAI = attr.isAI;
-			}
-
-			if(registerActorClass)
-				Actor._RegisterActorClass(script.ScriptName, isAI);
-		}
-
-		void LoadEntity(ref CryScript script)
-		{
-			//LoadFlowNode(ref script, true);
-
-			Entity.Methods.RegisterClass(Entity.GetEntityConfig(script.Type));
-		}
-
-		void LoadFlowNode(ref CryScript script, bool entityNode = false)
-		{
-			bool containsNodePorts = false;
-			foreach(var member in script.Type.GetMembers())
-			{
-				if(member.ContainsAttribute<PortAttribute>())
-				{
-					containsNodePorts = true;
-					break;
-				}
-			}
-
-			if(!containsNodePorts)
-				return;
-
-			string category = null;
-			var nodeName = script.ScriptName;
-
-			if(!entityNode)
-			{
-				category = script.Type.Namespace;
-
-				FlowNodeAttribute nodeInfo;
-				if(script.Type.TryGetAttribute<FlowNodeAttribute>(out nodeInfo))
-				{
-					if(nodeInfo.UICategory != null && nodeInfo.UICategory.Length > 0)
-						category = nodeInfo.UICategory;
-
-					if(nodeInfo.Name != null && nodeInfo.Name.Length > 0)
-						nodeName = nodeInfo.Name;
-				}
-
-				script.ScriptName = category + ":" + nodeName;
-			}
-			else
-				category = "entity";
-
-			FlowNodes.Add(category + ":" + nodeName);
-		}
-
-		void LoadGameRules(ref CryScript script)
-		{
-			string gamemodeName = null;
-
-			GameRulesAttribute gamemodeAttribute;
-			if(script.Type.TryGetAttribute<GameRulesAttribute>(out gamemodeAttribute))
-			{
-				if(!string.IsNullOrEmpty(gamemodeAttribute.Name))
-					gamemodeName = gamemodeAttribute.Name;
-
-				if(gamemodeAttribute.Default)
-					GameRules._SetDefaultGameMode(gamemodeName);
-			}
-
-			GameRules._RegisterGameMode(gamemodeName ?? script.ScriptName);
 		}
 
 		public void GenerateDebugDatabaseForAssembly(string assemblyPath)
@@ -270,7 +193,7 @@ namespace CryEngine.Initialization
 			}
 		}
 
-		List<string> FlowNodes { get; set; }
+		internal static List<string> FlowNodes { get; set; }
 
 		#region Statics
 		/// <summary>

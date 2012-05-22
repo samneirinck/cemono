@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+
 using CryEngine.Extensions;
+using CryEngine.Initialization;
 
 namespace CryEngine
 {
@@ -55,6 +57,46 @@ namespace CryEngine
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static IntPtr _GetTargetEntity(IntPtr nodePtr, out uint entId);
 		#endregion
+
+		internal static void Load(ref CryScript script, bool entityNode = false)
+		{
+			bool containsNodePorts = false;
+			foreach(var member in script.Type.GetMembers())
+			{
+				if(member.ContainsAttribute<PortAttribute>())
+				{
+					containsNodePorts = true;
+					break;
+				}
+			}
+
+			if(!containsNodePorts)
+				return;
+
+			string category = null;
+			var nodeName = script.ScriptName;
+
+			if(!entityNode)
+			{
+				category = script.Type.Namespace;
+
+				FlowNodeAttribute nodeInfo;
+				if(script.Type.TryGetAttribute<FlowNodeAttribute>(out nodeInfo))
+				{
+					if(nodeInfo.UICategory != null && nodeInfo.UICategory.Length > 0)
+						category = nodeInfo.UICategory;
+
+					if(nodeInfo.Name != null && nodeInfo.Name.Length > 0)
+						nodeName = nodeInfo.Name;
+				}
+
+				script.ScriptName = category + ":" + nodeName;
+			}
+			else
+				category = "entity";
+
+			ScriptManager.FlowNodes.Add(category + ":" + nodeName);
+		}
 
 		internal void InternalInitialize(NodeInfo nodeInfo)
 		{
@@ -193,7 +235,7 @@ namespace CryEngine
 		static Dictionary<Type, List<MethodInfo>> InputMethods { get; set; }
 
 		//DON'T LOOK AT ME
-		static NodePortType GetPortType(Type type)
+		internal static NodePortType GetPortType(Type type)
 		{
 			if(type == typeof(void))
 				return NodePortType.Void;
