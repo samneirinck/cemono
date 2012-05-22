@@ -11,47 +11,92 @@ namespace CryEngine
 {
 	public abstract class UIEventSystem
 	{
+
+
 		internal static void Load(ref CryScript script)
 		{
-			if(Pointers == null)
-				Pointers = new Dictionary<Type, IntPtr>();
-
 			bool createdToSystem = false;
 			bool createdToUI = false;
 
 			foreach(var member in script.Type.GetMembers())
 			{
-				PortAttribute attribute;
-				if(member.TryGetAttribute<PortAttribute>(out attribute))
+				switch(member.MemberType)
 				{
-					if(attribute.Name == null || attribute.Name.Length < 1)
-						attribute.Name = member.Name;
+					case MemberTypes.Field:
+					case MemberTypes.Property:
+						{
+							if(ToUIPointers == null)
+								ToUIPointers = new Dictionary<Type, IntPtr>();
 
-					if(attribute.Description == null)
-						attribute.Description = "";
+							string name = member.Name;
+							string desc = "";
 
-					switch(member.MemberType)
-					{
-						case MemberTypes.Field:
-						case MemberTypes.Property:
+							if(member.ContainsAttribute<UIEventAttribute>())
 							{
-								if(!createdToUI)
-								{
-									Pointers.Add(script.Type, UI.CreateEventSystem(script.ScriptName, UI.EventSystemType.ToUI));
+								var attribute = member.GetAttribute<UIEventAttribute>();
 
-									createdToUI = true;
-								}
+								if(attribute.Name != null && attribute.Name.Length > 0)
+									name = attribute.Name;
 
-								var args = new List<object>();
-
-								UI._RegisterEvent(Pointers[script.Type], attribute.Name, attribute.Description, args.ToArray());
+								if(attribute.Description != null && attribute.Name.Length > 0)
+									desc = attribute.Description;
 							}
-							break;
-						case MemberTypes.Method:
+							
+
+							Type memberType = null;
+							var fieldInfo = member as FieldInfo;
+							var propertyInfo = member as PropertyInfo;
+
+							if(fieldInfo != null)
+								memberType = fieldInfo.FieldType;
+							else
+								memberType = propertyInfo.PropertyType;
+
+							if(!memberType.Name.StartsWith("UIEvent`"))
+								break;
+
+							if(!createdToUI)
 							{
+								ToUIPointers.Add(script.Type, UI.CreateEventSystem(script.ScriptName, UI.EventSystemType.ToUI));
+
+								createdToUI = true;
+							}
+
+							var args = new List<object>();
+
+							foreach(var type in memberType.GetGenericArguments())
+								args.Add(new OutputPortConfig("Output", "", "desc", FlowNode.GetPortType(type)));
+
+							var eventId = UI._RegisterEvent(ToUIPointers[script.Type], name, desc, args.ToArray());
+
+							var uiEvent = Activator.CreateInstance(memberType);
+
+							memberType.GetProperty("EventId").SetValue(uiEvent, eventId, null);
+							memberType.GetProperty("EventSystemPointer").SetValue(uiEvent, ToUIPointers[script.Type], null);
+
+							if(fieldInfo != null)
+								fieldInfo.SetValue(null, uiEvent);
+							else
+								propertyInfo.SetValue(null, uiEvent, null);
+						}
+						break;
+					case MemberTypes.Method:
+						{
+							UIFunctionAttribute attribute;
+							if(member.TryGetAttribute<UIFunctionAttribute>(out attribute))
+							{
+								if(ToSystemPointers == null)
+									ToSystemPointers = new Dictionary<Type, IntPtr>();
+
+								if(attribute.Name == null || attribute.Name.Length < 0)
+									attribute.Name = member.Name;
+
+								if(attribute.Description == null)
+									attribute.Description = "";
+
 								if(!createdToSystem)
 								{
-									Pointers.Add(script.Type, UI.CreateEventSystem(script.ScriptName, UI.EventSystemType.ToSystem));
+									ToSystemPointers.Add(script.Type, UI.CreateEventSystem(script.ScriptName, UI.EventSystemType.ToSystem));
 
 									createdToSystem = true;
 								}
@@ -60,16 +105,44 @@ namespace CryEngine
 								var args = new List<object>();
 
 								foreach(var param in method.GetParameters())
-									args.Add(new InputPortConfig(param.Name, FlowNode.GetPortType(param.ParameterType), "desc"));
+									args.Add(new InputPortConfig(param.Name, FlowNode.GetPortType(param.ParameterType), ""));
 
-								UI.RegisterFunction(Pointers[script.Type], attribute.Name, attribute.Description, args.ToArray(), method);
+								UI.RegisterFunction(ToSystemPointers[script.Type], attribute.Name, attribute.Description, args.ToArray(), method);
 							}
-							break;
-					}
+						}
+						break;
 				}
 			}
 		}
 
-		internal static Dictionary<Type, IntPtr> Pointers { get; set; }
+		internal static Dictionary<Type, IntPtr> ToSystemPointers { get; set; }
+		internal static Dictionary<Type, IntPtr> ToUIPointers { get; set; }
+
+		public struct UIEvent<T1, T2, T3>
+		{
+			public void Activate(T1 t1, T2 t2, T3 t3)
+			{
+				object[] args = { t1, t2, t3 };
+
+				UI._SendEvent(EventSystemPointer, EventId, args);
+			}
+
+			public uint EventId { get; set; }
+			public IntPtr EventSystemPointer { get; set; }
+		}
+	}
+
+	[AttributeUsage(AttributeTargets.Method)]
+	public sealed class UIFunctionAttribute : Attribute
+	{
+		public string Name { get; set; }
+		public string Description { get; set; }
+	}
+
+	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+	public sealed class UIEventAttribute : Attribute
+	{
+		public string Name { get; set; }
+		public string Description { get; set; }
 	}
 }
