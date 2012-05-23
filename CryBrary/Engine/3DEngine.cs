@@ -30,8 +30,8 @@ namespace CryEngine
 		extern internal static void _SetTimeOfDayAdvancedInfo(TimeOfDay.AdvancedInfo advancedInfo);
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _SetTimeOfDayVariableValue(TimeOfDay.ParamId id, float value);
+		extern internal static void _SetTimeOfDayVariableValue(int id, float value);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _SetTimeOfDayVariableValueColor(TimeOfDay.ParamId id, Vec3 value);
+		extern internal static void _SetTimeOfDayVariableValueColor(int id, Vec3 value);
 	}
 }

@@ -123,144 +123,266 @@ namespace CryEngine
 			public float fAnimSpeed;
 		}
 
-		internal enum ParamId
+		// TODO: Make sure people can't send color values to float parameters and vice versa.
+		#region SetVariableValue methods
+		public static void SetVariableValue(SkyParams param, float value)
 		{
-			PARAM_HDR_DYNAMIC_POWER_FACTOR,
-
-			PARAM_TERRAIN_OCCL_MULTIPLIER,
-			PARAM_SSAO_MULTIPLIER,
-			PARAM_SSAO_CONTRAST_MULTIPLIER,
-			PARAM_GI_MULTIPLIER,
-
-			PARAM_SUN_COLOR,
-			PARAM_SUN_COLOR_MULTIPLIER,
-			PARAM_SUN_SPECULAR_MULTIPLIER,
-
-			PARAM_SKY_COLOR,
-			PARAM_SKY_COLOR_MULTIPLIER,
-
-			PARAM_AMBIENT_GROUND_COLOR,
-			PARAM_AMBIENT_GROUND_COLOR_MULTIPLIER,
-
-			PARAM_AMBIENT_MIN_HEIGHT,
-			PARAM_AMBIENT_MAX_HEIGHT,
-
-			PARAM_FOG_COLOR,
-			PARAM_FOG_COLOR_MULTIPLIER,
-			PARAM_VOLFOG_HEIGHT,
-			PARAM_VOLFOG_DENSITY,
-			PARAM_FOG_COLOR2,
-			PARAM_FOG_COLOR2_MULTIPLIER,
-			PARAM_VOLFOG_HEIGHT2,
-			PARAM_VOLFOG_DENSITY2,
-			PARAM_VOLFOG_HEIGHT_OFFSET,
-
-			PARAM_FOG_RADIAL_COLOR,
-			PARAM_FOG_RADIAL_COLOR_MULTIPLIER,
-			PARAM_VOLFOG_RADIAL_SIZE,
-			PARAM_VOLFOG_RADIAL_LOBE,
-
-			PARAM_VOLFOG_FINAL_DENSITY_CLAMP,
-
-			PARAM_VOLFOG_GLOBAL_DENSITY,
-			PARAM_VOLFOG_RAMP_START,
-			PARAM_VOLFOG_RAMP_END,
-			PARAM_VOLFOG_RAMP_INFLUENCE,
-
-			PARAM_SKYLIGHT_SUN_INTENSITY,
-			PARAM_SKYLIGHT_SUN_INTENSITY_MULTIPLIER,
-
-			PARAM_SKYLIGHT_KM,
-			PARAM_SKYLIGHT_KR,
-			PARAM_SKYLIGHT_G,
-
-			PARAM_SKYLIGHT_WAVELENGTH_R,
-			PARAM_SKYLIGHT_WAVELENGTH_G,
-			PARAM_SKYLIGHT_WAVELENGTH_B,
-
-			PARAM_NIGHSKY_HORIZON_COLOR,
-			PARAM_NIGHSKY_HORIZON_COLOR_MULTIPLIER,
-			PARAM_NIGHSKY_ZENITH_COLOR,
-			PARAM_NIGHSKY_ZENITH_COLOR_MULTIPLIER,
-			PARAM_NIGHSKY_ZENITH_SHIFT,
-
-			PARAM_NIGHSKY_START_INTENSITY,
-
-			PARAM_NIGHSKY_MOON_COLOR,
-			PARAM_NIGHSKY_MOON_COLOR_MULTIPLIER,
-			PARAM_NIGHSKY_MOON_INNERCORONA_COLOR,
-			PARAM_NIGHSKY_MOON_INNERCORONA_COLOR_MULTIPLIER,
-			PARAM_NIGHSKY_MOON_INNERCORONA_SCALE,
-			PARAM_NIGHSKY_MOON_OUTERCORONA_COLOR,
-			PARAM_NIGHSKY_MOON_OUTERCORONA_COLOR_MULTIPLIER,
-			PARAM_NIGHSKY_MOON_OUTERCORONA_SCALE,
-
-			PARAM_CLOUDSHADING_SUNLIGHT_MULTIPLIER,
-			PARAM_CLOUDSHADING_SKYLIGHT_MULTIPLIER,
-			PARAM_CLOUDSHADING_SUNLIGHT_CUSTOM_COLOR,
-			PARAM_CLOUDSHADING_SUNLIGHT_CUSTOM_COLOR_MULTIPLIER,
-			PARAM_CLOUDSHADING_SUNLIGHT_CUSTOM_COLOR_INFLUENCE,
-			PARAM_CLOUDSHADING_SKYLIGHT_CUSTOM_COLOR,
-			PARAM_CLOUDSHADING_SKYLIGHT_CUSTOM_COLOR_MULTIPLIER,
-			PARAM_CLOUDSHADING_SKYLIGHT_CUSTOM_COLOR_INFLUENCE,
-
-			PARAM_SUN_SHAFTS_VISIBILITY,
-			PARAM_SUN_RAYS_VISIBILITY,
-			PARAM_SUN_RAYS_ATTENUATION,
-			PARAM_SUN_RAYS_SUNCOLORINFLUENCE,
-			PARAM_SUN_RAYS_CUSTOMCOLOR,
-
-			PARAM_OCEANFOG_COLOR,
-			PARAM_OCEANFOG_COLOR_MULTIPLIER,
-			PARAM_OCEANFOG_DENSITY,
-
-			PARAM_SKYBOX_MULTIPLIER,
-
-			PARAM_HDR_FILMCURVE_SHOULDER_SCALE,
-			PARAM_HDR_FILMCURVE_LINEAR_SCALE,
-			PARAM_HDR_FILMCURVE_TOE_SCALE,
-			PARAM_HDR_FILMCURVE_WHITEPOINT,
-
-			PARAM_HDR_BLUE_SHIFT,
-			PARAM_HDR_BLUE_SHIFT_THRESHOLD,
-			PARAM_HDR_COLORGRADING_COLOR_SATURATION,
-			PARAM_HDR_COLORGRADING_COLOR_CONTRAST,
-			PARAM_HDR_COLORGRADING_COLOR_BALANCE,
-
-			PARAM_COLORGRADING_COLOR_SATURATION,
-			PARAM_COLORGRADING_COLOR_CONTRAST,
-			PARAM_COLORGRADING_COLOR_BRIGHTNESS,
-
-			PARAM_COLORGRADING_LEVELS_MININPUT,
-			PARAM_COLORGRADING_LEVELS_GAMMA,
-			PARAM_COLORGRADING_LEVELS_MAXINPUT,
-			PARAM_COLORGRADING_LEVELS_MINOUTPUT,
-			PARAM_COLORGRADING_LEVELS_MAXOUTPUT,
-
-			PARAM_COLORGRADING_SELCOLOR_COLOR,
-			PARAM_COLORGRADING_SELCOLOR_CYANS,
-			PARAM_COLORGRADING_SELCOLOR_MAGENTAS,
-			PARAM_COLORGRADING_SELCOLOR_YELLOWS,
-			PARAM_COLORGRADING_SELCOLOR_BLACKS,
-
-			PARAM_COLORGRADING_FILTERS_GRAIN,
-			PARAM_COLORGRADING_FILTERS_SHARPENING,
-			PARAM_COLORGRADING_FILTERS_PHOTOFILTER_COLOR,
-			PARAM_COLORGRADING_FILTERS_PHOTOFILTER_DENSITY,
-
-			PARAM_COLORGRADING_DOF_FOCUSRANGE,
-			PARAM_COLORGRADING_DOF_BLURAMOUNT,
-
-			PARAM_SHADOWSC0_BIAS,
-			PARAM_SHADOWSC0_SLOPE_BIAS,
-			PARAM_SHADOWSC1_BIAS,
-			PARAM_SHADOWSC1_SLOPE_BIAS,
-			PARAM_SHADOWSC2_BIAS,
-			PARAM_SHADOWSC2_SLOPE_BIAS,
-			PARAM_SHADOWSC3_BIAS,
-			PARAM_SHADOWSC3_SLOPE_BIAS,
-
-			PARAM_TOTAL
+			Engine._SetTimeOfDayVariableValue((int)param, value);
 		}
+
+		public static void SetVariableValue(SkyParams param, Vec3 value)
+		{
+			Engine._SetTimeOfDayVariableValueColor((int)param, value);
+		}
+
+		public static void SetVariableValue(FogParams param, float value)
+		{
+			Engine._SetTimeOfDayVariableValue((int)param, value);
+		}
+
+		public static void SetVariableValue(FogParams param, Vec3 value)
+		{
+			Engine._SetTimeOfDayVariableValueColor((int)param, value);
+		}
+
+		public static void SetVariableValue(SkyLightParams param, float value)
+		{
+			Engine._SetTimeOfDayVariableValue((int)param, value);
+		}
+
+		public static void SetVariableValue(SkyLightParams param, Vec3 value)
+		{
+			Engine._SetTimeOfDayVariableValueColor((int)param, value);
+		}
+
+		public static void SetVariableValue(NightSkyParams param, float value)
+		{
+			Engine._SetTimeOfDayVariableValue((int)param, value);
+		}
+
+		public static void SetVariableValue(NightSkyParams param, Vec3 value)
+		{
+			Engine._SetTimeOfDayVariableValueColor((int)param, value);
+		}
+
+		public static void SetVariableValue(CloudShading param, float value)
+		{
+			Engine._SetTimeOfDayVariableValue((int)param, value);
+		}
+
+		public static void SetVariableValue(CloudShading param, Vec3 value)
+		{
+			Engine._SetTimeOfDayVariableValueColor((int)param, value);
+		}
+
+		public static void SetVariableValue(SunRaysEffectParams param, float value)
+		{
+			Engine._SetTimeOfDayVariableValue((int)param, value);
+		}
+
+		public static void SetVariableValue(SunRaysEffectParams param, Vec3 value)
+		{
+			Engine._SetTimeOfDayVariableValueColor((int)param, value);
+		}
+
+		public static void SetVariableValue(ColorGradingParams param, float value)
+		{
+			Engine._SetTimeOfDayVariableValue((int)param, value);
+		}
+
+		public static void SetVariableValue(ColorGradingParams param, Vec3 value)
+		{
+			Engine._SetTimeOfDayVariableValueColor((int)param, value);
+		}
+
+		public static void SetVariableValue(ShadowParams param, float value)
+		{
+			Engine._SetTimeOfDayVariableValue((int)param, value);
+		}
+
+		public static void SetVariableValue(ShadowParams param, Vec3 value)
+		{
+			Engine._SetTimeOfDayVariableValueColor((int)param, value);
+		}
+
+		public static void SetVariableValue(HDRParams param, float value)
+		{
+			Engine._SetTimeOfDayVariableValue((int)param, value);
+		}
+
+		public static void SetVariableValue(HDRParams param, Vec3 value)
+		{
+			Engine._SetTimeOfDayVariableValueColor((int)param, value);
+		}
+		#endregion
+
+		#region Time of Day parameters
+		public enum SkyParams
+		{
+			SkyBrightening = 1,
+			GlobalIlluminationMultiplier = 3,
+
+			SunColor,
+			SunColorMultiplier,
+			SunSpecularMultiplier,
+
+			SkyColor,
+			SkyColorMultiplier,
+
+			AmbientGroundColor,
+			AmbientGroundColorMultiplier,
+
+			AmbientMinHeight,
+			AmbientMaxHeight,
+
+			SkyboxMultiplier = 70,
+		}
+
+		public enum FogParams
+		{
+			ColorBottom = 14,
+			ColorBottomMultiplier,
+			HeightBottom,
+			DensityBottom,
+
+			ColorTop,
+			ColorTopMultiplier,
+			HeightTop,
+			DensityTop,
+
+			ColorHeightOffset,
+
+			ColorRadial,
+			ColorRadialMultiplier,
+			RadialSize,
+			RadialLobe,
+
+			FinalDensityClamp,
+
+			GlobalDensity,
+			RampStart,
+			RampEnd,
+			RampInfluence,
+
+			OceanFogColor = 67,
+			OceanFogColorMultiplier,
+			OceanFogDesnity,
+		}
+
+		public enum SkyLightParams
+		{
+			SunIntensity = 32,
+			SunIntensityMultiplier,
+
+			MieScattering,
+			RayleighScattering,
+			SunAntisotropyFactor,
+
+			WaveLengthR,
+			WaveLengthG,
+			WaveLengthB,
+		}
+
+		public enum NightSkyParams
+		{
+			HorizonColor = 40,
+			HorizonColorMultiplier,
+			ZenithColor,
+			ZenithColorMultiplier,
+			ZenithShift,
+
+			StarIntensity,
+
+			MoonColor,
+			MoonColorMultiplier,
+
+			MoonInnerCoronaColor,
+			MoonInnerCoronaColorMultiplier,
+			MoonInnerCoronaScale,
+
+			MoonOuterCoronaColor,
+			MoonOuterCoronaColorMultiplier,
+			MoonOuterCoronaScale,
+		}
+
+		public enum CloudShading
+		{
+			SunlightMultiplier = 54,
+			SkylightMultiplier,
+
+			SunlightCustomColor,
+			SunlightCustomColorMultiplier,
+			SunlightCustomColorInfluence,
+
+			SkylightCustomColor,
+			SkylightCustomColorMultiplier,
+			SkylightCustomColorInfluence,
+		}
+
+		public enum SunRaysEffectParams
+		{
+			SunshaftVisibility = 62,
+			SunRayVisibility,
+			SunRayAttenuation,
+			SunRaySunColorInfluence,
+			SunRayCustomColor,
+		}
+
+		public enum ColorGradingParams
+		{
+			HDR_ColorSaturation = 77,
+			HDR_ColorContrast,
+			HDR_ColorBalance,
+
+			ColorSaturation,
+			ColorContrast,
+			ColorBrightness,
+
+			MinInput,
+			Gamme,
+			MaxInput,
+			MinOutput,
+			MaxOutput,
+
+			SelectiveColor_Color,
+			SelectiveColor_Cyans,
+			SelectiveColor_Magnetas,
+			SelectiveColor_Yellows,
+			SelectiveColor_Blacks,
+
+			Filters_Grain,
+			Filters_Sharpening,
+			Filters_PhotofilterColor,
+			Filters_PhotofilterDensity,
+
+			DepthOfField_FocusRange,
+			DepthOfField_BlurAmount
+		}
+
+		public enum ShadowParams
+		{
+			Cascade_0_Bias = 99,
+			Cascade_0_SlopeBias,
+			Cascade_1_Bias,
+			Cascade_1_SlopeBias,
+			Cascade_2_Bias,
+			Cascade_2_SlopeBias,
+			Cascade_3_Bias,
+			Cascade_3_SlopeBias,
+		}
+
+		public enum HDRParams
+		{
+			DynamicPowerFactor = 0,
+
+			FilmCurve_ShoulderScale = 71,
+			FilmCurve_LinearScale,
+			FilmCurve_ToeScale,
+			FilmCurve_WhitePoint,
+
+			BlueShift,
+			BlueShiftThreshold,
+		}
+		#endregion
 	}
 }
