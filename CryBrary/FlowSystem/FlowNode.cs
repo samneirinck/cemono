@@ -110,7 +110,7 @@ namespace CryEngine
 		internal virtual NodeConfig GetNodeConfig()
 		{
 			var nodeInfo = GetType().GetAttribute<FlowNodeAttribute>();
-			return new NodeConfig(nodeInfo.Category, nodeInfo.Description, nodeInfo.HasTargetEntity ? FlowNodeFlags.TargetEntity : 0);
+			return new NodeConfig(nodeInfo.Category != 0 ? nodeInfo.Category : FlowNodeCategory.Approved, nodeInfo.Description, nodeInfo.HasTargetEntity ? FlowNodeFlags.TargetEntity : 0);
 		}
 
 		internal virtual NodePortConfig GetPortConfig()
