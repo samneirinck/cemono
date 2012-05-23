@@ -127,8 +127,8 @@ namespace CryEngine
 				UI._SendEvent(EventSystemPointer, EventId, args);
 			}
 
-			public uint EventId { get; set; }
-			public IntPtr EventSystemPointer { get; set; }
+			private uint EventId { get; set; }
+			private IntPtr EventSystemPointer { get; set; }
 		}
 	}
 
