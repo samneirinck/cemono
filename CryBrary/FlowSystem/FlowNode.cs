@@ -218,7 +218,7 @@ namespace CryEngine
 			else
 				portType = NodePortType.Void;
 
-			inputs.Add(new InputPortConfig(portAttribute.Name, portType, defaultVal, portAttribute.Description, "", portAttribute.UIConfig));
+			inputs.Add(new InputPortConfig(portAttribute.Name ?? method.Name, portType, defaultVal, portAttribute.Description, "", portAttribute.UIConfig));
 			InputMethods[GetType()].Add(method);
 		}
 
@@ -313,6 +313,11 @@ namespace CryEngine
 			return _GetPortValueInt(NodePointer, GetInputPortId(port.Method));
 		}
 
+		protected bool IsIntPortActive(Action<int> port)
+		{
+			return IsPortActive(GetInputPortId(port.Method));
+		}
+
 		/// <summary>
 		/// Gets the float value of an flownode port.
 		/// </summary>
@@ -321,6 +326,11 @@ namespace CryEngine
 		protected float GetPortFloat(Action<float> port)
 		{
 			return _GetPortValueFloat(NodePointer, GetInputPortId(port.Method));
+		}
+
+		protected bool IsFloatPortActive(Action<float> port)
+		{
+			return IsPortActive(GetInputPortId(port.Method));
 		}
 
 		/// <summary>
@@ -333,6 +343,11 @@ namespace CryEngine
 			return _GetPortValueVec3(NodePointer, GetInputPortId(port.Method));
 		}
 
+		protected bool IsVec3PortActive(Action<Vec3> port)
+		{
+			return IsPortActive(GetInputPortId(port.Method));
+		}
+
 		/// <summary>
 		/// Gets the string value of an flownode port.
 		/// </summary>
@@ -343,6 +358,11 @@ namespace CryEngine
 			return _GetPortValueString(NodePointer, GetInputPortId(port.Method));
 		}
 
+		protected bool IsStringPortActive(Action<string> port)
+		{
+			return IsPortActive(GetInputPortId(port.Method));
+		}
+
 		/// <summary>
 		/// Gets the bool value of an flownode port.
 		/// </summary>
@@ -351,6 +371,11 @@ namespace CryEngine
 		protected bool GetPortBool(Action<bool> port)
 		{
 			return _GetPortValueBool(NodePointer, GetInputPortId(port.Method));
+		}
+
+		protected bool IsBoolPortActive(Action<bool> port)
+		{
+			return IsPortActive(GetInputPortId(port.Method));
 		}
 
 		int GetInputPortId(MethodInfo method)
@@ -369,7 +394,7 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="port"></param>
 		/// <returns></returns>
-		protected bool IsPortActive(int port) { return _IsPortActive(NodePointer, port); }
+		private bool IsPortActive(int port) { return _IsPortActive(NodePointer, port); }
 		#endregion
 
 		public Entity TargetEntity
