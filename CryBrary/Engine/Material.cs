@@ -123,11 +123,6 @@ namespace CryEngine
 			return _SetGetMaterialParamFloat(MaterialPointer, paramName, ref value, false);
 		}
 
-		public bool SetParam(MaterialFloatParameter param, float value)
-		{
-			return SetParam(param.GetEngineName(), value);
-		}
-
 		public float GetParam(string paramName)
 		{
 			float value;
@@ -143,24 +138,9 @@ namespace CryEngine
 			return _SetGetMaterialParamFloat(MaterialPointer, paramName, ref value, true);
 		}
 
-		public float GetParam(MaterialFloatParameter param)
-		{
-			return GetParam(param.GetEngineName());
-		}
-
-		public bool TryGetParam(MaterialFloatParameter param, out float value)
-		{
-			return TryGetParam(param.GetEngineName(), out value);
-		}
-
 		public bool SetParamVec3(string paramName, Vec3 value)
 		{
 			return _SetGetMaterialParamVec3(MaterialPointer, paramName, ref value, false);
-		}
-
-		public bool SetParamVec3(MaterialVec3Parameter param, Vec3 value)
-		{
-			return SetParamVec3(param.GetEngineName(), value);
 		}
 
 		public Vec3 GetParamVec3(string paramName)
@@ -169,11 +149,6 @@ namespace CryEngine
 			TryGetParam(paramName, out value);
 
 			return value;
-		}
-
-		public Vec3 GetParamVec3(MaterialVec3Parameter param)
-		{
-			return GetParamVec3(param.GetEngineName());
 		}
 
 		public bool TryGetParam(string paramName, out Vec3 value)
@@ -188,9 +163,20 @@ namespace CryEngine
 			_SetShaderParam(MaterialPointer, paramName, newVal);
 		}
 
+		public void SetParam(ShaderFloatParameter param, float value)
+		{
+			SetShaderParam(param.GetEngineName(), value);
+		}
+
 		#region Fields & Properties
 		public float AlphaTest { get { return GetParam("alpha"); } set { SetParam("alpha", value); } }
+		public float Opacity { get { return GetParam("opacity"); } set { SetParam("opacity", value); } }
+		public float Glow { get { return GetParam("glow"); } set { SetParam("glow", value); } }
+		public float Shininess { get { return GetParam("shininess"); } set { SetParam("shininess", value); } }
+
 		public Vec3 DiffuseColor { get { return GetParamVec3("diffuse"); } set { SetParamVec3("diffuse", value); } }
+		public Vec3 EmissiveColor { get { return GetParamVec3("emissive"); } set { SetParamVec3("emissive", value); } }
+		public Vec3 SpecularColor { get { return GetParamVec3("specular"); } set { SetParamVec3("specular", value); } }
 
 		public string SurfaceType { get { return _GetSurfaceTypeName(MaterialPointer); } }
 
@@ -198,71 +184,34 @@ namespace CryEngine
 		#endregion
 	}
 
-	public enum MaterialFloatParameter
-	{
-		Alpha,
-		Glow,
-		Opacity,
-		Shininess
-	}
-
-	public enum MaterialVec3Parameter
-	{
-		DiffuseColor,
-		EmissiveColor,
-		IndirectColor,
-		SpecularColor
-	}
-
 	public enum ShaderFloatParameter
 	{
-		BlendFactor,
 		BlendFalloff,
-		BlendLayerTiling,
-		FresnelBias,
+		BendDetailLeafAmplitude,
+		BackShadowBias,
 		FresnelPower,
-		FresnelScale,
-		BendDetailBranchAmplitude,
 		BendDetailFrequency,
-		BendDetailLeafAmplitude
+		BendDetailBranchAmplitude,
+		BlendLayer2Tiling,
+		FresnelScale,
+		FresnelBias,
+		CapOpacityFalloff,
+		BackViewDep,
+		BackDiffuseMultiplier,
+		BackDiffuse,
+		BlendFactor,
+		IndirectColor
 	}
 
 	public static class MaterialExtensions
 	{
-		public static string GetEngineName(this MaterialFloatParameter param)
-		{
-			switch(param)
-			{
-				case MaterialFloatParameter.Alpha: return "alpha";
-				case MaterialFloatParameter.Glow: return "glow";
-				case MaterialFloatParameter.Opacity: return "opacity";
-				case MaterialFloatParameter.Shininess: return "shininess";
-			}
-
-			return param.ToString();
-		}
-
-		public static string GetEngineName(this MaterialVec3Parameter param)
-		{
-			switch(param)
-			{
-				case MaterialVec3Parameter.DiffuseColor: return "diffuse";
-				case MaterialVec3Parameter.EmissiveColor: return "emissive";
-				case MaterialVec3Parameter.IndirectColor: return "IndirectColor";
-				case MaterialVec3Parameter.SpecularColor: return "specular";
-			}
-
-			return param.ToString();
-		}
-
 		public static string GetEngineName(this ShaderFloatParameter param)
 		{
 			switch(param)
 			{
-				case ShaderFloatParameter.BlendLayerTiling: return "BlendLayer2Tiling";
-				case ShaderFloatParameter.BendDetailBranchAmplitude: return "bendDetailBranchAmplitude";
-				case ShaderFloatParameter.BendDetailFrequency: return "bendDetailFrequency";
 				case ShaderFloatParameter.BendDetailLeafAmplitude: return "bendDetailLeafAmplitude";
+				case ShaderFloatParameter.BendDetailFrequency: return "bendDetailFrequency";
+				case ShaderFloatParameter.BendDetailBranchAmplitude: return "bendDetailBranchAmplitude";
 			}
 
 			return param.ToString();
