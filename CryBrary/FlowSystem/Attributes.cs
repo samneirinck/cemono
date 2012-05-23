@@ -30,7 +30,7 @@ namespace CryEngine
 		internal FlowNodeFlags Flags { get; set; }
 
 		// Do not expose this directly, needs moar pretty wrap.
-		public string UIConfig { get; set; }
+		internal string UIConfig { get; set; }
 	}
 
 	[Flags]

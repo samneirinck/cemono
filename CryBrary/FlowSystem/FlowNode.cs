@@ -161,11 +161,36 @@ namespace CryEngine
 			if(method.GetParameters().Length > 0)
 			{
 				ParameterInfo parameter = method.GetParameters()[0];
-				portType = GetPortType(parameter.ParameterType);
+				if(parameter.ParameterType.IsEnum)
+				{
+					portType = NodePortType.Int;
 
-				if(parameter.IsOptional)
-					defaultVal = parameter.DefaultValue;
+					var values = Enum.GetValues(parameter.ParameterType);
+					if(values.Length <= 0)
+						return;
+
+					defaultVal = values.GetValue(0);
+
+					portAttribute.UIConfig = "enum_int:";
+
+					for(int i = 0; i < values.Length; i++)
+					{
+						var value = values.GetValue(i);
+
+						if(i > 0 && i != values.Length)
+							portAttribute.UIConfig += ",";
+
+						portAttribute.UIConfig += Enum.GetName(parameter.ParameterType, value) + "=" + (int)value;
+					}
+
+					Debug.LogAlways(portAttribute.UIConfig);
+				}
 				else
+					portType = GetPortType(parameter.ParameterType);
+
+				if(parameter.IsOptional && defaultVal == null)
+					defaultVal = parameter.DefaultValue;
+				else if(defaultVal == null)
 				{
 					switch(portType)
 					{
