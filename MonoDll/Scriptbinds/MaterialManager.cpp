@@ -25,6 +25,7 @@ CScriptbind_MaterialManager::CScriptbind_MaterialManager()
 	REGISTER_METHOD(SetGetMaterialParamVec3);
 
 	REGISTER_METHOD(SetShaderParam);
+	REGISTER_METHOD(SetShaderParamColorF);
 
 	REGISTER_METHOD(GetFlags);
 	REGISTER_METHOD(SetFlags);
@@ -84,13 +85,11 @@ bool CScriptbind_MaterialManager::SetGetMaterialParamVec3(IMaterial *pMaterial, 
 	return pMaterial->SetGetMaterialParamVec3(ToCryString(paramName), v, get);
 }
 
-void CScriptbind_MaterialManager::SetShaderParam(IMaterial *pMaterial, mono::string monoParamName, float newVal)
+void SetShaderParamCommon(IMaterial *pMaterial, const char *paramName, UParamVal par)
 {
 	const SShaderItem& shaderItem(pMaterial->GetShaderItem());
 	DynArray<SShaderParam> params;
 	params = shaderItem.m_pShader->GetPublicParams();
-
-	const char *paramName = ToCryString(monoParamName);
 
 	for (DynArray<SShaderParam>::iterator it = params.begin(), end = params.end(); it != end; ++it)
 	{
@@ -98,9 +97,6 @@ void CScriptbind_MaterialManager::SetShaderParam(IMaterial *pMaterial, mono::str
 
 		if(!strcmp(paramName, param.m_Name))
 		{
-			UParamVal par;
-			par.m_Float = newVal;
-
 			param.SetParam(paramName, &params, par);
 
 			SInputShaderResources res;
@@ -110,6 +106,25 @@ void CScriptbind_MaterialManager::SetShaderParam(IMaterial *pMaterial, mono::str
 			break;
 		}
 	}
+}
+
+void CScriptbind_MaterialManager::SetShaderParam(IMaterial *pMaterial, mono::string monoParamName, float newVal)
+{
+	UParamVal par;
+	par.m_Float = newVal;
+
+	SetShaderParamCommon(pMaterial, ToCryString(monoParamName), par);
+}
+
+void CScriptbind_MaterialManager::SetShaderParamColorF(IMaterial *pMaterial, mono::string monoParamName, ColorF newVal)
+{
+	UParamVal par;
+	par.m_Color[0] = newVal.r;
+	par.m_Color[1] = newVal.g;
+	par.m_Color[2] = newVal.b;
+	par.m_Color[3] = newVal.a;
+
+	SetShaderParamCommon(pMaterial, ToCryString(monoParamName), par);
 }
 
 EMaterialFlags CScriptbind_MaterialManager::GetFlags(IMaterial *pMaterial)

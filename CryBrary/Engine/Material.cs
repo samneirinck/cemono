@@ -35,6 +35,8 @@ namespace CryEngine
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static void _SetShaderParam(IntPtr ptr, string paramName, float newVal);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static void _SetShaderParam(IntPtr ptr, string paramName, Color newVal);
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static MaterialFlags _GetFlags(IntPtr ptr);
@@ -138,7 +140,7 @@ namespace CryEngine
 			return _SetGetMaterialParamFloat(MaterialPointer, paramName, ref value, true);
 		}
 
-		public bool SetParamVec3(string paramName, Vec3 value)
+		public bool SetParam(string paramName, Vec3 value)
 		{
 			return _SetGetMaterialParamVec3(MaterialPointer, paramName, ref value, false);
 		}
@@ -163,9 +165,24 @@ namespace CryEngine
 			_SetShaderParam(MaterialPointer, paramName, newVal);
 		}
 
-		public void SetParam(ShaderFloatParameter param, float value)
+		public void SetShaderParam(ShaderFloatParameter param, float value)
 		{
 			SetShaderParam(param.GetEngineName(), value);
+		}
+
+		public void SetShaderParam(string paramName, Color newVal)
+		{
+			_SetShaderParam(MaterialPointer, paramName, newVal);
+		}
+
+		public void SetShaderParam(ShaderColorParameter param, Color value)
+		{
+			SetShaderParam(param.GetEngineName(), value);
+		}
+
+		public void SetShaderParam(ShaderColorParameter param, Vec3 value)
+		{
+			SetShaderParam(param.GetEngineName(), new Color(value.X, value.Y, value.Z));
 		}
 
 		#region Fields & Properties
@@ -174,9 +191,9 @@ namespace CryEngine
 		public float Glow { get { return GetParam("glow"); } set { SetParam("glow", value); } }
 		public float Shininess { get { return GetParam("shininess"); } set { SetParam("shininess", value); } }
 
-		public Vec3 DiffuseColor { get { return GetParamVec3("diffuse"); } set { SetParamVec3("diffuse", value); } }
-		public Vec3 EmissiveColor { get { return GetParamVec3("emissive"); } set { SetParamVec3("emissive", value); } }
-		public Vec3 SpecularColor { get { return GetParamVec3("specular"); } set { SetParamVec3("specular", value); } }
+		public Vec3 DiffuseColor { get { return GetParamVec3("diffuse"); } set { SetParam("diffuse", value); } }
+		public Vec3 EmissiveColor { get { return GetParamVec3("emissive"); } set { SetParam("emissive", value); } }
+		public Vec3 SpecularColor { get { return GetParamVec3("specular"); } set { SetParam("specular", value); } }
 
 		public string SurfaceType { get { return _GetSurfaceTypeName(MaterialPointer); } }
 
@@ -190,17 +207,21 @@ namespace CryEngine
 		BendDetailLeafAmplitude,
 		BackShadowBias,
 		FresnelPower,
-		BendDetailFrequency,
-		BendDetailBranchAmplitude,
+		DetailBendingFrequency,
+		BendingBranchAmplitude,
 		BlendLayer2Tiling,
 		FresnelScale,
 		FresnelBias,
 		CapOpacityFalloff,
 		BackViewDep,
-		BackDiffuseMultiplier,
-		BackDiffuse,
+		BackDiffuseColorScale,
 		BlendFactor,
-		IndirectColor
+	}
+
+	public enum ShaderColorParameter
+	{
+		BackDiffuseColor,
+		IndirectBounceColor
 	}
 
 	public static class MaterialExtensions
@@ -210,8 +231,20 @@ namespace CryEngine
 			switch(param)
 			{
 				case ShaderFloatParameter.BendDetailLeafAmplitude: return "bendDetailLeafAmplitude";
-				case ShaderFloatParameter.BendDetailFrequency: return "bendDetailFrequency";
-				case ShaderFloatParameter.BendDetailBranchAmplitude: return "bendDetailBranchAmplitude";
+				case ShaderFloatParameter.DetailBendingFrequency: return "bendDetailFrequency";
+				case ShaderFloatParameter.BendingBranchAmplitude: return "bendDetailBranchAmplitude";
+				case ShaderFloatParameter.BackDiffuseColorScale: return "BackDiffuseMultiplier";
+			}
+
+			return param.ToString();
+		}
+
+		public static string GetEngineName(this ShaderColorParameter param)
+		{
+			switch(param)
+			{
+				case ShaderColorParameter.BackDiffuseColor: return "BackDiffuse";
+				case ShaderColorParameter.IndirectBounceColor: return "IndirectColor";
 			}
 
 			return param.ToString();

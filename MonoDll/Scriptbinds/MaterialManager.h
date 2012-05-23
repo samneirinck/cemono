@@ -43,6 +43,7 @@ protected:
 	static void SetFlags(IMaterial *pMaterial, EMaterialFlags flags);
 
 	static void SetShaderParam(IMaterial *pMaterial, mono::string monoParamName, float newVal);
+	static void SetShaderParamColorF(IMaterial *pMaterial, mono::string monoParamName, ColorF newVal);
 	// ~Externals
 
 	// IMonoScriptBind
