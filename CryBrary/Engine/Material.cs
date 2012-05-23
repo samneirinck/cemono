@@ -189,7 +189,7 @@ namespace CryEngine
 		}
 
 		#region Fields & Properties
-		public float AlphaTest { get { return GetParam("alphatest"); } set { SetParam("alphatest", value); } }
+		public float AlphaTest { get { return GetParam("alpha"); } set { SetParam("alpha", value); } }
 		public Vec3 DiffuseColor { get { return GetParamVec3("diffuse"); } set { SetParamVec3("diffuse", value); } }
 
 		public string SurfaceType { get { return _GetSurfaceTypeName(MaterialPointer); } }
