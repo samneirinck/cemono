@@ -133,7 +133,7 @@ namespace CryEngine
 			return new NodePortConfig(inputs.ToArray(), outputs.ToArray());
 		}
 
-		public void ProcessMemberForPort(MemberInfo member, ref List<object> inputs, ref List<object> outputs)
+		void ProcessMemberForPort(MemberInfo member, ref List<object> inputs, ref List<object> outputs)
 		{
 			PortAttribute portAttribute;
 			if(member.TryGetAttribute(out portAttribute))
@@ -314,6 +314,19 @@ namespace CryEngine
 		}
 
 		protected bool IsIntPortActive(Action<int> port)
+		{
+			return IsPortActive(GetInputPortId(port.Method));
+		}
+
+		protected T GetPortEnum<T>(Action<T> port) where T : struct, IConvertible
+		{
+			if(!typeof(T).IsEnum)
+				throw new ArgumentException("T must be an enumerated type");
+
+			return (T)Enum.ToObject(typeof(T), _GetPortValueInt(NodePointer, GetInputPortId(port.Method)));
+		}
+
+		protected bool IsEnumPortActive(Action<Enum> port)
 		{
 			return IsPortActive(GetInputPortId(port.Method));
 		}
