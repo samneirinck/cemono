@@ -126,7 +126,6 @@ IEntity *CFlowManager::GetTargetEntity(CFlowNode *pNode, EntityId &id)
 {
 	if(IEntity *pEntity = pNode->GetTargetEntity())
 	{
-		CryLogAlways("[CFlowManager::GetTargetEntity] returning target entity %s with id %i!", pEntity->GetName(), pEntity->GetId());
 		id = pEntity->GetId();
 
 		return pEntity;
