@@ -21,7 +21,7 @@ class CUI
 {
 public:
 	CUI();
-	~CUI() {}
+	~CUI();
 
 	static CUI *GetInstance() { return m_pUI; }
 
@@ -39,6 +39,9 @@ protected:
 
 private:
 	static CUI *m_pUI;
+
+	typedef std::vector<SEventSystemHandler> TEventHandlers;
+	static TEventHandlers m_eventHandlers;
 };
 
 struct SEventSystemHandler
@@ -52,11 +55,11 @@ struct SEventSystemHandler
 			m_pEventSystem->RegisterListener(this, "SEventSystemHandler");
 	}
 
+	~SEventSystemHandler() { m_pEventSystem->UnregisterListener(this); }
+
 	// IUIEventListener
 	virtual void OnEvent(const SUIEvent& event);
 	// ~IUIEventListener
-
-	~SEventSystemHandler() {}
 
 	IUIEventSystem *GetEventSystem() { return m_pEventSystem; }
 

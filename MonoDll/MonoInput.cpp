@@ -22,6 +22,7 @@ CInput::~CInput()
 {
 	gEnv->pGameFramework->GetIActionMapManager()->RemoveExtraActionListener(this);
 	gEnv->pHardwareMouse->RemoveListener(this);
+	gEnv->pInput->RemoveEventListener(this);
 }
 
 void CInput::OnHardwareMouseEvent(int iX,int iY,EHARDWAREMOUSEEVENT eHardwareMouseEvent, int wheelDelta)

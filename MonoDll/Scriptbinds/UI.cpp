@@ -4,6 +4,7 @@
 #include "MonoFlowNode.h"
 
 CUI *CUI::m_pUI = NULL;
+CUI::TEventHandlers CUI::m_eventHandlers = CUI::TEventHandlers();
 
 CUI::CUI()
 {
@@ -15,6 +16,11 @@ CUI::CUI()
 	REGISTER_METHOD(RegisterEvent);
 
 	REGISTER_METHOD(SendEvent);
+}
+
+CUI::~CUI()
+{
+	m_eventHandlers.clear();
 }
 
 template <typename T>
@@ -70,9 +76,9 @@ void SEventSystemHandler::OnEvent(const SUIEvent& event)
 
 IUIEventSystem *CUI::CreateEventSystem(mono::string name, IUIEventSystem::EEventSystemType eventType)
 {
-	auto eventSystemHandler = new SEventSystemHandler(ToCryString(name), eventType);
+	m_eventHandlers.push_back(SEventSystemHandler(ToCryString(name), eventType));
 
-	return eventSystemHandler->GetEventSystem();
+	return m_eventHandlers.back().GetEventSystem();
 }
 
 unsigned int CUI::RegisterFunction(IUIEventSystem *pEventSystem, mono::string name, mono::string desc, mono::array inputs)

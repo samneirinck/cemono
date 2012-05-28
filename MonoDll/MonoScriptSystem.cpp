@@ -108,6 +108,8 @@ CScriptSystem::~CScriptSystem()
 	// Force garbage collection of all generations.
 	mono_gc_collect(mono_gc_max_generation());
 
+	gEnv->pGameFramework->UnregisterListener(this);
+
 	if(IFileChangeMonitor *pFileChangeMonitor = gEnv->pFileChangeMonitor)
 		pFileChangeMonitor->UnregisterListener(this);
 
