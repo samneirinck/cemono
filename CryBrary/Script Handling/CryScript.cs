@@ -10,7 +10,7 @@ namespace CryEngine.Initialization
 	/// </summary>
 	public struct CryScript
 	{
-		public CryScript(Type type)
+		internal CryScript(Type type)
 			: this()
 		{
 			Type = type;
@@ -55,7 +55,7 @@ namespace CryEngine.Initialization
 
 		public static bool operator !=(CryScript script1, CryScript script2)
 		{
-			return script1.Type != script2.Type;
+			return !(script1 == script2);
 		}
 
 		public override bool Equals(object obj)

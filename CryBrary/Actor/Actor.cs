@@ -8,11 +8,31 @@ using CryEngine.Extensions;
 
 namespace CryEngine
 {
+	internal interface INativeActorMethods
+	{
+		void RegisterClass(string className, bool isAI);
+	}
+
 	/// <summary>
 	/// WIP Player class. TODO: Redo, currently very limited in terms of callbacks + interoperability with C++ backend
 	/// </summary>
 	public abstract class Actor : EntityBase
 	{
+		private static INativeActorMethods _actormethods;
+		internal static INativeActorMethods Actormethods
+		{
+			get { return _actormethods ?? (_actormethods = new ActorMethods()); }
+			set { _actormethods = value; }
+		}
+
+		class ActorMethods : INativeActorMethods
+		{
+			public void RegisterClass(string className, bool isAI)
+			{
+				Actor._RegisterActorClass(className, isAI);
+			}
+		}
+
 		#region Externals
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static void _RegisterActorClass(string className, bool isAI);
@@ -54,7 +74,7 @@ namespace CryEngine
 			}
 
 			if(registerActorClass)
-				_RegisterActorClass(script.ScriptName, isAI);
+				Actormethods.RegisterClass(script.ScriptName, isAI);
 		}
 
 		public static Actor Get(int channelId)
@@ -72,7 +92,7 @@ namespace CryEngine
 
 		public static T Get<T>(int channelId) where T : Actor
 		{
-			return ScriptManager.FindScriptInstance<T>(x => x.ChannelId == channelId, ScriptType.Actor);
+			return ScriptManager.Find<T>(ScriptType.Actor, x => x.ChannelId == channelId);
 		}
 
 		public static Actor Get(EntityId actorId)
@@ -94,7 +114,7 @@ namespace CryEngine
 			if(actorId == 0)
 				throw new ArgumentException("actorId cannot be 0!");
 
-			return ScriptManager.FindScriptInstance<T>(x => x.Id == actorId, ScriptType.Actor);
+			return ScriptManager.Find<T>(ScriptType.Actor, x => x.Id == actorId);
 		}
 
 		static Actor CreateNativeActor(ActorInfo actorInfo)
@@ -225,6 +245,13 @@ namespace CryEngine
 			InitPhysics();
 
 			OnSpawn();
+		}
+
+		public override void OnScriptReload()
+		{
+			base.OnScriptReload();
+
+			ActorPointer = _GetActorInfoById(Id).ActorPtr;
 		}
 
 		internal IntPtr ActorPointer { get; set; }

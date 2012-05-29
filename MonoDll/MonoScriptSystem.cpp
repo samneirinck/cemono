@@ -269,7 +269,43 @@ bool CScriptSystem::DoReload(bool initialLoad)
 		m_pCryBraryAssembly = pNewCryBraryAssembly;
 		m_pScriptManager = pNewScriptManager;
 
-		PostReload(initialLoad);
+		m_AppDomainSerializer = m_pCryBraryAssembly->InstantiateClass("AppDomainSerializer", "CryEngine.Serialization");
+
+		m_pConverter->Reset();
+
+		// Nodes won't get recompiled if we forget this.
+		if(!initialLoad)
+		{
+			PostInit();
+
+			m_AppDomainSerializer->CallMethod("TrySetScriptData");
+
+			// Since we've destructed all previous scripts, assemblies and script domains, pointers to these are now invalid.
+			// Iterate through all scripts and get the new script instance objects.
+			for each(auto script in m_scripts)
+			{
+				IMonoArray *pParams = CreateMonoArray(2);
+				pParams->Insert(script.second);
+				pParams->Insert(eScriptType_Unknown);
+				if(IMonoObject *pScriptInstance = m_pScriptManager->CallMethod("GetScriptInstanceById", pParams, true))
+				{
+					mono::object monoObject = pScriptInstance->GetMonoObject();
+
+					MonoClass *pMonoClass = mono_object_get_class((MonoObject *)monoObject);
+					if(pMonoClass && mono_class_get_name(pMonoClass))
+						static_cast<CScriptClass *>(script.first)->OnReload(pMonoClass, monoObject);
+				}
+
+				SAFE_RELEASE(pParams);
+			}
+
+			m_pScriptManager->CallMethod("OnPostScriptReload");
+		}
+
+		m_bReloading = false;
+
+		for each(auto listener in m_scriptReloadListeners)
+			listener->OnPostScriptReload(initialLoad);
 	}
 	else
 	{
@@ -310,45 +346,6 @@ bool CScriptSystem::DoReload(bool initialLoad)
 	}
 
 	return true;
-}
-
-void CScriptSystem::PostReload(bool initialLoad)
-{
-	m_AppDomainSerializer = m_pCryBraryAssembly->InstantiateClass("AppDomainSerializer", "CryEngine.Serialization");
-
-	m_pConverter->Reset();
-
-	// Nodes won't get recompiled if we forget this.
-	if(!initialLoad)
-	{
-		PostInit();
-
-		m_AppDomainSerializer->CallMethod("TrySetScriptData");
-
-		// Since we've destructed all previous scripts, assemblies and script domains, pointers to these are now invalid.
-		// Iterate through all scripts and get the new script instance objects.
-		for each(auto script in m_scripts)
-		{
-			IMonoArray *pParams = CreateMonoArray(2);
-			pParams->Insert(script.second);
-			pParams->Insert(eScriptType_Unknown);
-			if(IMonoObject *pScriptInstance = m_pScriptManager->CallMethod("GetScriptInstanceById", pParams, true))
-			{
-				mono::object monoObject = pScriptInstance->GetMonoObject();
-
-				MonoClass *pMonoClass = mono_object_get_class((MonoObject *)monoObject);
-				if(pMonoClass && mono_class_get_name(pMonoClass))
-					static_cast<CScriptClass *>(script.first)->OnReload(pMonoClass, monoObject);
-			}
-
-			SAFE_RELEASE(pParams);
-		}
-	}
-
-	m_bReloading = false;
-
-	for each(auto listener in m_scriptReloadListeners)
-		listener->OnPostScriptReload(initialLoad);
 }
 
 void CScriptSystem::RegisterDefaultBindings()

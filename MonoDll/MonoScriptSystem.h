@@ -95,7 +95,6 @@ protected:
 
 	void PreReload();
 	bool DoReload(bool initialLoad);
-	void PostReload(bool initialLoad);
 
 	void RegisterDefaultBindings();
 

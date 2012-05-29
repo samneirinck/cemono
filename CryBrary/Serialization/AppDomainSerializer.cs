@@ -38,15 +38,11 @@ namespace CryEngine.Serialization
 			using(var stream = File.Open(Path.Combine(PathUtils.TempFolder, "ScriptManager.CompiledScripts.scriptdump"), FileMode.Open))
 				ScriptManager.CompiledScripts = Formatter.Deserialize(stream) as Dictionary<ScriptType, List<CryScript>>;
 
-			foreach(var script in ScriptManager.GetScriptList(ScriptType.Unknown))
+			ScriptManager.ForEach(ScriptType.Unknown, scriptInstance =>
 			{
-				if(script.ScriptInstances != null)
-					script.ScriptInstances.ForEach(x =>
-					{
-						if(x.ScriptId > ScriptManager.LastScriptId)
-							ScriptManager.LastScriptId = x.ScriptId + 1;
-					});
-			}
+				if(scriptInstance.ScriptId > ScriptManager.LastScriptId)
+					ScriptManager.LastScriptId = scriptInstance.ScriptId + 1;
+			});
 
 			stopwatch.Stop();
 

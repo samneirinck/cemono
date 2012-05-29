@@ -26,6 +26,8 @@
 			return false;
 		}
 
+		public virtual void OnScriptReload() { }
+
 		/// <summary>
 		/// Called each frame if script has been set to be regularly updated (See Updated property)
 		/// </summary>

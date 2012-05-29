@@ -424,6 +424,11 @@ namespace CryEngine
 			}
 		}
 
+		public override void OnScriptReload()
+		{
+			// TODO
+		}
+
 		internal IntPtr NodePointer { get; set; }
 		internal bool Initialized { get; set; }
 	}

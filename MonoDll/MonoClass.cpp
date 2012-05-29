@@ -90,23 +90,11 @@ IMonoObject *CScriptClass::CallMethod(const char *methodName, IMonoArray *pParam
 
 	if(MonoMethod *pMethod = GetMethod(methodName, pParams, _static))
 	{
-		// If overridden, get the "new" method.
-		if (m_pInstance && !_static)
-			pMethod = mono_object_get_virtual_method((MonoObject *)m_pInstance, pMethod);
-
 		MonoObject *pException = NULL;
-		MonoObject *pResult = NULL;
 
-		MonoArray *params = pParams ? (MonoArray *)(mono::array)*pParams : NULL;
-
-		try
-		{
-			pResult = mono_runtime_invoke_array(pMethod, _static ? NULL : m_pInstance, params, &pException);
-		}
-		catch(char *str)
-		{
-			CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "Exception was raised when invoking method %s: %s", methodName, str);
-		}
+		CryLogAlways(methodName);
+		MonoObject *pResult = mono_runtime_invoke_array(pMethod, _static ? NULL : m_pInstance, pParams ? (MonoArray *)(mono::array)*pParams : NULL, &pException);
+		CryLogAlways("~%s", methodName);
 
 		if(pException)
 			HandleException(pException);
@@ -115,6 +103,7 @@ IMonoObject *CScriptClass::CallMethod(const char *methodName, IMonoArray *pParam
 	}
 	else
 		CryLogAlways("[Warning] Failed to get method %s in object of class %s", methodName, GetName());
+
 
 	return NULL;
 }

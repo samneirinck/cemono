@@ -18,6 +18,12 @@ namespace CryEngine.Initialization
 
 				foreach(ScriptType scriptType in Enum.GetValues(typeof(ScriptType)))
 					CompiledScripts.Add(scriptType, new List<CryScript>());
+
+				Type[] specialTypes = { typeof(NativeEntity), typeof(NativeActor) };
+				foreach(var type in specialTypes)
+					ProcessType(type);
+
+				FlowNodes = new List<string>();
 			}
 
 			if(!Directory.Exists(PathUtils.TempFolder))
@@ -31,12 +37,6 @@ namespace CryEngine.Initialization
 				}
 				catch(UnauthorizedAccessException) { }
 			}
-
-			FlowNodes = new List<string>();
-
-			Type[] specialTypes = { typeof(NativeEntity), typeof(NativeActor) };
-			foreach(var type in specialTypes)
-				CreateScript(type);
 		}
 
 		bool LoadPlugins()
@@ -51,6 +51,11 @@ namespace CryEngine.Initialization
 			// These have to be registered later on due to the flow system being initialized late.
 			foreach(var node in FlowNodes)
 				FlowNode.Register(node);
+		}
+
+		public void OnPostScriptReload()
+		{
+			ForEach(ScriptType.Unknown, x => x.OnScriptReload());
 		}
 
 		/// <summary>
@@ -87,7 +92,7 @@ namespace CryEngine.Initialization
 		/// <summary>
 		/// Processes a C# assembly and adds all found types to ScriptCompiler.CompiledScripts
 		/// </summary>
-		public void ProcessAssembly(Assembly assembly)
+		public static void ProcessAssembly(Assembly assembly)
 		{
 			foreach(var type in assembly.GetTypes())
 				ProcessType(type);
@@ -144,9 +149,11 @@ namespace CryEngine.Initialization
 		/// Adds the type to CompiledScripts
 		/// </summary>
 		/// <param name="type"></param>
-		internal void ProcessType(Type type)
+		public static CryScript ProcessType(Type type)
 		{
 			var script = new CryScript(type);
+			if(CompiledScripts[script.ScriptType].Any(x => x.Type == type))
+				return default(CryScript);
 
 			if(!type.IsAbstract && !type.ContainsAttribute<ExcludeFromCompilationAttribute>())
 			{
@@ -178,6 +185,8 @@ namespace CryEngine.Initialization
 			}
 
 			CompiledScripts[script.ScriptType].Add(script);
+
+			return script;
 		}
 
 		public void GenerateDebugDatabaseForAssembly(string assemblyPath)
@@ -222,14 +231,7 @@ namespace CryEngine.Initialization
 			}
 		}
 
-		static CryScript CreateScript(Type type)
-		{
-			var script = new CryScript(type);
-			ScriptManager.CompiledScripts[script.ScriptType].Add(script);
-
-			return script;
-		}
-
+		/*
 		public static IEnumerable<CryScript> GetScriptList(ScriptType scriptType)
 		{
 			if(!Enum.IsDefined(typeof(ScriptType), scriptType))
@@ -249,7 +251,7 @@ namespace CryEngine.Initialization
 			}
 
 			return CompiledScripts[scriptType];
-		}
+		}*/
 
 		/// <summary>
 		/// Instantiates a script using its name and interface.
@@ -266,8 +268,7 @@ namespace CryEngine.Initialization
 			else if(!Enum.IsDefined(typeof(ScriptType), scriptType))
 				throw new ArgumentException(string.Format("scriptType: value {0} was not defined in the enum", scriptType));
 
-			var script = GetScriptList(scriptType).FirstOrDefault(x => x.ScriptName.Equals(scriptName) || (x.ScriptName.Contains(scriptName) && x.Type.Name.Equals(scriptName)));
-
+			var script = FirstOrDefaultScript(scriptType, x => x.ScriptName.Equals(scriptName) || (x.ScriptName.Contains(scriptName) && x.Type.Name.Equals(scriptName)));
 			if(script == default(CryScript))
 				throw new ScriptNotFoundException(string.Format("Script {0} of ScriptType {1} could not be found.", scriptName, scriptType));
 
@@ -296,8 +297,8 @@ namespace CryEngine.Initialization
 
 			if(type != null)
 			{
-				var script = GetScriptList(scriptType).First(x => x.Type == type);
-				if(script == null)
+				var script = FirstOrDefaultScript(scriptType, x => x.Type == type);
+				if(script == default(CryScript))
 					throw new TypeLoadException(string.Format("Failed to locate type {0}", type.Name));
 
 				if(script.ScriptInstances != null && script.ScriptInstances.RemoveAll(x => x.ScriptId == scriptId) > 0)
@@ -308,37 +309,45 @@ namespace CryEngine.Initialization
 			}
 			else
 			{
-				foreach(var script in GetScriptList(scriptType))
-				{
-					if(script.ScriptInstances != null && script.ScriptInstances.RemoveAll(x => x.ScriptId == scriptId) > 0)
+				ForEachScript(scriptType, script =>
 					{
-						int index = CompiledScripts[script.ScriptType].FindIndex(x => x.Type == script.Type);
-						CompiledScripts[script.ScriptType].Insert(index, script);
-					}
-				}
+						if(script.ScriptInstances != null && script.ScriptInstances.RemoveAll(x => x.ScriptId == scriptId) > 0)
+						{
+							int index = CompiledScripts[script.ScriptType].FindIndex(x => x.Type == script.Type);
+							CompiledScripts[script.ScriptType].Insert(index, script);
+						}
+					});
 			}
 
 
 		}
 
-		public static int GetEntityScriptId(EntityId entityId, ScriptType scriptType, Type type = null)
+		public static int GetEntityScriptId(EntityId entityId, ScriptType scriptType)
 		{
 			if(!Enum.IsDefined(typeof(ScriptType), scriptType))
 				throw new ArgumentException(string.Format("scriptType: value {0} was not defined in the enum", scriptType));
 
-			var scripts = GetScriptList(scriptType).Where(script => (type != null ? script.Type.Implements(type) : true) && script.ScriptInstances != null);
-
-			foreach(var compiledScript in scripts)
-			{
-				foreach(var script in compiledScript.ScriptInstances)
+			var scriptId = -1;
+			ForEachScript(scriptType, script =>
 				{
-					var scriptEntity = script as Entity;
-					if(scriptEntity != null && scriptEntity.Id == entityId)
-						return script.ScriptId;
-				}
-			}
+					if(script.ScriptInstances != null)
+					{
+						script.ScriptInstances.ForEach(scriptInstance =>
+							{
+								var scriptEntity = scriptInstance as Entity;
+								if(scriptEntity != null && scriptEntity.Id == entityId)
+								{
+									scriptId = scriptEntity.Id;
+									return;
+								}
+							});
 
-			return -1;
+						if(scriptId != -1)
+							return;
+					}
+				});
+
+			return scriptId;
 		}
 
 		public static CryScriptInstance GetScriptInstanceById(int id, ScriptType scriptType)
@@ -347,35 +356,94 @@ namespace CryEngine.Initialization
 				throw new ArgumentException(string.Format("scriptType: value {0} was not defined in the enum", scriptType));
 
 			CryScriptInstance scriptInstance = null;
-			foreach(var script in GetScriptList(scriptType))
+			ForEach(scriptType, instance =>
+			{
+				if(instance.ScriptId == id)
+				{
+					scriptInstance = instance;
+					return;
+				}
+			});
+
+			return scriptInstance;
+		}
+
+		#region Linq statements
+		public static CryScript FirstOrDefaultScript(ScriptType scriptType, Func<CryScript, bool> predicate)
+		{
+			var defaultScript = default(CryScript);
+
+			if(scriptType == ScriptType.Unknown)
+			{
+				foreach(var scriptPair in CompiledScripts)
+				{
+					var script = scriptPair.Value.FirstOrDefault(predicate);
+					if(script != defaultScript)
+						return script;
+				}
+			}
+			else
+				return CompiledScripts[scriptType].FirstOrDefault(predicate);
+
+			return defaultScript;
+		}
+
+		public static void ForEachScript(ScriptType scriptType, Action<CryScript> action)
+		{
+			if(scriptType == ScriptType.Unknown)
+			{
+				foreach(var scriptPair in CompiledScripts)
+					scriptPair.Value.ForEach(action);
+			}
+			else
+				CompiledScripts[scriptType].ForEach(action);
+		}
+
+		public static void ForEach(ScriptType scriptType, Action<CryScriptInstance> action)
+		{
+			ForEachScript(scriptType, script =>
 			{
 				if(script.ScriptInstances != null)
-				{
-					scriptInstance = script.ScriptInstances.FirstOrDefault(instance => instance.ScriptId == id);
-
-					if(scriptInstance != default(CryScriptInstance))
-						return scriptInstance;
-				}
-			}
-
-			return null;
+					script.ScriptInstances.ForEach(action);
+			});
 		}
 
-		internal static T FindScriptInstance<T>(Predicate<T> match, ScriptType scriptType) where T : CryScriptInstance
+		public static CryScriptInstance First(ScriptType scriptType, Func<CryScriptInstance, bool> predicate)
 		{
-			T result;
-			foreach(var script in GetScriptList(scriptType))
-			{
-				if((script.Type.Equals(typeof(T)) || script.Type.Implements(typeof(T))) && script.ScriptInstances != null)
-				{
-					result = script.ScriptInstances.Find(x => match(x as T)) as T;
-					if(result != null)
-						return result;
-				}
-			}
+			CryScriptInstance scriptInstance = null;
 
-			return null;
+			ForEachScript(scriptType, script =>
+				{
+					var instance = script.ScriptInstances.First(predicate);
+					if(instance != null)
+					{
+						scriptInstance = instance;
+						return;
+					}
+				});
+
+			return scriptInstance;
 		}
+
+		public static T Find<T>(ScriptType scriptType, Predicate<T> match) where T : CryScriptInstance
+		{
+			T result = null;
+			ForEachScript(scriptType, script =>
+				{
+					if((script.Type.Equals(typeof(T)) || script.Type.Implements(typeof(T))) && script.ScriptInstances != null)
+					{
+						var foundInstance = script.ScriptInstances.Find(x => match(x as T)) as T;
+						if(foundInstance != null)
+						{
+							result = foundInstance;
+							return;
+						}
+					}
+				});
+
+			return result;
+		}
+		#endregion
 
 		public static void AddScriptInstance(CryScriptInstance instance, ScriptType scriptType)
 		{
@@ -384,9 +452,9 @@ namespace CryEngine.Initialization
 			else if(!Enum.IsDefined(typeof(ScriptType), scriptType))
 				throw new ArgumentException(string.Format("scriptType: value {0} was not defined in the enum", scriptType));
 
-			var script = GetScriptList(scriptType).First(x => x.Type == instance.GetType());
-			if(script == null)
-				script = CreateScript(instance.GetType());
+			var script = FirstOrDefaultScript(scriptType, x => x.Type == instance.GetType());
+			if(script == default(CryScript))
+				script = ProcessType(instance.GetType());
 
 			AddScriptInstance(instance, script);
 		}
@@ -414,7 +482,7 @@ namespace CryEngine.Initialization
 		/// <summary>
 		/// Last assigned ScriptId, next = + 1
 		/// </summary>
-		public static int LastScriptId = 0;
+		public static int LastScriptId = 1;
 
 		internal static Dictionary<ScriptType, List<CryScript>> CompiledScripts { get; set; }
 		#endregion

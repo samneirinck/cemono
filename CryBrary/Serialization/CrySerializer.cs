@@ -51,15 +51,11 @@ namespace CryEngine.Serialization
 
 		void StartWrite(ObjectReference objectReference)
 		{
-			if(objectReference.Value == null)
-			{
+			Type valueType = objectReference.Value != null ? objectReference.Value.GetType() : null;
+
+			if(valueType == null || valueType.IsPointer || valueType == typeof(IntPtr))
 				WriteNull(objectReference);
-				return;
-			}
-
-			Type valueType = objectReference.Value.GetType();
-
-			if(valueType.IsPrimitive)
+			else  if(valueType.IsPrimitive)
 				WriteAny(objectReference);
 			else if(valueType == typeof(string))
 				WriteString(objectReference);
@@ -141,8 +137,10 @@ namespace CryEngine.Serialization
 				return;
 
 			WriteLine("generic_enumerable");
-			var array = objectReference.Value as ICollection;
-			WriteLine(array.Count);
+
+			var enumerable = (objectReference.Value as IEnumerable).Cast<object>();
+
+			WriteLine(enumerable.Count());
 			WriteLine(objectReference.Name);
 
 			var type = objectReference.Value.GetType();
@@ -151,7 +149,7 @@ namespace CryEngine.Serialization
 			if(type.Implements(typeof(IDictionary)))
 			{
 				int i = 0;
-				foreach(var element in array)
+				foreach(var element in enumerable)
 				{
 					StartWrite(new ObjectReference("key_" + i.ToString(), element.GetType().GetProperty("Key").GetValue(element, null)));
 					StartWrite(new ObjectReference("value_" + i.ToString(), element.GetType().GetProperty("Value").GetValue(element, null)));
@@ -160,12 +158,8 @@ namespace CryEngine.Serialization
 			}
 			else
 			{
-				int i = 0;
-				foreach(var element in array)
-				{
-					StartWrite(new ObjectReference(i.ToString(), element));
-					i++;
-				}
+				for(int i = 0; i < enumerable.Count(); i++)
+					StartWrite(new ObjectReference(i.ToString(), enumerable.ElementAt(i)));
 			}
 		}
 
@@ -180,13 +174,14 @@ namespace CryEngine.Serialization
 			WriteLine(objectReference.Name);
 			WriteType(type);
 
-			var fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-			WriteLine(fields.Length);
-			foreach(var field in fields)
+			while(type != null)
 			{
-				object fieldValue = field.GetValue(objectReference.Value);
+				var fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+				WriteLine(fields.Length);
+				foreach(var field in fields)
+					StartWrite(new ObjectReference(field.Name, field.GetValue(objectReference.Value)));
 
-				StartWrite(new ObjectReference(field.Name, fieldValue));
+				type = type.BaseType;
 			}
 		}
 
@@ -320,14 +315,16 @@ namespace CryEngine.Serialization
 
 			objReference.Name = ReadLine();
 			var type = ReadType();
-			int numFields = int.Parse(ReadLine());
 
 			objReference.Value = Activator.CreateInstance(type);
-			for(int i = 0; i < numFields; ++i)
+			while(type != null)
 			{
-				ObjectReference fieldReference = StartRead();
-				if(fieldReference.Value != null)
+				var numFields = int.Parse(ReadLine());
+
+				for(int i = 0; i < numFields; i++)
 				{
+					var fieldReference = StartRead();
+
 					var fieldInfo = type.GetField(fieldReference.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
 					if(fieldInfo != null)
@@ -335,6 +332,8 @@ namespace CryEngine.Serialization
 					else
 						throw new MissingFieldException(string.Format("Failed to find field {0} in type {1}", fieldReference.Name, type != null ? type.Name : "[Unknown]"));
 				}
+
+				type = type.BaseType;
 			}
 		}
 

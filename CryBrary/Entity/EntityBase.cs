@@ -153,7 +153,7 @@ namespace CryEngine
 
 		internal void InitPhysics()
 		{
-			_physics = new PhysicsParams(new EntityInfo(EntityPointer, Id));
+			_physics = new PhysicsParams(this);
 			_physics.Slot = 0;
 		}
 
@@ -182,8 +182,7 @@ namespace CryEngine
 			{
 				_physics = value;
 
-				_physics._entityId = Id;
-				_physics._entityPtr = EntityPointer;
+				_physics._entity = this;
 			}
 		}
 
@@ -233,6 +232,11 @@ namespace CryEngine
 		public EntityFlags Flags { get { return _GetFlags(EntityPointer); } set { _SetFlags(EntityPointer, value); } }
 
 		public Material Material { get { return Material.Get(this); } set { Material.Set(this, value); } }
+
+		public override void OnScriptReload()
+		{
+			EntityPointer = _GetEntity(Id);
+		}
 
 		internal IntPtr EntityPointer { get; set; }
 		public EntityId Id { get; set; }
