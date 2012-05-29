@@ -187,8 +187,6 @@ namespace CryEngine
 
 						portAttribute.UIConfig += Enum.GetName(parameter.ParameterType, value) + "=" + (int)value;
 					}
-
-					Debug.LogAlways(portAttribute.UIConfig);
 				}
 				else
 					portType = GetPortType(parameter.ParameterType);
@@ -291,6 +289,11 @@ namespace CryEngine
 		/// </summary>
 		internal void OnPortActivated(int index, object value = null)
 		{
+			if(InputMethods == null)
+				throw new Exception("InputMethods was null!");
+			if(!InputMethods.ContainsKey(GetType()))
+				throw new Exception("InputMethods did not contain the flownode type!");
+
 			var method = InputMethods[GetType()].ElementAt(index);
 
 			if(value != null && method.GetParameters().Length > 0)
