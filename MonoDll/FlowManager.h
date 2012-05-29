@@ -60,12 +60,16 @@ private:
 // Passed down to node script when initializing
 struct SMonoNodeInfo
 {
-	SMonoNodeInfo(CFlowNode *node)
+	SMonoNodeInfo(CFlowNode *node, TFlowNodeId _id, TFlowGraphId _graphId)
 		: pNode(node)
+		, id(_id)
+		, graphId(_graphId)
 	{
 	}
 
 	CFlowNode *pNode;
+	TFlowNodeId id;
+	TFlowGraphId graphId;
 };
 
 class CFlowManager
@@ -110,6 +114,7 @@ protected:
 
 	static void RegisterNode(mono::string typeName);
 
+	static IFlowNode *GetNode(TFlowGraphId graphId, TFlowNodeId id);
 	static bool IsPortActive(CFlowNode *pNode, int);
 
 	static int GetPortValueInt(CFlowNode *pNode, int);

@@ -21,6 +21,9 @@ namespace CryEngine
 		}
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static IntPtr _GetNode(UInt32 graphId, UInt16 nodeId);
+
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static void _SetRegularlyUpdated(IntPtr nodePtr, bool updated);
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
@@ -101,6 +104,8 @@ namespace CryEngine
 		internal void InternalInitialize(NodeInfo nodeInfo)
 		{
 			NodePointer = nodeInfo.nodePtr;
+			NodeId = nodeInfo.nodeId;
+			GraphId = nodeInfo.graphId;
 
 			List<object> emptyList = new List<object>();
 			foreach(var member in GetType().GetMembers().Where(x => x.MemberType == MemberTypes.Field || x.MemberType == MemberTypes.Property))
@@ -426,16 +431,21 @@ namespace CryEngine
 
 		public override void OnScriptReload()
 		{
-			// TODO
+			NodePointer = _GetNode(GraphId, NodeId);
 		}
 
 		internal IntPtr NodePointer { get; set; }
+		internal UInt16 NodeId { get; set; }
+		internal UInt32 GraphId { get; set; }
+
 		internal bool Initialized { get; set; }
 	}
 
 	struct NodeInfo
 	{
 		public IntPtr nodePtr;
+		public UInt16 nodeId;
+		public UInt32 graphId;
 	}
 
 	internal struct NodeConfig
