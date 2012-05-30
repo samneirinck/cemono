@@ -76,7 +76,7 @@ namespace CryEngine
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		internal virtual bool InternalRemove()
+		internal virtual bool InternalPreRemove()
 		{
 			if(OnRemove())
 			{
@@ -84,7 +84,6 @@ namespace CryEngine
 
 				return true;
 			}
-
 			// Abort removal
 			return false;
 		}

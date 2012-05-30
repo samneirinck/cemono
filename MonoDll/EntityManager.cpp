@@ -126,11 +126,14 @@ bool CEntityManager::OnRemove(IEntity *pEntity)
 	{
 		if((*it)->GetEntityId()==pEntity->GetId())
 		{
-			if((*it)->GetScript()->CallMethod("InternalRemove")->Unbox<bool>())
+			if(IMonoClass *pScript = (*it)->GetScript())
 			{
-				m_monoEntities.erase(it);
+				if(pScript->CallMethod("InternalPreRemove")->Unbox<bool>())
+				{
+					m_monoEntities.erase(it);
 
-				return true;
+					return true;
+				}
 			}
 			
 			return false;
