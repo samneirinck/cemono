@@ -221,7 +221,140 @@ namespace CryEngine
 			else
 				portType = NodePortType.Void;
 
-			inputs.Add(new InputPortConfig(portAttribute.Name ?? method.Name, portType, defaultVal, portAttribute.Description, "", portAttribute.UIConfig));
+			string inputPortType = "";
+			switch(portAttribute.Type)
+			{
+				case PortType.Sound:
+					{
+						if(portType == NodePortType.String)
+							inputPortType = "sound_";
+					}
+					break;
+				case PortType.DialogLine:
+					{
+						if(portType == NodePortType.String)
+							inputPortType = "dialogline_";
+					}
+					break;
+				case PortType.Color:
+					{
+						if(portType == NodePortType.Vec3)
+							inputPortType = "color_";
+					}
+					break;
+				case PortType.Texture:
+					{
+						if(portType == NodePortType.String)
+							inputPortType = "texture_";
+					}
+					break;
+				case PortType.Object:
+					{
+						if(portType == NodePortType.String)
+							inputPortType = "object_";
+					}
+					break;
+				case PortType.File:
+					{
+						if(portType == NodePortType.String)
+							inputPortType = "file_";
+					}
+					break;
+				case PortType.EquipmentPack:
+					{
+						if(portType == NodePortType.String)
+							inputPortType = "equip_";
+					}
+					break;
+				case PortType.ReverbPreset:
+					{
+						if(portType == NodePortType.String)
+							inputPortType = "reverbpreset_";
+					}
+					break;
+				case PortType.GameToken:
+					{
+						if(portType == NodePortType.String)
+							inputPortType = "gametoken_";
+					}
+					break;
+				case PortType.Material:
+					{
+						if(portType == NodePortType.String)
+							inputPortType = "mat_";
+					}
+					break;
+				case PortType.Sequence:
+					{
+						if(portType == NodePortType.String)
+							inputPortType = "seq_";
+					}
+					break;
+				case PortType.Mission:
+					{
+						if(portType == NodePortType.String)
+							inputPortType = "mission_";
+					}
+					break;
+				case PortType.Animation:
+					{
+						if(portType == NodePortType.String)
+							inputPortType = "anim_";
+					}
+					break;
+				case PortType.AnimationState:
+					{
+						if(portType == NodePortType.String)
+							inputPortType = "animstate_";
+					}
+					break;
+				case PortType.AnimationStateEx:
+					{
+						if(portType == NodePortType.String)
+							inputPortType = "animstateEx_";
+					}
+					break;
+				case PortType.Bone:
+					{
+						if(portType == NodePortType.String)
+							inputPortType = "bone_";
+					}
+					break;
+				case PortType.Attachment:
+					{
+						if(portType == NodePortType.String)
+							inputPortType = "attachment_";
+					}
+					break;
+				case PortType.Dialog:
+					{
+						if(portType == NodePortType.String)
+							inputPortType = "dialog_";
+					}
+					break;
+				case PortType.MaterialParamSlot:
+					{
+						if(portType == NodePortType.String)
+							inputPortType = "matparamslot_";
+					}
+					break;
+				case PortType.MaterialParamName:
+					{
+						if(portType == NodePortType.String)
+							inputPortType = "matparamname_";
+					}
+					break;
+				case PortType.MaterialParamCharacterAttachment:
+					{
+						if(portType == NodePortType.String)
+							inputPortType = "matparamcharatt_";
+					}
+					break;
+			}
+
+			string name = inputPortType + portAttribute.Name ?? method.Name;
+
+			inputs.Add(new InputPortConfig(name, portType, defaultVal, portAttribute.Description, portAttribute.Name ?? method.Name, portAttribute.UIConfig));
 			InputMethods[GetType()].Add(method);
 		}
 

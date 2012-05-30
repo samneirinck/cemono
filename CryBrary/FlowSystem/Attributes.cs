@@ -27,10 +27,45 @@ namespace CryEngine
 	{
 		public string Name { get; set; }
 		public string Description { get; set; }
-		internal FlowNodeFlags Flags { get; set; }
+		public PortType Type { get; set; }
 
+		internal FlowNodeFlags Flags { get; set; }
 		// Do not expose this directly, needs moar pretty wrap.
 		internal string UIConfig { get; set; }
+	}
+
+	public enum PortType
+	{
+		/// <summary>
+		/// Only applicable on string inputs.
+		/// </summary>
+		Sound,
+		DialogLine,
+		/// <summary>
+		/// Only applicable on Vec3 inputs.
+		/// </summary>
+		Color,
+		Texture,
+		Object,
+		File,
+		EquipmentPack,
+		ReverbPreset,
+		GameToken,
+		/// <summary>
+		/// Only applicable on string inputs.
+		/// </summary>
+		Material,
+		Sequence,
+		Mission,
+		Animation,
+		AnimationState,
+		AnimationStateEx,
+		Bone,
+		Attachment,
+		Dialog,
+		MaterialParamSlot,
+		MaterialParamName,
+		MaterialParamCharacterAttachment,
 	}
 
 	[Flags]
