@@ -130,6 +130,7 @@ bool CEntityManager::OnRemove(IEntity *pEntity)
 			{
 				if(pScript->CallMethod("InternalPreRemove")->Unbox<bool>())
 				{
+					(*it).reset();
 					m_monoEntities.erase(it);
 
 					return true;

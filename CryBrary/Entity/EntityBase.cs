@@ -38,7 +38,7 @@ namespace CryEngine
 		/// Spawns an entity with the specified parameters.
 		/// </summary>
 		/// <param name="spawnParams">The <see cref="EntitySpawnParams"/></param>
-		/// <param name="autoInit">Should the entity automatically be initialised?</param>
+		/// <param name="autoInit">Should the entity automatically be initialized?</param>
 		/// <returns></returns>
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static EntityInfo _SpawnEntity(EntitySpawnParams spawnParams, bool autoInit = true);
