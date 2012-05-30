@@ -122,7 +122,7 @@ protected:
 	static EntityId GetPortValueEntityId(CFlowNode *pNode, int);
 	static mono::string GetPortValueString(CFlowNode *pNode, int);
 	static bool GetPortValueBool(CFlowNode *pNode, int);
-	static mono::object GetPortValueVec3(CFlowNode *pNode, int);
+	static Vec3 GetPortValueVec3(CFlowNode *pNode, int);
 
 	static void ActivateOutput(CFlowNode *pNode, int);
 	static void ActivateOutputInt(CFlowNode *pNode, int, int);

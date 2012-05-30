@@ -125,9 +125,9 @@ bool CFlowManager::GetPortValueBool(CFlowNode *pFlowNode, int index)
 	return pFlowNode->GetPortBool(index);
 }
 
-mono::object CFlowManager::GetPortValueVec3(CFlowNode *pFlowNode, int index)
+Vec3 CFlowManager::GetPortValueVec3(CFlowNode *pFlowNode, int index)
 {
-	return *gEnv->pMonoScriptSystem->GetConverter()->ToManagedType(eCMT_Vec3, pFlowNode->GetPortVec3(index));
+	return pFlowNode->GetPortVec3(index);
 }
 
 IEntity *CFlowManager::GetTargetEntity(CFlowNode *pNode, EntityId &id)
