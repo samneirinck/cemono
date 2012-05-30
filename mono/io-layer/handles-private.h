@@ -68,7 +68,8 @@ extern void _wapi_handle_ops_signal (gpointer handle);
 extern gboolean _wapi_handle_ops_own (gpointer handle);
 extern gboolean _wapi_handle_ops_isowned (gpointer handle);
 extern guint32 _wapi_handle_ops_special_wait (gpointer handle,
-					      guint32 timeout);
+					      guint32 timeout,
+					      gboolean alertable);
 extern void _wapi_handle_ops_prewait (gpointer handle);
 
 extern gboolean _wapi_handle_count_signalled_handles (guint32 numhandles,
@@ -109,8 +110,8 @@ static inline WapiHandleType _wapi_handle_type (gpointer handle)
 {
 	guint32 idx = GPOINTER_TO_UINT(handle);
 	
-	if (!_WAPI_PRIVATE_VALID_SLOT (idx)) {
-		return(WAPI_HANDLE_COUNT);	/* An impossible type */
+	if (!_WAPI_PRIVATE_VALID_SLOT (idx) || !_WAPI_PRIVATE_HAVE_SLOT (idx)) {
+		return(WAPI_HANDLE_UNUSED);	/* An impossible type */
 	}
 	
 	return(_WAPI_PRIVATE_HANDLES(idx).type);

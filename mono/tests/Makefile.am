@@ -13,7 +13,7 @@ JITTEST_PROG_RUN = MONO_SHARED_DIR=$(mono_build_root)/runtime MONO_CFG_DIR=$(mon
 
 RUNTIME_ARGS=--config tests-config --optimize=all --debug
 
-with_mono_path = MONO_PATH=$(mcs_topdir)/class/lib/net_2_0
+with_mono_path = MONO_PATH=$(mcs_topdir)/class/lib/net_4_5
 with_mono_path_moonlight = MONO_PATH=$(mcs_topdir)/class/lib/moonlight_raw
 
 RUNTIME = $(with_mono_path) $(top_builddir)/runtime/mono-wrapper
@@ -21,11 +21,10 @@ RUNTIME_MOONLIGHT = $(with_mono_path_moonlight) $(top_builddir)/runtime/mono-wra
 
 MKBUNDLE = \
 	PKG_CONFIG_PATH=$(top_builddir):$(PKG_CONFIG_PATH) \
-	$(RUNTIME) $(mcs_topdir)/class/lib/net_2_0/mkbundle.exe
+	$(RUNTIME) $(mcs_topdir)/class/lib/net_4_5/mkbundle.exe
 
-MCS = $(RUNTIME) $(mcs_topdir)/class/lib/net_2_0/gmcs.exe -unsafe -nowarn:0162 -nowarn:0168 -nowarn:0219 -debug
-SMCS = $(RUNTIME_MOONLIGHT) --runtime=moonlight --security=temporary-smcs-hack $(mcs_topdir)/class/lib/moonlight_raw/smcs.exe -unsafe -nowarn:0162 -nowarn:0168 -nowarn:0219
-ILASM = $(RUNTIME) $(mcs_topdir)/class/lib/net_2_0/ilasm.exe
+MCS = $(RUNTIME) $(mcs_topdir)/class/lib/build/mcs.exe -unsafe -nowarn:0162 -nowarn:0168 -nowarn:0219 -debug
+ILASM = $(RUNTIME) $(mcs_topdir)/class/lib/net_4_5/ilasm.exe
 
 BENCHSRC=fib.cs random.cs nested-loops.cs ackermann.cs tight-loop.cs sieve.cs
 
@@ -239,6 +238,7 @@ BASE_TEST_CS_SRC=		\
 	finalizer-abort.cs	\
 	finalizer-exception.cs	\
 	finalizer-exit.cs	\
+	finalizer-thread.cs	\
 	main-exit.cs	\
 	main-returns-abort-resetabort.cs	\
 	main-returns-background-abort-resetabort.cs	\
@@ -372,6 +372,13 @@ BASE_TEST_CS_SRC=		\
 	bug-599469.cs	\
 	bug-389886-3.cs \
 	monitor.cs	\
+	dynamic-method-resurrection.cs	\
+	bug-666008.cs	\
+	bug-685908.cs	\
+	sgen-long-vtype.cs	\
+	delegate-invoke.cs	\
+	bug-696593.cs	\
+	bug-705140.cs	\
 	bug-1147.cs	\
 	mono-path.cs	\
 	bug-bxc-795.cs	\
@@ -410,7 +417,7 @@ endif
 if X86
 
 if HOST_WIN32
-PLATFORM_DISABLED_TESTS=async-exc-compilation.exe
+PLATFORM_DISABLED_TESTS=async-exc-compilation.exe finally_guard.exe
 endif
 
 endif
@@ -424,9 +431,22 @@ if ARM
 PLATFORM_DISABLED_TESTS=filter-stack.exe
 endif
 
+if MIPS
+# monitor.exe is racy
+PLATFORM_DISABLED_TESTS=filter-stack.exe monitor.exe
+endif
+
+if S390x
+PLATFORM_DISABLED_TESTS=dynamic-method-resurrection.exe
+#PLATFORM_DISABLED_TESTS=dynamic-method-resurrection.exe exception17.exe
+endif
+
 # The two finalizer tests only work under sgen
 # gc-altstack.exe fails under boehm because it has no support for altstack
 # bug-459094.exe creates an extremely deep directory tree
+# delegate-invoke.exe depends on 929c6bc9b6d76a273f251e6f5dfacac36e9c38bd which was
+# reverted.
+# generic_type_definition.2.exe depends on COMPILER_ACCESS which is no longer supported.
 DISABLED_TESTS=			\
 	delegate-async-exception.exe	\
 	bug-348522.2.exe	\
@@ -434,6 +454,8 @@ DISABLED_TESTS=			\
 	critical-finalizers.exe	\
 	gc-altstack.exe \
 	bug-459094.exe \
+	delegate-invoke.exe \
+	generic_type_definition.2.exe \
 	$(PLATFORM_DISABLED_TESTS)
 
 AOT_DISABLED_TESTS=constraints-load.exe
@@ -554,6 +576,9 @@ test_platform: test-eglib-remap
 endif
 endif
 
+# Target to precompile the test executables
+tests: $(TESTSI_CS) $(TESTSI_IL) $(TESTBS) libtest.la $(PREREQSI_IL) $(PREREQSI_CS) $(GSHARED_TESTS)
+
 #
 # Test that no symbols are missed in eglib-remap.h
 #
@@ -576,9 +601,25 @@ else
 test_2_1 :
 endif
 
+if AMD64
+test-sgen : sgen-tests
+else
+if X86
+test-sgen : sgen-tests
+else
+if ARM
+test-sgen : sgen-tests
+else
+if S390x
+test-sgen : sgen-regular-tests
+endif
+endif
+endif
+endif
+
 # test_messages fails on the buildbots
 #test: assemblyresolve/test/asm.dll testjit test-type-load test-generic-sharing test_platform test_2_1 test_messages
-test: assemblyresolve/test/asm.dll testjit test-generic-sharing test-type-load test_platform test_2_1 test-process-exit
+test: assemblyresolve/test/asm.dll testjit test-generic-sharing test-type-load test_platform test_2_1 test-process-exit test-sgen
 
 assemblyresolve/test/asm.dll:
 	$(MAKE) -C assemblyresolve prereq
@@ -697,6 +738,34 @@ test-type-load: TestDriver.dll
 	@$(MCS) -t:library -out:t.dll $(srcdir)/t-missing.cs
 	@echo "Testing load-exception.exe..."
 	@$(RUNTIME) load-exceptions.exe > load-exceptions.exe.stdout 2> load-exceptions.exe.stderr
+
+
+EXTRA_DIST += sgen-bridge.cs sgen-descriptors.cs sgen-gshared-vtype.cs sgen-bridge-major-fragmentation.cs
+
+SGEN_TESTS =	\
+	sgen-descriptors.exe	\
+	sgen-gshared-vtype.exe
+
+sgen-regular-tests: $(SGEN_TESTS)
+	@for fn in $+ ; do	\
+		echo "Testing $$fn ...";	\
+		MONO_GC_PARAMS=major=marksweep-par MONO_ENV_OPTIONS="--gc=sgen" $(RUNTIME) $$fn > $$fn.stdout || exit 1;	\
+		MONO_ENV_OPTIONS="--gc=sgen"                                    $(RUNTIME) $$fn > $$fn.stdout || exit 1;	\
+		MONO_GC_PARAMS=major=marksweep-par,minor=split MONO_ENV_OPTIONS="--gc=sgen" $(RUNTIME) $$fn > $$fn.stdout || exit 1;	\
+		MONO_GC_PARAMS=minor=split MONO_ENV_OPTIONS="--gc=sgen"                     $(RUNTIME) $$fn > $$fn.stdout || exit 1;	\
+		MONO_GC_PARAMS=major=marksweep,concurrent-sweep MONO_ENV_OPTIONS="--gc=sgen" $(RUNTIME) $$fn > $$fn.stdout || exit 1;	\
+		MONO_GC_PARAMS=minor=split,major=marksweep,concurrent-sweep MONO_ENV_OPTIONS="--gc=sgen" $(RUNTIME) $$fn > $$fn.stdout || exit 1;	\
+	done
+
+
+sgen-tests: sgen-regular-tests sgen-bridge.exe sgen-bridge-major-fragmentation.exe
+	@echo "Testing sgen-bridge.exe ...";	\
+	MONO_GC_PARAMS=bridge=Bridge MONO_ENV_OPTIONS="--gc=sgen" $(RUNTIME) sgen-bridge.exe > sgen-bridge.exe.stdout 2> sgen-bridge.exe.stderr
+	MONO_GC_PARAMS=bridge=Bridge,minor=split MONO_ENV_OPTIONS="--gc=sgen" $(RUNTIME) sgen-bridge.exe > sgen-bridge.exe.stdout 2> sgen-bridge.exe.stderr
+	@echo "Testing sgen-bridge-major-fragmentation.exe ...";	\
+	MONO_GC_PARAMS=bridge=Bridge MONO_ENV_OPTIONS="--gc=sgen" $(RUNTIME) sgen-bridge-major-fragmentation.exe > sgen-bridge-major-fragmentation.exe.stdout 2> sgen-bridge-major-fragmentation.exe.stderr
+	MONO_GC_PARAMS=bridge=Bridge,minor=split MONO_ENV_OPTIONS="--gc=sgen" $(RUNTIME) sgen-bridge-major-fragmentation.exe > sgen-bridge-major-fragmentation.exe.stdout 2> sgen-bridge-major-fragmentation.exe.stderr
+
 
 # Generated tests for runtime invoke
 EXTRA_DIST += gen-runtime-invoke.cs
@@ -822,7 +891,7 @@ generic-delegate2.2.exe : generic-delegate2.2.cs generic-delegate2-lib.2.dll
 	$(MCS) -r:generic-delegate2-lib.2.dll -out:$@ $(srcdir)/generic-delegate2.2.cs
 
 bug-3903.exe: bug-3903.cs
-	$(MCS) -sdk:2 bug-3903.cs -out:bug-3903.exe
+	$(MCS) -sdk:2 $(srcdir)/bug-3903.cs -out:$@
 
 gshared: test-generic-sharing
 
@@ -873,8 +942,6 @@ test-generic-sharing-managed: test-runner.exe $(GSHARED_TESTS)
 test-generic-sharing:
 	@if test x$(M) != x; then $(MAKE) test-generic-sharing-managed; else $(MAKE) test-generic-sharing-normal; fi
 
-EXTRA_DIST += delegate2.exe.config
-
 EXTRA_DIST += async-exceptions.cs
 async-exceptions.exe : async-exceptions.cs
 	$(MCS) -out:async-exceptions.exe $(srcdir)/async-exceptions.cs
@@ -900,7 +967,7 @@ test-process-exit:
 	@$(MCS) $(srcdir)/bug-438454.cs -out:bug-438454.exe
 	@echo "Testing bug-438454.exe..."
 	@$(RUNTIME) bug-438454.exe > bug-438454.exe.stdout
-	@diff bug-438454.exe.stdout $(srcdir)/bug-438454.exe.stdout.expected
+	@diff -w bug-438454.exe.stdout $(srcdir)/bug-438454.exe.stdout.expected
 
 OOM_TESTS =	\
 	gc-oom-handling.exe	\
@@ -931,6 +998,6 @@ else
 libtest_la_LDFLAGS = -rpath `pwd`
 endif
 libtest_la_SOURCES = libtest.c
-libtest_la_LIBADD = $(GLIB_LIBS)
+libtest_la_LIBADD = $(GLIB_LIBS) $(LIBICONV)
 
 CLEANFILES = $(TESTSI_CS) $(TESTSI_IL) $(STRESS_TESTS) *.dll *.stdout *.aotlog *.exe stest.dat

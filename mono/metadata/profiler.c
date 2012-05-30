@@ -6,6 +6,7 @@
  *
  * Copyright 2001-2003 Ximian, Inc (http://www.ximian.com)
  * Copyright 2004-2009 Novell, Inc (http://www.novell.com)
+ * Copyright 2011 Xamarin Inc (http://www.xamarin.com).
  */
 
 #include "config.h"
@@ -1140,6 +1141,8 @@ mono_profiler_load (const char *desc)
 		const char* col = strchr (desc, ':');
 		char* libname;
 		char *mname;
+		gboolean res = FALSE;
+
 		if (col != NULL) {
 			mname = g_memdup (desc, col - desc + 1);
 			mname [col - desc] = 0;
@@ -1148,9 +1151,14 @@ mono_profiler_load (const char *desc)
 		}
 		if (!load_embedded_profiler (desc, mname)) {
 			libname = g_strdup_printf ("mono-profiler-%s", mname);
-			if (!load_profiler_from_directory (NULL, libname, desc))
-				if (!load_profiler_from_directory (MONO_ASSEMBLIES, libname, desc))
+			if (!load_profiler_from_directory (NULL, libname, desc)) {
+				res = FALSE;
+#if defined (MONO_ASSEMBLIES)
+				res = load_profiler_from_directory (mono_assembly_getrootdir (), libname, desc);
+#endif
+				if (!res)
 					g_warning ("The '%s' profiler wasn't found in the main executable nor could it be loaded from '%s'.", mname, libname);
+			}
 			g_free (libname);
 		}
 		g_free (mname);

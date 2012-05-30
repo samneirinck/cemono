@@ -3,6 +3,7 @@
 
 #include <mono/arch/amd64/amd64-codegen.h>
 #include <mono/utils/mono-sigcontext.h>
+#include <mono/utils/mono-context.h>
 #include <glib.h>
 
 #ifdef __native_client_codegen__
@@ -98,7 +99,11 @@ struct sigcontext {
 
 
 
+#if defined(__APPLE__)
+#define MONO_ARCH_SIGNAL_STACK_SIZE MINSIGSTKSZ
+#else
 #define MONO_ARCH_SIGNAL_STACK_SIZE (16 * 1024)
+#endif
 
 #define MONO_ARCH_HAVE_RESTORE_STACK_SUPPORT 1
 
@@ -179,7 +184,6 @@ struct MonoLMF {
 };
 
 typedef struct MonoCompileArch {
-	gint32 lmf_offset;
 	gint32 localloc_offset;
 	gint32 reg_save_area_offset;
 	gint32 stack_alloc_size;
@@ -191,32 +195,10 @@ typedef struct MonoCompileArch {
 #ifdef HOST_WIN32
 	gpointer	unwindinfo;
 #endif
+	gpointer seq_point_info_var;
 	gpointer ss_trigger_page_var;
+	gpointer lmf_var;
 } MonoCompileArch;
-
-typedef struct {
-	guint64 rax;
-	guint64 rbx;
-	guint64 rcx;
-	guint64 rdx;
-	guint64 rbp;
-	guint64 rsp;
-    guint64 rsi;
-	guint64 rdi;
-	guint64 rip;
-	guint64 r12;
-	guint64 r13;
-	guint64 r14;
-	guint64 r15;
-} MonoContext;
-
-#define MONO_CONTEXT_SET_IP(ctx,ip) do { (ctx)->rip = (guint64)(ip); } while (0); 
-#define MONO_CONTEXT_SET_BP(ctx,bp) do { (ctx)->rbp = (guint64)(bp); } while (0); 
-#define MONO_CONTEXT_SET_SP(ctx,esp) do { (ctx)->rsp = (guint64)(esp); } while (0); 
-
-#define MONO_CONTEXT_GET_IP(ctx) ((gpointer)((ctx)->rip))
-#define MONO_CONTEXT_GET_BP(ctx) ((gpointer)((ctx)->rbp))
-#define MONO_CONTEXT_GET_SP(ctx) ((gpointer)((ctx)->rsp))
 
 #define MONO_CONTEXT_SET_LLVM_EXC_REG(ctx, exc) do { (ctx)->rax = (gsize)exc; } while (0)
 
@@ -346,16 +328,17 @@ typedef struct {
 #define MONO_ARCH_HAVE_IS_INT_OVERFLOW 1
 
 #define MONO_ARCH_ENABLE_REGALLOC_IN_EH_BLOCKS 1
+#if !defined(__APPLE__)
 #define MONO_ARCH_ENABLE_MONO_LMF_VAR 1
+#endif
 #define MONO_ARCH_HAVE_INVALIDATE_METHOD 1
 #define MONO_ARCH_HAVE_CREATE_DELEGATE_TRAMPOLINE 1
 #define MONO_ARCH_HAVE_ATOMIC_ADD 1
 #define MONO_ARCH_HAVE_ATOMIC_EXCHANGE 1
 #define MONO_ARCH_HAVE_ATOMIC_CAS 1
 #define MONO_ARCH_HAVE_FULL_AOT_TRAMPOLINES 1
-#define MONO_ARCH_HAVE_FULL_AOT_TRAMPOLINES_2 1
 #define MONO_ARCH_HAVE_IMT 1
-#define MONO_ARCH_HAVE_TLS_GET 1
+#define MONO_ARCH_HAVE_TLS_GET (mono_amd64_have_tls_get ())
 #define MONO_ARCH_IMT_REG AMD64_R10
 #define MONO_ARCH_IMT_SCRATCH_REG AMD64_R11
 #define MONO_ARCH_VTABLE_REG MONO_AMD64_ARG_REG1
@@ -364,7 +347,7 @@ typedef struct {
  * used by the trampoline as a scratch register and hence might be
  * clobbered across method call boundaries.
  */
-#define MONO_ARCH_RGCTX_REG AMD64_R10
+#define MONO_ARCH_RGCTX_REG MONO_ARCH_IMT_REG
 #define MONO_ARCH_HAVE_CMOV_OPS 1
 #define MONO_ARCH_HAVE_NOTIFY_PENDING_EXC 1
 #define MONO_ARCH_HAVE_EXCEPTIONS_INIT 1
@@ -376,14 +359,11 @@ typedef struct {
 #if !defined(HOST_WIN32)
 #define MONO_ARCH_MONITOR_OBJECT_REG MONO_AMD64_ARG_REG1
 #endif
-#define MONO_ARCH_HAVE_STATIC_RGCTX_TRAMPOLINE 1
 #define MONO_ARCH_HAVE_GET_TRAMPOLINES 1
 
 #define MONO_ARCH_AOT_SUPPORTED 1
 #if !defined( HOST_WIN32 ) && !defined( __native_client__ )
 #define MONO_ARCH_SOFT_DEBUG_SUPPORTED 1
-#else
-#define DISABLE_DEBUGGER_AGENT 1
 #endif
 
 #if !defined(HOST_WIN32) || defined(__sun)
@@ -407,6 +387,8 @@ typedef struct {
 #define MONO_ARCH_HAVE_CARD_TABLE_WBARRIER 1
 #define MONO_ARCH_HAVE_SETUP_RESUME_FROM_SIGNAL_HANDLER_CTX 1
 #define MONO_ARCH_GC_MAPS_SUPPORTED 1
+#define MONO_ARCH_HAVE_CONTEXT_SET_INT_REG 1
+#define MONO_ARCH_HAVE_SETUP_ASYNC_CALLBACK 1
 
 gboolean
 mono_amd64_tail_call_supported (MonoMethodSignature *caller_sig, MonoMethodSignature *callee_sig) MONO_INTERNAL;
@@ -446,6 +428,9 @@ mono_amd64_get_original_ip (void) MONO_INTERNAL;
 
 guint8*
 mono_amd64_emit_tls_get (guint8* code, int dreg, int tls_offset) MONO_INTERNAL;
+
+gboolean
+mono_amd64_have_tls_get (void) MONO_INTERNAL;
 
 GSList*
 mono_amd64_get_exception_trampolines (gboolean aot) MONO_INTERNAL;

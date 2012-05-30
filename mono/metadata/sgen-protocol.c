@@ -22,6 +22,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include "config.h"
 #include "sgen-protocol.h"
 
 #ifdef SGEN_BINARY_PROTOCOL
@@ -41,7 +42,18 @@ struct _BinaryProtocolBuffer {
 };
 
 static BinaryProtocolBuffer *binary_protocol_buffers = NULL;
-LOCK_DECLARE (binary_protocol_mutex);
+
+void
+binary_protocol_init (const char *filename)
+{
+	binary_protocol_file = fopen (filename, "w");
+}
+
+gboolean
+binary_protocol_is_enabled (void)
+{
+	return binary_protocol_file != NULL;
+}
 
 static void
 binary_protocol_flush_buffers_rec (BinaryProtocolBuffer *buffer)
@@ -54,10 +66,10 @@ binary_protocol_flush_buffers_rec (BinaryProtocolBuffer *buffer)
 	g_assert (buffer->index > 0);
 	fwrite (buffer->buffer, 1, buffer->index, binary_protocol_file);
 
-	mono_sgen_free_os_memory (buffer, sizeof (BinaryProtocolBuffer));
+	sgen_free_os_memory (buffer, sizeof (BinaryProtocolBuffer));
 }
 
-static void
+void
 binary_protocol_flush_buffers (gboolean force)
 {
 	if (!binary_protocol_file)
@@ -82,12 +94,12 @@ binary_protocol_get_buffer (int length)
 	if (buffer && buffer->index + length <= BINARY_PROTOCOL_BUFFER_SIZE)
 		return buffer;
 
-	new_buffer = mono_sgen_alloc_os_memory (sizeof (BinaryProtocolBuffer), TRUE);
+	new_buffer = sgen_alloc_os_memory (sizeof (BinaryProtocolBuffer), TRUE);
 	new_buffer->next = buffer;
 	new_buffer->index = 0;
 
 	if (InterlockedCompareExchangePointer ((void**)&binary_protocol_buffers, new_buffer, buffer) != buffer) {
-		mono_sgen_free_os_memory (new_buffer, sizeof (BinaryProtocolBuffer));
+		sgen_free_os_memory (new_buffer, sizeof (BinaryProtocolBuffer));
 		goto retry;
 	}
 

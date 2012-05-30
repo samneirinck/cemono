@@ -31,6 +31,7 @@
 #include <llvm/Target/TargetData.h>
 #include <llvm/Target/TargetRegisterInfo.h>
 #include <llvm/Analysis/Verifier.h>
+#include <llvm/Analysis/Passes.h>
 #include <llvm/Transforms/Scalar.h>
 #include <llvm/Support/CommandLine.h>
 #include "llvm/Support/PassNameParser.h"
@@ -39,7 +40,6 @@
 #include <llvm/CodeGen/MachineFunctionPass.h>
 #include <llvm/CodeGen/MachineFunction.h>
 #include <llvm/CodeGen/MachineFrameInfo.h>
-#include <llvm/Support/StandardPasses.h>
 //#include <llvm/LinkAllPasses.h>
 
 #include "llvm-c/Core.h"
@@ -50,8 +50,6 @@
 #define LLVM_CHECK_VERSION(major,minor) \
 	((LLVM_MAJOR_VERSION > (major)) ||									\
 	 ((LLVM_MAJOR_VERSION == (major)) && (LLVM_MINOR_VERSION >= (minor))))
-
-extern "C" void LLVMInitializeX86TargetInfo();
 
 using namespace llvm;
 
@@ -76,14 +74,6 @@ public:
     unsigned char *getGOTBase() const {
 		return mm->getGOTBase ();
     }
-
-#if LLVM_MAJOR_VERSION == 2 && LLVM_MINOR_VERSION < 7
-    void *getDlsymTable() const {
-		return mm->getDlsymTable ();
-    }
-
-	void SetDlsymTable(void *ptr);
-#endif
 
 	void setPoisonMemory(bool) {
 	}
@@ -110,20 +100,15 @@ public:
 						   unsigned char *TableEnd, 
 						   unsigned char* FrameRegister);
 
-#if LLVM_MAJOR_VERSION == 2 && LLVM_MINOR_VERSION >= 7
 	virtual void deallocateFunctionBody(void*) {
 	}
 
 	virtual void deallocateExceptionTable(void*) {
 	}
-#endif
 };
 
 MonoJITMemoryManager::MonoJITMemoryManager ()
 {
-#if LLVM_MAJOR_VERSION == 2 && LLVM_MINOR_VERSION <= 7
-	SizeRequired = true;
-#endif
 	mm = JITMemoryManager::CreateDefaultMemManager ();
 }
 
@@ -147,14 +132,6 @@ MonoJITMemoryManager::AllocateGOT()
 {
 	mm->AllocateGOT ();
 }
-
-#if LLVM_MAJOR_VERSION == 2 && LLVM_MINOR_VERSION < 7  
-void
-MonoJITMemoryManager::SetDlsymTable(void *ptr)
-{
-	mm->SetDlsymTable (ptr);
-}
-#endif
 
 unsigned char *
 MonoJITMemoryManager::startFunctionBody(const Function *F, 
@@ -316,6 +293,46 @@ mono_llvm_build_aligned_store (LLVMBuilderRef builder, LLVMValueRef Val, LLVMVal
 	return wrap (ins);
 }
 
+LLVMValueRef
+mono_llvm_build_cmpxchg (LLVMBuilderRef builder, LLVMValueRef ptr, LLVMValueRef cmp, LLVMValueRef val)
+{
+	AtomicCmpXchgInst *ins;
+
+	ins = unwrap(builder)->CreateAtomicCmpXchg (unwrap(ptr), unwrap (cmp), unwrap (val), SequentiallyConsistent);
+	return wrap (ins);
+}
+
+LLVMValueRef
+mono_llvm_build_atomic_rmw (LLVMBuilderRef builder, AtomicRMWOp op, LLVMValueRef ptr, LLVMValueRef val)
+{
+	AtomicRMWInst::BinOp aop = AtomicRMWInst::Xchg;
+	AtomicRMWInst *ins;
+
+	switch (op) {
+	case LLVM_ATOMICRMW_OP_XCHG:
+		aop = AtomicRMWInst::Xchg;
+		break;
+	case LLVM_ATOMICRMW_OP_ADD:
+		aop = AtomicRMWInst::Add;
+		break;
+	default:
+		g_assert_not_reached ();
+		break;
+	}
+
+	ins = unwrap (builder)->CreateAtomicRMW (aop, unwrap (ptr), unwrap (val), AcquireRelease);
+	return wrap (ins);
+}
+
+LLVMValueRef
+mono_llvm_build_fence (LLVMBuilderRef builder)
+{
+	FenceInst *ins;
+
+	ins = unwrap (builder)->CreateFence (AcquireRelease);
+	return wrap (ins);
+}
+
 void
 mono_llvm_replace_uses_of (LLVMValueRef var, LLVMValueRef v)
 {
@@ -384,7 +401,6 @@ force_pass_linking (void)
       (void) llvm::createLCSSAPass();
       (void) llvm::createLICMPass();
       (void) llvm::createLazyValueInfoPass();
-      (void) llvm::createLiveValuesPass();
       (void) llvm::createLoopDependenceAnalysisPass();
 	  /*
       (void) llvm::createLoopExtractorPass();
@@ -419,7 +435,6 @@ force_pass_linking (void)
       (void) llvm::createSCCPPass();
       (void) llvm::createScalarReplAggregatesPass();
       (void) llvm::createSimplifyLibCallsPass();
-      (void) llvm::createSimplifyHalfPowrLibCallsPass();
 	  /*
       (void) llvm::createSingleLoopExtractorPass();
       (void) llvm::createStripSymbolsPass();
@@ -465,23 +480,40 @@ mono_llvm_create_ee (LLVMModuleProviderRef MP, AllocCodeMemoryCb *alloc_cb, Func
 
   LLVMInitializeX86Target ();
   LLVMInitializeX86TargetInfo ();
+  LLVMInitializeX86TargetMC ();
 
   mono_mm = new MonoJITMemoryManager ();
   mono_mm->alloc_cb = alloc_cb;
 
-#if LLVM_MAJOR_VERSION == 2 && LLVM_MINOR_VERSION < 8
-   DwarfExceptionHandling = true;
-#else
-   JITExceptionHandling = true;
-#endif
+  //JITExceptionHandling = true;
   // PrettyStackTrace installs signal handlers which trip up libgc
   DisablePrettyStackTrace = true;
 
-  ExecutionEngine *EE = ExecutionEngine::createJIT (unwrap (MP), &Error, mono_mm, CodeGenOpt::Default);
+  /*
+   * The Default code model doesn't seem to work on amd64,
+   * test_0_fields_with_big_offsets (among others) crashes, because LLVM tries to call
+   * memset using a normal pcrel code which is in 32bit memory, while memset isn't.
+   */
+
+  TargetOptions opts;
+  opts.JITExceptionHandling = 1;
+
+  EngineBuilder b (unwrap (MP));
+#ifdef TARGET_AMD64
+  ExecutionEngine *EE = b.setJITMemoryManager (mono_mm).setTargetOptions (opts).setCodeModel (CodeModel::Large).setAllocateGVsWithCode (true).create ();
+#else
+  ExecutionEngine *EE = b.setJITMemoryManager (mono_mm).setTargetOptions (opts).setAllocateGVsWithCode (true).create ();
+#endif
+  g_assert (EE);
+
+#if 0
+  ExecutionEngine *EE = ExecutionEngine::createJIT (unwrap (MP), &Error, mono_mm, CodeGenOpt::Default, true, Reloc::Default, CodeModel::Large);
   if (!EE) {
 	  errs () << "Unable to create LLVM ExecutionEngine: " << Error << "\n";
 	  g_assert_not_reached ();
   }
+#endif
+
   EE->InstallExceptionTableRegister (exception_cb);
   mono_event_listener = new MonoJITEventListener (emitted_cb);
   EE->RegisterJITEventListener (mono_event_listener);
@@ -490,7 +522,6 @@ mono_llvm_create_ee (LLVMModuleProviderRef MP, AllocCodeMemoryCb *alloc_cb, Func
 
   fpm->add(new TargetData(*EE->getTargetData()));
 
-#if LLVM_CHECK_VERSION(2, 9)
   PassRegistry &Registry = *PassRegistry::getPassRegistry();
   initializeCore(Registry);
   initializeScalarOpts(Registry);
@@ -501,7 +532,6 @@ mono_llvm_create_ee (LLVMModuleProviderRef MP, AllocCodeMemoryCb *alloc_cb, Func
   initializeInstCombine(Registry);
   //initializeInstrumentation(Registry);
   initializeTarget(Registry);
-#endif
 
   llvm::cl::ParseEnvironmentOptions("mono", "MONO_LLVM", "", false);
 
@@ -518,7 +548,7 @@ mono_llvm_create_ee (LLVMModuleProviderRef MP, AllocCodeMemoryCb *alloc_cb, Func
 	  }
   } else {
 	  /* Use the same passes used by 'opt' by default, without the ipo passes */
-	  const char *opts = "-simplifycfg -domtree -domfrontier -scalarrepl -instcombine -simplifycfg -basiccg -domtree -domfrontier -scalarrepl -simplify-libcalls -instcombine -simplifycfg -instcombine -simplifycfg -reassociate -domtree -loops -loopsimplify -domfrontier -loopsimplify -lcssa -loop-rotate -licm -lcssa -loop-unswitch -instcombine -scalar-evolution -loopsimplify -lcssa -iv-users -indvars -loop-deletion -loopsimplify -lcssa -loop-unroll -instcombine -memdep -gvn -memdep -memcpyopt -sccp -instcombine -domtree -memdep -dse -adce -gvn -simplifycfg -preverify -domtree -verify";
+	  const char *opts = "-simplifycfg -domtree -domfrontier -scalarrepl -instcombine -simplifycfg -basiccg -domtree -domfrontier -scalarrepl -simplify-libcalls -instcombine -simplifycfg -instcombine -simplifycfg -reassociate -domtree -loops -loop-simplify -domfrontier -loop-simplify -lcssa -loop-rotate -licm -lcssa -loop-unswitch -instcombine -scalar-evolution -loop-simplify -lcssa -iv-users -indvars -loop-deletion -loop-simplify -lcssa -loop-unroll -instcombine -memdep -gvn -memdep -memcpyopt -sccp -instcombine -domtree -memdep -dse -adce -gvn -simplifycfg -preverify -domtree -verify";
 	  char **args;
 	  int i;
 

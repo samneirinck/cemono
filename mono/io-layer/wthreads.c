@@ -13,7 +13,6 @@
 #include <stdio.h>
 #include <glib.h>
 #include <string.h>
-#include <mono/utils/gc_wrapper.h>
 #include <pthread.h>
 #include <signal.h>
 #include <sched.h>
@@ -31,12 +30,18 @@
 #include <mono/io-layer/mutex-private.h>
 #include <mono/io-layer/atomic.h>
 
+#include <mono/utils/mono-threads.h>
+#include <mono/utils/gc_wrapper.h>
+
 #ifdef HAVE_VALGRIND_MEMCHECK_H
 #include <valgrind/memcheck.h>
 #endif
 
-#undef DEBUG
-#undef TLS_DEBUG
+#if 0
+#define DEBUG(...) g_message(__VA_ARGS__)
+#else
+#define DEBUG(...)
+#endif
 
 #if 0
 #define WAIT_DEBUG(code) do { code } while (0)
@@ -95,9 +100,7 @@ static void _wapi_thread_abandon_mutexes (gpointer handle)
 	pid_t pid = _wapi_getpid ();
 	pthread_t tid = pthread_self ();
 	
-#ifdef DEBUG
-	g_message ("%s: Thread %p abandoning held mutexes", __func__, handle);
-#endif
+	DEBUG ("%s: Thread %p abandoning held mutexes", __func__, handle);
 
 	if (handle == NULL) {
 		handle = _wapi_thread_handle_from_id (pthread_self ());
@@ -142,9 +145,7 @@ void _wapi_thread_set_termination_details (gpointer handle,
 		return;
 	}
 
-#ifdef DEBUG
-	g_message ("%s: Thread %p terminating", __func__, handle);
-#endif
+	DEBUG ("%s: Thread %p terminating", __func__, handle);
 
 	_wapi_thread_abandon_mutexes (handle);
 	
@@ -173,10 +174,8 @@ void _wapi_thread_set_termination_details (gpointer handle,
 	g_assert (thr_ret == 0);
 	pthread_cleanup_pop (0);
 	
-#ifdef DEBUG
-	g_message("%s: Recording thread handle %p id %ld status as %d",
+	DEBUG("%s: Recording thread handle %p id %ld status as %d",
 		  __func__, handle, thread_handle->id, exitstatus);
-#endif
 	
 	/* The thread is no longer active, so unref it */
 	_wapi_handle_unref (handle);
@@ -206,7 +205,7 @@ static void thread_exit (guint32 exitstatus, gpointer handle)
 	/* Call pthread_exit() to call destructors and really exit the
 	 * thread
 	 */
-	pthread_exit (NULL);
+	mono_gc_pthread_exit (NULL);
 }
 
 static void thread_attached_exit (gpointer handle)
@@ -271,14 +270,14 @@ static void *thread_start_routine (gpointer args)
 		   shutting down we still end up here, and at this
 		   point the thread_hash_key might already be
 		   destroyed. */
-		pthread_exit (NULL);
+		mono_gc_pthread_exit (NULL);
 	}
 
-	thread->id = pthread_self();
+	DEBUG ("%s: started thread id %ld", __func__, thread->id);
 
-#ifdef DEBUG
-	g_message ("%s: started thread id %ld", __func__, thread->id);
-#endif
+	/* We set it again here since passing &thread->id to pthread_create is racy
+	   as the thread can start running before the value is set.*/
+	thread->id = pthread_self ();
 
 	if (thread->create_flags & CREATE_SUSPENDED) {
 		_wapi_thread_suspend (thread);
@@ -406,8 +405,8 @@ gpointer CreateThread(WapiSecurityAttributes *security G_GNUC_UNUSED, guint32 st
 	thread_handle_p->handle = handle;
 	
 
-	ret = mono_gc_pthread_create (&thread_handle_p->id, &attr,
-								  thread_start_routine, (void *)thread_handle_p);
+	ret = mono_threads_pthread_create (&thread_handle_p->id, &attr,
+									   thread_start_routine, (void *)thread_handle_p);
 
 	if (ret != 0) {
 		g_warning ("%s: Error creating native thread handle %s (%d)", __func__,
@@ -421,10 +420,8 @@ gpointer CreateThread(WapiSecurityAttributes *security G_GNUC_UNUSED, guint32 st
 	}
 	ct_ret = handle;
 	
-#ifdef DEBUG
-	g_message("%s: Started thread handle %p ID %ld", __func__, handle,
+	DEBUG("%s: Started thread handle %p ID %ld", __func__, handle,
 		  thread_handle_p->id);
-#endif
 	
 	if (tid != NULL) {
 #ifdef PTHREAD_POINTER_ID
@@ -466,18 +463,14 @@ gpointer _wapi_thread_handle_from_id (pthread_t tid)
 	    (ret = pthread_getspecific (thread_hash_key)) != NULL) {
 		/* We know the handle */
 
-#ifdef DEBUG
-		g_message ("%s: Returning %p for self thread %ld from TLS",
+		DEBUG ("%s: Returning %p for self thread %ld from TLS",
 			   __func__, ret, tid);
-#endif
 		
 		return(ret);
 	}
 	
-#ifdef DEBUG
-	g_message ("%s: Returning NULL for unknown or non-self thread %ld",
+	DEBUG ("%s: Returning NULL for unknown or non-self thread %ld",
 		   __func__, tid);
-#endif
 		
 
 	return(NULL);
@@ -502,22 +495,16 @@ static gboolean find_thread_by_id (gpointer handle, gpointer user_data)
 			return(FALSE);
 		}
 		
-#ifdef DEBUG
-		g_message ("%s: looking at thread %ld from process %d", __func__, thread_handle->id, 0);
-#endif
+		DEBUG ("%s: looking at thread %ld from process %d", __func__, thread_handle->id, 0);
 
 		if (pthread_equal (thread_handle->id, tid)) {
-#ifdef DEBUG
-			g_message ("%s: found the thread we are looking for",
+			DEBUG ("%s: found the thread we are looking for",
 				   __func__);
-#endif
 			return(TRUE);
 		}
 	}
 	
-#ifdef DEBUG
-	g_message ("%s: not found %ld, returning FALSE", __func__, tid);
-#endif
+	DEBUG ("%s: not found %ld, returning FALSE", __func__, tid);
 	
 	return(FALSE);
 }
@@ -532,9 +519,7 @@ gpointer OpenThread (guint32 access G_GNUC_UNUSED, gboolean inherit G_GNUC_UNUSE
 	mono_once (&thread_hash_once, thread_hash_init);
 	mono_once (&thread_ops_once, thread_ops_init);
 	
-#ifdef DEBUG
-	g_message ("%s: looking up thread %"G_GSIZE_FORMAT, __func__, tid);
-#endif
+	DEBUG ("%s: looking up thread %"G_GSIZE_FORMAT, __func__, tid);
 
 	ret = _wapi_thread_handle_from_id ((pthread_t)tid);
 	if (ret == NULL) {
@@ -547,9 +532,7 @@ gpointer OpenThread (guint32 access G_GNUC_UNUSED, gboolean inherit G_GNUC_UNUSE
 		_wapi_handle_ref (ret);
 	}
 	
-#ifdef DEBUG
-	g_message ("%s: returning thread handle %p", __func__, ret);
-#endif
+	DEBUG ("%s: returning thread handle %p", __func__, ret);
 	
 	return(ret);
 }
@@ -571,7 +554,7 @@ void ExitThread(guint32 exitcode)
 		thread_exit(exitcode, thread);
 	} else {
 		/* Just blow this thread away */
-		pthread_exit (NULL);
+		mono_gc_pthread_exit (NULL);
 	}
 }
 
@@ -598,24 +581,18 @@ gboolean GetExitCodeThread(gpointer handle, guint32 *exitcode)
 		return (FALSE);
 	}
 	
-#ifdef DEBUG
-	g_message ("%s: Finding exit status for thread handle %p id %ld",
+	DEBUG ("%s: Finding exit status for thread handle %p id %ld",
 		   __func__, handle, thread_handle->id);
-#endif
 
 	if (exitcode == NULL) {
-#ifdef DEBUG
-		g_message ("%s: Nowhere to store exit code", __func__);
-#endif
+		DEBUG ("%s: Nowhere to store exit code", __func__);
 		return(FALSE);
 	}
 	
 	if (thread_handle->state != THREAD_STATE_EXITED) {
-#ifdef DEBUG
-		g_message ("%s: Thread still active (state %d, exited is %d)",
+		DEBUG ("%s: Thread still active (state %d, exited is %d)",
 			   __func__, thread_handle->state,
 			   THREAD_STATE_EXITED);
-#endif
 		*exitcode = STILL_ACTIVE;
 		return(TRUE);
 	}
@@ -705,10 +682,8 @@ static gpointer thread_attach(gsize *tid)
 	thr_ret = pthread_setspecific (thread_attached_key, (void *)handle);
 	g_assert (thr_ret == 0);
 	
-#ifdef DEBUG
-	g_message("%s: Attached thread handle %p ID %ld", __func__, handle,
+	DEBUG("%s: Attached thread handle %p ID %ld", __func__, handle,
 		  thread_handle_p->id);
-#endif
 
 	if (tid != NULL) {
 #ifdef PTHREAD_POINTER_ID
@@ -811,172 +786,6 @@ guint32 SuspendThread(gpointer handle)
 	return(0xFFFFFFFF);
 }
 
-/*
- * We assume here that TLS_MINIMUM_AVAILABLE is less than
- * PTHREAD_KEYS_MAX, allowing enough overhead for a few TLS keys for
- * library usage.
- *
- * Currently TLS_MINIMUM_AVAILABLE is 64 and _POSIX_THREAD_KEYS_MAX
- * (the minimum value for PTHREAD_KEYS_MAX) is 128, so we should be
- * fine.
- */
-
-static pthread_key_t TLS_keys[TLS_MINIMUM_AVAILABLE];
-static gboolean TLS_used[TLS_MINIMUM_AVAILABLE]={FALSE};
-static pthread_mutex_t TLS_mutex = PTHREAD_MUTEX_INITIALIZER;
-
-guint32
-mono_pthread_key_for_tls (guint32 idx)
-{
-	return (guint32)TLS_keys [idx];
-}
-
-/**
- * TlsAlloc:
- *
- * Allocates a Thread Local Storage (TLS) index.  Any thread in the
- * same process can use this index to store and retrieve values that
- * are local to that thread.
- *
- * Return value: The index value, or %TLS_OUT_OF_INDEXES if no index
- * is available.
- */
-guint32 TlsAlloc(void)
-{
-	guint32 i;
-	int thr_ret;
-	
-	pthread_mutex_lock (&TLS_mutex);
-	
-	for(i=0; i<TLS_MINIMUM_AVAILABLE; i++) {
-		if(TLS_used[i]==FALSE) {
-			TLS_used[i]=TRUE;
-			thr_ret = pthread_key_create(&TLS_keys[i], NULL);
-			g_assert (thr_ret == 0);
-
-			pthread_mutex_unlock (&TLS_mutex);
-	
-#ifdef TLS_DEBUG
-			g_message ("%s: returning key %d", __func__, i);
-#endif
-			
-			return(i);
-		}
-	}
-
-	pthread_mutex_unlock (&TLS_mutex);
-	
-#ifdef TLS_DEBUG
-	g_message ("%s: out of indices", __func__);
-#endif
-			
-	
-	return(TLS_OUT_OF_INDEXES);
-}
-
-#define MAKE_GC_ID(idx) (GUINT_TO_POINTER((idx)|(GetCurrentThreadId()<<8)))
-
-/**
- * TlsFree:
- * @idx: The TLS index to free
- *
- * Releases a TLS index, making it available for reuse.  This call
- * will delete any TLS data stored under index @idx in all threads.
- *
- * Return value: %TRUE on success, %FALSE otherwise.
- */
-gboolean TlsFree(guint32 idx)
-{
-	int thr_ret;
-	
-#ifdef TLS_DEBUG
-	g_message ("%s: freeing key %d", __func__, idx);
-#endif
-
-	if (idx >= TLS_MINIMUM_AVAILABLE) {
-		SetLastError (ERROR_INVALID_PARAMETER);
-		return FALSE;
-	}
-
-	pthread_mutex_lock (&TLS_mutex);
-	
-	if(TLS_used[idx]==FALSE) {
-		pthread_mutex_unlock (&TLS_mutex);
-		SetLastError (ERROR_INVALID_PARAMETER);
-		return(FALSE);
-	}
-	
-	TLS_used[idx]=FALSE;
-	thr_ret = pthread_key_delete(TLS_keys[idx]);
-	g_assert (thr_ret == 0);
-	
-	pthread_mutex_unlock (&TLS_mutex);
-	
-	return(TRUE);
-}
-
-/**
- * TlsGetValue:
- * @idx: The TLS index to retrieve
- *
- * Retrieves the TLS data stored under index @idx.
- *
- * Return value: The value stored in the TLS index @idx in the current
- * thread, or %NULL on error.  As %NULL can be a valid return value,
- * in this case GetLastError() returns %ERROR_SUCCESS.
- */
-gpointer TlsGetValue(guint32 idx)
-{
-	gpointer ret;
-	
-#ifdef TLS_DEBUG
-	g_message ("%s: looking up key %d", __func__, idx);
-#endif
-	if (idx >= TLS_MINIMUM_AVAILABLE) {
-		SetLastError (ERROR_INVALID_PARAMETER);
-		return NULL;
-	}
-	ret=pthread_getspecific(TLS_keys[idx]);
-
-#ifdef TLS_DEBUG
-	g_message ("%s: returning %p", __func__, ret);
-#endif
-
-	SetLastError (ERROR_SUCCESS);
-	return(ret);
-}
-
-/**
- * TlsSetValue:
- * @idx: The TLS index to store
- * @value: The value to store under index @idx
- *
- * Stores @value at TLS index @idx.
- *
- * Return value: %TRUE on success, %FALSE otherwise.
- */
-gboolean TlsSetValue(guint32 idx, gpointer value)
-{
-	int ret;
-
-#ifdef TLS_DEBUG
-	g_message ("%s: setting key %d to %p", __func__, idx, value);
-#endif
-	if (idx >= TLS_MINIMUM_AVAILABLE) {
-		SetLastError (ERROR_INVALID_PARAMETER);
-		return FALSE;
-	}
-	
-	ret=pthread_setspecific(TLS_keys[idx], value);
-#ifdef TLS_DEBUG
-	if(ret!=0)
-		g_message ("%s: pthread_setspecific error: %s", __func__,
-			   strerror (ret));
-#endif
-	
-	return(ret == 0);
-}
-
 /**
  * SleepEx:
  * @ms: The time in milliseconds to suspend for
@@ -993,9 +802,7 @@ guint32 SleepEx(guint32 ms, gboolean alertable)
 	int ret;
 	gpointer current_thread = NULL;
 	
-#ifdef DEBUG
-	g_message("%s: Sleeping for %d ms", __func__, ms);
-#endif
+	DEBUG("%s: Sleeping for %d ms", __func__, ms);
 
 	if (alertable) {
 		current_thread = _wapi_thread_handle_from_id (pthread_self ());
@@ -1023,6 +830,7 @@ guint32 SleepEx(guint32 ms, gboolean alertable)
 	req.tv_nsec=ms_rem*1000000;
 	
 again:
+	memset (&rem, 0, sizeof (rem));
 	ret=nanosleep(&req, &rem);
 
 	if (alertable && _wapi_thread_apc_pending (current_thread)) {
@@ -1032,7 +840,7 @@ again:
 	
 	if(ret==-1) {
 		/* Sleep interrupted with rem time remaining */
-#ifdef DEBUG
+#ifdef DEBUG_ENABLED
 		guint32 rems=rem.tv_sec*1000 + rem.tv_nsec/1000000;
 		
 		g_message("%s: Still got %d ms to go", __func__, rems);
@@ -1069,16 +877,14 @@ gboolean _wapi_thread_apc_pending (gpointer handle)
 	ok = _wapi_lookup_handle (handle, WAPI_HANDLE_THREAD,
 				  (gpointer *)&thread);
 	if (ok == FALSE) {
-#ifdef DEBUG
 		/* This might happen at process shutdown, as all
 		 * thread handles are forcibly closed.  If a thread
 		 * still has an alertable wait the final
 		 * _wapi_thread_apc_pending check will probably fail
 		 * to find the handle
 		 */
-		g_warning ("%s: error looking up thread handle %p", __func__,
+		DEBUG ("%s: error looking up thread handle %p", __func__,
 			   handle);
-#endif
 		return (FALSE);
 	}
 	
@@ -1196,6 +1002,70 @@ void wapi_interrupt_thread (gpointer thread_handle)
 	/* ref added by set_wait_handle */
 	_wapi_handle_unref (wait_handle);
 }
+
+
+gpointer wapi_prepare_interrupt_thread (gpointer thread_handle)
+{
+	struct _WapiHandle_thread *thread;
+	gboolean ok;
+	gpointer prev_handle, wait_handle;
+	
+	ok = _wapi_lookup_handle (thread_handle, WAPI_HANDLE_THREAD,
+				  (gpointer *)&thread);
+	g_assert (ok);
+
+	while (TRUE) {
+		wait_handle = thread->wait_handle;
+
+		/* 
+		 * Atomically obtain the handle the thread is waiting on, and
+		 * change it to a flag value.
+		 */
+		prev_handle = InterlockedCompareExchangePointer (&thread->wait_handle,
+														 INTERRUPTION_REQUESTED_HANDLE, wait_handle);
+		if (prev_handle == INTERRUPTION_REQUESTED_HANDLE)
+			/* Already interrupted */
+			return 0;
+		if (prev_handle == wait_handle)
+			break;
+
+		/* Try again */
+	}
+
+	WAIT_DEBUG (printf ("%p: state -> INTERRUPTED.\n", thread_handle->id););
+
+	return wait_handle;
+}
+
+void wapi_finish_interrupt_thread (gpointer wait_handle)
+{
+	pthread_cond_t *cond;
+	mono_mutex_t *mutex;
+	guint32 idx;
+
+	if (!wait_handle)
+		/* Not waiting */
+		return;
+
+	/* If we reach here, then wait_handle is set to the flag value, 
+	 * which means that the target thread is either
+	 * - before the first CAS in timedwait, which means it won't enter the
+	 * wait.
+	 * - it is after the first CAS, so it is already waiting, or it will 
+	 * enter the wait, and it will be interrupted by the broadcast.
+	 */
+	idx = GPOINTER_TO_UINT(wait_handle);
+	cond = &_WAPI_PRIVATE_HANDLES(idx).signal_cond;
+	mutex = &_WAPI_PRIVATE_HANDLES(idx).signal_mutex;
+
+	mono_mutex_lock (mutex);
+	mono_cond_broadcast (cond);
+	mono_mutex_unlock (mutex);
+
+	/* ref added by set_wait_handle */
+	_wapi_handle_unref (wait_handle);
+}
+
 
 /*
  * wapi_self_interrupt:

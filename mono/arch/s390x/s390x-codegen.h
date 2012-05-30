@@ -146,6 +146,8 @@ typedef enum {
 #define s390_is_uimm12(val)		((glong)val >= 0 && (glong)val <= 4095)
 
 #define STK_BASE			s390_r15
+#define S390_SP				s390_r15
+#define S390_FP				s390_r11
 #define S390_MINIMAL_STACK_SIZE		160
 #define S390_REG_SAVE_OFFSET 		48
 #define S390_PARM_SAVE_OFFSET 		16
@@ -335,7 +337,7 @@ typedef struct {
 
 typedef struct {
 	char 	op1;
-	char	r1 : 4;
+	char	m1 : 4;
 	char	op2 : 4;
 	short	i2;
 } RI_Format;
@@ -433,13 +435,13 @@ typedef struct {
 
 #define s390_emit16(c, x) do 			\
 {						\
-	*((guint16 *) c) = x; 			\
+	*((guint16 *) c) = (guint16) x;		\
 	c += sizeof(guint16);			\
 } while(0)
 
 #define s390_emit32(c, x) do 			\
 {						\
-	*((guint32 *) c) = x; 			\
+	*((guint32 *) c) = (guint32) x;		\
 	c += sizeof(guint32);			\
 } while(0)
 
@@ -726,6 +728,7 @@ typedef struct {
 #define s390_ngr(c, r1, r2)		S390_RRE(c, 0xb980, r1, r2)
 #define s390_nilh(c, r, v)		S390_RI(c, 0xa56, r, v)
 #define s390_nill(c, r, v)		S390_RI(c, 0xa57, r, v)
+#define s390_nop(c)  			S390_RR(c, 0x07, 0x0, 0)
 #define s390_nr(c, r1, r2)		S390_RR(c, 0x14, r1, r2)
 #define s390_o(c, r, x, b, d)		S390_RX(c, 0x56, r, x, b, d)
 #define s390_og(c, r, x, b, d)		S390_RXY(c, 0xe381, r, x, b, d)

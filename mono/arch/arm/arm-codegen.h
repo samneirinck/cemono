@@ -1,6 +1,8 @@
 /*
  * arm-codegen.h
- * Copyright (c) 2002 Sergey Chaban <serge@wildwestsoftware.com>
+ * Copyright (c) 2002-2003 Sergey Chaban <serge@wildwestsoftware.com>
+ * Copyright 2005-2011 Novell Inc
+ * Copyright 2011 Xamarin Inc
  */
 
 
@@ -948,8 +950,7 @@ typedef struct {
 
 
 
-
-#include "arm_dpimacros.h"
+#include "mono/arch/arm/arm_dpimacros.h"
 
 #define ARM_NOP(p) ARM_MOV_REG_REG(p, ARMREG_R0, ARMREG_R0)
 

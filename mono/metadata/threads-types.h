@@ -140,6 +140,8 @@ gint16 ves_icall_System_Threading_Thread_VolatileRead2 (void *ptr) MONO_INTERNAL
 gint32 ves_icall_System_Threading_Thread_VolatileRead4 (void *ptr) MONO_INTERNAL;
 gint64 ves_icall_System_Threading_Thread_VolatileRead8 (void *ptr) MONO_INTERNAL;
 void * ves_icall_System_Threading_Thread_VolatileReadIntPtr (void *ptr) MONO_INTERNAL;
+double ves_icall_System_Threading_Thread_VolatileReadDouble (void *ptr) MONO_INTERNAL;
+float ves_icall_System_Threading_Thread_VolatileReadFloat (void *ptr) MONO_INTERNAL;
 
 void ves_icall_System_Threading_Thread_VolatileWrite1 (void *ptr, gint8) MONO_INTERNAL;
 void ves_icall_System_Threading_Thread_VolatileWrite2 (void *ptr, gint16) MONO_INTERNAL;
@@ -147,6 +149,8 @@ void ves_icall_System_Threading_Thread_VolatileWrite4 (void *ptr, gint32) MONO_I
 void ves_icall_System_Threading_Thread_VolatileWrite8 (void *ptr, gint64) MONO_INTERNAL;
 void ves_icall_System_Threading_Thread_VolatileWriteIntPtr (void *ptr, void *) MONO_INTERNAL;
 void ves_icall_System_Threading_Thread_VolatileWriteObject (void *ptr, void *) MONO_INTERNAL;
+void ves_icall_System_Threading_Thread_VolatileWriteFloat (void *ptr, float) MONO_INTERNAL;
+void ves_icall_System_Threading_Thread_VolatileWriteDouble (void *ptr, double) MONO_INTERNAL;
 
 void ves_icall_System_Threading_Thread_MemoryBarrier (void) MONO_INTERNAL;
 void ves_icall_System_Threading_Thread_Interrupt_internal (MonoInternalThread *this_obj) MONO_INTERNAL;
@@ -161,6 +165,10 @@ gboolean mono_thread_internal_has_appdomain_ref (MonoInternalThread *thread, Mon
 void mono_thread_internal_reset_abort (MonoInternalThread *thread) MONO_INTERNAL;
 
 void mono_alloc_special_static_data_free (GHashTable *special_static_fields) MONO_INTERNAL;
+void mono_special_static_data_free_slot (guint32 offset, guint32 size) MONO_INTERNAL;
+uint32_t mono_thread_alloc_tls   (MonoReflectionType *type) MONO_INTERNAL;
+void     mono_thread_destroy_tls (uint32_t tls_offset) MONO_INTERNAL;
+void     mono_thread_destroy_domain_tls (MonoDomain *domain) MONO_INTERNAL;
 void mono_thread_free_local_slot_values (int slot, MonoBoolean thread_local) MONO_INTERNAL;
 void mono_thread_current_check_pending_interrupt (void) MONO_INTERNAL;
 void mono_thread_get_stack_bounds (guint8 **staddr, size_t *stsize) MONO_INTERNAL;
@@ -181,30 +189,9 @@ MonoException* mono_thread_get_undeniable_exception (void);
 
 MonoException* mono_thread_get_and_clear_pending_exception (void) MONO_INTERNAL;
 
-typedef struct {
-	gpointer hazard_pointers [2];
-} MonoThreadHazardPointers;
-
-typedef void (*MonoHazardousFreeFunc) (gpointer p);
-
-void mono_thread_hazardous_free_or_queue (gpointer p, MonoHazardousFreeFunc free_func);
-void mono_thread_hazardous_try_free_all (void);
-
-MonoThreadHazardPointers* mono_hazard_pointer_get (void);
-
 void mono_thread_set_name_internal (MonoInternalThread *this_obj, MonoString *name, gboolean managed) MONO_INTERNAL;
 
 void mono_threads_install_notify_pending_exc (MonoThreadNotifyPendingExcFunc func) MONO_INTERNAL;
-
-#define mono_hazard_pointer_set(hp,i,v)	\
-	do { g_assert ((i) == 0 || (i) == 1); \
-		(hp)->hazard_pointers [(i)] = (v); \
-		mono_memory_write_barrier (); \
-	} while (0)
-#define mono_hazard_pointer_clear(hp,i)	\
-	do { g_assert ((i) == 0 || (i) == 1); \
-		(hp)->hazard_pointers [(i)] = NULL; \
-	} while (0)
 
 MonoObject* mono_thread_get_execution_context (void) MONO_INTERNAL;
 void mono_thread_set_execution_context (MonoObject *ec) MONO_INTERNAL;
@@ -235,5 +222,6 @@ void*    mono_get_special_static_data   (uint32_t offset) MONO_INTERNAL;
 gpointer mono_get_special_static_data_for_thread (MonoInternalThread *thread, guint32 offset) MONO_INTERNAL;
 
 MonoException* mono_thread_resume_interruption (void) MONO_INTERNAL;
+void mono_threads_perform_thread_dump (void) MONO_INTERNAL;
 
 #endif /* _MONO_METADATA_THREADS_TYPES_H_ */

@@ -722,7 +722,7 @@
             Spawns an entity with the specified parameters.
             </summary>
             <param name="spawnParams">The <see cref="T:CryEngine.EntitySpawnParams"/></param>
-            <param name="autoInit">Should the entity automatically be initialised?</param>
+            <param name="autoInit">Should the entity automatically be initialized?</param>
             <returns></returns>
         </member>
         <member name="M:CryEngine.EntityBase._LoadCharacter(System.IntPtr,System.String,System.Int32)">

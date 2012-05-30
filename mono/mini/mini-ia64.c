@@ -875,7 +875,7 @@ mono_arch_allocate_vars (MonoCompile *cfg)
 	}
 
 	/* Allocate locals */
-	offsets = mono_allocate_stack_slots_full (cfg, cfg->arch.omit_fp ? FALSE : TRUE, &locals_stack_size, &locals_stack_align);
+	offsets = mono_allocate_stack_slots (cfg, cfg->arch.omit_fp ? FALSE : TRUE, &locals_stack_size, &locals_stack_align);
 	if (locals_stack_align) {
 		offset = ALIGN_TO (offset, locals_stack_align);
 	}
@@ -2070,7 +2070,7 @@ mono_arch_output_basic_block (MonoCompile *cfg, MonoBasicBlock *bb)
 			cfg->code_size *= 2;
 			cfg->native_code = g_realloc (cfg->native_code, cfg->code_size);
 			code_start = cfg->native_code + offset;
-			mono_jit_stats.code_reallocs++;
+			cfg->stat_code_reallocs++;
 
 			ia64_codegen_init (code, code_start);
 		}
@@ -4061,7 +4061,7 @@ mono_arch_emit_epilog (MonoCompile *cfg)
 	while (cfg->code_len + max_epilog_size > cfg->code_size) {
 		cfg->code_size *= 2;
 		cfg->native_code = g_realloc (cfg->native_code, cfg->code_size);
-		mono_jit_stats.code_reallocs++;
+		cfg->stat_code_reallocs++;
 	}
 
 	/* FIXME: Emit unwind info */
@@ -4175,7 +4175,7 @@ mono_arch_emit_exceptions (MonoCompile *cfg)
 	while (cfg->code_len + code_size > (cfg->code_size - 16)) {
 		cfg->code_size *= 2;
 		cfg->native_code = g_realloc (cfg->native_code, cfg->code_size);
-		mono_jit_stats.code_reallocs++;
+		cfg->stat_code_reallocs++;
 	}
 
 	ia64_codegen_init (code, cfg->native_code + cfg->code_len);
@@ -4525,7 +4525,7 @@ mono_arch_get_delegate_method_ptr_addr (guint8* code, mgreg_t *regs)
 }
 
 void
-mono_arch_setup_jit_tls_data (MonoJitTlsData *tls)
+mono_arch_finish_init (void)
 {
 }
 
@@ -4762,7 +4762,7 @@ mono_arch_get_domain_intrinsic (MonoCompile* cfg)
 	return mono_get_domain_intrinsic (cfg);
 }
 
-gpointer
+mgreg_t
 mono_arch_context_get_int_reg (MonoContext *ctx, int reg)
 {
 	/* FIXME: implement */

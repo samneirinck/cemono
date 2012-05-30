@@ -65,8 +65,7 @@
 /*------------------------------------------------------------------*/
 
 gboolean mono_arch_handle_exception (void     *ctx,
-				     gpointer obj, 
-				     gboolean test_only);
+									 gpointer obj);
 
 /*========================= End of Prototypes ======================*/
 
@@ -75,23 +74,6 @@ gboolean mono_arch_handle_exception (void     *ctx,
 /*------------------------------------------------------------------*/
 
 /*====================== End of Global Variables ===================*/
-
-/*------------------------------------------------------------------*/
-/*                                                                  */
-/* Name		- mono_arch_has_unwind_info                         */
-/*                                                                  */
-/* Function	- Tests if a function has a DWARF exception table   */
-/*		  that is able to restore all caller saved registers*/
-/*                                                                  */
-/*------------------------------------------------------------------*/
-
-gboolean
-mono_arch_has_unwind_info (gconstpointer addr)
-{
-	return FALSE;
-}
-
-/*========================= End of Function ========================*/
 
 /*------------------------------------------------------------------*/
 /*                                                                  */
@@ -246,7 +228,7 @@ throw_exception (MonoObject *exc, unsigned long ip, unsigned long sp,
 		if (!rethrow)
 			mono_ex->stack_trace = NULL;
 	}
-	mono_arch_handle_exception (&ctx, exc, FALSE);
+	mono_arch_handle_exception (&ctx, exc);
 	setcontext(&ctx);
 
 	g_assert_not_reached ();
@@ -449,7 +431,6 @@ mono_arch_find_jit_info (MonoDomain *domain, MonoJitTlsData *jit_tls,
 
 	memset (frame, 0, sizeof (StackFrameInfo));
 	frame->ji = ji;
-	frame->managed = FALSE;
 
 	*new_ctx = *ctx;
 
@@ -457,9 +438,6 @@ mono_arch_find_jit_info (MonoDomain *domain, MonoJitTlsData *jit_tls,
 		gint32 address;
 
 		frame->type = FRAME_TYPE_MANAGED;
-
-		if (!ji->method->wrapper_type || ji->method->wrapper_type == MONO_WRAPPER_DYNAMIC_METHOD)
-			frame->managed = TRUE;
 
 		if (*lmf && (MONO_CONTEXT_GET_SP (ctx) >= (gpointer)(*lmf)->ebp)) {
 			/* remove any unused lmf */
@@ -510,15 +488,13 @@ mono_arch_find_jit_info (MonoDomain *domain, MonoJitTlsData *jit_tls,
 /*                                                                  */
 /* Parameters   - ctx       - Saved processor state                 */
 /*                obj       - The exception object                  */
-/*                test_only - Only test if the exception is caught, */
-/*                            but don't call handlers               */
 /*                                                                  */
 /*------------------------------------------------------------------*/
 
 gboolean
-mono_arch_handle_exception (void *uc, gpointer obj, gboolean test_only)
+mono_arch_handle_exception (void *uc, gpointer obj)
 {
-	return mono_handle_exception (uc, obj, mono_arch_ip_from_context(uc), test_only);
+	return mono_handle_exception (uc, obj);
 }
 
 /*========================= End of Function ========================*/

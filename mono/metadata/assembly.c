@@ -67,6 +67,9 @@ static char **extra_gac_paths = NULL;
 #ifndef DISABLE_ASSEMBLY_REMAPPING
 /* The list of system assemblies what will be remapped to the running
  * runtime version. WARNING: this list must be sorted.
+ * The integer number is an index in the MonoRuntimeInfo structure, whose
+ * values can be found in domain.c - supported_runtimes. Look there
+ * to understand what remapping will be made.
  */
 static const AssemblyVersionMap framework_assemblies [] = {
 	{"Accessibility", 0},
@@ -837,7 +840,36 @@ mono_assembly_remap_version (MonoAssemblyName *aname, MonoAssemblyName *dest_ana
 	int pos, first, last;
 
 	if (aname->name == NULL) return aname;
+
 	current_runtime = mono_get_runtime_info ();
+
+	if (aname->flags & ASSEMBLYREF_RETARGETABLE_FLAG) {
+		const AssemblyVersionSet* vset;
+
+		/* Remap to current runtime */
+		vset = &current_runtime->version_sets [0];
+
+		memcpy (dest_aname, aname, sizeof(MonoAssemblyName));
+		dest_aname->major = vset->major;
+		dest_aname->minor = vset->minor;
+		dest_aname->build = vset->build;
+		dest_aname->revision = vset->revision;
+		dest_aname->flags &= ~ASSEMBLYREF_RETARGETABLE_FLAG;
+
+		/* Remap assembly name */
+		if (!strcmp (aname->name, "System.Net"))
+			dest_aname->name = g_strdup ("System");
+
+		mono_trace (G_LOG_LEVEL_WARNING, MONO_TRACE_ASSEMBLY,
+					"The request to load the retargetable assembly %s v%d.%d.%d.%d was remapped to %s v%d.%d.%d.%d",
+					aname->name,
+					aname->major, aname->minor, aname->build, aname->revision,
+					dest_aname->name,
+					vset->major, vset->minor, vset->build, vset->revision
+					);
+
+		return dest_aname;
+	}
 
 	first = 0;
 	last = G_N_ELEMENTS (framework_assemblies) - 1;
@@ -1632,7 +1664,7 @@ mono_assembly_load_from_full (MonoImage *image, const char*fname,
 	loaded_assemblies = g_list_prepend (loaded_assemblies, ass);
 	mono_assemblies_unlock ();
 
-#ifdef ENABLE_COREE
+#ifdef HOST_WIN32
 	if (image->is_module_handle)
 		mono_image_fixup_vtable (image);
 #endif
@@ -1670,7 +1702,7 @@ mono_assembly_name_free (MonoAssemblyName *aname)
 }
 
 static gboolean
-parse_public_key (const gchar *key, gchar** pubkey)
+parse_public_key (const gchar *key, gchar** pubkey, gboolean *is_ecma)
 {
 	const gchar *pkey;
 	gchar header [16], val, *arr;
@@ -1683,11 +1715,12 @@ parse_public_key (const gchar *key, gchar** pubkey)
 	/* allow the ECMA standard key */
 	if (strcmp (key, "00000000000000000400000000000000") == 0) {
 		if (pubkey) {
-			arr = g_strdup ("b77a5c561934e089");
-			*pubkey = arr;
+			*pubkey = g_strdup (key);
+			*is_ecma = TRUE;
 		}
 		return TRUE;
 	}
+	*is_ecma = FALSE;
 	val = g_ascii_xdigit_value (key [0]) << 4;
 	val |= g_ascii_xdigit_value (key [1]);
 	switch (val) {
@@ -1810,9 +1843,19 @@ build_assembly_name (const char *name, const char *version, const char *culture,
 	}
 
 	if (key) {
-		if (strcmp (key, "null") == 0 || !parse_public_key (key, &pkey)) {
+		gboolean is_ecma;
+		if (strcmp (key, "null") == 0 || !parse_public_key (key, &pkey, &is_ecma)) {
 			mono_assembly_name_free (aname);
 			return FALSE;
+		}
+
+		if (is_ecma) {
+			if (save_public_key)
+				aname->public_key = (guint8*)pkey;
+			else
+				g_free (pkey);
+			g_strlcpy ((gchar*)aname->public_key_token, "b77a5c561934e089", MONO_PUBLIC_KEY_TOKEN_LENGTH);
+			return TRUE;
 		}
 		
 		len = mono_metadata_decode_blob_size ((const gchar *) pkey, (const gchar **) &pkeyptr);
@@ -1884,7 +1927,7 @@ mono_assembly_name_parse_full (const char *name, MonoAssemblyName *aname, gboole
 	gboolean version_defined;
 	gboolean token_defined;
 	guint32 flags = 0;
-	guint32 arch = PROCESSOR_ARCHITECTURE_NONE;
+	guint32 arch = MONO_PROCESSOR_ARCHITECTURE_NONE;
 
 	if (!is_version_defined)
 		is_version_defined = &version_defined;
@@ -1961,15 +2004,15 @@ mono_assembly_name_parse_full (const char *name, MonoAssemblyName *aname, gboole
 
 		if (part_name_len == 21 && !g_ascii_strncasecmp (part_name, "ProcessorArchitecture", part_name_len)) {
 			if (!g_ascii_strcasecmp (value, "None"))
-				arch = PROCESSOR_ARCHITECTURE_NONE;
+				arch = MONO_PROCESSOR_ARCHITECTURE_NONE;
 			else if (!g_ascii_strcasecmp (value, "MSIL"))
-				arch = PROCESSOR_ARCHITECTURE_MSIL;
+				arch = MONO_PROCESSOR_ARCHITECTURE_MSIL;
 			else if (!g_ascii_strcasecmp (value, "X86"))
-				arch = PROCESSOR_ARCHITECTURE_X86;
+				arch = MONO_PROCESSOR_ARCHITECTURE_X86;
 			else if (!g_ascii_strcasecmp (value, "IA64"))
-				arch = PROCESSOR_ARCHITECTURE_IA64;
+				arch = MONO_PROCESSOR_ARCHITECTURE_IA64;
 			else if (!g_ascii_strcasecmp (value, "AMD64"))
-				arch = PROCESSOR_ARCHITECTURE_AMD64;
+				arch = MONO_PROCESSOR_ARCHITECTURE_AMD64;
 			else
 				goto cleanup_and_fail;
 			tmp++;

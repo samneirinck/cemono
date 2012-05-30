@@ -12,12 +12,13 @@
 
 #include <config.h>
 #include <glib.h>
-#ifdef HAVE_SEMAPHORE_H
+#include <time.h>
+#if defined(HAVE_SEMAPHORE_H) && !defined(HOST_WIN32)
 #include <semaphore.h>
 #endif
 #include <mono/io-layer/io-layer.h>
 
-#if defined (HAVE_SEMAPHORE_H) || defined (USE_MACH_SEMA)
+#if (defined (HAVE_SEMAPHORE_H) || defined (USE_MACH_SEMA)) && !defined(HOST_WIN32)
 #  define MONO_HAS_SEMAPHORES
 
 #  if defined (USE_MACH_SEMA)

@@ -1,3 +1,4 @@
+
 # x86-class cpu description file
 # this file is read by genmdesc to pruduce a table with all the relevant information
 # about the cpu instructions that may be used by the regsiter allocator, the scheduler
@@ -65,7 +66,7 @@ jmp: len:120
 tailcall: len:120 clob:c
 br: len:6
 label: len:0
-seq_point: len:25
+seq_point: len:31
 
 long_add: dest:i src1:i src2:i len:3 clob:1 nacl:6
 long_sub: dest:i src1:i src2:i len:3 clob:1 nacl:6

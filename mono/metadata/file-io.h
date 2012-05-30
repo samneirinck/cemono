@@ -6,6 +6,7 @@
  *	Dan Lewis (dihlewis@yahoo.co.uk)
  *
  * (C) 2001 Ximian, Inc.
+ * Copyright 2012 Xamarin Inc (http://www.xamarin.com)
  */
 
 #ifndef _MONO_METADATA_FILEIO_H_
@@ -67,7 +68,6 @@ typedef enum {
 
 /* This is a copy of System.IO.MonoIOStat */
 typedef struct _MonoIOStat {
-	MonoString *name;
 	gint32 attributes;
 	gint64 length;
 	gint64 creation_time;
@@ -93,7 +93,7 @@ typedef enum {
 	FileAttributes_Encrypted=0x04000,
 	FileAttributes_MonoExecutable= (int) 0x80000000
 } MonoFileAttributes;
-
+/* This is not used anymore
 typedef struct _MonoFSAsyncResult {
 	MonoObject obj;
 	MonoObject *state;
@@ -110,7 +110,7 @@ typedef struct _MonoFSAsyncResult {
 	gint bytes_read;
 	MonoDelegate *real_cb;
 } MonoFSAsyncResult;
-
+*/
 /* System.IO.MonoIO */
 
 extern MonoBoolean

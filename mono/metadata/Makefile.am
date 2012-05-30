@@ -45,6 +45,13 @@ endif
 sgen_libraries = $(shared_sgen_libraries) libmonoruntimesgen-static.la 
 endif
 
+if SUPPORT_BOEHM
+if SHARED_MONO
+shared_boehm_libraries = libmonoruntime.la
+endif
+boehm_libraries = $(shared_boehm_libraries) libmonoruntime-static.la
+endif
+
 if MOONLIGHT
 moonlight_libraries = libmonoruntimemoon.la
 moon-do-build: libmonoruntime-static.la libmonoruntimemoon.la
@@ -53,14 +60,13 @@ moon-do-clean:
 	-test -z "libmonoruntimemoon.la" || rm -f libmonoruntimemoon.la
 endif
 
-if SHARED_MONO
-if SUPPORT_BOEHM
-shared_libraries = libmonoruntime.la
+if DISABLE_EXECUTABLES
+noinst_LTLIBRARIES = $(shared_sgen_libraries) $(shared_boehm_libraries)
+else
+noinst_LTLIBRARIES = $(boehm_libraries) $(sgen_libraries) $(moonlight_libraries)
 endif
-endif
-noinst_LTLIBRARIES =  $(shared_libraries) libmonoruntime-static.la $(sgen_libraries) $(moonlight_libraries)
 
-INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/mono $(LIBGC_CFLAGS) $(GLIB_CFLAGS) -DMONO_BINDIR=\"$(bindir)/\" -DMONO_ASSEMBLIES=\"$(assembliesdir)\" -DMONO_CFG_DIR=\"$(confdir)\"
+INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/mono $(LIBGC_CPPFLAGS) $(GLIB_CFLAGS) -DMONO_BINDIR=\"$(bindir)/\" -DMONO_ASSEMBLIES=\"$(assembliesdir)\" -DMONO_CFG_DIR=\"$(confdir)\"
 
 #
 # Make sure any prefix changes are updated in the binaries too.
@@ -81,11 +87,7 @@ null_sources = \
 	console-null.c
 
 sgen_sources = \
-	sgen-cardtable.c	\
-	sgen-gray.c		\
-	sgen-pinning.c		\
-	sgen-pinning-stats.c	\
-	sgen-workers.c
+	sgen-fin-weak-hash.c
 
 libmonoruntime_la_SOURCES = \
 	$(platform_sources)	\
@@ -188,8 +190,10 @@ libmonoruntime_la_SOURCES = \
 	security-manager.h	\
 	sgen-os-posix.c		\
 	sgen-os-mach.c		\
+	sgen-os-win32.c		\
 	sgen-gc.c		\
 	sgen-internal.c		\
+	sgen-pinned-allocator.c	\
 	sgen-marksweep.c	\
 	sgen-marksweep-fixed.c	\
 	sgen-marksweep-par.c	\
@@ -202,12 +206,34 @@ libmonoruntime_la_SOURCES = \
 	sgen-toggleref.c		\
 	sgen-toggleref.h		\
 	sgen-gc.h		\
+	sgen-conf.h		\
 	sgen-archdep.h		\
+	sgen-cardtable.c	\
 	sgen-cardtable.h	\
+	sgen-ssb.c	\
+	sgen-ssb.h	\
+	sgen-pinning.c	\
+	sgen-pinning.h	\
+	sgen-pinning-stats.c	\
+	sgen-workers.c	\
+	sgen-workers.h	\
+	sgen-gray.c	\
+	sgen-gray.h	\
 	sgen-major-copy-object.h \
+	sgen-minor-copy-object.h \
+	sgen-copy-object.h \
 	sgen-major-scan-object.h \
+	sgen-minor-scan-object.h \
 	sgen-protocol.h		\
 	sgen-scan-object.h	\
+	sgen-nursery-allocator.c	\
+	sgen-hash-table.c	\
+	sgen-descriptor.c		\
+	sgen-descriptor.h		\
+	sgen-alloc.c		\
+	sgen-debug.c		\
+	sgen-simple-nursery.c	\
+	sgen-split-nursery.c	\
 	string-icalls.c 	\
 	string-icalls.h 	\
 	sysmath.h		\
@@ -290,7 +316,7 @@ pedump_SOURCES =		\
 	pedump.c
 
 pedump_LDADD = libmonoruntime.la ../io-layer/libwapi.la ../utils/libmonoutils.la \
-	$(LIBGC_LIBS) $(GLIB_LIBS) -lm $(PEDUMP_DTRACE_OBJECT)
+	$(LIBGC_LIBS) $(GLIB_LIBS) -lm $(LIBICONV) $(PEDUMP_DTRACE_OBJECT)
 
 if PLATFORM_DARWIN
 pedump_LDFLAGS=-framework CoreFoundation

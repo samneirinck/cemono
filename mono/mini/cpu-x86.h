@@ -13,7 +13,7 @@ const char x86_desc [] = {
 	"ii\x0" "\x0" "x\x0" ""	/* localloc */
 	"i\x0" "\x0" "\x0" "x\x0" ""	/* localloc_imm */
 	"\x0" "b\x0" "\x0" "\x3" "\x0" ""	/* checkthis */
-	"\x0" "\x0" "\x0" "\x0" "\x10" "\x0" ""	/* seq_point */
+	"\x0" "\x0" "\x0" "\x0" "\x11" "\x0" ""	/* seq_point */
 	"\x0" "\x0" "\x0" "\x0" "\x11" "c"	/* voidcall */
 	"\x0" "i\x0" "\x0" "\xb" "c"	/* voidcall_reg */
 	"\x0" "b\x0" "\x0" "\x10" "c"	/* voidcall_membase */

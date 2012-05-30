@@ -5,13 +5,17 @@ export HOST_CC
 endif
 
 if JIT_SUPPORTED
-runtime_lib=../mini/libmono-$(API_VER).la
+runtime_lib=../mini/$(LIBMONO_LA)
 else
 runtime_lib=../interpreter/libmint.la
 endif
 
+if DISABLE_EXECUTABLES
+bin_PROGRAMS =
+else
 if SUPPORT_BOEHM
 bin_PROGRAMS = monodis
+endif
 endif
 
 noinst_LIBRARIES = libmonodis.a
@@ -36,7 +40,8 @@ monodis_LDADD = 			\
 	libmonodis.a			\
 	$(runtime_lib)			\
 	$(LLVM_LIBS)			\
-	$(GLIB_LIBS) 
+	$(GLIB_LIBS)			\
+	$(LIBICONV)
 
 if PLATFORM_DARWIN
 monodis_LDFLAGS=-framework CoreFoundation

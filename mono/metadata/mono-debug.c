@@ -6,7 +6,7 @@
  *
  * Copyright 2001-2003 Ximian, Inc (http://www.ximian.com)
  * Copyright 2004-2009 Novell, Inc (http://www.novell.com)
- * Copyright 2011 Xamarin, Inc (http://www.xamarin.com)
+ * Copyright 2011 Xamarin Inc (http://www.xamarin.com)
  */
 
 #include <config.h>
@@ -21,7 +21,7 @@
 #include <mono/metadata/gc-internal.h>
 #include <string.h>
 
-#define DATA_TABLE_CHUNK_SIZE		16384
+#define DATA_TABLE_CHUNK_SIZE		(16384-sizeof (MonoDebugDataChunk))
 
 #define ALIGN_TO(val,align) ((((guint64)val) + ((align) - 1)) & ~((align) - 1))
 

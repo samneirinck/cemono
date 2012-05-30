@@ -335,8 +335,6 @@ int mono_exc_esp_offset = 0;
 
 static int indent_level = 0;
 
-static gboolean tls_offset_inited = FALSE;
-
 static int appdomain_tls_offset = -1,
            thread_tls_offset = -1;
 
@@ -4782,7 +4780,7 @@ mono_arch_emit_epilog (MonoCompile *cfg)
 	while ((cfg->code_len + max_epilog_size) > (cfg->code_size - 16)) {
 		cfg->code_size  *= 2;
 		cfg->native_code = g_realloc (cfg->native_code, cfg->code_size);
-		mono_jit_stats.code_reallocs++;
+		cfg->stat_code_reallocs++;
 	}
 
 	code = cfg->native_code + cfg->code_len;
@@ -4843,7 +4841,7 @@ mono_arch_emit_exceptions (MonoCompile *cfg)
 	while ((cfg->code_len + code_size) > (cfg->code_size - 16)) {
 		cfg->code_size  *= 2;
 		cfg->native_code = g_realloc (cfg->native_code, cfg->code_size);
-		mono_jit_stats.code_reallocs++; 
+		cfg->stat_code_reallocs++; 
 	}
 
 	code = cfg->native_code + cfg->code_len;
@@ -4921,19 +4919,15 @@ mono_arch_emit_exceptions (MonoCompile *cfg)
 
 /*------------------------------------------------------------------*/
 /*                                                                  */
-/* Name		- mono_arch_setup_jit_tls_data                      */
+/* Name		- mono_arch_finish_init                                 */
 /*                                                                  */
 /* Function	- Setup the JIT's Thread Level Specific Data.       */
 /*		                               			    */
 /*------------------------------------------------------------------*/
 
 void
-mono_arch_setup_jit_tls_data (MonoJitTlsData *tls)
+mono_arch_finish_init (void)
 {
-
-	if (!tls_offset_inited) {
-		tls_offset_inited = TRUE;
-
 #if HAVE_KW_THREAD
 # if 0
 	__asm__ ("\tear\t%r1,0\n"
@@ -4952,7 +4946,6 @@ mono_arch_setup_jit_tls_data (MonoJitTlsData *tls)
 		 : "1", "cc");
 # endif
 #endif
-	}		
 
 	if (!lmf_addr_key_inited) {
 		lmf_addr_key_inited = TRUE;
@@ -5277,7 +5270,7 @@ mono_arch_get_patch_offset (guint8 *code)
 /*                                                                  */
 /*------------------------------------------------------------------*/
 
-gpointer
+mgreg_t
 mono_arch_context_get_int_reg (MonoContext *ctx, int reg)
 {
 	/* FIXME: implement */

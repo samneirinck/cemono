@@ -21,89 +21,25 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-extern long long stat_scan_object_called_nursery;
 extern long long stat_scan_object_called_major;
 
-#undef HANDLE_PTR
-#define HANDLE_PTR(ptr,obj)	do {	\
-		void *__old = *(ptr);	\
-		void *__copy;		\
-		if (__old) {	\
-			copy_object ((ptr), queue);	\
-			__copy = *(ptr);	\
-			DEBUG (9, if (__old != __copy) fprintf (gc_debug_file, "Overwrote field at %p with %p (was: %p)\n", (ptr), *(ptr), __old));	\
-			if (G_UNLIKELY (ptr_in_nursery (__copy) && !ptr_in_nursery ((ptr)))) \
-				mono_sgen_add_to_global_remset ((ptr));	\
-		}	\
-	} while (0)
-
-/*
- * Scan the object pointed to by @start for references to
- * other objects between @from_start and @from_end and copy
- * them to the gray_objects area.
- */
-static void
-minor_scan_object (char *start, SgenGrayQueue *queue)
-{
-#include "sgen-scan-object.h"
-
-	HEAVY_STAT (++stat_scan_object_called_nursery);
-}
-
-/*
- * scan_vtype:
- *
- * Scan the valuetype pointed to by START, described by DESC for references to
- * other objects between @from_start and @from_end and copy them to the gray_objects area.
- * Returns a pointer to the end of the object.
- */
-static char*
-minor_scan_vtype (char *start, MonoClass* klass, char* from_start, char* from_end, SgenGrayQueue *queue)
-{
-	size_t skip_size;
-	mword desc = (mword)klass->gc_descr;
-
-	/* The descriptors include info about the MonoObject header as well */
-	start -= sizeof (MonoObject);
-
-	switch (desc & 0x7) {
-	case DESC_TYPE_RUN_LENGTH:
-		OBJ_RUN_LEN_FOREACH_PTR (desc,start);
-		OBJ_RUN_LEN_SIZE (skip_size, desc, start);
-		g_assert (skip_size);
-		return start + skip_size;
-	case DESC_TYPE_SMALL_BITMAP:
-		OBJ_BITMAP_FOREACH_PTR (desc,start);
-		OBJ_BITMAP_SIZE (skip_size, desc, start);
-		return start + skip_size;
-	case DESC_TYPE_LARGE_BITMAP:
-		OBJ_LARGE_BITMAP_FOREACH_PTR (desc,start);
-		skip_size = klass->instance_size;
-		return start + skip_size;
-		break;
-	case DESC_TYPE_COMPLEX:
-		OBJ_COMPLEX_FOREACH_PTR (desc,start);
-		skip_size = klass->instance_size;
-		return start + skip_size;
-		break;
-	default:
-		// The other descriptors can't happen with vtypes
-		g_assert_not_reached ();
-		break;
-	}
-	return NULL;
-}
+#ifdef FIXED_HEAP
+#define PREFETCH_DYNAMIC_HEAP(addr)
+#else
+#define PREFETCH_DYNAMIC_HEAP(addr)	PREFETCH ((addr))
+#endif
 
 #undef HANDLE_PTR
 #define HANDLE_PTR(ptr,obj)	do {					\
 		void *__old = *(ptr);					\
 		void *__copy;						\
 		if (__old) {						\
+			PREFETCH_DYNAMIC_HEAP (__old);			\
 			major_copy_or_mark_object ((ptr), queue);	\
 			__copy = *(ptr);				\
-			DEBUG (9, if (__old != __copy) mono_sgen_debug_printf (9, "Overwrote field at %p with %p (was: %p)\n", (ptr), *(ptr), __old)); \
-			if (G_UNLIKELY (ptr_in_nursery (__copy) && !ptr_in_nursery ((ptr)))) \
-				mono_sgen_add_to_global_remset ((ptr));	\
+			DEBUG (9, if (__old != __copy) sgen_debug_printf (9, "Overwrote field at %p with %p (was: %p)\n", (ptr), *(ptr), __old)); \
+			if (G_UNLIKELY (sgen_ptr_in_nursery (__copy) && !sgen_ptr_in_nursery ((ptr)))) \
+				sgen_add_to_global_remset ((ptr));	\
 		}							\
 	} while (0)
 
@@ -114,9 +50,3 @@ major_scan_object (char *start, SgenGrayQueue *queue)
 
 	HEAVY_STAT (++stat_scan_object_called_major);
 }
-
-#define FILL_COLLECTOR_SCAN_OBJECT(collector)	do {			\
-		(collector)->major_scan_object = major_scan_object;	\
-		(collector)->minor_scan_object = minor_scan_object;	\
-		(collector)->minor_scan_vtype = minor_scan_vtype;	\
-	} while (0)

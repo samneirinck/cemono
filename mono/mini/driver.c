@@ -834,10 +834,11 @@ typedef struct CompileAllThreadArgs {
 	MonoAssembly *ass;
 	int verbose;
 	guint32 opts;
+	guint32 recompilation_times;
 } CompileAllThreadArgs;
 
 static void
-compile_all_methods_thread_main (CompileAllThreadArgs *args)
+compile_all_methods_thread_main_inner (CompileAllThreadArgs *args)
 {
 	MonoAssembly *ass = args->ass;
 	int verbose = args->verbose;
@@ -895,13 +896,22 @@ compile_all_methods_thread_main (CompileAllThreadArgs *args)
 }
 
 static void
-compile_all_methods (MonoAssembly *ass, int verbose, guint32 opts)
+compile_all_methods_thread_main (CompileAllThreadArgs *args)
+{
+	guint32 i;
+	for (i = 0; i < args->recompilation_times; ++i)
+		compile_all_methods_thread_main_inner (args);
+}
+
+static void
+compile_all_methods (MonoAssembly *ass, int verbose, guint32 opts, guint32 recompilation_times)
 {
 	CompileAllThreadArgs args;
 
 	args.ass = ass;
 	args.verbose = verbose;
 	args.opts = opts;
+	args.recompilation_times = recompilation_times;
 
 	/* 
 	 * Need to create a mono thread since compilation might trigger
@@ -1081,7 +1091,7 @@ mini_usage_jitdeveloper (void)
 		 "    --break METHOD         Inserts a breakpoint at METHOD entry\n"
 		 "    --break-at-bb METHOD N Inserts a breakpoint in METHOD at BB N\n"
 		 "    --compile METHOD       Just compile METHOD in assembly\n"
-		 "    --compile-all          Compiles all the methods in the assembly\n"
+		 "    --compile-all=N        Compiles all the methods in the assembly multiple times (default: 1)\n"
 		 "    --ncompile N           Number of times to compile METHOD (default: 1)\n"
 		 "    --print-vtable         Print the vtable of all used classes\n"
 		 "    --regression           Runs the regression test contained in the assembly\n"
@@ -1143,6 +1153,9 @@ mini_usage (void)
 		"                           Currently the only supported option is 'disable'.\n"
 		"    --llvm, --nollvm       Controls whenever the runtime uses LLVM to compile code.\n"
 	        "    --gc=[sgen,boehm]      Select SGen or Boehm GC (runs mono or mono-sgen)\n"
+#ifdef HOST_WIN32
+	        "    --mixed-mode           Enable mixed-mode image support.\n"
+#endif
 	  );
 }
 
@@ -1241,7 +1254,8 @@ static const char info[] =
 #ifdef HOST_WIN32
 BOOL APIENTRY DllMain (HMODULE module_handle, DWORD reason, LPVOID reserved)
 {
-	if (!GC_DllMain (module_handle, reason, reserved))
+	int dummy;
+	if (!mono_gc_dllmain (module_handle, reason, reserved))
 		return FALSE;
 
 	switch (reason)
@@ -1250,11 +1264,16 @@ BOOL APIENTRY DllMain (HMODULE module_handle, DWORD reason, LPVOID reserved)
 		mono_install_runtime_load (mini_init);
 		break;
 	case DLL_PROCESS_DETACH:
-#ifdef ENABLE_COREE
 		if (coree_module_handle)
 			FreeLibrary (coree_module_handle);
-#endif
 		break;
+	case DLL_THREAD_ATTACH:
+		mono_thread_info_attach (&dummy);
+		break;
+	case DLL_THREAD_DETACH:
+		mono_thread_info_dettach ();
+		break;
+	
 	}
 	return TRUE;
 }
@@ -1272,6 +1291,8 @@ void
 mono_jit_parse_options (int argc, char * argv[])
 {
 	int i;
+	char *trace_options = NULL;
+	int mini_verbose = 0;
 
 	/* 
 	 * Some options have no effect here, since they influence the behavior of 
@@ -1293,11 +1314,58 @@ mono_jit_parse_options (int argc, char * argv[])
 
 			opt->soft_breakpoints = TRUE;
 			opt->explicit_null_checks = TRUE;
+		} else if (strncmp (argv [i], "--optimize=", 11) == 0) {
+			guint32 opt = parse_optimizations (argv [i] + 11);
+			mono_set_optimizations (opt);
+		} else if (strncmp (argv [i], "-O=", 3) == 0) {
+			guint32 opt = parse_optimizations (argv [i] + 3);
+			mono_set_optimizations (opt);
+		} else if (strcmp (argv [i], "--trace") == 0) {
+			trace_options = (char*)"";
+		} else if (strncmp (argv [i], "--trace=", 8) == 0) {
+			trace_options = &argv [i][8];
+		} else if (strcmp (argv [i], "--verbose") == 0 || strcmp (argv [i], "-v") == 0) {
+			mini_verbose++;
+		} else if (strcmp (argv [i], "--breakonex") == 0) {
+			MonoDebugOptions *opt = mini_get_debug_options ();
+
+			opt->break_on_exc = TRUE;
+		} else if (strcmp (argv [i], "--stats") == 0) {
+			mono_counters_enable (-1);
+			mono_stats.enabled = TRUE;
+			mono_jit_stats.enabled = TRUE;
+		} else if (strcmp (argv [i], "--break") == 0) {
+			if (i+1 >= argc){
+				fprintf (stderr, "Missing method name in --break command line option\n");
+				exit (1);
+			}
+			
+			if (!mono_debugger_insert_breakpoint (argv [++i], FALSE))
+				fprintf (stderr, "Error: invalid method name '%s'\n", argv [i]);
+		} else if (strcmp (argv [i], "--llvm") == 0) {
+#ifndef MONO_ARCH_LLVM_SUPPORTED
+			fprintf (stderr, "Mono Warning: --llvm not supported on this platform.\n");
+#else
+			mono_use_llvm = TRUE;
+#endif
 		} else {
 			fprintf (stderr, "Unsupported command line option: '%s'\n", argv [i]);
 			exit (1);
 		}
 	}
+
+	if (trace_options != NULL) {
+		/* 
+		 * Need to call this before mini_init () so we can trace methods 
+		 * compiled there too.
+		 */
+		mono_jit_trace_calls = mono_trace_parse_options (trace_options);
+		if (mono_jit_trace_calls == NULL)
+			exit (1);
+	}
+
+	if (mini_verbose)
+		mono_set_verbose_level (mini_verbose);
 }
 
 static void
@@ -1337,7 +1405,7 @@ mono_main (int argc, char* argv[])
 	const char* aname, *mname = NULL;
 	char *config_file = NULL;
 	int i, count = 1;
-	guint32 opt, action = DO_EXEC;
+	guint32 opt, action = DO_EXEC, recompilation_times = 1;
 	MonoGraphOptions mono_graph_options = 0;
 	int mini_verbose = 0;
 	gboolean enable_profile = FALSE;
@@ -1349,6 +1417,9 @@ mono_main (int argc, char* argv[])
 	char *attach_options = NULL;
 #ifdef MONO_JIT_INFO_TABLE_TEST
 	int test_jit_info_table = FALSE;
+#endif
+#ifdef HOST_WIN32
+	int mixed_mode = FALSE;
 #endif
 
 #ifdef MOONLIGHT
@@ -1368,22 +1439,6 @@ mono_main (int argc, char* argv[])
 	if (!g_thread_supported ())
 		g_thread_init (NULL);
 
-	if (mono_running_on_valgrind () && getenv ("MONO_VALGRIND_LEAK_CHECK")) {
-		GMemVTable mem_vtable;
-
-		/* 
-		 * Instruct glib to use the system allocation functions so valgrind
-		 * can track the memory allocated by the g_... functions.
-		 */
-		memset (&mem_vtable, 0, sizeof (mem_vtable));
-		mem_vtable.malloc = malloc;
-		mem_vtable.realloc = realloc;
-		mem_vtable.free = free;
-		mem_vtable.calloc = calloc;
-
-		g_mem_set_vtable (&mem_vtable);
-	}
-
 	g_log_set_always_fatal (G_LOG_LEVEL_ERROR);
 	g_log_set_fatal_mask (G_LOG_DOMAIN, G_LOG_LEVEL_ERROR);
 
@@ -1400,7 +1455,7 @@ mono_main (int argc, char* argv[])
 			char *build = mono_get_runtime_build_info ();
 			char *gc_descr;
 
-			g_print ("Mono JIT compiler version %s\nCopyright (C) 2002-2012 Novell, Inc, Xamarin, Inc and Contributors. www.mono-project.com\n", build);
+			g_print ("Mono JIT compiler version %s\nCopyright (C) 2002-2012 Novell, Inc, Xamarin Inc and Contributors. www.mono-project.com\n", build);
 			g_free (build);
 			g_print (info);
 			gc_descr = mono_gc_get_description ();
@@ -1478,6 +1533,10 @@ mono_main (int argc, char* argv[])
 				return 1;
 			}
 			config_file = argv [++i];
+#ifdef HOST_WIN32
+		} else if (strcmp (argv [i], "--mixed-mode") == 0) {
+			mixed_mode = TRUE;
+#endif
 		} else if (strcmp (argv [i], "--ncompile") == 0) {
 			if (i + 1 >= argc){
 				fprintf (stderr, "error: --ncompile requires an argument\n");
@@ -1490,7 +1549,9 @@ mono_main (int argc, char* argv[])
 		} else if (strncmp (argv [i], "--trace=", 8) == 0) {
 			trace_options = &argv [i][8];
 		} else if (strcmp (argv [i], "--breakonex") == 0) {
-			mono_break_on_exc = TRUE;
+			MonoDebugOptions *opt = mini_get_debug_options ();
+
+			opt->break_on_exc = TRUE;
 		} else if (strcmp (argv [i], "--break") == 0) {
 			if (i+1 >= argc){
 				fprintf (stderr, "Missing method name in --break command line option\n");
@@ -1540,6 +1601,9 @@ mono_main (int argc, char* argv[])
 			mono_compile_aot = TRUE;
 			aot_options = &argv [i][6];
 #endif
+		} else if (strncmp (argv [i], "--compile-all=", 14) == 0) {
+			action = DO_COMPILE;
+			recompilation_times = atoi (argv [i] + 14);
 		} else if (strcmp (argv [i], "--compile-all") == 0) {
 			action = DO_COMPILE;
 		} else if (strncmp (argv [i], "--runtime=", 10) == 0) {
@@ -1742,6 +1806,11 @@ mono_main (int argc, char* argv[])
 	}
 #endif
 
+#ifdef HOST_WIN32
+	if (mixed_mode)
+		mono_load_coree (argv [i]);
+#endif
+
 	mono_set_defaults (mini_verbose, opt);
 	domain = mini_init (argv [i], forced_version);
 
@@ -1889,7 +1958,7 @@ mono_main (int argc, char* argv[])
 		i = mono_environment_exitcode_get ();
 		return i;
 	} else if (action == DO_COMPILE) {
-		compile_all_methods (assembly, mini_verbose, opt);
+		compile_all_methods (assembly, mini_verbose, opt, recompilation_times);
 		mini_cleanup (domain);
 		return 0;
 	} else if (action == DO_DEBUGGER) {

@@ -392,7 +392,7 @@ cominterop_com_visible (MonoClass* klass)
 	MonoError error;
 	MonoCustomAttrInfo *cinfo;
 	GPtrArray *ifaces;
-	MonoBoolean visible = 0;
+	MonoBoolean visible = 1;
 
 	/* Handle the ComVisibleAttribute */
 	if (!ComVisibleAttribute)
@@ -831,7 +831,7 @@ cominterop_get_native_wrapper_adjusted (MonoMethod *method)
 		}
 	}
 
-	mono_marshal_emit_native_wrapper (method->klass->image, mb_native, sig_native, piinfo, mspecs, piinfo->addr, FALSE, TRUE);
+	mono_marshal_emit_native_wrapper (method->klass->image, mb_native, sig_native, piinfo, mspecs, piinfo->addr, FALSE, TRUE, FALSE);
 
 	res = mono_mb_create_method (mb_native, sig_native, sig_native->param_count + 16);	
 
@@ -2675,7 +2675,7 @@ mono_cominterop_emit_marshal_safearray (EmitMarshalContext *m, int argnum, MonoT
 
 			if (t->byref) {
 				mono_mb_emit_ldarg (mb, argnum);
-				mono_mb_emit_byte (mb, CEE_LDIND_I);
+				mono_mb_emit_byte (mb, CEE_LDIND_REF);
 			} else
 				mono_mb_emit_ldarg (mb, argnum);
 
@@ -2690,7 +2690,7 @@ mono_cominterop_emit_marshal_safearray (EmitMarshalContext *m, int argnum, MonoT
 
 			label2 = mono_mb_emit_short_branch (mb, CEE_BRTRUE_S);
 
-			index_var = mono_mb_add_local (mb, &mono_defaults.int_class->byval_arg);
+			index_var = mono_mb_add_local (mb, &mono_defaults.int32_class->byval_arg);
 			mono_mb_emit_byte (mb, CEE_LDC_I4_0);
 			mono_mb_emit_stloc (mb, index_var);
 
@@ -2702,7 +2702,7 @@ mono_cominterop_emit_marshal_safearray (EmitMarshalContext *m, int argnum, MonoT
 
 			if (t->byref) {
 				mono_mb_emit_ldarg (mb, argnum);
-				mono_mb_emit_byte (mb, CEE_LDIND_I);
+				mono_mb_emit_byte (mb, CEE_LDIND_REF);
 			} else
 				mono_mb_emit_ldarg (mb, argnum);
 
@@ -3206,6 +3206,27 @@ mono_free_bstr (gpointer bstr)
 #else
 	g_free (((char *)bstr) - 4);
 #endif
+}
+
+int
+ves_icall_System_Runtime_InteropServices_Marshal_AddRefInternal (gpointer pUnk)
+{
+	g_assert_not_reached ();
+	return 0;
+}
+
+int
+ves_icall_System_Runtime_InteropServices_Marshal_ReleaseInternal (gpointer pUnk)
+{
+	g_assert_not_reached ();
+	return 0;
+}
+
+int
+ves_icall_System_Runtime_InteropServices_Marshal_QueryInterfaceInternal (gpointer pUnk, gpointer riid, gpointer* ppv)
+{
+	g_assert_not_reached ();
+	return 0;
 }
 
 #endif /* DISABLE_COM */

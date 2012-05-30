@@ -6,6 +6,7 @@
  *   Zoltan Varga (vargaz@gmail.com)
  *
  * (C) 2001 Ximian, Inc.
+ * Copyright 2003-2011 Novell, Inc (http://www.novell.com)
  * Copyright 2011 Xamarin, Inc (http://www.xamarin.com)
  */
 
@@ -1207,7 +1208,7 @@ mono_arch_invalidate_method (MonoJitInfo *ji, void *func, gpointer func_arg)
 static void
 handler_block_trampoline_helper (gpointer *ptr)
 {
-	MonoJitTlsData *jit_tls = TlsGetValue (mono_jit_tls_id);
+	MonoJitTlsData *jit_tls = mono_native_tls_get_value (mono_jit_tls_id);
 	*ptr = jit_tls->handler_block_return_address;
 }
 

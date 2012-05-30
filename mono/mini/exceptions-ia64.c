@@ -284,7 +284,7 @@ throw_exception (MonoObject *exc, guint64 rethrow)
 	}
 	ctx.precise_ip = FALSE;
 
-	mono_handle_exception (&ctx, exc, (gpointer)(ip), FALSE);
+	mono_handle_exception (&ctx, exc);
 	restore_context (&ctx);
 
 	g_assert_not_reached ();
@@ -507,7 +507,6 @@ mono_arch_find_jit_info (MonoDomain *domain, MonoJitTlsData *jit_tls,
 
 	memset (frame, 0, sizeof (StackFrameInfo));
 	frame->ji = ji;
-	frame->managed = FALSE;
 
 	*new_ctx = *ctx;
 	new_ctx->precise_ip = FALSE;
@@ -547,9 +546,6 @@ mono_arch_find_jit_info (MonoDomain *domain, MonoJitTlsData *jit_tls,
 		frame->type = FRAME_TYPE_MANAGED;
 		frame->ji = ji;
 
-		if (!ji->method->wrapper_type || ji->method->wrapper_type == MONO_WRAPPER_DYNAMIC_METHOD)
-			frame->managed = TRUE;
-
 		//print_ctx (new_ctx);
 
 		err = unw_step (&new_ctx->cursor);
@@ -570,7 +566,7 @@ mono_arch_find_jit_info (MonoDomain *domain, MonoJitTlsData *jit_tls,
  * @obj: the exception object
  */
 gboolean
-mono_arch_handle_exception (void *sigctx, gpointer obj, gboolean test_only)
+mono_arch_handle_exception (void *sigctx, gpointer obj)
 {
 	/* libunwind takes care of this */
 	unw_context_t unw_ctx;
@@ -602,7 +598,7 @@ mono_arch_handle_exception (void *sigctx, gpointer obj, gboolean test_only)
 	}
 	ctx.precise_ip = TRUE;
 
-	mono_handle_exception (&ctx, obj, (gpointer)ip, test_only);
+	mono_handle_exception (&ctx, obj);
 
 	restore_context (&ctx);
 

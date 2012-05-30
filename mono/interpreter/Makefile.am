@@ -1,6 +1,6 @@
 INCLUDES = 				\
 	-I$(top_srcdir)			\
-	$(LIBGC_CFLAGS)			\
+	$(LIBGC_CPPFLAGS)		\
 	$(GLIB_CFLAGS)
 
 if HOST_WIN32
@@ -52,6 +52,7 @@ libmint_la_LIBADD =				\
 	../utils/libmonoutils.la	\
 	$(libgc_libs)			\
 	$(GLIB_LIBS)			\
+	$(LIBICONV)			\
 	$(ICU_LIBS)			\
 	-lm
 

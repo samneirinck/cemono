@@ -1,3 +1,8 @@
+/*
+ * Copyright 2008-2011 Novell Inc
+ * Copyright 2011 Xamarin Inc
+ */
+
 #include "config.h"
 #include "utils/mono-proclib.h"
 
@@ -13,7 +18,6 @@
 #include <windows.h>
 #endif
 
-/* FIXME: bsds untested */
 #if defined(__APPLE__) || defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__)
 #include <sys/param.h>
 #include <sys/types.h>
@@ -26,13 +30,11 @@
 #include <sys/user.h>
 #endif
 #ifdef HAVE_STRUCT_KINFO_PROC_KP_PROC
-#  ifdef KERN_PROC2
-#    define kinfo_pid_member p_pid
-#    define kinfo_name_member p_comm
-#  else
 #    define kinfo_pid_member kp_proc.p_pid
 #    define kinfo_name_member kp_proc.p_comm
-#  endif
+#elif defined(__OpenBSD__)
+#    define kinfo_pid_member p_pid
+#    define kinfo_name_member p_comm
 #else
 #define kinfo_pid_member ki_pid
 #define kinfo_name_member ki_comm
@@ -578,6 +580,7 @@ get_cpu_times (int cpu_id, gint64 *user, gint64 *systemt, gint64 *irq, gint64 *s
 			continue;
 		}
 		sscanf (data, "%Lu %Lu %Lu %Lu %Lu %Lu %Lu", &user_ticks, &nice_ticks, &system_ticks, &idle_ticks, &iowait_ticks, &irq_ticks, &sirq_ticks);
+		break;
 	}
 	fclose (f);
 

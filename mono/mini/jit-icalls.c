@@ -786,7 +786,7 @@ mono_class_static_field_address (MonoDomain *domain, MonoClassField *field)
 	if (domain->special_static_fields && (addr = g_hash_table_lookup (domain->special_static_fields, field)))
 		addr = mono_get_special_static_data (GPOINTER_TO_UINT (addr));
 	else
-		addr = (char*)vtable->data + field->offset;
+		addr = (char*)mono_vtable_get_static_field_data (vtable) + field->offset;
 	
 	return addr;
 }
@@ -1026,7 +1026,7 @@ mono_object_castclass (MonoObject *obj, MonoClass *klass)
 	MonoJitTlsData *jit_tls = NULL;
 
 	if (mini_get_debug_options ()->better_cast_details) {
-		jit_tls = TlsGetValue (mono_jit_tls_id);
+		jit_tls = mono_native_tls_get_value (mono_jit_tls_id);
 		jit_tls->class_cast_from = NULL;
 	}
 
@@ -1054,7 +1054,7 @@ mono_object_castclass_with_cache (MonoObject *obj, MonoClass *klass, gpointer *c
 	gpointer cached_vtable, obj_vtable;
 
 	if (mini_get_debug_options ()->better_cast_details) {
-		jit_tls = TlsGetValue (mono_jit_tls_id);
+		jit_tls = mono_native_tls_get_value (mono_jit_tls_id);
 		jit_tls->class_cast_from = NULL;
 	}
 

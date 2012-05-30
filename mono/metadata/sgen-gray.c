@@ -21,12 +21,16 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+#include "config.h"
+#ifdef HAVE_SGEN_GC
+
+#include "metadata/sgen-gc.h"
+#include "utils/mono-counters.h"
+
 #define GRAY_QUEUE_LENGTH_LIMIT	64
 
-static GrayQueue gray_queue;
-
-static void
-gray_object_alloc_queue_section (GrayQueue *queue)
+void
+sgen_gray_object_alloc_queue_section (SgenGrayQueue *queue)
 {
 	GrayQueueSection *section;
 
@@ -39,7 +43,7 @@ gray_object_alloc_queue_section (GrayQueue *queue)
 		queue->free_list = section->next;
 	} else {
 		/* Allocate a new section */
-		section = mono_sgen_alloc_internal_fixed (queue->allocator, INTERNAL_MEM_GRAY_QUEUE);
+		section = sgen_alloc_internal (INTERNAL_MEM_GRAY_QUEUE);
 	}
 
 	section->end = 0;
@@ -49,16 +53,10 @@ gray_object_alloc_queue_section (GrayQueue *queue)
 	queue->first = section;
 }
 
-static void
-gray_object_free_queue_section (GrayQueueSection *section, SgenInternalAllocator *thread_allocator)
+void
+sgen_gray_object_free_queue_section (GrayQueueSection *section)
 {
-	mono_sgen_free_internal_delayed (section, INTERNAL_MEM_GRAY_QUEUE, thread_allocator);
-}
-
-static inline gboolean
-gray_object_queue_is_empty (GrayQueue *queue)
-{
-	return queue->first == NULL;
+	sgen_free_internal (section, INTERNAL_MEM_GRAY_QUEUE);
 }
 
 /*
@@ -68,11 +66,11 @@ gray_object_queue_is_empty (GrayQueue *queue)
  */
 
 void
-mono_sgen_gray_object_enqueue (GrayQueue *queue, char *obj)
+sgen_gray_object_enqueue (SgenGrayQueue *queue, char *obj)
 {
 	DEBUG (9, g_assert (obj));
 	if (G_UNLIKELY (!queue->first || queue->first->end == SGEN_GRAY_QUEUE_SECTION_SIZE))
-		gray_object_alloc_queue_section (queue);
+		sgen_gray_object_alloc_queue_section (queue);
 	DEBUG (9, g_assert (queue->first && queue->first->end < SGEN_GRAY_QUEUE_SECTION_SIZE));
 	queue->first->objects [queue->first->end++] = obj;
 
@@ -80,11 +78,11 @@ mono_sgen_gray_object_enqueue (GrayQueue *queue, char *obj)
 }
 
 char*
-mono_sgen_gray_object_dequeue (GrayQueue *queue)
+sgen_gray_object_dequeue (SgenGrayQueue *queue)
 {
 	char *obj;
 
-	if (gray_object_queue_is_empty (queue))
+	if (sgen_gray_object_queue_is_empty (queue))
 		return NULL;
 
 	DEBUG (9, g_assert (queue->first->end));
@@ -103,8 +101,8 @@ mono_sgen_gray_object_dequeue (GrayQueue *queue)
 	return obj;
 }
 
-static GrayQueueSection*
-gray_object_dequeue_section (GrayQueue *queue)
+GrayQueueSection*
+sgen_gray_object_dequeue_section (SgenGrayQueue *queue)
 {
 	GrayQueueSection *section;
 
@@ -119,23 +117,21 @@ gray_object_dequeue_section (GrayQueue *queue)
 	return section;
 }
 
-static void
-gray_object_enqueue_section (GrayQueue *queue, GrayQueueSection *section)
+void
+sgen_gray_object_enqueue_section (SgenGrayQueue *queue, GrayQueueSection *section)
 {
 	section->next = queue->first;
 	queue->first = section;
 }
 
-static void
-gray_object_queue_init (GrayQueue *queue, SgenInternalAllocator *allocator)
+void
+sgen_gray_object_queue_init (SgenGrayQueue *queue)
 {
 	GrayQueueSection *section, *next;
 	int i;
 
-	g_assert (gray_object_queue_is_empty (queue));
+	g_assert (sgen_gray_object_queue_is_empty (queue));
 	DEBUG (9, g_assert (queue->balance == 0));
-
-	queue->allocator = allocator;
 
 	/* Free the extra sections allocated during the last collection */
 	i = 0;
@@ -146,14 +142,16 @@ gray_object_queue_init (GrayQueue *queue, SgenInternalAllocator *allocator)
 	while (section->next) {
 		next = section->next;
 		section->next = next->next;
-		gray_object_free_queue_section (next, allocator);
+		sgen_gray_object_free_queue_section (next);
 	}
 }
 
-static void
-gray_object_queue_init_with_alloc_prepare (GrayQueue *queue, SgenInternalAllocator *allocator, GrayQueueAllocPrepareFunc func, void *data)
+void
+sgen_gray_object_queue_init_with_alloc_prepare (SgenGrayQueue *queue, GrayQueueAllocPrepareFunc func, void *data)
 {
-	gray_object_queue_init (queue, allocator);
+	sgen_gray_object_queue_init (queue);
 	queue->alloc_prepare_func = func;
 	queue->alloc_prepare_data = data;
 }
+
+#endif

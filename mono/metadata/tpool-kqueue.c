@@ -36,7 +36,7 @@ static void
 kevent_change (int kfd, struct kevent *evt, const char *error_str)
 {
 	if (kevent (kfd, evt, 1, NULL, 0, NULL) == -1) {
-		int err = errno;	
+		int err = errno;
 		g_message ("kqueue(%s): %d %s", error_str, err, g_strerror (err));
 	}
 }
@@ -157,7 +157,7 @@ tp_kqueue_wait (gpointer p)
 		}
 		LeaveCriticalSection (&socket_io_data->io_lock);
 		threadpool_append_jobs (&async_io_tp, (MonoObject **) async_results, nresults);
-		memset (async_results, 0, sizeof (gpointer) * nresults);
+		mono_gc_bzero (async_results, sizeof (gpointer) * nresults);
 	}
 }
 #undef KQUEUE_NEVENTS

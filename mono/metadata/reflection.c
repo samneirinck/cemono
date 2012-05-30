@@ -2670,11 +2670,13 @@ mono_image_get_ctorbuilder_token (MonoDynamicImage *assembly, MonoReflectionCtor
 	if (token)
 		return token;
 
-	g_assert (tb->generic_params);
-
 	reflection_methodbuilder_from_ctor_builder (&rmb, mb);
 
-	parent = create_generic_typespec (assembly, tb);
+	if (tb->generic_params)
+		parent = create_generic_typespec (assembly, tb);
+	else
+		parent = mono_image_typedef_or_ref (assembly, mono_reflection_type_get_handle ((MonoReflectionType*)tb));
+	
 	name = mono_string_to_utf8 (rmb.name);
 	sig = method_builder_encode_signature (assembly, &rmb);
 
@@ -4928,7 +4930,7 @@ mono_image_create_token (MonoDynamicImage *assembly, MonoObject *obj,
 		if (tb->generic_params) {
 			token = mono_image_get_generic_field_token (assembly, fb);
 		} else {
-			if ((tb->module->dynamic_image == assembly)) {
+			if (tb->module->dynamic_image == assembly) {
 				token = fb->table_idx | MONO_TOKEN_FIELD_DEF;
 			} else {
 				token = mono_image_get_fieldref_token (assembly, (MonoObject*)fb, fb->handle);
@@ -7896,7 +7898,7 @@ handle_type:
 		val = load_cattr_value (image, &subc->byval_arg, p, end);
 		obj = mono_object_new (mono_domain_get (), subc);
 		g_assert (!subc->has_references);
-		memcpy ((char*)obj + sizeof (MonoObject), val, mono_class_value_size (subc, NULL));
+		mono_gc_memmove ((char*)obj + sizeof (MonoObject), val, mono_class_value_size (subc, NULL));
 		g_free (val);
 		return obj;
 	}
@@ -10068,8 +10070,7 @@ reflection_methodbuilder_to_mono_method (MonoClass *klass,
 	m->slot = -1;
 	m->flags = rmb->attrs;
 	m->iflags = rmb->iattrs;
-	m->name = mono_string_to_utf8_image (image, rmb->name, &error);
-	g_assert (mono_error_ok (&error));
+	m->name = mono_string_to_utf8_image_ignore (image, rmb->name);
 	m->klass = klass;
 	m->signature = sig;
 	m->sre_method = TRUE;
@@ -10926,7 +10927,11 @@ typebuilder_setup_fields (MonoClass *klass, MonoError *error)
 	mono_error_init (error);
 
 	if (tb->class_size) {
-		g_assert ((tb->packing_size & 0xfffffff0) == 0);
+		if ((tb->packing_size & 0xfffffff0) != 0) {
+			char *err_msg = g_strdup_printf ("Could not load struct '%s' with packing size %d >= 16", klass->name, tb->packing_size);
+			mono_class_set_failure (klass, MONO_EXCEPTION_TYPE_LOAD, err_msg);
+			return;
+		}
 		klass->packing_size = tb->packing_size;
 		real_size = klass->instance_size + tb->class_size;
 	}
@@ -12553,3 +12558,18 @@ mono_reflection_call_is_assignable_to (MonoClass *klass, MonoClass *oklass)
 	else
 		return *(MonoBoolean*)mono_object_unbox (res);
 }
+
+/**
+ * mono_reflection_type_get_type:
+ * @reftype: the System.Type object
+ *
+ * Returns the MonoType* associated with the C# System.Type object @reftype.
+ */
+MonoType*
+mono_reflection_type_get_type (MonoReflectionType *reftype)
+{
+	g_assert (reftype);
+
+	return mono_reflection_type_get_handle (reftype);
+}
+

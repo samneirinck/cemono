@@ -774,8 +774,8 @@ mono_monitor_get_object_monitor_weak_link (MonoObject *object)
 }
 
 static void
-emit_obj_syncp_check (MonoMethodBuilder *mb, int syncp_loc, int *obj_null_branch, int *syncp_true_false_branch,
-	gboolean branch_on_true)
+emit_obj_syncp_check (MonoMethodBuilder *mb, int syncp_loc, int *obj_null_branch, int *true_locktaken_branch, int *syncp_true_false_branch,
+	int *thin_hash_branch, gboolean branch_on_true)
 {
 	/*
 	  ldarg		0							obj
@@ -784,6 +784,17 @@ emit_obj_syncp_check (MonoMethodBuilder *mb, int syncp_loc, int *obj_null_branch
 
 	mono_mb_emit_byte (mb, CEE_LDARG_0);
 	*obj_null_branch = mono_mb_emit_short_branch (mb, CEE_BRFALSE_S);
+
+	/*
+	  ldarg.1
+	  ldind.i1
+	  brtrue.s true_locktaken
+	*/
+	if (true_locktaken_branch) {
+		mono_mb_emit_byte (mb, CEE_LDARG_1);
+		mono_mb_emit_byte (mb, CEE_LDIND_I1);
+		*true_locktaken_branch = mono_mb_emit_short_branch (mb, CEE_BRTRUE_S);
+	}
 
 	/*
 	  ldarg		0							obj
@@ -802,31 +813,80 @@ emit_obj_syncp_check (MonoMethodBuilder *mb, int syncp_loc, int *obj_null_branch
 	mono_mb_emit_byte (mb, CEE_ADD);
 	mono_mb_emit_byte (mb, CEE_LDIND_I);
 	mono_mb_emit_stloc (mb, syncp_loc);
+
+	
+	if (mono_gc_is_moving ()) {
+		/*check for a thin hash*/
+		mono_mb_emit_ldloc (mb, syncp_loc);
+		mono_mb_emit_icon (mb, 0x01);
+		mono_mb_emit_byte (mb, CEE_CONV_I);
+		mono_mb_emit_byte (mb, CEE_AND);
+		*thin_hash_branch = mono_mb_emit_short_branch (mb, CEE_BRTRUE_S);
+
+		/*clear gc bits*/
+		mono_mb_emit_ldloc (mb, syncp_loc);
+		mono_mb_emit_icon (mb, ~0x3);
+		mono_mb_emit_byte (mb, CEE_CONV_I);
+		mono_mb_emit_byte (mb, CEE_AND);
+		mono_mb_emit_stloc (mb, syncp_loc);
+	} else {
+		*thin_hash_branch = 0;
+	}
+
 	mono_mb_emit_ldloc (mb, syncp_loc);
 	*syncp_true_false_branch = mono_mb_emit_short_branch (mb, branch_on_true ? CEE_BRTRUE_S : CEE_BRFALSE_S);
+}
+
+static MonoMethod* monitor_il_fastpaths[3];
+
+gboolean
+mono_monitor_is_il_fastpath_wrapper (MonoMethod *method)
+{
+	int i;
+	for (i = 0; i < 3; ++i) {
+		if (monitor_il_fastpaths [i] == method)
+			return TRUE;
+	}
+	return FALSE;
+}
+
+enum {
+	FASTPATH_ENTER,
+	FASTPATH_ENTERV4,
+	FASTPATH_EXIT
+};
+
+
+static MonoMethod*
+register_fastpath (MonoMethod *method, int idx)
+{
+	mono_memory_barrier ();
+	monitor_il_fastpaths [idx] = method;
+	return method;
 }
 
 static MonoMethod*
 mono_monitor_get_fast_enter_method (MonoMethod *monitor_enter_method)
 {
-	static MonoMethod *fast_monitor_enter;
-	static MonoMethod *compare_exchange_method;
-
 	MonoMethodBuilder *mb;
-	int obj_null_branch, syncp_null_branch, has_owner_branch, other_owner_branch, tid_branch;
+	MonoMethod *res;
+	static MonoMethod *compare_exchange_method;
+	int obj_null_branch, true_locktaken_branch = 0, syncp_null_branch, has_owner_branch, other_owner_branch, tid_branch, thin_hash_branch;
 	int tid_loc, syncp_loc, owner_loc;
 	int thread_tls_offset;
+	gboolean is_v4 = mono_method_signature (monitor_enter_method)->param_count == 2;
+	int fast_path_idx = is_v4 ? FASTPATH_ENTERV4 : FASTPATH_ENTER;
+	WrapperInfo *info;
 
-#ifdef HAVE_MOVING_COLLECTOR
-	return NULL;
-#endif
+	/* The !is_v4 version is not used/tested */
+	g_assert (is_v4);
 
 	thread_tls_offset = mono_thread_get_tls_offset ();
 	if (thread_tls_offset == -1)
 		return NULL;
 
-	if (fast_monitor_enter)
-		return fast_monitor_enter;
+	if (monitor_il_fastpaths [fast_path_idx])
+		return monitor_il_fastpaths [fast_path_idx];
 
 	if (!compare_exchange_method) {
 		MonoMethodDesc *desc;
@@ -841,7 +901,7 @@ mono_monitor_get_fast_enter_method (MonoMethod *monitor_enter_method)
 			return NULL;
 	}
 
-	mb = mono_mb_new (mono_defaults.monitor_class, "FastMonitorEnter", MONO_WRAPPER_UNKNOWN);
+	mb = mono_mb_new (mono_defaults.monitor_class, is_v4 ? "FastMonitorEnterV4" : "FastMonitorEnter", MONO_WRAPPER_UNKNOWN);
 
 	mb->method->slot = -1;
 	mb->method->flags = METHOD_ATTRIBUTE_PUBLIC | METHOD_ATTRIBUTE_STATIC |
@@ -851,7 +911,7 @@ mono_monitor_get_fast_enter_method (MonoMethod *monitor_enter_method)
 	syncp_loc = mono_mb_add_local (mb, &mono_defaults.int_class->byval_arg);
 	owner_loc = mono_mb_add_local (mb, &mono_defaults.int_class->byval_arg);
 
-	emit_obj_syncp_check (mb, syncp_loc, &obj_null_branch, &syncp_null_branch, FALSE);
+	emit_obj_syncp_check (mb, syncp_loc, &obj_null_branch, is_v4 ? &true_locktaken_branch : NULL, &syncp_null_branch, &thin_hash_branch, FALSE);
 
 	/*
 	  mono. tls	thread_tls_offset					threadp
@@ -901,6 +961,12 @@ mono_monitor_get_fast_enter_method (MonoMethod *monitor_enter_method)
 	mono_mb_emit_byte (mb, CEE_LDC_I4_0);
 	mono_mb_emit_managed_call (mb, compare_exchange_method, NULL);
 	has_owner_branch = mono_mb_emit_short_branch (mb, CEE_BRTRUE_S);
+
+	if (is_v4) {
+		mono_mb_emit_byte (mb, CEE_LDARG_1);
+		mono_mb_emit_byte (mb, CEE_LDC_I4_1);
+		mono_mb_emit_byte (mb, CEE_STIND_I1);
+	}
 	mono_mb_emit_byte (mb, CEE_RET);
 
 	/*
@@ -931,6 +997,13 @@ mono_monitor_get_fast_enter_method (MonoMethod *monitor_enter_method)
 	mono_mb_emit_byte (mb, CEE_LDC_I4_1);
 	mono_mb_emit_byte (mb, CEE_ADD);
 	mono_mb_emit_byte (mb, CEE_STIND_I4);
+
+	if (is_v4) {
+		mono_mb_emit_byte (mb, CEE_LDARG_1);
+		mono_mb_emit_byte (mb, CEE_LDC_I4_1);
+		mono_mb_emit_byte (mb, CEE_STIND_I1);
+	}
+
 	mono_mb_emit_byte (mb, CEE_RET);
 
 	/*
@@ -940,40 +1013,46 @@ mono_monitor_get_fast_enter_method (MonoMethod *monitor_enter_method)
 	  ret
 	*/
 
+	if (thin_hash_branch)
+		mono_mb_patch_short_branch (mb, thin_hash_branch);
 	mono_mb_patch_short_branch (mb, obj_null_branch);
 	mono_mb_patch_short_branch (mb, syncp_null_branch);
 	mono_mb_patch_short_branch (mb, has_owner_branch);
 	mono_mb_patch_short_branch (mb, other_owner_branch);
+	if (true_locktaken_branch)
+		mono_mb_patch_short_branch (mb, true_locktaken_branch);
 	mono_mb_emit_byte (mb, CEE_LDARG_0);
+	if (is_v4)
+		mono_mb_emit_byte (mb, CEE_LDARG_1);
 	mono_mb_emit_managed_call (mb, monitor_enter_method, NULL);
 	mono_mb_emit_byte (mb, CEE_RET);
 
-	fast_monitor_enter = mono_mb_create_method (mb, mono_signature_no_pinvoke (monitor_enter_method), 5);
-	mono_mb_free (mb);
+	res = register_fastpath (mono_mb_create_method (mb, mono_signature_no_pinvoke (monitor_enter_method), 5), fast_path_idx);
 
-	return fast_monitor_enter;
+	info = mono_image_alloc0 (mono_defaults.corlib, sizeof (WrapperInfo));
+	info->subtype = is_v4 ? WRAPPER_SUBTYPE_FAST_MONITOR_ENTER_V4 : WRAPPER_SUBTYPE_FAST_MONITOR_ENTER;
+	mono_marshal_set_wrapper_info (res, info);
+
+	mono_mb_free (mb);
+	return res;
 }
 
 static MonoMethod*
 mono_monitor_get_fast_exit_method (MonoMethod *monitor_exit_method)
 {
-	static MonoMethod *fast_monitor_exit;
-
 	MonoMethodBuilder *mb;
-	int obj_null_branch, has_waiting_branch, has_syncp_branch, owned_branch, nested_branch;
+	MonoMethod *res;
+	int obj_null_branch, has_waiting_branch, has_syncp_branch, owned_branch, nested_branch, thin_hash_branch;
 	int thread_tls_offset;
 	int syncp_loc;
-
-#ifdef HAVE_MOVING_COLLECTOR
-	return NULL;
-#endif
+	WrapperInfo *info;
 
 	thread_tls_offset = mono_thread_get_tls_offset ();
 	if (thread_tls_offset == -1)
 		return NULL;
 
-	if (fast_monitor_exit)
-		return fast_monitor_exit;
+	if (monitor_il_fastpaths [FASTPATH_EXIT])
+		return monitor_il_fastpaths [FASTPATH_EXIT];
 
 	mb = mono_mb_new (mono_defaults.monitor_class, "FastMonitorExit", MONO_WRAPPER_UNKNOWN);
 
@@ -983,7 +1062,7 @@ mono_monitor_get_fast_exit_method (MonoMethod *monitor_exit_method)
 
 	syncp_loc = mono_mb_add_local (mb, &mono_defaults.int_class->byval_arg);
 
-	emit_obj_syncp_check (mb, syncp_loc, &obj_null_branch, &has_syncp_branch, TRUE);
+	emit_obj_syncp_check (mb, syncp_loc, &obj_null_branch, NULL, &has_syncp_branch, &thin_hash_branch, TRUE);
 
 	/*
 	  ret
@@ -1100,16 +1179,22 @@ mono_monitor_get_fast_exit_method (MonoMethod *monitor_exit_method)
 	  ret
 	 */
 
+	if (thin_hash_branch)
+		mono_mb_patch_short_branch (mb, thin_hash_branch);
 	mono_mb_patch_short_branch (mb, obj_null_branch);
 	mono_mb_patch_short_branch (mb, has_waiting_branch);
 	mono_mb_emit_byte (mb, CEE_LDARG_0);
 	mono_mb_emit_managed_call (mb, monitor_exit_method, NULL);
 	mono_mb_emit_byte (mb, CEE_RET);
 
-	fast_monitor_exit = mono_mb_create_method (mb, mono_signature_no_pinvoke (monitor_exit_method), 5);
+	res = register_fastpath (mono_mb_create_method (mb, mono_signature_no_pinvoke (monitor_exit_method), 5), FASTPATH_EXIT);
 	mono_mb_free (mb);
 
-	return fast_monitor_exit;
+	info = mono_image_alloc0 (mono_defaults.corlib, sizeof (WrapperInfo));
+	info->subtype = WRAPPER_SUBTYPE_FAST_MONITOR_EXIT;
+	mono_marshal_set_wrapper_info (res, info);
+
+	return res;
 }
 
 MonoMethod*

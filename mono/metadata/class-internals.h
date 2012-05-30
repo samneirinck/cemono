@@ -1,3 +1,6 @@
+/* 
+ * Copyright 2012 Xamarin Inc
+ */
 #ifndef __MONO_METADATA_CLASS_INTERBALS_H__
 #define __MONO_METADATA_CLASS_INTERBALS_H__
 
@@ -17,8 +20,6 @@
 
 extern gboolean mono_print_vtable;
 
-typedef void     (*MonoStackWalkImpl) (MonoStackWalk func, gboolean do_il_offset, gpointer user_data);
-
 typedef struct _MonoMethodWrapper MonoMethodWrapper;
 typedef struct _MonoMethodInflated MonoMethodInflated;
 typedef struct _MonoMethodPInvoke MonoMethodPInvoke;
@@ -29,6 +30,13 @@ typedef struct _MonoMethodPInvoke MonoMethodPInvoke;
  * This prop applies to class, method, property, event, assembly and image.
  */
 #define MONO_PROP_DYNAMIC_CATTR 0x1000
+
+#ifdef ENABLE_ICALL_EXPORT
+#pragma GCC diagnostic ignored "-Wmissing-prototypes"
+#define ICALL_EXPORT
+#else
+#define ICALL_EXPORT static
+#endif
 
 typedef enum {
 #define WRAPPER(e,n) MONO_WRAPPER_ ## e,
@@ -215,48 +223,6 @@ typedef struct {
 
 #define MONO_SIZEOF_CLASS_RUNTIME_INFO (sizeof (MonoClassRuntimeInfo) - MONO_ZERO_LEN_ARRAY * SIZEOF_VOID_P)
 
-enum {
-	MONO_RGCTX_INFO_STATIC_DATA,
-	MONO_RGCTX_INFO_KLASS,
-	MONO_RGCTX_INFO_VTABLE,
-	MONO_RGCTX_INFO_TYPE,
-	MONO_RGCTX_INFO_REFLECTION_TYPE,
-	MONO_RGCTX_INFO_METHOD,
-	MONO_RGCTX_INFO_GENERIC_METHOD_CODE,
-	MONO_RGCTX_INFO_CLASS_FIELD,
-	MONO_RGCTX_INFO_METHOD_RGCTX,
-	MONO_RGCTX_INFO_METHOD_CONTEXT,
-	MONO_RGCTX_INFO_REMOTING_INVOKE_WITH_CHECK,
-	MONO_RGCTX_INFO_METHOD_DELEGATE_CODE,
-	MONO_RGCTX_INFO_CAST_CACHE
-};
-
-typedef struct _MonoRuntimeGenericContextOtherInfoTemplate {
-	int info_type;
-	gpointer data;
-	struct _MonoRuntimeGenericContextOtherInfoTemplate *next;
-} MonoRuntimeGenericContextOtherInfoTemplate;
-
-typedef struct {
-	MonoClass *next_subclass;
-	MonoRuntimeGenericContextOtherInfoTemplate *other_infos;
-	GSList *method_templates;
-} MonoRuntimeGenericContextTemplate;
-
-typedef struct {
-	MonoVTable *class_vtable; /* must be the first element */
-	MonoGenericInst *method_inst;
-	gpointer infos [MONO_ZERO_LEN_ARRAY];
-} MonoMethodRuntimeGenericContext;
-
-#define MONO_SIZEOF_METHOD_RUNTIME_GENERIC_CONTEXT (sizeof (MonoMethodRuntimeGenericContext) - MONO_ZERO_LEN_ARRAY * SIZEOF_VOID_P)
-
-#define MONO_RGCTX_SLOT_MAKE_RGCTX(i)	(i)
-#define MONO_RGCTX_SLOT_MAKE_MRGCTX(i)	((i) | 0x80000000)
-#define MONO_RGCTX_SLOT_INDEX(s)	((s) & 0x7fffffff)
-#define MONO_RGCTX_SLOT_IS_MRGCTX(s)	(((s) & 0x80000000) ? TRUE : FALSE)
-
-
 #define MONO_CLASS_PROP_EXCEPTION_DATA 0
 
 /* 
@@ -352,6 +318,7 @@ struct _MonoClass {
 	guint is_inflated : 1; /* class is a generic instance */
 	/* next byte */
 	guint has_finalize_inited    : 1; /* has_finalize is initialized */
+	guint fields_inited : 1; /* fields is initialized */
 
 	guint8     exception_type;	/* MONO_EXCEPTION_* */
 
@@ -461,7 +428,6 @@ struct MonoVTable {
 	 */
 	void *gc_descr; 	
 	MonoDomain *domain;  /* each object/vtable belongs to exactly one domain */
-        gpointer    data; /* to store static class data */
         gpointer    type; /* System.Type type for klass */
 	guint8     *interface_bitmap;
 	guint16     max_interface_id;
@@ -469,11 +435,14 @@ struct MonoVTable {
 	guint remote          : 1; /* class is remotely activated */
 	guint initialized     : 1; /* cctor has been run */
 	guint init_failed     : 1; /* cctor execution failed */
+	guint has_static_fields : 1; /* pointer to the data stored at the end of the vtable array */
 	guint gc_bits         : MONO_VTABLE_AVAILABLE_GC_BITS; /* Those bits are reserved for the usaged of the GC */
 
 	guint32     imt_collisions_bitmap;
 	MonoRuntimeGenericContext *runtime_generic_context;
 	/* do not add any fields after vtable, the structure is dynamically extended */
+	/* vtable contains function pointers to methods or their trampolines, at the
+	 end there may be a slot containing the pointer to the static fields */
 	gpointer    vtable [MONO_ZERO_LEN_ARRAY];	
 };
 
@@ -674,6 +643,9 @@ typedef struct {
 
 void
 mono_class_setup_supertypes (MonoClass *klass) MONO_INTERNAL;
+
+void
+mono_class_setup_fields_locking (MonoClass *class) MONO_INTERNAL;
 
 /* WARNING
  * Only call this function if you can ensure both @klass and @parent
@@ -1173,9 +1145,6 @@ mono_icall_cleanup         (void) MONO_INTERNAL;
 gpointer
 mono_method_get_wrapper_data (MonoMethod *method, guint32 id) MONO_INTERNAL;
 
-void
-mono_install_stack_walk (MonoStackWalkImpl func) MONO_INTERNAL;
-
 gboolean
 mono_metadata_has_generic_params (MonoImage *image, guint32 token) MONO_INTERNAL;
 
@@ -1253,9 +1222,6 @@ gboolean
 mono_generic_class_is_generic_type_definition (MonoGenericClass *gklass) MONO_INTERNAL;
 
 MonoMethod*
-mono_method_get_declaring_generic_method (MonoMethod *method) MONO_INTERNAL;
-
-MonoMethod*
 mono_class_get_method_generic (MonoClass *klass, MonoMethod *method) MONO_INTERNAL;
 
 MonoType*
@@ -1309,6 +1275,9 @@ mono_class_is_assignable_from_slow (MonoClass *target, MonoClass *candidate) MON
 gboolean
 mono_class_has_variant_generic_params (MonoClass *klass) MONO_INTERNAL;
 
+gboolean
+mono_class_is_variant_compatible (MonoClass *klass, MonoClass *oklass, gboolean check_for_reference_conv) MONO_INTERNAL;
+
 gboolean mono_is_corlib_image (MonoImage *image) MONO_INTERNAL;
 
 MonoType*
@@ -1325,5 +1294,8 @@ mono_class_has_finalizer (MonoClass *klass) MONO_INTERNAL;
 
 void
 mono_unload_interface_id (MonoClass *class) MONO_INTERNAL;
+
+GPtrArray*
+mono_class_get_methods_by_name (MonoClass *klass, const char *name, guint32 bflags, gboolean ignore_case, gboolean allow_ctors, MonoException **ex) MONO_INTERNAL;
 
 #endif /* __MONO_METADATA_CLASS_INTERBALS_H__ */

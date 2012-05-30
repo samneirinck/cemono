@@ -3,6 +3,7 @@
 
 #include <glib.h>
 #include <mono/arch/mips/mips-codegen.h>
+#include <mono/utils/mono-context.h>
 
 #if _MIPS_SIM == _ABIO32
 /* o32 fully supported */
@@ -27,27 +28,17 @@
 
 #if SIZEOF_REGISTER == 4
 #define IREG_SIZE	4
-typedef guint32		mips_ireg;
 #define FREG_SIZE	4
 typedef gfloat		mips_freg;
 
 #elif SIZEOF_REGISTER == 8
 
 #define IREG_SIZE	8
-typedef guint64		mips_ireg;
 #define FREG_SIZE	8
 typedef gdouble		mips_freg;
 
 #else
 #error Unknown REGISTER_SIZE
-#endif
-
-#if G_BYTE_ORDER == G_LITTLE_ENDIAN
-#define MSW_OFFSET	sizeof(mips_ireg)
-#define LSW_OFFSET	0
-#else
-#define MSW_OFFSET	0
-#define LSW_OFFSET	sizeof(mips_ireg)
 #endif
 
 /*
@@ -103,7 +94,7 @@ typedef gdouble		mips_freg;
 
 #define mips_temp mips_t8
 
-#define MONO_ARCH_CALLEE_REGS		(MIPS_T_REGS | MIPS_V_REGS)
+#define MONO_ARCH_CALLEE_REGS		(MIPS_T_REGS | MIPS_V_REGS | MIPS_A_REGS)
 #define MONO_ARCH_CALLEE_SAVED_REGS	MIPS_S_REGS
 #define MIPS_ARG_REGS			MIPS_A_REGS
 
@@ -208,30 +199,21 @@ void mips_patch (guint32 *code, guint32 target);
 #define MIPS_LMF_MAGIC1	0xa5a5a5a5
 #define MIPS_LMF_MAGIC2	0xc3c3c3c3
 
+/* Registers saved in lmf->iregs */
+#define MIPS_LMF_IREGMASK (0xffffffff & ~((1 << mips_zero) | (1 << mips_at) | MONO_ARCH_CALLEE_REGS))
+
 struct MonoLMF {
 	gpointer	previous_lmf;
 	gpointer	lmf_addr;
 	MonoMethod	*method;
-	mips_ireg	ebp;
 	gpointer	eip;
-	mips_ireg	iregs [MONO_SAVED_GREGS];
+	mgreg_t     iregs [MONO_SAVED_GREGS];
 	mips_freg	fregs [MONO_SAVED_FREGS];
 	gulong		magic;
 };
 
-/* we define our own structure and we'll copy the data
- * from sigcontext/ucontext/mach when we need it.
- * This also makes us save stack space and time when copying
- * We might also want to add an additional field to propagate
- * the original context from the signal handler.
- */
-typedef struct {
-	gpointer	sc_pc;
-	mips_ireg	sc_regs [MONO_SAVED_GREGS];
-	mips_freg	sc_fpregs [MONO_SAVED_FREGS];
-} MonoContext;
-
 typedef struct MonoCompileArch {
+	gpointer    cinfo;
 	guint		iregs_offset;
 	guint		lmf_offset;
 	guint		local_alloc_offset;
@@ -239,6 +221,8 @@ typedef struct MonoCompileArch {
 	guint		spillvar_offset_float;
 	guint		tracing_offset;
 	guint		long_branch;
+	gboolean    omit_fp;
+	gboolean    omit_fp_computed;
 } MonoCompileArch;
 
 #if SIZEOF_REGISTER == 4
@@ -258,7 +242,7 @@ typedef struct MonoCompileArch {
 #define MIPS_FP_ADDR_OFFSET	(-8)
 #define MIPS_STACK_ALIGNMENT	16
 #define MIPS_STACK_PARAM_OFFSET 16		/* from sp to first parameter */
-#define MIPS_MINIMAL_STACK_SIZE (4*sizeof(mips_ireg) + 4*sizeof(mips_ireg))
+#define MIPS_MINIMAL_STACK_SIZE (4*sizeof(mgreg_t) + 4*sizeof(mgreg_t))
 #define MIPS_EXTRA_STACK_SIZE	16		/* from last parameter to top of frame */
 
 #if _MIPS_SIM == _ABIO32
@@ -276,21 +260,22 @@ typedef struct MonoCompileArch {
 #define MONO_ARCH_HAVE_IMT	1
 #define MONO_ARCH_IMT_REG	mips_t0
 
-#define MONO_ARCH_VTABLE_REG	mips_t0
-#define MONO_ARCH_RGCTX_REG	mips_t0
+#define MONO_ARCH_VTABLE_REG	mips_a0
+#define MONO_ARCH_RGCTX_REG	MONO_ARCH_IMT_REG
 
 #define MONO_ARCH_HAVE_DECOMPOSE_OPTS 1
 #define MONO_ARCH_HAVE_DECOMPOSE_LONG_OPTS 1
 
 #define MONO_ARCH_HAVE_GENERALIZED_IMT_THUNK 1
-
-/* XXX - a mystery, but it works */
-#define MONO_GET_CONTEXT \
-	void *ctx = (void *)(((int)context)+24);
+#define MONO_ARCH_SOFT_DEBUG_SUPPORTED 1
+#define MONO_ARCH_HAVE_SIGCTX_TO_MONOCTX 1
+#define MONO_ARCH_HAVE_XP_UNWIND 1
+#define MONO_ARCH_HAVE_CREATE_DELEGATE_TRAMPOLINE 1
+#define MONO_ARCH_HAVE_SETUP_RESUME_FROM_SIGNAL_HANDLER_CTX 1
+#define MONO_ARCH_GSHARED_SUPPORTED 1
 
 /* set the next to 0 once inssel-mips.brg is updated */
 #define MIPS_PASS_STRUCTS_BY_VALUE 1
-#define MIPS_SMALL_RET_STRUCT_IN_REG 0
 
 #define MONO_ARCH_USE_SIGACTION
 #define MONO_ARCH_NEED_DIV_CHECK 1
@@ -300,15 +285,6 @@ typedef struct MonoCompileArch {
 
 #define MIPS_NUM_REG_ARGS (MIPS_LAST_ARG_REG-MIPS_FIRST_ARG_REG+1)
 #define MIPS_NUM_REG_FPARGS (MIPS_LAST_FPARG_REG-MIPS_FIRST_FPARG_REG+1)
-
-/* we have the stack pointer, not the base pointer in sigcontext */
-#define MONO_CONTEXT_SET_IP(ctx,ip) do { (ctx)->sc_pc = (int)(ip); } while (0); 
-#define MONO_CONTEXT_SET_BP(ctx,bp) do { (ctx)->sc_regs[mips_fp] = (int)(bp); } while (0); 
-#define MONO_CONTEXT_SET_SP(ctx,sp) do { (ctx)->sc_regs[mips_sp] = (int)(sp); } while (0); 
-
-#define MONO_CONTEXT_GET_IP(ctx) ((gpointer)((ctx)->sc_pc))
-#define MONO_CONTEXT_GET_BP(ctx) ((gpointer)((ctx)->sc_regs[mips_fp]))
-#define MONO_CONTEXT_GET_SP(ctx) ((gpointer)((ctx)->sc_regs[mips_sp]))
 
 typedef struct {
 	unsigned long zero;
@@ -346,22 +322,12 @@ typedef struct {
 } MonoMipsStackFrame;
 
 #define MONO_INIT_CONTEXT_FROM_FUNC(ctx,func) do {	\
-		guint32 sp, ra;					\
-		guint32 *code = (guint32 *)(void *)func;	\
-		short imm;					\
-		memset ((ctx), 0, sizeof (*(ctx)));		\
-		__asm__ volatile("addu %0,$0,$29" : "=r" (sp));	\
-		/* Look for adjustment of sp */			\
-		while ((*code & 0xffff0000) != 0x27bd0000)	\
-			++code;					\
-		imm = (short) (*code & 0xffff);			\
-		MONO_CONTEXT_SET_BP ((ctx), sp + (-imm));	\
-		ra = *(guint32 *)(sp + (-imm) + MIPS_RET_ADDR_OFFSET);	\
-		MONO_CONTEXT_SET_IP ((ctx),ra);	\
-		MONO_CONTEXT_SET_SP ((ctx), MONO_CONTEXT_GET_BP (ctx));	\
+	MONO_CONTEXT_SET_BP ((ctx), __builtin_frame_address (0));			\
+	MONO_CONTEXT_SET_SP ((ctx), __builtin_frame_address (0));			\
+	MONO_CONTEXT_SET_IP ((ctx), (func));								\
 	} while (0)
 
-#define MONO_ARCH_INIT_TOP_LMF_ENTRY(lmf) do { (lmf)->ebp = -1; } while (0)
+#define MONO_ARCH_INIT_TOP_LMF_ENTRY(lmf)
 
 /* re-attaches with gdb - sometimes causes executable to hang */
 #undef HAVE_BACKTRACE_SYMBOLS

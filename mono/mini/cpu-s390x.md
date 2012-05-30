@@ -165,6 +165,7 @@ relaxed_nop: len:4
 oparglist: src1:i len:28
 bigmul: len:2 dest:i src1:a src2:i
 bigmul_un: len:2 dest:i src1:a src2:i
+tls_get: len:40 dest:i
 endfilter: src1:i len:28
 rethrow: src1:i len:26
 or_imm: dest:i src1:i len:24
@@ -177,11 +178,12 @@ s390_move: len:48 dest:b src1:b
 s390_setf4ret: dest:f src1:f len:4
 sbb: dest:i src1:i src2:i len:6
 sbb_imm: dest:i src1:i len:14
+seq_point: len:36
 sext_i4: dest:i src1:i len:4
 zext_i4: dest:i src1:i len:4
 shl_imm: dest:i src1:i len:10
 shr_imm: dest:i src1:i len:10
-shr_un_imm: dest:i src1:i len:8
+shr_un_imm: dest:i src1:i len:10
 sqrt: dest:f src1:f len:4
 start_handler: len:26
 store_membase_imm: dest:b len:46
@@ -380,3 +382,8 @@ s390_long_add_ovf: dest:i src1:i src2:i len:32
 s390_long_add_ovf_un: dest:i src1:i src2:i len:32
 s390_long_sub_ovf: dest:i src1:i src2:i len:32
 s390_long_sub_ovf_un: dest:i src1:i src2:i len:32
+
+gc_liveness_def: len:0
+gc_liveness_use: len:0
+gc_spill_slot_liveness_def: len:0
+gc_param_slot_liveness_def: len:0

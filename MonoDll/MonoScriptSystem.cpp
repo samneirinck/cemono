@@ -65,7 +65,7 @@ CScriptSystem::CScriptSystem()
 	, m_bReloading(false)
 	, m_bLastCompilationSuccess(false)
 {
-	CryLogAlways("Initializing Mono Script System");
+	//CryLogAlways("Initializing Mono Script System");
 
 	// We should look into storing mono binaries, configuration as well as scripts via CryPak.
 	mono_set_dirs(PathUtils::GetLibPath(), PathUtils::GetConfigPath());
@@ -170,7 +170,7 @@ bool CScriptSystem::CompleteInit()
 	m_pRootDomain = new CScriptDomain(eRV_4_30319);
 
 #ifndef _RELEASE
-	m_pPdb2MdbAssembly = new CScriptAssembly(PathUtils::GetMonoPath() + "bin\\pdb2mdb.dll");
+	//m_pPdb2MdbAssembly = new CScriptAssembly(PathUtils::GetMonoPath() + "bin\\pdb2mdb.dll");
 #endif
 	
 	// WIP ScriptManager game object, to be used for CryMono RMI support etc in the future.

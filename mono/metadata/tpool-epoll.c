@@ -1,3 +1,15 @@
+/*
+ * tpool-epoll.c: epoll related stuff
+ *
+ * Authors:
+ *   Dietmar Maurer (dietmar@ximian.com)
+ *   Gonzalo Paniagua Javier (gonzalo@ximian.com)
+ *
+ * Copyright 2001-2003 Ximian, Inc (http://www.ximian.com)
+ * Copyright 2004-2011 Novell, Inc (http://www.novell.com)
+ * Copyright 2011 Xamarin Inc (http://www.xamarin.com)
+ */
+
 struct _tp_epoll_data {
 	int epollfd;
 };
@@ -70,7 +82,7 @@ tp_epoll_shutdown (gpointer event_data)
 	tp_epoll_data *data = event_data;
 
 	close (data->epollfd);
-	data->epollfd = -1;
+	g_free (data);
 }
 
 #define EPOLL_ERRORS (EPOLLERR | EPOLLHUP)
@@ -112,14 +124,12 @@ tp_epoll_wait (gpointer p)
 			if (err != EBADF)
 				g_warning ("epoll_wait: %d %s", err, g_strerror (err));
 
-			close (epollfd);
 			return;
 		}
 
 		EnterCriticalSection (&socket_io_data->io_lock);
 		if (socket_io_data->inited == 3) {
 			g_free (events);
-			close (epollfd);
 			LeaveCriticalSection (&socket_io_data->io_lock);
 			return; /* cleanup called */
 		}
@@ -146,10 +156,17 @@ tp_epoll_wait (gpointer p)
 			}
 
 			if (list != NULL) {
+				int p;
+
 				mono_g_hash_table_replace (socket_io_data->sock_to_state, GINT_TO_POINTER (fd), list);
-				evt->events = get_events_from_list (list);
-				if (epoll_ctl (epollfd, EPOLL_CTL_MOD, fd, evt)) {
-					epoll_ctl (epollfd, EPOLL_CTL_ADD, fd, evt); /* ignoring error here */
+				p = get_events_from_list (list);
+				evt->events = (p & MONO_POLLOUT) ? EPOLLOUT : 0;
+				evt->events |= (p & MONO_POLLIN) ? EPOLLIN : 0;
+				if (epoll_ctl (epollfd, EPOLL_CTL_MOD, fd, evt) == -1) {
+					if (epoll_ctl (epollfd, EPOLL_CTL_ADD, fd, evt) == -1) {
+						int err = errno;
+						g_message ("epoll(ADD): %d %s", err, g_strerror (err));
+					}
 				}
 			} else {
 				mono_g_hash_table_remove (socket_io_data->sock_to_state, GINT_TO_POINTER (fd));
@@ -158,7 +175,8 @@ tp_epoll_wait (gpointer p)
 		}
 		LeaveCriticalSection (&socket_io_data->io_lock);
 		threadpool_append_jobs (&async_io_tp, (MonoObject **) async_results, nresults);
-		memset (async_results, 0, sizeof (gpointer) * nresults);
+		mono_gc_bzero (async_results, sizeof (gpointer) * nresults);
 	}
 }
 #undef EPOLL_NEVENTS
+#undef EPOLL_ERRORS

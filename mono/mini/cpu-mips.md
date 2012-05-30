@@ -54,11 +54,12 @@
 memory_barrier: len:4
 nop: len:4
 relaxed_nop: len:4
-break: len:4
+break: len:16
 jmp: len:92
 call: dest:v clob:c len:20
 br: len:16
 switch: src1:i len:40
+seq_point: len:24
 
 callvirt: dest:v clob:c len:20
 int_conv_to_r_un: dest:f src1:i len:32
@@ -177,10 +178,10 @@ not_null: src1:i len:0
 int_add: dest:i src1:i src2:i len:4
 int_sub: dest:i src1:i src2:i len:4
 int_mul: dest:i src1:i src2:i len:4
-int_div: dest:i src1:i src2:i len:76
+int_div: dest:i src1:i src2:i len:84
 int_div_un: dest:i src1:i src2:i len:40
-int_rem: dest:i src1:i src2:i len:76
-int_rem_un: dest:i src1:i src2:i len:76
+int_rem: dest:i src1:i src2:i len:84
+int_rem_un: dest:i src1:i src2:i len:40
 int_and: dest:i src1:i src2:i len:4
 int_or: dest:i src1:i src2:i len:4
 int_xor: dest:i src1:i src2:i len:4
@@ -405,13 +406,13 @@ mips_bltz: src1:i len:24
 mips_bne: src1:i src2:i len:24
 mips_cvtsd: dest:f src1:f len:8
 mips_fbeq: src1:f src2:f len:16
-mips_fbge: src1:f src2:f len:16
+mips_fbge: src1:f src2:f len:32
 mips_fbge_un: src1:f src2:f len:16
-mips_fbgt: src1:f src2:f len:16
+mips_fbgt: src1:f src2:f len:32
 mips_fbgt_un: src1:f src2:f len:16
-mips_fble: src1:f src2:f len:16
+mips_fble: src1:f src2:f len:32
 mips_fble_un: src1:f src2:f len:16
-mips_fblt: src1:f src2:f len:16
+mips_fblt: src1:f src2:f len:32
 mips_fblt_un: src1:f src2:f len:16
 mips_fbne: src1:f src2:f len:16
 mips_lwc1: dest:f src1:b len:16
