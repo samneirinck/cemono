@@ -142,6 +142,18 @@ namespace CryEngine
 		extern internal static uint _FindEntity(string name);
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static object[] _GetEntitiesByClass(string className);
+
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static int _GetAttachmentCount(IntPtr entPtr);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static IntPtr _GetAttachmentMaterialByIndex(IntPtr entPtr, int index);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static void _SetAttachmentMaterialByIndex(IntPtr entPtr, int index, IntPtr materialPtr);
+
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static IntPtr _GetAttachmentMaterial(IntPtr entPtr, string name);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static int _SetAttachmentMaterial(IntPtr entPtr, string name, IntPtr materialPtr);
 		#endregion
 
 		#region Callbacks
@@ -185,6 +197,40 @@ namespace CryEngine
 				_physics._entity = this;
 			}
 		}
+
+		public override void OnScriptReload()
+		{
+			EntityPointer = _GetEntity(Id);
+		}
+
+		// TODO: Expose the attachment system properly
+#region Attachments
+		public Material GetAttachmentMaterial(int index)
+		{
+			var ptr = _GetAttachmentMaterialByIndex(EntityPointer, index);
+
+			return Material.TryAdd(ptr);
+		}
+
+		public Material GetAttachmentMaterial(string attachmentName)
+		{
+			var ptr = _GetAttachmentMaterial(EntityPointer, attachmentName);
+
+			return Material.TryAdd(ptr);
+		}
+
+		public void SetAttachmentMaterial(int index, Material newMaterial)
+		{
+			_SetAttachmentMaterialByIndex(EntityPointer, index, newMaterial.MaterialPointer);
+		}
+
+		public void SetAttachmentMaterial(string name, Material newMaterial)
+		{
+			_SetAttachmentMaterial(EntityPointer, name, newMaterial.MaterialPointer);
+		}
+
+		public int AttachmentCount { get { return _GetAttachmentCount(EntityPointer); } }
+#endregion
 
 		/// <summary>
 		/// Sets / gets the world space entity position.
@@ -232,11 +278,6 @@ namespace CryEngine
 		public EntityFlags Flags { get { return _GetFlags(EntityPointer); } set { _SetFlags(EntityPointer, value); } }
 
 		public Material Material { get { return Material.Get(this); } set { Material.Set(this, value); } }
-
-		public override void OnScriptReload()
-		{
-			EntityPointer = _GetEntity(Id);
-		}
 
 		internal IntPtr EntityPointer { get; set; }
 		public EntityId Id { get; set; }

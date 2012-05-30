@@ -196,6 +196,13 @@ protected:
 
 	static EEntityFlags GetFlags(IEntity *pEnt);
 	static void SetFlags(IEntity *pEnt, EEntityFlags flags);
+
+	static int GetAttachmentCount(IEntity *pEnt);
+	static IMaterial *GetAttachmentMaterialByIndex(IEntity *pEnt, int index);
+	static void SetAttachmentMaterialByIndex(IEntity *pEnt, int index, IMaterial *pMaterial);
+
+	static IMaterial *GetAttachmentMaterial(IEntity *pEnt, mono::string name);
+	static void SetAttachmentMaterial(IEntity *pEnt, mono::string attachmentName, IMaterial *pMaterial);
 	/// End direct entity calls
 
 	// ~ScriptBinds

@@ -3228,6 +3228,21 @@
             The Sandbox filtering category
             </summary>
         </member>
+        <member name="F:CryEngine.PortType.Sound">
+            <summary>
+            Only applicable on string inputs.
+            </summary>
+        </member>
+        <member name="F:CryEngine.PortType.Color">
+            <summary>
+            Only applicable on Vec3 inputs.
+            </summary>
+        </member>
+        <member name="F:CryEngine.PortType.Material">
+            <summary>
+            Only applicable on string inputs.
+            </summary>
+        </member>
         <member name="F:CryEngine.FlowNodeFlags.TargetEntity">
             <summary>
             This node targets an entity, entity id must be provided.

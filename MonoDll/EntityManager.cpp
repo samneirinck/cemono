@@ -76,6 +76,13 @@ CEntityManager::CEntityManager()
 	REGISTER_METHOD(GetFlags);
 	REGISTER_METHOD(SetFlags);
 
+	REGISTER_METHOD(GetAttachmentCount);
+	REGISTER_METHOD(GetAttachmentMaterialByIndex);
+	REGISTER_METHOD(SetAttachmentMaterialByIndex);
+
+	REGISTER_METHOD(SetAttachmentMaterial);
+	REGISTER_METHOD(GetAttachmentMaterial);
+
 	gEnv->pEntitySystem->AddSink(this, IEntitySystem::OnBeforeSpawn | IEntitySystem::OnSpawn | IEntitySystem::OnRemove, 0);
 }
 
@@ -525,4 +532,66 @@ EEntityFlags CEntityManager::GetFlags(IEntity *pEntity)
 void CEntityManager::SetFlags(IEntity *pEntity, EEntityFlags flags)
 {
 	pEntity->SetFlags(flags);
+}
+
+int CEntityManager::GetAttachmentCount(IEntity *pEnt)
+{
+	if(auto pCharacter = pEnt->GetCharacter(0))
+	{
+		if(auto pAttachmentManager = pCharacter->GetIAttachmentManager())
+			return pAttachmentManager->GetAttachmentCount();
+	}
+
+	return 0;
+}
+
+IAttachmentManager *GetAttachmentManager(IEntity *pEntity)
+{
+	if(auto pCharacter = pEntity->GetCharacter(0))
+		return pCharacter->GetIAttachmentManager();
+
+	return NULL;
+}
+
+IMaterial *CEntityManager::GetAttachmentMaterialByIndex(IEntity *pEnt, int index)
+{
+	if(auto pAttachmentManager = GetAttachmentManager(pEnt))
+	{
+		if(auto pAttachment = pAttachmentManager->GetInterfaceByIndex(index))
+			return pAttachment->GetIAttachmentObject()->GetMaterial();
+	}
+
+	return NULL;
+}
+
+IMaterial *CEntityManager::GetAttachmentMaterial(IEntity *pEnt, mono::string attachmentName)
+{
+	if(auto pAttachmentManager = GetAttachmentManager(pEnt))
+	{
+		if(auto pAttachment = pAttachmentManager->GetInterfaceByName(ToCryString(attachmentName)))
+		{
+			if(auto pAttachmentObject = pAttachment->GetIAttachmentObject())
+				return pAttachmentObject->GetMaterial();
+		}
+	}
+
+	return NULL;
+}
+
+void CEntityManager::SetAttachmentMaterialByIndex(IEntity *pEnt, int index, IMaterial *pMaterial)
+{
+	if(auto pAttachmentManager = GetAttachmentManager(pEnt))
+	{
+		if(auto pAttachment = pAttachmentManager->GetInterfaceByIndex(index))
+			pAttachment->GetIAttachmentObject()->SetMaterial(pMaterial);
+	}
+}
+
+void CEntityManager::SetAttachmentMaterial(IEntity *pEnt, mono::string attachmentName, IMaterial *pMaterial)
+{
+	if(auto pAttachmentManager = GetAttachmentManager(pEnt))
+	{
+		if(auto pAttachment = pAttachmentManager->GetInterfaceByName(ToCryString(attachmentName)))
+			return pAttachment->GetIAttachmentObject()->SetMaterial(pMaterial);;
+	}
 }
