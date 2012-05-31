@@ -6054,5 +6054,60 @@
             <param name="y"></param>
             <returns></returns>
         </member>
+        <member name="M:CryEngine.DelayedFunc`10.#ctor(System.Action{`0,`1,`2,`3,`4,`5,`6,`7,`8,`9},System.Single,`0,`1,`2,`3,`4,`5,`6,`7,`8,`9)">
+            <summary>
+            </summary>
+            <param name="delay">The desired delay, in milliseconds.</param>
+        </member>
+        <member name="M:CryEngine.DelayedFunc`9.#ctor(System.Action{`0,`1,`2,`3,`4,`5,`6,`7,`8},System.Single,`0,`1,`2,`3,`4,`5,`6,`7,`8)">
+            <summary>
+            </summary>
+            <param name="delay">The desired delay, in milliseconds.</param>
+        </member>
+        <member name="M:CryEngine.DelayedFunc`8.#ctor(System.Action{`0,`1,`2,`3,`4,`5,`6,`7},System.Single,`0,`1,`2,`3,`4,`5,`6,`7)">
+            <summary>
+            </summary>
+            <param name="delay">The desired delay, in milliseconds.</param>
+        </member>
+        <member name="M:CryEngine.DelayedFunc`7.#ctor(System.Action{`0,`1,`2,`3,`4,`5,`6},System.Single,`0,`1,`2,`3,`4,`5,`6)">
+            <summary>
+            </summary>
+            <param name="delay">The desired delay, in milliseconds.</param>
+        </member>
+        <member name="M:CryEngine.DelayedFunc`6.#ctor(System.Action{`0,`1,`2,`3,`4,`5},System.Single,`0,`1,`2,`3,`4,`5)">
+            <summary>
+            </summary>
+            <param name="delay">The desired delay, in milliseconds.</param>
+        </member>
+        <member name="M:CryEngine.DelayedFunc`5.#ctor(System.Action{`0,`1,`2,`3,`4},System.Single,`0,`1,`2,`3,`4)">
+            <summary>
+            </summary>
+            <param name="delay">The desired delay, in milliseconds.</param>
+        </member>
+        <member name="M:CryEngine.DelayedFunc`4.#ctor(System.Action{`0,`1,`2,`3},System.Single,`0,`1,`2,`3)">
+            <summary>
+            </summary>
+            <param name="delay">The desired delay, in milliseconds.</param>
+        </member>
+        <member name="M:CryEngine.DelayedFunc`3.#ctor(System.Action{`0,`1,`2},System.Single,`0,`1,`2)">
+            <summary>
+            </summary>
+            <param name="delay">The desired delay, in milliseconds.</param>
+        </member>
+        <member name="M:CryEngine.DelayedFunc`2.#ctor(System.Action{`0,`1},System.Single,`0,`1)">
+            <summary>
+            </summary>
+            <param name="delay">The desired delay, in milliseconds.</param>
+        </member>
+        <member name="M:CryEngine.DelayedFunc`1.#ctor(System.Action{`0},System.Single,`0)">
+            <summary>
+            </summary>
+            <param name="delay">The desired delay, in milliseconds.</param>
+        </member>
+        <member name="M:CryEngine.DelayedFunc.#ctor(System.Action,System.Single)">
+            <summary>
+            </summary>
+            <param name="delay">The desired delay, in milliseconds.</param>
+        </member>
     </members>
 </doc>

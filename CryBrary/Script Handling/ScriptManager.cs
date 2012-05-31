@@ -19,7 +19,25 @@ namespace CryEngine.Initialization
 				foreach(ScriptType scriptType in Enum.GetValues(typeof(ScriptType)))
 					CompiledScripts.Add(scriptType, new List<CryScript>());
 
-				Type[] specialTypes = { typeof(NativeEntity), typeof(NativeActor) };
+				Type[] specialTypes = 
+				{
+					typeof(NativeEntity), 
+					typeof(NativeActor), 
+
+					typeof(DelayedFunc), 
+					typeof(DelayedFunc<>), 
+					typeof(DelayedFunc<,>),
+					typeof(DelayedFunc<,,>),
+					typeof(DelayedFunc<,,>),
+					typeof(DelayedFunc<,,,>),
+					typeof(DelayedFunc<,,,,>),
+					typeof(DelayedFunc<,,,,,>),
+					typeof(DelayedFunc<,,,,,,>),
+					typeof(DelayedFunc<,,,,,,,>),
+					typeof(DelayedFunc<,,,,,,,,>),
+					typeof(DelayedFunc<,,,,,,,,,>),
+				};
+
 				foreach(var type in specialTypes)
 					ProcessType(type);
 
@@ -445,6 +463,18 @@ namespace CryEngine.Initialization
 			return result;
 		}
 		#endregion
+
+		public static void AddScriptInstance(CryScriptInstance instance)
+		{
+			if(instance == null)
+				throw new ArgumentNullException("instance");
+
+			var script = FirstOrDefaultScript(ScriptType.Unknown, x => x.Type == instance.GetType());
+			if(script == default(CryScript))
+				script = ProcessType(instance.GetType());
+
+			AddScriptInstance(instance, script);
+		}
 
 		public static void AddScriptInstance(CryScriptInstance instance, ScriptType scriptType)
 		{
