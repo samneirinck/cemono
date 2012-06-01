@@ -165,12 +165,12 @@ namespace CryEngine
 			Engine._SetTimeOfDayVariableValueColor((int)param, value);
 		}
 
-		public static void SetVariableValue(CloudShading param, float value)
+		public static void SetVariableValue(CloudShadingParams param, float value)
 		{
 			Engine._SetTimeOfDayVariableValue((int)param, value);
 		}
 
-		public static void SetVariableValue(CloudShading param, Vec3 value)
+		public static void SetVariableValue(CloudShadingParams param, Vec3 value)
 		{
 			Engine._SetTimeOfDayVariableValueColor((int)param, value);
 		}
@@ -305,7 +305,7 @@ namespace CryEngine
 			MoonOuterCoronaScale,
 		}
 
-		public enum CloudShading
+		public enum CloudShadingParams
 		{
 			SunlightMultiplier = 54,
 			SkylightMultiplier,
