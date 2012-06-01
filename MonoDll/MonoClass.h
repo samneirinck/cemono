@@ -42,12 +42,13 @@ public:
 	virtual void SetProperty(const char *propertyName, IMonoObject *pNewValue) override;
 	virtual IMonoObject *GetField(const char *fieldName) override;
 	virtual void SetField(const char *fieldName, IMonoObject *pNewValue) override;
+
+	virtual mono::object GetInstance() override { return m_pInstance; }
 	// ~IMonoClass
 
 	void OnReload(MonoClass *pNewClass, mono::object pNewInstance);
 
 	MonoClass *GetMonoClass() { return m_pClass; }
-	mono::object GetInstance() { return m_pInstance; }
 
 private:
 	MonoMethod *GetMethod(const char *methodName, IMonoArray *pArgs, bool bStatic);

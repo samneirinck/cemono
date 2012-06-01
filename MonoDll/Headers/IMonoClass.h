@@ -80,6 +80,8 @@ public:
 	/// </summary>
 	virtual void SetField(const char *fieldName, IMonoObject *pNewValue) = 0;
 
+	virtual mono::object GetInstance() = 0;
+
 	template <typename TResult>
 	static TResult CallMethod(IMonoClass *pClass, const char *funcName, IMonoArray *pArgs = NULL, bool releaseArgs = false)
 	{
