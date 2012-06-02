@@ -28,20 +28,22 @@ public:
 	virtual void Release() override { delete this; }
 
 	virtual void Clear() override { for(int i = 0; i < GetSize(); i++) mono_array_set((MonoArray *)m_pArray, void *, i, NULL);  }
+
+	virtual void Resize(int size);
 	virtual int GetSize() const override { return (int)mono_array_length((MonoArray *)m_pArray); }
 
 	virtual IMonoObject *GetItem(int index) override;
 	virtual const char *GetItemString(int index) override { return ToCryString(mono_array_get((MonoArray *)m_pArray, mono::string , index)); }
 	virtual IMonoArray *GetItemArray(int index) override { return new CScriptArray((mono::array)mono_array_get((MonoArray *)m_pArray, MonoArray *, index)); }
 
-	virtual void InsertObject(IMonoObject *pObject) override;
-	virtual void InsertArray(IMonoArray *pArray) override { InsertMonoArray(pArray ? *pArray : (mono::array)NULL); }
-	virtual void InsertAny(MonoAnyValue value) override;
-	virtual void InsertMonoString(mono::string string);
+	virtual void InsertObject(IMonoObject *pObject, int index = -1) override;
+	virtual void InsertArray(IMonoArray *pArray, int index = -1) override;
+	virtual void InsertAny(MonoAnyValue value, int index = -1) override;
+	virtual void InsertMonoString(mono::string string, int index = -1);
 	// ~IMonoArray
 
-	virtual void InsertMonoArray(mono::array arr);
-	virtual void InsertMonoObject(mono::object object);
+	virtual void InsertMonoArray(mono::array arr, int index = -1);
+	virtual void InsertMonoObject(mono::object object, int index = -1);
 
 	virtual mono::array GetMonoArray() override { return m_pArray; }
 

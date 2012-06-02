@@ -43,6 +43,11 @@ public:
 	/// Note that the pre-determined size set when the array was created remains.
 	/// </summary>
 	virtual void Clear() = 0;
+
+	/// <summary>
+	/// Resizes the array.
+	/// </summary>
+	virtual void Resize(int size) = 0;
 	/// <summary>
 	/// Retrieves the size of the array.
 	/// </summary>
@@ -67,36 +72,36 @@ public:
 	virtual IMonoArray *GetItemArray(int index) = 0;
 
 	template <typename T>
-	void Insert(T value) { InsertAny(MonoAnyValue((T)value)); }
+	void Insert(T value, int index = -1) { InsertAny(MonoAnyValue((T)value)); }
 
 	template <>
-	void Insert(IMonoObject *pObject) { InsertObject(pObject); }
+	void Insert(IMonoObject *pObject, int index) { InsertObject(pObject); }
 
 	template <>
-	void Insert(IMonoArray *pArray) { InsertArray(pArray); }
+	void Insert(IMonoArray *pArray, int index) { InsertArray(pArray); }
 
 	template<>
-	void Insert(mono::string monoString) { InsertMonoString(monoString); }
+	void Insert(mono::string monoString, int index) { InsertMonoString(monoString); }
 
 	/// <summary>
-	/// Inserts an MonoAnyValue object into the array.
+	/// Inserts an MonoAnyValue object into the array at the specified index. (-1 = back)
 	/// </summary>
-	virtual void InsertAny(MonoAnyValue value) = 0;
+	virtual void InsertAny(MonoAnyValue value, int index = -1) = 0;
 	/// <summary>
-	/// Inserts an IMonoObject into the array
+	/// Inserts an IMonoObject into the array at the specified index. (-1 = back)
 	/// </summary>
-	virtual void InsertObject(IMonoObject *pObject) = 0;
+	virtual void InsertObject(IMonoObject *pObject, int index = -1) = 0;
 	/// <summary>
-	/// Inserts an IMonoArray into the array.
+	/// Inserts an IMonoArray into the array at the specified index. (-1 = back)
 	/// C# equivalent type: object[]
 	/// </summary>
-	virtual void InsertArray(IMonoArray *pArray) = 0;
+	virtual void InsertArray(IMonoArray *pArray, int index = -1) = 0;
 
 	/// <summary>
-	/// Inserts an mono string into the array.
+	/// Inserts an mono string into the array at the specified index. (-1 = back)
 	//// C# equivalent type: string
 	/// </summary>
-	virtual void InsertMonoString(mono::string string) = 0;
+	virtual void InsertMonoString(mono::string string, int index = -1) = 0;
 
 	/// <summary>
 	/// Retrieves the mono array, can be passed directly to C#.
