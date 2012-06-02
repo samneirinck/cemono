@@ -461,6 +461,11 @@ namespace CryEngine.Serialization
 
 		Type GetType(string typeName)
 		{
+			if(typeName == null)
+				throw new ArgumentNullException("typeName");
+			if(typeName.Length == 0)
+				throw new ArgumentException("typeName cannot have zero length");
+
 			if(typeName.Contains('+'))
 			{
 				var splitString = typeName.Split('+');
