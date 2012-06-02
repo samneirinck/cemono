@@ -19,28 +19,6 @@ namespace CryEngine.Initialization
 				foreach(ScriptType scriptType in Enum.GetValues(typeof(ScriptType)))
 					CompiledScripts.Add(scriptType, new List<CryScript>());
 
-				Type[] specialTypes = 
-				{
-					typeof(NativeEntity), 
-					typeof(NativeActor), 
-
-					typeof(DelayedFunc), 
-					typeof(DelayedFunc<>), 
-					typeof(DelayedFunc<,>),
-					typeof(DelayedFunc<,,>),
-					typeof(DelayedFunc<,,>),
-					typeof(DelayedFunc<,,,>),
-					typeof(DelayedFunc<,,,,>),
-					typeof(DelayedFunc<,,,,,>),
-					typeof(DelayedFunc<,,,,,,>),
-					typeof(DelayedFunc<,,,,,,,>),
-					typeof(DelayedFunc<,,,,,,,,>),
-					typeof(DelayedFunc<,,,,,,,,,>),
-				};
-
-				foreach(var type in specialTypes)
-					ProcessType(type);
-
 				FlowNodes = new List<string>();
 			}
 
