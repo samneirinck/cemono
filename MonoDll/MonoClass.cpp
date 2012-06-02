@@ -118,6 +118,8 @@ MonoMethod *CScriptClass::GetMethod(const char *methodName, IMonoArray *pArgs, b
 		MonoClass *pClass = m_pClass;
 		MonoMethod *pCurMethod = NULL;
 
+		int suppliedArgsCount = pArgs ? pArgs->GetSize() : 0;
+
 		while (pClass != NULL)
 		{
 			pCurMethod = mono_class_get_methods(pClass, &pIterator);
@@ -127,22 +129,21 @@ MonoMethod *CScriptClass::GetMethod(const char *methodName, IMonoArray *pArgs, b
 				if(pClass == mono_get_object_class())
 					break;
 
+				pIterator = 0;
 				continue;
 			}
 
-			if(strcmp(mono_method_get_name(pCurMethod), methodName))
-				continue;
-
-			//if(bStatic != (mono_method_get_flags(pCurMethod, NULL) & METHOD_ATTRIBUTE_STATIC) > 0)
-				//continue;
-
 			pSignature = mono_method_signature(pCurMethod);
-
 			int signatureParamCount = mono_signature_get_param_count(pSignature);
-			int suppliedArgsCount = pArgs ? pArgs->GetSize() : 0;
 
-			if(suppliedArgsCount > 0)
+			bool bCorrectName = !strcmp(mono_method_get_name(pCurMethod), methodName);
+			if(bCorrectName && signatureParamCount == 0 && suppliedArgsCount == 0)
+				return pCurMethod;
+			else if(bCorrectName && signatureParamCount >= suppliedArgsCount)
 			{
+				//if(bStatic != (mono_method_get_flags(pCurMethod, NULL) & METHOD_ATTRIBUTE_STATIC) > 0)
+					//continue;
+
 				void *pIter = NULL;
 
 				MonoType *pType = NULL;
@@ -168,15 +169,11 @@ MonoMethod *CScriptClass::GetMethod(const char *methodName, IMonoArray *pArgs, b
 						else if(monoType == MONO_TYPE_STRING && anyType != eMonoAnyType_String)
 							break;
 					}
-					else if(suppliedArgsCount - 1 < i)
-						return pCurMethod;
 
-					if(i >= suppliedArgsCount - 1)
+					if(i + 1 == suppliedArgsCount)
 						return pCurMethod;
 				}
 			}
-			else if(signatureParamCount == 0)
-				return pCurMethod; // The args desired to be sent and the method signature's num args were both 0, we can safely return this MonoMethod object.
 		}
 
 		return NULL;
@@ -195,7 +192,7 @@ MonoMethod *CScriptClass::GetMethod(const char *methodName, IMonoArray *pArgs, b
 		{
 			// TODO: Accurate method signature matching; currently several methods with the same name and amount of parameters will break.
 			pMethod = mono_method_desc_search_in_class(pMethodDesc, pClass); 
-			if (!pMethod) 
+			if (!pMethod)
 				pClass = mono_class_get_parent(pClass);
 		}
 
