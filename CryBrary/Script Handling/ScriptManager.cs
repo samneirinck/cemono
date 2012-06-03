@@ -493,6 +493,7 @@ namespace CryEngine.Initialization
 		/// </summary>
 		public static int LastScriptId = 1;
 
+		// TODO: ScriptType -> flags, better way of storing to allow fast searching of multiple ScriptTypes simultaneously. (I.e. when using Entity.Get with an actors entity id.
 		internal static Dictionary<ScriptType, List<CryScript>> CompiledScripts { get; set; }
 		#endregion
 	}
