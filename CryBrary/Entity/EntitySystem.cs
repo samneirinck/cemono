@@ -69,7 +69,7 @@ namespace CryEngine
 		/// <returns>A reference to the entity.</returns>
 		/// <remarks>If the entity does not exist in the managed space, this function will attempt to find
 		/// a C++ entity with the specified ID></remarks>
-		public static T Get<T>(EntityId entityId) where T : Entity
+		public static T Get<T>(EntityId entityId) where T : Entity // TODO: Following ScriptType flag rework, get as type EntityBase to allow casting to Actor.
 		{
 			if(entityId == 0)
 				throw new ArgumentException("entityId cannot be 0!");
