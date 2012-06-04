@@ -115,12 +115,6 @@ CScriptSystem::~CScriptSystem()
 
 	m_methodBindings.clear();
 
-	for each(auto script in m_scripts)
-	{
-		if(script.first)
-			script.first->Release();
-	}
-
 	m_scripts.clear();
 
 	SAFE_DELETE(m_pConverter);
