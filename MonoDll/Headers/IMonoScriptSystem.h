@@ -89,12 +89,6 @@ struct IMonoScriptSystem : ICryUnknown
 	CRYINTERFACE_DECLARE(IMonoScriptSystem, 0x86169744ce38420f, 0x9768a98386be991f)
 
 	/// <summary>
-	/// Registers default Mono bindings and initializes CryBrary.dll. (Scripts are compiled after this is called)
-	/// Called post-CryGame initialization; resides within CGameStartup::Init in the sample project.
-	/// </summary>
-	virtual void PostInit() = 0;
-
-	/// <summary>
 	/// Reloads CryBrary.dll and initializes script complilation.
 	/// Automatically called when a script, plugin or CryBrary itself is modified.
 	/// </summary>

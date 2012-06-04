@@ -185,12 +185,14 @@ bool CScriptSystem::CompleteInit()
 	return true;
 }
 
-void CScriptSystem::PostInit()
+void CScriptSystem::OnSystemEvent(ESystemEvent event,UINT_PTR wparam,UINT_PTR lparam)
 {
-	if(!m_pScriptManager)
-		gEnv->pSystem->Quit();
-	else
-		m_pScriptManager->CallMethod("PostInit");
+	switch(event)
+	{
+	case ESYSTEM_EVENT_GAME_POST_INIT:
+			m_pScriptManager->CallMethod("PostInit");
+		break;
+	}
 }
 
 bool CScriptSystem::Reload(bool initialLoad)
@@ -270,7 +272,10 @@ bool CScriptSystem::DoReload(bool initialLoad)
 		// Nodes won't get recompiled if we forget this.
 		if(!initialLoad)
 		{
-			PostInit();
+			if(m_pScriptManager)
+				m_pScriptManager->CallMethod("PostInit");
+			else
+				gEnv->pSystem->Quit();
 
 			m_AppDomainSerializer->CallMethod("TrySetScriptData");
 

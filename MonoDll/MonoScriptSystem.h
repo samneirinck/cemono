@@ -33,6 +33,7 @@ class CScriptSystem
 	: public IMonoScriptSystem
 	, public IFileChangeListener
 	, public IGameFrameworkListener
+	, public ISystemEventListener
 {
 	// CryExtension
 	CRYINTERFACE_SIMPLE(IMonoScriptSystem);
@@ -46,8 +47,6 @@ class CScriptSystem
 
 public:
 	// IMonoScriptSystem
-	virtual void PostInit() override;
-
 	virtual bool Reload(bool initialLoad = false) override;
 	virtual bool IsReloading() override { return m_bReloading; }
 
@@ -81,6 +80,10 @@ public:
 	virtual void OnLevelEnd(const char* nextLevel) {}  	
 	virtual void OnActionEvent(const SActionEvent& event) {} 	
 	// ~IGameFrameworkListener
+
+	// ISystemEventListener
+	virtual void OnSystemEvent(ESystemEvent event,UINT_PTR wparam,UINT_PTR lparam);
+	// ~ISystemEventListener
 
 	IMonoAssembly *GetDebugDatabaseCreator() { return m_pPdb2MdbAssembly; }
 
