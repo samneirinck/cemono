@@ -187,8 +187,7 @@ namespace CryEngine.Initialization
 
 		public void GenerateDebugDatabaseForAssembly(string assemblyPath)
 		{
-			if(false)
-			//if(File.Exists(Path.ChangeExtension(assemblyPath, "pdb")))
+			if(File.Exists(Path.ChangeExtension(assemblyPath, "pdb")))
 			{
 				var assembly = Assembly.LoadFrom(Path.Combine(PathUtils.EngineFolder, "Mono", "bin", "pdb2mdb.dll"));
 				var driver = assembly.GetType("Driver");

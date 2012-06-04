@@ -170,7 +170,7 @@ bool CScriptSystem::CompleteInit()
 	m_pRootDomain = new CScriptDomain(eRV_4_30319);
 
 #ifndef _RELEASE
-	//m_pPdb2MdbAssembly = new CScriptAssembly(PathUtils::GetMonoPath() + "bin\\pdb2mdb.dll");
+	m_pPdb2MdbAssembly = new CScriptAssembly(PathUtils::GetMonoPath() + "bin\\pdb2mdb.dll");
 #endif
 	
 	// WIP ScriptManager game object, to be used for CryMono RMI support etc in the future.
