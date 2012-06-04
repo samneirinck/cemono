@@ -410,7 +410,7 @@ namespace CryEngine
 				return NodePortType.Vec3;
 			else if(type == typeof(bool))
 				return NodePortType.Bool;
-			else if(type == typeof(uint))
+			else if(type == typeof(EntityId))
 				return NodePortType.EntityId;
 			else
 				throw new ArgumentException("Invalid flownode port type specified!");
