@@ -288,7 +288,7 @@ namespace CryEngine.Serialization
 				default: throw new SerializationException(string.Format("Invalid object type {0} was serialized", type));
 			}
 
-			if(objReference.Value == null && type != "null")
+			if(!objReference.AllowNull && objReference.Value == null && type != "null")
 				throw new SerializationException(string.Format("Failed to deserialize {0} {1} at line {2}!", type, objReference.Name, line));
 
 			return objReference;
@@ -316,7 +316,12 @@ namespace CryEngine.Serialization
 			objReference.Name = ReadLine();
 			var type = ReadType();
 
-			objReference.Value = Activator.CreateInstance(type);
+			try
+			{
+				objReference.Value = Activator.CreateInstance(type);
+			}
+			catch(MissingMethodException ex) { objReference.AllowNull = true; } // types lacking default constructors can't be serialized.
+
 			while(type != null)
 			{
 				var numFields = int.Parse(ReadLine());
@@ -328,9 +333,12 @@ namespace CryEngine.Serialization
 					var fieldInfo = type.GetField(fieldReference.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
 					if(fieldInfo != null)
-						fieldInfo.SetValue(objReference.Value, fieldReference.Value);
+					{
+						if(objReference.Value != null)
+							fieldInfo.SetValue(objReference.Value, fieldReference.Value);
+					}
 					else
-						throw new MissingFieldException(string.Format("Failed to find field {0} in type {1}", fieldReference.Name, type != null ? type.Name : "[Unknown]"));
+						throw new MissingFieldException(string.Format("Failed to find field {0} in type {1}", fieldReference.Name, type.Name));
 				}
 
 				type = type.BaseType;

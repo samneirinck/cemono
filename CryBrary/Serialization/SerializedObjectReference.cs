@@ -14,7 +14,8 @@ namespace CryEngine.Serialization
 		}
 
 		public string Name { get; set; }
-
 		public object Value { get; set; }
+
+		public bool AllowNull { get; set; }
 	}
 }
