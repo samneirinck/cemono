@@ -216,33 +216,39 @@ bool CEntityManager::RegisterEntityClass(EntityRegisterParams params, mono::arra
 		return false;
 	}
 
-	CScriptArray *propertiesArray = new CScriptArray(Properties);
-
-	int numProperties = propertiesArray->GetSize();
 	std::vector<IEntityPropertyHandler::SPropertyInfo> properties;
-	
-	for	(int i = 0; i < propertiesArray->GetSize(); ++i)
+	if(Properties != NULL)
 	{
-		SMonoEntityProperty monoProperty = propertiesArray->GetItem(i)->Unbox<SMonoEntityProperty>();
+		IMonoArray *propertiesArray = *Properties;
 
-		IEntityPropertyHandler::SPropertyInfo propertyInfo;
+		int numProperties = propertiesArray->GetSize();
+	
+		for	(int i = 0; i < numProperties; ++i)
+		{
+			SMonoEntityProperty monoProperty = propertiesArray->GetItem(i)->Unbox<SMonoEntityProperty>();
 
-		propertyInfo.name = ToCryString(monoProperty.name);
-		propertyInfo.description = ToCryString(monoProperty.description);
-		propertyInfo.editType = ToCryString(monoProperty.editType);
-		propertyInfo.type = monoProperty.type;
-		propertyInfo.limits.min = monoProperty.limits.min;
-		propertyInfo.limits.max = monoProperty.limits.max;
+			IEntityPropertyHandler::SPropertyInfo propertyInfo;
 
-		properties.push_back(propertyInfo);
+			propertyInfo.name = ToCryString(monoProperty.name);
+			propertyInfo.description = ToCryString(monoProperty.description);
+			propertyInfo.editType = ToCryString(monoProperty.editType);
+			propertyInfo.type = monoProperty.type;
+			propertyInfo.limits.min = monoProperty.limits.min;
+			propertyInfo.limits.max = monoProperty.limits.max;
+
+			properties.push_back(propertyInfo);
+		}
 	}
 
 	IEntityClassRegistry::SEntityClassDesc entityClassDesc;	
 	entityClassDesc.flags = params.Flags;
 	entityClassDesc.sName = className;
 	entityClassDesc.editorClassInfo.sCategory = ToCryString(params.Category);
-	entityClassDesc.editorClassInfo.sHelper = ToCryString(params.EditorHelper);
-	entityClassDesc.editorClassInfo.sIcon = ToCryString(params.EditorIcon);
+
+	if(params.EditorHelper != NULL)
+		entityClassDesc.editorClassInfo.sHelper = ToCryString(params.EditorHelper);
+	if(params.EditorIcon != NULL)
+		entityClassDesc.editorClassInfo.sIcon = ToCryString(params.EditorIcon);
 	
 	CEntityClass *entityClass = new CEntityClass(entityClassDesc, properties);
 

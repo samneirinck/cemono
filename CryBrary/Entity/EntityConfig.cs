@@ -11,11 +11,7 @@ namespace CryEngine
 	{
 		public EntityAttribute()
 		{
-			Name = null;
-			EditorHelper = "";
-			Category = "";
-			Icon = "";
-
+			Category = "Default";
 			Flags = EntityClassFlags.Default;
 		}
 
