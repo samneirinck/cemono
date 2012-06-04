@@ -94,6 +94,16 @@ private:
 
 struct SMonoInputPortConfig
 {
+	mono::string name;
+	mono::string humanName;
+	mono::string description;
+
+	EFlowDataTypes type;
+
+	mono::string uiConfig;
+
+	mono::object defaultValue;
+
 	SInputPortConfig Convert()
 	{
 		const char *sName = ToCryString(name);
@@ -125,19 +135,16 @@ struct SMonoInputPortConfig
 
 		return *(SInputPortConfig *)0;
 	}
+};
+
+struct SMonoOutputPortConfig
+{
 	mono::string name;
 	mono::string humanName;
 	mono::string description;
 
 	EFlowDataTypes type;
 
-	mono::string uiConfig;
-
-	mono::object defaultValue;
-};
-
-struct SMonoOutputPortConfig
-{
 	SOutputPortConfig Convert()
 	{
 		const char *sName = ToCryString(name);
@@ -147,49 +154,23 @@ struct SMonoOutputPortConfig
 		switch(type)
 		{
 		case eFDT_Void:
-			{
-				return OutputPortConfig_Void(sName, _HELP(sDesc), sHumanName);
-			}
+			return OutputPortConfig_Void(sName, _HELP(sDesc), sHumanName);
 		case eFDT_Int:
-			{
-				return OutputPortConfig<int>(sName, _HELP(sDesc), sHumanName);
-			}
-			break;
+			return OutputPortConfig<int>(sName, _HELP(sDesc), sHumanName);
 		case eFDT_Float:
-			{
-				return OutputPortConfig<float>(sName, _HELP(sDesc), sHumanName);
-			}
-			break;
+			return OutputPortConfig<float>(sName, _HELP(sDesc), sHumanName);
 		case eFDT_EntityId:
-			{
-				return OutputPortConfig<EntityId>(sName, _HELP(sDesc), sHumanName);
-			}
-			break;
+			return OutputPortConfig<EntityId>(sName, _HELP(sDesc), sHumanName);
 		case eFDT_Vec3:
-			{
-				return OutputPortConfig<Vec3>(sName, _HELP(sDesc), sHumanName);
-			}
-			break;
+			return OutputPortConfig<Vec3>(sName, _HELP(sDesc), sHumanName);
 		case eFDT_String:
-			{
-				return OutputPortConfig<string>(sName, _HELP(sDesc), sHumanName);
-			}
-			break;
+			return OutputPortConfig<string>(sName, _HELP(sDesc), sHumanName);
 		case eFDT_Bool:
-			{
-				return OutputPortConfig<bool>(sName, _HELP(sDesc), sHumanName);
-			}
-			break;
+			return OutputPortConfig<bool>(sName, _HELP(sDesc), sHumanName);
 		}
 
 		return *(SOutputPortConfig *)0;
 	}
-
-	mono::string name;
-	mono::string humanName;
-	mono::string description;
-
-	EFlowDataTypes type;
 };
 
 

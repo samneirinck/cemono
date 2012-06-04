@@ -15,11 +15,6 @@ namespace CryEngine
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static void _RegisterNode(string typeName);
 
-		internal static void Register(string typeName)
-		{
-			_RegisterNode(typeName);
-		}
-
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static IntPtr _GetNode(UInt32 graphId, UInt16 nodeId);
 
@@ -61,6 +56,7 @@ namespace CryEngine
 		extern internal static IntPtr _GetTargetEntity(IntPtr nodePtr, out uint entId);
 		#endregion
 
+
 		internal static void Load(ref CryScript script, bool entityNode = false)
 		{
 			bool containsNodePorts = false;
@@ -99,6 +95,11 @@ namespace CryEngine
 				category = "entity";
 
 			ScriptManager.FlowNodes.Add(category + ":" + nodeName);
+		}
+
+		internal static void Register(string typeName)
+		{
+			_RegisterNode(typeName);
 		}
 
 		internal void InternalInitialize(NodeInfo nodeInfo)
@@ -360,11 +361,17 @@ namespace CryEngine
 
 		void ProcessOutputPort(PortAttribute portAttribute, FieldInfo field, ref List<object> outputs)
 		{
+			if(portAttribute.Name == null)
+				portAttribute.Name = field.Name;
+
 			field.SetValue(this, ProcessOutputPortCommon(portAttribute, field.FieldType, ref outputs));
 		}
 
 		void ProcessOutputPort(PortAttribute portAttribute, PropertyInfo property, ref List<object> outputs)
 		{
+			if(portAttribute.Name == null)
+				portAttribute.Name = property.Name;
+
 			property.SetValue(this, ProcessOutputPortCommon(portAttribute, property.PropertyType, ref outputs), null);
 		}
 
