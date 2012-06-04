@@ -22,13 +22,13 @@ namespace CryEngine
 		/// <returns></returns>
 		public static T Spawn<T>(string name, Vec3 pos, Vec3? rot = null, Vec3? scale = null, bool autoInit = true, EntityFlags flags = EntityFlags.CastShadow) where T : Entity, new()
 		{
-			var entInfo = _SpawnEntity(new EntitySpawnParams { Name = name, Class = typeof(T).Name, Pos = pos, Rot = rot ?? Vec3.Zero, Scale = scale ?? new Vec3(1, 1, 1), Flags = flags }, autoInit);
-			if(entInfo.Id != 0)
+			EntityInfo info = new EntityInfo();
+			if(_SpawnEntity(new EntitySpawnParams { Name = name, Class = typeof(T).Name, Pos = pos, Rot = rot ?? Vec3.Zero, Scale = scale ?? new Vec3(1, 1, 1), Flags = flags }, autoInit, out info))
 			{
 				var ent = new T();
 
 				ScriptManager.AddScriptInstance(ent, ScriptType.Entity);
-				ent.InternalSpawn(entInfo);
+				ent.InternalSpawn(info);
 
 				return ent as T;
 			}

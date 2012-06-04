@@ -73,12 +73,13 @@ struct SMonoEntityProperty
 
 struct SMonoEntityInfo
 {
-	SMonoEntityInfo() : pEntity(NULL), id(0) { }
-
 	SMonoEntityInfo(IEntity *pEnt)
 		: pEntity(pEnt)
 	{
-		id = pEnt->GetId();
+		if(pEnt != NULL)
+			id = pEnt->GetId();
+		else
+			id = 0;
 	}
 
 	SMonoEntityInfo(IEntity *pEnt, EntityId entId)
@@ -123,7 +124,7 @@ protected:
 	// ~IMonoScriptBind
 
 	// ScriptBinds
-	static SMonoEntityInfo SpawnEntity(EntitySpawnParams, bool);
+	static bool SpawnEntity(EntitySpawnParams, bool, SMonoEntityInfo &entityInfo);
 	static void RemoveEntity(EntityId);
 
 	static IEntity *GetEntity(EntityId id);

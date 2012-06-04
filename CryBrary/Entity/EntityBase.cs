@@ -41,7 +41,7 @@ namespace CryEngine
 		/// <param name="autoInit">Should the entity automatically be initialized?</param>
 		/// <returns></returns>
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static EntityInfo _SpawnEntity(EntitySpawnParams spawnParams, bool autoInit = true);
+		extern internal static bool _SpawnEntity(EntitySpawnParams spawnParams, bool autoInit, out EntityInfo entityInfo);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static void _RemoveEntity(uint entityId);
 

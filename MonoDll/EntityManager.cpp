@@ -199,7 +199,7 @@ IMonoClass *CEntityManager::GetScript(EntityId entityId, bool returnBackIfInvali
 	return NULL;
 }
 
-SMonoEntityInfo CEntityManager::SpawnEntity(EntitySpawnParams monoParams, bool bAutoInit)
+bool CEntityManager::SpawnEntity(EntitySpawnParams monoParams, bool bAutoInit, SMonoEntityInfo &entityInfo)
 {
 	IEntityClass *pClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass(ToCryString(monoParams.sClass));
 	if(pClass != NULL)
@@ -214,10 +214,15 @@ SMonoEntityInfo CEntityManager::SpawnEntity(EntitySpawnParams monoParams, bool b
 		spawnParams.vScale = monoParams.scale;
 
 		if(IEntity *pEntity = gEnv->pEntitySystem->SpawnEntity(spawnParams, bAutoInit))
-			return SMonoEntityInfo(pEntity, pEntity->GetId());
+		{
+			entityInfo.pEntity = pEntity;
+			entityInfo.id = pEntity->GetId();
+
+			return true;
+		}
 	}
 
-	return SMonoEntityInfo();
+	return false;
 }
 
 bool CEntityManager::RegisterEntityClass(EntityRegisterParams params, mono::array Properties)
