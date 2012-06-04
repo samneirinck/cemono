@@ -140,9 +140,12 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="className">The entity class to search for.</param>
 		/// <returns>An array of entities.</returns>
-		public static IEnumerable<Entity> GetEntities(string className)
+		public static IEnumerable<Entity> GetByClass(string className)
 		{
-			return GetEntitiesCommon<Entity>(className);
+			if(String.IsNullOrEmpty(className))
+				throw new ArgumentException("className should not be null or empty", "className");
+
+			return GetEntitiesCommon<Entity>(_GetEntitiesByClass(className));
 		}
 
 		/// <summary>
@@ -150,21 +153,27 @@ namespace CryEngine
 		/// </summary>
 		/// <typeparam name="T">The entity class to search for.</typeparam>
 		/// <returns>An array of entities of type T.</returns>
-		public static IEnumerable<T> GetEntities<T>() where T : Entity
+		public static IEnumerable<T> GetByClass<T>() where T : Entity
 		{
-			return GetEntitiesCommon<T>(typeof(T).Name);
+			return GetEntitiesCommon<T>(_GetEntitiesByClass(typeof(T).Name));
 		}
 
-		internal static IEnumerable<T> GetEntitiesCommon<T>(string className) where T : Entity
+		public static IEnumerable<Entity> GetInBox(BoundingBox bbox, EntityQueryFlags flags = EntityQueryFlags.All)
 		{
-			if(String.IsNullOrEmpty(className))
-				throw new ArgumentException("className should not be null or empty", "className");
+			return GetEntitiesCommon<Entity>(_GetEntitiesInBox(bbox, flags));
+		}
 
-			var entitiesByClass = _GetEntitiesByClass(className);
-			if(entitiesByClass == null || entitiesByClass.Length <= 0)
+		public static IEnumerable<T> GetInBox<T>(BoundingBox bbox, EntityQueryFlags flags = EntityQueryFlags.All) where T : Entity
+		{
+			return GetEntitiesCommon<T>(_GetEntitiesInBox(bbox, flags));
+		}
+
+		internal static IEnumerable<T> GetEntitiesCommon<T>(object[] ents) where T : Entity
+		{
+			if(ents == null || ents.Length <= 0)
 				yield break;
 
-			foreach(EntityId id in entitiesByClass)
+			foreach(EntityId id in ents)
 			{
 				var ent = Get<T>(id);
 				if(ent != null)

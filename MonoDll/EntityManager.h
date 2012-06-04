@@ -148,6 +148,7 @@ protected:
 
 	static EntityId FindEntity(mono::string);
 	static mono::array GetEntitiesByClass(mono::string);
+	static mono::array GetEntitiesInBox(AABB bbox, int objTypes);
 
 	static mono::string GetPropertyValue(IEntity *pEnt, mono::string);
 

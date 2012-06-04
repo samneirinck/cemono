@@ -28,9 +28,9 @@ CEntityManager::CEntityManager()
 	REGISTER_METHOD(RegisterEntityClass);
 
 	REGISTER_METHOD(GetEntity);
-
 	REGISTER_METHOD(FindEntity);
 	REGISTER_METHOD(GetEntitiesByClass);
+	REGISTER_METHOD(GetEntitiesInBox);
 
 	REGISTER_METHOD(GetPropertyValue);
 
@@ -293,6 +293,19 @@ mono::array CEntityManager::GetEntitiesByClass(mono::string _class)
 		pArray->Insert(*it);
 
 	return *pArray;
+}
+
+mono::array CEntityManager::GetEntitiesInBox(AABB bbox, int objTypes)
+{
+	IPhysicalEntity **pEnts = NULL;
+
+	int numEnts = gEnv->pPhysicalWorld->GetEntitiesInBox(bbox.min, bbox.max, pEnts, objTypes);
+	IMonoArray *pEntities = CreateMonoArray(numEnts);
+
+	for(int i = 0; i < numEnts; i++)
+		pEntities->Insert(gEnv->pPhysicalWorld->GetPhysicalEntityId(pEnts[i]));
+
+	return pEntities->GetMonoArray();
 }
 
 mono::string CEntityManager::GetPropertyValue(IEntity *pEnt, mono::string propertyName)

@@ -47,6 +47,12 @@ namespace CryEngine
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static IntPtr _GetEntity(uint entityId);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static uint _FindEntity(string name);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static object[] _GetEntitiesByClass(string className);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static object[] _GetEntitiesInBox(BoundingBox bbox, EntityQueryFlags flags);
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static bool _RegisterEntityClass(EntityRegisterParams registerParams, object[] properties);
@@ -137,11 +143,6 @@ namespace CryEngine
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static void _CreateGameObjectForEntity(IntPtr ptr);
-
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static uint _FindEntity(string name);
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static object[] _GetEntitiesByClass(string className);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static int _GetAttachmentCount(IntPtr entPtr);
