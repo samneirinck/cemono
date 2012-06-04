@@ -40,9 +40,12 @@ namespace CryEngine
 		/// <param name="eventDelegate"></param>
 		public static void RegisterAction(string actionName, ActionMapEventDelegate eventDelegate)
 		{
-			_RegisterAction(actionName);
+			if(!actionmapDelegates.ContainsKey(actionName))
+			{
+				_RegisterAction(actionName);
 
-			actionmapDelegates.Add(actionName, eventDelegate);
+				actionmapDelegates.Add(actionName, eventDelegate);
+			}
 		}
 
 		static Dictionary<string, ActionMapEventDelegate> actionmapDelegates = new Dictionary<string, ActionMapEventDelegate>();
