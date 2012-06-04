@@ -17,7 +17,7 @@ namespace Microsoft.Cci.Pdb {
       bits.ReadInt32(out cbLines);
       bits.ReadInt16(out files);
       bits.ReadInt16(out pad1);
-      bits.Readuint(out offsets);
+      bits.ReadUInt32(out offsets);
       bits.ReadInt32(out niSource);
       bits.ReadInt32(out niCompiler);
       if (readStrings) {

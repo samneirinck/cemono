@@ -10,7 +10,7 @@ namespace Microsoft.Cci.Pdb {
     internal BitSet(BitAccess bits) {
       bits.ReadInt32(out size);    // 0..3 : Number of words
       words = new uint[size];
-      bits.Readuint(words);
+      bits.ReadUInt32(words);
     }
 
     internal BitSet(int size) {

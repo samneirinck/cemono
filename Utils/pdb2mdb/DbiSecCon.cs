@@ -12,11 +12,11 @@ namespace Microsoft.Cci.Pdb {
       bits.ReadInt16(out pad1);
       bits.ReadInt32(out offset);
       bits.ReadInt32(out size);
-      bits.Readuint(out flags);
+      bits.ReadUInt32(out flags);
       bits.ReadInt16(out module);
       bits.ReadInt16(out pad2);
-      bits.Readuint(out dataCrc);
-      bits.Readuint(out relocCrc);
+      bits.ReadUInt32(out dataCrc);
+      bits.ReadUInt32(out relocCrc);
       //if (pad1 != 0 || pad2 != 0) {
       //  throw new PdbException("Invalid DBI section. "+
       //                                 "(pad1={0}, pad2={1})",

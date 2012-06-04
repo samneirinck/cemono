@@ -87,7 +87,7 @@ namespace Microsoft.Cci.Pdb {
 
       uint sig;
       int ver;
-      bits.Readuint(out sig);   //  0..3  Signature
+      bits.ReadUInt32(out sig);   //  0..3  Signature
       bits.ReadInt32(out ver);    //  4..7  Version
 
       // Read (or skip) string buffer.
@@ -167,7 +167,7 @@ namespace Microsoft.Cci.Pdb {
               CV_FileCheckSum chk;
 
               int ni = bits.Position - place;
-              bits.Readuint(out chk.name);
+              bits.ReadUInt32(out chk.name);
               bits.ReadUInt8(out chk.len);
               bits.ReadUInt8(out chk.type);
 
@@ -209,10 +209,10 @@ namespace Microsoft.Cci.Pdb {
           case DEBUG_S_SUBSECTION.LINES: {
               CV_LineSection sec;
 
-              bits.Readuint(out sec.off);
+              bits.ReadUInt32(out sec.off);
               bits.ReadUInt16(out sec.sec);
               bits.ReadUInt16(out sec.flags);
-              bits.Readuint(out sec.cod);
+              bits.ReadUInt32(out sec.cod);
               PdbFunction func = FindFunction(funcs, sec.sec, sec.off);
               if (func == null) break;
 
@@ -221,9 +221,9 @@ namespace Microsoft.Cci.Pdb {
               int blocks = 0;
               while (bits.Position < endSym) {
                 CV_SourceFile file;
-                bits.Readuint(out file.index);
-                bits.Readuint(out file.count);
-                bits.Readuint(out file.linsiz);   // Size of payload.
+                bits.ReadUInt32(out file.index);
+                bits.ReadUInt32(out file.count);
+                bits.ReadUInt32(out file.linsiz);   // Size of payload.
                 int linsiz = (int)file.count * (8 + ((sec.flags & 1) != 0 ? 4 : 0));
                 bits.Position += linsiz;
                 blocks++;
@@ -235,9 +235,9 @@ namespace Microsoft.Cci.Pdb {
               bits.Position = begSym;
               while (bits.Position < endSym) {
                 CV_SourceFile file;
-                bits.Readuint(out file.index);
-                bits.Readuint(out file.count);
-                bits.Readuint(out file.linsiz);   // Size of payload.
+                bits.ReadUInt32(out file.index);
+                bits.ReadUInt32(out file.count);
+                bits.ReadUInt32(out file.linsiz);   // Size of payload.
 
                 PdbSource src = (PdbSource)checks[(int)file.index];
                 PdbLines tmp = new PdbLines(src, file.count);
@@ -252,8 +252,8 @@ namespace Microsoft.Cci.Pdb {
                   CV_Column column = new CV_Column();
 
                   bits.Position = plin + 8 * i;
-                  bits.Readuint(out line.offset);
-                  bits.Readuint(out line.flags);
+                  bits.ReadUInt32(out line.offset);
+                  bits.ReadUInt32(out line.flags);
 
                   uint lineBegin = line.flags & (uint)CV_Line_Flags.linenumStart;
                   uint delta = (line.flags & (uint)CV_Line_Flags.deltaLineEnd) >> 24;
@@ -407,7 +407,7 @@ namespace Microsoft.Cci.Pdb {
       if (header.snTokenRidMap != 0 && header.snTokenRidMap != 0xffff) {
         dir.streams[header.snTokenRidMap].Read(reader, bits);
         uint[] ridMap = new uint[dir.streams[header.snTokenRidMap].Length / 4];
-        bits.Readuint(ridMap);
+        bits.ReadUInt32(ridMap);
 
         foreach (PdbFunction func in funcs) {
           func.token = 0x06000000 | ridMap[func.token & 0xffffff];

@@ -50,10 +50,10 @@ namespace Microsoft.Cci.Pdb {
           case SYM.S_BLOCK32: {
               BlockSym32 sub = new BlockSym32();
 
-              bits.Readuint(out sub.parent);
-              bits.Readuint(out sub.end);
-              bits.Readuint(out sub.len);
-              bits.Readuint(out sub.off);
+              bits.ReadUInt32(out sub.parent);
+              bits.ReadUInt32(out sub.end);
+              bits.ReadUInt32(out sub.len);
+              bits.ReadUInt32(out sub.off);
               bits.ReadUInt16(out sub.seg);
               bits.SkipCString(out sub.name);
 

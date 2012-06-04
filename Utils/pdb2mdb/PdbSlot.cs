@@ -16,9 +16,9 @@ namespace Microsoft.Cci.Pdb {
     internal PdbSlot(BitAccess bits, out uint typind) {
       AttrSlotSym slot;
 
-      bits.Readuint(out slot.index);
-      bits.Readuint(out slot.typind);
-      bits.Readuint(out slot.offCod);
+      bits.ReadUInt32(out slot.index);
+      bits.ReadUInt32(out slot.typind);
+      bits.ReadUInt32(out slot.offCod);
       bits.ReadUInt16(out slot.segCod);
       bits.ReadUInt16(out slot.flags);
       bits.ReadCString(out slot.name);

@@ -62,8 +62,8 @@ namespace Microsoft.Cci.Pdb {
           case SYM.S_GMANPROC:
           case SYM.S_LMANPROC:
             ManProcSym proc;
-            bits.Readuint(out proc.parent);
-            bits.Readuint(out proc.end);
+            bits.ReadUInt32(out proc.parent);
+            bits.ReadUInt32(out proc.end);
             bits.Position = (int)proc.end;
             count++;
             break;
@@ -103,14 +103,14 @@ namespace Microsoft.Cci.Pdb {
             ManProcSym proc;
             int offset = bits.Position;
 
-            bits.Readuint(out proc.parent);
-            bits.Readuint(out proc.end);
-            bits.Readuint(out proc.next);
-            bits.Readuint(out proc.len);
-            bits.Readuint(out proc.dbgStart);
-            bits.Readuint(out proc.dbgEnd);
-            bits.Readuint(out proc.token);
-            bits.Readuint(out proc.off);
+            bits.ReadUInt32(out proc.parent);
+            bits.ReadUInt32(out proc.end);
+            bits.ReadUInt32(out proc.next);
+            bits.ReadUInt32(out proc.len);
+            bits.ReadUInt32(out proc.dbgStart);
+            bits.ReadUInt32(out proc.dbgEnd);
+            bits.ReadUInt32(out proc.token);
+            bits.ReadUInt32(out proc.off);
             bits.ReadUInt16(out proc.seg);
             bits.ReadUInt8(out proc.flags);
             bits.ReadUInt16(out proc.retReg);
@@ -156,8 +156,8 @@ namespace Microsoft.Cci.Pdb {
 
         switch ((SYM)rec) {
           case SYM.S_BLOCK32: {
-              bits.Readuint(out block.parent);
-              bits.Readuint(out block.end);
+              bits.ReadUInt32(out block.parent);
+              bits.ReadUInt32(out block.end);
 
               scopes++;
               bits.Position = (int)block.end;
@@ -235,7 +235,7 @@ namespace Microsoft.Cci.Pdb {
               OemSymbol oem;
 
               bits.ReadGuid(out oem.idOem);
-              bits.Readuint(out oem.typind);
+              bits.ReadUInt32(out oem.typind);
               // internal byte[]   rgl;        // user data, force 4-byte alignment
 
               if (oem.idOem == msilMetaData) {
@@ -263,10 +263,10 @@ namespace Microsoft.Cci.Pdb {
           case SYM.S_BLOCK32: {
               BlockSym32 block = new BlockSym32();
 
-              bits.Readuint(out block.parent);
-              bits.Readuint(out block.end);
-              bits.Readuint(out block.len);
-              bits.Readuint(out this.address);
+              bits.ReadUInt32(out block.parent);
+              bits.ReadUInt32(out block.end);
+              bits.ReadUInt32(out block.len);
+              bits.ReadUInt32(out this.address);
               bits.ReadUInt16(out block.seg);
               bits.SkipCString(out block.name);
               bits.Position = stop;
@@ -317,7 +317,7 @@ namespace Microsoft.Cci.Pdb {
       bits.ReadUInt8(out kind);
       bits.Align(4);
       uint numberOfBytesInItem;
-      bits.Readuint(out numberOfBytesInItem);
+      bits.ReadUInt32(out numberOfBytesInItem);
       switch (kind) {
         case 0: this.ReadUsingInfo(bits); break;
         case 1: this.ReadForwardInfo(bits); break;
@@ -335,13 +335,13 @@ namespace Microsoft.Cci.Pdb {
 
     private void ReadIteratorLocals(BitAccess bits) {
       uint numberOfLocals;
-      bits.Readuint(out numberOfLocals);
+      bits.ReadUInt32(out numberOfLocals);
       this.iteratorScopes = new List<ILocalScope>((int)numberOfLocals);
       while (numberOfLocals-- > 0) {
         uint ilStartOffset;
         uint ilEndOffset;
-        bits.Readuint(out ilStartOffset);
-        bits.Readuint(out ilEndOffset);
+        bits.ReadUInt32(out ilStartOffset);
+        bits.ReadUInt32(out ilEndOffset);
         this.iteratorScopes.Add(new PdbIteratorScope(ilStartOffset, ilEndOffset-ilStartOffset));
       }
     }

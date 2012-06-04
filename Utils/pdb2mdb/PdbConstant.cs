@@ -13,7 +13,7 @@ namespace Microsoft.Cci.Pdb {
     internal object value;
 
     internal PdbConstant(BitAccess bits) {
-      bits.Readuint(out this.token);
+      bits.ReadUInt32(out this.token);
       byte tag1;
       bits.ReadUInt8(out tag1);
       byte tag2;
@@ -39,7 +39,7 @@ namespace Microsoft.Cci.Pdb {
             break;
           case 0x04: //uint
             uint ui;
-            bits.Readuint(out ui);
+            bits.ReadUInt32(out ui);
             this.value = ui;
             break;
           case 0x05: //float

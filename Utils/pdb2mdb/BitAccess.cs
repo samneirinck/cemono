@@ -106,7 +106,7 @@ namespace Microsoft.Cci.Pdb {
       offset += 1;
     }
 
-    internal void Readuint(out uint value) {
+    internal void ReadUInt32(out uint value) {
       value = (uint)((buffer[offset + 0] & 0xFF) |
                            (buffer[offset + 1] << 8) |
                            (buffer[offset + 2] << 16) |
@@ -132,9 +132,9 @@ namespace Microsoft.Cci.Pdb {
       }
     }
 
-    internal void Readuint(uint[] values) {
+    internal void ReadUInt32(uint[] values) {
       for (int i = 0; i < values.Length; i++) {
-        Readuint(out values[i]);
+        ReadUInt32(out values[i]);
       }
     }
 
@@ -200,7 +200,7 @@ namespace Microsoft.Cci.Pdb {
       byte j;
       byte k;
 
-      Readuint(out a);
+      ReadUInt32(out a);
       ReadUInt16(out b);
       ReadUInt16(out c);
       ReadUInt8(out d);
