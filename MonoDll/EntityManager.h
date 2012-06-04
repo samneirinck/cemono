@@ -46,22 +46,6 @@ struct EntitySpawnParams
 	Vec3 scale;
 
 	EEntityFlags flags;
-
-	SEntitySpawnParams Convert()
-	{
-		SEntitySpawnParams params;
-
-		params.sName = ToCryString(sName);
-		params.pClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass(ToCryString(sClass));
-
-		params.vPosition = pos;
-		params.qRotation = Quat((Ang3)rot);
-		params.vScale = scale;
-
-		params.nFlags = flags;
-
-		return params;
-	}
 };
 
 struct EntityRegisterParams

@@ -26,17 +26,14 @@ namespace CryEngine
 			if(entInfo.Id != 0)
 			{
 				var ent = new T();
-				if(ent == null)
-				{
-					Debug.LogAlways("[Entity.Spawn] Failed to add script instance");
-					return null;
-				}
 
 				ScriptManager.AddScriptInstance(ent, ScriptType.Entity);
 				ent.InternalSpawn(entInfo);
 
 				return ent as T;
 			}
+			else
+				Debug.LogAlways("[Entity.Spawn] Failed to spawn entity of class {0} with name {1}", typeof(T).Name, name);
 
 			return null;
 		}
@@ -205,6 +202,16 @@ namespace CryEngine
 
 		ClientOnly = (1 << 8),
 		ServerOnly = (1 << 9),
+
+		/// <summary>
+		/// Entity will trigger areas when it enters them.
+		/// </summary>
+		TriggerAreas = (1 << 14),
+
+		/// <summary>
+		/// Entity was spawned dynamically without a class.
+		/// </summary>
+		Spawned = (1 << 24),
 	}
 
 	public struct EntitySpawnParams
