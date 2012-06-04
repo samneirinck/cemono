@@ -108,102 +108,73 @@ IMonoObject *CScriptClass::CallMethod(const char *methodName, IMonoArray *pParam
 
 MonoMethod *CScriptClass::GetMethod(const char *methodName, IMonoArray *pArgs, bool bStatic)
 {
-	if(g_pMonoCVars->mono_useExperimentalMethodFinding)
+	MonoMethodSignature *pSignature = NULL;
+
+	void *pIterator = 0;
+
+	MonoType *pClassType = mono_class_get_type(m_pClass);
+	MonoClass *pClass = m_pClass;
+	MonoMethod *pCurMethod = NULL;
+
+	int suppliedArgsCount = pArgs ? pArgs->GetSize() : 0;
+
+	while (pClass != NULL)
 	{
-		MonoMethodSignature *pSignature = NULL;
-
-		void *pIterator = 0;
-
-		MonoType *pClassType = mono_class_get_type(m_pClass);
-		MonoClass *pClass = m_pClass;
-		MonoMethod *pCurMethod = NULL;
-
-		int suppliedArgsCount = pArgs ? pArgs->GetSize() : 0;
-
-		while (pClass != NULL)
+		pCurMethod = mono_class_get_methods(pClass, &pIterator);
+		if(pCurMethod == NULL)
 		{
-			pCurMethod = mono_class_get_methods(pClass, &pIterator);
-			if(pCurMethod == NULL)
+			pClass = mono_class_get_parent(pClass);
+			if(pClass == mono_get_object_class())
+				break;
+
+			pIterator = 0;
+			continue;
+		}
+
+		pSignature = mono_method_signature(pCurMethod);
+		int signatureParamCount = mono_signature_get_param_count(pSignature);
+
+		bool bCorrectName = !strcmp(mono_method_get_name(pCurMethod), methodName);
+		if(bCorrectName && signatureParamCount == 0 && suppliedArgsCount == 0)
+			return pCurMethod;
+		else if(bCorrectName && signatureParamCount >= suppliedArgsCount)
+		{
+			//if(bStatic != (mono_method_get_flags(pCurMethod, NULL) & METHOD_ATTRIBUTE_STATIC) > 0)
+				//continue;
+
+			void *pIter = NULL;
+
+			MonoType *pType = NULL;
+			for(int i = 0; i < signatureParamCount; i++)
 			{
-				pClass = mono_class_get_parent(pClass);
-				if(pClass == mono_get_object_class())
-					break;
+				pType = mono_signature_get_params(pSignature, &pIter);
 
-				pIterator = 0;
-				continue;
-			}
-
-			pSignature = mono_method_signature(pCurMethod);
-			int signatureParamCount = mono_signature_get_param_count(pSignature);
-
-			bool bCorrectName = !strcmp(mono_method_get_name(pCurMethod), methodName);
-			if(bCorrectName && signatureParamCount == 0 && suppliedArgsCount == 0)
-				return pCurMethod;
-			else if(bCorrectName && signatureParamCount >= suppliedArgsCount)
-			{
-				//if(bStatic != (mono_method_get_flags(pCurMethod, NULL) & METHOD_ATTRIBUTE_STATIC) > 0)
-					//continue;
-
-				void *pIter = NULL;
-
-				MonoType *pType = NULL;
-				for(int i = 0; i < signatureParamCount; i++)
+				if(IMonoObject *pItem = pArgs->GetItem(i))
 				{
-					pType = mono_signature_get_params(pSignature, &pIter);
+					EMonoAnyType anyType = pItem->GetType();
+					MonoTypeEnum monoType = (MonoTypeEnum)mono_type_get_type(pType);
 
-					if(IMonoObject *pItem = pArgs->GetItem(i))
-					{
-						EMonoAnyType anyType = pItem->GetType();
-						MonoTypeEnum monoType = (MonoTypeEnum)mono_type_get_type(pType);
-
-						if(monoType == MONO_TYPE_BOOLEAN && anyType != eMonoAnyType_Boolean)
-							break;
-						else if(monoType == MONO_TYPE_I4 && anyType != eMonoAnyType_Integer)
-							break;
-						else if(monoType == MONO_TYPE_U4 && anyType != eMonoAnyType_UnsignedInteger)
-							break;
-						else if(monoType == MONO_TYPE_I2 && anyType != eMonoAnyType_Short)
-							break;
-						else if(monoType == MONO_TYPE_U2 && anyType != eMonoAnyType_UnsignedShort)
-							break;
-						else if(monoType == MONO_TYPE_STRING && anyType != eMonoAnyType_String)
-							break;
-					}
-
-					if(i + 1 == suppliedArgsCount)
-						return pCurMethod;
+					if(monoType == MONO_TYPE_BOOLEAN && anyType != eMonoAnyType_Boolean)
+						break;
+					else if(monoType == MONO_TYPE_I4 && anyType != eMonoAnyType_Integer)
+						break;
+					else if(monoType == MONO_TYPE_U4 && anyType != eMonoAnyType_UnsignedInteger)
+						break;
+					else if(monoType == MONO_TYPE_I2 && anyType != eMonoAnyType_Short)
+						break;
+					else if(monoType == MONO_TYPE_U2 && anyType != eMonoAnyType_UnsignedShort)
+						break;
+					else if(monoType == MONO_TYPE_STRING && anyType != eMonoAnyType_String)
+						break;
 				}
+
+				if(i + 1 == suppliedArgsCount)
+					return pCurMethod;
 			}
 		}
-
-		return NULL;
 	}
 
-	// Old method, to be removed when the new implementation is stable.
-	int numParams = pArgs ? pArgs->GetSize() : 0;
-	MonoMethod *pMethod = NULL;
-
-	if(m_pClass)
-	{
-		MonoMethodDesc *pMethodDesc = mono_method_desc_new(":" + (string)methodName, false);
-		MonoClass *pClass = m_pClass;
-
-		while (pClass != NULL && pMethod == NULL) 
-		{
-			// TODO: Accurate method signature matching; currently several methods with the same name and amount of parameters will break.
-			pMethod = mono_method_desc_search_in_class(pMethodDesc, pClass); 
-			if (!pMethod)
-				pClass = mono_class_get_parent(pClass);
-		}
-
-		mono_method_desc_free(pMethodDesc);
-
-		// If overridden, get the "new" method.
-		if (m_pInstance && !bStatic && pMethod)
-			pMethod = mono_object_get_virtual_method((MonoObject *)m_pInstance, pMethod);
-	}
-
-	return pMethod;
+	return NULL;
 }
 
 IMonoObject *CScriptClass::GetProperty(const char *propertyName)
