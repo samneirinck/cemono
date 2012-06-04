@@ -37,8 +37,8 @@ namespace CryEngine
 				FlowNode._ActivateOutputInt(ParentNodePointer, PortId, System.Convert.ToInt32(value));
 			else if(value is float || value is double)
 				FlowNode._ActivateOutputFloat(ParentNodePointer, PortId, System.Convert.ToSingle(value));
-			else if(value is uint)
-				FlowNode._ActivateOutputEntityId(ParentNodePointer, PortId, System.Convert.ToUInt32(value));
+			else if(value is EntityId)
+				FlowNode._ActivateOutputEntityId(ParentNodePointer, PortId, (uint)((EntityId)(object)value)._value);
 			else if(value is string)
 				FlowNode._ActivateOutputString(ParentNodePointer, PortId, System.Convert.ToString(value));
 			else if(value is bool)

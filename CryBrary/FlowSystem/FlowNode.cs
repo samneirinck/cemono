@@ -532,6 +532,16 @@ namespace CryEngine
 			return IsPortActive(GetInputPortId(port.Method));
 		}
 
+		protected EntityId GetPortEntityId(Action<EntityId> port)
+		{
+			return new EntityId(_GetPortValueEntityId(NodePointer, GetInputPortId(port.Method)));
+		}
+
+		protected bool IsEntityIdPortActive(Action<EntityId> port)
+		{
+			return IsPortActive(GetInputPortId(port.Method));
+		}
+
 		int GetInputPortId(MethodInfo method)
 		{
 			var methods = InputMethods[GetType()];
