@@ -221,6 +221,17 @@ namespace CryEngine
 		#endregion
 	}
 
+	[AttributeUsage(AttributeTargets.Method)]
+	public sealed class CVarAttribute : Attribute
+	{
+		public CVarAttribute() { }
+
+		public string Name;
+		public string Comment;
+		public CVarFlags Flags;
+		public object DefaultValue;
+	}
+
 	public enum CVarType
 	{
 		Int,

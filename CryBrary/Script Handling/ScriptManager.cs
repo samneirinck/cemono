@@ -178,11 +178,56 @@ namespace CryEngine.Initialization
 						}
 						break;
 				}
+
+				// When each ScriptType has been changed to a flag, only call this for CryScriptInstance types.
+				ProcessMembers(type);
 			}
 
 			CompiledScripts[script.ScriptType].Add(script);
 
 			return script;
+		}
+
+		/// <summary>
+		/// Processes all members of a type for CryMono features such as CCommands.
+		/// </summary>
+		/// <param name="type"></param>
+		public static void ProcessMembers(Type type)
+		{
+			foreach(var member in type.GetMembers(BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public))
+			{
+				switch(member.MemberType)
+				{
+					case MemberTypes.Method:
+						{
+							CCommandAttribute attribute;
+							if(member.TryGetAttribute<CCommandAttribute>(out attribute))
+								CCommand.Register(attribute.Name ?? member.Name, Delegate.CreateDelegate(typeof(CCommandDelegate), member as MethodInfo) as CCommandDelegate, attribute.Comment, attribute.Flags);
+						}
+						break;
+					case MemberTypes.Field:
+					case MemberTypes.Property:
+						{
+							CVarAttribute attribute;
+							if(member.TryGetAttribute<CVarAttribute>(out attribute))
+							{
+								Type memberType = null;
+								if(member.MemberType == MemberTypes.Field)
+									memberType = (member as FieldInfo).FieldType;
+								else
+									memberType = (member as PropertyInfo).PropertyType;
+
+								if(memberType == typeof(string))
+									CVar.Register<string>(attribute.Name ?? member.Name, attribute.DefaultValue as string, attribute.Comment, attribute.Flags);
+								else if(memberType == typeof(float))
+									CVar.Register<float>(attribute.Name ?? member.Name, (float)attribute.DefaultValue, attribute.Comment, attribute.Flags);
+								else if(memberType == typeof(int))
+									CVar.Register<int>(attribute.Name ?? member.Name, (int)attribute.DefaultValue, attribute.Comment, attribute.Flags);
+							}
+						}
+						break;
+				}
+			}
 		}
 
 		public void GenerateDebugDatabaseForAssembly(string assemblyPath)

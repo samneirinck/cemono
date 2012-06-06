@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace CryEngine
 {
@@ -26,5 +27,15 @@ namespace CryEngine
 		}
 
 		static Dictionary<string, CCommandDelegate> commands = new Dictionary<string, CCommandDelegate>();
+	}
+
+	[AttributeUsage(AttributeTargets.Method)]
+	public sealed class CCommandAttribute : Attribute
+	{
+		public CCommandAttribute() { }
+
+		public string Name;
+		public string Comment;
+		public CVarFlags Flags;
 	}
 }
