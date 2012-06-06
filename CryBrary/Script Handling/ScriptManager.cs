@@ -218,11 +218,11 @@ namespace CryEngine.Initialization
 									memberType = (member as PropertyInfo).PropertyType;
 
 								if(memberType == typeof(string))
-									CVar.Register<string>(attribute.Name ?? member.Name, attribute.DefaultValue as string, attribute.Comment, attribute.Flags);
+									CVar.Register(attribute.Name ?? member.Name, (attribute.DefaultValue ?? "") as string, attribute.Comment ?? "", attribute.Flags);
 								else if(memberType == typeof(float))
-									CVar.Register<float>(attribute.Name ?? member.Name, (float)attribute.DefaultValue, attribute.Comment, attribute.Flags);
+									CVar.Register(attribute.Name ?? member.Name, (float)(attribute.DefaultValue ?? 0), attribute.Comment ?? "", attribute.Flags);
 								else if(memberType == typeof(int))
-									CVar.Register<int>(attribute.Name ?? member.Name, (int)attribute.DefaultValue, attribute.Comment, attribute.Flags);
+									CVar.Register(attribute.Name ?? member.Name, (int)(attribute.DefaultValue ?? 0), attribute.Comment ?? "", attribute.Flags);
 							}
 						}
 						break;

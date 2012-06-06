@@ -44,9 +44,45 @@ namespace CryEngine
 		static List<CVar> internalCVars = new List<CVar>();
 
 		/// <summary>
-		/// Invoked by a CVar after its creation. Should <b>not</b> be visible outside this assembly.
+		/// Registers a CVar.
 		/// </summary>
-		public static CVar Register<T>(string name, T value, string help = "", CVarFlags flags = CVarFlags.None)
+		/// <param name="name"></param>
+		/// <param name="value"></param>
+		/// <param name="help"></param>
+		/// <param name="flags"></param>
+		/// <returns></returns>
+		public static CVar Register(string name, int value, string help = "", CVarFlags flags = CVarFlags.None)
+		{
+			return RegisterInternal(name, value, help, flags);
+		}
+
+		/// <summary>
+		/// Registers a CVar.
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="value"></param>
+		/// <param name="help"></param>
+		/// <param name="flags"></param>
+		/// <returns></returns>
+		public static CVar Register(string name, float value, string help = "", CVarFlags flags = CVarFlags.None)
+		{
+			return RegisterInternal(name, value, help, flags);
+		}
+
+		/// <summary>
+		/// Registers a CVar.
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="value"></param>
+		/// <param name="help"></param>
+		/// <param name="flags"></param>
+		/// <returns></returns>
+		public static CVar Register(string name, string value, string help = "", CVarFlags flags = CVarFlags.None)
+		{
+			return RegisterInternal(name, value, help, flags);
+		}
+
+		private static CVar RegisterInternal(string name, object value, string help, CVarFlags flags)
 		{
 			internalCVars.Add(new CVar(name, value, flags, help));
 
