@@ -37,9 +37,6 @@ namespace CryEngine
 
 			Spawned = true;
 
-			//Do this before the property overwrites
-			InitPhysics();
-
 			foreach(var property in GetType().GetProperties())
 			{
 				EditorPropertyAttribute attr;

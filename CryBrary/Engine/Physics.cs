@@ -15,21 +15,23 @@ namespace CryEngine
 	/// <summary>
 	/// Wrapper class to make physics parameters more intuitive.
 	/// </summary>
-	public class PhysicsParams
+	public class EntityPhysics
 	{
 		//These are the params that are actually sent to the engine
 		internal PhysicalizationParams _params;
 		internal EntityBase _entity;
 
-		public PhysicsParams() { }
+		internal EntityPhysics() { }
 
-		internal PhysicsParams(EntityBase entity)
+		internal EntityPhysics(EntityBase entity)
 		{
 			_entity = entity;
 
 			AutoUpdate = true;
 
 			_params = new PhysicalizationParams();
+
+			Slot = 0;
 		}
 
 		public void Break(BreakageParameters breakageParams)

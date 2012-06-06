@@ -164,12 +164,6 @@ namespace CryEngine
 		public virtual void OnSpawn() { }
 		#endregion
 
-		internal void InitPhysics()
-		{
-			_physics = new PhysicsParams(this);
-			_physics.Slot = 0;
-		}
-
 		public EntitySlotFlags GetSlotFlags(int slot = 0)
 		{
 			return _GetSlotFlags(EntityPointer, slot);
@@ -187,16 +181,10 @@ namespace CryEngine
 			set { _SetVelocity(EntityPointer, value); }
 		}
 
-		PhysicsParams _physics;
-		public PhysicsParams Physics
+		EntityPhysics _physics;
+		public EntityPhysics Physics
 		{
-			get { return _physics; }
-			set
-			{
-				_physics = value;
-
-				_physics._entity = this;
-			}
+			get { return _physics ?? (_physics = new EntityPhysics(this)); }
 		}
 
 		public override void OnScriptReload()

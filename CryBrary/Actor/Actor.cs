@@ -242,8 +242,6 @@ namespace CryEngine
 
 			ChannelId = channelId;
 
-			InitPhysics();
-
 			OnSpawn();
 		}
 
