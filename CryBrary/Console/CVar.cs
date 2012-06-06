@@ -221,7 +221,7 @@ namespace CryEngine
 		#endregion
 	}
 
-	[AttributeUsage(AttributeTargets.Method)]
+	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
 	public sealed class CVarAttribute : Attribute
 	{
 		public CVarAttribute() { }
