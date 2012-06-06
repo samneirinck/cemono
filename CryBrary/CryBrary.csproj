@@ -151,7 +151,7 @@
     <Compile Include="Engine\View.cs" />
     <Compile Include="Entity\EntityId.cs" />
     <Compile Include="Entity\NativeEntity.cs" />
-    <Compile Include="Engine\Physics.cs" />
+    <Compile Include="Entity\EntityPhysics.cs" />
     <Compile Include="Lua\ScriptTable.cs" />
     <Compile Include="Math\Collision.cs" />
     <Compile Include="Misc\NativeMethods.cs" />
@@ -171,7 +171,7 @@
     <Compile Include="Misc\Convert.cs" />
     <Compile Include="Math\Math.cs" />
     <Compile Include="Engine\3DEngine.cs" />
-    <Compile Include="Engine\PhysicalWorld.cs" />
+    <Compile Include="Engine\Physics.cs" />
     <Compile Include="Engine\Renderer.cs" />
     <Compile Include="Entity\EntityMovement.cs" />
     <Compile Include="GameRules\Network.cs" />

@@ -32,7 +32,7 @@
 #include "Scriptbinds\GameRules.h"
 #include "Scriptbinds\ActorSystem.h"
 #include "Scriptbinds\3DEngine.h"
-#include "Scriptbinds\PhysicalWorld.h"
+#include "Scriptbinds\Physics.h"
 #include "Scriptbinds\Renderer.h"
 #include "Scriptbinds\Debug.h"
 #include "Scriptbinds\MaterialManager.h"
@@ -359,7 +359,7 @@ void CScriptSystem::RegisterDefaultBindings()
 #define RegisterBinding(T) m_localScriptBinds.push_back((IMonoScriptBind *)new T());
 	RegisterBinding(CActorSystem);
 	RegisterBinding(CScriptbind_3DEngine);
-	RegisterBinding(CScriptbind_PhysicalWorld);
+	RegisterBinding(CScriptbind_Physics);
 	RegisterBinding(CScriptbind_Renderer);
 	RegisterBinding(CScriptbind_Console);
 	RegisterBinding(CScriptbind_ItemSystem);

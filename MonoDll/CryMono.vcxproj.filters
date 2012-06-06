@@ -81,9 +81,6 @@
     <ClInclude Include="Headers\IMonoInput.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="Scriptbinds\PhysicalWorld.h">
-      <Filter>ScriptBinds</Filter>
-    </ClInclude>
     <ClInclude Include="MonoCVars.h">
       <Filter>Mono</Filter>
     </ClInclude>
@@ -147,6 +144,9 @@
     <ClInclude Include="Scriptbinds\UI.h">
       <Filter>ScriptBinds\Viewport\UI</Filter>
     </ClInclude>
+    <ClInclude Include="Scriptbinds\Physics.h">
+      <Filter>ScriptBinds</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -189,9 +189,6 @@
     </ClCompile>
     <ClCompile Include="MonoEntity.cpp">
       <Filter>EntitySystem</Filter>
-    </ClCompile>
-    <ClCompile Include="Scriptbinds\PhysicalWorld.cpp">
-      <Filter>ScriptBinds</Filter>
     </ClCompile>
     <ClCompile Include="MonoCVars.cpp">
       <Filter>Mono</Filter>
@@ -246,6 +243,9 @@
     </ClCompile>
     <ClCompile Include="Scriptbinds\UI.cpp">
       <Filter>ScriptBinds\Viewport\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Scriptbinds\Physics.cpp">
+      <Filter>ScriptBinds</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

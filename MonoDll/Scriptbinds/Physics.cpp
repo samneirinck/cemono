@@ -1,17 +1,17 @@
 #include "StdAfx.h"
-#include "PhysicalWorld.h"
+#include "Physics.h"
 
 #include <IEntitySystem.h>
 
 #include <IMonoArray.h>
 #include <IMonoObject.h>
 
-CScriptbind_PhysicalWorld::CScriptbind_PhysicalWorld()
+CScriptbind_Physics::CScriptbind_Physics()
 {
 	REGISTER_METHOD(RayWorldIntersection);
 }
 
-int CScriptbind_PhysicalWorld::RayWorldIntersection(Vec3 origin, Vec3 dir, int objFlags, unsigned int flags, MonoRayHit &monoHit, int maxHits, mono::array skipEntities)
+int CScriptbind_Physics::RayWorldIntersection(Vec3 origin, Vec3 dir, int objFlags, unsigned int flags, MonoRayHit &monoHit, int maxHits, mono::array skipEntities)
 {
 	std::vector<IPhysicalEntity *> physEnts;
 
@@ -32,8 +32,6 @@ int CScriptbind_PhysicalWorld::RayWorldIntersection(Vec3 origin, Vec3 dir, int o
 	}
 
 	IPhysicalEntity **pSkipEnts = new IPhysicalEntity*[physEnts.size()];
-
-#pragma warning(suppress: 6386)
 
 	for(int i = 0; i < physEnts.size(); i++)
 		pSkipEnts[i] = physEnts[i];

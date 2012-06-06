@@ -29,14 +29,14 @@ struct MonoRayHit
 	int iPrim; // hit triangle index
 };
 
-class CScriptbind_PhysicalWorld : public IMonoScriptBind
+class CScriptbind_Physics : public IMonoScriptBind
 {
 public:
-	CScriptbind_PhysicalWorld();
-	~CScriptbind_PhysicalWorld() {}
+	CScriptbind_Physics();
+	~CScriptbind_Physics() {}
 
 	// IMonoScriptBind
-	virtual const char *GetClassName() { return "PhysicalWorld"; }
+	virtual const char *GetClassName() { return "Physics"; }
 	// ~IMonoScriptBind
 
 	static int RayWorldIntersection(Vec3, Vec3, int, unsigned int, MonoRayHit &, int, mono::array);

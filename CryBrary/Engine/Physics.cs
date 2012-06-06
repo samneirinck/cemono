@@ -1,9 +1,16 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
+
 
 namespace CryEngine
 {
-	public static class Physics
+	public class Physics
 	{
+		#region Externals
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static int _RayWorldIntersection(Vec3 origin, Vec3 dir, EntityQueryFlags objFlags, RayWorldIntersectionFlags flags, ref RayHit rayHit, int maxHits, object[] skipEnts);
+		#endregion
+
 		const string gravityCVar = "p_gravity_z";
 		public static float GravityZ
 		{
@@ -12,311 +19,148 @@ namespace CryEngine
 		}
 	}
 
+	internal struct RayHit
+	{
+		internal float dist;
+		internal int colliderId;
+		internal int ipart;
+		internal int partid;
+		internal short surface_idx;
+		internal short idmatOrg;	// original material index, not mapped with material mapping
+		internal int foreignIdx;
+		internal int iNode; // BV tree node that had the intersection; can be used for "warm start" next time
+		internal Vec3 pt;
+		internal Vec3 n;	// surface normal
+		internal int bTerrain;	// global terrain hit
+		internal int iPrim; // hit triangle index
+	}
+
+	public struct RaycastHit
+	{
+		RayHit _info;
+
+		internal RaycastHit(RayHit hit)
+		{
+			_info = hit;
+		}
+
+		public override bool Equals(object obj)
+		{
+			if(obj is RaycastHit)
+				return obj.GetHashCode() == GetHashCode();
+
+			return false;
+		}
+
+		public override int GetHashCode()
+		{
+			int hash = 17;
+
+			hash = hash * 29 + Distance.GetHashCode();
+			hash = hash * 29 + ColliderId.GetHashCode();
+			hash = hash * 29 + Point.GetHashCode();
+			hash = hash * 29 + Normal.GetHashCode();
+
+			return hash;
+		}
+
+		public float Distance { get { return _info.dist; } }
+		/// <summary>
+		/// PhysicalEntityId, not yet implemented.
+		/// </summary>
+		public int ColliderId { get { return _info.colliderId; } }
+		public Vec3 Point { get { return _info.pt; } }
+		public Vec3 Normal { get { return _info.n; } }
+	}
+
+	[Flags]
+	public enum SurfaceFlags
+	{
+		PierceableMask = 0x0F,
+		MaxPierceable = 0x0F,
+		Important = 0x200,
+		ManuallyBreakable = 0x400,
+		MaterialBreakableBit = 16
+	}
+
+	[Flags]
+	public enum RayWorldIntersectionFlags
+	{
+		IgnoreTerrainHole = 0x20,
+		IgnoreNonColliding = 0x40,
+		IgnoreBackfaces = 0x80,
+		IgnoreSolidBackfaces = 0x100,
+		PierceabilityMask = 0x0F,
+		Pierceability = 0,
+		StopAtPierceable = 0x0F,
+		/// <summary>
+		/// among pierceble hits, materials with sf_important will have priority
+		/// </summary>
+		SeperateImportantHits = SurfaceFlags.Important,
+		/// <summary>
+		/// used to manually specify collision geometry types (default is geom_colltype_ray)
+		/// </summary>
+		CollissionTypeBit = 16,
+		/// <summary>
+		/// if several colltype flag are specified, switches between requiring all or any of them in a geometry
+		/// </summary>
+		CollissionTypeAny = 0x400,
+		/// <summary>
+		/// queues the RWI request, when done it'll generate EventPhysRWIResult
+		/// </summary>
+		Queue = 0x800,
+		/// <summary>
+		/// non-colliding geometries will be treated as pierceable regardless of the actual material
+		/// </summary>
+		ForcePiercableNonCollidable = 0x1000,
+		/// <summary>
+		/// marks the rwi to be a debug rwi (used for spu debugging, only valid in non-release builds)
+		/// </summary>
+		DebugTrace = 0x2000,
+		/// <summary>
+		/// update phitLast with the current hit results (should be set if the last hit should be reused for a "warm" start)
+		/// </summary>
+		UpdateLastHit = 0x4000,
+		/// <summary>
+		/// returns the first found hit for meshes, not necessarily the closest
+		/// </summary>
+		AnyHit = 0x8000
+	}
+
 	/// <summary>
-	/// Wrapper class to make physics parameters more intuitive.
+	/// Used for GetEntitiesInBox and RayWorldIntersection
 	/// </summary>
-	public class EntityPhysics
+	[Flags]
+	public enum EntityQueryFlags
 	{
-		//These are the params that are actually sent to the engine
-		internal PhysicalizationParams _params;
-		internal EntityBase _entity;
-
-		internal EntityPhysics() { }
-
-		internal EntityPhysics(EntityBase entity)
-		{
-			_entity = entity;
-
-			AutoUpdate = true;
-
-			_params = new PhysicalizationParams();
-
-			Slot = 0;
-		}
-
-		public void Break(BreakageParameters breakageParams)
-		{
-			Entity._BreakIntoPieces(_entity.EntityPointer, 0, 0, breakageParams);
-		}
-
-		#region Basics
+		Static = 1, SleepingRigid = 2, Rigid = 4, Living = 8, Independent = 16, Deleted = 128, Terrain = 0x100,
+		All = Static | SleepingRigid | Rigid | Living | Independent | Terrain,
+		FlaggedOnly = 0x800, SkipFlagged = FlaggedOnly * 2, // "flagged" meas has pef_update set
+		Areas = 32, Triggers = 64,
+		IgnoreNonColliding = 0x10000,
 		/// <summary>
-		/// If true, physics value updates will be automatically applied. Otherwise, Save() must be called manually.
+		/// sort by mass in ascending order
 		/// </summary>
-		public bool AutoUpdate { get; set; }
-
-		internal bool resting;
+		SortByMass = 0x20000,
 		/// <summary>
-		/// Determines if this physical entity is in a sleeping state or not. (Will not be affected by gravity)
-		/// Autoamtically wakes upon collision.
+		/// if not set, the function will return an internal pointer
 		/// </summary>
-		public bool Resting { get { return resting; } set { resting = value; Entity._Sleep(_entity.EntityPointer, value); } }
-
+		AllocateList = 0x40000,
 		/// <summary>
-		/// Save the current physics settings.
+		/// will call AddRef on each entity in the list (expecting the caller call Release)
 		/// </summary>
-		public void Save()
-		{
-			Entity._Physicalize(_entity.EntityPointer, _params);
-		}
-
+		AddRefResults = 0x100000,
 		/// <summary>
-		/// Clears the current physics settings.
+		/// can only be used in RayWorldIntersection
 		/// </summary>
-		public void Clear()
-		{
-			_params = new PhysicalizationParams();
-		}
-
-		public void AddImpulse(Vec3 impulse, Vec3 angImpulse = default(Vec3), Vec3? point = null)
-		{
-			var actionImpulse = new ActionImpulse();
-
-			actionImpulse.impulse = impulse;
-			actionImpulse.angImpulse = angImpulse;
-			actionImpulse.point = point ?? Entity.Get(_entity.Id).Position;
-
-			Entity._AddImpulse(_entity.EntityPointer, actionImpulse);
-		}
-
+		Water = 0x200,
 		/// <summary>
-		/// The mass of the entity in kg.
+		/// can only be used in RayWorldIntersection
 		/// </summary>
-		public float Mass
-		{
-			get { return _params.mass; }
-			set { _params.mass = value; _params.density = -1; if(AutoUpdate) Save(); }
-		}
-
-		public float Density
-		{
-			get { return _params.density; }
-			set { _params.density = value; _params.mass = -1; if(AutoUpdate) Save(); }
-		}
-
+		NoOnDemandActivation = 0x80000,
 		/// <summary>
-		/// The entity slot for which these physical parameters apply.
+		/// queues procedural breakage requests; can only be used in SimulateExplosion
 		/// </summary>
-		public int Slot
-		{
-			get { return _params.slot; }
-			set { _params.slot = value; if(AutoUpdate) Save(); }
-		}
-
-		public PhysicalizationType Type
-		{
-			get { return _params.type; }
-			set { _params.type = value; if(AutoUpdate) Save(); }
-		}
-		#endregion
-
-		#region Characters
-		/// <summary>
-		/// For characters: the scale of force in joint springs.
-		/// </summary>
-		public float Stiffness
-		{
-			get { return _params.stiffnessScale; }
-			set { _params.stiffnessScale = value; if(AutoUpdate) Save(); }
-		}
-
-		#endregion
-	}
-
-	internal struct ActionImpulse
-	{
-		public Vec3 impulse;
-		public Vec3 angImpulse;	// optional
-		public Vec3 point; // point of application, in world CS, optional 
-		public int partid;	// receiver part identifier
-		public int ipart; // alternatively, part index can be used
-		public int iApplyTime; // 0-apply immediately, 1-apply before the next time step, 2-apply after the next time step
-		public int iSource; // reserved for internal use
-	}
-
-	public enum PhysicsApplyTime
-	{
-		Immediate = 0,
-		PreStep = 1,
-		PostStep = 2
-	}
-
-	public enum BreakageType
-	{
-		Destroy = 0,
-		Freeze_Shatter
-	}
-
-	public struct BreakageParameters
-	{
-		public BreakageType type;					// Type of the breakage.
-		public float fParticleLifeTime;		// Average lifetime of particle pieces.
-		public int nGenericCount;				// If not 0, force particle pieces to spawn generically, this many times.
-		public bool bForceEntity;					// Force pieces to spawn as entities.
-		public bool bMaterialEffects;			// Automatically create "destroy" and "breakage" material effects on pieces.
-		public bool bOnlyHelperPieces;		// Only spawn helper pieces.
-
-		// Impulse params.
-		public float fExplodeImpulse;			// Outward impulse to apply.
-		public Vec3 vHitImpulse;					// Hit impulse and center to apply.
-		public Vec3 vHitPoint;
-	}
-
-	public struct PhysicalizationParams
-	{
-		public PhysicalizationType type;
-
-		/// <summary>
-		/// Index of object slot, -1 if all slots should be used.
-		/// </summary>
-		public int slot;
-
-		/// <summary>
-		/// Only one either density or mass must be set, parameter set to 0 is ignored.
-		/// </summary>
-		public float density;
-		public float mass;
-
-		/// <summary>
-		/// Used for character physicalization (Scale of force in character joint's springs).
-		/// </summary>
-		public float stiffnessScale;
-
-		public PlayerDimensions playerDimensions;
-		public PlayerDynamics playerDynamics;
-	}
-
-	public struct PlayerDynamics
-	{
-		/// <summary>
-		/// inertia koefficient, the more it is, the less inertia is; 0 means no inertia
-		/// </summary>
-		public float kInertia;
-		/// <summary>
-		/// inertia on acceleration
-		/// </summary>
-		public float kInertiaAccel;
-		/// <summary>
-		/// air control koefficient 0..1, 1 - special value (total control of movement)
-		/// </summary>
-		public float kAirControl;
-		/// <summary>
-		/// standard air resistance 
-		/// </summary>
-		public float kAirResistance;
-		/// <summary>
-		/// gravity vector, utilizes sv_gravity if null.
-		/// </summary>
-		public Vec3 gravity;
-		/// <summary>
-		/// vertical camera shake speed after landings
-		/// </summary>
-		public float nodSpeed;
-		/// <summary>
-		/// whether entity is swimming (is not bound to ground plane)
-		/// </summary>
-		public bool swimming;
-		/// <summary>
-		/// mass (in kg)
-		/// </summary>
-		public float mass;
-		/// <summary>
-		/// surface identifier for collisions
-		/// </summary>
-		public int surface_idx;
-		/// <summary>
-		/// if surface slope is more than this angle, player starts sliding (angle is in radians)
-		/// </summary>
-		public float minSlideAngle;
-		/// <summary>
-		/// player cannot climb surface which slope is steeper than this angle
-		/// </summary>
-		public float maxClimbAngle;
-		/// <summary>
-		/// player is not allowed to jump towards ground if this angle is exceeded
-		/// </summary>
-		public float maxJumpAngle;
-		/// <summary>
-		/// player starts falling when slope is steeper than this
-		/// </summary>
-		public float minFallAngle;
-		/// <summary>
-		/// player cannot stand of surfaces that are moving faster than this
-		/// </summary>
-		public float maxVelGround;
-		/// <summary>
-		/// forcefully turns on inertia for that duration after receiving an impulse
-		/// </summary>
-		public float timeImpulseRecover;
-		/// <summary>
-		/// entity types to check collisions against
-		/// </summary>
-		public int collTypes;
-		/// <summary>
-		/// ignore collisions with this *living entity* (doesn't work with other entity types)
-		/// </summary>
-		public EntityId livingEntToIgnore;
-		/// <summary>
-		/// 0 disables all simulation for the character, apart from moving along the requested velocity
-		/// </summary>
-		public bool active;
-		/// <summary>
-		/// requests that the player rolls back to that time and re-exucutes pending actions during the next step
-		/// </summary>
-		public int iRequestedTime;
-	}
-
-	public struct PlayerDimensions
-	{
-		/// <summary>
-		/// offset from central ground position that is considered entity center
-		/// </summary>
-		public float heightPivot;
-		/// <summary>
-		/// vertical offset of camera
-		/// </summary>
-		public float heightEye;
-		/// <summary>
-		/// collision cylinder dimensions
-		/// </summary>
-		public Vec3 sizeCollider;
-		/// <summary>
-		/// vertical offset of collision geometry center
-		/// </summary>
-		public float heightCollider;
-		/// <summary>
-		/// radius of the 'head' geometry (used for camera offset)
-		/// </summary>
-		public float headRadius;
-		/// <summary>
-		/// center.z of the head geometry
-		/// </summary>
-		public float heightHead;
-		/// <summary>
-		/// unprojection direction to test in case the new position overlaps with the environment (can be 0 for 'auto')
-		/// </summary>
-		public Vec3 dirUnproj;
-		/// <summary>
-		/// maximum allowed unprojection
-		/// </summary>
-		public float maxUnproj;
-		/// <summary>
-		/// switches between capsule and cylinder collider geometry
-		/// </summary>
-		public bool useCapsule;
-	}
-
-	public enum PhysicalizationType
-	{
-		None = 0,
-		Static,
-		Rigid,
-		WheeledVehicle,
-		Living,
-		Particle,
-		Articulated,
-		Rope,
-		Soft,
-		Area
+		DelayedDeformations = 0x80000
 	}
 }
