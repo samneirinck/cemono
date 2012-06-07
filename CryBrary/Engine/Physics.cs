@@ -4,11 +4,27 @@ using System.Runtime.CompilerServices;
 
 namespace CryEngine
 {
-	public class Physics
+	public class GlobalPhysics
 	{
 		#region Externals
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static IntPtr _GetPhysicalEntity(IntPtr entityPointer);
+
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static int _RayWorldIntersection(Vec3 origin, Vec3 dir, EntityQueryFlags objFlags, RayWorldIntersectionFlags flags, ref RayHit rayHit, int maxHits, object[] skipEnts);
+
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static void _Physicalize(IntPtr entPtr, PhysicalizationParams physicalizationParams);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static void _Sleep(IntPtr entPtr, bool sleep);
+
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static void _AddImpulse(IntPtr entPtr, ActionImpulse actionImpulse);
+
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static Vec3 _GetVelocity(IntPtr entPtr);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static void _SetVelocity(IntPtr entPtr, Vec3 velocity);
 		#endregion
 
 		const string gravityCVar = "p_gravity_z";

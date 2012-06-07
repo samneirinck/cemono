@@ -7,26 +7,30 @@ namespace CryEngine
 	/// </summary>
 	public class EntityPhysics
 	{
-		//These are the params that are actually sent to the engine
-		internal PhysicalizationParams _params;
-		internal EntityBase _entity;
-
 		internal EntityPhysics() { }
 
-		internal EntityPhysics(EntityBase entity)
+		internal EntityPhysics(EntityBase _entity)
 		{
-			_entity = entity;
-
-			AutoUpdate = true;
+			entity = _entity;
 
 			_params = new PhysicalizationParams();
+			_params.mass = -1;
+			_params.slot = 0;
+			GlobalPhysics._Physicalize(_entity.EntityPointer, _params);
 
-			Slot = 0;
+			PhysicsPointer = GlobalPhysics._GetPhysicalEntity(entity.EntityPointer);
+
+			AutoUpdate = true;
+		}
+
+		internal void OnScriptReload()
+		{
+			PhysicsPointer = GlobalPhysics._GetPhysicalEntity(entity.EntityPointer);
 		}
 
 		public void Break(BreakageParameters breakageParams)
 		{
-			Entity._BreakIntoPieces(_entity.EntityPointer, 0, 0, breakageParams);
+			Entity._BreakIntoPieces(entity.EntityPointer, 0, 0, breakageParams);
 		}
 
 		#region Basics
@@ -40,14 +44,17 @@ namespace CryEngine
 		/// Determines if this physical entity is in a sleeping state or not. (Will not be affected by gravity)
 		/// Autoamtically wakes upon collision.
 		/// </summary>
-		public bool Resting { get { return resting; } set { resting = value; Entity._Sleep(_entity.EntityPointer, value); } }
+		public bool Resting { get { return resting; } set { resting = value; GlobalPhysics._Sleep(entity.EntityPointer, value); } }
 
 		/// <summary>
 		/// Save the current physics settings.
 		/// </summary>
 		public void Save()
 		{
-			Entity._Physicalize(_entity.EntityPointer, _params);
+			if(_params.type == 0)
+				_params.type = PhysicalizationType.Rigid;
+
+			GlobalPhysics._Physicalize(entity.EntityPointer, _params);
 		}
 
 		/// <summary>
@@ -61,12 +68,13 @@ namespace CryEngine
 		public void AddImpulse(Vec3 impulse, Vec3 angImpulse = default(Vec3), Vec3? point = null)
 		{
 			var actionImpulse = new ActionImpulse();
+			actionImpulse.iSource = 0;
 
 			actionImpulse.impulse = impulse;
 			actionImpulse.angImpulse = angImpulse;
-			actionImpulse.point = point ?? Entity.Get(_entity.Id).Position;
+			actionImpulse.point = point ?? Entity.Get(entity.Id).Position;
 
-			Entity._AddImpulse(_entity.EntityPointer, actionImpulse);
+			GlobalPhysics._AddImpulse(entity.EntityPointer, actionImpulse);
 		}
 
 		/// <summary>
@@ -111,6 +119,12 @@ namespace CryEngine
 		}
 
 		#endregion
+
+		internal IntPtr PhysicsPointer { get; set; }
+		public EntityBase entity;
+
+		// Sent directly to the engine
+		internal PhysicalizationParams _params;
 	}
 
 	internal struct ActionImpulse
@@ -120,8 +134,8 @@ namespace CryEngine
 		public Vec3 point; // point of application, in world CS, optional 
 		public int partid;	// receiver part identifier
 		public int ipart; // alternatively, part index can be used
-		public int iApplyTime; // 0-apply immediately, 1-apply before the next time step, 2-apply after the next time step
-		public int iSource; // reserved for internal use
+		public PhysicsApplyTime iApplyTime; // 0-apply immediately, 1-apply before the next time step, 2-apply after the next time step
+		internal int iSource; // reserved for internal use
 	}
 
 	public enum PhysicsApplyTime
@@ -168,12 +182,30 @@ namespace CryEngine
 		public float mass;
 
 		/// <summary>
+		/// When physicalizing geometry can specify to use physics from different LOD.
+		/// Used for characters that have ragdoll physics in Lod1
+		/// </summary>
+		public int lod;
+
+		/// <summary>
+		/// Physical entity to attach this physics object (Only for Soft physical entity).
+		/// </summary>
+		EntityId attachToEntity;
+
+		/// <summary>
+		/// Part ID in entity to attach to (Only for Soft physical entity).
+		/// </summary>
+		public int attachToPart;
+
+		/// <summary>
 		/// Used for character physicalization (Scale of force in character joint's springs).
 		/// </summary>
 		public float stiffnessScale;
 
-		public PlayerDimensions playerDimensions;
-		public PlayerDynamics playerDynamics;
+		/// <summary>
+		/// Copy joints velocities when converting a character to ragdoll.
+		/// </summary>
+		public bool copyJointVelocities;
 	}
 
 	public struct PlayerDynamics

@@ -58,21 +58,7 @@ namespace CryEngine
 		extern internal static bool _RegisterEntityClass(EntityRegisterParams registerParams, object[] properties);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _Physicalize(IntPtr ptr, PhysicalizationParams physicalizationParams);
-
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _Sleep(IntPtr ptr, bool sleep);
-
-		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static void _BreakIntoPieces(IntPtr ptr, int slot, int piecesSlot, BreakageParameters breakageParams);
-
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _AddImpulse(IntPtr ptr, ActionImpulse actionImpulse);
-
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static Vec3 _GetVelocity(IntPtr ptr);
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _SetVelocity(IntPtr ptr, Vec3 velocity);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static string _GetName(IntPtr ptr);
@@ -176,9 +162,9 @@ namespace CryEngine
 
 		public Vec3 Velocity
 		{
-			get { return _GetVelocity(EntityPointer); }
+			get { return GlobalPhysics._GetVelocity(Physics.PhysicsPointer); }
 
-			set { _SetVelocity(EntityPointer, value); }
+			set { GlobalPhysics._SetVelocity(Physics.PhysicsPointer, value); }
 		}
 
 		EntityPhysics _physics;
@@ -190,6 +176,8 @@ namespace CryEngine
 		public override void OnScriptReload()
 		{
 			EntityPointer = _GetEntity(Id);
+
+			Physics.OnScriptReload();
 		}
 
 		// TODO: Expose the attachment system properly

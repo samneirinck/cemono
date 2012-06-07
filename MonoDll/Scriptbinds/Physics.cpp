@@ -8,10 +8,119 @@
 
 CScriptbind_Physics::CScriptbind_Physics()
 {
+	REGISTER_METHOD(GetPhysicalEntity);
+
+	REGISTER_METHOD(Physicalize);
+	REGISTER_METHOD(Sleep);
+
+	REGISTER_METHOD(AddImpulse);
+
+	REGISTER_METHOD(GetVelocity);
+	REGISTER_METHOD(SetVelocity);
+
 	REGISTER_METHOD(RayWorldIntersection);
 }
 
-int CScriptbind_Physics::RayWorldIntersection(Vec3 origin, Vec3 dir, int objFlags, unsigned int flags, MonoRayHit &monoHit, int maxHits, mono::array skipEntities)
+IPhysicalEntity *CScriptbind_Physics::GetPhysicalEntity(IEntity *pEntity)
+{
+	return pEntity->GetPhysics();
+}
+
+void CScriptbind_Physics::Physicalize(IEntity *pEntity, SMonoPhysicalizeParams params)
+{
+	// Unphysicalize
+	{
+		const Ang3 oldRotation = pEntity->GetWorldAngles();
+		const Quat newRotation = Quat::CreateRotationZ( oldRotation.z );
+		pEntity->SetRotation( newRotation );
+
+		SEntityPhysicalizeParams pp;
+		pp.type = PE_NONE;
+		pEntity->Physicalize( pp );
+	}
+	// ~Unphysicalize
+
+	SEntityPhysicalizeParams pp;
+
+	if(params.type == 0)
+		params.type = PE_RIGID;
+
+	pp.bCopyJointVelocities = params.copyJointVelocities;
+	pp.density = params.density;
+	pp.fStiffnessScale = params.stiffnessScale;
+	pp.mass = params.mass;
+	pp.nAttachToPart = params.attachToPart;
+	pp.nLod = params.lod;
+	pp.nSlot = params.slot;
+	pp.type = params.type;
+
+	if(params.attachToEntity.id != 0)
+	{
+		if(IPhysicalEntity *pPhysEnt = gEnv->pPhysicalWorld->GetPhysicalEntityById(params.attachToEntity.id))
+			pp.pAttachToEntity = pPhysEnt;
+	}
+
+	pEntity->Physicalize(pp);
+
+	if(IPhysicalEntity *pPhysicalEntity = pEntity->GetPhysics())
+	{
+		pe_action_awake awake;
+		awake.bAwake = false;
+		pPhysicalEntity->Action(&awake);
+
+		pe_action_move actionMove;
+		actionMove.dir = Vec3(0,0,0);
+		pPhysicalEntity->Action(&actionMove);
+	}
+}
+
+void CScriptbind_Physics::Sleep(IEntity *pEntity, bool sleep)
+{
+	IPhysicalEntity *pPhysicalEntity = pEntity->GetPhysics();
+	if(!pPhysicalEntity)
+		return;
+
+	pe_action_awake awake;
+	awake.bAwake = !sleep;
+
+	pPhysicalEntity->Action(&awake);
+}
+
+void CScriptbind_Physics::AddImpulse(IEntity *pEntity, pe_action_impulse impulse)
+{
+	IPhysicalEntity *pPhysicalEntity = pEntity->GetPhysics();
+	if(!pPhysicalEntity)
+		return;
+
+	pPhysicalEntity->Action(&impulse);
+}
+
+Vec3 CScriptbind_Physics::GetVelocity(IEntity *pEntity)
+{
+	IPhysicalEntity *pPhysicalEntity = pEntity->GetPhysics();
+	if(!pPhysicalEntity)
+		return Vec3(ZERO);
+
+	pe_status_dynamics sd;
+	if(pPhysicalEntity->GetStatus(&sd) != 0)
+		return sd.v;
+
+	return Vec3(0, 0, 0);
+}
+
+void CScriptbind_Physics::SetVelocity(IEntity *pEntity, Vec3 vel)
+{
+	IPhysicalEntity *pPhysicalEntity = pEntity->GetPhysics();
+	if(!pPhysicalEntity)
+		return;
+
+	pe_action_set_velocity asv;
+	asv.v = vel;
+
+	pPhysicalEntity->Action(&asv);
+}
+
+int CScriptbind_Physics::RayWorldIntersection(Vec3 origin, Vec3 dir, int objFlags, unsigned int flags, SMonoRayHit &monoHit, int maxHits, mono::array skipEntities)
 {
 	std::vector<IPhysicalEntity *> physEnts;
 

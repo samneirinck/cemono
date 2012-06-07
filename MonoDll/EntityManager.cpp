@@ -53,17 +53,10 @@ CEntityManager::CEntityManager()
 	REGISTER_METHOD(GetSlotFlags);
 	REGISTER_METHOD(SetSlotFlags);
 
-	REGISTER_METHOD(Physicalize);
-	REGISTER_METHOD(Sleep);
 	REGISTER_METHOD(BreakIntoPieces);
 
 	REGISTER_METHOD(CreateGameObjectForEntity);
 	REGISTER_METHOD(GetStaticObjectFilePath);
-
-	REGISTER_METHOD(AddImpulse);
-
-	REGISTER_METHOD(GetVelocity);
-	REGISTER_METHOD(SetVelocity);
 
 	REGISTER_METHOD(SetWorldTM);
 	REGISTER_METHOD(GetWorldTM);
@@ -429,64 +422,6 @@ void CEntityManager::SetSlotFlags(IEntity *pEntity, int slot, EEntitySlotFlags s
 	pEntity->SetSlotFlags(slot, slotFlags);
 }
 
-void CEntityManager::Physicalize(IEntity *pEntity, MonoPhysicalizationParams params)
-{
-	// Unphysicalize
-	{
-		const Ang3 oldRotation = pEntity->GetWorldAngles();
-		const Quat newRotation = Quat::CreateRotationZ( oldRotation.z );
-		pEntity->SetRotation( newRotation );
-
-		SEntityPhysicalizeParams pp;
-		pp.type = PE_NONE;
-		pEntity->Physicalize( pp );
-	}
-	// ~Unphysicalize
-	
-	SEntityPhysicalizeParams pp;
-
-	pp.type = params.type;
-	pp.nSlot = params.slot;
-	pp.mass = params.mass;
-	pp.nFlagsOR = pef_monitor_poststep;
-	pp.fStiffnessScale = params.stiffnessScale;
-
-	if(IPhysicalEntity *pPhysicalEntity = pEntity->GetPhysics())
-	{
-		Ang3 rot(pEntity->GetWorldAngles());
-		pEntity->SetRotation(Quat::CreateRotationZ(rot.z));
-
-		SEntityPhysicalizeParams nop;
-		nop.type = PE_NONE;
-		pEntity->Physicalize(nop);
-	}
-
-	pEntity->Physicalize(pp);
-
-	if(IPhysicalEntity *pPhysicalEntity = pEntity->GetPhysics())
-	{
-		pe_action_awake awake;
-		awake.bAwake=0;
-
-		pPhysicalEntity->Action(&awake);
-
-		pe_action_move actionMove;
-		actionMove.dir = Vec3(0,0,0);
-		pPhysicalEntity->Action(&actionMove);
-	}
-}
-
-void CEntityManager::Sleep(IEntity *pEntity, bool sleep)
-{
-	if(IPhysicalEntity *pPhysicalEntity = pEntity->GetPhysics())
-	{
-		pe_action_awake awake;
-		awake.bAwake = !sleep;
-
-		pPhysicalEntity->Action(&awake);
-	}
-}
-
 void CEntityManager::BreakIntoPieces(IEntity *pEntity, int slot, int piecesSlot, IBreakableManager::BreakageParams breakageParams)
 {
 	gEnv->pEntitySystem->GetBreakableManager()->BreakIntoPieces(pEntity, slot, piecesSlot, breakageParams);
@@ -514,45 +449,6 @@ mono::string CEntityManager::GetStaticObjectFilePath(IEntity *pEntity, int slot)
 		return ToMonoString(pStatObj->GetFilePath());
 
 	return ToMonoString("");
-}
-
-void CEntityManager::AddImpulse(IEntity *pEntity, ActionImpulse actionImpulse)
-{
-	pe_action_impulse impulse;
-
-	impulse.angImpulse = actionImpulse.angImpulse;
-	impulse.iApplyTime = actionImpulse.iApplyTime;
-	impulse.impulse = actionImpulse.impulse;
-	impulse.ipart = actionImpulse.ipart;
-	impulse.iSource = actionImpulse.iSource;
-	impulse.partid = actionImpulse.partid;
-	impulse.point = actionImpulse.point;
-
-	if(IPhysicalEntity *pPhysEnt = pEntity->GetPhysics())
-		pPhysEnt->Action(&impulse);
-}
-
-Vec3 CEntityManager::GetVelocity(IEntity *pEntity)
-{
-	if(IPhysicalEntity *pPhysEnt = pEntity->GetPhysics())
-	{
-		pe_status_dynamics sd;
-		if(pPhysEnt->GetStatus(&sd) != 0)
-			return sd.v;
-	}
-
-	return Vec3(0,0,0);
-}
-
-void CEntityManager::SetVelocity(IEntity *pEntity, Vec3 vel)
-{
-	if(IPhysicalEntity *pPhysEnt = pEntity->GetPhysics())
-	{
-		pe_action_set_velocity asv;
-		asv.v = vel;
-
-		pPhysEnt->Action(&asv);
-	}
 }
 
 mono::string CEntityManager::GetName(IEntity *pEntity)

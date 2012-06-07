@@ -13,7 +13,7 @@
 #include <MonoCommon.h>
 #include <IMonoScriptBind.h>
 
-struct MonoRayHit
+struct SMonoRayHit
 {
 	float dist;
 	int colliderId;
@@ -29,6 +29,25 @@ struct MonoRayHit
 	int iPrim; // hit triangle index
 };
 
+struct SMonoPhysicalizeParams
+{
+	int type;
+	int slot;
+
+	float density;
+	float mass;
+
+	int lod;
+
+	mono::entityId attachToEntity;
+
+	int attachToPart;
+
+	float stiffnessScale;
+
+	bool copyJointVelocities;
+};
+
 class CScriptbind_Physics : public IMonoScriptBind
 {
 public:
@@ -36,10 +55,20 @@ public:
 	~CScriptbind_Physics() {}
 
 	// IMonoScriptBind
-	virtual const char *GetClassName() { return "Physics"; }
+	virtual const char *GetClassName() { return "GlobalPhysics"; }
 	// ~IMonoScriptBind
 
-	static int RayWorldIntersection(Vec3, Vec3, int, unsigned int, MonoRayHit &, int, mono::array);
+	static IPhysicalEntity *GetPhysicalEntity(IEntity *pEntity);
+
+	static void Physicalize(IEntity *pEntity, SMonoPhysicalizeParams params);
+	static void Sleep(IEntity *pEntity, bool sleep);
+
+	static void AddImpulse(IEntity *pEntity, pe_action_impulse impulse);
+
+	static Vec3 GetVelocity(IEntity *pEntity);
+	static void SetVelocity(IEntity *pEntity, Vec3 vel);
+
+	static int RayWorldIntersection(Vec3, Vec3, int, unsigned int, SMonoRayHit &, int, mono::array);
 };
 
 #endif //__SCRIPTBIND_PHYSICALWORLD__

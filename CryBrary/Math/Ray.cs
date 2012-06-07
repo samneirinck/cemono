@@ -72,7 +72,7 @@ namespace CryEngine
 			if(skipEntities != null && skipEntities.Length > 0)
 				skippedEntities = skipEntities.Cast<object>().ToArray();
 
-			int rayResult = Physics._RayWorldIntersection(Position, Direction, objectTypes, flags, ref internalRayHit, maxHits, skippedEntities);
+			int rayResult = GlobalPhysics._RayWorldIntersection(Position, Direction, objectTypes, flags, ref internalRayHit, maxHits, skippedEntities);
 
 			hits = new RaycastHit(internalRayHit);
 

@@ -370,86 +370,6 @@
             Bool is not currently functioning.
             </summary>
         </member>
-        <member name="P:CryEngine.RaycastHit.ColliderId">
-            <summary>
-            PhysicalEntityId, not yet implemented.
-            </summary>
-        </member>
-        <member name="F:CryEngine.RayWorldIntersectionFlags.SeperateImportantHits">
-            <summary>
-            among pierceble hits, materials with sf_important will have priority
-            </summary>
-        </member>
-        <member name="F:CryEngine.RayWorldIntersectionFlags.CollissionTypeBit">
-            <summary>
-            used to manually specify collision geometry types (default is geom_colltype_ray)
-            </summary>
-        </member>
-        <member name="F:CryEngine.RayWorldIntersectionFlags.CollissionTypeAny">
-            <summary>
-            if several colltype flag are specified, switches between requiring all or any of them in a geometry
-            </summary>
-        </member>
-        <member name="F:CryEngine.RayWorldIntersectionFlags.Queue">
-            <summary>
-            queues the RWI request, when done it'll generate EventPhysRWIResult
-            </summary>
-        </member>
-        <member name="F:CryEngine.RayWorldIntersectionFlags.ForcePiercableNonCollidable">
-            <summary>
-            non-colliding geometries will be treated as pierceable regardless of the actual material
-            </summary>
-        </member>
-        <member name="F:CryEngine.RayWorldIntersectionFlags.DebugTrace">
-            <summary>
-            marks the rwi to be a debug rwi (used for spu debugging, only valid in non-release builds)
-            </summary>
-        </member>
-        <member name="F:CryEngine.RayWorldIntersectionFlags.UpdateLastHit">
-            <summary>
-            update phitLast with the current hit results (should be set if the last hit should be reused for a "warm" start)
-            </summary>
-        </member>
-        <member name="F:CryEngine.RayWorldIntersectionFlags.AnyHit">
-            <summary>
-            returns the first found hit for meshes, not necessarily the closest
-            </summary>
-        </member>
-        <member name="T:CryEngine.EntityQueryFlags">
-            <summary>
-            Used for GetEntitiesInBox and RayWorldIntersection
-            </summary>
-        </member>
-        <member name="F:CryEngine.EntityQueryFlags.SortByMass">
-            <summary>
-            sort by mass in ascending order
-            </summary>
-        </member>
-        <member name="F:CryEngine.EntityQueryFlags.AllocateList">
-            <summary>
-            if not set, the function will return an internal pointer
-            </summary>
-        </member>
-        <member name="F:CryEngine.EntityQueryFlags.AddRefResults">
-            <summary>
-            will call AddRef on each entity in the list (expecting the caller call Release)
-            </summary>
-        </member>
-        <member name="F:CryEngine.EntityQueryFlags.Water">
-            <summary>
-            can only be used in RayWorldIntersection
-            </summary>
-        </member>
-        <member name="F:CryEngine.EntityQueryFlags.NoOnDemandActivation">
-            <summary>
-            can only be used in RayWorldIntersection
-            </summary>
-        </member>
-        <member name="F:CryEngine.EntityQueryFlags.DelayedDeformations">
-            <summary>
-            queues procedural breakage requests; can only be used in SimulateExplosion
-            </summary>
-        </member>
         <member name="T:CryEngine.Time">
             <summary>
             Contains useful functions related to game timing.
@@ -707,6 +627,223 @@
             <c>true</c> if the specified <see cref="T:System.Object"/> is equal to this instance; otherwise, <c>false</c>.
             </returns>
         </member>
+        <member name="T:CryEngine.EntityPhysics">
+            <summary>
+            Wrapper class to make physics parameters more intuitive.
+            </summary>
+        </member>
+        <member name="M:CryEngine.EntityPhysics.Save">
+            <summary>
+            Save the current physics settings.
+            </summary>
+        </member>
+        <member name="M:CryEngine.EntityPhysics.Clear">
+            <summary>
+            Clears the current physics settings.
+            </summary>
+        </member>
+        <member name="P:CryEngine.EntityPhysics.AutoUpdate">
+            <summary>
+            If true, physics value updates will be automatically applied. Otherwise, Save() must be called manually.
+            </summary>
+        </member>
+        <member name="P:CryEngine.EntityPhysics.Resting">
+            <summary>
+            Determines if this physical entity is in a sleeping state or not. (Will not be affected by gravity)
+            Autoamtically wakes upon collision.
+            </summary>
+        </member>
+        <member name="P:CryEngine.EntityPhysics.Mass">
+            <summary>
+            The mass of the entity in kg.
+            </summary>
+        </member>
+        <member name="P:CryEngine.EntityPhysics.Slot">
+            <summary>
+            The entity slot for which these physical parameters apply.
+            </summary>
+        </member>
+        <member name="P:CryEngine.EntityPhysics.Stiffness">
+            <summary>
+            For characters: the scale of force in joint springs.
+            </summary>
+        </member>
+        <member name="F:CryEngine.PhysicalizationParams.slot">
+            <summary>
+            Index of object slot, -1 if all slots should be used.
+            </summary>
+        </member>
+        <member name="F:CryEngine.PhysicalizationParams.density">
+            <summary>
+            Only one either density or mass must be set, parameter set to 0 is ignored.
+            </summary>
+        </member>
+        <member name="F:CryEngine.PhysicalizationParams.lod">
+            <summary>
+            When physicalizing geometry can specify to use physics from different LOD.
+            Used for characters that have ragdoll physics in Lod1
+            </summary>
+        </member>
+        <member name="F:CryEngine.PhysicalizationParams.attachToEntity">
+            <summary>
+            Physical entity to attach this physics object (Only for Soft physical entity).
+            </summary>
+        </member>
+        <member name="F:CryEngine.PhysicalizationParams.attachToPart">
+            <summary>
+            Part ID in entity to attach to (Only for Soft physical entity).
+            </summary>
+        </member>
+        <member name="F:CryEngine.PhysicalizationParams.stiffnessScale">
+            <summary>
+            Used for character physicalization (Scale of force in character joint's springs).
+            </summary>
+        </member>
+        <member name="F:CryEngine.PhysicalizationParams.copyJointVelocities">
+            <summary>
+            Copy joints velocities when converting a character to ragdoll.
+            </summary>
+        </member>
+        <member name="F:CryEngine.PlayerDynamics.kInertia">
+            <summary>
+            inertia koefficient, the more it is, the less inertia is; 0 means no inertia
+            </summary>
+        </member>
+        <member name="F:CryEngine.PlayerDynamics.kInertiaAccel">
+            <summary>
+            inertia on acceleration
+            </summary>
+        </member>
+        <member name="F:CryEngine.PlayerDynamics.kAirControl">
+            <summary>
+            air control koefficient 0..1, 1 - special value (total control of movement)
+            </summary>
+        </member>
+        <member name="F:CryEngine.PlayerDynamics.kAirResistance">
+            <summary>
+            standard air resistance 
+            </summary>
+        </member>
+        <member name="F:CryEngine.PlayerDynamics.gravity">
+            <summary>
+            gravity vector, utilizes sv_gravity if null.
+            </summary>
+        </member>
+        <member name="F:CryEngine.PlayerDynamics.nodSpeed">
+            <summary>
+            vertical camera shake speed after landings
+            </summary>
+        </member>
+        <member name="F:CryEngine.PlayerDynamics.swimming">
+            <summary>
+            whether entity is swimming (is not bound to ground plane)
+            </summary>
+        </member>
+        <member name="F:CryEngine.PlayerDynamics.mass">
+            <summary>
+            mass (in kg)
+            </summary>
+        </member>
+        <member name="F:CryEngine.PlayerDynamics.surface_idx">
+            <summary>
+            surface identifier for collisions
+            </summary>
+        </member>
+        <member name="F:CryEngine.PlayerDynamics.minSlideAngle">
+            <summary>
+            if surface slope is more than this angle, player starts sliding (angle is in radians)
+            </summary>
+        </member>
+        <member name="F:CryEngine.PlayerDynamics.maxClimbAngle">
+            <summary>
+            player cannot climb surface which slope is steeper than this angle
+            </summary>
+        </member>
+        <member name="F:CryEngine.PlayerDynamics.maxJumpAngle">
+            <summary>
+            player is not allowed to jump towards ground if this angle is exceeded
+            </summary>
+        </member>
+        <member name="F:CryEngine.PlayerDynamics.minFallAngle">
+            <summary>
+            player starts falling when slope is steeper than this
+            </summary>
+        </member>
+        <member name="F:CryEngine.PlayerDynamics.maxVelGround">
+            <summary>
+            player cannot stand of surfaces that are moving faster than this
+            </summary>
+        </member>
+        <member name="F:CryEngine.PlayerDynamics.timeImpulseRecover">
+            <summary>
+            forcefully turns on inertia for that duration after receiving an impulse
+            </summary>
+        </member>
+        <member name="F:CryEngine.PlayerDynamics.collTypes">
+            <summary>
+            entity types to check collisions against
+            </summary>
+        </member>
+        <member name="F:CryEngine.PlayerDynamics.livingEntToIgnore">
+            <summary>
+            ignore collisions with this *living entity* (doesn't work with other entity types)
+            </summary>
+        </member>
+        <member name="F:CryEngine.PlayerDynamics.active">
+            <summary>
+            0 disables all simulation for the character, apart from moving along the requested velocity
+            </summary>
+        </member>
+        <member name="F:CryEngine.PlayerDynamics.iRequestedTime">
+            <summary>
+            requests that the player rolls back to that time and re-exucutes pending actions during the next step
+            </summary>
+        </member>
+        <member name="F:CryEngine.PlayerDimensions.heightPivot">
+            <summary>
+            offset from central ground position that is considered entity center
+            </summary>
+        </member>
+        <member name="F:CryEngine.PlayerDimensions.heightEye">
+            <summary>
+            vertical offset of camera
+            </summary>
+        </member>
+        <member name="F:CryEngine.PlayerDimensions.sizeCollider">
+            <summary>
+            collision cylinder dimensions
+            </summary>
+        </member>
+        <member name="F:CryEngine.PlayerDimensions.heightCollider">
+            <summary>
+            vertical offset of collision geometry center
+            </summary>
+        </member>
+        <member name="F:CryEngine.PlayerDimensions.headRadius">
+            <summary>
+            radius of the 'head' geometry (used for camera offset)
+            </summary>
+        </member>
+        <member name="F:CryEngine.PlayerDimensions.heightHead">
+            <summary>
+            center.z of the head geometry
+            </summary>
+        </member>
+        <member name="F:CryEngine.PlayerDimensions.dirUnproj">
+            <summary>
+            unprojection direction to test in case the new position overlaps with the environment (can be 0 for 'auto')
+            </summary>
+        </member>
+        <member name="F:CryEngine.PlayerDimensions.maxUnproj">
+            <summary>
+            maximum allowed unprojection
+            </summary>
+        </member>
+        <member name="F:CryEngine.PlayerDimensions.useCapsule">
+            <summary>
+            switches between capsule and cylinder collider geometry
+            </summary>
+        </member>
         <member name="T:CryEngine.Entity">
             <summary>
             The base class for all entities in the game world.
@@ -717,7 +854,7 @@
             Contains common entity functionality.
             </summary>
         </member>
-        <member name="M:CryEngine.EntityBase._SpawnEntity(CryEngine.EntitySpawnParams,System.Boolean)">
+        <member name="M:CryEngine.EntityBase._SpawnEntity(CryEngine.EntitySpawnParams,System.Boolean,CryEngine.EntityInfo@)">
             <summary>
             Spawns an entity with the specified parameters.
             </summary>
@@ -834,14 +971,14 @@
             <remarks>If multiple entities have the same name, it will return the first found.
             Consider using IDs where necessary.</remarks>
         </member>
-        <member name="M:CryEngine.Entity.GetEntities(System.String)">
+        <member name="M:CryEngine.Entity.GetByClass(System.String)">
             <summary>
             Gets an array of entities that are of a given class.
             </summary>
             <param name="className">The entity class to search for.</param>
             <returns>An array of entities.</returns>
         </member>
-        <member name="M:CryEngine.Entity.GetEntities``1">
+        <member name="M:CryEngine.Entity.GetByClass``1">
             <summary>
             Gets an array of entities that are of a given class.
             </summary>
@@ -928,6 +1065,16 @@
         <member name="T:CryEngine.EntityFlags">
             <summary>
             These flags control entity instance behaviour.
+            </summary>
+        </member>
+        <member name="F:CryEngine.EntityFlags.TriggerAreas">
+            <summary>
+            Entity will trigger areas when it enters them.
+            </summary>
+        </member>
+        <member name="F:CryEngine.EntityFlags.Spawned">
+            <summary>
+            Entity was spawned dynamically without a class.
             </summary>
         </member>
         <member name="T:CryEngine.EntityClassFlags">
@@ -1052,10 +1199,35 @@
             Convenient accessor for the raw time value
             </summary>
         </member>
-        <member name="M:CryEngine.CVar.Register``1(System.String,``0,System.String,CryEngine.CVarFlags)">
+        <member name="M:CryEngine.CVar.Register(System.String,System.Int32,System.String,CryEngine.CVarFlags)">
             <summary>
-            Invoked by a CVar after its creation. Should <b>not</b> be visible outside this assembly.
+            Registers a CVar.
             </summary>
+            <param name="name"></param>
+            <param name="value"></param>
+            <param name="help"></param>
+            <param name="flags"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CryEngine.CVar.Register(System.String,System.Single,System.String,CryEngine.CVarFlags)">
+            <summary>
+            Registers a CVar.
+            </summary>
+            <param name="name"></param>
+            <param name="value"></param>
+            <param name="help"></param>
+            <param name="flags"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CryEngine.CVar.Register(System.String,System.String,System.String,CryEngine.CVarFlags)">
+            <summary>
+            Registers a CVar.
+            </summary>
+            <param name="name"></param>
+            <param name="value"></param>
+            <param name="help"></param>
+            <param name="flags"></param>
+            <returns></returns>
         </member>
         <member name="M:CryEngine.CVar.Get(System.String)">
             <summary>
@@ -1579,6 +1751,86 @@
             The current approximate memory usage in bytes.
             </summary>
         </member>
+        <member name="P:CryEngine.RaycastHit.ColliderId">
+            <summary>
+            PhysicalEntityId, not yet implemented.
+            </summary>
+        </member>
+        <member name="F:CryEngine.RayWorldIntersectionFlags.SeperateImportantHits">
+            <summary>
+            among pierceble hits, materials with sf_important will have priority
+            </summary>
+        </member>
+        <member name="F:CryEngine.RayWorldIntersectionFlags.CollissionTypeBit">
+            <summary>
+            used to manually specify collision geometry types (default is geom_colltype_ray)
+            </summary>
+        </member>
+        <member name="F:CryEngine.RayWorldIntersectionFlags.CollissionTypeAny">
+            <summary>
+            if several colltype flag are specified, switches between requiring all or any of them in a geometry
+            </summary>
+        </member>
+        <member name="F:CryEngine.RayWorldIntersectionFlags.Queue">
+            <summary>
+            queues the RWI request, when done it'll generate EventPhysRWIResult
+            </summary>
+        </member>
+        <member name="F:CryEngine.RayWorldIntersectionFlags.ForcePiercableNonCollidable">
+            <summary>
+            non-colliding geometries will be treated as pierceable regardless of the actual material
+            </summary>
+        </member>
+        <member name="F:CryEngine.RayWorldIntersectionFlags.DebugTrace">
+            <summary>
+            marks the rwi to be a debug rwi (used for spu debugging, only valid in non-release builds)
+            </summary>
+        </member>
+        <member name="F:CryEngine.RayWorldIntersectionFlags.UpdateLastHit">
+            <summary>
+            update phitLast with the current hit results (should be set if the last hit should be reused for a "warm" start)
+            </summary>
+        </member>
+        <member name="F:CryEngine.RayWorldIntersectionFlags.AnyHit">
+            <summary>
+            returns the first found hit for meshes, not necessarily the closest
+            </summary>
+        </member>
+        <member name="T:CryEngine.EntityQueryFlags">
+            <summary>
+            Used for GetEntitiesInBox and RayWorldIntersection
+            </summary>
+        </member>
+        <member name="F:CryEngine.EntityQueryFlags.SortByMass">
+            <summary>
+            sort by mass in ascending order
+            </summary>
+        </member>
+        <member name="F:CryEngine.EntityQueryFlags.AllocateList">
+            <summary>
+            if not set, the function will return an internal pointer
+            </summary>
+        </member>
+        <member name="F:CryEngine.EntityQueryFlags.AddRefResults">
+            <summary>
+            will call AddRef on each entity in the list (expecting the caller call Release)
+            </summary>
+        </member>
+        <member name="F:CryEngine.EntityQueryFlags.Water">
+            <summary>
+            can only be used in RayWorldIntersection
+            </summary>
+        </member>
+        <member name="F:CryEngine.EntityQueryFlags.NoOnDemandActivation">
+            <summary>
+            can only be used in RayWorldIntersection
+            </summary>
+        </member>
+        <member name="F:CryEngine.EntityQueryFlags.DelayedDeformations">
+            <summary>
+            queues procedural breakage requests; can only be used in SimulateExplosion
+            </summary>
+        </member>
         <member name="F:CryEngine.Math.ZeroTolerance">
             <summary>
             The value for which all absolute numbers smaller than are considered equal to zero.
@@ -1649,202 +1901,6 @@
         <member name="T:CryEngine.Serialization.AppDomainSerializer">
             <summary>
             Handles serializing script instances for an app domain reload.
-            </summary>
-        </member>
-        <member name="T:CryEngine.PhysicsParams">
-            <summary>
-            Wrapper class to make physics parameters more intuitive.
-            </summary>
-        </member>
-        <member name="M:CryEngine.PhysicsParams.Save">
-            <summary>
-            Save the current physics settings.
-            </summary>
-        </member>
-        <member name="M:CryEngine.PhysicsParams.Clear">
-            <summary>
-            Clears the current physics settings.
-            </summary>
-        </member>
-        <member name="P:CryEngine.PhysicsParams.AutoUpdate">
-            <summary>
-            If true, physics value updates will be automatically applied. Otherwise, Save() must be called manually.
-            </summary>
-        </member>
-        <member name="P:CryEngine.PhysicsParams.Resting">
-            <summary>
-            Determines if this physical entity is in a sleeping state or not. (Will not be affected by gravity)
-            Autoamtically wakes upon collision.
-            </summary>
-        </member>
-        <member name="P:CryEngine.PhysicsParams.Mass">
-            <summary>
-            The mass of the entity in kg.
-            </summary>
-        </member>
-        <member name="P:CryEngine.PhysicsParams.Slot">
-            <summary>
-            The entity slot for which these physical parameters apply.
-            </summary>
-        </member>
-        <member name="P:CryEngine.PhysicsParams.Stiffness">
-            <summary>
-            For characters: the scale of force in joint springs.
-            </summary>
-        </member>
-        <member name="F:CryEngine.PhysicalizationParams.slot">
-            <summary>
-            Index of object slot, -1 if all slots should be used.
-            </summary>
-        </member>
-        <member name="F:CryEngine.PhysicalizationParams.density">
-            <summary>
-            Only one either density or mass must be set, parameter set to 0 is ignored.
-            </summary>
-        </member>
-        <member name="F:CryEngine.PhysicalizationParams.stiffnessScale">
-            <summary>
-            Used for character physicalization (Scale of force in character joint's springs).
-            </summary>
-        </member>
-        <member name="F:CryEngine.PlayerDynamics.kInertia">
-            <summary>
-            inertia koefficient, the more it is, the less inertia is; 0 means no inertia
-            </summary>
-        </member>
-        <member name="F:CryEngine.PlayerDynamics.kInertiaAccel">
-            <summary>
-            inertia on acceleration
-            </summary>
-        </member>
-        <member name="F:CryEngine.PlayerDynamics.kAirControl">
-            <summary>
-            air control koefficient 0..1, 1 - special value (total control of movement)
-            </summary>
-        </member>
-        <member name="F:CryEngine.PlayerDynamics.kAirResistance">
-            <summary>
-            standard air resistance 
-            </summary>
-        </member>
-        <member name="F:CryEngine.PlayerDynamics.gravity">
-            <summary>
-            gravity vector, utilizes sv_gravity if null.
-            </summary>
-        </member>
-        <member name="F:CryEngine.PlayerDynamics.nodSpeed">
-            <summary>
-            vertical camera shake speed after landings
-            </summary>
-        </member>
-        <member name="F:CryEngine.PlayerDynamics.swimming">
-            <summary>
-            whether entity is swimming (is not bound to ground plane)
-            </summary>
-        </member>
-        <member name="F:CryEngine.PlayerDynamics.mass">
-            <summary>
-            mass (in kg)
-            </summary>
-        </member>
-        <member name="F:CryEngine.PlayerDynamics.surface_idx">
-            <summary>
-            surface identifier for collisions
-            </summary>
-        </member>
-        <member name="F:CryEngine.PlayerDynamics.minSlideAngle">
-            <summary>
-            if surface slope is more than this angle, player starts sliding (angle is in radians)
-            </summary>
-        </member>
-        <member name="F:CryEngine.PlayerDynamics.maxClimbAngle">
-            <summary>
-            player cannot climb surface which slope is steeper than this angle
-            </summary>
-        </member>
-        <member name="F:CryEngine.PlayerDynamics.maxJumpAngle">
-            <summary>
-            player is not allowed to jump towards ground if this angle is exceeded
-            </summary>
-        </member>
-        <member name="F:CryEngine.PlayerDynamics.minFallAngle">
-            <summary>
-            player starts falling when slope is steeper than this
-            </summary>
-        </member>
-        <member name="F:CryEngine.PlayerDynamics.maxVelGround">
-            <summary>
-            player cannot stand of surfaces that are moving faster than this
-            </summary>
-        </member>
-        <member name="F:CryEngine.PlayerDynamics.timeImpulseRecover">
-            <summary>
-            forcefully turns on inertia for that duration after receiving an impulse
-            </summary>
-        </member>
-        <member name="F:CryEngine.PlayerDynamics.collTypes">
-            <summary>
-            entity types to check collisions against
-            </summary>
-        </member>
-        <member name="F:CryEngine.PlayerDynamics.livingEntToIgnore">
-            <summary>
-            ignore collisions with this *living entity* (doesn't work with other entity types)
-            </summary>
-        </member>
-        <member name="F:CryEngine.PlayerDynamics.active">
-            <summary>
-            0 disables all simulation for the character, apart from moving along the requested velocity
-            </summary>
-        </member>
-        <member name="F:CryEngine.PlayerDynamics.iRequestedTime">
-            <summary>
-            requests that the player rolls back to that time and re-exucutes pending actions during the next step
-            </summary>
-        </member>
-        <member name="F:CryEngine.PlayerDimensions.heightPivot">
-            <summary>
-            offset from central ground position that is considered entity center
-            </summary>
-        </member>
-        <member name="F:CryEngine.PlayerDimensions.heightEye">
-            <summary>
-            vertical offset of camera
-            </summary>
-        </member>
-        <member name="F:CryEngine.PlayerDimensions.sizeCollider">
-            <summary>
-            collision cylinder dimensions
-            </summary>
-        </member>
-        <member name="F:CryEngine.PlayerDimensions.heightCollider">
-            <summary>
-            vertical offset of collision geometry center
-            </summary>
-        </member>
-        <member name="F:CryEngine.PlayerDimensions.headRadius">
-            <summary>
-            radius of the 'head' geometry (used for camera offset)
-            </summary>
-        </member>
-        <member name="F:CryEngine.PlayerDimensions.heightHead">
-            <summary>
-            center.z of the head geometry
-            </summary>
-        </member>
-        <member name="F:CryEngine.PlayerDimensions.dirUnproj">
-            <summary>
-            unprojection direction to test in case the new position overlaps with the environment (can be 0 for 'auto')
-            </summary>
-        </member>
-        <member name="F:CryEngine.PlayerDimensions.maxUnproj">
-            <summary>
-            maximum allowed unprojection
-            </summary>
-        </member>
-        <member name="F:CryEngine.PlayerDimensions.useCapsule">
-            <summary>
-            switches between capsule and cylinder collider geometry
             </summary>
         </member>
         <member name="T:CryEngine.Lua.ScriptTable">
@@ -3307,6 +3363,12 @@
         <member name="M:CryEngine.Initialization.ScriptManager.ProcessType(System.Type)">
             <summary>
             Adds the type to CompiledScripts
+            </summary>
+            <param name="type"></param>
+        </member>
+        <member name="M:CryEngine.Initialization.ScriptManager.ProcessMembers(System.Type)">
+            <summary>
+            Processes all members of a type for CryMono features such as CCommands.
             </summary>
             <param name="type"></param>
         </member>
@@ -5988,6 +6050,61 @@
             The object is intersecting the plane.
             </summary>
         </member>
+        <member name="M:CryEngine.DelayedFunc`10.#ctor(System.Action{`0,`1,`2,`3,`4,`5,`6,`7,`8,`9},System.Single,`0,`1,`2,`3,`4,`5,`6,`7,`8,`9)">
+            <summary>
+            </summary>
+            <param name="delay">The desired delay, in milliseconds.</param>
+        </member>
+        <member name="M:CryEngine.DelayedFunc`9.#ctor(System.Action{`0,`1,`2,`3,`4,`5,`6,`7,`8},System.Single,`0,`1,`2,`3,`4,`5,`6,`7,`8)">
+            <summary>
+            </summary>
+            <param name="delay">The desired delay, in milliseconds.</param>
+        </member>
+        <member name="M:CryEngine.DelayedFunc`8.#ctor(System.Action{`0,`1,`2,`3,`4,`5,`6,`7},System.Single,`0,`1,`2,`3,`4,`5,`6,`7)">
+            <summary>
+            </summary>
+            <param name="delay">The desired delay, in milliseconds.</param>
+        </member>
+        <member name="M:CryEngine.DelayedFunc`7.#ctor(System.Action{`0,`1,`2,`3,`4,`5,`6},System.Single,`0,`1,`2,`3,`4,`5,`6)">
+            <summary>
+            </summary>
+            <param name="delay">The desired delay, in milliseconds.</param>
+        </member>
+        <member name="M:CryEngine.DelayedFunc`6.#ctor(System.Action{`0,`1,`2,`3,`4,`5},System.Single,`0,`1,`2,`3,`4,`5)">
+            <summary>
+            </summary>
+            <param name="delay">The desired delay, in milliseconds.</param>
+        </member>
+        <member name="M:CryEngine.DelayedFunc`5.#ctor(System.Action{`0,`1,`2,`3,`4},System.Single,`0,`1,`2,`3,`4)">
+            <summary>
+            </summary>
+            <param name="delay">The desired delay, in milliseconds.</param>
+        </member>
+        <member name="M:CryEngine.DelayedFunc`4.#ctor(System.Action{`0,`1,`2,`3},System.Single,`0,`1,`2,`3)">
+            <summary>
+            </summary>
+            <param name="delay">The desired delay, in milliseconds.</param>
+        </member>
+        <member name="M:CryEngine.DelayedFunc`3.#ctor(System.Action{`0,`1,`2},System.Single,`0,`1,`2)">
+            <summary>
+            </summary>
+            <param name="delay">The desired delay, in milliseconds.</param>
+        </member>
+        <member name="M:CryEngine.DelayedFunc`2.#ctor(System.Action{`0,`1},System.Single,`0,`1)">
+            <summary>
+            </summary>
+            <param name="delay">The desired delay, in milliseconds.</param>
+        </member>
+        <member name="M:CryEngine.DelayedFunc`1.#ctor(System.Action{`0},System.Single,`0)">
+            <summary>
+            </summary>
+            <param name="delay">The desired delay, in milliseconds.</param>
+        </member>
+        <member name="M:CryEngine.DelayedFunc.#ctor(System.Action,System.Single)">
+            <summary>
+            </summary>
+            <param name="delay">The desired delay, in milliseconds.</param>
+        </member>
         <member name="M:CryEngine.Input.RegisterAction(System.String,CryEngine.ActionMapEventDelegate)">
             <summary>
             Registers an event declared in the players actionmap. Without invoking this, Your KeyEventDelegate will never be invoked with the new action.
@@ -6053,61 +6170,6 @@
             <param name="x"></param>
             <param name="y"></param>
             <returns></returns>
-        </member>
-        <member name="M:CryEngine.DelayedFunc`10.#ctor(System.Action{`0,`1,`2,`3,`4,`5,`6,`7,`8,`9},System.Single,`0,`1,`2,`3,`4,`5,`6,`7,`8,`9)">
-            <summary>
-            </summary>
-            <param name="delay">The desired delay, in milliseconds.</param>
-        </member>
-        <member name="M:CryEngine.DelayedFunc`9.#ctor(System.Action{`0,`1,`2,`3,`4,`5,`6,`7,`8},System.Single,`0,`1,`2,`3,`4,`5,`6,`7,`8)">
-            <summary>
-            </summary>
-            <param name="delay">The desired delay, in milliseconds.</param>
-        </member>
-        <member name="M:CryEngine.DelayedFunc`8.#ctor(System.Action{`0,`1,`2,`3,`4,`5,`6,`7},System.Single,`0,`1,`2,`3,`4,`5,`6,`7)">
-            <summary>
-            </summary>
-            <param name="delay">The desired delay, in milliseconds.</param>
-        </member>
-        <member name="M:CryEngine.DelayedFunc`7.#ctor(System.Action{`0,`1,`2,`3,`4,`5,`6},System.Single,`0,`1,`2,`3,`4,`5,`6)">
-            <summary>
-            </summary>
-            <param name="delay">The desired delay, in milliseconds.</param>
-        </member>
-        <member name="M:CryEngine.DelayedFunc`6.#ctor(System.Action{`0,`1,`2,`3,`4,`5},System.Single,`0,`1,`2,`3,`4,`5)">
-            <summary>
-            </summary>
-            <param name="delay">The desired delay, in milliseconds.</param>
-        </member>
-        <member name="M:CryEngine.DelayedFunc`5.#ctor(System.Action{`0,`1,`2,`3,`4},System.Single,`0,`1,`2,`3,`4)">
-            <summary>
-            </summary>
-            <param name="delay">The desired delay, in milliseconds.</param>
-        </member>
-        <member name="M:CryEngine.DelayedFunc`4.#ctor(System.Action{`0,`1,`2,`3},System.Single,`0,`1,`2,`3)">
-            <summary>
-            </summary>
-            <param name="delay">The desired delay, in milliseconds.</param>
-        </member>
-        <member name="M:CryEngine.DelayedFunc`3.#ctor(System.Action{`0,`1,`2},System.Single,`0,`1,`2)">
-            <summary>
-            </summary>
-            <param name="delay">The desired delay, in milliseconds.</param>
-        </member>
-        <member name="M:CryEngine.DelayedFunc`2.#ctor(System.Action{`0,`1},System.Single,`0,`1)">
-            <summary>
-            </summary>
-            <param name="delay">The desired delay, in milliseconds.</param>
-        </member>
-        <member name="M:CryEngine.DelayedFunc`1.#ctor(System.Action{`0},System.Single,`0)">
-            <summary>
-            </summary>
-            <param name="delay">The desired delay, in milliseconds.</param>
-        </member>
-        <member name="M:CryEngine.DelayedFunc.#ctor(System.Action,System.Single)">
-            <summary>
-            </summary>
-            <param name="delay">The desired delay, in milliseconds.</param>
         </member>
     </members>
 </doc>
