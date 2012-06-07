@@ -41,8 +41,6 @@ namespace CryEngine
 		public static void Remove(EntityId id)
 		{
 			_RemoveEntity(id);
-
-			InternalRemove(id);
 		}
 
 		public void Remove()
@@ -50,13 +48,24 @@ namespace CryEngine
 			Entity.Remove(Id);
 		}
 
-		internal static void InternalRemove(EntityId id)
+		internal static bool InternalRemove(EntityId id)
 		{
 			foreach(var script in ScriptManager.CompiledScripts[ScriptType.Entity])
 			{
 				if(script.ScriptInstances != null)
-					script.ScriptInstances.RemoveAll(instance => instance is Entity && (instance as Entity).Id == id);
+				{
+					script.ScriptInstances.RemoveAll(instance =>
+						{
+							var entity = instance as Entity;
+							if(entity != null && entity.Id == id && entity.OnRemove())
+								return true;
+
+							return false;
+						});
+				}
 			}
+
+			return true;
 		}
 
 		/// <summary>

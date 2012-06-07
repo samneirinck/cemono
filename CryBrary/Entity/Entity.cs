@@ -72,19 +72,6 @@ namespace CryEngine
 			return value != defaultVal;
 		}
 
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		internal virtual bool InternalPreRemove()
-		{
-			if(OnRemove())
-			{
-				Entity.InternalRemove(Id);
-
-				return true;
-			}
-			// Abort removal
-			return false;
-		}
-
 		/// <summary>
 		/// Returns true if this entity contains input or output ports.
 		/// </summary>

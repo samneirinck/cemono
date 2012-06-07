@@ -115,26 +115,35 @@ bool CEntityManager::OnRemove(IEntity *pEntity)
 	if(!IsMonoEntity(entClass))
 		return true;
 
-	for(TMonoEntities::iterator it = m_monoEntities.begin(); it != m_monoEntities.end(); ++it)
-	{
-		if((*it)->GetEntityId()==pEntity->GetId())
-		{
-			if(IMonoClass *pScript = (*it)->GetScript())
-			{
-				if(pScript->CallMethod("InternalPreRemove")->Unbox<bool>())
-				{
-					(*it).reset();
-					m_monoEntities.erase(it);
+	EntityId id = pEntity->GetId();
+	bool result = true;
 
-					return true;
-				}
+	if(IMonoClass *pEntityClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("Entity"))
+	{
+		IMonoArray *pArgs = CreateMonoArray(1);
+		pArgs->Insert(id);
+
+		result = pEntityClass->CallMethod("InternalRemove", pArgs, true)->Unbox<bool>();
+
+		SAFE_RELEASE(pArgs);
+		SAFE_RELEASE(pEntityClass);
+	}
+
+	if(result)
+	{
+		for(TMonoEntities::iterator it = m_monoEntities.begin(); it != m_monoEntities.end(); ++it)
+		{
+			if((*it)->GetEntityId() == id)
+			{
+				if(IMonoClass *pScript = (*it)->GetScript())
+					delete pScript;
+
+				break;
 			}
-			
-			return false;
 		}
 	}
 
-	return true;
+	return result;
 }
 
 void CEntityManager::RemoveEntity(EntityId id)
