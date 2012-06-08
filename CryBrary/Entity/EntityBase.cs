@@ -162,9 +162,9 @@ namespace CryEngine
 
 		public Vec3 Velocity
 		{
-			get { return GlobalPhysics._GetVelocity(Physics.PhysicsPointer); }
+			get { return GlobalPhysics._GetVelocity(EntityPointer); }
 
-			set { GlobalPhysics._SetVelocity(Physics.PhysicsPointer, value); }
+			set { GlobalPhysics._SetVelocity(EntityPointer, value); }
 		}
 
 		EntityPhysics _physics;
