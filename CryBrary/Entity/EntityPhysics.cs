@@ -68,7 +68,6 @@ namespace CryEngine
 		public void AddImpulse(Vec3 impulse, Vec3 angImpulse = default(Vec3), Vec3? point = null)
 		{
 			var actionImpulse = new ActionImpulse();
-			actionImpulse.iSource = 0;
 
 			actionImpulse.impulse = impulse;
 			actionImpulse.angImpulse = angImpulse;

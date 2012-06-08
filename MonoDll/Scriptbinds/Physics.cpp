@@ -42,9 +42,6 @@ void CScriptbind_Physics::Physicalize(IEntity *pEntity, SMonoPhysicalizeParams p
 
 	SEntityPhysicalizeParams pp;
 
-	if(params.type == 0)
-		params.type = PE_RIGID;
-
 	pp.bCopyJointVelocities = params.copyJointVelocities;
 	pp.density = params.density;
 	pp.fStiffnessScale = params.stiffnessScale;
@@ -86,13 +83,20 @@ void CScriptbind_Physics::Sleep(IEntity *pEntity, bool sleep)
 	pPhysicalEntity->Action(&awake);
 }
 
-void CScriptbind_Physics::AddImpulse(IEntity *pEntity, pe_action_impulse impulse)
+void CScriptbind_Physics::AddImpulse(IEntity *pEntity, SMonoActionImpulse actionImpulse)
 {
-	IPhysicalEntity *pPhysicalEntity = pEntity->GetPhysics();
-	if(!pPhysicalEntity)
-		return;
+	pe_action_impulse impulse;
 
-	pPhysicalEntity->Action(&impulse);
+	impulse.angImpulse = actionImpulse.angImpulse;
+	impulse.iApplyTime = actionImpulse.iApplyTime;
+	impulse.impulse = actionImpulse.impulse;
+	impulse.ipart = actionImpulse.ipart;
+	impulse.iSource = actionImpulse.iSource;
+	impulse.partid = actionImpulse.partid;
+	impulse.point = actionImpulse.point;
+
+	if(IPhysicalEntity *pPhysEnt = pEntity->GetPhysics())
+		pPhysEnt->Action(&impulse);
 }
 
 Vec3 CScriptbind_Physics::GetVelocity(IEntity *pEntity)

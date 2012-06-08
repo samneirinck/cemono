@@ -48,6 +48,17 @@ struct SMonoPhysicalizeParams
 	bool copyJointVelocities;
 };
 
+struct SMonoActionImpulse
+{
+	Vec3 impulse;
+	Vec3 angImpulse;	// optional
+	Vec3 point; // point of application, in world CS, optional 
+	int partid;	// receiver part identifier
+	int ipart; // alternatively, part index can be used
+	int iApplyTime; // 0-apply immediately, 1-apply before the next time step, 2-apply after the next time step
+	int iSource; // reserved for internal use
+};
+
 class CScriptbind_Physics : public IMonoScriptBind
 {
 public:
@@ -63,7 +74,7 @@ public:
 	static void Physicalize(IEntity *pEntity, SMonoPhysicalizeParams params);
 	static void Sleep(IEntity *pEntity, bool sleep);
 
-	static void AddImpulse(IEntity *pEntity, pe_action_impulse impulse);
+	static void AddImpulse(IEntity *pEntity, SMonoActionImpulse impulse);
 
 	static Vec3 GetVelocity(IEntity *pEntity);
 	static void SetVelocity(IEntity *pEntity, Vec3 vel);
