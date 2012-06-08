@@ -4,6 +4,34 @@ namespace CryEngine
 {
 	public static class Math
 	{
+		public static void Interpolate(ref Vec3 actual, Vec3 goal, float speed, float limit = 0)
+		{
+			Vec3 delta = goal - actual;
+		
+			if (limit>0.001f)
+			{
+				float length = delta.Length;
+
+				if (length>limit)
+				{
+					delta /= length;
+					delta *= limit;
+				}
+			}
+
+			actual += delta * Min(Time.DeltaTime * speed,1.0f);
+		}
+
+		public static void Interpolate(ref float actual, float goal, float speed, float limit = 0)
+		{
+			float delta = goal - actual;
+
+			if (limit>0.001f)
+				delta = Max(Min(delta,limit), -limit);
+
+			actual += delta * Min(Time.DeltaTime * speed,1.0f);
+		}
+
 		/// <summary>
 		/// Converts degrees to radians
 		/// </summary>
