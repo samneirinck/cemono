@@ -82,13 +82,6 @@ CEntityManager::~CEntityManager()
 {
 	m_monoEntityClasses.clear();
 
-	for(auto it = m_monoEntities.begin(); it != m_monoEntities.end(); ++it)
-	{
-		(*it).reset();
-
-		it = m_monoEntities.erase(it);
-	}
-
 	if(gEnv->pEntitySystem)
 		gEnv->pEntitySystem->RemoveSink(this);
 }
