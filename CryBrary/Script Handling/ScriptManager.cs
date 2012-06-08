@@ -220,7 +220,7 @@ namespace CryEngine.Initialization
 								if(memberType == typeof(string))
 									CVar.Register(attribute.Name ?? member.Name, (attribute.DefaultValue ?? "") as string, attribute.Comment ?? "", attribute.Flags);
 								else if(memberType == typeof(float))
-									CVar.Register(attribute.Name ?? member.Name, (float)(attribute.DefaultValue ?? 0), attribute.Comment ?? "", attribute.Flags);
+									CVar.Register(attribute.Name ?? member.Name, (float)(attribute.DefaultValue ?? 0f), attribute.Comment ?? "", attribute.Flags);
 								else if(memberType == typeof(int))
 									CVar.Register(attribute.Name ?? member.Name, (int)(attribute.DefaultValue ?? 0), attribute.Comment ?? "", attribute.Flags);
 							}
