@@ -135,9 +135,9 @@ bool CEntityManager::OnRemove(IEntity *pEntity)
 		{
 			if((*it)->GetEntityId() == id)
 			{
-				if(IMonoClass *pScript = (*it)->GetScript())
-					delete pScript;
+				(*it).reset();
 
+				m_monoEntities.erase(it);
 				break;
 			}
 		}
