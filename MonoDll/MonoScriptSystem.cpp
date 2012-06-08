@@ -45,8 +45,6 @@
 #include "FlowManager.h"
 #include "MonoInput.h"
 
-#include "CallbackHandler.h"
-
 #include "MonoCVars.h"
 
 SCVars *g_pMonoCVars = 0;
@@ -56,7 +54,6 @@ CRYREGISTER_CLASS(CScriptSystem)
 CScriptSystem::CScriptSystem() 
 	: m_pRootDomain(NULL)
 	, m_pCryBraryAssembly(NULL)
-	, m_pCallbackHandler(NULL)
 	, m_pPdb2MdbAssembly(NULL)
 	, m_pScriptManager(NULL)
 	, m_pScriptDomain(NULL)
@@ -66,7 +63,7 @@ CScriptSystem::CScriptSystem()
 	, m_bLastCompilationSuccess(false)
 {
 	//CryLogAlways("Initializing Mono Script System");
-
+	
 	// We should look into storing mono binaries, configuration as well as scripts via CryPak.
 	mono_set_dirs(PathUtils::GetLibPath(), PathUtils::GetConfigPath());
 
@@ -108,7 +105,8 @@ CScriptSystem::~CScriptSystem()
 	// Force garbage collection of all generations.
 	mono_gc_collect(mono_gc_max_generation());
 
-	gEnv->pGameFramework->UnregisterListener(this);
+	if(gEnv->pSystem)
+		gEnv->pGameFramework->UnregisterListener(this);
 
 	if(IFileChangeMonitor *pFileChangeMonitor = gEnv->pFileChangeMonitor)
 		pFileChangeMonitor->UnregisterListener(this);
@@ -118,7 +116,6 @@ CScriptSystem::~CScriptSystem()
 	m_scripts.clear();
 
 	SAFE_DELETE(m_pConverter);
-	SAFE_DELETE(m_pCallbackHandler);
 
 	SAFE_RELEASE(m_AppDomainSerializer);
 	SAFE_RELEASE(m_pScriptManager);
@@ -128,15 +125,12 @@ CScriptSystem::~CScriptSystem()
 	SAFE_DELETE(m_pCVars);
 
 	for each(auto scriptbind in m_localScriptBinds)
-		SAFE_DELETE(scriptbind);
+		scriptbind.reset();
 
-	m_localScriptBinds.clear();
 	m_scriptReloadListeners.clear();
 
 	SAFE_RELEASE(m_pScriptDomain);
 	SAFE_RELEASE(m_pRootDomain);
-
-	gEnv->pMonoScriptSystem = NULL;
 }
 
 #define REGISTER_GAME_OBJECT_EXTENSION(framework, name)\
@@ -356,7 +350,7 @@ void CScriptSystem::RegisterDefaultBindings()
 			RegisterMethodBinding((*it).first, (*it).second);
 	}
 
-#define RegisterBinding(T) m_localScriptBinds.push_back((IMonoScriptBind *)new T());
+#define RegisterBinding(T) m_localScriptBinds.push_back(std::shared_ptr<IMonoScriptBind>(new T()));
 	RegisterBinding(CActorSystem);
 	RegisterBinding(CScriptbind_3DEngine);
 	RegisterBinding(CScriptbind_Physics);
@@ -372,8 +366,7 @@ void CScriptSystem::RegisterDefaultBindings()
 	RegisterBinding(CLevelSystem);
 	RegisterBinding(CUI);
 
-#define RegisterBindingAndSet(var, T) RegisterBinding(T); var = (T *)m_localScriptBinds.back();
-	RegisterBindingAndSet(m_pCallbackHandler, CCallbackHandler);
+#define RegisterBindingAndSet(var, T) RegisterBinding(T); var = (T *)m_localScriptBinds.back().get();
 	RegisterBindingAndSet(m_pEntityManager, CEntityManager);
 	RegisterBindingAndSet(m_pFlowManager, CFlowManager);
 	RegisterBindingAndSet(m_pInput, CInput);

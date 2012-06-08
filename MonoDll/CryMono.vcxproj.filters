@@ -45,9 +45,6 @@
     <ClInclude Include="Headers\IMonoAssembly.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="CallbackHandler.h">
-      <Filter>Mono\Callbacks</Filter>
-    </ClInclude>
     <ClInclude Include="Headers\IMonoEntityManager.h">
       <Filter>Interfaces\Subsystems</Filter>
     </ClInclude>
@@ -165,9 +162,6 @@
     <ClCompile Include="MonoArray.cpp">
       <Filter>Wrappers</Filter>
     </ClCompile>
-    <ClCompile Include="CallbackHandler.cpp">
-      <Filter>Mono\Callbacks</Filter>
-    </ClCompile>
     <ClCompile Include="MonoScriptSystem.cpp">
       <Filter>Mono</Filter>
     </ClCompile>
@@ -266,9 +260,6 @@
     </Filter>
     <Filter Include="Mono">
       <UniqueIdentifier>{2de1619b-2f0c-4705-a8e5-59c8778b080d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Mono\Callbacks">
-      <UniqueIdentifier>{f40082af-b3c5-4cbe-a79c-19b63a0de8f6}</UniqueIdentifier>
     </Filter>
     <Filter Include="ScriptBinds\Utils">
       <UniqueIdentifier>{76693c78-6092-4e31-8c05-8e5226c91219}</UniqueIdentifier>

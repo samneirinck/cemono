@@ -188,8 +188,6 @@ protected:
 	static TMonoEntities m_monoEntities;
 
 	static std::vector<const char *> m_monoEntityClasses;
-
-	int m_refs;
 };
 
 #endif //__ENTITY_MANAGER_H__

@@ -26,7 +26,6 @@ struct IMonoEntityManager;
 struct SCVars;
 
 class CFlowManager;
-class CCallbackHandler;
 class CInput;
 
 class CScriptSystem
@@ -87,7 +86,6 @@ public:
 
 	IMonoAssembly *GetDebugDatabaseCreator() { return m_pPdb2MdbAssembly; }
 
-	CCallbackHandler *GetCallbackHandler() const { return m_pCallbackHandler; }
 	CFlowManager *GetFlowManager() const { return m_pFlowManager; }
 
 	bool IsInitialized() { return m_pRootDomain != NULL; }
@@ -117,7 +115,6 @@ protected:
 	IMonoEntityManager *m_pEntityManager;
 	CFlowManager *m_pFlowManager;
 	CInput *m_pInput;
-	CCallbackHandler *m_pCallbackHandler;
 
 	IMonoConverter *m_pConverter;
 
@@ -130,7 +127,7 @@ protected:
 	TMethodBindings m_methodBindings;
 
 	// ScriptBinds declared in this project are stored here to make sure they are destructed on shutdown.
-	std::vector<IMonoScriptBind *> m_localScriptBinds;
+	std::vector<std::shared_ptr<IMonoScriptBind>> m_localScriptBinds;
 
 	TScriptCompilationListeners m_scriptReloadListeners;
 

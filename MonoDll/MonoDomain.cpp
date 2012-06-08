@@ -46,17 +46,13 @@ CScriptDomain::CScriptDomain(const char *name, bool setActive)
 CScriptDomain::~CScriptDomain()
 {
 	if(m_bRootDomain)
-	{
-		// cleanup currently crashes in Launcher
-		if(gEnv->IsEditor())
-			mono_jit_cleanup(m_pDomain);
-	}
+		mono_jit_cleanup(m_pDomain);
 	else
 	{
 		if(m_pDomain == mono_domain_get())
 			mono_domain_set(mono_get_root_domain(), false);
 
-		mono_domain_finalize(m_pDomain, -1);
+		mono_domain_finalize(m_pDomain, 2);
 
 		MonoObject *pException;
 		try

@@ -348,7 +348,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Actor.h" />
-    <ClInclude Include="CallbackHandler.h" />
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="FlowManager.h" />
     <ClInclude Include="FlowBaseNode.h" />
@@ -400,7 +399,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp" />
-    <ClCompile Include="CallbackHandler.cpp" />
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="FlowManager.cpp" />
     <ClCompile Include="MonoConverter.cpp" />

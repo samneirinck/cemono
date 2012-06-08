@@ -20,7 +20,6 @@ std::vector<const char *> CEntityManager::m_monoEntityClasses = std::vector<cons
 CEntityManager::TMonoEntities CEntityManager::m_monoEntities = CEntityManager::TMonoEntities();
 
 CEntityManager::CEntityManager()
-	: m_refs(0)
 {
 	REGISTER_METHOD(SpawnEntity);
 	REGISTER_METHOD(RemoveEntity);
@@ -81,7 +80,17 @@ CEntityManager::CEntityManager()
 
 CEntityManager::~CEntityManager()
 {
-	gEnv->pEntitySystem->RemoveSink(this);
+	m_monoEntityClasses.clear();
+
+	for(auto it = m_monoEntities.begin(); it != m_monoEntities.end(); ++it)
+	{
+		(*it).reset();
+
+		it = m_monoEntities.erase(it);
+	}
+
+	if(gEnv->pEntitySystem)
+		gEnv->pEntitySystem->RemoveSink(this);
 }
 
 bool CEntityManager::OnBeforeSpawn(SEntitySpawnParams &params)

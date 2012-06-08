@@ -55,7 +55,10 @@ struct SEventSystemHandler
 			m_pEventSystem->RegisterListener(this, "SEventSystemHandler");
 	}
 
-	~SEventSystemHandler() { m_pEventSystem->UnregisterListener(this); }
+	~SEventSystemHandler() 
+	{
+		//m_pEventSystem->UnregisterListener(this);
+	}
 
 	// IUIEventListener
 	virtual void OnEvent(const SUIEvent& event);
@@ -64,7 +67,7 @@ struct SEventSystemHandler
 	IUIEventSystem *GetEventSystem() { return m_pEventSystem; }
 
 private:
-
+	
 	IUIEventSystem  *m_pEventSystem;
 };
 

@@ -37,7 +37,8 @@ CScriptClass::~CScriptClass()
 {
 	mono_gchandle_free(m_instanceHandle);
 
-	gEnv->pMonoScriptSystem->RemoveScriptInstance(m_scriptId);
+	if(gEnv->pMonoScriptSystem)
+		gEnv->pMonoScriptSystem->RemoveScriptInstance(m_scriptId);
 
 	m_pInstance = 0;
 	m_pClass = 0;
