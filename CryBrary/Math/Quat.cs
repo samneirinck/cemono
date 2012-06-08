@@ -132,6 +132,14 @@ namespace CryEngine
 			W = values[3];
 		}
 
+		public Vec3 Column0 { get { return new Vec3(2 * (V.X * V.X + W * W) - 1, 2 * (V.Y * V.X + V.Z * W), 2 * (V.Z * V.X - V.Y * W)); } }
+		public Vec3 Column1 { get { return new Vec3(2 * (V.X * V.Y - V.Z * W), 2 * (V.Y * V.Y + W * W) - 1, 2 * (V.Z * V.Y + V.X * W)); } }
+		public Vec3 Column2 { get { return new Vec3(2 * (V.X * V.Z + V.Y * W), 2 * (V.Y * V.Z - V.X * W), 2 * (V.Z * V.Z + W * W) - 1); } }
+
+		public Vec3 Row0 { get { return new Vec3(2 * (V.X * V.X + W * W) - 1, 2 * (V.X * V.Y - V.Z * W), 2 * (V.X * V.Z + V.Y * W)); } }
+		public Vec3 Row1 { get { return new Vec3(2 * (V.Y * V.X + V.Z * W), 2 * (V.Y * V.Y + W * W) - 1, 2 * (V.Y * V.Z - V.X * W)); } }
+		public Vec3 Row2 { get { return new Vec3(2 * (V.Z * V.X - V.Y * W), 2 * (V.Z * V.Y + V.X * W), 2 * (V.Z * V.Z + W * W) - 1); } }
+
 		/// <summary>
 		/// Gets a value indicating whether this instance is equivalent to the identity quaternion.
 		/// </summary>
