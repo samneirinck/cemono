@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-
 namespace CryEngine
 {
-	public class GlobalPhysics
+	public static class GlobalPhysics
 	{
 		#region Externals
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
