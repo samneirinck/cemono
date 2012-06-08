@@ -11,6 +11,8 @@
     <RootNamespace>CryEngine</RootNamespace>
     <AssemblyName>CryBrary</AssemblyName>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -25,6 +27,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisIgnoreGeneratedCode>true</CodeAnalysisIgnoreGeneratedCode>
     <PlatformTarget>x86</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -37,6 +40,7 @@
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisRuleSet>BasicDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
     <PlatformTarget>x86</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -55,6 +59,7 @@
     <Optimize>false</Optimize>
     <DocumentationFile>CryBrary.xml</DocumentationFile>
     <RunCodeAnalysis>false</RunCodeAnalysis>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>..\..\..\Bin64\</OutputPath>
@@ -72,6 +77,7 @@
     <WarningLevel>2</WarningLevel>
     <DocumentationFile>CryBrary.xml</DocumentationFile>
     <RunCodeAnalysis>false</RunCodeAnalysis>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Profile|AnyCPU'">
     <OutputPath>..\..\..\Bin32\</OutputPath>
@@ -92,6 +98,7 @@
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>CryBrary.xml</DocumentationFile>
     <RunCodeAnalysis>false</RunCodeAnalysis>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Profile|x64'">
     <OutputPath>..\..\..\Bin64\</OutputPath>
@@ -112,6 +119,7 @@
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>CryBrary.xml</DocumentationFile>
     <RunCodeAnalysis>false</RunCodeAnalysis>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
@@ -135,6 +143,12 @@
   <ItemGroup>
     <Compile Include="Actor\Actor.cs" />
     <Compile Include="Actor\NativeActor.cs" />
+    <Compile Include="Async\AsyncJob.cs" />
+    <Compile Include="Async\Awaiter.cs" />
+    <Compile Include="Async\Delay.cs" />
+    <Compile Include="Async\FrameDelayJob.cs" />
+    <Compile Include="Async\IAsyncJob.cs" />
+    <Compile Include="Async\TimeDelayJob.cs" />
     <Compile Include="Engine\Level.cs" />
     <Compile Include="Entity\EntityBase.cs" />
     <Compile Include="Engine\TimeOfDay.cs" />
