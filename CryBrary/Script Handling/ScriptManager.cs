@@ -211,28 +211,8 @@ namespace CryEngine.Initialization
 							CVarAttribute attribute;
 							if(member.TryGetAttribute<CVarAttribute>(out attribute))
 							{
-								Type memberType = null;
-								if(member.MemberType == MemberTypes.Field)
-								{
-									var field = member as FieldInfo;
-									field.SetValue(null, attribute.DefaultValue);
-
-									memberType = field.FieldType;
-								}
-								else
-								{
-									var property = member as PropertyInfo;
-									property.SetValue(null, attribute.DefaultValue, null);
-
-									memberType = property.PropertyType;
-								}
-
-								if(memberType == typeof(string))
-									CVar.Register(attribute.Name ?? member.Name, (string)attribute.DefaultValue ?? "" as string, attribute.Comment ?? "", attribute.Flags);
-								else if(memberType == typeof(float))
-									CVar.Register(attribute.Name ?? member.Name, System.Convert.ToSingle(attribute.DefaultValue), attribute.Comment ?? "", attribute.Flags);
-								else if(memberType == typeof(int))
-									CVar.Register(attribute.Name ?? member.Name, System.Convert.ToInt32(attribute.DefaultValue), attribute.Comment ?? "", attribute.Flags);
+								// There's no way to pass the variable itself by reference to properly register the CVar.
+								//CVar.Register(attribute, member, 
 							}
 						}
 						break;

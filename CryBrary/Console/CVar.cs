@@ -6,12 +6,13 @@ using System.Runtime.Serialization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+using System.Reflection;
+
 namespace CryEngine
 {
-	public class CVar
+	public abstract class CVar
 	{
 		#region Externals
-		// Console commands
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static void _RegisterCommand(string name, string description, CVarFlags flags);
 
@@ -41,7 +42,8 @@ namespace CryEngine
 		extern internal static bool _HasCVar(string name);
 		#endregion
 
-		static List<CVar> internalCVars = new List<CVar>();
+		#region Statics
+		static List<CVar> CVars = new List<CVar>();
 
 		/// <summary>
 		/// Registers a CVar.
@@ -84,9 +86,54 @@ namespace CryEngine
 
 		private static CVar RegisterInternal(string name, object value, string help, CVarFlags flags)
 		{
-			internalCVars.Add(new CVar(name, value, flags, help));
+			CVars.Add(new DynamicCVar(name, value, flags, help));
 
-			return internalCVars.Last();
+			return CVars.Last();
+		}
+
+		public static CVar Register(CVarAttribute attribute, MemberInfo memberInfo, ref int value)
+		{
+			if(attribute.Name == null)
+				attribute.Name = memberInfo.Name;
+
+			CVar._RegisterCVarInt(attribute.Name, ref value, System.Convert.ToInt32(attribute.DefaultValue), attribute.Flags, attribute.Help);
+
+			if(memberInfo.MemberType == MemberTypes.Field)
+				CVars.Add(new StaticCVarField(attribute, memberInfo as FieldInfo));
+			else
+				CVars.Add(new StaticCVarProperty(attribute, memberInfo as PropertyInfo));
+
+			return CVars.Last();
+		}
+
+		public static CVar Register(CVarAttribute attribute, MemberInfo memberInfo, ref float value)
+		{
+			if(attribute.Name == null)
+				attribute.Name = memberInfo.Name;
+
+			CVar._RegisterCVarFloat(attribute.Name, ref value, System.Convert.ToSingle(attribute.DefaultValue), attribute.Flags, attribute.Help);
+
+			if(memberInfo.MemberType == MemberTypes.Field)
+				CVars.Add(new StaticCVarField(attribute, memberInfo as FieldInfo));
+			else
+				CVars.Add(new StaticCVarProperty(attribute, memberInfo as PropertyInfo));
+
+			return CVars.Last();
+		}
+
+		public static CVar Register(CVarAttribute attribute, MemberInfo memberInfo, string value)
+		{
+			if(attribute.Name == null)
+				attribute.Name = memberInfo.Name;
+
+			CVar._RegisterCVarString(attribute.Name, value, (string)attribute.DefaultValue ?? "", attribute.Flags, attribute.Help);
+
+			if(memberInfo.MemberType == MemberTypes.Field)
+				CVars.Add(new StaticCVarField(attribute, memberInfo as FieldInfo));
+			else
+				CVars.Add(new StaticCVarProperty(attribute, memberInfo as PropertyInfo));
+
+			return CVars.Last();
 		}
 
 		/// <summary>
@@ -96,12 +143,16 @@ namespace CryEngine
 		/// <returns></returns>
 		public static CVar Get(string name)
 		{
-			CVar cvar = internalCVars.FirstOrDefault(var => var.Name.Equals(name));
+			CVar cvar = CVars.FirstOrDefault(var => var.Name.Equals(name));
 			if(cvar != default(CVar))
 				return cvar;
 
 			if(CVar._HasCVar(name))
-				return new CVar(name);
+			{
+				CVars.Add(new ExternalCVar(name));
+
+				return CVars.Last();
+			}
 
 			return null;
 		}
@@ -119,7 +170,92 @@ namespace CryEngine
 
 			return false;
 		}
+		#endregion
 
+		public string Name { get; protected set; }
+		public string Help { get; protected set; }
+		public CVarFlags Flags { get; protected set; }
+
+		public virtual string String { get; set; }
+		public virtual float FVal { get; set; }
+		public virtual int IVal { get; set; }
+	}
+
+	/// <summary>
+	/// CVar created using CVarAttribute, targeting a field.
+	/// </summary>
+	class StaticCVarField : CVar
+	{
+		public StaticCVarField(CVarAttribute attribute, FieldInfo fieldInfo)
+		{
+			Name = attribute.Name;
+			Flags = attribute.Flags;
+			Help = attribute.Help;
+
+			fieldInfo.SetValue(null, attribute.DefaultValue);
+
+			field = fieldInfo;
+		}
+
+		public override string String
+		{
+			get { return field.GetValue(null) as string; }
+			set { field.SetValue(null, value); }
+		}
+		public override float FVal
+		{
+			get { return (float)field.GetValue(null); }
+			set { field.SetValue(null, value); }
+		}
+		public override int IVal
+		{
+			get { return (int)field.GetValue(null); }
+			set { field.SetValue(null, value); }
+		}
+
+		FieldInfo field;
+	}
+
+	/// <summary>
+	/// CVar created using CVarAttribute, targeting a property.
+	/// </summary>
+	class StaticCVarProperty : CVar
+	{
+		public StaticCVarProperty(CVarAttribute attribute, PropertyInfo propertyInfo)
+		{
+			Name = attribute.Name;
+			Flags = attribute.Flags;
+			Help = attribute.Help;
+
+			property.SetValue(null, attribute.DefaultValue, null);
+
+			property = propertyInfo;
+		}
+
+		public override string String
+		{
+			get { return property.GetValue(null, null) as string; }
+			set { property.SetValue(null, value, null); }
+		}
+		public override float FVal
+		{
+			get { return (float)property.GetValue(null, null); }
+			set { property.SetValue(null, value, null); }
+		}
+		public override int IVal
+		{
+			get { return (int)property.GetValue(null, null); }
+			set { property.SetValue(null, value, null); }
+		}
+
+		PropertyInfo property;
+	}
+
+	/// <summary>
+	/// CVar created at run-time
+	/// </summary>
+	class DynamicCVar : CVar
+	{
 		/// <summary>
 		/// Used by CryConsole.RegisterCVar to construct the CVar.
 		/// </summary>
@@ -127,7 +263,7 @@ namespace CryEngine
 		/// <param name="value"></param>
 		/// <param name="flags"></param>
 		/// <param name="help"></param>
-		internal CVar(string name, object value, CVarFlags flags, string help)
+		internal DynamicCVar(string name, object value, CVarFlags flags, string help)
 		{
 			Flags = flags;
 			Help = help;
@@ -135,106 +271,47 @@ namespace CryEngine
 
 			if(value is int)
 			{
-				Type = CVarType.Int;
 				IVal = (int)value;
 
 				CVar._RegisterCVarInt(Name, ref IntValue, IVal, Flags, Help);
 			}
 			else if(value is float || value is double)
 			{
-				Type = CVarType.Float;
 				FVal = (float)value;
 
 				CVar._RegisterCVarFloat(Name, ref FloatValue, FVal, Flags, Help);
 			}
 			else if(value is string)
 			{
-				Type = CVarType.String;
 				String = value as string;
 
 				// String CVars are not supported yet.
-				//CryConsole._RegisterCVarString(Name, ref StringValue, StringValue, Flags, Help);
+				CVar._RegisterCVarString(Name, StringValue, StringValue, Flags, Help);
 			}
 			else
 				throw new CVarException(string.Format("Invalid data type ({0}) used in CVar {1}.", value.GetType().ToString(), Name));
 		}
 
-		/// <summary>
-		/// Used to construct an "empty" CVar used to handle C++ registered CVars.
-		/// </summary>
-		/// <param name="name"></param>
-		internal CVar(string name)
-		{
-			Name = name;
-
-			ExternallyRegistered = true;
-		}
-
 		#region Properties
-
-		public string Name { get; set; }
-		public string Help { get; private set; }
-		public CVarFlags Flags { get; private set; }
-		public CVarType Type { get; private set; }
-
-		public string String
+		public override string String
 		{
-			get
-			{
-				if(ExternallyRegistered)
-					return CVar._GetCVarString(Name);
-
-				return StringValue;
-			}
-			set
-			{
-				if(ExternallyRegistered)
-					CVar._SetCVarString(Name, value);
-				else
-					StringValue = value;
-			}
+			get { return StringValue; }
+			set { StringValue = value; }
 		}
-		public float FVal
+		public override float FVal
 		{
-			get
-			{
-				if(ExternallyRegistered)
-					return CVar._GetCVarFloat(Name);
-
-				return FloatValue;
-			}
-			set
-			{
-				if(ExternallyRegistered)
-					CVar._SetCVarFloat(Name, value);
-				else
-					FloatValue = value;
-			}
+			get { return FloatValue; }
+			set { FloatValue = value; }
 		}
-		public int IVal
+		public override int IVal
 		{
-			get
-			{
-				if(ExternallyRegistered)
-					return CVar._GetCVarInt(Name);
-
-				return IntValue;
-			}
-			set
-			{
-				if(ExternallyRegistered)
-					CVar._SetCVarInt(Name, value);
-				else
-					IntValue = value;
-			}
+			get { return IntValue; }
+			set { IntValue = value; }
 		}
 
 		private string StringValue;
 		private float FloatValue;
 		private int IntValue;
-
-		private bool ExternallyRegistered;
-
 		#endregion
 
 		#region Overrides
@@ -257,13 +334,41 @@ namespace CryEngine
 		#endregion
 	}
 
+	/// <summary>
+	/// CVar created outside CryMono
+	/// </summary>
+	class ExternalCVar : CVar
+	{
+		internal ExternalCVar(string name)
+		{
+			Name = name;
+		}
+
+		public override string String
+		{
+			get { return CVar._GetCVarString(Name); }
+			set { CVar._SetCVarString(Name, value); }
+		}
+		public override float FVal
+		{
+			get { return CVar._GetCVarFloat(Name); }
+			set { CVar._SetCVarFloat(Name, value); }
+		}
+		public override int IVal
+		{
+			get { return CVar._GetCVarInt(Name); }
+			set { CVar._SetCVarInt(Name, value); }
+		}
+	}
+
+	//[Obsolete("CVars cannot be created using attributes at the moment.")]
 	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
 	public sealed class CVarAttribute : Attribute
 	{
 		public CVarAttribute() { }
 
 		public string Name;
-		public string Comment;
+		public string Help;
 		public CVarFlags Flags;
 		public object DefaultValue;
 	}
