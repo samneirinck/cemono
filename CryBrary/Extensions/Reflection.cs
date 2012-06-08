@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace CryEngine.Extensions
@@ -31,6 +33,17 @@ namespace CryEngine.Extensions
 		}
 
 		/// <summary>
+		/// Gets all instances of a given attribute on the selected member.
+		/// </summary>
+		/// <typeparam name="T">The attribute to search for.</typeparam>
+		/// <param name="memberInfo">The member on which the search is performed.</param>
+		/// <returns>The first instance of attribute T, or null if none is found.</returns>
+		public static IEnumerable<T> GetAttributes<T>(this MemberInfo memberInfo) where T : Attribute
+		{
+			return (T[])memberInfo.GetCustomAttributes(typeof(T), true);
+		}
+
+		/// <summary>
 		/// Gets the first instance of a given attribute on the selected member.
 		/// </summary>
 		/// <typeparam name="T">The attribute to search for.</typeparam>
@@ -38,10 +51,10 @@ namespace CryEngine.Extensions
 		/// <returns>The first instance of attribute T, or null if none is found.</returns>
 		public static T GetAttribute<T>(this MemberInfo memberInfo) where T : Attribute
 		{
-			var attributes = memberInfo.GetCustomAttributes(typeof(T), true);
-			if(attributes.Length > 0)
+			var attributes = memberInfo.GetAttributes<T>();
+			if(attributes.Count() > 0)
 			{
-				return (T)attributes[0];
+				return attributes.First();
 			}
 			else
 			{
