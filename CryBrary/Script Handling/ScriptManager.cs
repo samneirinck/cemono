@@ -213,9 +213,19 @@ namespace CryEngine.Initialization
 							{
 								Type memberType = null;
 								if(member.MemberType == MemberTypes.Field)
-									memberType = (member as FieldInfo).FieldType;
+								{
+									var field = member as FieldInfo;
+									field.SetValue(null, attribute.DefaultValue);
+
+									memberType = field.FieldType;
+								}
 								else
-									memberType = (member as PropertyInfo).PropertyType;
+								{
+									var property = member as PropertyInfo;
+									property.SetValue(null, attribute.DefaultValue, null);
+
+									memberType = property.PropertyType;
+								}
 
 								if(memberType == typeof(string))
 									CVar.Register(attribute.Name ?? member.Name, (string)attribute.DefaultValue ?? "" as string, attribute.Comment ?? "", attribute.Flags);
