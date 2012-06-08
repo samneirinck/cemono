@@ -124,9 +124,6 @@ CScriptSystem::~CScriptSystem()
 
 	SAFE_DELETE(m_pCVars);
 
-	for each(auto scriptbind in m_localScriptBinds)
-		scriptbind.reset();
-
 	m_scriptReloadListeners.clear();
 
 	SAFE_RELEASE(m_pScriptDomain);

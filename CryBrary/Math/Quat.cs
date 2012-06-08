@@ -132,6 +132,14 @@ namespace CryEngine
 			W = values[3];
 		}
 
+		public Vec3 Column0 { get { return new Vec3(2 * (V.X * V.X + W * W) - 1, 2 * (V.Y * V.X + V.Z * W), 2 * (V.Z * V.X - V.Y * W)); } }
+		public Vec3 Column1 { get { return new Vec3(2 * (V.X * V.Y - V.Z * W), 2 * (V.Y * V.Y + W * W) - 1, 2 * (V.Z * V.Y + V.X * W)); } }
+		public Vec3 Column2 { get { return new Vec3(2 * (V.X * V.Z + V.Y * W), 2 * (V.Y * V.Z - V.X * W), 2 * (V.Z * V.Z + W * W) - 1); } }
+
+		public Vec3 Row0 { get { return new Vec3(2 * (V.X * V.X + W * W) - 1, 2 * (V.X * V.Y - V.Z * W), 2 * (V.X * V.Z + V.Y * W)); } }
+		public Vec3 Row1 { get { return new Vec3(2 * (V.Y * V.X + V.Z * W), 2 * (V.Y * V.Y + W * W) - 1, 2 * (V.Y * V.Z - V.X * W)); } }
+		public Vec3 Row2 { get { return new Vec3(2 * (V.Z * V.X - V.Y * W), 2 * (V.Z * V.Y + V.X * W), 2 * (V.Z * V.Z + W * W) - 1); } }
+
 		/// <summary>
 		/// Gets a value indicating whether this instance is equivalent to the identity quaternion.
 		/// </summary>
@@ -217,6 +225,73 @@ namespace CryEngine
 					default: throw new ArgumentOutOfRangeException("index", "Indices for Quaternion run from 0 to 3, inclusive.");
 				}
 			}
+		}
+
+		public static Quat CreateRotationXYZ(Vec3 a)
+		{
+			var q = new Quat();
+			q.SetRotationXYZ(a);
+
+			return q;
+		}
+
+		public void SetRotationXYZ(Vec3 a)
+		{
+			float sx, cx; Math.SinCos(a.X * 0.5f, out sx, out cx);
+			float sy, cy; Math.SinCos(a.Y * 0.5f, out sy, out cy);
+			float sz, cz; Math.SinCos(a.Z * 0.5f, out sz, out cz);
+			W = cx * cy * cz + sx * sy * sz;
+			V.X = cz * cy * sx - sz * sy * cx;
+			V.Y = cz * sy * cx + sz * cy * sx;
+			V.Z = sz * cy * cx - cz * sy * sx;
+		}
+
+		public static Quat CreateRotationX(float r)
+		{
+			var q = new Quat();
+			q.SetRotationX(r);
+
+			return q;
+		}
+
+		public void SetRotationX(float r)
+		{
+			float s, c;
+			Math.SinCos(r * 0.5f, out s, out c);
+
+			W = c; V.X = s; V.Y = 0; V.Z = 0;
+		}
+
+		public static Quat CreateRotationY(float r)
+		{
+			var q = new Quat();
+			q.SetRotationY(r);
+
+			return q;
+		}
+
+		public void SetRotationY(float r)
+		{
+			float s, c;
+			Math.SinCos(r * 0.5f, out s, out c);
+
+			W = c; V.X = 0; V.Y = s; V.Z = 0;
+		}
+
+		public static Quat CreateRotationZ(float r)
+		{
+			var q = new Quat();
+			q.SetRotationZ(r);
+
+			return q;
+		}
+
+		public void SetRotationZ(float r)
+		{
+			float s, c;
+			Math.SinCos(r * 0.5f, out s, out c);
+
+			W = c; V.X = 0; V.Y = 0; V.Z = s;
 		}
 
 		/// <summary>
@@ -831,6 +906,19 @@ namespace CryEngine
 			result.V.Y = (ry * lw + ly * rw + rz * lx) - (rx * lz);
 			result.V.Z = (rz * lw + lz * rw + rx * ly) - (ry * lx);
 			result.W = (rw * lw) - (rx * lx + ry * ly + rz * lz);
+			return result;
+		}
+
+		public static Vec3 operator *(Quat left, Vec3 right)
+		{
+			Vec3 result,r2 = new Vec3();
+			r2.X=(left.V.Y*right.Z-left.V.Z*right.Y)+left.W*right.X;
+			r2.Y=(left.V.Z*right.X-left.V.X*right.Z)+left.W*right.Y;
+			r2.Z=(left.V.X*right.Y-left.V.Y*right.X)+left.W*right.Z;
+			result.X=(r2.Z*left.V.Y-r2.Y*left.V.Z); result.X+=result.X+right.X;
+			result.Y=(r2.X*left.V.Z-r2.Z*left.V.X); result.Y+=result.Y+right.Y;
+			result.Z=(r2.Y*left.V.X-r2.X*left.V.Y); result.Z+=result.Z+right.Z;
+
 			return result;
 		}
 
