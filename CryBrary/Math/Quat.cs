@@ -227,6 +227,73 @@ namespace CryEngine
 			}
 		}
 
+		public static Quat CreateRotationXYZ(Vec3 a)
+		{
+			var q = new Quat();
+			q.SetRotationXYZ(a);
+
+			return q;
+		}
+
+		public void SetRotationXYZ(Vec3 a)
+		{
+			float sx, cx; Math.SinCos(a.X * 0.5f, out sx, out cx);
+			float sy, cy; Math.SinCos(a.Y * 0.5f, out sy, out cy);
+			float sz, cz; Math.SinCos(a.Z * 0.5f, out sz, out cz);
+			W = cx * cy * cz + sx * sy * sz;
+			V.X = cz * cy * sx - sz * sy * cx;
+			V.Y = cz * sy * cx + sz * cy * sx;
+			V.Z = sz * cy * cx - cz * sy * sx;
+		}
+
+		public static Quat CreateRotationX(float r)
+		{
+			var q = new Quat();
+			q.SetRotationX(r);
+
+			return q;
+		}
+
+		public void SetRotationX(float r)
+		{
+			float s, c;
+			Math.SinCos(r * 0.5f, out s, out c);
+
+			W = c; V.X = s; V.Y = 0; V.Z = 0;
+		}
+
+		public static Quat CreateRotationY(float r)
+		{
+			var q = new Quat();
+			q.SetRotationY(r);
+
+			return q;
+		}
+
+		public void SetRotationY(float r)
+		{
+			float s, c;
+			Math.SinCos(r * 0.5f, out s, out c);
+
+			W = c; V.X = 0; V.Y = s; V.Z = 0;
+		}
+
+		public static Quat CreateRotationZ(float r)
+		{
+			var q = new Quat();
+			q.SetRotationZ(r);
+
+			return q;
+		}
+
+		public void SetRotationZ(float r)
+		{
+			float s, c;
+			Math.SinCos(r * 0.5f, out s, out c);
+
+			W = c; V.X = 0; V.Y = 0; V.Z = s;
+		}
+
 		/// <summary>
 		/// Conjugates the quaternion.
 		/// </summary>
@@ -839,6 +906,19 @@ namespace CryEngine
 			result.V.Y = (ry * lw + ly * rw + rz * lx) - (rx * lz);
 			result.V.Z = (rz * lw + lz * rw + rx * ly) - (ry * lx);
 			result.W = (rw * lw) - (rx * lx + ry * ly + rz * lz);
+			return result;
+		}
+
+		public static Vec3 operator *(Quat left, Vec3 right)
+		{
+			Vec3 result,r2 = new Vec3();
+			r2.X=(left.V.Y*right.Z-left.V.Z*right.Y)+left.W*right.X;
+			r2.Y=(left.V.Z*right.X-left.V.X*right.Z)+left.W*right.Y;
+			r2.Z=(left.V.X*right.Y-left.V.Y*right.X)+left.W*right.Z;
+			result.X=(r2.Z*left.V.Y-r2.Y*left.V.Z); result.X+=result.X+right.X;
+			result.Y=(r2.X*left.V.Z-r2.Z*left.V.X); result.Y+=result.Y+right.Y;
+			result.Z=(r2.Y*left.V.X-r2.X*left.V.Y); result.Z+=result.Z+right.Z;
+
 			return result;
 		}
 
