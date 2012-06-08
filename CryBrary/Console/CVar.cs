@@ -91,7 +91,25 @@ namespace CryEngine
 			return CVars.Last();
 		}
 
-		public static CVar Register(CVarAttribute attribute, MemberInfo memberInfo, ref int value)
+		public static CVar Register(string name, ref int value, string help = "", CVarFlags flags = CVarFlags.None)
+		{
+			CVar._RegisterCVarInt(name, ref value, value, flags, help);
+
+			CVars.Add(new ExternalCVar(name));
+
+			return CVars.Last();
+		}
+
+		public static CVar Register(string name, ref float value, string help = "", CVarFlags flags = CVarFlags.None)
+		{
+			CVar._RegisterCVarFloat(name, ref value, value, flags, help);
+
+			CVars.Add(new ExternalCVar(name));
+
+			return CVars.Last();
+		}
+
+		internal static CVar Register(CVarAttribute attribute, MemberInfo memberInfo, ref int value)
 		{
 			if(attribute.Name == null)
 				attribute.Name = memberInfo.Name;
@@ -106,7 +124,7 @@ namespace CryEngine
 			return CVars.Last();
 		}
 
-		public static CVar Register(CVarAttribute attribute, MemberInfo memberInfo, ref float value)
+		internal static CVar Register(CVarAttribute attribute, MemberInfo memberInfo, ref float value)
 		{
 			if(attribute.Name == null)
 				attribute.Name = memberInfo.Name;
@@ -121,7 +139,7 @@ namespace CryEngine
 			return CVars.Last();
 		}
 
-		public static CVar Register(CVarAttribute attribute, MemberInfo memberInfo, string value)
+		internal static CVar Register(CVarAttribute attribute, MemberInfo memberInfo, string value)
 		{
 			if(attribute.Name == null)
 				attribute.Name = memberInfo.Name;
