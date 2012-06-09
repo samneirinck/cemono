@@ -79,12 +79,7 @@ void CEntity::ProcessEvent(SEntityEvent &event)
 
 			CallMonoScript<void>(m_pScriptClass, "OnCollision", targetId, pCollision->pt, pCollision->vloc[0].GetNormalizedSafe(), pCollision->idmat[0], pCollision->n);
 		}
-		break;/*
-	case ENTITY_EVENT_ONHIT:
-		{
-			CallMonoScript<void>(m_scriptId, "OnHit");
-		}
-		break;*/
+		break;
 	case ENTITY_EVENT_START_GAME:
 		m_pScriptClass->CallMethod("OnStartGame");
 		break;
@@ -92,10 +87,34 @@ void CEntity::ProcessEvent(SEntityEvent &event)
 		m_pScriptClass->CallMethod("OnStartLevel");
 		break;
 	case ENTITY_EVENT_ENTERAREA:
-		CallMonoScript<void>(m_pScriptClass, "OnEnterArea", (EntityId)event.nParam[0], (EntityId)event.nParam[2]);
+		CallMonoScript<void>(m_pScriptClass, "OnEnterArea", (EntityId)event.nParam[0], (int)event.nParam[1], event.fParam[0]);
+		break;
+	case ENTITY_EVENT_MOVEINSIDEAREA:
+		CallMonoScript<void>(m_pScriptClass, "OnMoveInsideArea", (EntityId)event.nParam[0], (int)event.nParam[1], event.fParam[0]);
 		break;
 	case ENTITY_EVENT_LEAVEAREA:
-		CallMonoScript<void>(m_pScriptClass, "OnLeaveArea", (EntityId)event.nParam[0], (EntityId)event.nParam[2]);
+		CallMonoScript<void>(m_pScriptClass, "OnLeaveArea", (EntityId)event.nParam[0], (int)event.nParam[1], event.fParam[0]);
+		break;
+	case ENTITY_EVENT_ENTERNEARAREA:
+		CallMonoScript<void>(m_pScriptClass, "OnEnterNearArea", (EntityId)event.nParam[0], (int)event.nParam[1], event.fParam[0]);
+		break;
+	case ENTITY_EVENT_MOVENEARAREA:
+		CallMonoScript<void>(m_pScriptClass, "OnMoveNearArea", (EntityId)event.nParam[0], (int)event.nParam[1], event.fParam[0]);
+		break;
+	case ENTITY_EVENT_LEAVENEARAREA:
+		CallMonoScript<void>(m_pScriptClass, "OnLeaveNearArea", (EntityId)event.nParam[0], (int)event.nParam[1], event.fParam[0]);
+		break;
+	case ENTITY_EVENT_XFORM:
+		m_pScriptClass->CallMethod("OnMove");
+		break;
+	case ENTITY_EVENT_ATTACH:
+		CallMonoScript<void>(m_pScriptClass, "OnAttach", (EntityId)event.nParam[0]);
+		break;
+	case ENTITY_EVENT_DETACH:
+		CallMonoScript<void>(m_pScriptClass, "OnDetach", (EntityId)event.nParam[0]);
+		break;
+	case ENTITY_EVENT_DETACH_THIS:
+		CallMonoScript<void>(m_pScriptClass, "OnDetachThis", (EntityId)event.nParam[0]);
 		break;
 	}
 }

@@ -113,18 +113,30 @@ namespace CryEngine
 		protected virtual void OnStartLevel() { }
 
 		/// <summary>
-		/// Sent when triggering entity enters to the area proximity.
+		/// Sent when entity enters to the area proximity.
 		/// </summary>
-		/// <param name="triggerEntityId"></param>
+		/// <param name="entityId"></param>
 		/// <param name="areaEntityId"></param>
-		protected virtual void OnEnterArea(EntityId triggerEntityId, EntityId areaEntityId) { }
+		protected virtual void OnEnterArea(EntityId entityId, int areaEntityId) { }
 
 		/// <summary>
-		/// Sent when triggering entity leaves the area proximity.
+		/// Sent when entity moves inside the area proximity.
 		/// </summary>
-		/// <param name="triggerEntityId"></param>
+		/// <param name="entityId"></param>
+		/// <param name="areaId"></param>
+		/// <param name="fade"></param>
+		protected virtual void OnMoveInsideArea(EntityId entityId, int areaId, float fade) { }
+
+		/// <summary>
+		/// Sent when entity leaves the area proximity.
+		/// </summary>
+		/// <param name="entityId"></param>
 		/// <param name="areaEntityId"></param>
-		protected virtual void OnLeaveArea(EntityId triggerEntityId, EntityId areaEntityId) { }
+		protected virtual void OnLeaveArea(EntityId entityId, int areaEntityId) { }
+
+		protected virtual void OnEnterNearArea(EntityId entityId, int areaId, float fade) { }
+		protected virtual void OnLeaveNearArea(EntityId entityId, int areaId, float fade) { }
+		protected virtual void OnMoveNearArea(EntityId entityId, int areaId, float fade) { }
 
 		/// <summary>
 		/// Sent on entity collision.
@@ -147,6 +159,27 @@ namespace CryEngine
 		protected virtual void OnInit()
 		{
 		}
+
+		/// <summary>
+		/// Called when the entities local or world transformation matrix changes. (Position / Rotation / Scale)
+		/// </summary>
+		protected virtual void OnMove() { }
+
+		/// <summary>
+		/// Called whenever another entity has been linked to this entity.
+		/// </summary>
+		/// <param name="child"></param>
+		protected virtual void OnAttach(EntityId child) { }
+		/// <summary>
+		/// Called whenever another entity has been unlinked from this entity.
+		/// </summary>
+		/// <param name="child"></param>
+		protected virtual void OnDetach(EntityId child) { }
+		/// <summary>
+		/// Called whenever this entity is unliked from another entity.
+		/// </summary>
+		/// <param name="parent"></param>
+		protected virtual void OnDetachThis(EntityId parent) { }
 		#endregion
 
 		#region Base Logic
