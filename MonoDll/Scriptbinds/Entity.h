@@ -103,7 +103,7 @@ public:
 	// IEntitySystemSink
 	virtual bool OnBeforeSpawn(SEntitySpawnParams &params) { return true; }
 	virtual void OnSpawn(IEntity *pEntity,SEntitySpawnParams &params);
-	virtual bool OnRemove(IEntity *pEntity) { return true; }
+	virtual bool OnRemove(IEntity *pEntity);
 	virtual void OnReused( IEntity *pEntity, SEntitySpawnParams &params) {}
 	virtual void OnEvent(IEntity *pEntity, SEntityEvent &event) {}
 	// ~IEntitySystemSink
@@ -112,6 +112,8 @@ protected:
 	// IMonoScriptBind
 	virtual const char *GetClassName() { return "EntityBase"; }
 	// ~IMonoScriptBind
+
+	bool IsMonoEntity(const char *className);
 
 	// Scriptbinds
 	static bool SpawnEntity(EntitySpawnParams, bool, SMonoEntityInfo &entityInfo);

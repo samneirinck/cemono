@@ -73,25 +73,51 @@ CScriptbind_Entity::CScriptbind_Entity()
 	REGISTER_METHOD(SetAttachmentMaterial);
 	REGISTER_METHOD(GetAttachmentMaterial);
 
-	gEnv->pEntitySystem->AddSink(this, IEntitySystem::OnSpawn, 0);
+	gEnv->pEntitySystem->AddSink(this, IEntitySystem::OnSpawn | IEntitySystem::OnRemove, 0);
+}
+
+bool CScriptbind_Entity::IsMonoEntity(const char *className)
+{
+	for each(auto entityClass in m_monoEntityClasses)
+	{
+		if(!strcmp(entityClass, className))
+			return true;
+	}
+
+	return false;
 }
 
 void CScriptbind_Entity::OnSpawn(IEntity *pEntity,SEntitySpawnParams &params)
 {
 	const char *className = params.pClass->GetName();
-
-	bool exists = false;
-	for each(auto entityClass in m_monoEntityClasses)
-	{
-		if(!strcmp(entityClass, className))
-			exists = true;
-	}
-
-	if(!exists)
+	if(!IsMonoEntity(className))
 		return;
 
 	auto gameObject = gEnv->pGameFramework->GetIGameObjectSystem()->CreateGameObjectForEntity(pEntity->GetId());
 	gameObject->ActivateExtension(className);
+}
+
+bool CScriptbind_Entity::OnRemove(IEntity *pIEntity)
+{
+	const char *className = pIEntity->GetClass()->GetName();
+	if(!IsMonoEntity(className))
+		return true;
+
+	if(IMonoClass *pEntityClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("Entity"))
+	{
+		IMonoArray *pArgs = CreateMonoArray(1);
+		pArgs->Insert(pIEntity->GetId());
+
+		auto result = pEntityClass->CallMethod("InternalRemove", pArgs, true)->Unbox<bool>();
+
+		SAFE_RELEASE(pArgs);
+		SAFE_RELEASE(pEntityClass);
+
+		if(!result)
+			return false;
+	}
+
+	return true;
 }
 
 struct SMonoEntityCreator
