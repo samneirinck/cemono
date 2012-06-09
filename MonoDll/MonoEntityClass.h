@@ -28,7 +28,7 @@ public:
 	virtual const char *GetEditorHelperObjectName() const { return m_classInfo.sHelper; }
 	virtual const char *GetEditorIconName() const { return m_classInfo.sIcon; }
 	virtual bool LoadScript(bool bForceReload) { return false; }
-	virtual IEntityClass::UserProxyCreateFunc GetUserProxyCreateFunc() const { return NULL; }
+	virtual UserProxyCreateFunc GetUserProxyCreateFunc() const { return m_proxyCreateFunc; }
 	virtual void *GetUserProxyData() const { return NULL; }
 	virtual IEntityPropertyHandler *GetPropertyHandler() const { return m_pPropertyHandler;  }
 	virtual IEntityEventHandler *GetEventHandler() const { return m_pEventHandler; }
@@ -49,6 +49,7 @@ protected:
 	uint32	m_flags;
 	string	m_name;
 
+	UserProxyCreateFunc m_proxyCreateFunc;
 	SEditorClassInfo m_classInfo;
 
 	IEntityPropertyHandler *m_pPropertyHandler;

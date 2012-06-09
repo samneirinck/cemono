@@ -697,18 +697,26 @@
             Called when the level is started.
             </summary>
         </member>
-        <member name="M:CryEngine.Entity.OnEnterArea(CryEngine.EntityId,CryEngine.EntityId)">
+        <member name="M:CryEngine.Entity.OnEnterArea(CryEngine.EntityId,System.Int32)">
             <summary>
-            Sent when triggering entity enters to the area proximity.
+            Sent when entity enters to the area proximity.
             </summary>
-            <param name="triggerEntityId"></param>
+            <param name="entityId"></param>
             <param name="areaEntityId"></param>
         </member>
-        <member name="M:CryEngine.Entity.OnLeaveArea(CryEngine.EntityId,CryEngine.EntityId)">
+        <member name="M:CryEngine.Entity.OnMoveInsideArea(CryEngine.EntityId,System.Int32,System.Single)">
             <summary>
-            Sent when triggering entity leaves the area proximity.
+            Sent when entity moves inside the area proximity.
             </summary>
-            <param name="triggerEntityId"></param>
+            <param name="entityId"></param>
+            <param name="areaId"></param>
+            <param name="fade"></param>
+        </member>
+        <member name="M:CryEngine.Entity.OnLeaveArea(CryEngine.EntityId,System.Int32)">
+            <summary>
+            Sent when entity leaves the area proximity.
+            </summary>
+            <param name="entityId"></param>
             <param name="areaEntityId"></param>
         </member>
         <member name="M:CryEngine.Entity.OnCollision(CryEngine.EntityId,CryEngine.Vec3,CryEngine.Vec3,System.Int16,CryEngine.Vec3)">
@@ -730,6 +738,29 @@
             <summary>
             Called after level has been loaded, is not called on serialization.
             </summary>
+        </member>
+        <member name="M:CryEngine.Entity.OnMove">
+            <summary>
+            Called when the entities local or world transformation matrix changes. (Position / Rotation / Scale)
+            </summary>
+        </member>
+        <member name="M:CryEngine.Entity.OnAttach(CryEngine.EntityId)">
+            <summary>
+            Called whenever another entity has been linked to this entity.
+            </summary>
+            <param name="child"></param>
+        </member>
+        <member name="M:CryEngine.Entity.OnDetach(CryEngine.EntityId)">
+            <summary>
+            Called whenever another entity has been unlinked from this entity.
+            </summary>
+            <param name="child"></param>
+        </member>
+        <member name="M:CryEngine.Entity.OnDetachThis(CryEngine.EntityId)">
+            <summary>
+            Called whenever this entity is unliked from another entity.
+            </summary>
+            <param name="parent"></param>
         </member>
         <member name="M:CryEngine.Entity.LoadObject(System.String,System.Int32)">
             <summary>
@@ -3978,6 +4009,7 @@
         <member name="T:CryEngine.Testing.IgnoreTestAttribute">
             <summary>
             Indicates that a test should be ignored.
+            Ignored tests will not be reported as a success; they will be reported as ignored.
             </summary>
         </member>
         <member name="T:CryEngine.Testing.AssertionFailedException">

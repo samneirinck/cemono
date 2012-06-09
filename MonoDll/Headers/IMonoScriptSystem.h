@@ -105,8 +105,6 @@ struct IMonoScriptSystem : ICryUnknown
 	/// </summary>
 	virtual void Release() = 0;
 
-	virtual IMonoEntityManager *GetEntityManager() const = 0;
-	
 	/// <summary>
 	/// Registers a method binding, called from IMonoScriptBind.
 	/// </summary>

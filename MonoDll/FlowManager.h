@@ -9,7 +9,6 @@
 #ifndef __FLOW_MANAGER__
 #define __FLOW_MANAGER__
 
-#include "EntityManager.h"
 #include "MonoCommon.h"
 #include <IMonoScriptBind.h>
 

@@ -51,8 +51,6 @@ public:
 
 	virtual void Release() override { delete this; }
 
-	virtual IMonoEntityManager *GetEntityManager() const override { return m_pEntityManager; }
-
 	virtual void RegisterMethodBinding(const void *method, const char *fullMethodName) override;
 
 	virtual IMonoClass *InstantiateScript(const char *scriptName, EMonoScriptType scriptType = eScriptType_Unknown, IMonoArray *pConstructorParameters = nullptr) override;
@@ -112,7 +110,6 @@ protected:
 	// Map containing all scripts and their id's for quick access.
 	TScripts m_scripts;
 
-	IMonoEntityManager *m_pEntityManager;
 	CFlowManager *m_pFlowManager;
 	CInput *m_pInput;
 

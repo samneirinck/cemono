@@ -111,9 +111,6 @@ namespace CryEngine
 		extern internal static Quat _GetRotation(IntPtr ptr);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static string _GetPropertyValue(IntPtr ptr, string propertyName);
-
-		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static void _LoadObject(IntPtr ptr, string fileName, int slot);
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static string _GetStaticObjectFilePath(IntPtr ptr, int slot);
@@ -126,9 +123,6 @@ namespace CryEngine
 		/// <param name="slot"></param>
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static void _LoadCharacter(IntPtr ptr, string fileName, int slot);
-
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _CreateGameObjectForEntity(IntPtr ptr);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static int _GetAttachmentCount(IntPtr entPtr);
