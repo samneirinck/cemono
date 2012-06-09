@@ -28,11 +28,23 @@ void CConverter::Reset()
 
 IMonoArray *CConverter::CreateArray(int numArgs)
 {
+	if(numArgs < 1)
+	{
+		gEnv->pLog->LogError("Attempted to create array with invalid size %i", numArgs);
+		return NULL;
+	}
+
 	return new CScriptArray(numArgs); 
 }
 
 IMonoArray *CConverter::ToArray(mono::array arr)
 {
+	if(arr == NULL)
+	{
+		gEnv->pLog->LogError("Failed to convert mono::array");
+		return NULL;
+	}
+
 	return new CScriptArray(arr);
 }
 
@@ -57,8 +69,11 @@ IMonoObject *CConverter::ToManagedType(IMonoClass *pTo, void *object)
 
 IMonoObject *CConverter::ToObject(mono::object obj)
 {
-	//if(mono_object_get_class((MonoObject *)obj) == mono_get_array_class())
-		//return new CScriptArray((mono::array)obj);
+	if(obj == NULL)
+	{
+		gEnv->pLog->LogError("Failed to convert mono::object");
+		return NULL;
+	}
 
 	return new CScriptObject(obj);
 }
@@ -70,6 +85,8 @@ IMonoClass *CConverter::ToClass(IMonoObject *pObject)
 	MonoClass *pClass = mono_object_get_class((MonoObject *)pMonoObject);
 	if(pClass && mono_class_get_name(pClass))
 		return new CScriptClass(pClass, pMonoObject);
+	else
+		gEnv->pLog->LogError("Mono class object creation failed!");
 
 	return NULL;
 }
@@ -115,9 +132,4 @@ IMonoObject *CConverter::CreateObject(MonoAnyValue &any)
 	}
 
 	return NULL;
-}
-
-IMonoAssembly *CConverter::LoadAssembly(const char *assemblyPath)
-{
-	return new CScriptAssembly(assemblyPath);
 }

@@ -6,12 +6,6 @@
 CScriptArray::CScriptArray(int size)
 	: m_curIndex(0)
 {
-	if(size<1)
-	{
-		gEnv->pLog->LogError("Attempted to create array with invalid size %i", size);
-		Release();
-	}
-
 	m_pArray = (mono::array)mono_array_new(mono_domain_get(), mono_get_object_class(), size);
 }
 
@@ -46,6 +40,14 @@ IMonoObject *CScriptArray::GetItem(int index)
 	}
 	else
 		CryLogAlways("[Warning] Index out of range exception: Attempted to access index %i on IMonoArray of size %i", index, GetSize());
+
+	return NULL;
+}
+
+IMonoArray *CScriptArray::GetItemArray(int index) 
+{
+	if(mono::array monoArray = (mono::array)mono_array_get((MonoArray *)m_pArray, MonoArray *, index))
+		return new CScriptArray(monoArray);
 
 	return NULL;
 }

@@ -89,8 +89,6 @@ struct IMonoConverter
 	/// Converts an object into the specified managed type.
 	/// </summary>
 	virtual IMonoObject *ToManagedType(IMonoClass *pTo, void *object) = 0;
-
-	virtual IMonoAssembly *LoadAssembly(const char *assemblyPath) = 0;
 };
 
 #endif //__I_MONO_CONVERTER_H__

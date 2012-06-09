@@ -13,13 +13,6 @@ CScriptClass::CScriptClass(MonoClass *pClass, IMonoArray *pConstructorArguments)
 	, m_pInstance(NULL)
 	, m_scriptId(-1)
 {
-	if (!m_pClass)
-	{
-		gEnv->pLog->LogError("Mono class object creation failed!");
-
-		Release();
-	}
-
 	Instantiate(pConstructorArguments);
 }
 
