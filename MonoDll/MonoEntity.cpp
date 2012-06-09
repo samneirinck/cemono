@@ -153,7 +153,5 @@ void CEntity::FullSerialize(TSerialize ser)
 
 void CEntity::SetPropertyValue(IEntityPropertyHandler::SPropertyInfo propertyInfo, const char *value)
 {
-	CryLogAlways("setting property %s with value %s", propertyInfo.name, value);
-
 	CallMonoScript<void>(m_pScriptClass, "SetPropertyValue", propertyInfo.name, propertyInfo.type, value);
 }
