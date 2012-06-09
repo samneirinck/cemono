@@ -88,7 +88,6 @@ void CEntityPropertyHandler::SetProperty(IEntity *pIEntity, int index, const cha
 		pEntity->SetPropertyValue(m_properties.at(index), value);
 	else
 	{
-		CryLogAlways("1");
 		bool exists = false;
 		for(auto it = m_queuedProperties.begin(); it != m_queuedProperties.end(); ++it)
 		{
@@ -100,18 +99,13 @@ void CEntityPropertyHandler::SetProperty(IEntity *pIEntity, int index, const cha
 				break;
 			}
 		}
-		CryLogAlways("2");
 		if(!exists)
 		{
-			CryLogAlways("3");
 			DynArray<SQueuedProperty> queuedPropertiesForEntity;
-			CryLogAlways("4");
 			queuedPropertiesForEntity.push_back(SQueuedProperty(m_properties.at(index), value));
-			CryLogAlways("5");
+
 			m_queuedProperties.insert(TQueuedPropertyMap::value_type(id, queuedPropertiesForEntity));
-			CryLogAlways("6");
 		}
-		CryLogAlways("3");
 	}
 }
 
