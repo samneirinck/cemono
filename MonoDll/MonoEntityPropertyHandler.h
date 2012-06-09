@@ -11,6 +11,8 @@
 
 #include <IEntityClass.h>
 
+#include "MonoEntity.h"
+
 class CEntityPropertyHandler : public IEntityPropertyHandler
 {
 public:
@@ -31,7 +33,12 @@ public:
 	virtual void PropertiesChanged(IEntity* entity) {}
 	// -IEntityPropertyHandler
 
+	SQueuedProperty *GetQueuedProperties(EntityId id, int &numProperties);
+
 protected:
+
+	typedef std::map<EntityId, DynArray<SQueuedProperty>> TQueuedPropertyMap;
+	TQueuedPropertyMap m_queuedProperties;
 	std::vector<IEntityPropertyHandler::SPropertyInfo> m_properties;
 };
 

@@ -1,60 +1,64 @@
 #include "StdAfx.h"
 #include "MonoEntity.h"
+#include "MonoEntityPropertyHandler.h"
+
+#include "Scriptbinds\Entity.h"
+
+#include <IEntityClass.h>
 
 #include <IMonoScriptSystem.h>
+#include <IMonoAssembly.h>
 #include <IMonoConverter.h>
-#include <IMonoObject.h>
 
+#include <MonoCommon.h>
 
-CEntity::CEntity(SEntitySpawnParams &spawnParams)
-	: m_pGameObject(NULL)
-	, m_pScriptClass(NULL)
-	, m_entityGUID(spawnParams.guid)
+CEntity::CEntity()
+	: m_pScriptClass(NULL)
+	, m_bInitialized(false)
 {
 }
 
 CEntity::~CEntity()
 {
-#define REMOVE_EVENTLISTENER(event) gEnv->pEntitySystem->RemoveEntityEventListener(m_entityId, event, this);
-	REMOVE_EVENTLISTENER(ENTITY_EVENT_LEVEL_LOADED);
-	REMOVE_EVENTLISTENER(ENTITY_EVENT_RESET);
-	REMOVE_EVENTLISTENER(ENTITY_EVENT_COLLISION);
-	REMOVE_EVENTLISTENER(ENTITY_EVENT_START_GAME);
-	REMOVE_EVENTLISTENER(ENTITY_EVENT_START_LEVEL);
-	REMOVE_EVENTLISTENER(ENTITY_EVENT_ENTERAREA);
-	REMOVE_EVENTLISTENER(ENTITY_EVENT_LEAVEAREA);
-#undef REMOVE_EVENTLISTENER
-
 	SAFE_RELEASE(m_pScriptClass);
 }
 
-void CEntity::OnSpawn(IEntity *pEntity, SEntitySpawnParams &spawnParams)
+bool CEntity::Init(IGameObject *pGameObject)
 {
-	m_entityId = spawnParams.id;
+	SetGameObject(pGameObject);
 
-#define ADD_EVENTLISTENER(event) gEnv->pEntitySystem->AddEntityEventListener(m_entityId, event, this);
-	ADD_EVENTLISTENER(ENTITY_EVENT_LEVEL_LOADED);
-	ADD_EVENTLISTENER(ENTITY_EVENT_RESET);
-	ADD_EVENTLISTENER(ENTITY_EVENT_COLLISION);
-	ADD_EVENTLISTENER(ENTITY_EVENT_START_GAME);
-	ADD_EVENTLISTENER(ENTITY_EVENT_START_LEVEL);
-	ADD_EVENTLISTENER(ENTITY_EVENT_ENTERAREA);
-	ADD_EVENTLISTENER(ENTITY_EVENT_LEAVEAREA);
-#undef ADD_EVENTLISTENER
+	pGameObject->EnablePrePhysicsUpdate( ePPU_Always );
+	pGameObject->EnablePhysicsEvent( true, eEPE_OnPostStepImmediate );
 
-	m_pScriptClass = gEnv->pMonoScriptSystem->InstantiateScript(spawnParams.pClass->GetName(), eScriptType_Entity);
+	IEntity *pEntity = GetEntity();
+	IEntityClass *pEntityClass = pEntity->GetClass();
+
+	m_pScriptClass = gEnv->pMonoScriptSystem->InstantiateScript(pEntityClass->GetName(), eScriptType_Entity);
 
 	IMonoClass *pEntityInfoClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("EntityInfo");
 
-	CallMonoScript<void>(m_pScriptClass, "InternalSpawn", gEnv->pMonoScriptSystem->GetConverter()->ToManagedType(pEntityInfoClass, &SMonoEntityInfo(pEntity, m_entityId)));
+	CallMonoScript<void>(m_pScriptClass, "InternalSpawn", gEnv->pMonoScriptSystem->GetConverter()->ToManagedType(pEntityInfoClass, &SMonoEntityInfo(pEntity)));
 
-	for each(auto propertyCall in m_propertyQueue)
-		CallMonoScript<void>(m_pScriptClass, "SetPropertyValue", propertyCall.propertyInfo.name, propertyCall.propertyInfo.type, propertyCall.value.c_str());
+	int numProperties;
+	auto pProperties = static_cast<CEntityPropertyHandler *>(pEntityClass->GetPropertyHandler())->GetQueuedProperties(pEntity->GetId(), numProperties);
 
-	m_propertyQueue.clear();
+	if(pProperties)
+	{
+		for(int i = 0; i < numProperties; i++)
+		{
+			auto queuedProperty = pProperties[i];
+
+			CryLogAlways("Setting property %s with value %s on entity %i", queuedProperty.propertyInfo.name, queuedProperty.value.c_str(), pEntity->GetId());
+			CallMonoScript<void>(m_pScriptClass, "SetPropertyValue", queuedProperty.propertyInfo.name, queuedProperty.propertyInfo.type, queuedProperty.value.c_str());
+		}
+	}
+
+	m_bInitialized = true;
+
+	return true;
 }
 
-void CEntity::OnEntityEvent(IEntity *pEntity,SEntityEvent &event)
+void CEntity::ProcessEvent(SEntityEvent &event)
 {
 	switch(event.event)
 	{
@@ -99,8 +103,5 @@ void CEntity::OnEntityEvent(IEntity *pEntity,SEntityEvent &event)
 
 void CEntity::SetPropertyValue(IEntityPropertyHandler::SPropertyInfo propertyInfo, const char *value)
 {
-	if(IsSpawned())
-		CallMonoScript<void>(m_pScriptClass, "SetPropertyValue", propertyInfo.name, propertyInfo.type, value);
-	else
-		m_propertyQueue.push_back(SQueuedProperty(propertyInfo, value));
+	CallMonoScript<void>(m_pScriptClass, "SetPropertyValue", propertyInfo.name, propertyInfo.type, value);
 }

@@ -6,17 +6,17 @@
 //////////////////////////////////////////////////////////////////////////
 // ??/??/2011 : Created by Filip 'i59' Lundgren
 ////////////////////////////////////////////////////////////////////////*/
+
 #ifndef __MONO_ENTITY__
 #define __MONO_ENTITY__
 
-#include <IAnimatedCharacter.h>
-
-#include <IEntityClass.h>
-
-#include "EntityManager.h"
+#include <IGameObject.h>
+#include <IMonoClass.h>
 
 struct SQueuedProperty
 {
+	SQueuedProperty() {}
+
 	SQueuedProperty(IEntityPropertyHandler::SPropertyInfo propInfo, const char *val)
 		: propertyInfo(propInfo)
 		, value(string(val)) {}
@@ -25,41 +25,60 @@ struct SQueuedProperty
 	IEntityPropertyHandler::SPropertyInfo propertyInfo;
 };
 
-class CEntity : public IEntityEventListener
+class CEntity
+	: public CGameObjectExtensionHelper<CEntity, IGameObjectExtension>
+	, public IEntityProxy
 {
 public:
-	CEntity(SEntitySpawnParams &spawnParams);
-	~CEntity();
+	CEntity();
+	virtual ~CEntity();
 
-	// IEntityEventListener
-	virtual void OnEntityEvent( IEntity *pEntity,SEntityEvent &event );
-	// ~IEntityEventListener
+	// IGameObjectExtension
+	virtual bool Init(IGameObject *pGameObject);
+	virtual void InitClient( int channelId ) {}
+	virtual void PostInit(IGameObject *pGameObject) {}
+	virtual void PostInitClient( int channelId ) {}
+	virtual bool ReloadExtension( IGameObject* pGameObject, const SEntitySpawnParams& params ) { return false; }
+	virtual void PostReloadExtension( IGameObject* pGameObject, const SEntitySpawnParams& params ) {}
+	virtual bool GetEntityPoolSignature( TSerialize signature ) { return false; }
+	virtual void Release() { delete this; }
+	virtual void FullSerialize( TSerialize ser ) {}
+	virtual bool NetSerialize( TSerialize ser, EEntityAspects aspect, uint8 profile, int flags ) { return true; }
+	virtual void PostSerialize() {}
+	virtual void SerializeSpawnInfo( TSerialize ser ) {}
+	virtual ISerializableInfoPtr GetSpawnInfo() { return 0; }
+	virtual void Update( SEntityUpdateContext& ctx, int updateSlot ) {}
+	virtual void PostUpdate( float frameTime ) {}
+	virtual void PostRemoteSpawn() {}
+	virtual void HandleEvent( const SGameObjectEvent& event ) {}
+	virtual void ProcessEvent( SEntityEvent& event );
+	virtual void SetChannelId( uint16 id ) {}
+	virtual void SetAuthority( bool auth ) {}
+	virtual void GetMemoryUsage( ICrySizer* s ) const { s->Add( *this ); }
+	// ~IGameObjectExtension
 
-	void SetPropertyValue(IEntityPropertyHandler::SPropertyInfo propertyInfo, const char *value);
-	// Register game object after using IGameObjectSystem::CreateGameObjectForEntity.
-	void RegisterGameObject(IGameObject *pGameObject) { m_pGameObject = pGameObject; }
-
-	void OnSpawn(IEntity *pEntity, SEntitySpawnParams &spawnParams);
-
-	IGameObject *GetGameObject() { return m_pGameObject; }
-
-	EntityId GetEntityId() { return m_entityId; }
-	EntityGUID GetEntityGUID() { return m_entityGUID; }
+	// IEntityProxy
+	virtual EEntityProxy GetType() { return ENTITY_PROXY_USER; };
+	virtual bool Init(IEntity *pEntity, SEntitySpawnParams &spawnParams) { return true; }
+	virtual void Reload(IEntity *pEntity, SEntitySpawnParams &params) {}
+	virtual void Done() {}
+	virtual	void Update(SEntityUpdateContext &ctx) {}
+	virtual void SerializeXML(XmlNodeRef &entityNode, bool loading) {}
+	virtual void Serialize(TSerialize ser) {}
+	virtual bool NeedSerialize() { return true; }
+	virtual bool GetSignature(TSerialize signature) { return true; }
+	// ~IEntityProxy
 
 	IMonoClass *GetScript() { return m_pScriptClass; }
 
-	bool IsSpawned() { return m_pScriptClass != NULL; }
+	void SetPropertyValue(IEntityPropertyHandler::SPropertyInfo propertyInfo, const char *value);
+
+	bool IsInitialized() { return m_bInitialized; }
 
 protected:
-	EntityId m_entityId;
-	EntityGUID m_entityGUID;
-
 	IMonoClass *m_pScriptClass;
 
-	IGameObject *m_pGameObject;
-
-	// If we haven't spawned yet, we have to store these and call them on spawn
-	std::list<SQueuedProperty> m_propertyQueue;
+	bool m_bInitialized;
 };
 
 #endif

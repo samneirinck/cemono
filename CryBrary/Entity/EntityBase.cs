@@ -128,9 +128,6 @@ namespace CryEngine
 		extern internal static void _LoadCharacter(IntPtr ptr, string fileName, int slot);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _CreateGameObjectForEntity(IntPtr ptr);
-
-		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static int _GetAttachmentCount(IntPtr entPtr);
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static IntPtr _GetAttachmentMaterialByIndex(IntPtr entPtr, int index);

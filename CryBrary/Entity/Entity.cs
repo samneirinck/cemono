@@ -158,8 +158,6 @@ namespace CryEngine
 
 		internal virtual void SetPropertyValue(string propertyName, EntityPropertyType propertyType, string valueString)
 		{
-			Debug.LogAlways("SetPropertyValue on entity {0}; property {1} {2}", Name, propertyName, valueString);
-
 			if(valueString == null)
 				throw new ArgumentNullException("value");
 			else if(propertyName == null)

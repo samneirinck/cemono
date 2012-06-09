@@ -40,8 +40,8 @@
 #include "Scriptbinds\ViewSystem.h"
 #include "Scriptbinds\LevelSystem.h"
 #include "Scriptbinds\UI.h"
+#include "Scriptbinds\Entity.h"
 
-#include "EntityManager.h"
 #include "FlowManager.h"
 #include "MonoInput.h"
 
@@ -362,9 +362,9 @@ void CScriptSystem::RegisterDefaultBindings()
 	RegisterBinding(CScriptbind_ViewSystem);
 	RegisterBinding(CLevelSystem);
 	RegisterBinding(CUI);
+	RegisterBinding(CScriptbind_Entity);
 
 #define RegisterBindingAndSet(var, T) RegisterBinding(T); var = (T *)m_localScriptBinds.back().get();
-	RegisterBindingAndSet(m_pEntityManager, CEntityManager);
 	RegisterBindingAndSet(m_pFlowManager, CFlowManager);
 	RegisterBindingAndSet(m_pInput, CInput);
 

@@ -1,7 +1,6 @@
 #include "StdAfx.h"
 #include "MonoEntityPropertyHandler.h"
 
-#include "EntityManager.h"
 #include "MonoEntity.h"
 
 #include <MonoCommon.h>
@@ -26,10 +25,65 @@ bool CEntityPropertyHandler::GetPropertyInfo(int index, SPropertyInfo& info ) co
 	return true;
 }
 
-void CEntityPropertyHandler::SetProperty(IEntity *pEntity, int index, const char *value)
+SQueuedProperty *CEntityPropertyHandler::GetQueuedProperties(EntityId id, int &numProperties)
 {
-	if(auto entity = static_cast<CEntityManager *>(gEnv->pMonoScriptSystem->GetEntityManager())->GetMonoEntity(pEntity->GetGuid()))
-		entity->SetPropertyValue(m_properties.at(index), value);
+	for each(auto pair in m_queuedProperties)
+	{
+		if(pair.first == id)
+		{
+			numProperties = pair.second.size();
+			SQueuedProperty *pProperties = new SQueuedProperty[numProperties];
+
+			int i = 0;
+			for(auto it = pair.second.begin(); it != pair.second.end(); ++it)
+			{
+				pProperties[i] = *it;
+
+				i++;
+			}
+
+			return pProperties;
+		}
+	}
+
+	return NULL;
+}
+
+void CEntityPropertyHandler::SetProperty(IEntity *pIEntity, int index, const char *value)
+{
+	EntityId id = pIEntity->GetId();
+
+	CryLogAlways("Trying to set property %s with value %s on entity %i", m_properties.at(index).name, value, id);
+
+	CEntity *pEntity = NULL;
+	if(IGameObject *pGameObject = gEnv->pGameFramework->GetGameObject(id))
+		pEntity = static_cast<CEntity *>(pGameObject->QueryExtension(pIEntity->GetClass()->GetName()));
+
+	// Only true after game has started, limiting this to changes made in Editor.
+	if(pEntity && pEntity->IsInitialized())
+		pEntity->SetPropertyValue(m_properties.at(index), value);
+	else
+	{
+		bool exists = false;
+		for(auto it = m_queuedProperties.begin(); it != m_queuedProperties.end(); ++it)
+		{
+			if((*it).first == id)
+			{
+				(*it).second.push_back(SQueuedProperty(m_properties.at(index), value));
+
+				exists = true;
+				break;
+			}
+		}
+
+		if(!exists)
+		{
+			DynArray<SQueuedProperty> queuedPropertiesForEntity;
+			queuedPropertiesForEntity.push_back(SQueuedProperty(m_properties.at(index), value));
+
+			m_queuedProperties.insert(TQueuedPropertyMap::value_type(id, queuedPropertiesForEntity));
+		}
+	}
 }
 
 const char *CEntityPropertyHandler::GetProperty(IEntity *pEntity, int index) const

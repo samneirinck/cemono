@@ -348,7 +348,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Actor.h" />
-    <ClInclude Include="EntityManager.h" />
     <ClInclude Include="FlowManager.h" />
     <ClInclude Include="FlowBaseNode.h" />
     <ClInclude Include="Headers\IMonoArray.h" />
@@ -356,7 +355,6 @@
     <ClInclude Include="Headers\IMonoClass.h" />
     <ClInclude Include="Headers\IMonoConverter.h" />
     <ClInclude Include="Headers\IMonoDomain.h" />
-    <ClInclude Include="Headers\IMonoEntityManager.h" />
     <ClInclude Include="Headers\IMonoInput.h" />
     <ClInclude Include="Headers\IMonoObject.h" />
     <ClInclude Include="Headers\MonoAnyValue.h" />
@@ -381,6 +379,7 @@
     <ClInclude Include="Headers\IMonoScriptBind.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Scriptbinds\ActorSystem.h" />
+    <ClInclude Include="Scriptbinds\Entity.h" />
     <ClInclude Include="Scriptbinds\ItemSystem.h" />
     <ClInclude Include="Scriptbinds\Console.h" />
     <ClInclude Include="Scriptbinds\3DEngine.h" />
@@ -399,7 +398,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp" />
-    <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="FlowManager.cpp" />
     <ClCompile Include="MonoConverter.cpp" />
     <ClCompile Include="MonoCVars.cpp" />
@@ -416,6 +414,7 @@
     <ClCompile Include="MonoEntityClass.cpp" />
     <ClCompile Include="MonoEntityPropertyHandler.cpp" />
     <ClCompile Include="Scriptbinds\ActorSystem.cpp" />
+    <ClCompile Include="Scriptbinds\Entity.cpp" />
     <ClCompile Include="Scriptbinds\ItemSystem.cpp" />
     <ClCompile Include="Scriptbinds\Console.cpp" />
     <ClCompile Include="Scriptbinds\3DEngine.cpp" />
