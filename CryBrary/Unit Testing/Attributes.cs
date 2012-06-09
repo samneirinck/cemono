@@ -8,6 +8,23 @@ namespace CryEngine.Testing
 	[AttributeUsage(AttributeTargets.Class)]
 	public sealed class TestCollectionAttribute : Attribute
 	{
+		public string Name { get; set; }
+		public string Description { get; set; }
+
+		public TestCollectionAttribute()
+		{
+		}
+
+		public TestCollectionAttribute(string name)
+		{
+			Name = name;
+		}
+
+		public TestCollectionAttribute(string name, string description)
+		{
+			Name = name;
+			Description = description;
+		}
 	}
 
 	/// <summary>
@@ -17,5 +34,29 @@ namespace CryEngine.Testing
 	[AttributeUsage(AttributeTargets.Method)]
 	public sealed class TestAttribute : Attribute
 	{
+		public string Name { get; set; }
+		public string Description { get; set; }
+
+		public TestAttribute()
+		{
+		}
+
+		public TestAttribute(string name)
+		{
+			Name = name;
+		}
+
+		public TestAttribute(string name, string description)
+		{
+			Name = name; 
+			Description = description;
+		}
 	}
+
+	/// <summary>
+	/// Indicates that a test should be ignored.
+	/// Ignored tests will not be reported as a success; they will be reported as ignored.
+	/// </summary>
+	[AttributeUsage(AttributeTargets.Method)]
+	public sealed class IgnoreTestAttribute : Attribute { }
 }

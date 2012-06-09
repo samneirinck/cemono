@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using CryEngine.Extensions;
 using CryEngine.Testing;
+using CryEngine.Testing.Internals;
 
 namespace CryEngine.Initialization
 {
@@ -204,7 +205,10 @@ namespace CryEngine.Initialization
 					var collection = new TestCollection
 					{
 						Instance = ctor.Invoke(Type.EmptyTypes),
-						Tests = type.GetMethods().Where(method => method.ContainsAttribute<TestAttribute>())
+						Tests = from method in type.GetMethods()
+								where method.ContainsAttribute<TestAttribute>()
+									&& method.GetParameters().Length == 0
+								select method
 					};
 
 					TestManager.TestCollections.Add(collection);

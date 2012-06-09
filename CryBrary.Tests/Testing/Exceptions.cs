@@ -8,25 +8,29 @@ using TestFixture = NUnit.Framework.TestFixtureAttribute;
 namespace CryBrary.Tests.UnitTester
 {
 	[TestFixture]
-	public class Assertion
+	public class Exceptions
 	{
 		[TestAttribute]
-		public void ReferenceEquals_Valid()
+		public void Throw_Valid()
 		{
-			var lhs = new object();
-			var rhs = lhs;
+			var obj = new object();
 
-			Assert.IsTrue(lhs == rhs);
+			Assert.Throws<InvalidCastException>(() =>
+			{
+				var myInt = (int)obj;
+			});
 		}
 
 		[TestAttribute]
 		[ExpectedException(typeof(AssertionFailedException))]
-		public void ReferenceEquals_Invalid()
+		public void Throw_Invalid()
 		{
-			var lhs = new object();
-			var rhs = new object();
+			object obj = 1;
 
-			Assert.IsTrue(lhs == rhs);
+			Assert.Throws<InvalidCastException>(() =>
+			{
+				var myInt = (int)obj;
+			});
 		}
 	}
 }

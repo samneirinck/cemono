@@ -129,6 +129,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.XML" />
     <Reference Include="System.Xml.Linq" />
@@ -139,6 +140,7 @@
     <Compile Include="Engine\Level.cs" />
     <Compile Include="Entity\EntityBase.cs" />
     <Compile Include="Engine\TimeOfDay.cs" />
+    <Compile Include="Extensions\Enum.cs" />
     <Compile Include="Extensions\IDictionary.cs" />
     <Compile Include="Extensions\IEnumerable.cs" />
     <Compile Include="FlowSystem\Attributes.cs" />
@@ -169,8 +171,17 @@
     <Compile Include="Unit Testing\Assertion.cs" />
     <Compile Include="Unit Testing\Attributes.cs" />
     <Compile Include="Unit Testing\Exceptions.cs" />
-    <Compile Include="Unit Testing\TestCollection.cs" />
-    <Compile Include="Unit Testing\TestManager.cs" />
+    <Compile Include="Unit Testing\Reporting\ConsoleListener.cs" />
+    <Compile Include="Unit Testing\Reporting\ReportForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Unit Testing\Reporting\ReportForm.Designer.cs">
+      <DependentUpon>ReportForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Unit Testing\Reporting\ListenerInterface.cs" />
+    <Compile Include="Unit Testing\Internal.cs" />
+    <Compile Include="Unit Testing\Results.cs" />
+    <Compile Include="Unit Testing\Manager.cs" />
     <Compile Include="UI\EventSystem.cs" />
     <Compile Include="UI\UI.cs" />
     <Compile Include="Serialization\AppDomainSerializer.cs" />
@@ -210,7 +221,11 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Unit Testing\Reporting\ReportForm.resx">
+      <DependentUpon>ReportForm.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

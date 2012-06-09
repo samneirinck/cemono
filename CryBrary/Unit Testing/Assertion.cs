@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Collections;
 
 namespace CryEngine.Testing
 {

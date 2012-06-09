@@ -27,7 +27,7 @@ namespace CryEngine.Testing
 		{
 		}
 
-		protected AssertionFailedException(SerializationInfo info, StreamingContext context)
+		public AssertionFailedException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
 		}
