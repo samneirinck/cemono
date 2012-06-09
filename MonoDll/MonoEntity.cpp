@@ -48,11 +48,14 @@ bool CEntity::Init(IGameObject *pGameObject)
 		{
 			auto queuedProperty = pProperties[i];
 
-			CallMonoScript<void>(m_pScriptClass, "SetPropertyValue", queuedProperty.propertyInfo.name, queuedProperty.propertyInfo.type, queuedProperty.value.c_str());
+			SetPropertyValue(queuedProperty.propertyInfo, queuedProperty.value.c_str());
 		}
 	}
 
 	m_bInitialized = true;
+
+	if (!GetGameObject()->BindToNetwork())
+		return false;
 
 	return true;
 }
@@ -119,7 +122,38 @@ void CEntity::ProcessEvent(SEntityEvent &event)
 	}
 }
 
+void CEntity::FullSerialize(TSerialize ser)
+{
+	IEntity *pEntity = GetEntity();
+
+	ser.BeginGroup("Properties");
+	auto pPropertyHandler = static_cast<CEntityPropertyHandler *>(pEntity->GetClass()->GetPropertyHandler());
+	for(int i = 0; i < pPropertyHandler->GetPropertyCount(); i++)
+	{
+		if(ser.IsWriting())
+		{
+			IEntityPropertyHandler::SPropertyInfo propertyInfo;
+			pPropertyHandler->GetPropertyInfo(i, propertyInfo);
+
+			ser.Value(propertyInfo.name, pPropertyHandler->GetProperty(pEntity, i));
+		}
+		else
+		{
+			IEntityPropertyHandler::SPropertyInfo propertyInfo;
+			pPropertyHandler->GetPropertyInfo(i, propertyInfo);
+
+			char *propertyValue = NULL;
+			ser.ValueChar(propertyInfo.name, propertyValue, 0);
+
+			pPropertyHandler->SetProperty(pEntity, i, propertyValue);
+		}
+	}
+	ser.EndGroup();
+}
+
 void CEntity::SetPropertyValue(IEntityPropertyHandler::SPropertyInfo propertyInfo, const char *value)
 {
+	CryLogAlways("setting property %s with value %s", propertyInfo.name, value);
+
 	CallMonoScript<void>(m_pScriptClass, "SetPropertyValue", propertyInfo.name, propertyInfo.type, value);
 }

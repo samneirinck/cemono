@@ -41,7 +41,7 @@ public:
 	virtual void PostReloadExtension( IGameObject* pGameObject, const SEntitySpawnParams& params ) {}
 	virtual bool GetEntityPoolSignature( TSerialize signature ) { return false; }
 	virtual void Release() { delete this; }
-	virtual void FullSerialize( TSerialize ser ) {}
+	virtual void FullSerialize(TSerialize ser);
 	virtual bool NetSerialize( TSerialize ser, EEntityAspects aspect, uint8 profile, int flags ) { return true; }
 	virtual void PostSerialize() {}
 	virtual void SerializeSpawnInfo( TSerialize ser ) {}

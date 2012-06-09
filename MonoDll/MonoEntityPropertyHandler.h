@@ -22,7 +22,7 @@ public:
 	// IEntityPropertyHandler interface
 	virtual void GetMemoryUsage( ICrySizer *pSizer ) const { pSizer->Add(m_properties); }
 	virtual void RefreshProperties() {}
-	virtual void LoadEntityXMLProperties(IEntity* entity, const XmlNodeRef& xml) {}
+	virtual void LoadEntityXMLProperties(IEntity* entity, const XmlNodeRef& xml);
 	virtual void LoadArchetypeXMLProperties(const char* archetypeName, const XmlNodeRef& xml) {}
 	virtual void InitArchetypeEntity(IEntity* entity, const char* archetypeName, const SEntitySpawnParams& spawnParams) {}
 	virtual int GetPropertyCount() const;

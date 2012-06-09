@@ -93,7 +93,9 @@ IMonoObject *CScriptClass::CallMethod(const char *methodName, IMonoArray *pParam
 	{
 		MonoObject *pException = NULL;
 
+		CryLogAlways(methodName);
 		MonoObject *pResult = mono_runtime_invoke_array(pMethod, _static ? NULL : m_pInstance, pParams ? (MonoArray *)(mono::array)*pParams : NULL, &pException);
+		CryLogAlways("~%s", methodName);
 
 		if(pException)
 			HandleException(pException);

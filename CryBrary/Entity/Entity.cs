@@ -184,9 +184,22 @@ namespace CryEngine
 
 		#region Base Logic
 
-		protected virtual string GetPropertyValue(string propertyName)
+		internal virtual string GetPropertyValue(string propertyName)
 		{
-			return _GetPropertyValue(EntityPointer, propertyName);
+			if(propertyName == null)
+				throw new ArgumentNullException("propertyName");
+			else if(propertyName.Length < 1)
+				throw new ArgumentException("propertyName was empty!");
+
+			var field = GetType().GetField(propertyName);
+			if(field != null)
+				return field.GetValue(this).ToString();
+
+			var property = GetType().GetProperty(propertyName);
+			if(property != null)
+				return property.GetValue(this, null).ToString();
+
+			return null;
 		}
 
 		internal virtual void SetPropertyValue(string propertyName, EntityPropertyType propertyType, string valueString)
@@ -197,7 +210,7 @@ namespace CryEngine
 				throw new ArgumentNullException("propertyName");
 			else if(valueString.Length < 1 && propertyType != EntityPropertyType.String)
 				throw new ArgumentException("value was empty!");
-			else if(propertyName.Length < 1 && propertyType != EntityPropertyType.String)
+			else if(propertyName.Length < 1)
 				throw new ArgumentException("propertyName was empty!");
 
 			var value = Convert.FromString(propertyType, valueString);

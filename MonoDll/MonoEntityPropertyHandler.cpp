@@ -49,6 +49,32 @@ SQueuedProperty *CEntityPropertyHandler::GetQueuedProperties(EntityId id, int &n
 	return NULL;
 }
 
+void CEntityPropertyHandler::LoadEntityXMLProperties(IEntity *pEntity, const XmlNodeRef& xml)
+{
+	if(auto properties = xml->findChild("Properties"))
+	{
+		for(int i = 0; i < properties->getNumAttributes(); i++)
+		{
+			const char *name;
+			const char *value;
+
+			properties->getAttributeByIndex(i, &name, &value);
+
+			int index = 0;
+			for(; index < GetPropertyCount(); index++)
+			{
+				SPropertyInfo info;
+				GetPropertyInfo(index, info);
+
+				if(!strcmp(info.name, name))
+					break;
+			}
+
+			SetProperty(pEntity, i, value);
+		}
+	}
+}
+
 void CEntityPropertyHandler::SetProperty(IEntity *pIEntity, int index, const char *value)
 {
 	EntityId id = pIEntity->GetId();
@@ -84,10 +110,13 @@ void CEntityPropertyHandler::SetProperty(IEntity *pIEntity, int index, const cha
 	}
 }
 
-const char *CEntityPropertyHandler::GetProperty(IEntity *pEntity, int index) const
+const char *CEntityPropertyHandler::GetProperty(IEntity *pIEntity, int index) const
 {
-	//if(IMonoClass *pScriptClass = gEnv->pMonoScriptSystem->GetEntityManager()->GetScript(pEntity->GetId()))
-		//return CallMonoScript<const char *>(pScriptClass, "GetPropertyValue", m_properties.at(index).name);
+	if(IGameObject *pGameObject = gEnv->pGameFramework->GetGameObject(pIEntity->GetId()))
+	{
+		if(CEntity *pEntity = static_cast<CEntity *>(pGameObject->QueryExtension(pIEntity->GetClass()->GetName())))
+			return CallMonoScript<const char *>(pEntity->GetScript(), "GetPropertyValue", m_properties.at(index).name);
+	}
 
 	return "";
 }

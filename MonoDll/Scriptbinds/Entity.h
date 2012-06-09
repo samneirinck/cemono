@@ -127,8 +127,6 @@ protected:
 	static mono::array GetEntitiesByClass(mono::string);
 	static mono::array GetEntitiesInBox(AABB bbox, int objTypes);
 
-	static mono::string GetPropertyValue(IEntity *pEnt, mono::string);
-
 	static void SetWorldPos(IEntity *pEnt, Vec3);
 	static Vec3 GetWorldPos(IEntity *pEnt);
 	static void SetPos(IEntity *pEnt, Vec3);

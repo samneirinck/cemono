@@ -111,9 +111,6 @@ namespace CryEngine
 		extern internal static Quat _GetRotation(IntPtr ptr);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static string _GetPropertyValue(IntPtr ptr, string propertyName);
-
-		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static void _LoadObject(IntPtr ptr, string fileName, int slot);
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static string _GetStaticObjectFilePath(IntPtr ptr, int slot);

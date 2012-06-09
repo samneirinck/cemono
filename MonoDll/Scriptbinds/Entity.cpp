@@ -30,8 +30,6 @@ CScriptbind_Entity::CScriptbind_Entity()
 	REGISTER_METHOD(GetEntitiesByClass);
 	REGISTER_METHOD(GetEntitiesInBox);
 
-	REGISTER_METHOD(GetPropertyValue);
-
 	REGISTER_METHOD(SetPos);
 	REGISTER_METHOD(GetPos);
 	REGISTER_METHOD(SetWorldPos);
@@ -260,13 +258,6 @@ mono::array CScriptbind_Entity::GetEntitiesInBox(AABB bbox, int objTypes)
 		pEntities->Insert(gEnv->pPhysicalWorld->GetPhysicalEntityId(pEnts[i]));
 
 	return pEntities->GetMonoArray();
-}
-
-mono::string CScriptbind_Entity::GetPropertyValue(IEntity *pEnt, mono::string propertyName)
-{
-	IEntityPropertyHandler *pPropertyHandler = pEnt->GetClass()->GetPropertyHandler();
-
-	return ToMonoString(pPropertyHandler->GetProperty(pEnt, 0));
 }
 
 void CScriptbind_Entity::SetWorldTM(IEntity *pEntity, Matrix34 tm)
