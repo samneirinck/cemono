@@ -158,6 +158,8 @@ namespace CryEngine
 
 		internal virtual void SetPropertyValue(string propertyName, EntityPropertyType propertyType, string valueString)
 		{
+			Debug.LogAlways("SetPropertyValue on entity {0}; property {1} {2}", Name, propertyName, valueString);
+
 			if(valueString == null)
 				throw new ArgumentNullException("value");
 			else if(propertyName == null)
@@ -181,6 +183,8 @@ namespace CryEngine
 			var field = GetType().GetField(propertyName);
 			if(field != null)
 				field.SetValue(this, value);
+			else
+				throw new ArgumentException(string.Format("member {0} could not be located", propertyName));
 		}
 
 		/// <summary>
