@@ -96,12 +96,6 @@ CScriptSystem::CScriptSystem()
 	if(!CompleteInit())
 		return;
 
-	if(IMonoAssembly *pAssembly = GetAssembly("System.Windows.Forms.dll"))
-	{
-		if(IMonoClass *pClass = pAssembly->GetCustomClass("Application", "System.Windows.Forms"))
-			pClass->CallMethod("EnableVisualStyles", true);
-	}
-
 	if(IFileChangeMonitor *pFileChangeMonitor = gEnv->pFileChangeMonitor)
 		pFileChangeMonitor->RegisterListener(this, "scripts\\");
 }
