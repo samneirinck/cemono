@@ -53,8 +53,6 @@ void CEntityPropertyHandler::SetProperty(IEntity *pIEntity, int index, const cha
 {
 	EntityId id = pIEntity->GetId();
 
-	CryLogAlways("Trying to set property %s with value %s on entity %i", m_properties.at(index).name, value, id);
-
 	CEntity *pEntity = NULL;
 	if(IGameObject *pGameObject = gEnv->pGameFramework->GetGameObject(id))
 		pEntity = static_cast<CEntity *>(pGameObject->QueryExtension(pIEntity->GetClass()->GetName()));

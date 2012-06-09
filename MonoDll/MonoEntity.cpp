@@ -48,7 +48,6 @@ bool CEntity::Init(IGameObject *pGameObject)
 		{
 			auto queuedProperty = pProperties[i];
 
-			CryLogAlways("Setting property %s with value %s on entity %i", queuedProperty.propertyInfo.name, queuedProperty.value.c_str(), pEntity->GetId());
 			CallMonoScript<void>(m_pScriptClass, "SetPropertyValue", queuedProperty.propertyInfo.name, queuedProperty.propertyInfo.type, queuedProperty.value.c_str());
 		}
 	}
