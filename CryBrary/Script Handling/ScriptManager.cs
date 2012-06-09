@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using CryEngine.Extensions;
+using CryEngine.Testing;
 
 namespace CryEngine.Initialization
 {
@@ -33,6 +33,8 @@ namespace CryEngine.Initialization
 				}
 				catch(UnauthorizedAccessException) { }
 			}
+
+			TestManager.Init();
 		}
 
 		bool LoadPlugins()
@@ -194,6 +196,21 @@ namespace CryEngine.Initialization
 		/// <param name="type"></param>
 		public static void ProcessMembers(Type type)
 		{
+			if(type.ContainsAttribute<TestCollectionAttribute>())
+			{
+				var ctor = type.GetConstructor(Type.EmptyTypes);
+				if(ctor != null)
+				{
+					var collection = new TestCollection
+					{
+						Instance = ctor.Invoke(Type.EmptyTypes),
+						Tests = type.GetMethods().Where(method => method.ContainsAttribute<TestAttribute>())
+					};
+
+					TestManager.TestCollections.Add(collection);
+				}
+			}
+
 			foreach(var member in type.GetMembers(BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public))
 			{
 				switch(member.MemberType)

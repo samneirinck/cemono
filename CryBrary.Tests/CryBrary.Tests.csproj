@@ -55,6 +55,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serialization\CompiledScriptsSerializationTests.cs" />
     <Compile Include="Serialization\CrySerializerTests.cs" />
+    <Compile Include="Testing\Assertion.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
