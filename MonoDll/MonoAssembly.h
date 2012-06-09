@@ -19,6 +19,7 @@ class CScriptAssembly : public IMonoAssembly
 {
 public:
 	CScriptAssembly(const char *assemblyPath, bool shadowCopy = false);
+	CScriptAssembly(MonoImage *pImage) : m_pImage(pImage), m_pAssembly(NULL) {}
 	virtual ~CScriptAssembly();
 
 	// IMonoAssembly

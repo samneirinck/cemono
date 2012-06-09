@@ -127,6 +127,16 @@ struct IMonoScriptSystem : ICryUnknown
 	virtual IMonoAssembly *GetCryBraryAssembly() = 0;
 
 	/// <summary>
+	/// Gets the core assembly, containing the System namespace etc.
+	/// </summary>
+	virtual IMonoAssembly *GetCorlibAssembly() = 0;
+
+	/// <summary>
+	/// Loads an .NET assembly at a specific location and returns it.
+	/// </summary>
+	virtual IMonoAssembly *GetAssembly(const char *file, bool shadowCopy = false) = 0;
+
+	/// <summary>
 	/// Gets the root domain created on script system initialization.
 	/// </summary>
 	virtual IMonoDomain *GetRootDomain() = 0;

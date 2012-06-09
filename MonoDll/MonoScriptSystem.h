@@ -57,6 +57,8 @@ public:
 	virtual void RemoveScriptInstance(int id, EMonoScriptType scriptType = eScriptType_Unknown) override;
 	
 	virtual IMonoAssembly *GetCryBraryAssembly() override { return m_pCryBraryAssembly; }
+	virtual IMonoAssembly *GetCorlibAssembly() override;
+	virtual IMonoAssembly *GetAssembly(const char *file, bool shadowCopy = false);
 
 	virtual IMonoDomain *GetRootDomain() override { return m_pRootDomain; }
 
