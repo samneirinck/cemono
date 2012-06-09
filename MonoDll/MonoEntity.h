@@ -27,7 +27,6 @@ struct SQueuedProperty
 
 class CEntity
 	: public CGameObjectExtensionHelper<CEntity, IGameObjectExtension>
-	, public IEntityProxy
 {
 public:
 	CEntity();
@@ -56,18 +55,6 @@ public:
 	virtual void SetAuthority( bool auth ) {}
 	virtual void GetMemoryUsage( ICrySizer* s ) const { s->Add( *this ); }
 	// ~IGameObjectExtension
-
-	// IEntityProxy
-	virtual EEntityProxy GetType() { return ENTITY_PROXY_USER; };
-	virtual bool Init(IEntity *pEntity, SEntitySpawnParams &spawnParams) { return true; }
-	virtual void Reload(IEntity *pEntity, SEntitySpawnParams &params) {}
-	virtual void Done() {}
-	virtual	void Update(SEntityUpdateContext &ctx) {}
-	virtual void SerializeXML(XmlNodeRef &entityNode, bool loading) {}
-	virtual void Serialize(TSerialize ser) {}
-	virtual bool NeedSerialize() { return true; }
-	virtual bool GetSignature(TSerialize signature) { return true; }
-	// ~IEntityProxy
 
 	IMonoClass *GetScript() { return m_pScriptClass; }
 
