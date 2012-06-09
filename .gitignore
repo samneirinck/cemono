@@ -62,3 +62,4 @@ MonoDll/Profile/CryMono.lib
 # Excludes
 !*/Utils/Debug
 *.VisualState.xml
+*embed.manifest
