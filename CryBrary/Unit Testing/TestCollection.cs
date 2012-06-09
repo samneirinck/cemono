@@ -35,10 +35,9 @@ namespace CryEngine.Testing
 			catch(Exception ex)
 			{
 				// The main exception will always be a TargetInvocationException because we invoke via reflection
-				if(ex is TargetInvocationException)
-					ex = ex.InnerException;
+				var inner = ex.InnerException;
 
-				var trace = new StackTrace(ex, true);
+				var trace = new StackTrace(inner, true);
 				var firstFrame = trace.GetFrame(0);
 
 				// FIXME: Assert will report exceptions from inside CryBrary
@@ -46,7 +45,7 @@ namespace CryEngine.Testing
 				if(firstFrame.GetFileName().Contains(Path.Combine("CryMono", "CryBrary")))
 					firstFrame = trace.GetFrame(1);
 
-				Debug.LogAlways("			({0}) {1} (thrown at line {2} of {3})", ex.GetType().Name, ex.Message,
+				Debug.LogAlways("			({0}) {1} (thrown at line {2} of {3})", inner.GetType().Name, inner.Message,
 					firstFrame.GetFileLineNumber(), firstFrame.GetFileName());
 
 				return false;
