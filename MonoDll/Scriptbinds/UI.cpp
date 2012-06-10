@@ -177,7 +177,7 @@ void CUI::SendEvent(IUIEventSystem *pEventSystem, unsigned int eventId, mono::ar
 				event.args.AddArgument(string(pItem->Unbox<const char *>()));
 				break;
 			default :
-				CryLogAlways("[Warning] Attempted to send event with arg of unsupported type %i at index %i", pItem->GetType(), i);
+				MonoWarning("Attempted to send event with arg of unsupported type %i at index %i", pItem->GetType(), i);
 				break;
 			}
 		}

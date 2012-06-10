@@ -155,7 +155,7 @@ bool CScriptSystem::CompleteInit()
 	m_pRootDomain = new CScriptDomain(eRV_4_30319);
 
 #ifndef _RELEASE
-	m_pPdb2MdbAssembly = new CScriptAssembly(PathUtils::GetMonoPath() + "bin\\pdb2mdb.dll");
+	m_pPdb2MdbAssembly = GetAssembly(PathUtils::GetMonoPath() + "bin\\pdb2mdb.dll");
 #endif
 	
 	// WIP ScriptManager game object, to be used for CryMono RMI support etc in the future.
@@ -216,10 +216,10 @@ bool CScriptSystem::DoReload(bool initialLoad)
 	IMonoDomain *pNewScriptDomain = new CScriptDomain("ScriptDomain");
 	pNewScriptDomain->SetActive(true);
 
-	IMonoAssembly *pNewCryBraryAssembly = new CScriptAssembly(PathUtils::GetBinaryPath() + "CryBrary.dll");
+	IMonoAssembly *pNewCryBraryAssembly = GetAssembly(PathUtils::GetBinaryPath() + "CryBrary.dll");
 	if(!pNewCryBraryAssembly)
 	{
-		CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "Failed to load CryBrary.dll");
+		MonoWarning("Failed to load CryBrary.dll");
 		return false;
 	}
 
@@ -426,7 +426,7 @@ IMonoClass *CScriptSystem::InstantiateScript(const char *scriptName, EMonoScript
 	if(pScript)
 		m_scripts.insert(TScripts::value_type(pScript, pScript->GetScriptId()));
 	else
-		CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "Failed to instantiate script %s", scriptName);
+		MonoWarning("Failed to instantiate script %s", scriptName);
 
 	return pScript;
 }
@@ -456,5 +456,36 @@ IMonoAssembly *CScriptSystem::GetCorlibAssembly()
 
 IMonoAssembly *CScriptSystem::GetAssembly(const char *file, bool shadowCopy)
 {
-	return new CScriptAssembly(file, shadowCopy);
+	string sAssemblyPath = string(file);
+
+#ifndef _RELEASE
+	if(sAssemblyPath.find("pdb2mdb")==-1)
+	{
+		if(IMonoAssembly *pDebugDatabaseCreator = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetDebugDatabaseCreator())
+		{
+			if(IMonoClass *pDriverClass = pDebugDatabaseCreator->GetCustomClass("Driver", ""))
+			{
+				IMonoArray *pArgs = CreateMonoArray(1);
+				pArgs->Insert(file);
+				pDriverClass->CallMethod("Convert", pArgs, true);
+
+				SAFE_RELEASE(pArgs);
+				SAFE_RELEASE(pDriverClass);
+			}
+		}
+	}
+#endif
+
+	const char *assemblyPath = shadowCopy ? CScriptAssembly::Relocate(file) : file;
+	if (MonoAssembly *pMonoAssembly = mono_domain_assembly_open(mono_domain_get(), assemblyPath))
+	{
+		if(MonoImage *pImage = mono_assembly_get_image(pMonoAssembly))
+			return new CScriptAssembly(pImage);
+		else
+			MonoWarning("Failed to get image from assembly %s", assemblyPath);
+	}
+	else
+		MonoWarning("Failed to create assembly from %s", assemblyPath);
+
+	return NULL;
 }

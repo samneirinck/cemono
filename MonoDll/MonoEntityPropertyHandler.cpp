@@ -61,16 +61,24 @@ void CEntityPropertyHandler::LoadEntityXMLProperties(IEntity *pEntity, const Xml
 			properties->getAttributeByIndex(i, &name, &value);
 
 			int index = 0;
+			bool exists = false;
+
 			for(; index < GetPropertyCount(); index++)
 			{
 				SPropertyInfo info;
 				GetPropertyInfo(index, info);
 
 				if(!strcmp(info.name, name))
+				{
+					exists = true;
 					break;
+				}
 			}
 
-			SetProperty(pEntity, i, value);
+			if(exists)
+				SetProperty(pEntity, index, value);
+			else
+				MonoWarning("Could not set property %s because it did not exist", name);
 		}
 	}
 }
@@ -99,7 +107,6 @@ void CEntityPropertyHandler::SetProperty(IEntity *pIEntity, int index, const cha
 				break;
 			}
 		}
-
 		if(!exists)
 		{
 			DynArray<SQueuedProperty> queuedPropertiesForEntity;

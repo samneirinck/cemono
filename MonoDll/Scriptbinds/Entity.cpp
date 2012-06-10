@@ -130,7 +130,7 @@ bool CScriptbind_Entity::RegisterEntityClass(EntityRegisterParams params, mono::
 	const char *className = ToCryString(params.Name);
 	if(gEnv->pEntitySystem->GetClassRegistry()->FindClass(className))
 	{
-		CryLog("Aborting registration of entity class %s, a class with the same name already exists", className); 
+		MonoWarning("Aborting registration of entity class %s, a class with the same name already exists", className); 
 		return false;
 	}
 

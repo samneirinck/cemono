@@ -172,7 +172,7 @@ void CFlowNode::GetConfiguration(SFlowNodeConfig &config)
 {
 	if(!m_pScriptClass)
 	{
-		CryWarning(VALIDATOR_MODULE_FLOWGRAPH, VALIDATOR_ERROR, "CFlowNode::GetConfiguration: m_pScriptClass was NULL!");
+		MonoWarning("CFlowNode::GetConfiguration: m_pScriptClass was NULL!");
 		return;
 	}
 

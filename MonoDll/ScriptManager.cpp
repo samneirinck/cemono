@@ -23,8 +23,6 @@ CScriptManager::~CScriptManager()
 
 bool CScriptManager::ReloadExtension( IGameObject * pGameObject, const SEntitySpawnParams &params )
 {
-	CryLogAlways("CScriptManager::ReloadExtension");
-
 	return true;
 }
 
