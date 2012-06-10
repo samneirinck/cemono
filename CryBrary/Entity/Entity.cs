@@ -155,6 +155,7 @@ namespace CryEngine
 
 		/// <summary>
 		/// Called after level has been loaded, is not called on serialization.
+		/// Note that this is called prior to GameRules.OnClientConnect and OnClientEnteredGame!
 		/// </summary>
 		protected virtual void OnInit()
 		{
