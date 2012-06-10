@@ -148,6 +148,7 @@ namespace CryEngine.Testing.Internals
 			this.uxTestResult.Location = new System.Drawing.Point(9, 19);
 			this.uxTestResult.Multiline = true;
 			this.uxTestResult.Name = "uxTestResult";
+			this.uxTestResult.ReadOnly = true;
 			this.uxTestResult.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.uxTestResult.Size = new System.Drawing.Size(380, 275);
 			this.uxTestResult.TabIndex = 7;
