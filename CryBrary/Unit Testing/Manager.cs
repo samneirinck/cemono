@@ -24,6 +24,8 @@ namespace CryEngine.Testing
 
 			var report = new TestReport { Collections = testResults, TimeTaken = timer.Elapsed };
 
+			formListener = new ReportForm();
+
 			if(Run != null)
 				Run(report);
 		}
@@ -37,5 +39,6 @@ namespace CryEngine.Testing
 		}
 
 		private static ConsoleTestListener listener;
+		private static ReportForm formListener;
 	}
 }
