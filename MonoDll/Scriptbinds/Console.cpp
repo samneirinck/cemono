@@ -48,7 +48,7 @@ extern "C"
 
 	_declspec(dllexport) void __cdecl _Warning(const char *msg)
 	{
-		CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, msg); 
+		MonoWarning(msg); 
 	}
 }
 
