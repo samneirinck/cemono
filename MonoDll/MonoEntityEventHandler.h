@@ -23,7 +23,7 @@ public:
 	virtual void LoadEntityXMLEvents(IEntity* entity, const XmlNodeRef& xml) {}
 	virtual int GetEventCount() const { return 0; }
 	virtual bool GetEventInfo(int index, SEventInfo& info ) const { return true; }
-	virtual void SendEvent(IEntity* entity, const char* eventName) { CryLogAlways("event %s on entity %i", eventName, entity->GetId()); }
+	virtual void SendEvent(IEntity* entity, const char* eventName) {}
 	// -IEntityEventHandler
 };
 

@@ -53,7 +53,7 @@ void CFlowManager::RegisterNode(mono::string monoTypeName)
 	IFlowSystem *pFlowSystem = gEnv->pFlowSystem;
 	if(!pFlowSystem)
 	{
-		CryLogAlways("[Warning] Failed to register node %s, gEnv->pFlowSystem was null!", ToCryString(monoTypeName));
+		MonoWarning("Failed to register node %s, gEnv->pFlowSystem was null!", ToCryString(monoTypeName));
 		return;
 	}
 
@@ -139,7 +139,7 @@ IEntity *CFlowManager::GetTargetEntity(CFlowNode *pNode, EntityId &id)
 		return pEntity;
 	}
 
-	CryLogAlways("[CFlowManager::GetTargetEntity] returning null target entity!");
+	MonoWarning("CFlowManager::GetTargetEntity returning null target entity!");
 	return NULL;
 }
 

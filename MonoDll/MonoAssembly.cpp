@@ -37,7 +37,7 @@ IMonoClass *CScriptAssembly::InstantiateClass(const char *className, const char 
 	MonoClass *pClass = GetClassFromName(nameSpace, className);
 	if (!pClass)
 	{
-		gEnv->pLog->LogError("Tried to create an instance of non-existent class %s.%s", nameSpace, className);
+		MonoWarning("Tried to create an instance of non-existent class %s.%s", nameSpace, className);
 		return NULL;
 	}
 
@@ -49,7 +49,7 @@ IMonoClass *CScriptAssembly::GetCustomClass(const char *className, const char *n
 	if(MonoClass *monoClass = GetClassFromName(nameSpace, className))
 		return new CScriptClass(monoClass);
 
-	gEnv->pLog->LogError("Failed to get class %s.%s", nameSpace, className);
+	MonoWarning("Failed to get class %s.%s", nameSpace, className);
 	return NULL;
 }
 

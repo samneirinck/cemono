@@ -52,7 +52,7 @@ void CScriptClass::Instantiate(IMonoArray *pConstructorParams)
 {
 	if(m_pInstance)
 	{
-		CryLogAlways("[Warning] Attempted to instantiate mono class with existing instance");
+		MonoWarning("Attempted to instantiate mono class with existing instance");
 		return;
 	}
 
@@ -80,7 +80,7 @@ void CScriptClass::OnReload(MonoClass *pNewClass, mono::object pNewInstance)
 IMonoObject *CScriptClass::CallMethod(const char *methodName, IMonoArray *pParams, bool _static)
 {
 	if(!_static && !m_pInstance)
-		CryLogAlways("[Warning] Attempting to invoke non-static method %s on non-instantiated class %s!", methodName, GetName());
+		MonoWarning("Attempting to invoke non-static method %s on non-instantiated class %s!", methodName, GetName());
 
 	if(MonoMethod *pMethod = GetMethod(methodName, pParams, _static))
 	{
@@ -94,7 +94,7 @@ IMonoObject *CScriptClass::CallMethod(const char *methodName, IMonoArray *pParam
 			return *(mono::object)(pResult);
 	}
 	else
-		CryLogAlways("[Warning] Failed to get method %s in object of class %s", methodName, GetName());
+		MonoWarning("Failed to get method %s in object of class %s", methodName, GetName());
 
 
 	return NULL;
@@ -227,5 +227,5 @@ void CScriptClass::HandleException(MonoObject *pException)
 	if(g_pMonoCVars->mono_exceptionsTriggerMessageBoxes)
 		CryMessageBox(ToCryString((mono::string)exceptionString), "CryMono exception was raised", 0x00000000L);
 	else
-		CryLogAlways(ToCryString((mono::string)exceptionString));
+		MonoWarning(ToCryString((mono::string)exceptionString));
 }

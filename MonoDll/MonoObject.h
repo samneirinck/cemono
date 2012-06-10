@@ -67,16 +67,16 @@ template <typename T>
 static IMonoObject *CreateMonoObject(T t)
 {
 	if(std::is_same<T, MonoString *>::value)
-		CryLogAlways("[Warning] Trying to create MonoObject using a MonoString");
+		MonoWarning("Trying to create MonoObject using a MonoString");
 	if(std::is_same<T, const char *>::value)
-		CryLogAlways("[Warning] Trying to create MonoObject using string");//return mono_value_box(mono_domain_get(), mono_get_string_class(), ToMonoString((const char *)t));
+		MonoWarning("Trying to create MonoObject using string");//return mono_value_box(mono_domain_get(), mono_get_string_class(), ToMonoString((const char *)t));
 	else
 	{
 		if(MonoClass *pClass = GetMonoClassOfType<T>(t))
 			return *(mono::object)mono_value_box(mono_domain_get(), pClass, &t);
 	}
 
-	CryLogAlways("Failed to create IMonoObject, try using IMonoConverter::CreateObjectOfCustomType instead.");
+	MonoWarning("Failed to create IMonoObject, try using IMonoConverter::CreateObjectOfCustomType instead.");
 	return NULL;
 }
 

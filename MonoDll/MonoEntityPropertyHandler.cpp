@@ -78,7 +78,7 @@ void CEntityPropertyHandler::LoadEntityXMLProperties(IEntity *pEntity, const Xml
 			if(exists)
 				SetProperty(pEntity, index, value);
 			else
-				CryLogAlways("Could not set property %s because it did not exist", name);
+				MonoWarning("Could not set property %s because it did not exist", name);
 		}
 	}
 }

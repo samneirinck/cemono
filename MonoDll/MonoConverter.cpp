@@ -30,7 +30,7 @@ IMonoArray *CConverter::CreateArray(int numArgs)
 {
 	if(numArgs < 1)
 	{
-		gEnv->pLog->LogError("Attempted to create array with invalid size %i", numArgs);
+		MonoWarning("Attempted to create array with invalid size %i", numArgs);
 		return NULL;
 	}
 
@@ -41,7 +41,7 @@ IMonoArray *CConverter::ToArray(mono::array arr)
 {
 	if(arr == NULL)
 	{
-		gEnv->pLog->LogError("Failed to convert mono::array");
+		MonoWarning("Failed to convert mono::array");
 		return NULL;
 	}
 
@@ -71,7 +71,7 @@ IMonoObject *CConverter::ToObject(mono::object obj)
 {
 	if(obj == NULL)
 	{
-		gEnv->pLog->LogError("Failed to convert mono::object");
+		MonoWarning("Failed to convert mono::object");
 		return NULL;
 	}
 
@@ -86,7 +86,7 @@ IMonoClass *CConverter::ToClass(IMonoObject *pObject)
 	if(pClass && mono_class_get_name(pClass))
 		return new CScriptClass(pClass, pMonoObject);
 	else
-		gEnv->pLog->LogError("Mono class object creation failed!");
+		MonoWarning("Mono class object creation failed!");
 
 	return NULL;
 }

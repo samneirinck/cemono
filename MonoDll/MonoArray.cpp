@@ -39,7 +39,7 @@ IMonoObject *CScriptArray::GetItem(int index)
 			return *monoObj;
 	}
 	else
-		CryLogAlways("[Warning] Index out of range exception: Attempted to access index %i on IMonoArray of size %i", index, GetSize());
+		MonoWarning("Index out of range exception: Attempted to access index %i on IMonoArray of size %i", index, GetSize());
 
 	return NULL;
 }
@@ -56,7 +56,7 @@ void CScriptArray::InsertMonoObject(mono::object object, int index)
 {
 	if((index == -1 && m_curIndex >= GetSize()) || index >= GetSize())
 	{
-		CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "Attempted to insert too many objects into array of size %i", GetSize());
+		MonoWarning("Attempted to insert too many objects into array of size %i", GetSize());
 		return;
 	}
 
@@ -69,7 +69,7 @@ void CScriptArray::InsertMonoString(mono::string string, int index)
 {
 	if((index == -1 && m_curIndex >= GetSize()) || index >= GetSize())
 	{
-		CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "Attempted to insert too many objects into array of size %i", GetSize());
+		MonoWarning("Attempted to insert too many objects into array of size %i", GetSize());
 		return;
 	}
 
@@ -82,7 +82,7 @@ void CScriptArray::InsertMonoArray(mono::array arr, int index)
 {
 	if((index == -1 && m_curIndex >= GetSize()) || index >= GetSize())
 	{
-		CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "Attempted to insert too many objects into array of size %i", GetSize());
+		MonoWarning("Attempted to insert too many objects into array of size %i", GetSize());
 		return;
 	}
 

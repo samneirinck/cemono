@@ -219,7 +219,7 @@ bool CScriptSystem::DoReload(bool initialLoad)
 	IMonoAssembly *pNewCryBraryAssembly = GetAssembly(PathUtils::GetBinaryPath() + "CryBrary.dll");
 	if(!pNewCryBraryAssembly)
 	{
-		CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "Failed to load CryBrary.dll");
+		MonoWarning("Failed to load CryBrary.dll");
 		return false;
 	}
 
@@ -426,7 +426,7 @@ IMonoClass *CScriptSystem::InstantiateScript(const char *scriptName, EMonoScript
 	if(pScript)
 		m_scripts.insert(TScripts::value_type(pScript, pScript->GetScriptId()));
 	else
-		CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "Failed to instantiate script %s", scriptName);
+		MonoWarning("Failed to instantiate script %s", scriptName);
 
 	return pScript;
 }
@@ -482,10 +482,10 @@ IMonoAssembly *CScriptSystem::GetAssembly(const char *file, bool shadowCopy)
 		if(MonoImage *pImage = mono_assembly_get_image(pMonoAssembly))
 			return new CScriptAssembly(pImage);
 		else
-			gEnv->pLog->LogError("Failed to get image from assembly %s", assemblyPath);
+			MonoWarning("Failed to get image from assembly %s", assemblyPath);
 	}
 	else
-		gEnv->pLog->LogError("Failed to create assembly from %s", assemblyPath);
+		MonoWarning("Failed to create assembly from %s", assemblyPath);
 
 	return NULL;
 }
