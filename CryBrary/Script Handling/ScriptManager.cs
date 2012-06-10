@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Xml;
 using System.Linq;
 using System.Reflection;
 using CryEngine.Extensions;
@@ -36,6 +37,46 @@ namespace CryEngine.Initialization
 			}
 
 			TestManager.Init();
+		}
+
+		void PopulateAssemblyLookup()
+		{
+#if !RELEASE
+			var monoDir = Path.Combine(PathUtils.EngineFolder, "Mono");
+			// Doesn't exist when unit testing
+			if(Directory.Exists(monoDir))
+			{
+				using(XmlWriter writer = XmlWriter.Create(Path.Combine(monoDir, "assemblylookup.xml")))
+				{
+					writer.WriteStartDocument();
+					writer.WriteStartElement("AssemblyLookupTable");
+
+					var gacFolder = Path.Combine(monoDir, "lib", "mono", "gac");
+					foreach(var assemblyLocation in Directory.GetFiles(gacFolder, "*.dll", SearchOption.AllDirectories))
+					{
+						var separator = new string[] { "__" };
+						var splitParentDir = Directory.GetParent(assemblyLocation).Name.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+
+						var assembly = Assembly.Load(Path.GetFileName(assemblyLocation) + string.Format(", Version={0}, Culture=neutral, PublicKeyToken={1}", splitParentDir.ElementAt(0), splitParentDir.ElementAt(1)));
+
+						writer.WriteStartElement("Assembly");
+						writer.WriteAttributeString("name", assembly.FullName);
+
+						foreach(var nameSpace in assembly.GetTypes().Select(t => t.Namespace).Distinct())
+						{
+							writer.WriteStartElement("Namespace");
+							writer.WriteAttributeString("name", nameSpace);
+							writer.WriteEndElement();
+						}
+
+						writer.WriteEndElement();
+					}
+
+					writer.WriteEndElement();
+					writer.WriteEndDocument();
+				}
+			}
+#endif
 		}
 
 		bool LoadPlugins()
