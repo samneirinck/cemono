@@ -466,7 +466,7 @@ namespace CryEngine
 			return IsPortActive(GetInputPortId(port.Method));
 		}
 
-		protected T GetPortEnum<T>(Action<T> port) where T : struct, IConvertible
+		protected T GetPortEnum<T>(Action<T> port) where T : struct
 		{
 			if(!typeof(T).IsEnum)
 				throw new ArgumentException("T must be an enumerated type");

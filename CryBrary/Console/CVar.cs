@@ -91,7 +91,7 @@ namespace CryEngine
 			return CVars.Last();
 		}
 
-		public static CVar Register(string name, ref int value, string help = "", CVarFlags flags = CVarFlags.None)
+		public static CVar RegisterInt(string name, ref int value, string help = "", CVarFlags flags = CVarFlags.None)
 		{
 			CVar._RegisterCVarInt(name, ref value, value, flags, help);
 
@@ -100,7 +100,7 @@ namespace CryEngine
 			return CVars.Last();
 		}
 
-		public static CVar Register(string name, ref float value, string help = "", CVarFlags flags = CVarFlags.None)
+		public static CVar RegisterFloat(string name, ref float value, string help = "", CVarFlags flags = CVarFlags.None)
 		{
 			CVar._RegisterCVarFloat(name, ref value, value, flags, help);
 

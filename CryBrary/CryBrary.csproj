@@ -191,7 +191,7 @@
     <Compile Include="Engine\Physics.cs" />
     <Compile Include="Engine\Renderer.cs" />
     <Compile Include="Entity\EntityMovement.cs" />
-    <Compile Include="GameRules\Network.cs" />
+    <Compile Include="Network\Network.cs" />
     <Compile Include="Input\InputSystem.cs" />
     <Compile Include="Math\Quat.cs" />
     <Compile Include="Entity\Interface.cs" />
