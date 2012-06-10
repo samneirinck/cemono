@@ -374,7 +374,7 @@ void CScriptSystem::RegisterDefaultBindings()
 
 bool CScriptSystem::InitializeSystems(IMonoAssembly *pCryBraryAssembly)
 {
-	IMonoClass *pClass = pCryBraryAssembly->GetCustomClass("CryNetwork");
+	IMonoClass *pClass = pCryBraryAssembly->GetCustomClass("Network");
 	IMonoArray *pArray = CreateMonoArray(2);
 	pArray->Insert(gEnv->IsEditor());
 	pArray->Insert(gEnv->IsDedicated());

@@ -4322,14 +4322,14 @@
             The height of the screen in pixels.
             </summary>
         </member>
-        <member name="M:CryEngine.CryNetwork.InitializeNetworkStatics(System.Boolean,System.Boolean)">
+        <member name="M:CryEngine.Network.InitializeNetworkStatics(System.Boolean,System.Boolean)">
             <summary>
             Initializes static variables which never change, i.e. IsEditor.
             </summary>
             <param name="isEditor"></param>
             <param name="isDedicated"></param>
         </member>
-        <member name="M:CryEngine.CryNetwork.InitializeNetwork(System.Boolean,System.Boolean,System.Boolean)">
+        <member name="M:CryEngine.Network.InitializeNetwork(System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             Initializes variables which change, i.e. IsServer.
             </summary>
