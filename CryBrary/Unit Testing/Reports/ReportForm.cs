@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Windows.Forms;
+using CryEngine.Extensions;
 
 namespace CryEngine.Testing.Internals
 {
@@ -9,6 +11,8 @@ namespace CryEngine.Testing.Internals
 		{
 			InitializeComponent();
 			TestManager.Run += OnTestsRun;
+
+			uxRerunTests.Click += (sender, args) => CCommand.OnCommand(TestManager.CommandString);
 		}
 
 		public void OnTestsRun(TestReport report)
@@ -21,15 +25,20 @@ namespace CryEngine.Testing.Internals
 			var overallSuccess = true;
 			var overallIgnored = false;
 
+			var testCounts = EnumExtensions.GetMembers<TestResult>().ToDictionary(key => key, key => 0);
+
 			foreach(var collection in report.Collections)
 			{
 				var collectionNode = root.Nodes.Add(collection.Name);
+				collectionNode.Tag = collection;
 
 				var ignored = false;
 				var failed = false;
 
 				foreach(var test in collection.Results)
 				{
+					testCounts[test.Result]++;
+
 					if(test.Result == TestResult.Failure)
 					{
 						overallSuccess = false;
@@ -45,6 +54,8 @@ namespace CryEngine.Testing.Internals
 
 					var image = GetImageIndex(test.Result);
 					var node = new TreeNode(test.Name, image, image);
+					node.Tag = test;
+
 					collectionNode.Nodes.Add(node);
 				}
 
@@ -56,6 +67,21 @@ namespace CryEngine.Testing.Internals
 			var rootImage = GetImageIndex(!overallSuccess, overallIgnored);
 			root.ImageIndex = rootImage;
 			root.SelectedImageIndex = rootImage;
+
+			var totalTestCount = testCounts.Sum(pair => pair.Value);
+
+			uxTimeMessage.Text = string.Format("Test run with {0} tests took {1}s to execute.", totalTestCount, report.TimeTaken.TotalSeconds);
+
+			uxSuccessCount.Text = CreateCountMessage(testCounts[TestResult.Success], "passed");
+			uxFailureCount.Text = CreateCountMessage(testCounts[TestResult.Failure], "failed");
+			uxIgnoredCount.Text = CreateCountMessage(testCounts[TestResult.Ignored], "ignored", true);
+		}
+
+		private string CreateCountMessage(int count, string message, bool passive = false)
+		{
+			var plural = count > 1;
+			return string.Format("{0} test{1}{2} {3}.", count, plural ? "s" : string.Empty,
+				passive ? (plural ? " were" : " was") : string.Empty, message);
 		}
 
 		private int GetImageIndex(bool failed, bool ignored)
@@ -77,7 +103,32 @@ namespace CryEngine.Testing.Internals
 					return 2;
 			}
 
-			throw new ArgumentException("TestResult value is not supported by the report UI.", "result");
+			throw new ArgumentException("The supplied TestResult value is not supported by the report UI.", "result");
+		}
+
+		private void OnTreeSelect(object sender, TreeViewEventArgs e)
+		{
+			uxTestResult.Clear();
+
+			var test = e.Node.Tag as TestResultInfo;
+
+			if(test != null)
+			{
+				var n = Environment.NewLine;
+				uxTestResult.AppendText(test.Name + n);
+				uxTestResult.AppendText((test.Description ?? "No description supplied.") + n + n);
+
+				uxTestResult.AppendText("Result: " + test.Result.ToString() + n + n);
+
+				if(test.Result == TestResult.Failure)
+				{
+					uxTestResult.AppendText(string.Format("{0} ({1} thrown at line {2} of {3})", test.Exception.Message,
+								test.Exception.GetType().Name, test.FirstFrame.GetFileLineNumber(), test.FirstFrame.GetFileName()));
+
+					uxTestResult.AppendText(n + n + "Full stacktrace:" + n + n);
+					uxTestResult.AppendText(test.Stack.ToString());
+				}
+			}
 		}
 
 		private void OnClose(object sender, FormClosingEventArgs e)

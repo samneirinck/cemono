@@ -1,6 +1,8 @@
 ﻿
 namespace CryEngine.Testing
 {
+	// TODO: Add autodetection for CryBrary-loaded types
+	
 	/// <summary>
 	/// Represents an object that is capable of receiving unit test reports.
 	/// </summary>

@@ -10,6 +10,8 @@ namespace CryEngine.Testing
 	{
 		internal static List<TestCollection> TestCollections { get; private set; }
 
+		public const string CommandString = "tester_run";
+
 		public static event Action<TestReport> Run;
 
 		public static void RunTests(string[] args, string fullCommandLine)
@@ -24,7 +26,8 @@ namespace CryEngine.Testing
 
 			var report = new TestReport { Collections = testResults, TimeTaken = timer.Elapsed };
 
-			formListener = new ReportForm();
+			if(formListener == null || !formListener.Visible)
+				formListener = new ReportForm();
 
 			if(Run != null)
 				Run(report);
@@ -33,7 +36,7 @@ namespace CryEngine.Testing
 		public static void Init()
 		{
 			TestCollections = new List<TestCollection>();
-			CCommand.Register("tester_run", RunTests, "Runs the feature tester");
+			CCommand.Register(CommandString, RunTests, "Runs the feature tester");
 
 			listener = new ConsoleTestListener();
 		}
