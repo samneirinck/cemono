@@ -575,7 +575,7 @@ namespace CryEngine
 				uint entId;
 				var entPtr = _GetTargetEntity(NodePointer, out entId);
 
-				if(entPtr != null)
+				if(entPtr != IntPtr.Zero)
 					return Entity.Get(new EntityId(entId), entPtr);
 
 				return null;
