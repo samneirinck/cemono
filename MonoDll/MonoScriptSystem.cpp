@@ -41,6 +41,7 @@
 #include "Scriptbinds\LevelSystem.h"
 #include "Scriptbinds\UI.h"
 #include "Scriptbinds\Entity.h"
+#include "Scriptbinds\Network.h"
 
 #include "FlowManager.h"
 #include "MonoInput.h"
@@ -61,6 +62,7 @@ CScriptSystem::CScriptSystem()
 	, m_pInput(NULL)
 	, m_bReloading(false)
 	, m_bLastCompilationSuccess(false)
+	, m_bHasPostInitialized(false)
 {
 	//CryLogAlways("Initializing Mono Script System");
 	
@@ -181,7 +183,14 @@ void CScriptSystem::OnSystemEvent(ESystemEvent event,UINT_PTR wparam,UINT_PTR lp
 	switch(event)
 	{
 	case ESYSTEM_EVENT_GAME_POST_INIT:
-			m_pScriptManager->CallMethod("PostInit");
+		{
+			if(!m_bHasPostInitialized && gEnv->pGameFramework->GetIFlowSystem())
+			{
+				m_pScriptManager->CallMethod("PostInit");
+
+				m_bHasPostInitialized = true;
+			}
+		}
 		break;
 	}
 }
@@ -363,6 +372,7 @@ void CScriptSystem::RegisterDefaultBindings()
 	RegisterBinding(CLevelSystem);
 	RegisterBinding(CUI);
 	RegisterBinding(CScriptbind_Entity);
+	RegisterBinding(CNetwork);
 
 #define RegisterBindingAndSet(var, T) RegisterBinding(T); var = (T *)m_localScriptBinds.back().get();
 	RegisterBindingAndSet(m_pFlowManager, CFlowManager);

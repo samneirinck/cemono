@@ -66,6 +66,8 @@ public:
 
 	virtual void RegisterListener(IMonoScriptSystemListener *pListener) override { stl::push_back_unique(m_scriptReloadListeners, pListener); }
 	virtual void UnregisterListener(IMonoScriptSystemListener *pListener) override { stl::find_and_erase(m_scriptReloadListeners, pListener); }
+
+	virtual void RegisterFlownodes() { OnSystemEvent(ESYSTEM_EVENT_GAME_POST_INIT, 0, 0); }
 	// ~IMonoScriptSystem
 
 	// IFileChangeMonitor
@@ -134,6 +136,9 @@ protected:
 	bool m_bLastCompilationSuccess;
 	// True when currently recompiling scripts / serializing app domain.
 	bool m_bReloading;
+
+	// If true when PostInit is called, does not forward call to ScriptManager
+	bool m_bHasPostInitialized;
 };
 
 #endif //__MONO_H__

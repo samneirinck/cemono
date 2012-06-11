@@ -36,7 +36,9 @@ namespace CryEngine.Initialization
 				catch(UnauthorizedAccessException) { }
 			}
 
+#if !RELEASE
 			TestManager.Init();
+#endif
 		}
 
 		void PopulateAssemblyLookup()
@@ -238,6 +240,7 @@ namespace CryEngine.Initialization
 		/// <param name="type"></param>
 		public static void ProcessMembers(Type type)
 		{
+#if !RELEASE
 			if(type.ContainsAttribute<TestCollectionAttribute>())
 			{
 				var ctor = type.GetConstructor(Type.EmptyTypes);
@@ -255,6 +258,7 @@ namespace CryEngine.Initialization
 					TestManager.TestCollections.Add(collection);
 				}
 			}
+#endif
 
 			foreach(var member in type.GetMembers(BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public))
 			{

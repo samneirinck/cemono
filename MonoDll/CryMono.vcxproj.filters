@@ -141,6 +141,7 @@
     <ClInclude Include="Scriptbinds\Entity.h">
       <Filter>ScriptBinds</Filter>
     </ClInclude>
+    <ClInclude Include="Scriptbinds\Network.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -238,6 +239,7 @@
     <ClCompile Include="Scriptbinds\Entity.cpp">
       <Filter>ScriptBinds</Filter>
     </ClCompile>
+    <ClCompile Include="Scriptbinds\Network.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ScriptBinds">
