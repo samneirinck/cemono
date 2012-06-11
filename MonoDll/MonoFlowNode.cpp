@@ -67,9 +67,7 @@ IFlowNodePtr CFlowNode::Clone(SActivationInfo *pActInfo)
 
 IEntity *CFlowNode::GetTargetEntity()
 {
-	IEntity *pEntity = m_pActInfo->pEntity;
-
-	return pEntity;
+	return m_pActInfo->pEntity;
 }
 
 void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
