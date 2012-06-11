@@ -10,17 +10,7 @@ namespace CryEngine.Extensions
 	/// </summary>
 	public static class ReflectionExtensions
 	{
-		/// <summary>
-		/// Determines whether this member is decorated with at least one instance of a given attribute.
-		/// </summary>
-		/// <typeparam name="T">The attribute to search for.</typeparam>
-		/// <param name="info">The member on which the search is performed.</param>
-		/// <returns>True if the member is decorated with at least one instance of attribute T.</returns>
-		public static bool ContainsAttribute<T>(this MemberInfo info) where T : Attribute
-		{
-			return info.GetCustomAttributes(typeof(T), true).Length > 0;
-		}
-
+		#region Inheritance
 		/// <summary>
 		/// Determines whether a given type is the child of another.
 		/// </summary>
@@ -30,6 +20,30 @@ namespace CryEngine.Extensions
 		public static bool Implements(this Type thisType, Type baseType)
 		{
 			return baseType.IsAssignableFrom(thisType) && !thisType.Equals(baseType);
+		}
+
+		/// <summary>
+		/// Determines whether a given type is the child of another.
+		/// </summary>
+		/// <typeparam name="T">The possible parent type.</typeparam>
+		/// <param name="thisType">The child type.</param>
+		/// <returns>True if thisType implements type T.</returns>
+		public static bool Implements<T>(this Type thisType)
+		{
+			return thisType.Implements(typeof(T));
+		}
+		#endregion
+
+		#region Attributes
+		/// <summary>
+		/// Determines whether this member is decorated with at least one instance of a given attribute.
+		/// </summary>
+		/// <typeparam name="T">The attribute to search for.</typeparam>
+		/// <param name="info">The member on which the search is performed.</param>
+		/// <returns>True if the member is decorated with at least one instance of attribute T.</returns>
+		public static bool ContainsAttribute<T>(this MemberInfo info) where T : Attribute
+		{
+			return info.GetCustomAttributes(typeof(T), true).Length > 0;
 		}
 
 		/// <summary>
@@ -84,5 +98,6 @@ namespace CryEngine.Extensions
 				return false;
 			}
 		}
+		#endregion
 	}
 }

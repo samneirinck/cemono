@@ -143,6 +143,7 @@
     <Compile Include="Extensions\Enum.cs" />
     <Compile Include="Extensions\IDictionary.cs" />
     <Compile Include="Extensions\IEnumerable.cs" />
+    <Compile Include="Extensions\WinForms.cs" />
     <Compile Include="FlowSystem\Attributes.cs" />
     <Compile Include="FlowSystem\Ports.cs" />
     <Compile Include="Misc\DelayedFunc.cs" />
