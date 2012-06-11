@@ -50,12 +50,9 @@ void CFlowManager::Reset()
 
 void CFlowManager::RegisterNode(mono::string monoTypeName)
 {
-	IFlowSystem *pFlowSystem = gEnv->pFlowSystem;
+	IFlowSystem *pFlowSystem = gEnv->pGameFramework->GetIFlowSystem();
 	if(!pFlowSystem)
-	{
-		MonoWarning("Failed to register node %s, gEnv->pFlowSystem was null!", ToCryString(monoTypeName));
 		return;
-	}
 
 	CFlowManager *pFlowManager = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager();
 

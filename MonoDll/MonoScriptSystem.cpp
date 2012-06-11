@@ -62,6 +62,7 @@ CScriptSystem::CScriptSystem()
 	, m_pInput(NULL)
 	, m_bReloading(false)
 	, m_bLastCompilationSuccess(false)
+	, m_bHasPostInitialized(false)
 {
 	//CryLogAlways("Initializing Mono Script System");
 	
@@ -182,7 +183,14 @@ void CScriptSystem::OnSystemEvent(ESystemEvent event,UINT_PTR wparam,UINT_PTR lp
 	switch(event)
 	{
 	case ESYSTEM_EVENT_GAME_POST_INIT:
-			m_pScriptManager->CallMethod("PostInit");
+		{
+			if(!m_bHasPostInitialized && gEnv->pGameFramework->GetIFlowSystem())
+			{
+				m_pScriptManager->CallMethod("PostInit");
+
+				m_bHasPostInitialized = true;
+			}
+		}
 		break;
 	}
 }

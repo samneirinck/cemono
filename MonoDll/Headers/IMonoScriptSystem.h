@@ -156,6 +156,11 @@ struct IMonoScriptSystem : ICryUnknown
 	virtual void UnregisterListener(IMonoScriptSystemListener *pListener) = 0;
 
 	/// <summary>
+	/// If called prior to default CryMono flownode registration time (IGameFramework PostInit); flownodes are immediately registered.
+	/// </summary>
+	virtual void RegisterFlownodes() = 0;
+
+	/// <summary>
 	/// Entry point of the dll, used to set up CryMono.
 	/// </summary>
 	typedef void *(*TEntryFunction)(ISystem* pSystem);
