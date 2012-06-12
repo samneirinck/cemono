@@ -320,7 +320,7 @@ namespace CryEngine.Serialization
 			{
 				objReference.Value = Activator.CreateInstance(type);
 			}
-			catch(MissingMethodException ex) { objReference.AllowNull = true; } // types lacking default constructors can't be serialized.
+			catch(MissingMethodException) { objReference.AllowNull = true; } // types lacking default constructors can't be serialized.
 
 			while(type != null)
 			{

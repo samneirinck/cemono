@@ -5,6 +5,7 @@ namespace CryEngine
 	/// <summary>
 	/// Used for non-CryMono entities, i.e. Lua / C++ such.
 	/// </summary>
+	[ExcludeFromCompilation]
 	internal class NativeEntity : Entity
 	{
 		public NativeEntity() { }

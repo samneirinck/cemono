@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using CryEngine.Extensions;
+using CryEngine.Initialization;
 
 namespace CryEngine.Initialization
 {
@@ -16,22 +17,27 @@ namespace CryEngine.Initialization
 			Type = type;
 			ScriptName = type.Name;
 
-			if(type.Implements(typeof(Actor)))
-				ScriptType = ScriptType.Actor;
-			else if(type.Implements(typeof(Entity)))
-				ScriptType = ScriptType.Entity;
-			else if(type.Implements(typeof(FlowNode)))
-				ScriptType = ScriptType.FlowNode;
-			else if(type.Implements(typeof(GameRules)))
-				ScriptType = ScriptType.GameRules;
+			ScriptType |= ScriptType.Any;
+			if(type.Implements(typeof(CryScriptInstance)))
+			{
+				ScriptType |= ScriptType.CryScriptInstance;
+
+				if(type.Implements(typeof(EntityBase)))
+				{
+					ScriptType |= ScriptType.Entity;
+
+					if(type.Implements(typeof(Actor)))
+						ScriptType |= ScriptType.Actor;
+				}
+				if(type.Implements(typeof(FlowNode)))
+					ScriptType |= ScriptType.FlowNode;
+				else if(type.Implements(typeof(GameRules)))
+					ScriptType |= ScriptType.GameRules;
+			}
 			else if(type.Implements(typeof(UIEventSystem)))
-				ScriptType = ScriptType.UIEventSystem;
+				ScriptType |= ScriptType.UIEventSystem;
 			else if(type.Implements(typeof(ScriptCompiler)))
-				ScriptType = ScriptType.ScriptCompiler;
-			else if(type.Implements(typeof(CryScriptInstance)))
-				ScriptType = ScriptType.CryScriptInstance;
-			else
-				ScriptType = ScriptType.Unknown;
+				ScriptType |= ScriptType.ScriptCompiler;
 		}
 
 		public ScriptType ScriptType { get; private set; }
@@ -74,38 +80,36 @@ namespace CryEngine.Initialization
 		#endregion
 	}
 
+	[Flags]
 	public enum ScriptType
 	{
 		/// <summary>
-		/// Scripts not inheriting from CryScriptInstance will utilize this script type.
+		/// All scripts have this flag applied.
 		/// </summary>
-		Unknown = -1,
+		Any = 1,
 		/// <summary>
-		/// Scripts inheriting from CryScriptInstance, but no other CryMono base script will be linked to this script type.
+		/// Scripts deriving from CryScriptInstance.
 		/// </summary>
-		CryScriptInstance,
+		CryScriptInstance = 2,
 		/// <summary>
-		/// Scripts directly inheriting from BaseGameRules will utilize this script type.
+		/// Scripts deriving from GameRules.
 		/// </summary>
-		GameRules,
+		GameRules = 4,
 		/// <summary>
-		/// Scripts directly inheriting from FlowNode will utilize this script type.
+		/// Scripts deriving from FlowNode.
 		/// </summary>
-		FlowNode,
+		FlowNode = 8,
 		/// <summary>
-		/// Scripts directly inheriting from Entity will utilize this script type.
+		/// Scripts deriving from EntityBase.
 		/// </summary>
-		Entity,
+		Entity = 16,
 		/// <summary>
-		/// Scripts directly inheriting from Actor will utilize this script type.
+		/// Scripts deriving from Actor.
 		/// </summary>
-		Actor,
-		/// <summary>
-		/// </summary>
-		UIEventSystem,
+		Actor = 32,
 		/// <summary>
 		/// </summary>
-		EditorForm,
-		ScriptCompiler,
+		UIEventSystem = 64,
+		ScriptCompiler = 128,
 	}
 }

@@ -50,22 +50,16 @@ namespace CryEngine
 
 		internal static bool InternalRemove(EntityId id)
 		{
-			foreach(var script in ScriptManager.CompiledScripts[ScriptType.Entity])
-			{
-				if(script.ScriptInstances != null)
+			int numRemoved = ScriptManager.RemoveInstances(ScriptType.Entity, instance =>
 				{
-					script.ScriptInstances.RemoveAll(instance =>
-						{
-							var entity = instance as Entity;
+					var entity = instance as Entity;
 							if(entity != null && entity.Id == id && entity.OnRemove())
 								return true;
 
 							return false;
-						});
-				}
-			}
+				});
 
-			return true;
+			return numRemoved > 0;
 		}
 
 		/// <summary>
@@ -75,7 +69,7 @@ namespace CryEngine
 		/// <returns>A reference to the entity.</returns>
 		/// <remarks>If the entity does not exist in the managed space, this function will attempt to find
 		/// a C++ entity with the specified ID></remarks>
-		public static T Get<T>(EntityId entityId) where T : Entity // TODO: Following ScriptType flag rework, get as type EntityBase to allow casting to Actor.
+		public static T Get<T>(EntityId entityId) where T : EntityBase
 		{
 			if(entityId == 0)
 				throw new ArgumentException("entityId cannot be 0!");
@@ -90,41 +84,29 @@ namespace CryEngine
 		/// <returns>A reference to the entity.</returns>
 		/// <remarks>If the entity does not exist in the managed space, this function will attempt to find
 		/// a C++ entity with the specified ID></remarks>
-		public static Entity Get(EntityId entityId)
+		public static EntityBase Get(EntityId entityId)
 		{
-			var ent = Get<Entity>(entityId);
+			var ent = Get<EntityBase>(entityId);
 			if(ent != null)
 				return ent;
 
 			// Couldn't find a CryMono entity, check if a non-managed one exists.
 			var entPointer = _GetEntity(entityId);
 			if(entPointer != null)
-			{
-				var script = ScriptManager.CompiledScripts[ScriptType.Entity].First(x => x.Type == typeof(NativeEntity));
-				if(script == null)
-					throw new TypeLoadException("Failed to locate NativeEntity type");
-
-				var nativeEntity = new NativeEntity(entityId, entPointer);
-				ScriptManager.AddScriptInstance(nativeEntity, script);
-
-				return nativeEntity;
-			}
+				return CreateNativeEntity(entityId, entPointer);
 
 			return null;
 		}
 
-		public static Entity Get(EntityId entityId, IntPtr entPtr)
+		internal static EntityBase CreateNativeEntity(EntityId id, IntPtr entityPointer)
 		{
-			var ent = Get<Entity>(entityId);
-			if(ent != null)
-				return ent;
+			// check if actor
+			var actorInfo = Actor._GetActorInfoById((uint)id._value);
+			if(actorInfo.Id != 0)
+				return Actor.CreateNativeActor(actorInfo);
 
-			var script = ScriptManager.CompiledScripts[ScriptType.Entity].First(x => x.Type == typeof(NativeEntity));
-			if(script == null)
-				throw new TypeLoadException("Failed to locate NativeEntity type");
-
-			var nativeEntity = new NativeEntity(entityId, entPtr);
-			ScriptManager.AddScriptInstance(nativeEntity, script);
+			var nativeEntity = new NativeEntity(id, entityPointer);
+			ScriptManager.AddScriptInstance(nativeEntity);
 
 			return nativeEntity;
 		}
@@ -136,7 +118,7 @@ namespace CryEngine
 		/// <returns>A reference to the entity.</returns>
 		/// <remarks>If multiple entities have the same name, it will return the first found.
 		/// Consider using IDs where necessary.</remarks>
-		public static Entity Find(string name)
+		public static EntityBase Find(string name)
 		{
 			return Get(new EntityId(_FindEntity(name)));
 		}

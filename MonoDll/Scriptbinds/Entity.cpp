@@ -71,6 +71,9 @@ CScriptbind_Entity::CScriptbind_Entity()
 	REGISTER_METHOD(SetAttachmentMaterial);
 	REGISTER_METHOD(GetAttachmentMaterial);
 
+	REGISTER_METHOD(SetVisionParams);
+	REGISTER_METHOD(SetHUDSilhouettesParams);
+
 	gEnv->pEntitySystem->AddSink(this, IEntitySystem::OnSpawn | IEntitySystem::OnRemove, 0);
 }
 
@@ -449,4 +452,22 @@ void CScriptbind_Entity::SetAttachmentMaterial(IEntity *pEnt, mono::string attac
 		if(auto pAttachment = pAttachmentManager->GetInterfaceByName(ToCryString(attachmentName)))
 			return pAttachment->GetIAttachmentObject()->SetMaterial(pMaterial);;
 	}
+}
+
+void CScriptbind_Entity::SetVisionParams(IEntity *pEntity, float r, float g, float b, float a)
+{
+	IEntityRenderProxy *pRenderProxy = static_cast<IEntityRenderProxy *>(pEntity->GetProxy(ENTITY_PROXY_RENDER));
+	if(!pRenderProxy)
+		return;
+
+	pRenderProxy->SetVisionParams(r, g, b, a);
+}
+
+void CScriptbind_Entity::SetHUDSilhouettesParams(IEntity *pEntity, float r, float g, float b, float a)
+{
+	IEntityRenderProxy *pRenderProxy = static_cast<IEntityRenderProxy *>(pEntity->GetProxy(ENTITY_PROXY_RENDER));
+	if(!pRenderProxy)
+		return;
+
+	pRenderProxy->SetVisionParams(r, g, b, a);
 }

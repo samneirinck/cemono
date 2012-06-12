@@ -285,7 +285,7 @@ bool CScriptSystem::DoReload(bool initialLoad)
 			{
 				IMonoArray *pParams = CreateMonoArray(2);
 				pParams->Insert(script.second);
-				pParams->Insert(eScriptType_Unknown);
+				pParams->Insert(eScriptFlag_Any);
 				if(IMonoObject *pScriptInstance = m_pScriptManager->CallMethod("GetScriptInstanceById", pParams, true))
 				{
 					mono::object monoObject = pScriptInstance->GetMonoObject();
@@ -422,13 +422,13 @@ void CScriptSystem::RegisterMethodBinding(const void *method, const char *fullMe
 		mono_add_internal_call(fullMethodName, method);
 }
 
-IMonoClass *CScriptSystem::InstantiateScript(const char *scriptName, EMonoScriptType scriptType, IMonoArray *pConstructorParameters)
+IMonoClass *CScriptSystem::InstantiateScript(const char *scriptName, EMonoScriptFlags scriptType, IMonoArray *pConstructorParameters)
 {
 	IMonoArray *pArray = CreateMonoArray(3);
 	pArray->Insert(scriptName);
 	pArray->Insert(scriptType);
 	pArray->Insert(pConstructorParameters);
-	IMonoObject *pResult = m_pScriptManager->CallMethod("InstantiateScript", pArray, true);
+	IMonoObject *pResult = m_pScriptManager->CallMethod("CreateScriptInstance", pArray, true);
 	SAFE_RELEASE(pArray);
 
 	auto *pScript = pResult ? pResult->Unbox<IMonoClass *>() : NULL;
@@ -441,7 +441,7 @@ IMonoClass *CScriptSystem::InstantiateScript(const char *scriptName, EMonoScript
 	return pScript;
 }
 
-void CScriptSystem::RemoveScriptInstance(int id, EMonoScriptType scriptType)
+void CScriptSystem::RemoveScriptInstance(int id, EMonoScriptFlags scriptType)
 {
 	if(id==-1)
 		return;

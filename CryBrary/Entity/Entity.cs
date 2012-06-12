@@ -17,7 +17,7 @@ namespace CryEngine
 	{
 		protected Entity() { }
 		
-		internal static void Load(ref CryScript script)
+		internal static void Load(CryScript script)
 		{
 			//LoadFlowNode(ref script, true);
 

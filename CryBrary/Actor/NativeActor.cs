@@ -4,6 +4,7 @@ namespace CryEngine
 	/// <summary>
 	/// Used for non-CryMono actors.
 	/// </summary>
+	[ExcludeFromCompilation]
 	class NativeActor : Actor
 	{
 		public NativeActor() { }

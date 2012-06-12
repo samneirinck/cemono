@@ -167,6 +167,9 @@ protected:
 
 	static IMaterial *GetAttachmentMaterial(IEntity *pEnt, mono::string name);
 	static void SetAttachmentMaterial(IEntity *pEnt, mono::string attachmentName, IMaterial *pMaterial);
+
+	static void SetVisionParams(IEntity *pEntity, float r, float g, float b, float a);
+	static void SetHUDSilhouettesParams(IEntity *pEntity, float r, float g, float b, float a);
 	// ~Scriptbinds
 
 	static std::vector<const char *> m_monoEntityClasses;
