@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Xml;
 using System.Linq;
 using System.Reflection;
+using System.Windows.Forms;
+using System.Xml;
 using CryEngine.Extensions;
+using CryEngine.Sandbox;
 using CryEngine.Testing;
 using CryEngine.Testing.Internals;
 
@@ -147,7 +149,7 @@ namespace CryEngine.Initialization
 		public void LoadAssembly(string assemblyPath)
 		{
 			var newPath = Path.Combine(PathUtils.TempFolder, Path.GetFileName(assemblyPath));
-			
+
 			TryCopyFile(assemblyPath, ref newPath, true);
 
 #if !RELEASE
@@ -260,6 +262,13 @@ namespace CryEngine.Initialization
 			}
 #endif
 
+			SandboxExtensionAttribute attr;
+			if(type.TryGetAttribute(out attr) && type.Implements<Form>())
+			{
+				Debug.LogAlways("Registering Sandbox extension: {0}", attr.Name);
+				FormHelper.AvailableForms.Add(new FormInfo { Type = type, Data = attr });
+			}
+
 			foreach(var member in type.GetMembers(BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public))
 			{
 				switch(member.MemberType)
@@ -314,7 +323,7 @@ namespace CryEngine.Initialization
 				if(scriptList.Key == ScriptType.Unknown)
 					continue;
 
-				scriptList.Value.ForEach(script => 
+				scriptList.Value.ForEach(script =>
 					{
 						if(script.ScriptInstances != null)
 						{

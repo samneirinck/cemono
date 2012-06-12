@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -148,6 +148,14 @@
     <Compile Include="FlowSystem\Ports.cs" />
     <Compile Include="Misc\DelayedFunc.cs" />
     <Compile Include="Network\NetworkCallAttribute.cs" />
+    <Compile Include="Sandbox\Attributes.cs" />
+    <Compile Include="Sandbox\FormLoader.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Sandbox\FormLoader.Designer.cs">
+      <DependentUpon>FormLoader.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sandbox\Helper.cs" />
     <Compile Include="Script Handling\CryScript.cs" />
     <Compile Include="Script Handling\ScriptCompiler.cs" />
     <Compile Include="Engine\Material.cs" />
@@ -224,6 +232,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Sandbox\FormLoader.resx">
+      <DependentUpon>FormLoader.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Unit Testing\Reports\ReportForm.resx">
       <DependentUpon>ReportForm.cs</DependentUpon>
     </EmbeddedResource>

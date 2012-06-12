@@ -16,8 +16,7 @@ namespace CryEngine.Testing
 
 		public static void RunTests(string[] args, string fullCommandLine)
 		{
-			var timer = new Stopwatch();
-			timer.Start();
+			var timer = Stopwatch.StartNew();
 
 			var testResults = (from testCollection in TestCollections
 							   select testCollection.Run()).ToList();

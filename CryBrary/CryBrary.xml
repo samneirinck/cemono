@@ -376,6 +376,23 @@
             </summary>
             <param name="delay">The desired delay, in milliseconds.</param>
         </member>
+        <member name="F:CryEngine.Sandbox.FormLoader.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:CryEngine.Sandbox.FormLoader.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:CryEngine.Sandbox.FormLoader.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
         <member name="T:CryEngine.Initialization.CryScript">
             <summary>
             Represents a given class.
@@ -5159,14 +5176,6 @@
             Useful extensions when working with reflection.
             </summary>
         </member>
-        <member name="M:CryEngine.Extensions.ReflectionExtensions.ContainsAttribute``1(System.Reflection.MemberInfo)">
-            <summary>
-            Determines whether this member is decorated with at least one instance of a given attribute.
-            </summary>
-            <typeparam name="T">The attribute to search for.</typeparam>
-            <param name="info">The member on which the search is performed.</param>
-            <returns>True if the member is decorated with at least one instance of attribute T.</returns>
-        </member>
         <member name="M:CryEngine.Extensions.ReflectionExtensions.Implements(System.Type,System.Type)">
             <summary>
             Determines whether a given type is the child of another.
@@ -5174,6 +5183,22 @@
             <param name="thisType">The child type.</param>
             <param name="baseType">The possible parent type.</param>
             <returns>True if thisType is a child of baseType.</returns>
+        </member>
+        <member name="M:CryEngine.Extensions.ReflectionExtensions.Implements``1(System.Type)">
+            <summary>
+            Determines whether a given type is the child of another.
+            </summary>
+            <typeparam name="T">The possible parent type.</typeparam>
+            <param name="thisType">The child type.</param>
+            <returns>True if thisType implements type T.</returns>
+        </member>
+        <member name="M:CryEngine.Extensions.ReflectionExtensions.ContainsAttribute``1(System.Reflection.MemberInfo)">
+            <summary>
+            Determines whether this member is decorated with at least one instance of a given attribute.
+            </summary>
+            <typeparam name="T">The attribute to search for.</typeparam>
+            <param name="info">The member on which the search is performed.</param>
+            <returns>True if the member is decorated with at least one instance of attribute T.</returns>
         </member>
         <member name="M:CryEngine.Extensions.ReflectionExtensions.GetAttributes``1(System.Reflection.MemberInfo)">
             <summary>
