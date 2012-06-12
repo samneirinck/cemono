@@ -57,7 +57,7 @@ namespace CryEngine
 		#endregion
 
 
-		internal static void Load(CryScript script, bool entityNode = false)
+		internal static void Load(ref CryScript script, bool entityNode = false)
 		{
 			bool containsNodePorts = false;
 			foreach(var member in script.Type.GetMembers())

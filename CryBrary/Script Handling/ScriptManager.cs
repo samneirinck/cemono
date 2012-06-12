@@ -215,7 +215,7 @@ namespace CryEngine.Initialization
 				else if(script.ScriptType.ContainsFlag(ScriptType.Entity))
 					Entity.Load(script);
 				else if(script.ScriptType.ContainsFlag(ScriptType.FlowNode))
-					FlowNode.Load(script);
+					FlowNode.Load(ref script);
 				else if(script.ScriptType.ContainsFlag(ScriptType.GameRules))
 					GameRules.Load(script);
 				else if(script.ScriptType.ContainsFlag(ScriptType.UIEventSystem))
