@@ -234,7 +234,7 @@ namespace CryEngine.Initialization
 					ProcessMembers(type);
 			}
 
-		//	if(script.ScriptType.ContainsFlag(ScriptType.CryScriptInstance))
+			if(script.ScriptType.ContainsFlag(ScriptType.CryScriptInstance))
 				Scripts.Add(script);
 
 			return script;
@@ -342,7 +342,7 @@ namespace CryEngine.Initialization
 		/// <param name="scriptName"></param>
 		/// <param name="constructorParams"></param>
 		/// <returns>New instance scriptId or -1 if instantiation failed.</returns>
-		public static object CreateScriptInstance(string scriptName, ScriptType scriptType, object[] constructorParams = null)
+		public static CryScriptInstance CreateScriptInstance(string scriptName, ScriptType scriptType, object[] constructorParams = null)
 		{
 			if(scriptName == null)
 				throw new ArgumentNullException("scriptName");
@@ -355,13 +355,44 @@ namespace CryEngine.Initialization
 			if(script == default(CryScript))
 				throw new ScriptNotFoundException(string.Format("Script {0} of ScriptType {1} could not be found.", scriptName, scriptType));
 
-			var scriptInstance = Activator.CreateInstance(script.Type, constructorParams);
-			AddScriptInstance(scriptInstance as CryScriptInstance, script);
+			var scriptInstance = Activator.CreateInstance(script.Type, constructorParams) as CryScriptInstance;
+			if(scriptInstance == null)
+				throw new ArgumentException("Failed to create instance, make sure type derives from CryScriptInstance", "scriptName");
 
 			if(scriptType == ScriptType.GameRules)
-				GameRules.Current = (GameRules)scriptInstance;
+				GameRules.Current = scriptInstance as GameRules;
+
+			AddScriptInstance(script, scriptInstance);
 
 			return scriptInstance;
+		}
+
+		public static void AddScriptInstance(CryScriptInstance instance, ScriptType scriptType)
+		{
+			if(instance == null)
+				throw new ArgumentNullException("instance");
+			if(!Enum.IsDefined(typeof(ScriptType), scriptType))
+				throw new ArgumentException(string.Format("scriptType: value {0} was not defined in the enum", scriptType));
+
+			var script = FindScript(scriptType, x => x.Type == instance.GetType());
+			if(script == default(CryScript))
+				script = ProcessType(instance.GetType());
+
+			AddScriptInstance(script, instance);
+		}
+
+		static void AddScriptInstance(CryScript script, CryScriptInstance instance)
+		{
+			var index = Scripts.IndexOf(script);
+
+			instance.ScriptId = LastScriptId++;
+
+			if(script.ScriptInstances == null)
+				script.ScriptInstances = new List<CryScriptInstance>();
+
+			script.ScriptInstances.Add(instance);
+
+			Scripts[index] = script;
 		}
 
 		/// <summary>
@@ -473,55 +504,6 @@ namespace CryEngine.Initialization
 			return result;
 		}
 		#endregion
-
-		public static void AddScriptInstance(CryScriptInstance instance)
-		{
-			if(instance == null)
-				throw new ArgumentNullException("instance");
-
-			var script = FindScript(ScriptType.Any, x => x.Type == instance.GetType());
-			if(script == default(CryScript))
-				script = ProcessType(instance.GetType());
-
-			AddScriptInstance(instance, script);
-		}
-
-		public static void AddScriptInstance(CryScriptInstance instance, ScriptType scriptType)
-		{
-			if(instance == null)
-				throw new ArgumentNullException("instance");
-			else if(!Enum.IsDefined(typeof(ScriptType), scriptType))
-				throw new ArgumentException(string.Format("scriptType: value {0} was not defined in the enum", scriptType));
-
-			var script = FindScript(scriptType, x => x.Type == instance.GetType());
-			if(script == default(CryScript))
-				script = ProcessType(instance.GetType());
-
-			AddScriptInstance(instance, script);
-		}
-
-		/// <summary>
-		/// Adds an script instance to the script collection and returns its new id.
-		/// </summary>
-		/// <param name="instance"></param>
-		public static void AddScriptInstance(CryScriptInstance instance, CryScript script)
-		{
-			if(instance == null)
-				throw new ArgumentNullException("instance");
-			else if(script == default(CryScript))
-				throw new ArgumentNullException("script");
-
-			var index = Scripts.IndexOf(script);
-
-			instance.ScriptId = LastScriptId++;
-
-			if(script.ScriptInstances == null)
-				script.ScriptInstances = new List<CryScriptInstance>();
-
-			script.ScriptInstances.Add(instance);
-
-			Scripts[index] = script;
-		}
 
 		/// <summary>
 		/// Last assigned ScriptId, next = + 1

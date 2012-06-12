@@ -127,7 +127,7 @@ namespace CryEngine
 				throw new ArgumentException("actorInfo.EntityPtr cannot be 0!");
 
 			var nativeActor = new NativeActor(actorInfo);
-			ScriptManager.AddScriptInstance(nativeActor);
+			ScriptManager.AddScriptInstance(nativeActor, ScriptType.Actor);
 
 			return nativeActor;
 		}

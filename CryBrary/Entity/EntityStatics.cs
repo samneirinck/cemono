@@ -106,7 +106,7 @@ namespace CryEngine
 				return Actor.CreateNativeActor(actorInfo);
 
 			var nativeEntity = new NativeEntity(id, entityPointer);
-			ScriptManager.AddScriptInstance(nativeEntity);
+			ScriptManager.AddScriptInstance(nativeEntity, ScriptType.Entity);
 
 			return nativeEntity;
 		}
