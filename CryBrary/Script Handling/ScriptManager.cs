@@ -12,13 +12,16 @@ namespace CryEngine.Initialization
 {
 	class ScriptManager
 	{
-		public ScriptManager()
+		static ScriptManager()
 		{
 			if(FlowNodes == null)
 				FlowNodes = new List<string>();
 			if(Scripts == null)
 				Scripts = new List<CryScript>();
+		}
 
+		public ScriptManager()
+		{
 			if(!Directory.Exists(PathUtils.TempFolder))
 				Directory.CreateDirectory(PathUtils.TempFolder);
 			else
@@ -208,7 +211,7 @@ namespace CryEngine.Initialization
 				return Scripts.FirstOrDefault(x => x.Type == type);
 
 			var script = new CryScript(type);
-			if(!type.IsAbstract && !type.ContainsAttribute<ExcludeFromCompilationAttribute>())
+			if(!type.IsAbstract && !type.ContainsAttribute<ExcludeFromCompilationAttribute>() && !IgnoreExternalCalls)
 			{
 				if(script.ScriptType.ContainsFlag(ScriptType.Actor))
 					Actor.Load(script);
@@ -524,6 +527,8 @@ namespace CryEngine.Initialization
 		/// Last assigned ScriptId, next = + 1
 		/// </summary>
 		public static int LastScriptId = 1;
+
+		public static bool IgnoreExternalCalls { get; set; }
 
 		internal static List<CryScript> Scripts { get; set; }
 		#endregion
