@@ -2,23 +2,22 @@
 using System.Linq;
 using System.Windows.Forms;
 using CryEngine.Extensions;
+using CryEngine.Sandbox;
 
 namespace CryEngine.Testing.Internals
 {
-	internal partial class ReportForm : Form, IReportListener
+	[SandboxExtension("Unit Testing", "Provides automated testing for your .NET game project.", AuthorName = "Ink Studios Ltd.", AuthorContact = "http://inkdev.net")]
+	internal partial class ReportForm : Form
 	{
 		public ReportForm()
 		{
 			InitializeComponent();
 			TestManager.Run += OnTestsRun;
-
-			uxRerunTests.Click += (sender, args) => CCommand.OnCommand(TestManager.CommandString);
+			uxRerunTests.Click += (sender, args) => TestManager.RunTests();
 		}
 
 		public void OnTestsRun(TestReport report)
 		{
-			Show();
-
 			uxTestTree.Nodes.Clear();
 			var root = uxTestTree.Nodes.Add("Tests");
 

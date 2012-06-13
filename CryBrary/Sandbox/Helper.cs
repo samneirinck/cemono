@@ -1,18 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using CryEngine.Extensions;
 
 namespace CryEngine.Sandbox
 {
 	internal static class FormHelper
 	{
+		private static FormLoader instance;
+
 		static FormHelper()
 		{
 			FormHelper.AvailableForms = new List<FormInfo>();
-			CCommand.Register("mono_extensions", (args, cmd) => new FormLoader().Show());
+			CCommand.Register("mono_extensions", (args, cmd) =>
+			{
+				if(instance == null)
+					instance = new FormLoader();
+
+				instance.Show();
+			});
 		}
 
-		internal static List<FormInfo> AvailableForms { get; set; }
+		public static void RegisterInternal<T>() where T : Form
+		{
+			var type = typeof(T);
+			SandboxExtensionAttribute attr;
+			
+			if(type.TryGetAttribute(out attr))
+				AvailableForms.Add(new FormInfo { Type = type, Data = attr });
+			else
+				throw new Exception("The internal Sandbox extension of type {0} has no SandboxExtensionAttribute.");
+		}
+
+		public static List<FormInfo> AvailableForms { get; set; }
 	}
 
 	/// <summary>

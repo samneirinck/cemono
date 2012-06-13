@@ -42,7 +42,7 @@
 			this.uxExtensionList.FormattingEnabled = true;
 			this.uxExtensionList.Location = new System.Drawing.Point(15, 33);
 			this.uxExtensionList.Name = "uxExtensionList";
-			this.uxExtensionList.Size = new System.Drawing.Size(244, 277);
+			this.uxExtensionList.Size = new System.Drawing.Size(244, 290);
 			this.uxExtensionList.TabIndex = 0;
 			this.uxExtensionList.SelectedIndexChanged += new System.EventHandler(this.OnExtensionSelect);
 			// 

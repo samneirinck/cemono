@@ -37,10 +37,6 @@ namespace CryEngine.Initialization
 				}
 				catch(UnauthorizedAccessException) { }
 			}
-
-#if !RELEASE
-			TestManager.Init();
-#endif
 		}
 
 		void PopulateAssemblyLookup()
