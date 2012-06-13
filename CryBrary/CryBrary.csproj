@@ -214,7 +214,7 @@
     <Compile Include="ThirdParty\Arduino.cs" />
     <Compile Include="Utils\Debug\Debug.cs" />
     <Compile Include="Extensions\Reflection.cs" />
-    <Compile Include="Entity\EntitySystem.cs" />
+    <Compile Include="Entity\EntityStatics.cs" />
     <Compile Include="Entity\Entity.cs" />
     <Compile Include="FlowSystem\FlowNode.cs" />
     <Compile Include="Actor\ItemSystem.cs" />

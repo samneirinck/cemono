@@ -568,7 +568,7 @@ namespace CryEngine
 		private bool IsPortActive(int port) { return _IsPortActive(NodePointer, port); }
 		#endregion
 
-		public Entity TargetEntity
+		public EntityBase TargetEntity
 		{
 			get
 			{
@@ -576,7 +576,7 @@ namespace CryEngine
 				var entPtr = _GetTargetEntity(NodePointer, out entId);
 
 				if(entPtr != IntPtr.Zero)
-					return Entity.Get(new EntityId(entId), entPtr);
+					return Entity.CreateNativeEntity(new EntityId(entId), entPtr);
 
 				return null;
 			}

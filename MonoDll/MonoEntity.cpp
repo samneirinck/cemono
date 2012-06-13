@@ -33,7 +33,7 @@ bool CEntity::Init(IGameObject *pGameObject)
 	IEntity *pEntity = GetEntity();
 	IEntityClass *pEntityClass = pEntity->GetClass();
 
-	m_pScriptClass = gEnv->pMonoScriptSystem->InstantiateScript(pEntityClass->GetName(), eScriptType_Entity);
+	m_pScriptClass = gEnv->pMonoScriptSystem->InstantiateScript(pEntityClass->GetName(), eScriptFlag_Entity);
 
 	IMonoClass *pEntityInfoClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("EntityInfo");
 

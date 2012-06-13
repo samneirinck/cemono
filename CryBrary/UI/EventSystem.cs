@@ -13,7 +13,7 @@ namespace CryEngine
 	{
 
 
-		internal static void Load(ref CryScript script)
+		internal static void Load(CryScript script)
 		{
 			bool createdToSystem = false;
 			bool createdToUI = false;

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using CryEngine.Initialization;
+
 namespace CryEngine.Extensions
 {
 	public static class EnumExtensions
@@ -11,6 +13,11 @@ namespace CryEngine.Extensions
 		{
 			return from value in Enum.GetNames(typeof(T))
 				   select (T)Enum.Parse(typeof(T), value);
+		}
+
+		public static bool ContainsFlag(this ScriptType scriptType, ScriptType flag)
+		{
+			return (scriptType & flag) == flag;
 		}
 	}
 }

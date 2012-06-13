@@ -42,7 +42,7 @@ void CFlowManager::Reset()
 {
 	for each(auto nodeType in m_nodeTypes)
 	{
-		IMonoClass *pScript = gEnv->pMonoScriptSystem->InstantiateScript(nodeType->GetScriptName(), eScriptType_FlowNode);
+		IMonoClass *pScript = gEnv->pMonoScriptSystem->InstantiateScript(nodeType->GetScriptName(), eScriptFlag_FlowNode);
 		nodeType->ReloadPorts(pScript);
 		SAFE_RELEASE(pScript);
 	}

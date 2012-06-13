@@ -35,7 +35,7 @@ bool CFlowNode::CreatedNode(TFlowNodeId id, const char *name, TFlowNodeTypeId ty
 	{
 		m_pNodeType = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager()->GetNodeType(gEnv->pFlowSystem->GetTypeName(typeId));
 
-		IMonoClass *pScriptClass = gEnv->pMonoScriptSystem->InstantiateScript(m_pNodeType->GetScriptName(), m_pNodeType->IsEntityNode() ? eScriptType_Entity : eScriptType_FlowNode);
+		IMonoClass *pScriptClass = gEnv->pMonoScriptSystem->InstantiateScript(m_pNodeType->GetScriptName(), m_pNodeType->IsEntityNode() ? eScriptFlag_Entity : eScriptFlag_FlowNode);
 
 		IMonoClass *pNodeInfo = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("NodeInfo");
 		auto graphId = m_pActInfo->pGraph->GetGraphId();
@@ -67,9 +67,7 @@ IFlowNodePtr CFlowNode::Clone(SActivationInfo *pActInfo)
 
 IEntity *CFlowNode::GetTargetEntity()
 {
-	IEntity *pEntity = m_pActInfo->pEntity;
-
-	return pEntity;
+	return m_pActInfo->pEntity;
 }
 
 void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)

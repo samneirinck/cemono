@@ -468,41 +468,37 @@
             Stores all instances of this class.
             </summary>
         </member>
-        <member name="F:CryEngine.Initialization.ScriptType.Unknown">
+        <member name="F:CryEngine.Initialization.ScriptType.Any">
             <summary>
-            Scripts not inheriting from CryScriptInstance will utilize this script type.
+            All scripts have this flag applied.
             </summary>
         </member>
         <member name="F:CryEngine.Initialization.ScriptType.CryScriptInstance">
             <summary>
-            Scripts inheriting from CryScriptInstance, but no other CryMono base script will be linked to this script type.
+            Scripts deriving from CryScriptInstance.
             </summary>
         </member>
         <member name="F:CryEngine.Initialization.ScriptType.GameRules">
             <summary>
-            Scripts directly inheriting from BaseGameRules will utilize this script type.
+            Scripts deriving from GameRules.
             </summary>
         </member>
         <member name="F:CryEngine.Initialization.ScriptType.FlowNode">
             <summary>
-            Scripts directly inheriting from FlowNode will utilize this script type.
+            Scripts deriving from FlowNode.
             </summary>
         </member>
         <member name="F:CryEngine.Initialization.ScriptType.Entity">
             <summary>
-            Scripts directly inheriting from Entity will utilize this script type.
+            Scripts deriving from EntityBase.
             </summary>
         </member>
         <member name="F:CryEngine.Initialization.ScriptType.Actor">
             <summary>
-            Scripts directly inheriting from Actor will utilize this script type.
+            Scripts deriving from Actor.
             </summary>
         </member>
         <member name="F:CryEngine.Initialization.ScriptType.UIEventSystem">
-            <summary>
-            </summary>
-        </member>
-        <member name="F:CryEngine.Initialization.ScriptType.EditorForm">
             <summary>
             </summary>
         </member>
@@ -6438,7 +6434,7 @@
             Called once per frame.
             </summary>
         </member>
-        <member name="M:CryEngine.Initialization.ScriptManager.InstantiateScript(System.String,CryEngine.Initialization.ScriptType,System.Object[])">
+        <member name="M:CryEngine.Initialization.ScriptManager.CreateScriptInstance(System.String,CryEngine.Initialization.ScriptType,System.Object[])">
             <summary>
             Instantiates a script using its name and interface.
             </summary>
@@ -6446,17 +6442,10 @@
             <param name="constructorParams"></param>
             <returns>New instance scriptId or -1 if instantiation failed.</returns>
         </member>
-        <member name="M:CryEngine.Initialization.ScriptManager.RemoveInstance(System.Int32,CryEngine.Initialization.ScriptType,System.Type)">
+        <member name="M:CryEngine.Initialization.ScriptManager.RemoveInstances``1(CryEngine.Initialization.ScriptType,System.Predicate{``0})">
             <summary>
             Locates and destructs the script with the assigned scriptId.
             </summary>
-            <param name="scriptId"></param>
-        </member>
-        <member name="M:CryEngine.Initialization.ScriptManager.AddScriptInstance(CryEngine.CryScriptInstance,CryEngine.Initialization.CryScript)">
-            <summary>
-            Adds an script instance to the script collection and returns its new id.
-            </summary>
-            <param name="instance"></param>
         </member>
         <member name="F:CryEngine.Initialization.ScriptManager.LastScriptId">
             <summary>

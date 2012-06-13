@@ -10,7 +10,7 @@ namespace CryEngine
 		/// <param name="delay">The desired delay, in milliseconds.</param>
 		public DelayedFunc(Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> action, float delay, T1 param1, T2 param2, T3 param3, T4 param4, T5 param5, T6 param6, T7 param7, T8 param8, T9 param9, T10 param10)
 		{
-			ScriptManager.AddScriptInstance(this);
+			ScriptManager.AddScriptInstance(this, ScriptType.CryScriptInstance);
 
 			Action = action;
 			Delay = delay;
@@ -69,7 +69,7 @@ namespace CryEngine
 		/// <param name="delay">The desired delay, in milliseconds.</param>
 		public DelayedFunc(Action<T1, T2, T3, T4, T5, T6, T7, T8, T9> action, float delay, T1 param1, T2 param2, T3 param3, T4 param4, T5 param5, T6 param6, T7 param7, T8 param8, T9 param9)
 		{
-			ScriptManager.AddScriptInstance(this);
+			ScriptManager.AddScriptInstance(this, ScriptType.CryScriptInstance);
 
 			Action = action;
 			Delay = delay;
@@ -126,7 +126,7 @@ namespace CryEngine
 		/// <param name="delay">The desired delay, in milliseconds.</param>
 		public DelayedFunc(Action<T1, T2, T3, T4, T5, T6, T7, T8> action, float delay, T1 param1, T2 param2, T3 param3, T4 param4, T5 param5, T6 param6, T7 param7, T8 param8)
 		{
-			ScriptManager.AddScriptInstance(this);
+			ScriptManager.AddScriptInstance(this, ScriptType.CryScriptInstance);
 
 			Action = action;
 			Delay = delay;
@@ -181,7 +181,7 @@ namespace CryEngine
 		/// <param name="delay">The desired delay, in milliseconds.</param>
 		public DelayedFunc(Action<T1, T2, T3, T4, T5, T6, T7> action, float delay, T1 param1, T2 param2, T3 param3, T4 param4, T5 param5, T6 param6, T7 param7)
 		{
-			ScriptManager.AddScriptInstance(this);
+			ScriptManager.AddScriptInstance(this, ScriptType.CryScriptInstance);
 
 			Action = action;
 			Delay = delay;
@@ -234,7 +234,7 @@ namespace CryEngine
 		/// <param name="delay">The desired delay, in milliseconds.</param>
 		public DelayedFunc(Action<T1, T2, T3, T4, T5, T6> action, float delay, T1 param1, T2 param2, T3 param3, T4 param4, T5 param5, T6 param6)
 		{
-			ScriptManager.AddScriptInstance(this);
+			ScriptManager.AddScriptInstance(this, ScriptType.CryScriptInstance);
 
 			Action = action;
 			Delay = delay;
@@ -285,7 +285,7 @@ namespace CryEngine
 		/// <param name="delay">The desired delay, in milliseconds.</param>
 		public DelayedFunc(Action<T1, T2, T3, T4, T5> action, float delay, T1 param1, T2 param2, T3 param3, T4 param4, T5 param5)
 		{
-			ScriptManager.AddScriptInstance(this);
+			ScriptManager.AddScriptInstance(this, ScriptType.CryScriptInstance);
 
 			Action = action;
 			Delay = delay;
@@ -334,7 +334,7 @@ namespace CryEngine
 		/// <param name="delay">The desired delay, in milliseconds.</param>
 		public DelayedFunc(Action<T1, T2, T3, T4> action, float delay, T1 param1, T2 param2, T3 param3, T4 param4)
 		{
-			ScriptManager.AddScriptInstance(this);
+			ScriptManager.AddScriptInstance(this, ScriptType.CryScriptInstance);
 
 			Action = action;
 			Delay = delay;
@@ -381,7 +381,7 @@ namespace CryEngine
 		/// <param name="delay">The desired delay, in milliseconds.</param>
 		public DelayedFunc(Action<T1, T2, T3> action, float delay, T1 param1, T2 param2, T3 param3)
 		{
-			ScriptManager.AddScriptInstance(this);
+			ScriptManager.AddScriptInstance(this, ScriptType.CryScriptInstance);
 
 			Action = action;
 			Delay = delay;
@@ -426,7 +426,7 @@ namespace CryEngine
 		/// <param name="delay">The desired delay, in milliseconds.</param>
 		public DelayedFunc(Action<T1, T2> action, float delay, T1 param1, T2 param2)
 		{
-			ScriptManager.AddScriptInstance(this);
+			ScriptManager.AddScriptInstance(this, ScriptType.CryScriptInstance);
 
 			Action = action;
 			Delay = delay;
@@ -469,7 +469,7 @@ namespace CryEngine
 		/// <param name="delay">The desired delay, in milliseconds.</param>
 		public DelayedFunc(Action<T1> action, float delay, T1 param1)
 		{
-			ScriptManager.AddScriptInstance(this);
+			ScriptManager.AddScriptInstance(this, ScriptType.CryScriptInstance);
 
 			Action = action;
 			Delay = delay;
@@ -510,7 +510,7 @@ namespace CryEngine
 		/// <param name="delay">The desired delay, in milliseconds.</param>
 		public DelayedFunc(Action action, float delay)
 		{
-			ScriptManager.AddScriptInstance(this);
+			ScriptManager.AddScriptInstance(this, ScriptType.CryScriptInstance);
 
 			Action = action;
 			Delay = delay;
