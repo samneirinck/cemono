@@ -408,6 +408,11 @@ namespace CryEngine.Initialization
 			Scripts[index] = script;
 		}
 
+		public static void RemoveInstance(int instanceId, ScriptType scriptType)
+		{
+			RemoveInstances<CryScriptInstance>(scriptType, x => x.ScriptId == instanceId);
+		}
+
 		/// <summary>
 		/// Locates and destructs the script with the assigned scriptId.
 		/// </summary>
@@ -417,14 +422,18 @@ namespace CryEngine.Initialization
 				throw new ArgumentException(string.Format("scriptType: value {0} was not defined in the enum", scriptType));
 
 			int numRemoved = 0;
-			Scripts.ForEach(script =>
+			for(int i = 0; i < Scripts.Count; i++)
+			{
+				var script = Scripts[i];
+
+				if(script.ScriptType.ContainsFlag(scriptType))
 				{
-					if(script.ScriptType.ContainsFlag(scriptType))
-					{
-						if(script.ScriptInstances != null)
-							numRemoved += script.ScriptInstances.RemoveAll(x => match(x as T));
-					}
-				});
+					if(script.ScriptInstances != null)
+						numRemoved += script.ScriptInstances.RemoveAll(x => match(x as T));
+				}
+
+				Scripts[i] = script;
+			}
 
 			return numRemoved;
 		}
