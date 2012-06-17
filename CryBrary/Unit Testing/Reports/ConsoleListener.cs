@@ -4,9 +4,9 @@ using CryEngine.Extensions;
 namespace CryEngine.Testing
 {
 	/// <summary>
-	/// Example implementation of IReportListener, used to log the results of a test run to the console.
+	/// Example report listener, used to log the results of a test run to the console.
 	/// </summary>
-	internal class ConsoleTestListener : IReportListener
+	internal class ConsoleTestListener
 	{
 		/// <summary>
 		/// Constructs a new ConsoleTestListener and subscribes to the TestManager.Run event.

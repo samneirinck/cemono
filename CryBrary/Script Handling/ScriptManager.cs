@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Xml;
 using System.Linq;
 using System.Reflection;
+using System.Windows.Forms;
+using System.Xml;
 using CryEngine.Extensions;
+using CryEngine.Sandbox;
 using CryEngine.Testing;
 using CryEngine.Testing.Internals;
 
@@ -34,9 +36,13 @@ namespace CryEngine.Initialization
 				catch(UnauthorizedAccessException) { }
 			}
 
-#if !RELEASE
+			RegisterServices();
+		}
+
+		void RegisterServices()
+		{
+			FormHelper.Init();
 			TestManager.Init();
-#endif
 		}
 
 		void PopulateAssemblyLookup()
@@ -158,7 +164,7 @@ namespace CryEngine.Initialization
 				throw new ArgumentException("string cannot be empty!", "assemblyPath");
 
 			var newPath = Path.Combine(PathUtils.TempFolder, Path.GetFileName(assemblyPath));
-			
+
 			TryCopyFile(assemblyPath, ref newPath, true);
 
 #if !RELEASE
@@ -268,6 +274,13 @@ namespace CryEngine.Initialization
 				}
 			}
 #endif
+
+			SandboxExtensionAttribute attr;
+			if(type.TryGetAttribute(out attr) && type.Implements<Form>())
+			{
+				Debug.LogAlways("Registering Sandbox extension: {0}", attr.Name);
+				FormHelper.AvailableForms.Add(new FormInfo { Type = type, Data = attr });
+			}
 
 			foreach(var member in type.GetMembers(BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public))
 			{

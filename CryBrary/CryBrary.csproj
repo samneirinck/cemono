@@ -143,10 +143,19 @@
     <Compile Include="Extensions\Enum.cs" />
     <Compile Include="Extensions\IDictionary.cs" />
     <Compile Include="Extensions\IEnumerable.cs" />
+    <Compile Include="Extensions\WinForms.cs" />
     <Compile Include="FlowSystem\Attributes.cs" />
     <Compile Include="FlowSystem\Ports.cs" />
     <Compile Include="Misc\DelayedFunc.cs" />
     <Compile Include="Network\NetworkCallAttribute.cs" />
+    <Compile Include="Sandbox\Attributes.cs" />
+    <Compile Include="Sandbox\FormLoader.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Sandbox\FormLoader.Designer.cs">
+      <DependentUpon>FormLoader.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sandbox\Helper.cs" />
     <Compile Include="Script Handling\CryScript.cs" />
     <Compile Include="Script Handling\ScriptCompiler.cs" />
     <Compile Include="Engine\Material.cs" />
@@ -179,7 +188,6 @@
     <Compile Include="Unit Testing\Reports\ReportForm.Designer.cs">
       <DependentUpon>ReportForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Unit Testing\Reports\ListenerInterface.cs" />
     <Compile Include="Unit Testing\Internal.cs" />
     <Compile Include="Unit Testing\Results.cs" />
     <Compile Include="Unit Testing\Manager.cs" />
@@ -223,6 +231,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Sandbox\FormLoader.resx">
+      <DependentUpon>FormLoader.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Unit Testing\Reports\ReportForm.resx">
       <DependentUpon>ReportForm.cs</DependentUpon>
     </EmbeddedResource>
