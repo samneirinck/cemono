@@ -159,16 +159,8 @@
     <Compile Include="FlowSystem\Attributes.cs" />
     <Compile Include="FlowSystem\Ports.cs" />
     <Compile Include="Misc\DelayedFunc.cs" />
-    <Compile Include="Engine\Level.cs" />
-    <Compile Include="Entity\EntityBase.cs" />
-    <Compile Include="Engine\TimeOfDay.cs" />
     <Compile Include="Extensions\Enum.cs" />
-    <Compile Include="Extensions\IDictionary.cs" />
-    <Compile Include="Extensions\IEnumerable.cs" />
     <Compile Include="Extensions\WinForms.cs" />
-    <Compile Include="FlowSystem\Attributes.cs" />
-    <Compile Include="FlowSystem\Ports.cs" />
-    <Compile Include="Misc\DelayedFunc.cs" />
     <Compile Include="Network\NetworkCallAttribute.cs" />
     <Compile Include="Sandbox\Attributes.cs" />
     <Compile Include="Sandbox\FormLoader.cs">
@@ -222,7 +214,6 @@
     <Compile Include="Engine\Physics.cs" />
     <Compile Include="Engine\Renderer.cs" />
     <Compile Include="Entity\EntityMovement.cs" />
-    <Compile Include="GameRules\Network.cs" />
     <Compile Include="Network\Network.cs" />
     <Compile Include="Input\InputSystem.cs" />
     <Compile Include="Math\Quat.cs" />
@@ -237,7 +228,6 @@
     <Compile Include="ThirdParty\Arduino.cs" />
     <Compile Include="Utils\Debug\Debug.cs" />
     <Compile Include="Extensions\Reflection.cs" />
-    <Compile Include="Entity\EntitySystem.cs" />
     <Compile Include="Entity\EntityStatics.cs" />
     <Compile Include="Entity\Entity.cs" />
     <Compile Include="FlowSystem\FlowNode.cs" />
@@ -277,12 +267,6 @@
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
