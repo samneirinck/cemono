@@ -484,46 +484,27 @@ namespace CryEngine.Initialization
 			});
 		}
 
-		public static CryScriptInstance First(ScriptType scriptType, Func<CryScriptInstance, bool> predicate)
+		public static T Find<T>(ScriptType scriptType, Func<T, bool> predicate) where T : CryScriptInstance
 		{
 			if(!Enum.IsDefined(typeof(ScriptType), scriptType))
 				throw new ArgumentException(string.Format("scriptType: value {0} was not defined in the enum", scriptType));
 
-			CryScriptInstance scriptInstance = null;
+			T scriptInstance = null;
 
-			ForEachScript(scriptType, script =>
-				{
-					var instance = script.ScriptInstances.First(predicate);
-					if(instance != null)
-					{
-						scriptInstance = instance;
-						return;
-					}
-				});
-
-			return scriptInstance;
-		}
-
-		public static T Find<T>(ScriptType scriptType, Predicate<T> match) where T : CryScriptInstance
-		{
-			if(!Enum.IsDefined(typeof(ScriptType), scriptType))
-				throw new ArgumentException(string.Format("scriptType: value {0} was not defined in the enum", scriptType));
-
-			T result = null;
 			ForEachScript(scriptType, script =>
 				{
 					if(script.ScriptInstances != null && script.Type.ImplementsOrEquals<T>())
 					{
-						var foundInstance = script.ScriptInstances.Find(x => match(x as T)) as T;
-						if(foundInstance != null)
+						var instance = script.ScriptInstances.Find(x => predicate(x as T)) as T;
+						if(instance != null)
 						{
-							result = foundInstance;
+							scriptInstance = instance;
 							return;
 						}
 					}
 				});
 
-			return result;
+			return scriptInstance;
 		}
 		#endregion
 
