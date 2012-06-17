@@ -35,6 +35,14 @@ namespace CryEngine.Initialization
 				}
 				catch(UnauthorizedAccessException) { }
 			}
+
+			RegisterServices();
+		}
+
+		void RegisterServices()
+		{
+			FormHelper.Init();
+			TestManager.Init();
 		}
 
 		void PopulateAssemblyLookup()

@@ -34,8 +34,7 @@ namespace CryEngine.Testing
 				Run(report);
 		}
 
-		// This is lazily invoked, specifically whenever we first encounter a unit test in non-release mode
-		static TestManager()
+		internal static void Init()
 		{
 			TestCollections = new List<TestCollection>();
 			CCommand.Register("tester_run", RunTests, "Runs the feature tester");

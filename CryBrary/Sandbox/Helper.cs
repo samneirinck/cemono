@@ -9,7 +9,7 @@ namespace CryEngine.Sandbox
 	{
 		private static FormLoader instance;
 
-		static FormHelper()
+		internal static void Init()
 		{
 			FormHelper.AvailableForms = new List<FormInfo>();
 			CCommand.Register("mono_extensions", (args, cmd) =>
@@ -25,7 +25,7 @@ namespace CryEngine.Sandbox
 		{
 			var type = typeof(T);
 			SandboxExtensionAttribute attr;
-			
+
 			if(type.TryGetAttribute(out attr))
 				AvailableForms.Add(new FormInfo { Type = type, Data = attr });
 			else
