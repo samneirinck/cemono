@@ -12,6 +12,9 @@ namespace CryEngine
 {
 	public abstract class CVar
 	{
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static void _HandleException(Exception ex);
+
 		#region Externals
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static void _RegisterCommand(string name, string description, CVarFlags flags);
