@@ -171,6 +171,8 @@ bool CScriptSystem::CompleteInit()
 
 	gEnv->pGameFramework->RegisterListener(this, "CryMono", eFLPriority_Game);
 
+	gEnv->pSystem->GetISystemEventDispatcher()->RegisterListener(this);
+
 	CryModuleMemoryInfo memInfo;
 	CryModuleGetMemoryInfo(&memInfo);
 	CryLogAlways("		Initializing CryMono done, MemUsage=%iKb", (memInfo.allocated + m_pCryBraryAssembly->GetCustomClass("CryStats", "CryEngine.Utilities")->GetProperty("MemoryUsage")->Unbox<long>()) / 1024);
