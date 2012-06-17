@@ -512,7 +512,7 @@ namespace CryEngine.Initialization
 			T result = null;
 			ForEachScript(scriptType, script =>
 				{
-					if((script.Type.Equals(typeof(T)) || script.Type.Implements(typeof(T))) && script.ScriptInstances != null)
+					if(script.ScriptInstances != null && script.Type.ImplementsOrEquals<T>())
 					{
 						var foundInstance = script.ScriptInstances.Find(x => match(x as T)) as T;
 						if(foundInstance != null)
