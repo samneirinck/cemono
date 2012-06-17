@@ -10,6 +10,8 @@ namespace CryEngine
 	{
 		#region Externals
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static IntPtr _FindMaterial(string name);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static IntPtr _CreateMaterial(string name);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static IntPtr _LoadMaterial(string name, bool makeIfNotFound = true, bool nonRemovable = false);
@@ -45,6 +47,13 @@ namespace CryEngine
 		#endregion
 
 		#region Statics
+		public static Material Find(string name)
+		{
+			var ptr = _FindMaterial(name);
+
+			return TryAdd(ptr);
+		}
+
 		public static Material Create(string name, bool makeIfNotFound = true, bool nonRemovable = false)
 		{
 			var ptr = _CreateMaterial(name);

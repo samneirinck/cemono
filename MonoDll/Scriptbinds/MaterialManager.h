@@ -24,6 +24,7 @@ public:
 protected:
 
 	// Externals
+	static IMaterial *FindMaterial(mono::string name);
 	static IMaterial *CreateMaterial(mono::string name);
 	static IMaterial *LoadMaterial(mono::string name, bool makeIfNotFound, bool nonRemovable);
 
