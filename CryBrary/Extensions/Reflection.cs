@@ -32,6 +32,16 @@ namespace CryEngine.Extensions
 		{
 			return thisType.Implements(typeof(T));
 		}
+
+		public static bool ImplementsOrEquals(this Type thisType, Type baseType)
+		{
+			return thisType.Equals(baseType) || baseType.IsAssignableFrom(thisType);
+		}
+
+		public static bool ImplementsOrEquals<T>(this Type thisType)
+		{
+			return thisType.ImplementsOrEquals(typeof(T));
+		}
 		#endregion
 
 		#region Attributes
