@@ -18,25 +18,25 @@ namespace CryEngine.Initialization
 			ScriptName = type.Name;
 
 			ScriptType |= ScriptType.Any;
-			if(type.Implements(typeof(CryScriptInstance)))
+			if(type.Implements<CryScriptInstance>())
 			{
 				ScriptType |= ScriptType.CryScriptInstance;
 
-				if(type.Implements(typeof(EntityBase)))
+				if(type.Implements<EntityBase>())
 				{
 					ScriptType |= ScriptType.Entity;
 
-					if(type.Implements(typeof(Actor)))
+					if(type.Implements<Actor>())
 						ScriptType |= ScriptType.Actor;
 				}
-				if(type.Implements(typeof(FlowNode)))
+				if(type.Implements<FlowNode>())
 					ScriptType |= ScriptType.FlowNode;
-				else if(type.Implements(typeof(GameRules)))
+				else if(type.Implements<GameRules>())
 					ScriptType |= ScriptType.GameRules;
 			}
-			else if(type.Implements(typeof(UIEventSystem)))
+			else if(type.Implements<UIEventSystem>())
 				ScriptType |= ScriptType.UIEventSystem;
-			else if(type.Implements(typeof(ScriptCompiler)))
+			else if(type.Implements<ScriptCompiler>())
 				ScriptType |= ScriptType.ScriptCompiler;
 		}
 

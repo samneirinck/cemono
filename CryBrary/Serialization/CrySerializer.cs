@@ -59,7 +59,7 @@ namespace CryEngine.Serialization
 				WriteAny(objectReference);
 			else if(valueType == typeof(string))
 				WriteString(objectReference);
-			else if(valueType.Implements(typeof(IEnumerable)))
+			else if(valueType.Implements<IEnumerable>())
 			{
 				if(valueType.IsGenericType)
 					WriteGenericEnumerable(objectReference);
@@ -72,7 +72,7 @@ namespace CryEngine.Serialization
 			{
 				if(objectReference.Value is Type)
 					WriteType(objectReference);
-				else if(valueType.Implements(typeof(MemberInfo)))
+				else if(valueType.Implements<MemberInfo>())
 					WriteMemberInfo(objectReference);
 				else
 					WriteObject(objectReference);
@@ -146,7 +146,7 @@ namespace CryEngine.Serialization
 			var type = objectReference.Value.GetType();
 			WriteType(type);
 
-			if(type.Implements(typeof(IDictionary)))
+			if(type.Implements<IDictionary>())
 			{
 				int i = 0;
 				foreach(var element in enumerable)
@@ -371,7 +371,7 @@ namespace CryEngine.Serialization
 
 			objReference.Value = Activator.CreateInstance(type);
 
-			if(type.Implements(typeof(IDictionary)))
+			if(type.Implements<IDictionary>())
 			{
 				var dict = objReference.Value as IDictionary;
 

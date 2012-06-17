@@ -40,6 +40,9 @@ namespace CryEngine
 
 		public static void Remove(EntityId id)
 		{
+			if(id == 0)
+				throw new ArgumentException("entityId cannot be 0!");
+
 			_RemoveEntity(id);
 		}
 
@@ -86,6 +89,9 @@ namespace CryEngine
 		/// a C++ entity with the specified ID></remarks>
 		public static EntityBase Get(EntityId entityId)
 		{
+			if(entityId == 0)
+				throw new ArgumentException("entityId cannot be 0!");
+
 			var ent = Get<EntityBase>(entityId);
 			if(ent != null)
 				return ent;
@@ -120,7 +126,11 @@ namespace CryEngine
 		/// Consider using IDs where necessary.</remarks>
 		public static EntityBase Find(string name)
 		{
-			return Get(new EntityId(_FindEntity(name)));
+			var id = _FindEntity(name);
+			if(id == 0)
+				return null;
+
+			return Get(new EntityId(id));
 		}
 
 		/// <summary>
