@@ -61,12 +61,12 @@ CScriptDomain::~CScriptDomain()
 		}
 		catch(char *ex)
 		{
-			CryLogAlways("[MonoWarning] An exception was raised during ScriptDomain unload: %s", ex);
+			MonoWarning("An exception was raised during ScriptDomain unload: %s", ex);
 		}
 
 		if(pException)	
 		{			
-			CryLogAlways("[MonoWarning] An exception was raised during ScriptDomain unload:");
+			MonoWarning("An exception was raised during ScriptDomain unload:");
 			MonoMethod *pExceptionMethod = mono_method_desc_search_in_class(mono_method_desc_new("::ToString()", false),mono_get_exception_class());		
 			MonoString *exceptionString = (MonoString *)mono_runtime_invoke(pExceptionMethod, pException, NULL, NULL);		
 			CryLogAlways(ToCryString((mono::string)exceptionString));

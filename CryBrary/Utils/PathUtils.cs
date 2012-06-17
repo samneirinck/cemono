@@ -33,9 +33,6 @@ namespace CryEngine
 				case ScriptType.GameRules:
 					folder = "GameRules";
 					break;
-				case ScriptType.EditorForm:
-					folder = "EditorForms";
-					break;
 				case ScriptType.UIEventSystem:
 					folder = "UI";
 					break;

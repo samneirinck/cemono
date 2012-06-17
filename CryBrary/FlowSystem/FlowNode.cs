@@ -466,7 +466,7 @@ namespace CryEngine
 			return IsPortActive(GetInputPortId(port.Method));
 		}
 
-		protected T GetPortEnum<T>(Action<T> port) where T : struct, IConvertible
+		protected T GetPortEnum<T>(Action<T> port) where T : struct
 		{
 			if(!typeof(T).IsEnum)
 				throw new ArgumentException("T must be an enumerated type");
@@ -568,15 +568,15 @@ namespace CryEngine
 		private bool IsPortActive(int port) { return _IsPortActive(NodePointer, port); }
 		#endregion
 
-		public Entity TargetEntity
+		public EntityBase TargetEntity
 		{
 			get
 			{
 				uint entId;
 				var entPtr = _GetTargetEntity(NodePointer, out entId);
 
-				if(entPtr != null)
-					return Entity.Get(new EntityId(entId), entPtr);
+				if(entPtr != IntPtr.Zero)
+					return Entity.CreateNativeEntity(new EntityId(entId), entPtr);
 
 				return null;
 			}

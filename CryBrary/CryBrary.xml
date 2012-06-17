@@ -251,6 +251,21 @@
             Convenient accessor for the raw time value
             </summary>
         </member>
+        <member name="M:CryEngine.Extensions.WinFormsExtensions.Append(System.Windows.Forms.TextBoxBase,System.String,System.Object[])">
+            <summary>
+            Appends text to the current text of a text box, with formatted arguments.
+            </summary>
+            <param name="textBox"></param>
+            <param name="format"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:CryEngine.Extensions.WinFormsExtensions.NewLine(System.Windows.Forms.TextBoxBase,System.Int32)">
+            <summary>
+            Appends a number of Environment.NewLine strings to the current text of a text box.
+            </summary>
+            <param name="textBox"></param>
+            <param name="count"></param>
+        </member>
         <member name="P:CryEngine.FlowNodeAttribute.Name">
             <summary>
             Name of the node, if not set will use the node class name.
@@ -376,6 +391,68 @@
             </summary>
             <param name="delay">The desired delay, in milliseconds.</param>
         </member>
+        <member name="T:CryEngine.Sandbox.SandboxExtensionAttribute">
+            <summary>
+            Defines a Sandbox extension.
+            </summary>
+        </member>
+        <member name="P:CryEngine.Sandbox.SandboxExtensionAttribute.Name">
+            <summary>
+            The name of the extension.
+            </summary>
+        </member>
+        <member name="P:CryEngine.Sandbox.SandboxExtensionAttribute.Description">
+            <summary>
+            An optional description of the extension's purpose.
+            </summary>
+        </member>
+        <member name="P:CryEngine.Sandbox.SandboxExtensionAttribute.AuthorName">
+            <summary>
+            The name of the author.
+            </summary>
+        </member>
+        <member name="P:CryEngine.Sandbox.SandboxExtensionAttribute.AuthorContact">
+            <summary>
+            A method, such as a website or email address, to contact the extension developer.
+            </summary>
+        </member>
+        <member name="F:CryEngine.Sandbox.FormLoader.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:CryEngine.Sandbox.FormLoader.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:CryEngine.Sandbox.FormLoader.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:CryEngine.Sandbox.FormInfo">
+            <summary>
+            Describes an available Sandbox extension.
+            </summary>
+        </member>
+        <member name="P:CryEngine.Sandbox.FormInfo.Type">
+            <summary>
+            The type of the form, guaranteed to inherit from System.Windows.Forms.Form.
+            </summary>
+        </member>
+        <member name="P:CryEngine.Sandbox.FormInfo.Name">
+            <summary>
+            The name of the extension.
+            </summary>
+        </member>
+        <member name="P:CryEngine.Sandbox.FormInfo.Data">
+            <summary>
+            Extension metadata such as author info.
+            </summary>
+        </member>
         <member name="T:CryEngine.Initialization.CryScript">
             <summary>
             Represents a given class.
@@ -391,41 +468,37 @@
             Stores all instances of this class.
             </summary>
         </member>
-        <member name="F:CryEngine.Initialization.ScriptType.Unknown">
+        <member name="F:CryEngine.Initialization.ScriptType.Any">
             <summary>
-            Scripts not inheriting from CryScriptInstance will utilize this script type.
+            All scripts have this flag applied.
             </summary>
         </member>
         <member name="F:CryEngine.Initialization.ScriptType.CryScriptInstance">
             <summary>
-            Scripts inheriting from CryScriptInstance, but no other CryMono base script will be linked to this script type.
+            Scripts deriving from CryScriptInstance.
             </summary>
         </member>
         <member name="F:CryEngine.Initialization.ScriptType.GameRules">
             <summary>
-            Scripts directly inheriting from BaseGameRules will utilize this script type.
+            Scripts deriving from GameRules.
             </summary>
         </member>
         <member name="F:CryEngine.Initialization.ScriptType.FlowNode">
             <summary>
-            Scripts directly inheriting from FlowNode will utilize this script type.
+            Scripts deriving from FlowNode.
             </summary>
         </member>
         <member name="F:CryEngine.Initialization.ScriptType.Entity">
             <summary>
-            Scripts directly inheriting from Entity will utilize this script type.
+            Scripts deriving from EntityBase.
             </summary>
         </member>
         <member name="F:CryEngine.Initialization.ScriptType.Actor">
             <summary>
-            Scripts directly inheriting from Actor will utilize this script type.
+            Scripts deriving from Actor.
             </summary>
         </member>
         <member name="F:CryEngine.Initialization.ScriptType.UIEventSystem">
-            <summary>
-            </summary>
-        </member>
-        <member name="F:CryEngine.Initialization.ScriptType.EditorForm">
             <summary>
             </summary>
         </member>
@@ -697,18 +770,26 @@
             Called when the level is started.
             </summary>
         </member>
-        <member name="M:CryEngine.Entity.OnEnterArea(CryEngine.EntityId,CryEngine.EntityId)">
+        <member name="M:CryEngine.Entity.OnEnterArea(CryEngine.EntityId,System.Int32)">
             <summary>
-            Sent when triggering entity enters to the area proximity.
+            Sent when entity enters to the area proximity.
             </summary>
-            <param name="triggerEntityId"></param>
+            <param name="entityId"></param>
             <param name="areaEntityId"></param>
         </member>
-        <member name="M:CryEngine.Entity.OnLeaveArea(CryEngine.EntityId,CryEngine.EntityId)">
+        <member name="M:CryEngine.Entity.OnMoveInsideArea(CryEngine.EntityId,System.Int32,System.Single)">
             <summary>
-            Sent when triggering entity leaves the area proximity.
+            Sent when entity moves inside the area proximity.
             </summary>
-            <param name="triggerEntityId"></param>
+            <param name="entityId"></param>
+            <param name="areaId"></param>
+            <param name="fade"></param>
+        </member>
+        <member name="M:CryEngine.Entity.OnLeaveArea(CryEngine.EntityId,System.Int32)">
+            <summary>
+            Sent when entity leaves the area proximity.
+            </summary>
+            <param name="entityId"></param>
             <param name="areaEntityId"></param>
         </member>
         <member name="M:CryEngine.Entity.OnCollision(CryEngine.EntityId,CryEngine.Vec3,CryEngine.Vec3,System.Int16,CryEngine.Vec3)">
@@ -729,7 +810,31 @@
         <member name="M:CryEngine.Entity.OnInit">
             <summary>
             Called after level has been loaded, is not called on serialization.
+            Note that this is called prior to GameRules.OnClientConnect and OnClientEnteredGame!
             </summary>
+        </member>
+        <member name="M:CryEngine.Entity.OnMove">
+            <summary>
+            Called when the entities local or world transformation matrix changes. (Position / Rotation / Scale)
+            </summary>
+        </member>
+        <member name="M:CryEngine.Entity.OnAttach(CryEngine.EntityId)">
+            <summary>
+            Called whenever another entity has been linked to this entity.
+            </summary>
+            <param name="child"></param>
+        </member>
+        <member name="M:CryEngine.Entity.OnDetach(CryEngine.EntityId)">
+            <summary>
+            Called whenever another entity has been unlinked from this entity.
+            </summary>
+            <param name="child"></param>
+        </member>
+        <member name="M:CryEngine.Entity.OnDetachThis(CryEngine.EntityId)">
+            <summary>
+            Called whenever this entity is unliked from another entity.
+            </summary>
+            <param name="parent"></param>
         </member>
         <member name="M:CryEngine.Entity.LoadObject(System.String,System.Int32)">
             <summary>
@@ -3942,6 +4047,159 @@
             <returns>The value of the component at the specified index.</returns>
             <exception cref="T:System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 3].</exception>
         </member>
+        <member name="T:CryEngine.Testing.Assert">
+            <summary>
+            Contains methods used to make assertions for testing purposes.
+            </summary>
+        </member>
+        <member name="M:CryEngine.Testing.Assert.IsTrue(System.Boolean)">
+            <summary>
+            Asserts that a given statement is true.
+            </summary>
+            <param name="value">The value to be asserted as true.</param>
+            <exception cref="T:CryEngine.Testing.AssertionFailedException">Thrown if the value is false.</exception>
+        </member>
+        <member name="M:CryEngine.Testing.Assert.Throws``1(System.Action,System.Boolean)">
+            <summary>
+            Asserts that a given expression throws an exception of type T.
+            </summary>
+            <typeparam name="T">The expression that should be thrown within the supplied method.</typeparam>
+            <param name="method">The method in which the expression should be thrown.</param>
+            <param name="includeChildren">Specifies whether subclassed exceptions should be counted as valid.</param>
+            <returns>The exception that was thrown as expected.</returns>
+            <exception cref="T:CryEngine.Testing.AssertionFailedException">Thrown if an exception of type T is not thrown.</exception>
+        </member>
+        <member name="T:CryEngine.Testing.TestCollectionAttribute">
+            <summary>
+            Indicates that a class should be loaded by the unit tester.
+            </summary>
+        </member>
+        <member name="T:CryEngine.Testing.TestAttribute">
+            <summary>
+            Indicates that a method should be run as a test.
+            Requires that the method belong to a class decorated with a TestCollectionAttribute.
+            </summary>
+        </member>
+        <member name="T:CryEngine.Testing.IgnoreTestAttribute">
+            <summary>
+            Indicates that a test should be ignored.
+            Ignored tests will not be reported as a success; they will be reported as ignored.
+            </summary>
+        </member>
+        <member name="T:CryEngine.Testing.AssertionFailedException">
+            <summary>
+            The exception that is thrown when a false assertion is made.
+            </summary>
+        </member>
+        <member name="T:CryEngine.Testing.ConsoleTestListener">
+            <summary>
+            Example report listener, used to log the results of a test run to the console.
+            </summary>
+        </member>
+        <member name="M:CryEngine.Testing.ConsoleTestListener.#ctor">
+            <summary>
+            Constructs a new ConsoleTestListener and subscribes to the TestManager.Run event.
+            </summary>
+        </member>
+        <member name="M:CryEngine.Testing.ConsoleTestListener.OnTestsRun(CryEngine.Testing.TestReport)">
+            <summary>
+            Called when a report is received.
+            </summary>
+            <param name="report">The report, containing all test information.</param>
+        </member>
+        <member name="F:CryEngine.Testing.Internals.ReportForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:CryEngine.Testing.Internals.ReportForm.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:CryEngine.Testing.Internals.ReportForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:CryEngine.Testing.TestReport">
+            <summary>
+            Contains all the test data for a single run.
+            </summary>
+        </member>
+        <member name="P:CryEngine.Testing.TestReport.Collections">
+            <summary>
+            The test collections which were run.
+            </summary>
+        </member>
+        <member name="P:CryEngine.Testing.TestReport.TimeTaken">
+            <summary>
+            The time the entire unit test set took to execute.
+            </summary>
+        </member>
+        <member name="T:CryEngine.Testing.TestResult">
+            <summary>
+            Indicates the actual result of a given single test.
+            </summary>
+        </member>
+        <member name="T:CryEngine.Testing.TestResultInfo">
+            <summary>
+            Contains detailed information on the result of a test.
+            </summary>
+        </member>
+        <member name="P:CryEngine.Testing.TestResultInfo.Name">
+            <summary>
+            The name of the test.
+            </summary>
+        </member>
+        <member name="P:CryEngine.Testing.TestResultInfo.Description">
+            <summary>
+            The optional test description.
+            </summary>
+        </member>
+        <member name="P:CryEngine.Testing.TestResultInfo.Result">
+            <summary>
+            The result of the test.
+            </summary>
+        </member>
+        <member name="P:CryEngine.Testing.TestResultInfo.Stack">
+            <summary>
+            The full stracktrace for this test, if it failed.
+            </summary>
+        </member>
+        <member name="P:CryEngine.Testing.TestResultInfo.FirstFrame">
+            <summary>
+            For convenience, the first desired frame from the stack.
+            If the frame is inside CryBrary due to an assertion, we drop down one frame.
+            </summary>
+        </member>
+        <member name="P:CryEngine.Testing.TestResultInfo.Exception">
+            <summary>
+            The exception that caused this test to fail, if it did.
+            </summary>
+        </member>
+        <member name="T:CryEngine.Testing.TestCollectionResult">
+            <summary>
+            Contains the results for a set of tests.
+            </summary>
+        </member>
+        <member name="P:CryEngine.Testing.TestCollectionResult.Name">
+            <summary>
+            The name of this collection.
+            </summary>
+        </member>
+        <member name="P:CryEngine.Testing.TestCollectionResult.Description">
+            <summary>
+            The optional collection description.
+            </summary>
+        </member>
+        <member name="P:CryEngine.Testing.TestCollectionResult.Results">
+            <summary>
+            The individual results for the tests in this collection.
+            </summary>
+        </member>
         <member name="T:CryEngine.Serialization.AppDomainSerializer">
             <summary>
             Handles serializing script instances for an app domain reload.
@@ -4126,14 +4384,14 @@
             The height of the screen in pixels.
             </summary>
         </member>
-        <member name="M:CryEngine.CryNetwork.InitializeNetworkStatics(System.Boolean,System.Boolean)">
+        <member name="M:CryEngine.Network.InitializeNetworkStatics(System.Boolean,System.Boolean)">
             <summary>
             Initializes static variables which never change, i.e. IsEditor.
             </summary>
             <param name="isEditor"></param>
             <param name="isDedicated"></param>
         </member>
-        <member name="M:CryEngine.CryNetwork.InitializeNetwork(System.Boolean,System.Boolean,System.Boolean)">
+        <member name="M:CryEngine.Network.InitializeNetwork(System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             Initializes variables which change, i.e. IsServer.
             </summary>
@@ -4963,6 +5221,22 @@
             Useful extensions when working with reflection.
             </summary>
         </member>
+        <member name="M:CryEngine.Extensions.ReflectionExtensions.Implements(System.Type,System.Type)">
+            <summary>
+            Determines whether a given type is the child of another.
+            </summary>
+            <param name="thisType">The child type.</param>
+            <param name="baseType">The possible parent type.</param>
+            <returns>True if thisType is a child of baseType.</returns>
+        </member>
+        <member name="M:CryEngine.Extensions.ReflectionExtensions.Implements``1(System.Type)">
+            <summary>
+            Determines whether a given type is the child of another.
+            </summary>
+            <typeparam name="T">The possible parent type.</typeparam>
+            <param name="thisType">The child type.</param>
+            <returns>True if thisType implements type T.</returns>
+        </member>
         <member name="M:CryEngine.Extensions.ReflectionExtensions.ContainsAttribute``1(System.Reflection.MemberInfo)">
             <summary>
             Determines whether this member is decorated with at least one instance of a given attribute.
@@ -4971,13 +5245,13 @@
             <param name="info">The member on which the search is performed.</param>
             <returns>True if the member is decorated with at least one instance of attribute T.</returns>
         </member>
-        <member name="M:CryEngine.Extensions.ReflectionExtensions.Implements(System.Type,System.Type)">
+        <member name="M:CryEngine.Extensions.ReflectionExtensions.GetAttributes``1(System.Reflection.MemberInfo)">
             <summary>
-            Determines whether a given type is the child of another.
+            Gets all instances of a given attribute on the selected member.
             </summary>
-            <param name="thisType">The child type.</param>
-            <param name="baseType">The possible parent type.</param>
-            <returns>True if thisType is a child of baseType.</returns>
+            <typeparam name="T">The attribute to search for.</typeparam>
+            <param name="memberInfo">The member on which the search is performed.</param>
+            <returns>The first instance of attribute T, or null if none is found.</returns>
         </member>
         <member name="M:CryEngine.Extensions.ReflectionExtensions.GetAttribute``1(System.Reflection.MemberInfo)">
             <summary>
@@ -6160,7 +6434,7 @@
             Called once per frame.
             </summary>
         </member>
-        <member name="M:CryEngine.Initialization.ScriptManager.InstantiateScript(System.String,CryEngine.Initialization.ScriptType,System.Object[])">
+        <member name="M:CryEngine.Initialization.ScriptManager.CreateScriptInstance(System.String,CryEngine.Initialization.ScriptType,System.Object[])">
             <summary>
             Instantiates a script using its name and interface.
             </summary>
@@ -6168,17 +6442,10 @@
             <param name="constructorParams"></param>
             <returns>New instance scriptId or -1 if instantiation failed.</returns>
         </member>
-        <member name="M:CryEngine.Initialization.ScriptManager.RemoveInstance(System.Int32,CryEngine.Initialization.ScriptType,System.Type)">
+        <member name="M:CryEngine.Initialization.ScriptManager.RemoveInstances``1(CryEngine.Initialization.ScriptType,System.Predicate{``0})">
             <summary>
             Locates and destructs the script with the assigned scriptId.
             </summary>
-            <param name="scriptId"></param>
-        </member>
-        <member name="M:CryEngine.Initialization.ScriptManager.AddScriptInstance(CryEngine.CryScriptInstance,CryEngine.Initialization.CryScript)">
-            <summary>
-            Adds an script instance to the script collection and returns its new id.
-            </summary>
-            <param name="instance"></param>
         </member>
         <member name="F:CryEngine.Initialization.ScriptManager.LastScriptId">
             <summary>

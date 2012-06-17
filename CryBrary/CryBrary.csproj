@@ -137,6 +137,8 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.XML" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
@@ -157,6 +159,25 @@
     <Compile Include="FlowSystem\Attributes.cs" />
     <Compile Include="FlowSystem\Ports.cs" />
     <Compile Include="Misc\DelayedFunc.cs" />
+    <Compile Include="Engine\Level.cs" />
+    <Compile Include="Entity\EntityBase.cs" />
+    <Compile Include="Engine\TimeOfDay.cs" />
+    <Compile Include="Extensions\Enum.cs" />
+    <Compile Include="Extensions\IDictionary.cs" />
+    <Compile Include="Extensions\IEnumerable.cs" />
+    <Compile Include="Extensions\WinForms.cs" />
+    <Compile Include="FlowSystem\Attributes.cs" />
+    <Compile Include="FlowSystem\Ports.cs" />
+    <Compile Include="Misc\DelayedFunc.cs" />
+    <Compile Include="Network\NetworkCallAttribute.cs" />
+    <Compile Include="Sandbox\Attributes.cs" />
+    <Compile Include="Sandbox\FormLoader.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Sandbox\FormLoader.Designer.cs">
+      <DependentUpon>FormLoader.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sandbox\Helper.cs" />
     <Compile Include="Script Handling\CryScript.cs" />
     <Compile Include="Script Handling\ScriptCompiler.cs" />
     <Compile Include="Engine\Material.cs" />
@@ -179,6 +200,19 @@
     <Compile Include="Math\Vec2.cs" />
     <Compile Include="Math\Vec4.cs" />
     <Compile Include="Serialization\SerializedObjectReference.cs" />
+    <Compile Include="Unit Testing\Assertion.cs" />
+    <Compile Include="Unit Testing\Attributes.cs" />
+    <Compile Include="Unit Testing\Exceptions.cs" />
+    <Compile Include="Unit Testing\Reports\ConsoleListener.cs" />
+    <Compile Include="Unit Testing\Reports\ReportForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Unit Testing\Reports\ReportForm.Designer.cs">
+      <DependentUpon>ReportForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Unit Testing\Internal.cs" />
+    <Compile Include="Unit Testing\Results.cs" />
+    <Compile Include="Unit Testing\Manager.cs" />
     <Compile Include="UI\EventSystem.cs" />
     <Compile Include="UI\UI.cs" />
     <Compile Include="Serialization\AppDomainSerializer.cs" />
@@ -189,6 +223,7 @@
     <Compile Include="Engine\Renderer.cs" />
     <Compile Include="Entity\EntityMovement.cs" />
     <Compile Include="GameRules\Network.cs" />
+    <Compile Include="Network\Network.cs" />
     <Compile Include="Input\InputSystem.cs" />
     <Compile Include="Math\Quat.cs" />
     <Compile Include="Entity\Interface.cs" />
@@ -203,6 +238,7 @@
     <Compile Include="Utils\Debug\Debug.cs" />
     <Compile Include="Extensions\Reflection.cs" />
     <Compile Include="Entity\EntitySystem.cs" />
+    <Compile Include="Entity\EntityStatics.cs" />
     <Compile Include="Entity\Entity.cs" />
     <Compile Include="FlowSystem\FlowNode.cs" />
     <Compile Include="Actor\ItemSystem.cs" />
@@ -219,11 +255,34 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Sandbox\FormLoader.resx">
+      <DependentUpon>FormLoader.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Unit Testing\Reports\ReportForm.resx">
+      <DependentUpon>ReportForm.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Unit Testing\Reports\Resources\TestFailed.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Unit Testing\Reports\Resources\TestIgnored.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Unit Testing\Reports\Resources\TestSuccess.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

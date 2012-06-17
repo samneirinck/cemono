@@ -1,0 +1,47 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using CryEngine.Sandbox;
+using CryEngine.Testing.Internals;
+
+namespace CryEngine.Testing
+{
+	public static class TestManager
+	{
+		internal static List<TestCollection> TestCollections { get; private set; }
+
+		public static event Action<TestReport> Run;
+
+		// TODO: Provide a method to selectively run tests
+		public static void RunTests()
+		{
+			RunTests(null, null);
+		}
+
+		private static void RunTests(string[] args, string fullCommandLine)
+		{
+			var timer = Stopwatch.StartNew();
+
+			var testResults = (from testCollection in TestCollections
+							   select testCollection.Run()).ToList();
+
+			timer.Stop();
+
+			var report = new TestReport { Collections = testResults, TimeTaken = timer.Elapsed };
+
+			if(Run != null)
+				Run(report);
+		}
+
+		internal static void Init()
+		{
+			TestCollections = new List<TestCollection>();
+			CCommand.Register("tester_run", RunTests, "Runs the feature tester");
+			FormHelper.RegisterInternal<ReportForm>();
+			listener = new ConsoleTestListener();
+		}
+
+		private static ConsoleTestListener listener;
+	}
+}

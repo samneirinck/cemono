@@ -34,7 +34,7 @@ public:
 
 	virtual IMonoObject *GetItem(int index) override;
 	virtual const char *GetItemString(int index) override { return ToCryString(mono_array_get((MonoArray *)m_pArray, mono::string , index)); }
-	virtual IMonoArray *GetItemArray(int index) override { return new CScriptArray((mono::array)mono_array_get((MonoArray *)m_pArray, MonoArray *, index)); }
+	virtual IMonoArray *GetItemArray(int index) override;
 
 	virtual void InsertObject(IMonoObject *pObject, int index = -1) override;
 	virtual void InsertArray(IMonoArray *pArray, int index = -1) override;

@@ -51,14 +51,14 @@ public:
 
 	virtual void Release() override { delete this; }
 
-	virtual IMonoEntityManager *GetEntityManager() const override { return m_pEntityManager; }
-
 	virtual void RegisterMethodBinding(const void *method, const char *fullMethodName) override;
 
-	virtual IMonoClass *InstantiateScript(const char *scriptName, EMonoScriptType scriptType = eScriptType_Unknown, IMonoArray *pConstructorParameters = nullptr) override;
-	virtual void RemoveScriptInstance(int id, EMonoScriptType scriptType = eScriptType_Unknown) override;
+	virtual IMonoClass *InstantiateScript(const char *scriptName, EMonoScriptFlags scriptType = eScriptFlag_Any, IMonoArray *pConstructorParameters = nullptr) override;
+	virtual void RemoveScriptInstance(int id, EMonoScriptFlags scriptType = eScriptFlag_Any) override;
 	
 	virtual IMonoAssembly *GetCryBraryAssembly() override { return m_pCryBraryAssembly; }
+	virtual IMonoAssembly *GetCorlibAssembly() override;
+	virtual IMonoAssembly *GetAssembly(const char *file, bool shadowCopy = false);
 
 	virtual IMonoDomain *GetRootDomain() override { return m_pRootDomain; }
 
@@ -66,6 +66,8 @@ public:
 
 	virtual void RegisterListener(IMonoScriptSystemListener *pListener) override { stl::push_back_unique(m_scriptReloadListeners, pListener); }
 	virtual void UnregisterListener(IMonoScriptSystemListener *pListener) override { stl::find_and_erase(m_scriptReloadListeners, pListener); }
+
+	virtual void RegisterFlownodes() { OnSystemEvent(ESYSTEM_EVENT_GAME_POST_INIT, 0, 0); }
 	// ~IMonoScriptSystem
 
 	// IFileChangeMonitor
@@ -112,7 +114,6 @@ protected:
 	// Map containing all scripts and their id's for quick access.
 	TScripts m_scripts;
 
-	IMonoEntityManager *m_pEntityManager;
 	CFlowManager *m_pFlowManager;
 	CInput *m_pInput;
 
@@ -135,6 +136,9 @@ protected:
 	bool m_bLastCompilationSuccess;
 	// True when currently recompiling scripts / serializing app domain.
 	bool m_bReloading;
+
+	// If true when PostInit is called, does not forward call to ScriptManager
+	bool m_bHasPostInitialized;
 };
 
 #endif //__MONO_H__

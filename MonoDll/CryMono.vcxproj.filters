@@ -45,12 +45,6 @@
     <ClInclude Include="Headers\IMonoAssembly.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\IMonoEntityManager.h">
-      <Filter>Interfaces\Subsystems</Filter>
-    </ClInclude>
-    <ClInclude Include="EntityManager.h">
-      <Filter>EntitySystem</Filter>
-    </ClInclude>
     <ClInclude Include="FlowManager.h">
       <Filter>FlowSystem</Filter>
     </ClInclude>
@@ -144,6 +138,10 @@
     <ClInclude Include="Scriptbinds\Physics.h">
       <Filter>ScriptBinds</Filter>
     </ClInclude>
+    <ClInclude Include="Scriptbinds\Entity.h">
+      <Filter>ScriptBinds</Filter>
+    </ClInclude>
+    <ClInclude Include="Scriptbinds\Network.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -164,9 +162,6 @@
     </ClCompile>
     <ClCompile Include="MonoScriptSystem.cpp">
       <Filter>Mono</Filter>
-    </ClCompile>
-    <ClCompile Include="EntityManager.cpp">
-      <Filter>EntitySystem</Filter>
     </ClCompile>
     <ClCompile Include="FlowManager.cpp">
       <Filter>FlowSystem</Filter>
@@ -241,6 +236,10 @@
     <ClCompile Include="Scriptbinds\Physics.cpp">
       <Filter>ScriptBinds</Filter>
     </ClCompile>
+    <ClCompile Include="Scriptbinds\Entity.cpp">
+      <Filter>ScriptBinds</Filter>
+    </ClCompile>
+    <ClCompile Include="Scriptbinds\Network.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ScriptBinds">
@@ -276,17 +275,11 @@
     <Filter Include="Interfaces">
       <UniqueIdentifier>{2274758e-72ad-46e0-8409-df6cebf00772}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Interfaces\Subsystems">
-      <UniqueIdentifier>{c8d89b01-9d52-4b04-b3e0-3b66f52199f0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ActorSystem">
       <UniqueIdentifier>{7519e88b-de7a-4729-919b-85c4612989e9}</UniqueIdentifier>
     </Filter>
     <Filter Include="ScriptBinds\Viewport\UI">
       <UniqueIdentifier>{35c9343f-03fb-4c50-9c85-fa0b95fafeb7}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="CryMono.rc" />
   </ItemGroup>
 </Project>

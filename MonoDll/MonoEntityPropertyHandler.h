@@ -11,6 +11,8 @@
 
 #include <IEntityClass.h>
 
+#include "MonoEntity.h"
+
 class CEntityPropertyHandler : public IEntityPropertyHandler
 {
 public:
@@ -20,7 +22,7 @@ public:
 	// IEntityPropertyHandler interface
 	virtual void GetMemoryUsage( ICrySizer *pSizer ) const { pSizer->Add(m_properties); }
 	virtual void RefreshProperties() {}
-	virtual void LoadEntityXMLProperties(IEntity* entity, const XmlNodeRef& xml) {}
+	virtual void LoadEntityXMLProperties(IEntity* entity, const XmlNodeRef& xml);
 	virtual void LoadArchetypeXMLProperties(const char* archetypeName, const XmlNodeRef& xml) {}
 	virtual void InitArchetypeEntity(IEntity* entity, const char* archetypeName, const SEntitySpawnParams& spawnParams) {}
 	virtual int GetPropertyCount() const;
@@ -31,7 +33,12 @@ public:
 	virtual void PropertiesChanged(IEntity* entity) {}
 	// -IEntityPropertyHandler
 
+	SQueuedProperty *GetQueuedProperties(EntityId id, int &numProperties);
+
 protected:
+
+	typedef std::map<EntityId, DynArray<SQueuedProperty>> TQueuedPropertyMap;
+	TQueuedPropertyMap m_queuedProperties;
 	std::vector<IEntityPropertyHandler::SPropertyInfo> m_properties;
 };
 

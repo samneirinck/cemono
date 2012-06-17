@@ -17,7 +17,7 @@ namespace CryEngine
 	{
 		protected Entity() { }
 		
-		internal static void Load(ref CryScript script)
+		internal static void Load(CryScript script)
 		{
 			//LoadFlowNode(ref script, true);
 
@@ -113,18 +113,30 @@ namespace CryEngine
 		protected virtual void OnStartLevel() { }
 
 		/// <summary>
-		/// Sent when triggering entity enters to the area proximity.
+		/// Sent when entity enters to the area proximity.
 		/// </summary>
-		/// <param name="triggerEntityId"></param>
+		/// <param name="entityId"></param>
 		/// <param name="areaEntityId"></param>
-		protected virtual void OnEnterArea(EntityId triggerEntityId, EntityId areaEntityId) { }
+		protected virtual void OnEnterArea(EntityId entityId, int areaEntityId) { }
 
 		/// <summary>
-		/// Sent when triggering entity leaves the area proximity.
+		/// Sent when entity moves inside the area proximity.
 		/// </summary>
-		/// <param name="triggerEntityId"></param>
+		/// <param name="entityId"></param>
+		/// <param name="areaId"></param>
+		/// <param name="fade"></param>
+		protected virtual void OnMoveInsideArea(EntityId entityId, int areaId, float fade) { }
+
+		/// <summary>
+		/// Sent when entity leaves the area proximity.
+		/// </summary>
+		/// <param name="entityId"></param>
 		/// <param name="areaEntityId"></param>
-		protected virtual void OnLeaveArea(EntityId triggerEntityId, EntityId areaEntityId) { }
+		protected virtual void OnLeaveArea(EntityId entityId, int areaEntityId) { }
+
+		protected virtual void OnEnterNearArea(EntityId entityId, int areaId, float fade) { }
+		protected virtual void OnLeaveNearArea(EntityId entityId, int areaId, float fade) { }
+		protected virtual void OnMoveNearArea(EntityId entityId, int areaId, float fade) { }
 
 		/// <summary>
 		/// Sent on entity collision.
@@ -143,17 +155,52 @@ namespace CryEngine
 
 		/// <summary>
 		/// Called after level has been loaded, is not called on serialization.
+		/// Note that this is called prior to GameRules.OnClientConnect and OnClientEnteredGame!
 		/// </summary>
 		protected virtual void OnInit()
 		{
 		}
+
+		/// <summary>
+		/// Called when the entities local or world transformation matrix changes. (Position / Rotation / Scale)
+		/// </summary>
+		protected virtual void OnMove() { }
+
+		/// <summary>
+		/// Called whenever another entity has been linked to this entity.
+		/// </summary>
+		/// <param name="child"></param>
+		protected virtual void OnAttach(EntityId child) { }
+		/// <summary>
+		/// Called whenever another entity has been unlinked from this entity.
+		/// </summary>
+		/// <param name="child"></param>
+		protected virtual void OnDetach(EntityId child) { }
+		/// <summary>
+		/// Called whenever this entity is unliked from another entity.
+		/// </summary>
+		/// <param name="parent"></param>
+		protected virtual void OnDetachThis(EntityId parent) { }
 		#endregion
 
 		#region Base Logic
 
-		protected virtual string GetPropertyValue(string propertyName)
+		internal virtual string GetPropertyValue(string propertyName)
 		{
-			return _GetPropertyValue(EntityPointer, propertyName);
+			if(propertyName == null)
+				throw new ArgumentNullException("propertyName");
+			else if(propertyName.Length < 1)
+				throw new ArgumentException("propertyName was empty!");
+
+			var field = GetType().GetField(propertyName);
+			if(field != null)
+				return field.GetValue(this).ToString();
+
+			var property = GetType().GetProperty(propertyName);
+			if(property != null)
+				return property.GetValue(this, null).ToString();
+
+			return null;
 		}
 
 		internal virtual void SetPropertyValue(string propertyName, EntityPropertyType propertyType, string valueString)
@@ -164,7 +211,7 @@ namespace CryEngine
 				throw new ArgumentNullException("propertyName");
 			else if(valueString.Length < 1 && propertyType != EntityPropertyType.String)
 				throw new ArgumentException("value was empty!");
-			else if(propertyName.Length < 1 && propertyType != EntityPropertyType.String)
+			else if(propertyName.Length < 1)
 				throw new ArgumentException("propertyName was empty!");
 
 			var value = Convert.FromString(propertyType, valueString);
@@ -181,6 +228,8 @@ namespace CryEngine
 			var field = GetType().GetField(propertyName);
 			if(field != null)
 				field.SetValue(this, value);
+			else
+				throw new ArgumentException(string.Format("member {0} could not be located", propertyName));
 		}
 
 		/// <summary>

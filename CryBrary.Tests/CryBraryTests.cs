@@ -1,5 +1,6 @@
 ﻿using System;
 using CryEngine;
+using CryEngine.Initialization;
 using Moq;
 using NUnit.Framework;
 
@@ -11,6 +12,8 @@ namespace CryBrary.Tests
 		public void Init()
 		{
 			InitializeLoggingMethods();
+
+			ScriptManager.IgnoreExternalCalls = true;
 		}
 
 		private void InitializeLoggingMethods()

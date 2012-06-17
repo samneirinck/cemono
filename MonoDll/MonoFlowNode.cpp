@@ -1,16 +1,16 @@
 #include "StdAfx.h"
 #include "MonoFlowNode.h"
 
-#include "MonoCommon.h"
-#include "MonoArray.h"
-
-#include <IMonoObject.h>
-
 #include "MonoScriptSystem.h"
 #include "FlowManager.h"
-#include <IMonoEntityManager.h>
+
+#include "MonoEntity.h"
 
 #include <IGameFramework.h>
+
+#include <MonoCommon.h>
+#include <IMonoObject.h>
+#include <IMonoArray.h>
 
 CFlowNode::CFlowNode(SActivationInfo *pActInfo)
 	: m_pScriptClass(NULL)
@@ -35,7 +35,7 @@ bool CFlowNode::CreatedNode(TFlowNodeId id, const char *name, TFlowNodeTypeId ty
 	{
 		m_pNodeType = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager()->GetNodeType(gEnv->pFlowSystem->GetTypeName(typeId));
 
-		IMonoClass *pScriptClass = gEnv->pMonoScriptSystem->InstantiateScript(m_pNodeType->GetScriptName(), m_pNodeType->IsEntityNode() ? eScriptType_Entity : eScriptType_FlowNode);
+		IMonoClass *pScriptClass = gEnv->pMonoScriptSystem->InstantiateScript(m_pNodeType->GetScriptName(), m_pNodeType->IsEntityNode() ? eScriptFlag_Entity : eScriptFlag_FlowNode);
 
 		IMonoClass *pNodeInfo = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("NodeInfo");
 		auto graphId = m_pActInfo->pGraph->GetGraphId();
@@ -67,9 +67,7 @@ IFlowNodePtr CFlowNode::Clone(SActivationInfo *pActInfo)
 
 IEntity *CFlowNode::GetTargetEntity()
 {
-	IEntity *pEntity = m_pActInfo->pEntity;
-
-	return pEntity;
+	return m_pActInfo->pEntity;
 }
 
 void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
@@ -149,19 +147,18 @@ void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 			if(m_pNodeType->IsEntityNode())
 			{
 				IMonoClass *pEntityScript = NULL;
-
-				if(IMonoEntityManager *pEntityManager = gEnv->pMonoScriptSystem->GetEntityManager())
+				EntityId entId = pActInfo->pGraph->GetEntityId(pActInfo->myID);
+				if(pActInfo && entId)
 				{
-					EntityId entId = pActInfo->pGraph->GetEntityId(pActInfo->myID);
-					if(pActInfo && entId > 0)
-						pEntityScript =  pEntityManager->GetScript(entId);
-				}
+					if(IGameObject *pGameObject = gEnv->pGameFramework->GetGameObject(entId))
+					{
+						if(CEntity *pEntity = static_cast<CEntity *>(pGameObject->QueryExtension("MonoEntity")))
+						{
+							SAFE_RELEASE(m_pScriptClass);
 
-				if(pEntityScript != NULL && pEntityScript != m_pScriptClass)
-				{
-					SAFE_RELEASE(m_pScriptClass);
-
-					m_pScriptClass = pEntityScript;
+							m_pScriptClass = pEntity->GetScript();
+						}
+					}
 				}
 			}
 		}
@@ -173,7 +170,7 @@ void CFlowNode::GetConfiguration(SFlowNodeConfig &config)
 {
 	if(!m_pScriptClass)
 	{
-		CryWarning(VALIDATOR_MODULE_FLOWGRAPH, VALIDATOR_ERROR, "CFlowNode::GetConfiguration: m_pScriptClass was NULL!");
+		MonoWarning("CFlowNode::GetConfiguration: m_pScriptClass was NULL!");
 		return;
 	}
 

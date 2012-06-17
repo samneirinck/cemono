@@ -24,7 +24,7 @@ namespace CryEngine
 		#endregion
 
 		#region Statics
-		internal static void Load(ref CryScript script)
+		internal static void Load(CryScript script)
 		{
 			string gamemodeName = null;
 

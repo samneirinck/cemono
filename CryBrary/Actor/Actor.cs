@@ -61,7 +61,7 @@ namespace CryEngine
 		#endregion
 
 		#region Statics
-		internal static void Load(ref CryScript script)
+		internal static void Load(CryScript script)
 		{
 			bool registerActorClass = true;
 			bool isAI = false;
@@ -117,7 +117,7 @@ namespace CryEngine
 			return ScriptManager.Find<T>(ScriptType.Actor, x => x.Id == actorId);
 		}
 
-		static Actor CreateNativeActor(ActorInfo actorInfo)
+		internal static Actor CreateNativeActor(ActorInfo actorInfo)
 		{
 			if(actorInfo.Id == 0)
 				throw new ArgumentException("actorInfo.Id cannot be 0!");
@@ -126,15 +126,8 @@ namespace CryEngine
 			else if(actorInfo.EntityPtr == null)
 				throw new ArgumentException("actorInfo.EntityPtr cannot be 0!");
 
-			var script = ScriptManager.CompiledScripts[ScriptType.Actor].First(x => x.Type == typeof(NativeActor));
-			if(script == null)
-				throw new TypeLoadException("Failed to locate NativeActor type");
-
-			if(script.ScriptInstances == null)
-				script.ScriptInstances = new List<CryScriptInstance>();
-
 			var nativeActor = new NativeActor(actorInfo);
-			script.ScriptInstances.Add(nativeActor);
+			ScriptManager.AddScriptInstance(nativeActor, ScriptType.Actor);
 
 			return nativeActor;
 		}
@@ -200,7 +193,7 @@ namespace CryEngine
 		{
 			_RemoveActor(id);
 
-			InternalRemove(actor => actor.Id == id);
+			ScriptManager.RemoveInstances<Actor>(ScriptType.Actor, actor => actor.Id == id);
 		}
 
 		public static void Remove(Actor actor)
@@ -214,18 +207,7 @@ namespace CryEngine
 			if(actorInfo.Id != 0)
 				_RemoveActor(actorInfo.Id);
 
-			InternalRemove(actor => actor.ChannelId == channelId);
-		}
-
-		internal static void InternalRemove(Predicate<Actor> match)
-		{
-			foreach(var script in ScriptManager.CompiledScripts[ScriptType.Actor])
-			{
-				if(script.ScriptInstances == null)
-					continue;
-
-				script.ScriptInstances.RemoveAll(instance => match(instance as Actor));
-			}
+			ScriptManager.RemoveInstances<Actor>(ScriptType.Actor, actor => actor.ChannelId == channelId);
 		}
 		#endregion
 

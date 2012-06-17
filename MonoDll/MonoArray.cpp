@@ -6,12 +6,6 @@
 CScriptArray::CScriptArray(int size)
 	: m_curIndex(0)
 {
-	if(size<1)
-	{
-		gEnv->pLog->LogError("Attempted to create array with invalid size %i", size);
-		Release();
-	}
-
 	m_pArray = (mono::array)mono_array_new(mono_domain_get(), mono_get_object_class(), size);
 }
 
@@ -45,7 +39,15 @@ IMonoObject *CScriptArray::GetItem(int index)
 			return *monoObj;
 	}
 	else
-		CryLogAlways("[Warning] Index out of range exception: Attempted to access index %i on IMonoArray of size %i", index, GetSize());
+		MonoWarning("Index out of range exception: Attempted to access index %i on IMonoArray of size %i", index, GetSize());
+
+	return NULL;
+}
+
+IMonoArray *CScriptArray::GetItemArray(int index) 
+{
+	if(mono::array monoArray = (mono::array)mono_array_get((MonoArray *)m_pArray, MonoArray *, index))
+		return new CScriptArray(monoArray);
 
 	return NULL;
 }
@@ -54,7 +56,7 @@ void CScriptArray::InsertMonoObject(mono::object object, int index)
 {
 	if((index == -1 && m_curIndex >= GetSize()) || index >= GetSize())
 	{
-		CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "Attempted to insert too many objects into array of size %i", GetSize());
+		MonoWarning("Attempted to insert too many objects into array of size %i", GetSize());
 		return;
 	}
 
@@ -67,7 +69,7 @@ void CScriptArray::InsertMonoString(mono::string string, int index)
 {
 	if((index == -1 && m_curIndex >= GetSize()) || index >= GetSize())
 	{
-		CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "Attempted to insert too many objects into array of size %i", GetSize());
+		MonoWarning("Attempted to insert too many objects into array of size %i", GetSize());
 		return;
 	}
 
@@ -80,7 +82,7 @@ void CScriptArray::InsertMonoArray(mono::array arr, int index)
 {
 	if((index == -1 && m_curIndex >= GetSize()) || index >= GetSize())
 	{
-		CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "Attempted to insert too many objects into array of size %i", GetSize());
+		MonoWarning("Attempted to insert too many objects into array of size %i", GetSize());
 		return;
 	}
 

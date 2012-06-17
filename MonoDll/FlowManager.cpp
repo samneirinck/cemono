@@ -42,7 +42,7 @@ void CFlowManager::Reset()
 {
 	for each(auto nodeType in m_nodeTypes)
 	{
-		IMonoClass *pScript = gEnv->pMonoScriptSystem->InstantiateScript(nodeType->GetScriptName(), eScriptType_FlowNode);
+		IMonoClass *pScript = gEnv->pMonoScriptSystem->InstantiateScript(nodeType->GetScriptName(), eScriptFlag_FlowNode);
 		nodeType->ReloadPorts(pScript);
 		SAFE_RELEASE(pScript);
 	}
@@ -50,12 +50,9 @@ void CFlowManager::Reset()
 
 void CFlowManager::RegisterNode(mono::string monoTypeName)
 {
-	IFlowSystem *pFlowSystem = gEnv->pFlowSystem;
+	IFlowSystem *pFlowSystem = gEnv->pGameFramework->GetIFlowSystem();
 	if(!pFlowSystem)
-	{
-		CryLogAlways("[Warning] Failed to register node %s, gEnv->pFlowSystem was null!", ToCryString(monoTypeName));
 		return;
-	}
 
 	CFlowManager *pFlowManager = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager();
 
@@ -139,7 +136,7 @@ IEntity *CFlowManager::GetTargetEntity(CFlowNode *pNode, EntityId &id)
 		return pEntity;
 	}
 
-	CryLogAlways("[CFlowManager::GetTargetEntity] returning null target entity!");
+	MonoWarning("CFlowManager::GetTargetEntity returning null target entity!");
 	return NULL;
 }
 

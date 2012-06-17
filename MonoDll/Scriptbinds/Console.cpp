@@ -14,6 +14,8 @@ CScriptbind_Console::CScriptbind_Console()
 	//REGISTER_METHOD(LogAlways);
 	//REGISTER_METHOD(Log);
 	//REGISTER_METHOD(Warning);
+	
+	REGISTER_METHOD(HandleException);
 
 	// Console commands
 	REGISTER_METHOD(RegisterCommand);
@@ -48,8 +50,13 @@ extern "C"
 
 	_declspec(dllexport) void __cdecl _Warning(const char *msg)
 	{
-		CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, msg); 
+		MonoWarning(msg); 
 	}
+}
+
+void CScriptbind_Console::HandleException(mono::object exception)
+{
+	CScriptClass::HandleException((MonoObject *)exception);
 }
 
 void CScriptbind_Console::OnMonoCmd(IConsoleCmdArgs *cmdArgs)

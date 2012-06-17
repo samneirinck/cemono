@@ -13,6 +13,8 @@ CEntityClass::CEntityClass(IEntityClassRegistry::SEntityClassDesc desc, std::vec
 
 	m_pPropertyHandler = new CEntityPropertyHandler(properties);
 	m_pEventHandler = new CEntityEventHandler();
+
+	m_proxyCreateFunc = desc.pUserProxyCreateFunc;
 }
 
 CEntityClass::~CEntityClass()

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace CryEngine.Extensions
@@ -8,17 +10,7 @@ namespace CryEngine.Extensions
 	/// </summary>
 	public static class ReflectionExtensions
 	{
-		/// <summary>
-		/// Determines whether this member is decorated with at least one instance of a given attribute.
-		/// </summary>
-		/// <typeparam name="T">The attribute to search for.</typeparam>
-		/// <param name="info">The member on which the search is performed.</param>
-		/// <returns>True if the member is decorated with at least one instance of attribute T.</returns>
-		public static bool ContainsAttribute<T>(this MemberInfo info) where T : Attribute
-		{
-			return info.GetCustomAttributes(typeof(T), true).Length > 0;
-		}
-
+		#region Inheritance
 		/// <summary>
 		/// Determines whether a given type is the child of another.
 		/// </summary>
@@ -31,6 +23,51 @@ namespace CryEngine.Extensions
 		}
 
 		/// <summary>
+		/// Determines whether a given type is the child of another.
+		/// </summary>
+		/// <typeparam name="T">The possible parent type.</typeparam>
+		/// <param name="thisType">The child type.</param>
+		/// <returns>True if thisType implements type T.</returns>
+		public static bool Implements<T>(this Type thisType)
+		{
+			return thisType.Implements(typeof(T));
+		}
+
+		public static bool ImplementsOrEquals(this Type thisType, Type baseType)
+		{
+			return thisType.Equals(baseType) || baseType.IsAssignableFrom(thisType);
+		}
+
+		public static bool ImplementsOrEquals<T>(this Type thisType)
+		{
+			return thisType.ImplementsOrEquals(typeof(T));
+		}
+		#endregion
+
+		#region Attributes
+		/// <summary>
+		/// Determines whether this member is decorated with at least one instance of a given attribute.
+		/// </summary>
+		/// <typeparam name="T">The attribute to search for.</typeparam>
+		/// <param name="info">The member on which the search is performed.</param>
+		/// <returns>True if the member is decorated with at least one instance of attribute T.</returns>
+		public static bool ContainsAttribute<T>(this MemberInfo info) where T : Attribute
+		{
+			return info.GetCustomAttributes(typeof(T), true).Length > 0;
+		}
+
+		/// <summary>
+		/// Gets all instances of a given attribute on the selected member.
+		/// </summary>
+		/// <typeparam name="T">The attribute to search for.</typeparam>
+		/// <param name="memberInfo">The member on which the search is performed.</param>
+		/// <returns>The first instance of attribute T, or null if none is found.</returns>
+		public static IEnumerable<T> GetAttributes<T>(this MemberInfo memberInfo) where T : Attribute
+		{
+			return (T[])memberInfo.GetCustomAttributes(typeof(T), true);
+		}
+
+		/// <summary>
 		/// Gets the first instance of a given attribute on the selected member.
 		/// </summary>
 		/// <typeparam name="T">The attribute to search for.</typeparam>
@@ -38,10 +75,10 @@ namespace CryEngine.Extensions
 		/// <returns>The first instance of attribute T, or null if none is found.</returns>
 		public static T GetAttribute<T>(this MemberInfo memberInfo) where T : Attribute
 		{
-			var attributes = memberInfo.GetCustomAttributes(typeof(T), true);
-			if(attributes.Length > 0)
+			var attributes = memberInfo.GetAttributes<T>();
+			if(attributes.Count() > 0)
 			{
-				return (T)attributes[0];
+				return attributes.First();
 			}
 			else
 			{
@@ -71,5 +108,6 @@ namespace CryEngine.Extensions
 				return false;
 			}
 		}
+		#endregion
 	}
 }

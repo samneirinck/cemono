@@ -28,6 +28,8 @@ protected:
 	//static void Log(mono::string msg);
 	//static void Warning(mono::string msg);
 
+	static void HandleException(mono::object exception);
+
 	// Console commands
 	static void OnMonoCmd(IConsoleCmdArgs *);
 	static void RegisterCommand(mono::string, mono::string, EVarFlags);

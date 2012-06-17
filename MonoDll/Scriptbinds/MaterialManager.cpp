@@ -9,6 +9,7 @@ CScriptbind_MaterialManager::CScriptbind_MaterialManager()
 {
 	m_pMaterialManager = gEnv->p3DEngine->GetMaterialManager();
 
+	REGISTER_METHOD(FindMaterial);
 	REGISTER_METHOD(CreateMaterial);
 	REGISTER_METHOD(LoadMaterial);
 
@@ -29,6 +30,11 @@ CScriptbind_MaterialManager::CScriptbind_MaterialManager()
 
 	REGISTER_METHOD(GetFlags);
 	REGISTER_METHOD(SetFlags);
+}
+
+IMaterial *CScriptbind_MaterialManager::FindMaterial(mono::string name)
+{
+	return m_pMaterialManager->FindMaterial(ToCryString(name));
 }
 
 IMaterial *CScriptbind_MaterialManager::CreateMaterial(mono::string name)

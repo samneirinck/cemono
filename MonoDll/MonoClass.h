@@ -50,10 +50,10 @@ public:
 
 	MonoClass *GetMonoClass() { return m_pClass; }
 
+	static void HandleException(MonoObject *pException);
+
 private:
 	MonoMethod *GetMethod(const char *methodName, IMonoArray *pArgs, bool bStatic);
-
-	void HandleException(MonoObject *pException);
 
 	mono::object m_pInstance;
 	MonoClass *m_pClass;

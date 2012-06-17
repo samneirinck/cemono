@@ -1,7 +1,6 @@
 #include "StdAfx.h"
 #include "MonoEntityPropertyHandler.h"
 
-#include "EntityManager.h"
 #include "MonoEntity.h"
 
 #include <MonoCommon.h>
@@ -26,16 +25,105 @@ bool CEntityPropertyHandler::GetPropertyInfo(int index, SPropertyInfo& info ) co
 	return true;
 }
 
-void CEntityPropertyHandler::SetProperty(IEntity *pEntity, int index, const char *value)
+SQueuedProperty *CEntityPropertyHandler::GetQueuedProperties(EntityId id, int &numProperties)
 {
-	if(auto entity = static_cast<CEntityManager *>(gEnv->pMonoScriptSystem->GetEntityManager())->GetMonoEntity(pEntity->GetGuid()))
-		entity->SetPropertyValue(m_properties.at(index), value);
+	for each(auto pair in m_queuedProperties)
+	{
+		if(pair.first == id)
+		{
+			numProperties = pair.second.size();
+			SQueuedProperty *pProperties = new SQueuedProperty[numProperties];
+
+			int i = 0;
+			for(auto it = pair.second.begin(); it != pair.second.end(); ++it)
+			{
+				pProperties[i] = *it;
+
+				i++;
+			}
+
+			return pProperties;
+		}
+	}
+
+	return NULL;
 }
 
-const char *CEntityPropertyHandler::GetProperty(IEntity *pEntity, int index) const
+void CEntityPropertyHandler::LoadEntityXMLProperties(IEntity *pEntity, const XmlNodeRef& xml)
 {
-	//if(IMonoClass *pScriptClass = gEnv->pMonoScriptSystem->GetEntityManager()->GetScript(pEntity->GetId()))
-		//return CallMonoScript<const char *>(pScriptClass, "GetPropertyValue", m_properties.at(index).name);
+	if(auto properties = xml->findChild("Properties"))
+	{
+		for(int i = 0; i < properties->getNumAttributes(); i++)
+		{
+			const char *name;
+			const char *value;
+
+			properties->getAttributeByIndex(i, &name, &value);
+
+			int index = 0;
+			bool exists = false;
+
+			for(; index < GetPropertyCount(); index++)
+			{
+				SPropertyInfo info;
+				GetPropertyInfo(index, info);
+
+				if(!strcmp(info.name, name))
+				{
+					exists = true;
+					break;
+				}
+			}
+
+			if(exists)
+				SetProperty(pEntity, index, value);
+			else
+				MonoWarning("Could not set property %s because it did not exist", name);
+		}
+	}
+}
+
+void CEntityPropertyHandler::SetProperty(IEntity *pIEntity, int index, const char *value)
+{
+	EntityId id = pIEntity->GetId();
+
+	CEntity *pEntity = NULL;
+	if(IGameObject *pGameObject = gEnv->pGameFramework->GetGameObject(id))
+		pEntity = static_cast<CEntity *>(pGameObject->QueryExtension(pIEntity->GetClass()->GetName()));
+
+	// Only true after game has started, limiting this to changes made in Editor.
+	if(pEntity && pEntity->IsInitialized())
+		pEntity->SetPropertyValue(m_properties.at(index), value);
+	else
+	{
+		bool exists = false;
+		for(auto it = m_queuedProperties.begin(); it != m_queuedProperties.end(); ++it)
+		{
+			if((*it).first == id)
+			{
+				(*it).second.push_back(SQueuedProperty(m_properties.at(index), value));
+
+				exists = true;
+				break;
+			}
+		}
+		if(!exists)
+		{
+			DynArray<SQueuedProperty> queuedPropertiesForEntity;
+			queuedPropertiesForEntity.push_back(SQueuedProperty(m_properties.at(index), value));
+
+			m_queuedProperties.insert(TQueuedPropertyMap::value_type(id, queuedPropertiesForEntity));
+		}
+	}
+}
+
+const char *CEntityPropertyHandler::GetProperty(IEntity *pIEntity, int index) const
+{
+	if(IGameObject *pGameObject = gEnv->pGameFramework->GetGameObject(pIEntity->GetId()))
+	{
+		if(CEntity *pEntity = static_cast<CEntity *>(pGameObject->QueryExtension(pIEntity->GetClass()->GetName())))
+			return CallMonoScript<const char *>(pEntity->GetScript(), "GetPropertyValue", m_properties.at(index).name);
+	}
 
 	return "";
 }

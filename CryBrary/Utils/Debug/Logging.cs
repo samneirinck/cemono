@@ -12,6 +12,11 @@ namespace CryEngine
 
 	public static partial class Debug
 	{
+		static Debug()
+		{
+			AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionOccurred;
+		}
+
 		private static INativeLoggingMethods _methods;
 		internal static INativeLoggingMethods Methods
 		{
@@ -41,6 +46,11 @@ namespace CryEngine
 			{
 				NativeMethods._Warning(msg);
 			}
+		}
+
+		private static void UnhandledExceptionOccurred(object sender, UnhandledExceptionEventArgs e)
+		{
+			Debug.LogException((Exception)e.ExceptionObject);
 		}
 
 		/// <summary>
@@ -86,7 +96,8 @@ namespace CryEngine
 		/// <param name="ex"></param>
 		public static void LogException(Exception ex)
 		{
-			Warning(ex.ToString());
+			CVar._HandleException(ex);
+			//Warning(ex.ToString());
 		}
 
 		/// <summary>

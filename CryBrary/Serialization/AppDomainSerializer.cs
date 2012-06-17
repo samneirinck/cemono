@@ -23,7 +23,7 @@ namespace CryEngine.Serialization
 			Stopwatch stopwatch = Stopwatch.StartNew();
 
 			using(var stream = File.Create(Path.Combine(PathUtils.TempFolder, "ScriptManager.CompiledScripts.scriptdump")))
-				Formatter.Serialize(stream, ScriptManager.CompiledScripts);
+				Formatter.Serialize(stream, ScriptManager.Scripts);
 
 			stopwatch.Stop();
 			Debug.LogAlways("Serializer took {0}ms to dump script data", stopwatch.ElapsedMilliseconds);
@@ -36,9 +36,9 @@ namespace CryEngine.Serialization
 			Stopwatch stopwatch = Stopwatch.StartNew();
 
 			using(var stream = File.Open(Path.Combine(PathUtils.TempFolder, "ScriptManager.CompiledScripts.scriptdump"), FileMode.Open))
-				ScriptManager.CompiledScripts = Formatter.Deserialize(stream) as Dictionary<ScriptType, List<CryScript>>;
+				ScriptManager.Scripts = Formatter.Deserialize(stream) as List<CryScript>;
 
-			ScriptManager.ForEach(ScriptType.Unknown, scriptInstance =>
+			ScriptManager.ForEach(ScriptType.Any, scriptInstance =>
 			{
 				if(scriptInstance.ScriptId > ScriptManager.LastScriptId)
 					ScriptManager.LastScriptId = scriptInstance.ScriptId + 1;

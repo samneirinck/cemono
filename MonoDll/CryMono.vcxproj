@@ -348,7 +348,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Actor.h" />
-    <ClInclude Include="EntityManager.h" />
     <ClInclude Include="FlowManager.h" />
     <ClInclude Include="FlowBaseNode.h" />
     <ClInclude Include="Headers\IMonoArray.h" />
@@ -356,7 +355,6 @@
     <ClInclude Include="Headers\IMonoClass.h" />
     <ClInclude Include="Headers\IMonoConverter.h" />
     <ClInclude Include="Headers\IMonoDomain.h" />
-    <ClInclude Include="Headers\IMonoEntityManager.h" />
     <ClInclude Include="Headers\IMonoInput.h" />
     <ClInclude Include="Headers\IMonoObject.h" />
     <ClInclude Include="Headers\MonoAnyValue.h" />
@@ -381,12 +379,14 @@
     <ClInclude Include="Headers\IMonoScriptBind.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Scriptbinds\ActorSystem.h" />
+    <ClInclude Include="Scriptbinds\Entity.h" />
     <ClInclude Include="Scriptbinds\ItemSystem.h" />
     <ClInclude Include="Scriptbinds\Console.h" />
     <ClInclude Include="Scriptbinds\3DEngine.h" />
     <ClInclude Include="Scriptbinds\Debug.h" />
     <ClInclude Include="Scriptbinds\GameRules.h" />
     <ClInclude Include="Scriptbinds\LevelSystem.h" />
+    <ClInclude Include="Scriptbinds\Network.h" />
     <ClInclude Include="Scriptbinds\ParticleSystem.h" />
     <ClInclude Include="Scriptbinds\Physics.h" />
     <ClInclude Include="Scriptbinds\Renderer.h" />
@@ -399,7 +399,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp" />
-    <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="FlowManager.cpp" />
     <ClCompile Include="MonoConverter.cpp" />
     <ClCompile Include="MonoCVars.cpp" />
@@ -416,12 +415,14 @@
     <ClCompile Include="MonoEntityClass.cpp" />
     <ClCompile Include="MonoEntityPropertyHandler.cpp" />
     <ClCompile Include="Scriptbinds\ActorSystem.cpp" />
+    <ClCompile Include="Scriptbinds\Entity.cpp" />
     <ClCompile Include="Scriptbinds\ItemSystem.cpp" />
     <ClCompile Include="Scriptbinds\Console.cpp" />
     <ClCompile Include="Scriptbinds\3DEngine.cpp" />
     <ClCompile Include="Scriptbinds\Debug.cpp" />
     <ClCompile Include="Scriptbinds\GameRules.cpp" />
     <ClCompile Include="Scriptbinds\LevelSystem.cpp" />
+    <ClCompile Include="Scriptbinds\Network.cpp" />
     <ClCompile Include="Scriptbinds\ParticleSystem.cpp" />
     <ClCompile Include="Scriptbinds\Physics.cpp" />
     <ClCompile Include="Scriptbinds\Renderer.cpp" />
@@ -438,9 +439,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Create</PrecompiledHeader>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="CryMono.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
