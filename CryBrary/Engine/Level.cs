@@ -57,7 +57,7 @@ namespace CryEngine
 				return level;
 
 			var ptr = _LoadLevel(name);
-			if(ptr != null)
+			if(ptr != IntPtr.Zero)
 				return new Level(ptr);
 
 			return null;
@@ -79,7 +79,7 @@ namespace CryEngine
 			get
 			{
 				var ptr = _GetCurrentLevel();
-				if(ptr != null)
+				if(ptr != IntPtr.Zero)
 				{
 					if(Levels.Any(x => x.Value.LevelPointer == ptr))
 					{

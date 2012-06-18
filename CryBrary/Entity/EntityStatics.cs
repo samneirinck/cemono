@@ -98,7 +98,7 @@ namespace CryEngine
 
 			// Couldn't find a CryMono entity, check if a non-managed one exists.
 			var entPointer = _GetEntity(entityId);
-			if(entPointer != null)
+			if(entPointer != IntPtr.Zero)
 				return CreateNativeEntity(entityId, entPointer);
 
 			return null;

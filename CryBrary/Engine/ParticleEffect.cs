@@ -18,7 +18,7 @@ namespace CryEngine
 		public static ParticleEffect Get(string effectName, bool loadResources = true)
 		{
 			var ptr = _FindEffect(effectName, loadResources);
-			if(ptr != null)
+			if(ptr != IntPtr.Zero)
 				return new ParticleEffect(ptr);
 
 			return null;

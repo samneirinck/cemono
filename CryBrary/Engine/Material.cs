@@ -89,7 +89,7 @@ namespace CryEngine
 
 		internal static Material TryAdd(IntPtr ptr)
 		{
-			if(ptr == null || ptr == IntPtr.Zero)
+			if(ptr == IntPtr.Zero)
 				return null;
 
 			var mat = Materials.FirstOrDefault(x => x.MaterialPointer == ptr);

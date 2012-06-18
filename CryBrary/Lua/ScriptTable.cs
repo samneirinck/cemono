@@ -30,7 +30,7 @@ namespace CryEngine.Lua
 				return scriptTable;
 
 			var scriptPtr = _GetScriptTable(entityId);
-			if(scriptPtr != null)
+			if(scriptPtr != IntPtr.Zero)
 			{
 				ScriptTables.Add(new ScriptTable(scriptPtr));
 				return ScriptTables.Last();
