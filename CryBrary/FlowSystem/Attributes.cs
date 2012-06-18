@@ -36,6 +36,7 @@ namespace CryEngine
 
 	public enum PortType
 	{
+		None,
 		/// <summary>
 		/// Only applicable on string inputs.
 		/// </summary>

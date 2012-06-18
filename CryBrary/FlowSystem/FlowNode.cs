@@ -353,7 +353,7 @@ namespace CryEngine
 					break;
 			}
 
-			string name = inputPortType + portAttribute.Name ?? method.Name;
+			string name = inputPortType + (portAttribute.Name ?? method.Name);
 
 			inputs.Add(new InputPortConfig(name, portType, defaultVal, portAttribute.Description, portAttribute.Name ?? method.Name, portAttribute.UIConfig));
 			InputMethods[GetType()].Add(method);
