@@ -28,7 +28,7 @@ namespace CryEngine
 
 		public void Break(BreakageParameters breakageParams)
 		{
-			Entity._BreakIntoPieces(entity.EntityPointer, 0, 0, breakageParams);
+			EntityBase._BreakIntoPieces(entity.EntityPointer, 0, 0, breakageParams);
 		}
 
 		#region Basics
