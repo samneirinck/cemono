@@ -200,7 +200,19 @@ namespace CryEngine
 		public float Glow { get { return GetParam("glow"); } set { SetParam("glow", value); } }
 		public float Shininess { get { return GetParam("shininess"); } set { SetParam("shininess", value); } }
 
-		public Vec3 DiffuseColor { get { return GetParamVec3("diffuse"); } set { SetParam("diffuse", value); } }
+		public Vec3 DiffuseColor 
+		{
+			get { return GetParamVec3("diffuse"); }
+			set 
+			{
+				var alpha = Opacity;  
+				SetParam("diffuse", value);
+
+				// Setting diffuse overrides alpha, so we have to restore it manually.
+				Opacity = alpha;
+			}
+		}
+
 		public Vec3 EmissiveColor { get { return GetParamVec3("emissive"); } set { SetParam("emissive", value); } }
 		public Vec3 SpecularColor { get { return GetParamVec3("specular"); } set { SetParam("specular", value); } }
 
