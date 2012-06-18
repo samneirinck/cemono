@@ -509,7 +509,7 @@ namespace CryEngine.Serialization
 			{
 				Type[] interfaces = enumerableType.GetInterfaces();
 				foreach(Type i in interfaces)
-					if(i.IsGenericType && i.GetGenericTypeDefinition().Equals(typeof(IEnumerable<>)))
+					if(i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>))
 						type = i.GetGenericArguments()[0];
 			}
 
