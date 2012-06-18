@@ -36,7 +36,7 @@ namespace CryEngine
 		}
 
 		static Vec2 mousePosition;
-		public static Vec2 MousePosition { get { return MousePosition; } set { MousePosition = value; } }
+		public static Vec2 MousePosition { get { return mousePosition; } set { mousePosition = value; } }
 		#endregion
 
 		/// <summary>
