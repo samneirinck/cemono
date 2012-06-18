@@ -204,7 +204,7 @@ namespace CryEngine
 		internal virtual void SetPropertyValue(string propertyName, EntityPropertyType propertyType, string valueString)
 		{
 			if(valueString == null)
-				throw new ArgumentNullException("value");
+				throw new ArgumentNullException("valueString");
 			else if(propertyName == null)
 				throw new ArgumentNullException("propertyName");
 			else if(valueString.Length < 1 && propertyType != EntityPropertyType.String)
