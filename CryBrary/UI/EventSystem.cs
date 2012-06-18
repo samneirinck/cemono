@@ -43,11 +43,10 @@ namespace CryEngine
 							}
 							
 
-							Type memberType = null;
 							var fieldInfo = member as FieldInfo;
 							var propertyInfo = member as PropertyInfo;
 
-							memberType = (fieldInfo != null ? fieldInfo.FieldType : propertyInfo.PropertyType);
+							var memberType = (fieldInfo != null ? fieldInfo.FieldType : propertyInfo.PropertyType);
 
 							if(!memberType.Name.StartsWith("UIEvent`"))
 								break;

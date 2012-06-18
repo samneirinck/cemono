@@ -53,7 +53,6 @@ namespace CryBrary.Tests.Serialization
 				var serializer = new CrySerializer();
 				serializer.Serialize(stream, SetupTestClass());
 
-				serializer = null;
 				serializer = new CrySerializer();
 
 				var testClass = serializer.Deserialize(stream) as TestClass;
@@ -77,7 +76,6 @@ namespace CryBrary.Tests.Serialization
 				var serializer = new CrySerializer();
 				serializer.Serialize(stream, "Test str1ng_I5 V37y tEsTy%‹Œm´ð!");
 
-				serializer = null;
 				serializer = new CrySerializer();
 
 				var testString = serializer.Deserialize(stream) as string;
@@ -96,10 +94,8 @@ namespace CryBrary.Tests.Serialization
 				var serializer = new CrySerializer();
 				serializer.Serialize(stream, list);
 
-				serializer = null;
 				serializer = new CrySerializer();
 
-				list = null;
 				var deserialized = serializer.Deserialize(stream) as List<string>;
 
 				Assert.IsNotNull(deserialized);
@@ -120,7 +116,6 @@ namespace CryBrary.Tests.Serialization
 				var serializer = new CrySerializer();
 				serializer.Serialize(stream, dictionary);
 
-				serializer = null;
 				serializer = new CrySerializer();
 
 				var deserializedDictionary = serializer.Deserialize(stream) as Dictionary<string, int>;
@@ -150,7 +145,6 @@ namespace CryBrary.Tests.Serialization
 				var serializer = new CrySerializer();
 				serializer.Serialize(stream, list.ToArray());
 
-				serializer = null;
 				serializer = new CrySerializer();
 
 				var array = serializer.Deserialize(stream) as object[];
@@ -173,7 +167,6 @@ namespace CryBrary.Tests.Serialization
 				var serializer = new CrySerializer();
 				serializer.Serialize(stream, list.ToArray());
 
-				serializer = null;
 				serializer = new CrySerializer();
 
 				var array = serializer.Deserialize(stream) as object[];
@@ -222,9 +215,6 @@ namespace CryBrary.Tests.Serialization
 				var serializer = new CrySerializer();
 				serializer.Serialize(stream, referenceTestClass);
 
-				referenceTestClass = null;
-
-				serializer = null;
 				serializer = new CrySerializer();
 
 				referenceTestClass = serializer.Deserialize(stream) as Multiple_Reference_Test_Class;
@@ -262,7 +252,6 @@ namespace CryBrary.Tests.Serialization
 
 				serializer.Serialize(stream, new Class_With_MemberInfo_Member());
 
-				serializer = null;
 				serializer = new CrySerializer();
 
 				var memberInfoClass = serializer.Deserialize(stream) as Class_With_MemberInfo_Member;
@@ -331,7 +320,6 @@ namespace CryBrary.Tests.Serialization
 
 				serializer.Serialize(stream, new Class_Inherit_From_Class());
 
-				serializer = null;
 				serializer = new CrySerializer();
 
 				var inheritClass = serializer.Deserialize(stream) as Class_Inherit_From_Class;
@@ -360,9 +348,7 @@ namespace CryBrary.Tests.Serialization
 				var serializer = new CrySerializer();
 
 				serializer.Serialize(stream, dictionary);
-				dictionary = null;
 
-				serializer = null;
 				serializer = new CrySerializer();
 
 				var deserializedDictionary = serializer.Deserialize(stream) as Dictionary<int, List<TestClass>>;

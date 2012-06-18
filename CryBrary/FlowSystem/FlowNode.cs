@@ -72,7 +72,7 @@ namespace CryEngine
 			if(!containsNodePorts)
 				return;
 
-			string category = null;
+			string category;
 			var nodeName = script.ScriptName;
 
 			if(!entityNode)
