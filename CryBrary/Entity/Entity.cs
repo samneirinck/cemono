@@ -77,7 +77,7 @@ namespace CryEngine
 		public bool IsEntityFlowNode()
 		{
 			var members = GetType().GetMembers(BindingFlags.Instance);
-			if(members == null || members.Length <= 0)
+			if(!members.Any())
 				return false;
 
 			return members.Any(member => member.ContainsAttribute<PortAttribute>());

@@ -118,7 +118,7 @@ namespace CryEngine.Initialization
 			{
 				var plugins = Directory.GetFiles(directory, "*.dll", SearchOption.AllDirectories);
 
-				if(plugins != null && plugins.Length != 0)
+				if(plugins.Any())
 				{
 					foreach(var plugin in plugins)
 					{
