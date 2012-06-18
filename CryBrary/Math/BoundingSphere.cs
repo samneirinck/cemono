@@ -235,7 +235,7 @@ namespace CryEngine
 			float y = box.Minimum.Y - box.Maximum.Y;
 			float z = box.Minimum.Z - box.Maximum.Z;
 
-			float distance = (float)(Math.Sqrt((x * x) + (y * y) + (z * z)));
+			var distance = (float)(Math.Sqrt((x * x) + (y * y) + (z * z)));
 			result.Radius = distance * 0.5f;
 		}
 

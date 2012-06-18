@@ -47,10 +47,7 @@ namespace CryEngine
 							var fieldInfo = member as FieldInfo;
 							var propertyInfo = member as PropertyInfo;
 
-							if(fieldInfo != null)
-								memberType = fieldInfo.FieldType;
-							else
-								memberType = propertyInfo.PropertyType;
+							memberType = (fieldInfo != null ? fieldInfo.FieldType : propertyInfo.PropertyType);
 
 							if(!memberType.Name.StartsWith("UIEvent`"))
 								break;
@@ -64,8 +61,12 @@ namespace CryEngine
 
 							var args = new List<object>();
 
-							foreach(var type in memberType.GetGenericArguments())
-								args.Add(new OutputPortConfig("Output", "", "desc", FlowNode.GetPortType(type)));
+							memberType.GetGenericArguments().ForEach(type =>
+							                                         	{
+							                                         		args.Add(new OutputPortConfig("Output", "", "desc",
+							                                         		                              FlowNode.GetPortType(type)));
+							                                         	});
+								
 
 							var eventId = UI._RegisterEvent(ToUIPointers[script.Type], name, desc, args.ToArray());
 
@@ -104,8 +105,12 @@ namespace CryEngine
 								var method = member as MethodInfo;
 								var args = new List<object>();
 
-								foreach(var param in method.GetParameters())
-									args.Add(new InputPortConfig(param.Name, FlowNode.GetPortType(param.ParameterType), ""));
+								method.GetParameters().ForEach(param =>
+								                               	{
+								                               		args.Add(new InputPortConfig(param.Name,
+								                               		                             FlowNode.GetPortType(param.ParameterType), ""));
+								                               	});
+									
 
 								UI.RegisterFunction(ToSystemPointers[script.Type], attribute.Name, attribute.Description, args.ToArray(), method);
 							}

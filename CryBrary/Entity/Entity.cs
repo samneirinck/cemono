@@ -15,8 +15,6 @@ namespace CryEngine
 	/// </summary>
 	public abstract partial class Entity : EntityBase
 	{
-		protected Entity() { }
-		
 		internal static void Load(CryScript script)
 		{
 			//LoadFlowNode(ref script, true);
@@ -39,9 +37,9 @@ namespace CryEngine
 
 			foreach(var property in GetType().GetProperties())
 			{
-				EditorPropertyAttribute attr;
 				try
 				{
+					EditorPropertyAttribute attr;
 					if(property.TryGetAttribute(out attr) && attr.DefaultValue != null && !HasEditorPropertyBeenSet(property.GetValue(this, null), property.PropertyType))// && !storedPropertyNames.Contains(property.Name))
 						property.SetValue(this, attr.DefaultValue, null);
 				}
@@ -262,30 +260,30 @@ namespace CryEngine
 			var entityProperties = new List<object>();
 
 			//Process all properties
-			foreach(var property in properties)
-			{
-				if(property.ContainsAttribute<EditorPropertyAttribute>())
-				{
-					var attribute = property.GetAttribute<EditorPropertyAttribute>();
-					EntityPropertyType propertyType = GetEditorType(property.PropertyType, attribute.Type);
-					var limits = new EntityPropertyLimits(attribute.Min, attribute.Max);
+			properties.ForEach(property =>
+			                   	{
+									if(property.ContainsAttribute<EditorPropertyAttribute>())
+									{
+										var attribute = property.GetAttribute<EditorPropertyAttribute>();
+										EntityPropertyType propertyType = GetEditorType(property.PropertyType, attribute.Type);
+										var limits = new EntityPropertyLimits(attribute.Min, attribute.Max);
 
-					entityProperties.Add(new EntityProperty(property.Name, attribute.Description, propertyType, limits, attribute.Flags));
-				}
-			}
+										entityProperties.Add(new EntityProperty(property.Name, attribute.Description, propertyType, limits, attribute.Flags));
+									}
+			                   	});
 
 			//Process all fields
-			foreach(var field in fields)
-			{
-				if(field.ContainsAttribute<EditorPropertyAttribute>())
-				{
-					var attribute = field.GetAttribute<EditorPropertyAttribute>();
-					EntityPropertyType propertyType = GetEditorType(field.FieldType, attribute.Type);
-					var limits = new EntityPropertyLimits(attribute.Min, attribute.Max);
+			fields.ForEach(field =>
+			               	{
+								if(field.ContainsAttribute<EditorPropertyAttribute>())
+								{
+									var attribute = field.GetAttribute<EditorPropertyAttribute>();
+									EntityPropertyType propertyType = GetEditorType(field.FieldType, attribute.Type);
+									var limits = new EntityPropertyLimits(attribute.Min, attribute.Max);
 
-					entityProperties.Add(new EntityProperty(field.Name, attribute.Description, propertyType, limits, attribute.Flags));
-				}
-			}
+									entityProperties.Add(new EntityProperty(field.Name, attribute.Description, propertyType, limits, attribute.Flags));
+								}
+			               	});
 
 			return new EntityConfig(GetRegistrationConfig(type), entityProperties.ToArray());
 		}

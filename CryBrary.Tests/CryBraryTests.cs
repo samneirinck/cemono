@@ -28,7 +28,7 @@ namespace CryBrary.Tests
 			Debug.Methods = loggingMethodsMock.Object;
 
 			var entityMethodsMock = new Mock<INativeEntityMethods>();
-			Entity.Methods = entityMethodsMock.Object;
+			EntityBase.Methods = entityMethodsMock.Object;
 
 			var actorMethodsMock = new Mock<INativeActorMethods>();
 			Actor.Actormethods = actorMethodsMock.Object;

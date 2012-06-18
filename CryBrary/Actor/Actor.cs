@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 
 using CryEngine.Initialization;
@@ -29,7 +27,7 @@ namespace CryEngine
 		{
 			public void RegisterClass(string className, bool isAI)
 			{
-				Actor._RegisterActorClass(className, isAI);
+				_RegisterActorClass(className, isAI);
 			}
 		}
 
@@ -67,7 +65,7 @@ namespace CryEngine
 			bool isAI = false;
 
 			ActorAttribute attr;
-			if(script.Type.TryGetAttribute<ActorAttribute>(out attr))
+			if(script.Type.TryGetAttribute(out attr))
 			{
 				registerActorClass = attr.useMonoActor;
 				isAI = attr.isAI;
@@ -121,9 +119,9 @@ namespace CryEngine
 		{
 			if(actorInfo.Id == 0)
 				throw new ArgumentException("actorInfo.Id cannot be 0!");
-			else if(actorInfo.ActorPtr == null)
+			if(actorInfo.ActorPtr == IntPtr.Zero)
 				throw new ArgumentException("actorInfo.ActorPtr cannot be 0!");
-			else if(actorInfo.EntityPtr == null)
+			if(actorInfo.EntityPtr == IntPtr.Zero)
 				throw new ArgumentException("actorInfo.EntityPtr cannot be 0!");
 
 			var nativeActor = new NativeActor(actorInfo);
@@ -147,7 +145,7 @@ namespace CryEngine
 		public static T Create<T>(int channelId, string name, string className,  Vec3 pos, Vec3 angles, Vec3 scale) where T : Actor, new()
 		{
 			// just in case
-			Actor.Remove(channelId);
+			Remove(channelId);
 
 			var info = _CreateActor(channelId, name, className, pos, angles, scale);
 			if(info.Id == 0)
@@ -157,12 +155,6 @@ namespace CryEngine
 			}
 
 			var player = new T();
-			if(player == null)
-			{
-				Debug.LogAlways("[Actor.Create] Failed to add script instance");
-				return null;
-			}
-
 			ScriptManager.AddScriptInstance(player, ScriptType.Actor);
 			player.InternalSpawn(info, channelId);
 

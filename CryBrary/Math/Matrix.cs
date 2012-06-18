@@ -24,7 +24,7 @@ namespace CryEngine
 
 		public static Matrix33 CreateIdentity()
 		{
-			Matrix33 matrix = new Matrix33();
+			var matrix = new Matrix33();
 			matrix.SetIdentity();
 
 			return matrix;
@@ -42,7 +42,7 @@ namespace CryEngine
 
 		public static Matrix33 CreateRotationAA(float rad, Vec3 axis)
 		{
-			Matrix33 matrix = new Matrix33();
+			var matrix = new Matrix33();
 			matrix.SetRotationAA(rad, axis);
 
 			return matrix;
@@ -58,7 +58,7 @@ namespace CryEngine
 
 		public static Matrix33 CreateRotationAA(float c, float s, Vec3 axis)
 		{
-			Matrix33 matrix = new Matrix33();
+			var matrix = new Matrix33();
 			matrix.SetRotationAA(c, s, axis);
 
 			return matrix;
@@ -75,7 +75,7 @@ namespace CryEngine
 
 		public static Matrix33 CreateRotationAA(Vec3 rot)
 		{
-			Matrix33 matrix = new Matrix33();
+			var matrix = new Matrix33();
 			matrix.SetRotationAA(rot);
 
 			return matrix;
@@ -91,7 +91,7 @@ namespace CryEngine
 
 		public static Matrix33 CreateRotationX(float rad)
 		{
-			Matrix33 matrix = new Matrix33();
+			var matrix = new Matrix33();
 			matrix.SetRotationX(rad);
 
 			return matrix;
@@ -107,7 +107,7 @@ namespace CryEngine
 
 		public static Matrix33 CreateRotationY(float rad)
 		{
-			Matrix33 matrix = new Matrix33();
+			var matrix = new Matrix33();
 			matrix.SetRotationY(rad);
 
 			return matrix;
@@ -123,7 +123,7 @@ namespace CryEngine
 
 		public static Matrix33 CreateRotationZ(float rad)
 		{
-			Matrix33 matrix = new Matrix33();
+			var matrix = new Matrix33();
 			matrix.SetRotationZ(rad);
 
 			return matrix;
@@ -142,7 +142,7 @@ namespace CryEngine
 
 		public static Matrix33 CreateRotationXYZ(Vec3 rad)
 		{
-			Matrix33 matrix = new Matrix33();
+			var matrix = new Matrix33();
 			matrix.SetRotationXYZ(rad);
 
 			return matrix;
@@ -157,7 +157,7 @@ namespace CryEngine
 
 		public static Matrix33 CreateScale(Vec3 s)
 		{
-			Matrix33 matrix = new Matrix33();
+			var matrix = new Matrix33();
 			matrix.SetScale(s);
 
 			return matrix;
@@ -235,7 +235,7 @@ namespace CryEngine
 
 		public static Matrix34 CreateIdentity()
 		{
-			Matrix34 matrix = new Matrix34();
+			var matrix = new Matrix34();
 
 			matrix.SetIdentity();
 
@@ -261,7 +261,7 @@ namespace CryEngine
 
 		public static Matrix34 CreateRotationAA(float rad, Vec3 axis, Vec3 t = default(Vec3))
 		{
-			Matrix34 matrix = new Matrix34();
+			var matrix = new Matrix34();
 			matrix.SetRotationAA(rad, axis, t);
 
 			return matrix;
@@ -276,7 +276,7 @@ namespace CryEngine
 
 		public static Matrix34 CreateRotationAA(Vec3 rot, Vec3 t = default(Vec3))
 		{
-			Matrix34 matrix = new Matrix34();
+			var matrix = new Matrix34();
 			matrix.SetRotationAA(rot, t);
 
 			return matrix;
@@ -300,7 +300,7 @@ namespace CryEngine
 
 		public static Matrix34 CreateRotationX(float rad, Vec3 t = default(Vec3))
 		{
-			Matrix34 matrix = new Matrix34();
+			var matrix = new Matrix34();
 			matrix.SetRotationX(rad, t);
 
 			return matrix;
@@ -324,7 +324,7 @@ namespace CryEngine
 
 		public static Matrix34 CreateRotationY(float rad, Vec3 t = default(Vec3))
 		{
-			Matrix34 matrix = new Matrix34();
+			var matrix = new Matrix34();
 			matrix.SetRotationY(rad, t);
 
 			return matrix;
@@ -348,7 +348,7 @@ namespace CryEngine
 
 		public static Matrix34 CreateRotationZ(float rad, Vec3 t = default(Vec3))
 		{
-			Matrix34 matrix = new Matrix34();
+			var matrix = new Matrix34();
 			matrix.SetRotationZ(rad, t);
 
 			return matrix;
@@ -376,7 +376,7 @@ namespace CryEngine
 
 		public static Matrix34 CreateRotationXYZ(Vec3 rad, Vec3 t = default(Vec3))
 		{
-			Matrix34 matrix = new Matrix34();
+			var matrix = new Matrix34();
 			matrix.SetRotationXYZ(rad, t);
 
 			return matrix;
@@ -390,7 +390,7 @@ namespace CryEngine
 
 		public static Matrix34 CreateRotationAA(float c, float s, Vec3 axis, Vec3 t = default(Vec3))
 		{
-			Matrix34 matrix = new Matrix34();
+			var matrix = new Matrix34();
 			matrix.SetRotationAA(c, s, axis, t);
 
 			return matrix;
@@ -408,7 +408,7 @@ namespace CryEngine
 
 		public static Matrix34 Create(Vec3 s, Quat q, Vec3 t = default(Vec3))
 		{
-			Matrix34 matrix = new Matrix34();
+			var matrix = new Matrix34();
 			matrix.Set(s, q, t);
 
 			return matrix;
@@ -423,7 +423,7 @@ namespace CryEngine
 
 		public static Matrix34 CreateScale(Vec3 s, Vec3 t = default(Vec3))
 		{
-			Matrix34 matrix = new Matrix34();
+			var matrix = new Matrix34();
 			matrix.SetScale(s, t);
 
 			return matrix;
@@ -438,7 +438,7 @@ namespace CryEngine
 
 		public static Matrix34 CreateTranslationMat(Vec3 v)
 		{
-			Matrix34 matrix = new Matrix34();
+			var matrix = new Matrix34();
 			matrix.SetTranslationMat(v);
 
 			return matrix;
@@ -453,7 +453,7 @@ namespace CryEngine
 
 		public static Matrix34 CreateFromVectors(Vec3 vx, Vec3 vy, Vec3 vz, Vec3 pos)
 		{
-			Matrix34 matrix = new Matrix34();
+			var matrix = new Matrix34();
 			matrix.SetFromVectors(vx, vy, vz, pos);
 
 			return matrix;
@@ -461,15 +461,15 @@ namespace CryEngine
 
 		public void InvertFast()
 		{
-			float t; Vec3 v = new Vec3(M03, M13, M23);
-			t = M01; M01 = M10; M10 = t; M03 = -v.X * M00 - v.Y * M01 - v.Z * M20;
+			var v = new Vec3(M03, M13, M23);
+			float t = M01; M01 = M10; M10 = t; M03 = -v.X * M00 - v.Y * M01 - v.Z * M20;
 			t = M02; M02 = M20; M20 = t; M13 = -v.X * M10 - v.Y * M11 - v.Z * M21;
 			t = M12; M12 = M21; M21 = t; M23 = -v.X * M20 - v.Y * M21 - v.Z * M22;
 		}
 
 		public Matrix34 GetInvertedFast()
 		{
-			Matrix34 dst = new Matrix34();
+			var dst = new Matrix34();
 			dst.M00 = M00; dst.M01 = M10; dst.M02 = M20; dst.M03 = -M03 * M00 - M13 * M10 - M23 * M20;
 			dst.M10 = M01; dst.M11 = M11; dst.M12 = M21; dst.M13 = -M03 * M01 - M13 * M11 - M23 * M21;
 			dst.M20 = M02; dst.M21 = M12; dst.M22 = M22; dst.M23 = -M03 * M02 - M13 * M12 - M23 * M22;
@@ -479,7 +479,7 @@ namespace CryEngine
 		public void Invert()
 		{
 			//rescue members	
-			Matrix34 m = this;
+			var m = this;
 			// calculate 12 cofactors
 			M00 = m.M22 * m.M11 - m.M12 * m.M21;
 			M10 = m.M12 * m.M20 - m.M22 * m.M10;
@@ -535,11 +535,10 @@ namespace CryEngine
 		/// </summary>
 		public void OrthonormalizeFast()
 		{
-			Vec3 x = new Vec3(M00, M10, M20);
-			Vec3 y = new Vec3(M01, M11, M21);
-			Vec3 z;
+			var x = new Vec3(M00, M10, M20);
+			var y = new Vec3(M01, M11, M21);
 			x = x.Normalized;
-			z = (x % y).Normalized;
+			var z = (x % y).Normalized;
 			y = (z % x).Normalized;
 			M00 = x.X; M10 = x.Y; M20 = x.Z;
 			M01 = y.X; M11 = y.Y; M21 = y.Z;
@@ -557,7 +556,7 @@ namespace CryEngine
 
 		public static Matrix34 CreateSlerp(Matrix34 m, Matrix34 n, float t)
 		{
-			Matrix34 matrix = new Matrix34();
+			var matrix = new Matrix34();
 			matrix.SetSlerp(m, n, t);
 
 			return matrix;
@@ -660,12 +659,12 @@ namespace CryEngine
 		/// <returns></returns>
 		int IsOrthonormal(float threshold = 0.001f)
 		{
-			float d0 = (float)Math.Abs(GetColumn0() | GetColumn1()); if(d0 > threshold) return 0;
-			float d1 = (float)Math.Abs(GetColumn0() | GetColumn2()); if(d1 > threshold) return 0;
-			float d2 = (float)Math.Abs(GetColumn1() | GetColumn2()); if(d2 > threshold) return 0;
-			int a = (int)System.Convert.ChangeType((Math.Abs(1 - (GetColumn0() | GetColumn0()))) < threshold, typeof(int));
-			int b = (int)System.Convert.ChangeType((Math.Abs(1 - (GetColumn1() | GetColumn1()))) < threshold, typeof(int));
-			int c = (int)System.Convert.ChangeType((Math.Abs(1 - (GetColumn2() | GetColumn2()))) < threshold, typeof(int));
+			var d0 = (float)Math.Abs(GetColumn0() | GetColumn1()); if(d0 > threshold) return 0;
+			var d1 = (float)Math.Abs(GetColumn0() | GetColumn2()); if(d1 > threshold) return 0;
+			var d2 = (float)Math.Abs(GetColumn1() | GetColumn2()); if(d2 > threshold) return 0;
+			var a = (int)System.Convert.ChangeType((Math.Abs(1 - (GetColumn0() | GetColumn0()))) < threshold, typeof(int));
+			var b = (int)System.Convert.ChangeType((Math.Abs(1 - (GetColumn1() | GetColumn1()))) < threshold, typeof(int));
+			var c = (int)System.Convert.ChangeType((Math.Abs(1 - (GetColumn2() | GetColumn2()))) < threshold, typeof(int));
 			return a & b & c;
 		}
 

@@ -6,7 +6,7 @@ namespace CryEngine.Testing
 	/// <summary>
 	/// The exception that is thrown when a false assertion is made.
 	/// </summary>
-	public sealed class AssertionFailedException : Exception, ISerializable
+	public sealed class AssertionFailedException : Exception
 	{
 		public AssertionFailedException()
 		{

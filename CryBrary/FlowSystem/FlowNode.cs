@@ -60,14 +60,14 @@ namespace CryEngine
 		internal static void Load(ref CryScript script, bool entityNode = false)
 		{
 			bool containsNodePorts = false;
-			foreach(var member in script.Type.GetMembers())
-			{
-				if(member.ContainsAttribute<PortAttribute>())
-				{
-					containsNodePorts = true;
-					break;
-				}
-			}
+			script.Type.GetMembers().ForEach(member =>
+			                                 	{
+													if(member.ContainsAttribute<PortAttribute>())
+													{
+														containsNodePorts = true;
+														return;
+													}
+			                                 	});
 
 			if(!containsNodePorts)
 				return;
@@ -108,7 +108,7 @@ namespace CryEngine
 			NodeId = nodeInfo.nodeId;
 			GraphId = nodeInfo.graphId;
 
-			List<object> emptyList = new List<object>();
+			var emptyList = new List<object>();
 			foreach(var member in GetType().GetMembers().Where(x => x.MemberType == MemberTypes.Field || x.MemberType == MemberTypes.Property))
 				ProcessMemberForPort(member, ref emptyList, ref emptyList);
 		}

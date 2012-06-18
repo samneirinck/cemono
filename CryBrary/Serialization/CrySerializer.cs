@@ -268,7 +268,7 @@ namespace CryEngine.Serialization
 
 		ObjectReference StartRead()
 		{
-			ObjectReference objReference = new ObjectReference();
+			var objReference = new ObjectReference();
 
 			string type = ReadLine();
 			int line = CurrentLine;

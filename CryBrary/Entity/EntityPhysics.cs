@@ -13,9 +13,7 @@ namespace CryEngine
 		{
 			entity = _entity;
 
-			_params = new PhysicalizationParams();
-			_params.mass = -1;
-			_params.slot = 0;
+			_params = new PhysicalizationParams { mass = -1, slot = 0 };
 			GlobalPhysics._Physicalize(_entity.EntityPointer, _params);
 
 			PhysicsPointer = GlobalPhysics._GetPhysicalEntity(entity.EntityPointer);
@@ -67,11 +65,7 @@ namespace CryEngine
 
 		public void AddImpulse(Vec3 impulse, Vec3 angImpulse = default(Vec3), Vec3? point = null)
 		{
-			var actionImpulse = new ActionImpulse();
-
-			actionImpulse.impulse = impulse;
-			actionImpulse.angImpulse = angImpulse;
-			actionImpulse.point = point ?? Entity.Get(entity.Id).Position;
+			var actionImpulse = new ActionImpulse { impulse = impulse, angImpulse = angImpulse, point = point ?? Entity.Get(entity.Id).Position };
 
 			GlobalPhysics._AddImpulse(entity.EntityPointer, actionImpulse);
 		}

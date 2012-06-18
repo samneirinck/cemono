@@ -19,7 +19,7 @@ namespace CryEngine.Extensions
 		/// <returns>True if thisType is a child of baseType.</returns>
 		public static bool Implements(this Type thisType, Type baseType)
 		{
-			return baseType.IsAssignableFrom(thisType) && !thisType.Equals(baseType);
+			return baseType.IsAssignableFrom(thisType) && thisType != baseType;
 		}
 
 		/// <summary>
@@ -35,7 +35,7 @@ namespace CryEngine.Extensions
 
 		public static bool ImplementsOrEquals(this Type thisType, Type baseType)
 		{
-			return thisType.Equals(baseType) || baseType.IsAssignableFrom(thisType);
+			return thisType == baseType || baseType.IsAssignableFrom(thisType);
 		}
 
 		public static bool ImplementsOrEquals<T>(this Type thisType)
@@ -76,14 +76,10 @@ namespace CryEngine.Extensions
 		public static T GetAttribute<T>(this MemberInfo memberInfo) where T : Attribute
 		{
 			var attributes = memberInfo.GetAttributes<T>();
-			if(attributes.Count() > 0)
-			{
+			if(attributes.Any())
 				return attributes.First();
-			}
 			else
-			{
 				return null;
-			}
 		}
 
 		/// <summary>

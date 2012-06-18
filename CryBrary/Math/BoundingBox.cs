@@ -59,7 +59,7 @@ namespace CryEngine
 		/// <returns>An array of points representing the eight corners of the bounding box.</returns>
 		public Vec3[] GetCorners()
 		{
-			Vec3[] results = new Vec3[8];
+			var results = new Vec3[8];
 			results[0] = new Vec3(Minimum.X, Maximum.Y, Maximum.Z);
 			results[1] = new Vec3(Maximum.X, Maximum.Y, Maximum.Z);
 			results[2] = new Vec3(Maximum.X, Minimum.Y, Maximum.Z);
@@ -205,8 +205,8 @@ namespace CryEngine
 			if(points == null)
 				throw new ArgumentNullException("points");
 
-			Vec3 min = new Vec3(float.MaxValue);
-			Vec3 max = new Vec3(float.MinValue);
+			var min = new Vec3(float.MaxValue);
+			var max = new Vec3(float.MinValue);
 
 			for(int i = 0; i < points.Length; ++i)
 			{
@@ -228,8 +228,8 @@ namespace CryEngine
 			if(points == null)
 				throw new ArgumentNullException("points");
 
-			Vec3 min = new Vec3(float.MaxValue);
-			Vec3 max = new Vec3(float.MinValue);
+			var min = new Vec3(float.MaxValue);
+			var max = new Vec3(float.MinValue);
 
 			for(int i = 0; i < points.Length; ++i)
 			{

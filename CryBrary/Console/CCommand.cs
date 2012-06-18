@@ -32,8 +32,6 @@ namespace CryEngine
 	[AttributeUsage(AttributeTargets.Method)]
 	public sealed class CCommandAttribute : Attribute
 	{
-		public CCommandAttribute() { }
-
 		public string Name;
 		public string Comment;
 		public CVarFlags Flags;

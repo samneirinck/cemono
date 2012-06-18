@@ -95,10 +95,6 @@ namespace CryEngine
 	[AttributeUsage(AttributeTargets.Class)]
 	public sealed class GameRulesAttribute : Attribute
 	{
-		public GameRulesAttribute()
-		{
-		}
-
 		/// <summary>
 		/// Sets the game mode's name. Uses the class name if not set.
 		/// </summary>

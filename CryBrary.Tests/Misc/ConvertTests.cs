@@ -10,9 +10,9 @@ namespace CryBrary.Tests.Misc
 		public void FromString_ValidBool_BoolResult()
 		{
 			// Arrange
-			string allLowercaseBool = "true";
-			string capitalizedBool = "True";
-			string allUppercaseBool = "TRUE";
+			const string allLowercaseBool = "true";
+			const string capitalizedBool = "True";
+			const string allUppercaseBool = "TRUE";
 
 			// Act
 			object allLowercaseBoolResult = CryEngine.Convert.FromString(CryEngine.EntityPropertyType.Bool, allLowercaseBool);

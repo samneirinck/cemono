@@ -120,8 +120,6 @@ namespace CryEngine.Initialization
 
 				if(plugins != null && plugins.Length != 0)
 				{
-					var typeCollection = new List<Type>();
-
 					foreach(var plugin in plugins)
 					{
 						try

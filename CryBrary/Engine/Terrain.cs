@@ -12,10 +12,7 @@ namespace CryEngine
 		{
 			get
 			{
-				if(_elevation == null)
-					_elevation = new TerrainElevation();
-
-				return _elevation;
+				return _elevation ?? (_elevation = new TerrainElevation());
 			}
 		}
 

@@ -40,12 +40,7 @@ namespace CryBrary.Tests.Serialization
 
 		static TestClass SetupTestClass()
 		{
-			var testClass = new TestClass();
-			testClass.Integer = 3;
-			testClass.String = "testString";
-			testClass.Boolean = true;
-
-			testClass.nestedClass = new TestClass.NestedClass(TestClass.NestedEnum.Nested_NotQuite);
+			var testClass = new TestClass { Integer = 3, String = "testString", Boolean = true, nestedClass =  new TestClass.NestedClass(TestClass.NestedEnum.Nested_NotQuite) };
 
 			return testClass;
 		}
@@ -85,7 +80,7 @@ namespace CryBrary.Tests.Serialization
 				serializer = null;
 				serializer = new CrySerializer();
 
-				string testString = serializer.Deserialize(stream) as string;
+				var testString = serializer.Deserialize(stream) as string;
 
 				Assert.AreEqual("Test str1ng_I5 V37y tEsTy%‹Œm´ð!", testString);
 			}
@@ -96,9 +91,7 @@ namespace CryBrary.Tests.Serialization
 		{
 			using(var stream = new MemoryStream())
 			{
-				var list = new List<string>();
-				list.Add("test1");
-				list.Add("test2");
+				var list = new List<string> { "test1", "test2" };
 
 				var serializer = new CrySerializer();
 				serializer.Serialize(stream, list);
@@ -122,9 +115,7 @@ namespace CryBrary.Tests.Serialization
 		{
 			using(var stream = new MemoryStream())
 			{
-				var dictionary = new Dictionary<string, int>();
-				dictionary.Add("test1", 1);
-				dictionary.Add("test2", 2);
+				var dictionary = new Dictionary<string, int>() { {"test1", 1 }, { "test2", 2 } };
 
 				var serializer = new CrySerializer();
 				serializer.Serialize(stream, dictionary);
@@ -154,11 +145,7 @@ namespace CryBrary.Tests.Serialization
 		{
 			using(var stream = new MemoryStream())
 			{
-				var list = new List<object>();
-
-				list.Add("testString");
-				list.Add(1337);
-				list.Add(true);
+				var list = new List<object>() { "testString", 1337, true };
 
 				var serializer = new CrySerializer();
 				serializer.Serialize(stream, list.ToArray());
@@ -181,11 +168,7 @@ namespace CryBrary.Tests.Serialization
 		{
 			using(var stream = new MemoryStream())
 			{
-				var list = new List<object>();
-
-				list.Add("first_string");
-				list.Add("second_string");
-				list.Add("third_string");
+				var list = new List<object> {"first_string", "second_string", "third_string"};
 
 				var serializer = new CrySerializer();
 				serializer.Serialize(stream, list.ToArray());
@@ -220,13 +203,13 @@ namespace CryBrary.Tests.Serialization
 					TestClass = SetupTestClass();
 				}
 
-				public TestClass TestClass { get; set; }
+				public TestClass TestClass { get; private set; }
 			}
 
 			public Class_Containing_Reference ClassWithTestClassReference { get; set; }
-			public TestClass TestClassReference { get; set; }
+			public TestClass TestClassReference { get; private set; }
 
-			public TestClass TestClassSeperate { get; set; }
+			public TestClass TestClassSeperate { get; private set; }
 		}
 
 		[Test]
@@ -258,14 +241,16 @@ namespace CryBrary.Tests.Serialization
 			{
 				MethodInfo = GetType().GetMethod("Method");
 				FieldInfo = GetType().GetField("booleanField");
+
+				booleanField = true;
 			}
 
 			public void Method() { }
 
-			public System.Reflection.MethodInfo MethodInfo { get; set; }
-			public System.Reflection.FieldInfo FieldInfo { get; set; }
+			public System.Reflection.MethodInfo MethodInfo { get; private set; }
+			public System.Reflection.FieldInfo FieldInfo { get; private set; }
 
-			public bool booleanField = true;
+			public bool booleanField;
 		}
 
 		[Test]
@@ -365,9 +350,7 @@ namespace CryBrary.Tests.Serialization
 			var dictionary = new Dictionary<int, List<TestClass>>();
 			for(int i = 0; i < 10; i++)
 			{
-				var list = new List<TestClass>();
-				list.Add(SetupTestClass());
-				list.Add(null);
+				var list = new List<TestClass> { SetupTestClass(), null };
 
 				dictionary.Add(i, list);
 			}
