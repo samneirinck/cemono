@@ -107,16 +107,16 @@ namespace CryEngine
 
 		public Vec3(Quat q)
 		{
-			Y = (float)Math.Asin(Math.Max(-1.0f, Math.Min(1.0f, -(q.Axis.X * q.Axis.Z - q.Angle * q.Axis.Y) * 2.0f)));
+			Y = Math.Asin(Math.Max(-1.0f, Math.Min(1.0f, -(q.Axis.X * q.Axis.Z - q.Angle * q.Axis.Y) * 2.0f)));
 			if(Math.Abs(Math.Abs(Y) - (Math.PI * 0.5)) < 0.01)
 			{
 				X = 0;
-				Z = (float)Math.Atan2(-2 * (q.Axis.X * q.Axis.Y - q.Angle * q.Axis.Z), 1 - (q.Axis.X * q.Axis.X + q.Axis.Z * q.Axis.Z) * 2);
+				Z = Math.Atan2(-2 * (q.Axis.X * q.Axis.Y - q.Angle * q.Axis.Z), 1 - (q.Axis.X * q.Axis.X + q.Axis.Z * q.Axis.Z) * 2);
 			}
 			else
 			{
-				X = (float)Math.Atan2((q.Axis.Y * q.Axis.Z + q.Angle * q.Axis.X) * 2, 1 - (q.Axis.X * q.Axis.X + q.Axis.Y * q.Axis.Y) * 2);
-				Z = (float)Math.Atan2((q.Axis.X * q.Axis.Y + q.Angle * q.Axis.Z) * 2, 1 - (q.Axis.Z * q.Axis.Z + q.Axis.Y * q.Axis.Y) * 2);
+				X = Math.Atan2((q.Axis.Y * q.Axis.Z + q.Angle * q.Axis.X) * 2, 1 - (q.Axis.X * q.Axis.X + q.Axis.Y * q.Axis.Y) * 2);
+				Z = Math.Atan2((q.Axis.X * q.Axis.Y + q.Angle * q.Axis.Z) * 2, 1 - (q.Axis.Z * q.Axis.Z + q.Axis.Y * q.Axis.Y) * 2);
 			}
 		}
 
@@ -171,7 +171,7 @@ namespace CryEngine
 		/// </remarks>
 		public float Length
 		{
-			get { return (float)Math.Sqrt((X * X) + (Y * Y) + (Z * Z)); }
+			get { return Math.Sqrt((X * X) + (Y * Y) + (Z * Z)); }
 		}
 
 		/// <summary>
@@ -219,7 +219,7 @@ namespace CryEngine
 		/// <returns>A three-element array containing the components of the vector.</returns>
 		public float[] ToArray()
 		{
-			return new float[] { X, Y, Z };
+			return new [] { X, Y, Z };
 		}
 
 		/// <summary>
@@ -499,7 +499,7 @@ namespace CryEngine
 			float y = value1.Y - value2.Y;
 			float z = value1.Z - value2.Z;
 
-			result = (float)Math.Sqrt((x * x) + (y * y) + (z * z));
+			result = Math.Sqrt((x * x) + (y * y) + (z * z));
 		}
 
 		/// <summary>
@@ -518,7 +518,7 @@ namespace CryEngine
 			float y = value1.Y - value2.Y;
 			float z = value1.Z - value2.Z;
 
-			return (float)Math.Sqrt((x * x) + (y * y) + (z * z));
+			return Math.Sqrt((x * x) + (y * y) + (z * z));
 		}
 
 		/// <summary>
@@ -864,10 +864,10 @@ namespace CryEngine
 			float radicand = 1.0f - (index * index) * (1.0f - (cos1 * cos1));
 
 			if(radicand < 0.0f)
-				result = Vec3.Zero;
+				result = Zero;
 			else
 			{
-				float cos2 = (float)Math.Sqrt(radicand);
+				float cos2 = Math.Sqrt(radicand);
 				result = (index * vector) + ((cos2 - index * cos1) * normal);
 			}
 		}
@@ -924,7 +924,7 @@ namespace CryEngine
 
 				for(int r = 0; r < i; ++r)
 				{
-					newvector -= (Vec3.Dot(destination[r], newvector) / Vec3.Dot(destination[r], destination[r])) * destination[r];
+					newvector -= (Dot(destination[r], newvector) / Dot(destination[r], destination[r])) * destination[r];
 				}
 
 				destination[i] = newvector;
@@ -971,7 +971,7 @@ namespace CryEngine
 
 				for(int r = 0; r < i; ++r)
 				{
-					newvector -= Vec3.Dot(destination[r], newvector) * destination[r];
+					newvector -= Dot(destination[r], newvector) * destination[r];
 				}
 
 				newvector.Normalize();
@@ -1244,7 +1244,7 @@ namespace CryEngine
 		{
 			if(value == null)
 				throw new ArgumentNullException("value");
-			else if(value.Length < 1)
+			if(value.Length < 1)
 				throw new ArgumentException("value string was empty");
 
 			string[] split = value.Split(',');
@@ -1291,7 +1291,7 @@ namespace CryEngine
 		/// </returns>
 		public bool Equals(Vec3 other)
 		{
-			return (this.X == other.X) && (this.Y == other.Y) && (this.Z == other.Z);
+			return (X == other.X) && (Y == other.Y) && (Z == other.Z);
 		}
 
 		/// <summary>
@@ -1304,9 +1304,9 @@ namespace CryEngine
 		/// </returns>
 		public bool Equals(Vec3 other, float epsilon)
 		{
-			return ((float)Math.Abs(other.X - X) < epsilon &&
-				(float)Math.Abs(other.Y - Y) < epsilon &&
-				(float)Math.Abs(other.Z - Z) < epsilon);
+			return (Math.Abs(other.X - X) < epsilon &&
+				Math.Abs(other.Y - Y) < epsilon &&
+				Math.Abs(other.Z - Z) < epsilon);
 		}
 
 		/// <summary>

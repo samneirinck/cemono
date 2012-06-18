@@ -178,7 +178,7 @@ namespace CryEngine
 		/// </remarks>
 		public float Length()
 		{
-			return (float)Math.Sqrt((X * X) + (Y * Y) + (Z * Z) + (W * W));
+			return Math.Sqrt((X * X) + (Y * Y) + (Z * Z) + (W * W));
 		}
 
 		/// <summary>
@@ -216,7 +216,7 @@ namespace CryEngine
 		/// <returns>A four-element array containing the components of the vector.</returns>
 		public float[] ToArray()
 		{
-			return new float[] { X, Y, Z, W };
+			return new [] { X, Y, Z, W };
 		}
 
 		/// <summary>
@@ -441,7 +441,7 @@ namespace CryEngine
 			float z = value1.Z - value2.Z;
 			float w = value1.W - value2.W;
 
-			result = (float)Math.Sqrt((x * x) + (y * y) + (z * z) + (w * w));
+			result = Math.Sqrt((x * x) + (y * y) + (z * z) + (w * w));
 		}
 
 		/// <summary>
@@ -461,7 +461,7 @@ namespace CryEngine
 			float z = value1.Z - value2.Z;
 			float w = value1.W - value2.W;
 
-			return (float)Math.Sqrt((x * x) + (y * y) + (z * z) + (w * w));
+			return Math.Sqrt((x * x) + (y * y) + (z * z) + (w * w));
 		}
 
 		/// <summary>
@@ -794,7 +794,7 @@ namespace CryEngine
 
 				for(int r = 0; r < i; ++r)
 				{
-					newvector -= (Vec4.Dot(destination[r], newvector) / Vec4.Dot(destination[r], destination[r])) * destination[r];
+					newvector -= (Dot(destination[r], newvector) / Dot(destination[r], destination[r])) * destination[r];
 				}
 
 				destination[i] = newvector;
@@ -841,7 +841,7 @@ namespace CryEngine
 
 				for(int r = 0; r < i; ++r)
 				{
-					newvector -= Vec4.Dot(destination[r], newvector) * destination[r];
+					newvector -= Dot(destination[r], newvector) * destination[r];
 				}
 
 				newvector.Normalize();
@@ -1134,7 +1134,7 @@ namespace CryEngine
 		/// </returns>
 		public bool Equals(Vec4 other)
 		{
-			return (this.X == other.X) && (this.Y == other.Y) && (this.Z == other.Z) && (this.W == other.W);
+			return (X == other.X) && (Y == other.Y) && (Z == other.Z) && (W == other.W);
 		}
 
 		/// <summary>
@@ -1147,10 +1147,10 @@ namespace CryEngine
 		/// </returns>
 		public bool Equals(Vec4 other, float epsilon)
 		{
-			return ((float)Math.Abs(other.X - X) < epsilon &&
-				(float)Math.Abs(other.Y - Y) < epsilon &&
-				(float)Math.Abs(other.Z - Z) < epsilon &&
-				(float)Math.Abs(other.W - W) < epsilon);
+			return (Math.Abs(other.X - X) < epsilon &&
+				Math.Abs(other.Y - Y) < epsilon &&
+				Math.Abs(other.Z - Z) < epsilon &&
+				Math.Abs(other.W - W) < epsilon);
 		}
 
 		/// <summary>

@@ -50,8 +50,8 @@ namespace CryEngine
 		/// <param name="direction">The normalized direction of the ray.</param>
 		public Ray(Vec3 position, Vec3 direction)
 		{
-			this.Position = position;
-			this.Direction = direction;
+			Position = position;
+			Direction = direction;
 		}
 
 		/// <summary>
@@ -81,7 +81,7 @@ namespace CryEngine
 
 		public static int Cast(Vec3 pos, Vec3 dir, out RaycastHit hits, EntityQueryFlags objectTypes = EntityQueryFlags.All, RayWorldIntersectionFlags flags = RayWorldIntersectionFlags.AnyHit, int maxHits = 1, EntityId[] skipEntities = null)
 		{
-			Ray ray = new Ray(pos, dir);
+			var ray = new Ray(pos, dir);
 
 			return ray.Cast(out hits, objectTypes, flags, maxHits, skipEntities);
 		}

@@ -50,7 +50,7 @@ namespace CryEngine
 
 		private static void UnhandledExceptionOccurred(object sender, UnhandledExceptionEventArgs e)
 		{
-			Debug.LogException((Exception)e.ExceptionObject);
+			LogException((Exception)e.ExceptionObject);
 		}
 
 		/// <summary>

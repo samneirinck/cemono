@@ -218,8 +218,8 @@ namespace CryEngine
 		{
 			if(value.CompareTo(min) >= 0 && value.CompareTo(max) <= 0)
 				return true;
-			else
-				return false;
+
+			return false;
 		}
 
 		/// <summary>
@@ -234,10 +234,10 @@ namespace CryEngine
 		{
 			if(value.CompareTo(min) < 0)
 				return min;
-			else if(value.CompareTo(max) > 0)
+			if(value.CompareTo(max) > 0)
 				return max;
-			else
-				return value;
+
+			return value;
 		}
 
 		public static T Max<T>(T val1, T val2) where T : IComparable<T>

@@ -148,7 +148,7 @@ namespace CryEngine
 		/// </value>
 		public bool IsIdentity
 		{
-			get { return this.Equals(Identity); }
+			get { return Equals(Identity); }
 		}
 
 		/// <summary>
@@ -326,7 +326,7 @@ namespace CryEngine
 		/// </remarks>
 		public float Length()
 		{
-			return (float)Math.Sqrt((V.X * V.X) + (V.Y * V.Y) + (V.Z * V.Z) + (W * W));
+			return Math.Sqrt((V.X * V.X) + (V.Y * V.Y) + (V.Z * V.Z) + (W * W));
 		}
 
 		/// <summary>
@@ -364,7 +364,7 @@ namespace CryEngine
 		/// <returns>A four-element array containing the components of the quaternion.</returns>
 		public float[] ToArray()
 		{
-			return new float[] { V.X, V.Y, V.Z, W };
+			return new [] { V.X, V.Y, V.Z, W };
 		}
 
 		/// <summary>
@@ -454,8 +454,8 @@ namespace CryEngine
 		/// <param name="result">When the method completes, contains the exponentiated quaternion.</param>
 		public static void Exponential(ref Quat value, out Quat result)
 		{
-			float angle = (float)Math.Sqrt((value.V.X * value.V.X) + (value.V.Y * value.V.Y) + (value.V.Z * value.V.Z));
-			float sin = (float)Math.Sin(angle);
+			float angle = Math.Sqrt((value.V.X * value.V.X) + (value.V.Y * value.V.Y) + (value.V.Z * value.V.Z));
+			float sin = Math.Sin(angle);
 
 			if(Math.Abs(sin) >= Math.ZeroTolerance)
 			{
@@ -469,7 +469,7 @@ namespace CryEngine
 				result = value;
 			}
 
-			result.W = (float)Math.Cos(angle);
+			result.W = Math.Cos(angle);
 		}
 
 		/// <summary>
@@ -569,8 +569,8 @@ namespace CryEngine
 		{
 			if(Math.Abs(value.W) < 1.0)
 			{
-				float angle = (float)Math.Acos(value.W);
-				float sin = (float)Math.Sin(angle);
+				float angle = Math.Acos(value.W);
+				float sin = Math.Sin(angle);
 
 				if(Math.Abs(sin) >= Math.ZeroTolerance)
 				{
@@ -639,8 +639,8 @@ namespace CryEngine
 			Vec3.Normalize(ref axis, out normalized);
 
 			float half = angle * 0.5f;
-			float sin = (float)Math.Sin(half);
-			float cos = (float)Math.Cos(half);
+			float sin = Math.Sin(half);
+			float cos = Math.Cos(half);
 
 			result.V.X = normalized.X * sin;
 			result.V.Y = normalized.Y * sin;
@@ -674,12 +674,12 @@ namespace CryEngine
 			float halfPitch = pitch * 0.5f;
 			float halfYaw = yaw * 0.5f;
 
-			float sinRoll = (float)Math.Sin(halfRoll);
-			float cosRoll = (float)Math.Cos(halfRoll);
-			float sinPitch = (float)Math.Sin(halfPitch);
-			float cosPitch = (float)Math.Cos(halfPitch);
-			float sinYaw = (float)Math.Sin(halfYaw);
-			float cosYaw = (float)Math.Cos(halfYaw);
+			float sinRoll = Math.Sin(halfRoll);
+			float cosRoll = Math.Cos(halfRoll);
+			float sinPitch = Math.Sin(halfPitch);
+			float cosPitch = Math.Cos(halfPitch);
+			float sinYaw = Math.Sin(halfYaw);
+			float cosYaw = Math.Cos(halfYaw);
 
 			result.V.X = (cosYaw * sinPitch * cosRoll) + (sinYaw * cosPitch * sinRoll);
 			result.V.Y = (sinYaw * cosPitch * cosRoll) - (cosYaw * sinPitch * sinRoll);
@@ -721,11 +721,11 @@ namespace CryEngine
 			}
 			else
 			{
-				float acos = (float)Math.Acos(Math.Abs(dot));
+				float acos = Math.Acos(Math.Abs(dot));
 				float invSin = (float)(1.0 / Math.Sin(acos));
 
-				inverse = (float)Math.Sin((1.0f - amount) * acos) * invSin;
-				opposite = (float)Math.Sin(amount * acos) * invSin * System.Math.Sign(dot);
+				inverse = Math.Sin((1.0f - amount) * acos) * invSin;
+				opposite = Math.Sin(amount * acos) * invSin * System.Math.Sign(dot);
 			}
 
 			result.V.X = (inverse * start.V.X) + (opposite * end.V.X);
@@ -800,7 +800,7 @@ namespace CryEngine
 			Exponential(ref q1, out q1Exp);
 			Exponential(ref q2, out q2Exp);
 
-			Quat[] results = new Quat[3];
+			var results = new Quat[3];
 			results[0] = q1 * Exponential(-0.25f * (Logarithm(q1Exp * q2) + Logarithm(q1Exp * q0)));
 			results[1] = q2 * Exponential(-0.25f * (Logarithm(q2Exp * q3) + Logarithm(q2Exp * q1)));
 			results[2] = q2;
@@ -816,7 +816,7 @@ namespace CryEngine
 		/// <returns>The sum of the two quaternions.</returns>
 		public static Quat operator +(Quat left, Quat right)
 		{
-			Quat result = new Quat();
+			var result = new Quat();
 			result.V.X = left.V.X + right.V.X;
 			result.V.Y = left.V.Y + right.V.Y;
 			result.V.Z = left.V.Z + right.V.Z;
@@ -832,7 +832,7 @@ namespace CryEngine
 		/// <returns>The difference of the two quaternions.</returns>
 		public static Quat operator -(Quat left, Quat right)
 		{
-			Quat result = new Quat();
+			var result = new Quat();
 
 			result.V.X = left.V.X - right.V.X;
 			result.V.Y = left.V.Y - right.V.Y;
@@ -849,7 +849,7 @@ namespace CryEngine
 		/// <returns>A quaternion facing in the opposite direction.</returns>
 		public static Quat operator -(Quat value)
 		{
-			Quat result = new Quat();
+			var result = new Quat();
 			result.V.X = -value.V.X;
 			result.V.Y = -value.V.Y;
 			result.V.Z = -value.V.Z;
@@ -876,7 +876,7 @@ namespace CryEngine
 		/// <returns>The scaled quaternion.</returns>
 		public static Quat operator *(Quat value, float scale)
 		{
-			Quat result = new Quat();
+			var result = new Quat();
 			result.V.X = value.V.X * scale;
 			result.V.Y = value.V.Y * scale;
 			result.V.Z = value.V.Z * scale;
@@ -892,7 +892,7 @@ namespace CryEngine
 		/// <returns>The multiplied quaternion.</returns>
 		public static Quat operator *(Quat left, Quat right)
 		{
-			Quat result = new Quat();
+			var result = new Quat();
 			float lx = left.V.X;
 			float ly = left.V.Y;
 			float lz = left.V.Z;
@@ -1020,7 +1020,7 @@ namespace CryEngine
 		/// </returns>
 		public bool Equals(Quat other)
 		{
-			return (this.V.X == other.V.X) && (this.V.Y == other.V.Y) && (this.V.Z == other.V.Z) && (this.W == other.W);
+			return (V.X == other.V.X) && (V.Y == other.V.Y) && (V.Z == other.V.Z) && (W == other.W);
 		}
 
 		/// <summary>
@@ -1033,10 +1033,10 @@ namespace CryEngine
 		/// </returns>
 		public bool Equals(Quat other, float epsilon)
 		{
-			return ((float)Math.Abs(other.V.X - V.X) < epsilon &&
-				(float)Math.Abs(other.V.Y - V.Y) < epsilon &&
-				(float)Math.Abs(other.V.Z - V.Z) < epsilon &&
-				(float)Math.Abs(other.W - W) < epsilon);
+			return (Math.Abs(other.V.X - V.X) < epsilon &&
+				Math.Abs(other.V.Y - V.Y) < epsilon &&
+				Math.Abs(other.V.Z - V.Z) < epsilon &&
+				Math.Abs(other.W - W) < epsilon);
 		}
 
 		/// <summary>

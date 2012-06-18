@@ -111,7 +111,7 @@ namespace CryBrary.Tests.Serialization
 		{
 			using(var stream = new MemoryStream())
 			{
-				var dictionary = new Dictionary<string, int>() { {"test1", 1 }, { "test2", 2 } };
+				var dictionary = new Dictionary<string, int> { {"test1", 1 }, { "test2", 2 } };
 
 				var serializer = new CrySerializer();
 				serializer.Serialize(stream, dictionary);
@@ -140,7 +140,7 @@ namespace CryBrary.Tests.Serialization
 		{
 			using(var stream = new MemoryStream())
 			{
-				var list = new List<object>() { "testString", 1337, true };
+				var list = new List<object> { "testString", 1337, true };
 
 				var serializer = new CrySerializer();
 				serializer.Serialize(stream, list.ToArray());
@@ -199,7 +199,7 @@ namespace CryBrary.Tests.Serialization
 				public TestClass TestClass { get; private set; }
 			}
 
-			public Class_Containing_Reference ClassWithTestClassReference { get; set; }
+			public Class_Containing_Reference ClassWithTestClassReference { get; private set; }
 			public TestClass TestClassReference { get; private set; }
 
 			public TestClass TestClassSeperate { get; private set; }

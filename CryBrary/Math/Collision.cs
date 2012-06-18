@@ -250,7 +250,7 @@ namespace CryEngine
 			if(point.Z > box.Maximum.Z)
 				distance += (point.Z - box.Maximum.Z) * (point.Z - box.Maximum.Z);
 
-			return (float)Math.Sqrt(distance);
+			return Math.Sqrt(distance);
 		}
 
 		/// <summary>
@@ -299,7 +299,7 @@ namespace CryEngine
 				distance += delta * delta;
 			}
 
-			return (float)Math.Sqrt(distance);
+			return Math.Sqrt(distance);
 		}
 
 		/// <summary>
@@ -822,7 +822,7 @@ namespace CryEngine
 				return false;
 			}
 
-			distance = -b - (float)Math.Sqrt(discriminant);
+			distance = -b - Math.Sqrt(discriminant);
 
 			if(distance < 0f)
 				distance = 0f;

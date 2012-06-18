@@ -49,8 +49,8 @@ namespace CryEngine
 		/// <param name="radius">The radius of the sphere.</param>
 		public BoundingSphere(Vec3 center, float radius)
 		{
-			this.Center = center;
-			this.Radius = radius;
+			Center = center;
+			Radius = radius;
 		}
 
 		/// <summary>
@@ -203,7 +203,7 @@ namespace CryEngine
 			}
 
 			//Find the real distance from the DistanceSquared.
-			radius = (float)Math.Sqrt(radius);
+			radius = Math.Sqrt(radius);
 
 			//Construct the sphere.
 			result.Center = center;
@@ -235,7 +235,7 @@ namespace CryEngine
 			float y = box.Minimum.Y - box.Maximum.Y;
 			float z = box.Minimum.Z - box.Maximum.Z;
 
-			var distance = (float)(Math.Sqrt((x * x) + (y * y) + (z * z)));
+			var distance = (Math.Sqrt((x * x) + (y * y) + (z * z)));
 			result.Radius = distance * 0.5f;
 		}
 

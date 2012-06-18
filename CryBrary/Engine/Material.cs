@@ -81,7 +81,7 @@ namespace CryEngine
 		{
 			if(entity == null)
 				throw new ArgumentNullException("entity");
-			else if(mat == null)
+			if(mat == null)
 				throw new ArgumentNullException("mat");
 
 			_SetMaterial(entity.EntityPointer, mat.MaterialPointer, slot);

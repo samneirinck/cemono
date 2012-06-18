@@ -60,7 +60,7 @@ namespace CryEngine.Initialization
 					var gacFolder = Path.Combine(monoDir, "lib", "mono", "gac");
 					foreach(var assemblyLocation in Directory.GetFiles(gacFolder, "*.dll", SearchOption.AllDirectories))
 					{
-						var separator = new string[] { "__" };
+						var separator = new [] { "__" };
 						var splitParentDir = Directory.GetParent(assemblyLocation).Name.Split(separator, StringSplitOptions.RemoveEmptyEntries);
 
 						var assembly = Assembly.Load(Path.GetFileName(assemblyLocation) + string.Format(", Version={0}, Culture=neutral, PublicKeyToken={1}", splitParentDir.ElementAt(0), splitParentDir.ElementAt(1)));
@@ -111,7 +111,7 @@ namespace CryEngine.Initialization
 		{
 			if(directory == null)
 				throw new ArgumentNullException("directory");
-			else if(directory.Length < 1)
+			if(directory.Length < 1)
 				throw new ArgumentException("string cannot be empty!", "directory");
 
 			if(Directory.Exists(directory))
@@ -158,12 +158,12 @@ namespace CryEngine.Initialization
 		{
 			if(assemblyPath == null)
 				throw new ArgumentNullException("assemblyPath");
-			else if(assemblyPath.Length < 1)
+			if(assemblyPath.Length < 1)
 				throw new ArgumentException("string cannot be empty!", "assemblyPath");
 
 			var newPath = Path.Combine(PathUtils.TempFolder, Path.GetFileName(assemblyPath));
 
-			TryCopyFile(assemblyPath, ref newPath, true);
+			TryCopyFile(assemblyPath, ref newPath);
 
 #if !RELEASE
 			GenerateDebugDatabaseForAssembly(assemblyPath);
@@ -287,7 +287,7 @@ namespace CryEngine.Initialization
 					case MemberTypes.Method:
 						{
 							CCommandAttribute attribute;
-							if(member.TryGetAttribute<CCommandAttribute>(out attribute))
+							if(member.TryGetAttribute(out attribute))
 								CCommand.Register(attribute.Name ?? member.Name, Delegate.CreateDelegate(typeof(CCommandDelegate), member as MethodInfo) as CCommandDelegate, attribute.Comment, attribute.Flags);
 						}
 						break;
@@ -295,7 +295,7 @@ namespace CryEngine.Initialization
 					case MemberTypes.Property:
 						{
 							CVarAttribute attribute;
-							if(member.TryGetAttribute<CVarAttribute>(out attribute))
+							if(member.TryGetAttribute(out attribute))
 							{
 								// There's no way to pass the variable itself by reference to properly register the CVar.
 								//CVar.Register(attribute, member, 
@@ -310,7 +310,7 @@ namespace CryEngine.Initialization
 		{
 			if(assemblyPath == null)
 				throw new ArgumentNullException("assemblyPath");
-			else if(assemblyPath.Length < 1)
+			if(assemblyPath.Length < 1)
 				throw new ArgumentException("string cannot be empty!", "assemblyPath");
 
 			if(File.Exists(Path.ChangeExtension(assemblyPath, "pdb")))
@@ -357,9 +357,9 @@ namespace CryEngine.Initialization
 		{
 			if(scriptName == null)
 				throw new ArgumentNullException("scriptName");
-			else if(scriptName.Length < 1)
+			if(scriptName.Length < 1)
 				throw new ArgumentException("string cannot be empty!", "scriptName");
-			else if(!Enum.IsDefined(typeof(ScriptType), scriptType))
+			if(!Enum.IsDefined(typeof(ScriptType), scriptType))
 				throw new ArgumentException(string.Format("scriptType: value {0} was not defined in the enum", scriptType));
 
 			var script = Scripts.FirstOrDefault(x => x.ScriptType.ContainsFlag(scriptType) && x.ScriptName.Equals(scriptName));

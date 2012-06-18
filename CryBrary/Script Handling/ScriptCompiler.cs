@@ -49,7 +49,5 @@ namespace CryEngine.Initialization
 
 		public ScriptCompilationException(string errorMessage, Exception innerEx)
 			: base(errorMessage, innerEx) { }
-
-		public override string Message { get { return base.Message.ToString(); } }
 	}
 }

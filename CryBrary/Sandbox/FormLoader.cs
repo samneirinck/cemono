@@ -21,7 +21,7 @@ namespace CryEngine.Sandbox
 			};
 		}
 
-		private void OnExtensionSelect(object sender, System.EventArgs e)
+		private void OnExtensionSelect(object sender, EventArgs e)
 		{
 			var formInfo = uxExtensionList.SelectedItem as FormInfo;
 			var data = formInfo.Data;

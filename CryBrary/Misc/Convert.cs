@@ -9,7 +9,7 @@
 
 			if(value == null)
 				throw new System.ArgumentNullException("value");
-			else if(value.Length < 1)
+			if(value.Length < 1)
 				throw new System.ArgumentException("value string was empty");
 
 			switch(type)

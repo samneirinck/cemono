@@ -78,8 +78,8 @@ namespace CryEngine.Extensions
 			var attributes = memberInfo.GetAttributes<T>();
 			if(attributes.Any())
 				return attributes.First();
-			else
-				return null;
+
+			return null;
 		}
 
 		/// <summary>
@@ -98,11 +98,9 @@ namespace CryEngine.Extensions
 				attribute = attributes[0] as T;
 				return true;
 			}
-			else
-			{
-				attribute = null;
-				return false;
-			}
+
+			attribute = null;
+			return false;
 		}
 		#endregion
 	}

@@ -22,10 +22,10 @@ namespace CryEngine
 				throw new ArgumentException("Color and alpha values must be between 0 and 1.");
 			}
 
-			this.R = red;
-			this.G = green;
-			this.B = blue;
-			this.A = alpha;
+			R = red;
+			G = green;
+			B = blue;
+			A = alpha;
 		}
 
 		/// <summary>

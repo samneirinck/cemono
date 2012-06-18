@@ -1,5 +1,4 @@
-﻿using System;
-using CryEngine.Testing;
+﻿using CryEngine.Testing;
 
 using TestAttribute = NUnit.Framework.TestAttribute;
 using ExpectedException = NUnit.Framework.ExpectedExceptionAttribute;

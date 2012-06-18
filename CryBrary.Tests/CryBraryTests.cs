@@ -19,7 +19,7 @@ namespace CryBrary.Tests
 		private void InitializeLoggingMethods()
 		{
 			var loggingMethodsMock = new Mock<INativeLoggingMethods>();
-			Action<string> loggingMethod = msg => System.Console.WriteLine(msg);
+			Action<string> loggingMethod = msg => Console.WriteLine(msg);
 
 			loggingMethodsMock.Setup(m => m._Log(It.IsAny<string>())).Callback(loggingMethod);
 			loggingMethodsMock.Setup(m => m._LogAlways(It.IsAny<string>())).Callback(loggingMethod);

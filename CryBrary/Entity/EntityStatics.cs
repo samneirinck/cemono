@@ -2,8 +2,6 @@
 
 using System.Collections.Generic;
 
-using System.Linq;
-
 using CryEngine.Initialization;
 
 namespace CryEngine
@@ -30,11 +28,10 @@ namespace CryEngine
 				ScriptManager.AddScriptInstance(ent, ScriptType.Entity);
 				ent.InternalSpawn(info);
 
-				return ent as T;
+				return ent;
 			}
-			else
-				Debug.LogAlways("[Entity.Spawn] Failed to spawn entity of class {0} with name {1}", typeof(T).Name, name);
 
+			Debug.LogAlways("[Entity.Spawn] Failed to spawn entity of class {0} with name {1}", typeof(T).Name, name);
 			return null;
 		}
 
@@ -48,7 +45,7 @@ namespace CryEngine
 
 		public void Remove()
 		{
-			Entity.Remove(Id);
+			Remove(Id);
 		}
 
 		internal static bool InternalRemove(EntityId id)

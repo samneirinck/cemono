@@ -187,7 +187,7 @@ namespace CryEngine
 		{
 			if(propertyName == null)
 				throw new ArgumentNullException("propertyName");
-			else if(propertyName.Length < 1)
+			if(propertyName.Length < 1)
 				throw new ArgumentException("propertyName was empty!");
 
 			var field = GetType().GetField(propertyName);
@@ -205,11 +205,11 @@ namespace CryEngine
 		{
 			if(valueString == null)
 				throw new ArgumentNullException("valueString");
-			else if(propertyName == null)
+			if(propertyName == null)
 				throw new ArgumentNullException("propertyName");
-			else if(valueString.Length < 1 && propertyType != EntityPropertyType.String)
+			if(valueString.Length < 1 && propertyType != EntityPropertyType.String)
 				throw new ArgumentException("value was empty!");
-			else if(propertyName.Length < 1)
+			if(propertyName.Length < 1)
 				throw new ArgumentException("propertyName was empty!");
 
 			var value = Convert.FromString(propertyType, valueString);
@@ -302,31 +302,31 @@ namespace CryEngine
 					{
 						if(type == typeof(string))
 							return propertyType;
-						else
-							throw new EntityException("File selector type was specified, but property was not a string.");
+
+						throw new EntityException("File selector type was specified, but property was not a string.");
 					}
 				case EntityPropertyType.Color:
 					{
 						if(type == typeof(Vec3))
 							return propertyType;
-						else
-							throw new EntityException("Vector type was specified, but property was not a vector.");
+
+						throw new EntityException("Vector type was specified, but property was not a vector.");
 					}
 			}
 
 			//OH PROGRAMMING GODS, FORGIVE ME
 			if(type == typeof(string))
 				return EntityPropertyType.String;
-			else if(type == typeof(int))
+			if(type == typeof(int))
 				return EntityPropertyType.Int;
-			else if(type == typeof(float) || type == typeof(double))
+			if(type == typeof(float) || type == typeof(double))
 				return EntityPropertyType.Float;
-			else if(type == typeof(bool))
+			if(type == typeof(bool))
 				return EntityPropertyType.Bool;
-			else if(type == typeof(Vec3))
+			if(type == typeof(Vec3))
 				return EntityPropertyType.Vec3;
-			else
-				throw new EntityException("Invalid property type specified.");
+			
+			throw new EntityException("Invalid property type specified.");
 		}
 		/*
 		internal override NodeConfig GetNodeConfig()
@@ -336,7 +336,7 @@ namespace CryEngine
 
 		internal static EntityRegisterParams GetRegistrationConfig(Type type)
 		{
-			EntityAttribute entityAttribute = type.ContainsAttribute<EntityAttribute>() ? type.GetAttribute<EntityAttribute>() : new EntityAttribute();
+			var entityAttribute = type.ContainsAttribute<EntityAttribute>() ? type.GetAttribute<EntityAttribute>() : new EntityAttribute();
 
 			return new EntityRegisterParams(entityAttribute.Name ?? type.Name, entityAttribute.Category, entityAttribute.EditorHelper,
 					entityAttribute.Icon, entityAttribute.Flags);

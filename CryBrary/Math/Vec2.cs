@@ -129,7 +129,7 @@ namespace CryEngine
 		/// </remarks>
 		public float Length()
 		{
-			return (float)Math.Sqrt((X * X) + (Y * Y));
+			return Math.Sqrt((X * X) + (Y * Y));
 		}
 
 		/// <summary>
@@ -165,7 +165,7 @@ namespace CryEngine
 		/// <returns>A two-element array containing the components of the vector.</returns>
 		public float[] ToArray()
 		{
-			return new float[] { X, Y };
+			return new [] { X, Y };
 		}
 
 		/// <summary>
@@ -378,7 +378,7 @@ namespace CryEngine
 			float x = value1.X - value2.X;
 			float y = value1.Y - value2.Y;
 
-			result = (float)Math.Sqrt((x * x) + (y * y));
+			result = Math.Sqrt((x * x) + (y * y));
 		}
 
 		/// <summary>
@@ -396,7 +396,7 @@ namespace CryEngine
 			float x = value1.X - value2.X;
 			float y = value1.Y - value2.Y;
 
-			return (float)Math.Sqrt((x * x) + (y * y));
+			return Math.Sqrt((x * x) + (y * y));
 		}
 
 		/// <summary>
@@ -812,7 +812,7 @@ namespace CryEngine
 
 				for(int r = 0; r < i; ++r)
 				{
-					newvector -= (Vec2.Dot(destination[r], newvector) / Vec2.Dot(destination[r], destination[r])) * destination[r];
+					newvector -= (Dot(destination[r], newvector) / Dot(destination[r], destination[r])) * destination[r];
 				}
 
 				destination[i] = newvector;
@@ -859,7 +859,7 @@ namespace CryEngine
 
 				for(int r = 0; r < i; ++r)
 				{
-					newvector -= Vec2.Dot(destination[r], newvector) * destination[r];
+					newvector -= Dot(destination[r], newvector) * destination[r];
 				}
 
 				newvector.Normalize();
@@ -1131,7 +1131,7 @@ namespace CryEngine
 		/// </returns>
 		public bool Equals(Vec2 other)
 		{
-			return (this.X == other.X) && (this.Y == other.Y);
+			return (X == other.X) && (Y == other.Y);
 		}
 
 		/// <summary>
@@ -1144,8 +1144,8 @@ namespace CryEngine
 		/// </returns>
 		public bool Equals(Vec2 other, float epsilon)
 		{
-			return ((float)Math.Abs(other.X - X) < epsilon &&
-				(float)Math.Abs(other.Y - Y) < epsilon);
+			return (Math.Abs(other.X - X) < epsilon &&
+				Math.Abs(other.Y - Y) < epsilon);
 		}
 
 		/// <summary>

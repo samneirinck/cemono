@@ -309,19 +309,19 @@ namespace CryEngine
 
 			if (value is int)
 			{
-				IVal = (int) value;
+				IntValue = (int)value;
 
-				_RegisterCVarInt(Name, ref IntValue, IVal, Flags, Help);
+				_RegisterCVarInt(Name, ref IntValue, IntValue, Flags, Help);
 			}
 			else if (value is float || value is double)
 			{
-				FVal = (float) value;
+				FloatValue = (float) value;
 
-				_RegisterCVarFloat(Name, ref FloatValue, FVal, Flags, Help);
+				_RegisterCVarFloat(Name, ref FloatValue, FloatValue, Flags, Help);
 			}
 			else if (value is string)
 			{
-				String = value as string;
+				StringValue = value as string;
 
 				// String CVars are not supported yet.
 				_RegisterCVarString(Name, StringValue, StringValue, Flags, Help);
@@ -372,9 +372,19 @@ namespace CryEngine
 
 		public override int GetHashCode()
 		{
-			return base.GetHashCode();
-		}
+			unchecked // Overflow is fine, just wrap
+			{
+				int hash = 17;
 
+				hash = hash * 29 + FloatValue.GetHashCode();
+				hash = hash * 29 + IntValue.GetHashCode();
+				hash = hash * 29 + StringValue.GetHashCode();
+				hash = hash * 29 + Flags.GetHashCode();
+				hash = hash * 29 + Name.GetHashCode();
+
+				return hash;
+			}
+		}
 		#endregion
 	}
 

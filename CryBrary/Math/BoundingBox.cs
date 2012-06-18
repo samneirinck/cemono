@@ -49,8 +49,8 @@ namespace CryEngine
 		/// <param name="maximum">The maximum vertex of the bounding box.</param>
 		public BoundingBox(Vec3 minimum, Vec3 maximum)
 		{
-			this.Minimum = minimum;
-			this.Maximum = maximum;
+			Minimum = minimum;
+			Maximum = maximum;
 		}
 
 		/// <summary>

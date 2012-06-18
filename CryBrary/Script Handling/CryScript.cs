@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 
 using CryEngine.Extensions;
-using CryEngine.Initialization;
 
 namespace CryEngine.Initialization
 {

@@ -59,17 +59,7 @@ namespace CryEngine
 
 		internal static void Load(ref CryScript script, bool entityNode = false)
 		{
-			bool containsNodePorts = false;
-			script.Type.GetMembers().ForEach(member =>
-			                                 	{
-													if(member.ContainsAttribute<PortAttribute>())
-													{
-														containsNodePorts = true;
-														return;
-													}
-			                                 	});
-
-			if(!containsNodePorts)
+			if(!script.Type.GetMembers().Any(member => member.ContainsAttribute<PortAttribute>()))
 				return;
 
 			string category;
@@ -80,12 +70,12 @@ namespace CryEngine
 				category = script.Type.Namespace;
 
 				FlowNodeAttribute nodeInfo;
-				if(script.Type.TryGetAttribute<FlowNodeAttribute>(out nodeInfo))
+				if(script.Type.TryGetAttribute(out nodeInfo))
 				{
-					if(nodeInfo.UICategory != null && nodeInfo.UICategory.Length > 0)
+					if(!string.IsNullOrEmpty(nodeInfo.UICategory))
 						category = nodeInfo.UICategory;
 
-					if(nodeInfo.Name != null && nodeInfo.Name.Length > 0)
+					if(!string.IsNullOrEmpty(nodeInfo.Name))
 						nodeName = nodeInfo.Name;
 				}
 
@@ -407,20 +397,20 @@ namespace CryEngine
 		{
 			if(type == typeof(void))
 				return NodePortType.Void;
-			else if(type == typeof(int))
+			if(type == typeof(int))
 				return NodePortType.Int;
-			else if(type == typeof(float))
+			if(type == typeof(float))
 				return NodePortType.Float;
-			else if(type == typeof(string))
+			if(type == typeof(string))
 				return NodePortType.String;
-			else if(type == typeof(Vec3))
+			if(type == typeof(Vec3))
 				return NodePortType.Vec3;
-			else if(type == typeof(bool))
+			if(type == typeof(bool))
 				return NodePortType.Bool;
-			else if(type == typeof(EntityId))
+			if(type == typeof(EntityId))
 				return NodePortType.EntityId;
-			else
-				throw new ArgumentException("Invalid flownode port type specified!");
+			
+			throw new ArgumentException("Invalid flownode port type specified!");
 		}
 
 		#region Callbacks
@@ -437,7 +427,7 @@ namespace CryEngine
 			var method = InputMethods[GetType()].ElementAt(index);
 
 			if(value != null && method.GetParameters().Length > 0)
-				method.Invoke(this, new object[] { value });
+				method.Invoke(this, new [] { value });
 			else
 				method.Invoke(this, null);
 		}

@@ -30,11 +30,10 @@ namespace CryEngine.Serialization
 		{
 			if(stream == null)
 				throw new ArgumentNullException("stream");
-			else if(graph == null)
+			if(graph == null)
 				throw new ArgumentNullException("graph");
 
-			Writer = new StreamWriter(stream);
-			Writer.AutoFlush = true;
+			Writer = new StreamWriter(stream) { AutoFlush = true };
 
 			ObjectReferences.Clear();
 			CurrentLine = 0;
@@ -122,12 +121,13 @@ namespace CryEngine.Serialization
 
 			WriteLine("enumerable");
 			var array = (objectReference.Value as IEnumerable).Cast<object>();
-			WriteLine(array.Count());
+			var numElements = array.Count();
+			WriteLine(numElements);
 			WriteLine(objectReference.Name);
 
 			WriteType(GetIEnumerableElementType(array.GetType()));
 
-			for(int i = 0; i < array.Count(); i++)
+			for(int i = 0; i < numElements; i++)
 				StartWrite(new ObjectReference(i.ToString(), array.ElementAt(i)));
 		}
 

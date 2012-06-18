@@ -18,9 +18,9 @@
 		{
 			if(obj is EntityId)
 				return (EntityId)obj == this;
-			else if(obj is int)
+			if(obj is int)
 				return (int)obj == _value;
-			else if(obj is uint)
+			if(obj is uint)
 				return (uint)obj == _value;
 
 			return false;

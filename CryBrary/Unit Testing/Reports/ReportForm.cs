@@ -52,8 +52,7 @@ namespace CryEngine.Testing.Internals
 					}
 
 					var image = GetImageIndex(test.Result);
-					var node = new TreeNode(test.Name, image, image);
-					node.Tag = test;
+					var node = new TreeNode(test.Name, image, image) { Tag = test };
 
 					collectionNode.Nodes.Add(node);
 				}

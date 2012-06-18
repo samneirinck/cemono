@@ -199,7 +199,6 @@ namespace CryEngine
 		public Matrix34(Matrix33 m33)
 			: this()
 		{
-
 		}
 		#endregion
 
@@ -594,7 +593,7 @@ namespace CryEngine
 			//extract angle and axis
 			double cosine = Math.Clamp((d.M00 + d.M11 + d.M22 - 1.0) * 0.5, -1.0, +1.0);
 			double angle = Math.Atan2(Math.Sqrt(1.0 - cosine * cosine), cosine);
-			Vec3 axis = new Vec3(d.M21 - d.M12, d.M02 - d.M20, d.M10 - d.M01);
+			var axis = new Vec3(d.M21 - d.M12, d.M02 - d.M20, d.M10 - d.M01);
 			double l = Math.Sqrt(axis | axis); if(l > 0.00001) axis /= (float)l; else axis = new Vec3(1, 0, 0);
 			i.SetRotationAA((float)angle * t, axis); //angle interpolation and calculation of new delta-matrix (=26 flops) 
 
@@ -659,9 +658,9 @@ namespace CryEngine
 		/// <returns></returns>
 		int IsOrthonormal(float threshold = 0.001f)
 		{
-			var d0 = (float)Math.Abs(GetColumn0() | GetColumn1()); if(d0 > threshold) return 0;
-			var d1 = (float)Math.Abs(GetColumn0() | GetColumn2()); if(d1 > threshold) return 0;
-			var d2 = (float)Math.Abs(GetColumn1() | GetColumn2()); if(d2 > threshold) return 0;
+			var d0 = Math.Abs(GetColumn0() | GetColumn1()); if(d0 > threshold) return 0;
+			var d1 = Math.Abs(GetColumn0() | GetColumn2()); if(d1 > threshold) return 0;
+			var d2 = Math.Abs(GetColumn1() | GetColumn2()); if(d2 > threshold) return 0;
 			var a = (int)System.Convert.ChangeType((Math.Abs(1 - (GetColumn0() | GetColumn0()))) < threshold, typeof(int));
 			var b = (int)System.Convert.ChangeType((Math.Abs(1 - (GetColumn1() | GetColumn1()))) < threshold, typeof(int));
 			var c = (int)System.Convert.ChangeType((Math.Abs(1 - (GetColumn2() | GetColumn2()))) < threshold, typeof(int));
@@ -670,9 +669,9 @@ namespace CryEngine
 
 		public int IsOrthonormalRH(float threshold = 0.001f)
 		{
-			int a = (int)System.Convert.ChangeType(GetColumn0().IsEquivalent(GetColumn1() % GetColumn2(), threshold), typeof(int));
-			int b = (int)System.Convert.ChangeType(GetColumn1().IsEquivalent(GetColumn2() % GetColumn0(), threshold), typeof(int));
-			int c = (int)System.Convert.ChangeType(GetColumn2().IsEquivalent(GetColumn0() % GetColumn1(), threshold), typeof(int));
+			var a = (int)System.Convert.ChangeType(GetColumn0().IsEquivalent(GetColumn1() % GetColumn2(), threshold), typeof(int));
+			var b = (int)System.Convert.ChangeType(GetColumn1().IsEquivalent(GetColumn2() % GetColumn0(), threshold), typeof(int));
+			var c = (int)System.Convert.ChangeType(GetColumn2().IsEquivalent(GetColumn0() % GetColumn1(), threshold), typeof(int));
 			return a & b & c;
 		}
 

@@ -11,7 +11,7 @@ namespace CryEngine.Sandbox
 
 		internal static void Init()
 		{
-			FormHelper.AvailableForms = new List<FormInfo>();
+			AvailableForms = new List<FormInfo>();
 			CCommand.Register("mono_extensions", (args, cmd) =>
 			{
 				if(instance == null)

@@ -21,13 +21,13 @@ namespace CryBrary.Tests.Misc
 
 			// Assert
 			Assert.IsTrue(allLowercaseBoolResult is bool);
-			Assert.IsTrue((bool)allLowercaseBoolResult == true);
+			Assert.IsTrue((bool)allLowercaseBoolResult);
 
 			Assert.IsTrue(capitalizedBoolResult is bool);
-			Assert.IsTrue((bool)capitalizedBoolResult == true);
+			Assert.IsTrue((bool)capitalizedBoolResult);
 
 			Assert.IsTrue(allUppercaseBoolResult is bool);
-			Assert.IsTrue((bool)allUppercaseBoolResult == true);
+			Assert.IsTrue((bool)allUppercaseBoolResult);
 		}
 
 		[Test]

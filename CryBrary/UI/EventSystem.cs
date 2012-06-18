@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Linq;
-using System.Text;
 
 using CryEngine.Initialization;
 using CryEngine.Extensions;
@@ -38,7 +36,7 @@ namespace CryEngine
 								if(attribute.Name != null && attribute.Name.Length > 0)
 									name = attribute.Name;
 
-								if(attribute.Description != null && attribute.Name.Length > 0)
+								if(attribute.Description != null && attribute.Description.Length > 0)
 									desc = attribute.Description;
 							}
 							
@@ -83,7 +81,7 @@ namespace CryEngine
 					case MemberTypes.Method:
 						{
 							UIFunctionAttribute attribute;
-							if(member.TryGetAttribute<UIFunctionAttribute>(out attribute))
+							if(member.TryGetAttribute(out attribute))
 							{
 								if(ToSystemPointers == null)
 									ToSystemPointers = new Dictionary<Type, IntPtr>();

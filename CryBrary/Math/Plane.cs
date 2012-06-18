@@ -105,7 +105,7 @@ namespace CryEngine
 			float yz = (y1 * z2) - (z1 * y2);
 			float xz = (z1 * x2) - (x1 * z2);
 			float xy = (x1 * y2) - (y1 * x2);
-			float invPyth = 1.0f / (float)(Math.Sqrt((yz * yz) + (xz * xz) + (xy * xy)));
+			float invPyth = 1.0f / (Math.Sqrt((yz * yz) + (xz * xz) + (xy * xy)));
 
 			Normal.X = yz * invPyth;
 			Normal.Y = xz * invPyth;
@@ -172,7 +172,7 @@ namespace CryEngine
 		/// </summary>
 		public void Normalize()
 		{
-			float magnitude = 1.0f / (float)(Math.Sqrt((Normal.X * Normal.X) + (Normal.Y * Normal.Y) + (Normal.Z * Normal.Z)));
+			float magnitude = 1.0f / (Math.Sqrt((Normal.X * Normal.X) + (Normal.Y * Normal.Y) + (Normal.Z * Normal.Z)));
 
 			Normal.X *= magnitude;
 			Normal.Y *= magnitude;
@@ -186,7 +186,7 @@ namespace CryEngine
 		/// <returns>A four-element array containing the components of the plane.</returns>
 		public float[] ToArray()
 		{
-			return new float[] { Normal.X, Normal.Y, Normal.Z, D };
+			return new [] { Normal.X, Normal.Y, Normal.Z, D };
 		}
 
 		/// <summary>
@@ -411,7 +411,7 @@ namespace CryEngine
 		/// <param name="result">When the method completes, contains the normalized plane.</param>
 		public static void Normalize(ref Plane plane, out Plane result)
 		{
-			float magnitude = 1.0f / (float)(Math.Sqrt((plane.Normal.X * plane.Normal.X) + (plane.Normal.Y * plane.Normal.Y) + (plane.Normal.Z * plane.Normal.Z)));
+			float magnitude = 1.0f / (Math.Sqrt((plane.Normal.X * plane.Normal.X) + (plane.Normal.Y * plane.Normal.Y) + (plane.Normal.Z * plane.Normal.Z)));
 
 			result.Normal.X = plane.Normal.X * magnitude;
 			result.Normal.Y = plane.Normal.Y * magnitude;
@@ -426,7 +426,7 @@ namespace CryEngine
 		/// <returns>The normalized plane.</returns>
 		public static Plane Normalize(Plane plane)
 		{
-			float magnitude = 1.0f / (float)(Math.Sqrt((plane.Normal.X * plane.Normal.X) + (plane.Normal.Y * plane.Normal.Y) + (plane.Normal.Z * plane.Normal.Z)));
+			float magnitude = 1.0f / (Math.Sqrt((plane.Normal.X * plane.Normal.X) + (plane.Normal.Y * plane.Normal.Y) + (plane.Normal.Z * plane.Normal.Z)));
 			return new Plane(plane.Normal.X * magnitude, plane.Normal.Y * magnitude, plane.Normal.Z * magnitude, plane.D * magnitude);
 		}
 

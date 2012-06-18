@@ -38,7 +38,7 @@ namespace CryEngine
 					break;
 			}
 
-			return Path.Combine(PathUtils.ScriptsFolder, folder);
+			return Path.Combine(ScriptsFolder, folder);
 		}
 
 		/// <summary>

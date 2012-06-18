@@ -29,7 +29,7 @@ namespace CryEngine
 			/// <returns>True if registration succeeded, otherwise false.</returns>
 			public bool RegisterClass(EntityConfig config)
 			{
-				return EntityBase._RegisterEntityClass(config.registerParams, config.properties);
+				return _RegisterEntityClass(config.registerParams, config.properties);
 			}
 		}
 

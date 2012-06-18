@@ -29,7 +29,7 @@ namespace CryEngine
 			string gamemodeName = null;
 
 			GameRulesAttribute gamemodeAttribute;
-			if(script.Type.TryGetAttribute<GameRulesAttribute>(out gamemodeAttribute))
+			if(script.Type.TryGetAttribute(out gamemodeAttribute))
 			{
 				if(!string.IsNullOrEmpty(gamemodeAttribute.Name))
 					gamemodeName = gamemodeAttribute.Name;
