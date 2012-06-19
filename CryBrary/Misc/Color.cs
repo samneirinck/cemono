@@ -102,5 +102,10 @@ namespace CryEngine
 		public static Color Black { get { return new Color(0); } }
 		public static Color White { get { return new Color(1); } }
 		#endregion
+
+		public static implicit operator Vec3(Color clr)
+		{
+			return new Vec3(clr.R, clr.G, clr.B);
+		}
 	}
 }
