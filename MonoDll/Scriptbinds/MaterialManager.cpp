@@ -91,6 +91,23 @@ bool CScriptbind_MaterialManager::SetGetMaterialParamVec3(IMaterial *pMaterial, 
 	return pMaterial->SetGetMaterialParamVec3(ToCryString(paramName), v, get);
 }
 
+int CScriptbind_MaterialManager::GetShaderParamCount(IMaterial *pMaterial)
+{
+	const SShaderItem& shaderItem(pMaterial->GetShaderItem());
+	DynArray<SShaderParam> params;
+
+	return shaderItem.m_pShader->GetPublicParams().size();
+}
+
+mono::string CScriptbind_MaterialManager::GetShaderParamName(IMaterial *pMaterial, int index)
+{
+	const SShaderItem& shaderItem(pMaterial->GetShaderItem());
+	DynArray<SShaderParam> params;
+	params = shaderItem.m_pShader->GetPublicParams();
+
+	return ToMonoString(params.at(index).m_Name);
+}
+
 void SetShaderParamCommon(IMaterial *pMaterial, const char *paramName, UParamVal par)
 {
 	const SShaderItem& shaderItem(pMaterial->GetShaderItem());

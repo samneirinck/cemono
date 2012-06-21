@@ -36,6 +36,11 @@ namespace CryEngine
 		extern internal static bool _SetGetMaterialParamVec3(IntPtr ptr, string paramName, ref Vec3 v, bool get);
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static int _GetShaderParamCount(IntPtr ptr);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static string _GetShaderParamName(IntPtr ptr, int index);
+
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static void _SetShaderParam(IntPtr ptr, string paramName, float newVal);
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static void _SetShaderParam(IntPtr ptr, string paramName, Color newVal);
@@ -194,6 +199,11 @@ namespace CryEngine
 			SetShaderParam(param.GetEngineName(), new Color(value.X, value.Y, value.Z));
 		}
 
+		public string GetShaderParamName(int index)
+		{
+			return _GetShaderParamName(MaterialPointer, index);
+		}
+
 		#region Fields & Properties
 		public float AlphaTest { get { return GetParam("alpha"); } set { SetParam("alpha", value); } }
 		public float Opacity { get { return GetParam("opacity"); } set { SetParam("opacity", value); } }
@@ -217,6 +227,8 @@ namespace CryEngine
 		public Vec3 SpecularColor { get { return GetParamVec3("specular"); } set { SetParam("specular", value); } }
 
 		public string SurfaceType { get { return _GetSurfaceTypeName(MaterialPointer); } }
+
+		public int ShaderParamCount { get { return _GetShaderParamCount(MaterialPointer);  } }
 
 		internal IntPtr MaterialPointer { get; set; }
 		#endregion

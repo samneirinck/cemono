@@ -45,6 +45,9 @@ protected:
 
 	static void SetShaderParam(IMaterial *pMaterial, mono::string monoParamName, float newVal);
 	static void SetShaderParamColorF(IMaterial *pMaterial, mono::string monoParamName, ColorF newVal);
+
+	static int GetShaderParamCount(IMaterial *pMaterial);
+	static mono::string GetShaderParamName(IMaterial *pMaterial, int index);
 	// ~Externals
 
 	// IMonoScriptBind
