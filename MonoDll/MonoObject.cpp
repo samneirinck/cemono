@@ -42,8 +42,7 @@ IMonoClass *CScriptObject::GetClass()
 
 EMonoAnyType CScriptObject::GetType()
 {
-	IMonoClass *pClass = GetClass();
-	MonoClass *pMonoClass = (MonoClass *)pClass->GetManagedObject();
+	MonoClass *pMonoClass = GetMonoClass();
 
 	if(pMonoClass==mono_get_boolean_class())
 		return eMonoAnyType_Boolean;
@@ -59,8 +58,10 @@ EMonoAnyType CScriptObject::GetType()
 		return eMonoAnyType_Float;
 	else if(pMonoClass==mono_get_string_class())
 		return eMonoAnyType_String;
-	else if(!strcmp(pClass->GetName(), "Vec3"))
-		return eMonoAnyType_Vec3;
+	else if(pMonoClass==mono_get_intptr_class())
+		return eMonoAnyType_IntPtr;
+	//else if(!strcmp(className, "Vec3"))
+		//return eMonoAnyType_Vec3;
 
 	return eMonoAnyType_Unknown;
 }
