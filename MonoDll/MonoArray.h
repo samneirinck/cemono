@@ -21,14 +21,12 @@ class CScriptArray
 public:
 	// Used on MonoArray's returned from C#.
 	CScriptArray(mono::object monoArray);
-
 	// Used to send arrays to C#.
 	CScriptArray(int size);
+
 	virtual ~CScriptArray();
 
 	// IMonoArray
-	virtual void Release() override { delete this; }
-
 	virtual void Clear() override { for(int i = 0; i < GetSize(); i++) mono_array_set((MonoArray *)m_pObject, void *, i, NULL);  }
 
 	virtual void Resize(int size);
@@ -44,6 +42,8 @@ public:
 	// ~IMonoArray
 
 	// IMonoObject
+	virtual void Release() override { delete this; };
+
 	virtual IMonoObject *CallMethod(const char *methodName, IMonoArray *params = NULL, bool bStatic = false) override { return CScriptObject::CallMethod(methodName, params, bStatic); }
 
 	virtual IMonoObject *GetProperty(const char *propertyName, bool bStatic = false) override { return CScriptObject::GetProperty(propertyName, bStatic); }

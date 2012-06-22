@@ -22,12 +22,10 @@ class CScriptClass
 	, public IMonoClass
 {
 public:
-	CScriptClass(MonoClass *pClass) { m_pObject = (MonoObject *)pClass; }
+	CScriptClass(MonoClass *pClass);
 	virtual ~CScriptClass() {}
 
 	// IMonoClass
-	virtual void Release() override { delete this; }
-
 	virtual const char *GetName() override { return mono_class_get_name((MonoClass *)m_pObject); }
 	virtual const char *GetNamespace() override { return mono_class_get_namespace((MonoClass *)m_pObject); }
 
@@ -35,6 +33,8 @@ public:
 	// ~IMonoClass
 
 	// IMonoObject
+	virtual void Release() override { delete this; }
+
 	virtual IMonoObject *CallMethod(const char *methodName, IMonoArray *params = NULL, bool bStatic = false) { return CScriptObject::CallMethod(methodName, params, true); }
 
 	virtual IMonoObject *GetProperty(const char *propertyName, bool bStatic = false) override { return CScriptObject::GetProperty(propertyName, true); }

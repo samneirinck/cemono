@@ -16,7 +16,8 @@
 
 #include <mono/mini/jit.h>
 
-class CScriptObject : public IMonoObject
+class CScriptObject
+	: public IMonoObject
 {
 protected:
 	CScriptObject() {}
@@ -24,7 +25,7 @@ protected:
 public:
 	CScriptObject(MonoObject *object);
 	CScriptObject(MonoObject *object, IMonoArray *pConstructorParams);
-	virtual ~CScriptObject() { mono_gchandle_free(m_objectHandle); m_pObject; }
+	virtual ~CScriptObject() { mono_gchandle_free(m_objectHandle); m_pObject = 0; }
 
 	MonoClass *GetMonoClass() { return mono_object_get_class(m_pObject); }
 

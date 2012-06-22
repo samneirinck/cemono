@@ -9,33 +9,19 @@
 
 IMonoArray *CConverter::CreateArray(int numArgs)
 {
-	if(numArgs < 1)
-	{
-		MonoWarning("Attempted to create array with invalid size %i", numArgs);
-		return NULL;
-	}
-
 	return new CScriptArray(numArgs); 
 }
 
 IMonoArray *CConverter::ToArray(mono::object arr)
 {
-	if(arr == NULL)
-	{
-		MonoWarning("Failed to convert mono::array");
-		return NULL;
-	}
+	CRY_ASSERT(arr);
 
 	return new CScriptArray(arr);
 }
 
 IMonoObject *CConverter::ToObject(mono::object obj)
 {
-	if(obj == NULL)
-	{
-		MonoWarning("Failed to convert mono::object");
-		return NULL;
-	}
+	CRY_ASSERT(obj);
 
 	return new CScriptObject((MonoObject *)obj);
 }

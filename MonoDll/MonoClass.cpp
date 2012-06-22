@@ -6,6 +6,14 @@
 
 #include "MonoCVars.h"
 
+CScriptClass::CScriptClass(MonoClass *pClass)
+{
+	CRY_ASSERT(pClass);
+
+	m_pObject = (MonoObject *)pClass; 
+	m_objectHandle = mono_gchandle_new(m_pObject, false);
+}
+
 IMonoObject *CScriptClass::CreateInstance(IMonoArray *pConstructorParams)
 {
 	MonoObject *pInstance = mono_object_new(mono_domain_get(), (MonoClass *)m_pObject);

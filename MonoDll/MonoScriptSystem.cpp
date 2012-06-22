@@ -233,11 +233,7 @@ bool CScriptSystem::DoReload(bool initialLoad)
 	pNewScriptDomain->SetActive(true);
 
 	IMonoAssembly *pNewCryBraryAssembly = GetAssembly(PathUtils::GetBinaryPath() + "CryBrary.dll");
-	if(!pNewCryBraryAssembly)
-	{
-		MonoWarning("Failed to load CryBrary.dll");
-		return false;
-	}
+	CRY_ASSERT(pNewCryBraryAssembly);
 
 	if(initialLoad)
 		CryLogAlways("		Initializing subsystems...");

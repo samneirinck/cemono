@@ -180,11 +180,7 @@ void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 
 void CFlowNode::GetConfiguration(SFlowNodeConfig &config)
 {
-	if(!m_pScript)
-	{
-		MonoWarning("CFlowNode::GetConfiguration: m_pScript was NULL!");
-		return;
-	}
+	CRY_ASSERT(m_pScript);
 
 	if(IMonoObject *pResult = m_pScript->CallMethod("GetNodeConfig"))
 	{

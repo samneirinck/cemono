@@ -10,6 +10,8 @@
 
 CScriptObject::CScriptObject(MonoObject *pObject)
 {
+	CRY_ASSERT(pObject);
+
 	m_pObject = pObject;
 
 	// We need this to allow the GC to collect the class object later on.
@@ -19,6 +21,8 @@ CScriptObject::CScriptObject(MonoObject *pObject)
 CScriptObject::CScriptObject(MonoObject *object, IMonoArray *pConstructorParams)
 	: m_pObject(object)
 {
+	CRY_ASSERT(pObject);
+
 	if(pConstructorParams)
 		CallMethod(".ctor", pConstructorParams);
 	else
@@ -30,7 +34,10 @@ CScriptObject::CScriptObject(MonoObject *object, IMonoArray *pConstructorParams)
 
 IMonoClass *CScriptObject::GetClass()
 {
-	return new CScriptClass(GetMonoClass());
+	MonoClass *pMonoClass = GetMonoClass();
+	CRY_ASSERT(pMonoClass);
+
+	return new CScriptClass(pMonoClass);
 }
 
 EMonoAnyType CScriptObject::GetType()

@@ -5,6 +5,8 @@
 
 CScriptArray::CScriptArray(mono::object managedArray)
 {
+	CRY_ASSERT(managedArray);
+
 	m_pObject = (MonoObject *)managedArray;
 
 	m_objectHandle = mono_gchandle_new(m_pObject, false);
@@ -13,7 +15,11 @@ CScriptArray::CScriptArray(mono::object managedArray)
 CScriptArray::CScriptArray(int size)
 	: m_curIndex(0)
 {
+	CRY_ASSERT(size > 0);
+
 	m_pObject = (MonoObject *)mono_array_new(mono_domain_get(), mono_get_object_class(), size);
+
+	m_objectHandle = mono_gchandle_new(m_pObject, false);
 }
 
 CScriptArray::~CScriptArray()
@@ -37,24 +43,17 @@ void CScriptArray::Resize(int size)
 
 IMonoObject *CScriptArray::GetItem(int index)
 { 
-	if(index <= GetSize())
-	{
-		if(mono::object monoObj = (mono::object)mono_array_get((MonoArray *)m_pObject, MonoObject *, index))
-			return *monoObj;
-	}
-	else
-		MonoWarning("Index out of range exception: Attempted to access index %i on IMonoArray of size %i", index, GetSize());
+	CRY_ASSERT(index <= GetSize());
+
+	if(mono::object monoObj = (mono::object)mono_array_get((MonoArray *)m_pObject, MonoObject *, index))
+		return *monoObj;
 
 	return NULL;
 }
 
 void CScriptArray::InsertMonoObject(mono::object object, int index)
 {
-	if((index == -1 && m_curIndex >= GetSize()) || index >= GetSize())
-	{
-		MonoWarning("Attempted to insert too many objects into array of size %i", GetSize());
-		return;
-	}
+	CRY_ASSERT((index == -1 ? m_curIndex : index) < GetSize());
 
 	mono_array_set((MonoArray *)m_pObject, MonoObject *, m_curIndex, (MonoObject *)object);
 
@@ -63,11 +62,7 @@ void CScriptArray::InsertMonoObject(mono::object object, int index)
 
 void CScriptArray::InsertMonoString(mono::string string, int index)
 {
-	if((index == -1 && m_curIndex >= GetSize()) || index >= GetSize())
-	{
-		MonoWarning("Attempted to insert too many objects into array of size %i", GetSize());
-		return;
-	}
+	CRY_ASSERT((index == -1 ? m_curIndex : index) < GetSize());
 
 	mono_array_set((MonoArray *)m_pObject, MonoString *, index != -1 ? index : m_curIndex, (MonoString *)string);
 
@@ -76,11 +71,7 @@ void CScriptArray::InsertMonoString(mono::string string, int index)
 
 void CScriptArray::InsertMonoArray(mono::object arr, int index)
 {
-	if((index == -1 && m_curIndex >= GetSize()) || index >= GetSize())
-	{
-		MonoWarning("Attempted to insert too many objects into array of size %i", GetSize());
-		return;
-	}
+	CRY_ASSERT((index == -1 ? m_curIndex : index) < GetSize());
 
 	mono_array_set((MonoArray *)m_pObject, MonoArray *, index != -1 ? index : m_curIndex, (MonoArray *)arr);
 
@@ -89,11 +80,7 @@ void CScriptArray::InsertMonoArray(mono::object arr, int index)
 
 void CScriptArray::InsertNativePointer(void *ptr, int index)
 { 
-	if((index == -1 && m_curIndex >= GetSize()) || index >= GetSize())
-	{
-		MonoWarning("Attempted to insert too many objects into array of size %i", GetSize());
-		return;
-	}
+	CRY_ASSERT((index == -1 ? m_curIndex : index) < GetSize());
 
 	mono_array_set((MonoArray *)m_pObject, void *, index != -1 ? index : m_curIndex, ptr);
 
