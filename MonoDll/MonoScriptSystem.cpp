@@ -175,7 +175,12 @@ bool CScriptSystem::CompleteInit()
 
 	CryModuleMemoryInfo memInfo;
 	CryModuleGetMemoryInfo(&memInfo);
-	CryLogAlways("		Initializing CryMono done, MemUsage=%iKb", (memInfo.allocated + m_pCryBraryAssembly->GetClass("CryStats", "CryEngine.Utilities")->GetProperty("MemoryUsage")->Unbox<long>()) / 1024);
+
+	IMonoClass *pCryStats = m_pCryBraryAssembly->GetClass("CryStats", "CryEngine.Utilities");
+	auto memoryUsage = pCryStats->GetProperty("MemoryUsage")->Unbox<long>();
+	SAFE_RELEASE(pCryStats);
+
+	CryLogAlways("		Initializing CryMono done, MemUsage=%iKb", (memInfo.allocated + memoryUsage) / 1024);
 
 	return true;
 }
