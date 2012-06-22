@@ -175,7 +175,7 @@ bool CScriptSystem::CompleteInit()
 
 	CryModuleMemoryInfo memInfo;
 	CryModuleGetMemoryInfo(&memInfo);
-	CryLogAlways("		Initializing CryMono done, MemUsage=%iKb", (memInfo.allocated + m_pCryBraryAssembly->GetCustomClass("CryStats", "CryEngine.Utilities")->GetProperty("MemoryUsage")->Unbox<long>()) / 1024);
+	CryLogAlways("		Initializing CryMono done, MemUsage=%iKb", (memInfo.allocated + m_pCryBraryAssembly->GetClass("CryStats", "CryEngine.Utilities")->GetProperty("MemoryUsage")->Unbox<long>()) / 1024);
 
 	return true;
 }
@@ -239,7 +239,7 @@ bool CScriptSystem::DoReload(bool initialLoad)
 
 	InitializeSystems(pNewCryBraryAssembly);
 
-	IMonoClass *pNewScriptManager = pNewCryBraryAssembly->InstantiateClass("ScriptManager", "CryEngine.Initialization");
+	IMonoObject *pNewScriptManager = pNewCryBraryAssembly->GetClass("ScriptManager", "CryEngine.Initialization")->CreateInstance();
 
 	for each(auto listener in m_scriptReloadListeners)
 		listener->OnPreScriptCompilation(!initialLoad);
@@ -267,9 +267,7 @@ bool CScriptSystem::DoReload(bool initialLoad)
 		m_pCryBraryAssembly = pNewCryBraryAssembly;
 		m_pScriptManager = pNewScriptManager;
 
-		m_AppDomainSerializer = m_pCryBraryAssembly->InstantiateClass("AppDomainSerializer", "CryEngine.Serialization");
-
-		m_pConverter->Reset();
+		m_AppDomainSerializer = m_pCryBraryAssembly->GetClass("AppDomainSerializer", "CryEngine.Serialization")->CreateInstance();
 
 		// Nodes won't get recompiled if we forget this.
 		if(!initialLoad)
@@ -289,13 +287,7 @@ bool CScriptSystem::DoReload(bool initialLoad)
 				pParams->Insert(script.second);
 				pParams->Insert(eScriptFlag_Any);
 				if(IMonoObject *pScriptInstance = m_pScriptManager->CallMethod("GetScriptInstanceById", pParams, true))
-				{
-					mono::object monoObject = pScriptInstance->GetMonoObject();
-
-					MonoClass *pMonoClass = mono_object_get_class((MonoObject *)monoObject);
-					if(pMonoClass && mono_class_get_name(pMonoClass))
-						static_cast<CScriptClass *>(script.first)->OnReload(pMonoClass, monoObject);
-				}
+					static_cast<CScriptObject *>(script.first)->SetObject(pScriptInstance->GetManagedObject());
 
 				SAFE_RELEASE(pParams);
 			}
@@ -386,7 +378,7 @@ void CScriptSystem::RegisterDefaultBindings()
 
 bool CScriptSystem::InitializeSystems(IMonoAssembly *pCryBraryAssembly)
 {
-	IMonoClass *pClass = pCryBraryAssembly->GetCustomClass("Network");
+	IMonoClass *pClass = pCryBraryAssembly->GetClass("Network");
 	IMonoArray *pArray = CreateMonoArray(2);
 	pArray->Insert(gEnv->IsEditor());
 	pArray->Insert(gEnv->IsDedicated());
@@ -424,7 +416,7 @@ void CScriptSystem::RegisterMethodBinding(const void *method, const char *fullMe
 		mono_add_internal_call(fullMethodName, method);
 }
 
-IMonoClass *CScriptSystem::InstantiateScript(const char *scriptName, EMonoScriptFlags scriptType, IMonoArray *pConstructorParameters)
+IMonoObject *CScriptSystem::InstantiateScript(const char *scriptName, EMonoScriptFlags scriptType, IMonoArray *pConstructorParameters)
 {
 	IMonoArray *pArray = CreateMonoArray(3);
 	pArray->Insert(scriptName);
@@ -433,14 +425,12 @@ IMonoClass *CScriptSystem::InstantiateScript(const char *scriptName, EMonoScript
 	IMonoObject *pResult = m_pScriptManager->CallMethod("CreateScriptInstance", pArray, true);
 	SAFE_RELEASE(pArray);
 
-	auto *pScript = pResult ? pResult->Unbox<IMonoClass *>() : NULL;
-
-	if(pScript)
-		m_scripts.insert(TScripts::value_type(pScript, pScript->GetScriptId()));
+	if(pResult)
+		m_scripts.insert(TScripts::value_type(pResult, pResult->GetProperty("ScriptId")->Unbox<int>()));
 	else
 		MonoWarning("Failed to instantiate script %s", scriptName);
 
-	return pScript;
+	return pResult;
 }
 
 void CScriptSystem::RemoveScriptInstance(int id, EMonoScriptFlags scriptType)
@@ -475,7 +465,7 @@ IMonoAssembly *CScriptSystem::GetAssembly(const char *file, bool shadowCopy)
 	{
 		if(IMonoAssembly *pDebugDatabaseCreator = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetDebugDatabaseCreator())
 		{
-			if(IMonoClass *pDriverClass = pDebugDatabaseCreator->GetCustomClass("Driver", ""))
+			if(IMonoClass *pDriverClass = pDebugDatabaseCreator->GetClass("Driver", ""))
 			{
 				IMonoArray *pArgs = CreateMonoArray(1);
 				pArgs->Insert(file);

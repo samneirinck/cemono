@@ -11,7 +11,7 @@
 #include <MonoCommon.h>
 #include <IGameObject.h>
 
-struct IMonoClass;
+struct IMonoScript;
 struct IMonoArray;
 
 class CScriptManager

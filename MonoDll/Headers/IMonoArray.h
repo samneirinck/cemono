@@ -9,14 +9,11 @@
 #ifndef __I_MONO_ARRAY_H__
 #define __I_MONO_ARRAY_H__
 
-#include <MonoSerializable.h>
-
 #include <IMonoObject.h>
 
 namespace mono 
 {
-	class _string; typedef _string* string; 
-	class _array; typedef _array* array;
+	class _string; typedef _string* string;
 };
 
 struct IMonoObject;
@@ -29,15 +26,9 @@ struct MonoAnyValue;
 /// Creating an IMonoArray: IMonoArray *pMyArray = CreateMonoArray(arraySize);
 /// Converting an mono::array: IMonoArray *pConvertedArray = *(mono::array)monoArray;
 /// </summary>
-struct IMonoArray : public CSerializable
+struct IMonoArray : public IMonoObject
 {
 public:
-	/// <summary>
-	/// Deletes the array and everything contained within it.
-	/// Note: This also deletes the C# array.
-	/// </summary>
-	virtual void Release() = 0;
-
 	/// <summary>
 	/// Clears the array of all its elements.
 	/// Note that the pre-determined size set when the array was created remains.
@@ -66,22 +57,23 @@ public:
 	/// Retrieves a string at the selected index of the array.
 	/// </summary>
 	virtual const char *GetItemString(int index) = 0;
-	/// <summary>
-	/// Retrieves an IMonoArray at the selected index of the array.
-	/// </summary>
-	virtual IMonoArray *GetItemArray(int index) = 0;
 
 	template <typename T>
-	void Insert(T value, int index = -1) { InsertAny(MonoAnyValue((T)value)); }
+	void Insert(T value, int index = -1) { InsertAny(MonoAnyValue((T)value), index); }
 
 	template <>
-	void Insert(IMonoObject *pObject, int index) { InsertObject(pObject); }
+	void Insert(IMonoObject *pObject, int index) { InsertObject(pObject, index); }
 
 	template <>
-	void Insert(IMonoArray *pArray, int index) { InsertArray(pArray); }
+	void Insert(IMonoArray *pArray, int index) { InsertObject(pArray, index); }
 
 	template<>
-	void Insert(mono::string monoString, int index) { InsertMonoString(monoString); }
+	void Insert(mono::string monoString, int index) { InsertMonoString(monoString, index); }
+
+	/// <summary>
+	/// Inserts a native pointer into the array at the specified index. (-1 = back)
+	/// </summary>
+	virtual void InsertNativePointer(void *ptr, int index = -1) = 0;
 
 	/// <summary>
 	/// Inserts an MonoAnyValue object into the array at the specified index. (-1 = back)
@@ -91,30 +83,12 @@ public:
 	/// Inserts an IMonoObject into the array at the specified index. (-1 = back)
 	/// </summary>
 	virtual void InsertObject(IMonoObject *pObject, int index = -1) = 0;
-	/// <summary>
-	/// Inserts an IMonoArray into the array at the specified index. (-1 = back)
-	/// C# equivalent type: object[]
-	/// </summary>
-	virtual void InsertArray(IMonoArray *pArray, int index = -1) = 0;
 
 	/// <summary>
 	/// Inserts an mono string into the array at the specified index. (-1 = back)
 	//// C# equivalent type: string
 	/// </summary>
 	virtual void InsertMonoString(mono::string string, int index = -1) = 0;
-
-	/// <summary>
-	/// Retrieves the mono array, can be passed directly to C#.
-	/// </summary>
-	virtual mono::array GetMonoArray() = 0;
-
-	/// <summary>
-	/// Simple overloaded operator to allow direct casting to Mono type array.
-	/// </summary>
-	operator mono::array() const
-	{
-		return const_cast<IMonoArray *>(this)->GetMonoArray();
-	}
 };
 
 #endif //__I_MONO_ARRAY_H__

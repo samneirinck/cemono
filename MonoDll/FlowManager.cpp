@@ -42,7 +42,7 @@ void CFlowManager::Reset()
 {
 	for each(auto nodeType in m_nodeTypes)
 	{
-		IMonoClass *pScript = gEnv->pMonoScriptSystem->InstantiateScript(nodeType->GetScriptName(), eScriptFlag_FlowNode);
+		IMonoObject *pScript = gEnv->pMonoScriptSystem->InstantiateScript(nodeType->GetScriptName(), eScriptFlag_FlowNode);
 		nodeType->ReloadPorts(pScript);
 		SAFE_RELEASE(pScript);
 	}
@@ -141,9 +141,9 @@ IEntity *CFlowManager::GetTargetEntity(CFlowNode *pNode, EntityId &id)
 }
 
 static const int MAX_NODE_PORT_COUNT = 20;
-void SNodeType::ReloadPorts(IMonoClass *pScriptClass)
+void SNodeType::ReloadPorts(IMonoObject *pScript)
 {
-	if(IMonoObject *pResult = pScriptClass->CallMethod("GetPortConfig"))
+	if(IMonoObject *pResult = pScript->CallMethod("GetPortConfig"))
 	{
 		auto monoConfig = pResult->Unbox<SMonoNodePortConfig>();
 

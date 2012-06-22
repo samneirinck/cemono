@@ -39,9 +39,6 @@
     <ClInclude Include="MonoArray.h">
       <Filter>Wrappers</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\IMonoClass.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
     <ClInclude Include="Headers\IMonoAssembly.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
@@ -50,9 +47,6 @@
     </ClInclude>
     <ClInclude Include="MonoFlowNode.h">
       <Filter>FlowSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="Headers\MonoSerializable.h">
-      <Filter>Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="Headers\MonoCommon.h">
       <Filter>Interfaces</Filter>
@@ -68,9 +62,6 @@
     </ClInclude>
     <ClInclude Include="MonoEntity.h">
       <Filter>EntitySystem</Filter>
-    </ClInclude>
-    <ClInclude Include="Headers\IMonoInput.h">
-      <Filter>Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="MonoCVars.h">
       <Filter>Mono</Filter>
@@ -108,9 +99,6 @@
     <ClInclude Include="Scriptbinds\ActorSystem.h">
       <Filter>ScriptBinds\Game Logic</Filter>
     </ClInclude>
-    <ClInclude Include="Scriptbinds\ScriptInterface.h">
-      <Filter>ScriptBinds</Filter>
-    </ClInclude>
     <ClInclude Include="FlowBaseNode.h">
       <Filter>FlowSystem</Filter>
     </ClInclude>
@@ -142,6 +130,9 @@
       <Filter>ScriptBinds</Filter>
     </ClInclude>
     <ClInclude Include="Scriptbinds\Network.h" />
+    <ClInclude Include="Headers\IMonoClass.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -211,9 +202,6 @@
     </ClCompile>
     <ClCompile Include="Scriptbinds\ActorSystem.cpp">
       <Filter>ScriptBinds\Game Logic</Filter>
-    </ClCompile>
-    <ClCompile Include="Scriptbinds\ScriptInterface.cpp">
-      <Filter>ScriptBinds</Filter>
     </ClCompile>
     <ClCompile Include="ScriptManager.cpp">
       <Filter>Mono</Filter>

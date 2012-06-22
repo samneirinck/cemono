@@ -10,56 +10,49 @@
 #ifndef __MONO_CLASS_H__
 #define __MONO_CLASS_H__
 
+#include "MonoObject.h"
+
 #include <MonoCommon.h>
 #include <IMonoClass.h>
 
-struct IMonoObject;
 struct IMonoArray;
 
-class CScriptClass : public IMonoClass
+class CScriptClass 
+	: public CScriptObject
+	, public IMonoClass
 {
 public:
-	// Instantiate a class right away.
-	CScriptClass(MonoClass *pClass, IMonoArray *pConstructorArguments);
-	// No instance provided, can only be used to invoke / get static members. Instantiation is possible using the Instantiate method.
-	CScriptClass(MonoClass *pClass) : m_pClass(pClass), m_pInstance(NULL), m_scriptId(-1) {}
-	// Set up using an existing instance.
-	CScriptClass(MonoClass *pClass, mono::object instance);
-	virtual ~CScriptClass();
+	CScriptClass(MonoClass *pClass) { m_pObject = (MonoObject *)pClass; }
+	virtual ~CScriptClass() {}
 
 	// IMonoClass
 	virtual void Release() override { delete this; }
 
-	virtual const char *GetName() override { return mono_class_get_name(m_pClass); }
-	virtual int GetScriptId() override;
+	virtual const char *GetName() override { return mono_class_get_name((MonoClass *)m_pObject); }
 
-	virtual void Instantiate(IMonoArray *pConstructorParams = NULL) override;
-
-	virtual IMonoObject *CallMethod(const char *methodName, IMonoArray *params = NULL, bool _static = false) override;
-	virtual IMonoObject *CallMethod(const char *methodName, bool _static) override { return CallMethod(methodName, NULL, _static); }
-
-	virtual IMonoObject *GetProperty(const char *propertyName) override;
-	virtual void SetProperty(const char *propertyName, IMonoObject *pNewValue) override;
-	virtual IMonoObject *GetField(const char *fieldName) override;
-	virtual void SetField(const char *fieldName, IMonoObject *pNewValue) override;
-
-	virtual mono::object GetInstance() override { return m_pInstance; }
+	virtual IMonoObject *CreateInstance(IMonoArray *pConstructorParams = NULL) override;
 	// ~IMonoClass
 
-	void OnReload(MonoClass *pNewClass, mono::object pNewInstance);
+	// IMonoObject
+	virtual IMonoObject *CallMethod(const char *methodName, IMonoArray *params = NULL, bool bStatic = false) { return CScriptObject::CallMethod(methodName, params, true); }
 
-	MonoClass *GetMonoClass() { return m_pClass; }
+	virtual IMonoObject *GetProperty(const char *propertyName, bool bStatic = false) override { return CScriptObject::GetProperty(propertyName, true); }
+	virtual void SetProperty(const char *propertyName, IMonoObject *pNewValue, bool bStatic = false) override { CScriptObject::SetProperty(propertyName, pNewValue, true); }
+	virtual IMonoObject *GetField(const char *fieldName, bool bStatic = false) override { return CScriptObject::GetField(fieldName, true); }
+	virtual void SetField(const char *fieldName, IMonoObject *pNewValue, bool bStatic = false) override { CScriptObject::SetField(fieldName, pNewValue, true); }
 
-	static void HandleException(MonoObject *pException);
+	virtual EMonoAnyType GetType() override { return eMonoAnyType_Class; }
 
-private:
-	MonoMethod *GetMethod(const char *methodName, IMonoArray *pArgs, bool bStatic);
+	virtual mono::object GetManagedObject() override { return CScriptObject::GetManagedObject(); }
 
-	mono::object m_pInstance;
-	MonoClass *m_pClass;
+	virtual IMonoClass *GetClass() override { return CScriptObject::GetClass(); }
 
-	int m_instanceHandle;
-	int m_scriptId;
+	virtual void *UnboxObject() override { return CScriptObject::UnboxObject(); }
+	// ~IMonoObject
+
+	MonoMethod *GetMonoMethod(const char *name, IMonoArray *pArgs);
+	MonoProperty *GetMonoProperty(const char *name);
+	MonoClassField *GetMonoField(const char *name);
 };
 
 #endif //__MONO_CLASS_H__

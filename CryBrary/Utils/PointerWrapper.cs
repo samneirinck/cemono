@@ -2,8 +2,13 @@
 
 namespace CryEngine
 {
-	public struct PointerWrapper
+	internal struct PointerWrapper
 	{
+		public PointerWrapper(IntPtr pointer)
+		{
+			ptr = pointer;
+		}
+
 		public IntPtr ptr;
 	}
 }

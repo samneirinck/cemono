@@ -64,8 +64,8 @@ public:
 	TFlowNodeId GetId() const { return m_pActInfo->myID; }
 	IEntity *GetTargetEntity();
 
-	IMonoClass *GetScript() const { return m_pScriptClass; }
-	void SetScript(IMonoClass *pScript) { m_pScriptClass = pScript; }
+	IMonoObject *GetScript() const { return m_pScript; }
+	void SetScript(IMonoObject *pScript) { m_pScript = pScript; }
 
 	inline void SetRegularlyUpdated(bool update) { m_pActInfo->pGraph->SetRegularlyUpdated(m_pActInfo->myID, update); }
 
@@ -86,7 +86,7 @@ private:
 	SActivationInfo *m_pActInfo;
 	IFlowGraph *m_pHookedGraph;
 
-	IMonoClass *m_pScriptClass;
+	IMonoObject *m_pScript;
 	std::shared_ptr<SNodeType> m_pNodeType;
 
 	ENodeCloneType m_cloneType;
@@ -184,8 +184,8 @@ struct SMonoNodeConfig
 
 struct SMonoNodePortConfig
 {
-	mono::array inputs;
-	mono::array outputs;
+	mono::object inputs;
+	mono::object outputs;
 };
 
 #endif // __MONO_FLOWBASENODE_H__

@@ -3,6 +3,8 @@
 
 #include "MonoFlowNode.h"
 
+#include <IMonoClass.h>
+
 CUI *CUI::m_pUI = NULL;
 CUI::TEventHandlers CUI::m_eventHandlers = CUI::TEventHandlers();
 
@@ -38,7 +40,19 @@ void SEventSystemHandler::OnEvent(const SUIEvent& event)
 
 	auto pConverter = gEnv->pMonoScriptSystem->GetConverter();
 
-	pArgs->Insert(pConverter->ToManagedType(pConverter->GetCommonClass(eCMT_PointerWrapper), &mono::pointer(m_pEventSystem)));
+	IMonoObject *pPointerWrapper = NULL;
+	if(IMonoAssembly *pCryBraryAssembly = gEnv->pMonoScriptSystem->GetCryBraryAssembly())
+	{
+		if(IMonoClass *pClass = pCryBraryAssembly->GetClass("PointerWrapper"))
+		{
+			IMonoArray *pArgs = CreateMonoArray(1);
+			pArgs->InsertNativePointer(m_pEventSystem);
+
+			pPointerWrapper = pClass->CreateInstance(pArgs);
+		}
+	}
+
+	pArgs->Insert(pPointerWrapper);
 	pArgs->Insert(event.event);
 
 	IMonoArray *pArray = CreateMonoArray(event.args.GetArgCount());
@@ -69,7 +83,7 @@ void SEventSystemHandler::OnEvent(const SUIEvent& event)
 		}
 	}
 
-	pArgs->InsertArray(pArray);
+	pArgs->Insert(pArray);
 
 	CUI::GetInstance()->GetClass()->CallMethod("OnEvent", pArgs, true);
 }
@@ -81,7 +95,7 @@ IUIEventSystem *CUI::CreateEventSystem(mono::string name, IUIEventSystem::EEvent
 	return m_eventHandlers.back().GetEventSystem();
 }
 
-unsigned int CUI::RegisterFunction(IUIEventSystem *pEventSystem, mono::string name, mono::string desc, mono::array inputs)
+unsigned int CUI::RegisterFunction(IUIEventSystem *pEventSystem, mono::string name, mono::string desc, mono::object inputs)
 {
 	SUIEventDesc eventDesc(ToCryString(name), ToCryString(desc));
 
@@ -115,7 +129,7 @@ unsigned int CUI::RegisterFunction(IUIEventSystem *pEventSystem, mono::string na
 	return pEventSystem->RegisterEvent(eventDesc);
 }
 
-unsigned int CUI::RegisterEvent(IUIEventSystem *pEventSystem, mono::string name, mono::string desc, mono::array outputs)
+unsigned int CUI::RegisterEvent(IUIEventSystem *pEventSystem, mono::string name, mono::string desc, mono::object outputs)
 {
 	SUIEventDesc eventDesc(ToCryString(name), ToCryString(desc));
 
@@ -149,7 +163,7 @@ unsigned int CUI::RegisterEvent(IUIEventSystem *pEventSystem, mono::string name,
 	return pEventSystem->RegisterEvent(eventDesc);
 }
 
-void CUI::SendEvent(IUIEventSystem *pEventSystem, unsigned int eventId, mono::array args)
+void CUI::SendEvent(IUIEventSystem *pEventSystem, unsigned int eventId, mono::object args)
 {
 	SUIEvent event(eventId);
 

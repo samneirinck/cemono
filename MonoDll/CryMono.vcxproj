@@ -355,11 +355,9 @@
     <ClInclude Include="Headers\IMonoClass.h" />
     <ClInclude Include="Headers\IMonoConverter.h" />
     <ClInclude Include="Headers\IMonoDomain.h" />
-    <ClInclude Include="Headers\IMonoInput.h" />
     <ClInclude Include="Headers\IMonoObject.h" />
     <ClInclude Include="Headers\MonoAnyValue.h" />
     <ClInclude Include="Headers\MonoCommon.h" />
-    <ClInclude Include="Headers\MonoSerializable.h" />
     <ClInclude Include="MonoArray.h" />
     <ClInclude Include="MonoConverter.h" />
     <ClInclude Include="MonoCVars.h" />
@@ -391,7 +389,6 @@
     <ClInclude Include="Scriptbinds\Physics.h" />
     <ClInclude Include="Scriptbinds\Renderer.h" />
     <ClInclude Include="ScriptBinds\MaterialManager.h" />
-    <ClInclude Include="Scriptbinds\ScriptInterface.h" />
     <ClInclude Include="Scriptbinds\UI.h" />
     <ClInclude Include="Scriptbinds\ViewSystem.h" />
     <ClInclude Include="ScriptManager.h" />
@@ -427,7 +424,6 @@
     <ClCompile Include="Scriptbinds\Physics.cpp" />
     <ClCompile Include="Scriptbinds\Renderer.cpp" />
     <ClCompile Include="ScriptBinds\MaterialManager.cpp" />
-    <ClCompile Include="Scriptbinds\ScriptInterface.cpp" />
     <ClCompile Include="Scriptbinds\UI.cpp" />
     <ClCompile Include="Scriptbinds\ViewSystem.cpp" />
     <ClCompile Include="ScriptManager.cpp" />

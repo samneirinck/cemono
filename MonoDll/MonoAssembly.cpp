@@ -31,29 +31,11 @@ const char *CScriptAssembly::Relocate(const char *originalAssemblyPath)
 	return newAssemblyPath.c_str();
 }
 
-IMonoClass *CScriptAssembly::InstantiateClass(const char *className, const char *nameSpace, IMonoArray *pConstructorArguments)
-{
-	// Get class
-	MonoClass *pClass = GetClassFromName(nameSpace, className);
-	if (!pClass)
-	{
-		MonoWarning("Tried to create an instance of non-existent class %s.%s", nameSpace, className);
-		return NULL;
-	}
-
-	return new CScriptClass(pClass, pConstructorArguments);
-}
-
-IMonoClass *CScriptAssembly::GetCustomClass(const char *className, const char *nameSpace)
+IMonoClass *CScriptAssembly::GetClass(const char *className, const char *nameSpace)
 { 
-	if(MonoClass *monoClass = GetClassFromName(nameSpace, className))
+	if(MonoClass *monoClass = mono_class_from_name(m_pImage, nameSpace, className))
 		return new CScriptClass(monoClass);
 
 	MonoWarning("Failed to get class %s.%s", nameSpace, className);
 	return NULL;
-}
-
-MonoClass *CScriptAssembly::GetClassFromName(const char* nameSpace, const char* className)
-{
-	return mono_class_from_name(m_pImage, nameSpace, className);
 }

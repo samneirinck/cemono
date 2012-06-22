@@ -41,7 +41,7 @@ class CScriptSystem
 	// ~CryExtension
 
 	typedef std::map<const void *, const char *> TMethodBindings;
-	typedef std::map<IMonoClass *, int> TScripts;
+	typedef std::map<IMonoObject *, int> TScripts;
 	typedef std::vector<IMonoScriptSystemListener *> TScriptCompilationListeners;
 
 public:
@@ -53,7 +53,7 @@ public:
 
 	virtual void RegisterMethodBinding(const void *method, const char *fullMethodName) override;
 
-	virtual IMonoClass *InstantiateScript(const char *scriptName, EMonoScriptFlags scriptType = eScriptFlag_Any, IMonoArray *pConstructorParameters = nullptr) override;
+	virtual IMonoObject *InstantiateScript(const char *scriptName, EMonoScriptFlags scriptType = eScriptFlag_Any, IMonoArray *pConstructorParameters = nullptr) override;
 	virtual void RemoveScriptInstance(int id, EMonoScriptFlags scriptType = eScriptFlag_Any) override;
 	
 	virtual IMonoAssembly *GetCryBraryAssembly() override { return m_pCryBraryAssembly; }
@@ -107,9 +107,9 @@ protected:
 	// The app domain in which we load scripts into. Killed and reloaded on script reload.
 	IMonoDomain *m_pScriptDomain;
 
-	IMonoClass *m_pScriptManager;
+	IMonoObject *m_pScriptManager;
 	// Hard pointer to the AppDomainSerializer class to quickly dump and restore scripts.
-	IMonoClass *m_AppDomainSerializer;
+	IMonoObject *m_AppDomainSerializer;
 
 	// Map containing all scripts and their id's for quick access.
 	TScripts m_scripts;

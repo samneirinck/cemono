@@ -47,7 +47,7 @@ struct EntitySpawnParams
 	EEntityFlags flags;
 };
 
-struct EntityRegisterParams
+struct SEntityRegistrationParams
 {
 	mono::string Name;
 	mono::string Category;
@@ -56,6 +56,8 @@ struct EntityRegisterParams
 	mono::string EditorIcon;
 
 	EEntityClassFlags Flags;
+
+	mono::object Properties;
 };
 
 struct SMonoEntityProperty
@@ -121,11 +123,11 @@ protected:
 
 	static IEntity *GetEntity(EntityId id);
 
-	static bool RegisterEntityClass(EntityRegisterParams, mono::array);
+	static bool RegisterEntityClass(SEntityRegistrationParams);
 
 	static EntityId FindEntity(mono::string);
-	static mono::array GetEntitiesByClass(mono::string);
-	static mono::array GetEntitiesInBox(AABB bbox, int objTypes);
+	static mono::object GetEntitiesByClass(mono::string);
+	static mono::object GetEntitiesInBox(AABB bbox, int objTypes);
 
 	static void SetWorldPos(IEntity *pEnt, Vec3);
 	static Vec3 GetWorldPos(IEntity *pEnt);

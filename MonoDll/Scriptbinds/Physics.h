@@ -79,7 +79,7 @@ public:
 	static Vec3 GetVelocity(IEntity *pEntity);
 	static void SetVelocity(IEntity *pEntity, Vec3 vel);
 
-	static int RayWorldIntersection(Vec3, Vec3, int, unsigned int, SMonoRayHit &, int, mono::array);
+	static int RayWorldIntersection(Vec3, Vec3, int, unsigned int, SMonoRayHit &, int, mono::object);
 };
 
 #endif //__SCRIPTBIND_PHYSICALWORLD__

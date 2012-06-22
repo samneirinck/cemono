@@ -104,7 +104,7 @@ bool CScriptbind_Entity::OnRemove(IEntity *pIEntity)
 	if(!IsMonoEntity(className))
 		return true;
 
-	if(IMonoClass *pEntityClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("Entity"))
+	if(IMonoClass *pEntityClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("Entity"))
 	{
 		IMonoArray *pArgs = CreateMonoArray(1);
 		pArgs->Insert(pIEntity->GetId());
@@ -128,7 +128,7 @@ struct SMonoEntityCreator
 	virtual void GetGameObjectExtensionRMIData(void **ppRMI, size_t *nCount) { return CEntity::GetGameObjectExtensionRMIData(ppRMI, nCount); }
 };
 
-bool CScriptbind_Entity::RegisterEntityClass(EntityRegisterParams params, mono::array Properties)
+bool CScriptbind_Entity::RegisterEntityClass(SEntityRegistrationParams params)
 {
 	const char *className = ToCryString(params.Name);
 	if(gEnv->pEntitySystem->GetClassRegistry()->FindClass(className))
@@ -138,9 +138,9 @@ bool CScriptbind_Entity::RegisterEntityClass(EntityRegisterParams params, mono::
 	}
 
 	std::vector<IEntityPropertyHandler::SPropertyInfo> properties;
-	if(Properties != NULL)
+	if(params.Properties != NULL)
 	{
-		IMonoArray *propertiesArray = *Properties;
+		IMonoArray *propertiesArray = *params.Properties;
 
 		int numProperties = propertiesArray->GetSize();
 	
@@ -225,7 +225,7 @@ EntityId CScriptbind_Entity::FindEntity(mono::string name)
 	return 0;
 }
 
-mono::array CScriptbind_Entity::GetEntitiesByClass(mono::string _class)
+mono::object CScriptbind_Entity::GetEntitiesByClass(mono::string _class)
 {
 	const char *className = ToCryString(_class);
 	std::vector<EntityId> classEntities;
@@ -247,10 +247,10 @@ mono::array CScriptbind_Entity::GetEntitiesByClass(mono::string _class)
 	for(std::vector<EntityId>::iterator it = classEntities.begin(); it != classEntities.end(); ++it)
 		pArray->Insert(*it);
 
-	return *pArray;
+	return pArray->GetManagedObject();
 }
 
-mono::array CScriptbind_Entity::GetEntitiesInBox(AABB bbox, int objTypes)
+mono::object CScriptbind_Entity::GetEntitiesInBox(AABB bbox, int objTypes)
 {
 	IPhysicalEntity **pEnts = NULL;
 
@@ -260,7 +260,7 @@ mono::array CScriptbind_Entity::GetEntitiesInBox(AABB bbox, int objTypes)
 	for(int i = 0; i < numEnts; i++)
 		pEntities->Insert(gEnv->pPhysicalWorld->GetPhysicalEntityId(pEnts[i]));
 
-	return pEntities->GetMonoArray();
+	return pEntities->GetManagedObject();
 }
 
 void CScriptbind_Entity::SetWorldTM(IEntity *pEntity, Matrix34 tm)

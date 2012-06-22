@@ -3,31 +3,35 @@
 
 #include "MonoObject.h"
 
+CScriptArray::CScriptArray(mono::object managedArray)
+{
+	m_pObject = (MonoObject *)managedArray;
+
+	m_objectHandle = mono_gchandle_new(m_pObject, false);
+}
+
 CScriptArray::CScriptArray(int size)
 	: m_curIndex(0)
 {
-	m_pArray = (mono::array)mono_array_new(mono_domain_get(), mono_get_object_class(), size);
+	m_pObject = (MonoObject *)mono_array_new(mono_domain_get(), mono_get_object_class(), size);
 }
 
 CScriptArray::~CScriptArray()
 {
 	m_curIndex = 0;
-	m_pArray = 0;
-
-	mono_gchandle_free(m_arrayHandle); 
 }
 
 void CScriptArray::Resize(int size)
 {
-	MonoArray *pOldArray = (MonoArray *)m_pArray;
+	MonoArray *pOldArray = (MonoArray *)m_pObject;
 	int oldArraySize = mono_array_length(pOldArray);
 
-	m_pArray = (mono::array)mono_array_new(mono_domain_get(), mono_get_object_class(), size);
+	m_pObject = (MonoObject *)mono_array_new(mono_domain_get(), mono_get_object_class(), size);
 
 	for(int i = 0; i < size; i++)
 	{
 		if(i > oldArraySize)
-			mono_array_set((MonoArray *)m_pArray, MonoObject *, i, mono_array_get(pOldArray, MonoObject *, i));
+			mono_array_set((MonoArray *)m_pObject, MonoObject *, i, mono_array_get(pOldArray, MonoObject *, i));
 	}
 }
 
@@ -35,19 +39,11 @@ IMonoObject *CScriptArray::GetItem(int index)
 { 
 	if(index <= GetSize())
 	{
-		if(mono::object monoObj = (mono::object)mono_array_get((MonoArray *)m_pArray, MonoObject *, index))
+		if(mono::object monoObj = (mono::object)mono_array_get((MonoArray *)m_pObject, MonoObject *, index))
 			return *monoObj;
 	}
 	else
 		MonoWarning("Index out of range exception: Attempted to access index %i on IMonoArray of size %i", index, GetSize());
-
-	return NULL;
-}
-
-IMonoArray *CScriptArray::GetItemArray(int index) 
-{
-	if(mono::array monoArray = (mono::array)mono_array_get((MonoArray *)m_pArray, MonoArray *, index))
-		return new CScriptArray(monoArray);
 
 	return NULL;
 }
@@ -60,7 +56,7 @@ void CScriptArray::InsertMonoObject(mono::object object, int index)
 		return;
 	}
 
-	mono_array_set((MonoArray *)m_pArray, MonoObject *, m_curIndex, (MonoObject *)object);
+	mono_array_set((MonoArray *)m_pObject, MonoObject *, m_curIndex, (MonoObject *)object);
 
 	m_curIndex++;
 }
@@ -73,12 +69,12 @@ void CScriptArray::InsertMonoString(mono::string string, int index)
 		return;
 	}
 
-	mono_array_set((MonoArray *)m_pArray, MonoString *, index != -1 ? index : m_curIndex, (MonoString *)string);
+	mono_array_set((MonoArray *)m_pObject, MonoString *, index != -1 ? index : m_curIndex, (MonoString *)string);
 
 	m_curIndex++;
 }
 
-void CScriptArray::InsertMonoArray(mono::array arr, int index)
+void CScriptArray::InsertMonoArray(mono::object arr, int index)
 {
 	if((index == -1 && m_curIndex >= GetSize()) || index >= GetSize())
 	{
@@ -86,14 +82,27 @@ void CScriptArray::InsertMonoArray(mono::array arr, int index)
 		return;
 	}
 
-	mono_array_set((MonoArray *)m_pArray, MonoArray *, index != -1 ? index : m_curIndex, (MonoArray *)arr);
+	mono_array_set((MonoArray *)m_pObject, MonoArray *, index != -1 ? index : m_curIndex, (MonoArray *)arr);
+
+	m_curIndex++;
+}
+
+void CScriptArray::InsertNativePointer(void *ptr, int index)
+{ 
+	if((index == -1 && m_curIndex >= GetSize()) || index >= GetSize())
+	{
+		MonoWarning("Attempted to insert too many objects into array of size %i", GetSize());
+		return;
+	}
+
+	mono_array_set((MonoArray *)m_pObject, void *, index != -1 ? index : m_curIndex, ptr);
 
 	m_curIndex++;
 }
 
 void CScriptArray::InsertObject(IMonoObject *pObject, int index)
 { 
-	InsertMonoObject(pObject->GetMonoObject(), index); 
+	InsertMonoObject(pObject->GetManagedObject(), index); 
 }
 
 void CScriptArray::InsertAny(MonoAnyValue value, int index)
@@ -102,9 +111,4 @@ void CScriptArray::InsertAny(MonoAnyValue value, int index)
 		InsertMonoString(ToMonoString(value.str), index);
 	else
 		Insert(gEnv->pMonoScriptSystem->GetConverter()->CreateObject(value), index);
-}
-
-void CScriptArray::InsertArray(IMonoArray *pArray, int index)
-{
-	InsertMonoArray(pArray ? *pArray : (mono::array)NULL, index);
 }

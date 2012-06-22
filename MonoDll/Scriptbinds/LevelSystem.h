@@ -11,7 +11,7 @@
 
 #include "MonoCommon.h"
 
-struct IMonoClass;
+struct IMonoScript;
 
 struct ILevelInfo;
 

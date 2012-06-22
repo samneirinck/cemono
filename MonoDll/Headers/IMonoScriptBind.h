@@ -40,7 +40,7 @@ struct IMonoScriptBind
 	IMonoClass *GetClass()
 	{
 		if(!m_pClass)
-			m_pClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass(GetClassName(), GetNamespace());
+			m_pClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass(GetClassName(), GetNamespace());
 
 		return m_pClass;
 	}

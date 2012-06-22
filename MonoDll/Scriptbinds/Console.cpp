@@ -56,7 +56,7 @@ extern "C"
 
 void CScriptbind_Console::HandleException(mono::object exception)
 {
-	CScriptClass::HandleException((MonoObject *)exception);
+	CScriptObject::HandleException((MonoObject *)exception);
 }
 
 void CScriptbind_Console::OnMonoCmd(IConsoleCmdArgs *cmdArgs)
@@ -64,7 +64,7 @@ void CScriptbind_Console::OnMonoCmd(IConsoleCmdArgs *cmdArgs)
 	IMonoArray *pArgs = CreateMonoArray(1);
 	pArgs->Insert(cmdArgs->GetCommandLine());
 
-	gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("CCommand")->CallMethod("OnCommand", pArgs, true);
+	gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("CCommand")->CallMethod("OnCommand", pArgs, true);
 }
 
 void CScriptbind_Console::RegisterCommand(mono::string cmd, mono::string desc, EVarFlags flags)

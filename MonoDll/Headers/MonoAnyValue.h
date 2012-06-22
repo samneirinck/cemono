@@ -15,7 +15,7 @@
 /// </summary>
 enum EMonoAnyType
 {
-	eMonoAnyType_NULL = -1,
+	eMonoAnyType_Unknown = -1,
 
 	eMonoAnyType_Boolean,
 
@@ -27,6 +27,8 @@ enum EMonoAnyType
 	eMonoAnyType_Vec3,
 
 	eMonoAnyType_String,
+	eMonoAnyType_Array,
+	eMonoAnyType_Class,
 
 	eMonoAnyType_Last
 };
@@ -37,7 +39,7 @@ enum EMonoAnyType
 /// </summary>
 struct MonoAnyValue
 {
-	MonoAnyValue() : type(eMonoAnyType_NULL) { };
+	MonoAnyValue() : type(eMonoAnyType_Unknown) { };
 	MonoAnyValue(bool value) : type(eMonoAnyType_Boolean) { b = value; }
 	MonoAnyValue(int value) : type(eMonoAnyType_Integer) { i = value; }
 	MonoAnyValue(unsigned int value) : type(eMonoAnyType_UnsignedInteger) { u = value; }
@@ -48,42 +50,6 @@ struct MonoAnyValue
 	MonoAnyValue(string value) : type(eMonoAnyType_String) { str = value.c_str(); }
 	MonoAnyValue(Vec3 value) : type(eMonoAnyType_Vec3) { vec3.x = value.x; vec3.y = value.y; vec3.z = value.z; }
 	MonoAnyValue(Ang3 value) : type(eMonoAnyType_Vec3) { vec3.x = value.x; vec3.y = value.y; vec3.z = value.z; }
-
-	void Serialize(TSerialize ser)
-	{
-		ser.BeginGroup("MonoAnyValue");
-		switch(type)
-		{
-		case eMonoAnyType_Boolean:
-			ser.Value("monoValueBool", b);
-			break;
-
-		case eMonoAnyType_UnsignedInteger:
-		case eMonoAnyType_UnsignedShort:
-			ser.Value("monoValueUIntNum", u);
-			break;
-		case eMonoAnyType_Integer:
-		case eMonoAnyType_Short:
-			ser.Value("monoValueIntNum", i);
-			break;
-		case eMonoAnyType_Float:
-			ser.Value("monoValueFloatNum", f);
-			break;
-		case eMonoAnyType_Vec3:
-			{
-				ser.Value("monoValueVec3x", vec3.x);
-				ser.Value("monoValueVec3y", vec3.y);
-				ser.Value("monoValueVec3z", vec3.z);
-			}
-			break;
-		case eMonoAnyType_String:
-			ser.ValueChar("monoValueString", const_cast<char *>(str), strlen(str));
-			break;
-		}
-
-		ser.EnumValue("monoValueType", type, eMonoAnyType_NULL, eMonoAnyType_Last);
-		ser.EndGroup();
-	};
 
 	void *GetValue()
 	{

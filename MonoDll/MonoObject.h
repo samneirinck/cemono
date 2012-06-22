@@ -11,37 +11,53 @@
 #define __MONO_OBJECT_H__
 
 #include "MonoCommon.h"
-#include "MonoClass.h"
-
-#include "MonoScriptSystem.h"
 
 #include <IMonoObject.h>
+
 #include <mono/mini/jit.h>
 
 class CScriptObject : public IMonoObject
 {
-public:
-	CScriptObject(mono::object object);
-	virtual ~CScriptObject() { mono_gchandle_free(m_objectHandle); m_pObject = 0; }
+protected:
+	CScriptObject() {}
 
-	MonoClass *GetMonoClass() { return mono_object_get_class((MonoObject *)m_pObject); }
+public:
+	CScriptObject(MonoObject *object);
+	CScriptObject(MonoObject *object, IMonoArray *pConstructorParams);
+	virtual ~CScriptObject() { mono_gchandle_free(m_objectHandle); m_pObject; }
+
+	MonoClass *GetMonoClass() { return mono_object_get_class(m_pObject); }
+
+	void SetObject(mono::object object) { m_pObject = (MonoObject *)object; }
 
 	// IMonoObject
+	virtual IMonoObject *CallMethod(const char *methodName, IMonoArray *params = NULL, bool bStatic = false);
+
+	virtual IMonoObject *GetProperty(const char *propertyName, bool bStatic = false);
+	virtual void SetProperty(const char *propertyName, IMonoObject *pNewValue, bool bStatic = false);
+	virtual IMonoObject *GetField(const char *fieldName, bool bStatic = false);
+	virtual void SetField(const char *fieldName, IMonoObject *pNewValue, bool bStatic = false);
+
 	virtual void Release() override { delete this; }
 
-	virtual EMonoAnyType GetType() override;
-	virtual MonoAnyValue GetAnyValue() override;
+	virtual EMonoAnyType GetType() override { return m_type; }
 
-	virtual mono::object GetMonoObject() override { return m_pObject; }
+	virtual mono::object GetManagedObject() override { return (mono::object)m_pObject; }
 
-private:
-	virtual void *UnboxObject() override { return mono_object_unbox((MonoObject *)m_pObject); }
-	// ~IMonoObject
+	virtual IMonoClass *GetClass();
+
+	static void HandleException(MonoObject *pException);
 
 protected:
-	mono::object m_pObject;
+	void CheckType();
 
+	virtual void *UnboxObject() override { return mono_object_unbox(m_pObject); }
+	// ~IMonoObject
+
+	MonoObject *m_pObject;
 	int m_objectHandle;
+
+	EMonoAnyType m_type;
 };
 
 template <typename T>

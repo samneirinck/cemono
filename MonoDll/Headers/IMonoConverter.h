@@ -12,44 +12,20 @@
 namespace mono 
 { 
 	class _string; typedef _string *string;
-	class _array; typedef _array *array; 
 	class _object; typedef _object *object;
 }
 
 struct IMonoArray;
 struct IMonoObject;
-struct IMonoClass;
 struct IMonoAssembly;
 
 struct MonoAnyValue;
-
-enum ECommonManagedTypes
-{
-	/// <summary>
-	/// Vec3 struct
-	/// </summary>
-	eCMT_Vec3 = 0,
-	/// <summary>
-	/// unsigned int, do not supply an object of the SMonoEntityId struct.
-	/// </summary>
-	eCMT_EntityId,
-	/// <summary>
-	/// Standard hit info struct declared in CryGame.
-	/// </summary>
-	eCMT_HitInfo,
-	/// <summary>
-	/// Struct containing an IntPtr representing a native pointer object.
-	/// </summary>
-	eCMT_PointerWrapper
-};
 
 /// <summary>
 /// Used to create and convert C++ / C# values.
 /// </summary>
 struct IMonoConverter
 {
-	virtual void Reset() = 0;
-
 	/// <summary>
 	/// Converts a mono string to a const char *.
 	/// </summary>
@@ -66,7 +42,7 @@ struct IMonoConverter
 	/// <summary>
 	/// Converts a mono array to a IMonoArray. (To provide GetSize, GetItem etc functionality.)
 	/// </summary>
-	virtual IMonoArray *ToArray(mono::array arr) = 0;
+	virtual IMonoArray *ToArray(mono::object arr) = 0;
 
 	/// <summary>
 	/// Creates a IMonoObject out of a MonoAnyValue.
@@ -76,19 +52,6 @@ struct IMonoConverter
 	/// Converts an mono object to a IMonoObject.
 	/// </summary>
 	virtual IMonoObject *ToObject(mono::object obj) = 0;
-	/// <summary>
-	/// Converts an IMonoObject to a class, if valid mono object is contained within.
-	/// Allows for invoking methods, properties etc.
-	/// </summary>
-	virtual IMonoClass *ToClass(IMonoObject *pObject) = 0;
-
-	virtual IMonoClass *GetCommonClass(ECommonManagedTypes commonType) = 0;
-	virtual IMonoObject *ToManagedType(ECommonManagedTypes commonType, void *object) = 0;
-
-	/// <summary>
-	/// Converts an object into the specified managed type.
-	/// </summary>
-	virtual IMonoObject *ToManagedType(IMonoClass *pTo, void *object) = 0;
 };
 
 #endif //__I_MONO_CONVERTER_H__

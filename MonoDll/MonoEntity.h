@@ -11,7 +11,8 @@
 #define __MONO_ENTITY__
 
 #include <IGameObject.h>
-#include <IMonoClass.h>
+
+struct IMonoObject;
 
 struct SQueuedProperty
 {
@@ -56,14 +57,14 @@ public:
 	virtual void GetMemoryUsage( ICrySizer* s ) const { s->Add( *this ); }
 	// ~IGameObjectExtension
 
-	IMonoClass *GetScript() { return m_pScriptClass; }
+	IMonoObject *GetScript() { return m_pScript; }
 
 	void SetPropertyValue(IEntityPropertyHandler::SPropertyInfo propertyInfo, const char *value);
 
 	bool IsInitialized() { return m_bInitialized; }
 
 protected:
-	IMonoClass *m_pScriptClass;
+	IMonoObject *m_pScript;
 
 	bool m_bInitialized;
 };

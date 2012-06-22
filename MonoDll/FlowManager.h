@@ -15,7 +15,7 @@
 #include <IFlowSystem.h>
 
 struct IMonoArray;
-struct IMonoClass;
+struct IMonoScript;
 
 class CFlowNode;
 
@@ -29,7 +29,7 @@ struct SNodeType
 			scriptName = typeName;
 	}
 
-	void ReloadPorts(IMonoClass *pScript);
+	void ReloadPorts(IMonoObject *pScript);
 	
 	/// <summary>
 	/// Gets the complete node type name, i.e. entity:Bouncy
@@ -43,8 +43,8 @@ struct SNodeType
 
 	bool IsEntityNode() const { return bEntityNode; }
 
-	SOutputPortConfig *GetOutputPorts(IMonoClass *pScript) { if(!pOutputs) ReloadPorts(pScript); return pOutputs; }
-	SInputPortConfig *GetInputPorts(IMonoClass *pScript) { if(!pInputs) ReloadPorts(pScript); return pInputs; }
+	SOutputPortConfig *GetOutputPorts(IMonoObject *pScript) { if(!pOutputs) ReloadPorts(pScript); return pOutputs; }
+	SInputPortConfig *GetInputPorts(IMonoObject *pScript) { if(!pInputs) ReloadPorts(pScript); return pInputs; }
 
 private:
 

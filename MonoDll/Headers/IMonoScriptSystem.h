@@ -16,7 +16,7 @@
 
 struct IMonoScriptManager;
 
-struct IMonoClass;
+struct IMonoObject;
 struct IMonoArray;
 struct IMonoAssembly;
 struct IMonoDomain;
@@ -25,6 +25,9 @@ struct IMonoEntityManager;
 
 struct IMonoConverter;
 
+/// <summary>
+/// Script flags are passed to IMonoScriptSystem::InstantiateScript and RemoveScriptInstance as a way to identify scripts more effectively, and to solve the issue with scripts being of multiple types.
+/// </summary>
 enum EMonoScriptFlags
 {
 	/// <summary>
@@ -57,6 +60,9 @@ enum EMonoScriptFlags
 	eScriptFlag_ScriptCompiler = 128,
 };
 
+/// <summary>
+/// Implementations in need of finding out when scripts are about to be recompiled / reloaded can implement this listener, and register it using IMonoScriptSystem::RegisterListener
+/// </summary>
 struct IMonoScriptSystemListener
 {
 	/// <summary>
@@ -112,14 +118,14 @@ struct IMonoScriptSystem : ICryUnknown
 	/// Instantiates a script (with constructor parameters if supplied) of type and name
 	/// This assumes that the script was present in a .dll in Plugins or within a .cs file when PostInit was called.
 	/// </summary>
-	virtual IMonoClass *InstantiateScript(const char *scriptName, EMonoScriptFlags scriptType = eScriptFlag_Any, IMonoArray *pConstructorParameters = nullptr) = 0;
+	virtual IMonoObject *InstantiateScript(const char *scriptName, EMonoScriptFlags scriptType = eScriptFlag_Any, IMonoArray *pConstructorParameters = nullptr) = 0;
 	/// <summary>
 	/// Removes and destructs an instantiated script with the supplied id if found.
 	/// </summary>
 	virtual void RemoveScriptInstance(int id, EMonoScriptFlags scriptType = eScriptFlag_Any) = 0;
 
 	/// <summary>
-	/// Gets a pointer to the CryBrary assembly containing all default CryMono types.
+	/// Gets a pointer to the CryBrary assembly containing all default managed CryMono types.
 	/// </summary>
 	virtual IMonoAssembly *GetCryBraryAssembly() = 0;
 
@@ -129,7 +135,7 @@ struct IMonoScriptSystem : ICryUnknown
 	virtual IMonoAssembly *GetCorlibAssembly() = 0;
 
 	/// <summary>
-	/// Loads an .NET assembly at a specific location and returns it.
+	/// Loads an .NET assembly at a specific location and returns it in the form of an IMonoAssembly object.
 	/// </summary>
 	virtual IMonoAssembly *GetAssembly(const char *file, bool shadowCopy = false) = 0;
 

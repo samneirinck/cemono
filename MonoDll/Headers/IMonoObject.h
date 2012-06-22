@@ -12,8 +12,6 @@
 #include <IMonoScriptSystem.h>
 #include <IMonoConverter.h>
 
-#include <MonoSerializable.h>
-
 struct IMonoClass;
 
 namespace mono { class _object; typedef _object* object; }
@@ -22,9 +20,36 @@ namespace mono { class _object; typedef _object* object; }
 /// The IMonoObject class is used to wrap native mono objects of any type, and to
 /// convert C++ types to the Mono equivalent.
 /// </summary>
-struct IMonoObject : public CSerializable
+struct IMonoObject
 {
 public:
+	virtual IMonoObject *CallMethod(const char *methodName, IMonoArray *params = NULL, bool bStatic = false) = 0;
+
+	virtual IMonoObject *GetProperty(const char *propertyName, bool bStatic = false) = 0;
+	virtual void SetProperty(const char *propertyName, IMonoObject *pNewValue, bool bStatic = false) = 0;
+	virtual IMonoObject *GetField(const char *fieldName, bool bStatic = false) = 0;
+	virtual void SetField(const char *fieldName, IMonoObject *pNewValue, bool bStatic = false) = 0;
+
+	template <typename TResult>
+	static TResult CallMethod(IMonoObject *pInvokable, const char *funcName, IMonoArray *pArgs = NULL)
+	{
+		if(IMonoObject *pResult = pInvokable->CallMethod(funcName, pArgs))
+		{
+			TResult result = pResult->Unbox<TResult>();
+
+			SAFE_RELEASE(pResult);
+			return result;
+		}
+
+		return (TResult)0;
+	}
+
+	template <>
+	static void CallMethod(IMonoObject *pInvokable, const char *funcName, IMonoArray *pArgs)
+	{
+		pInvokable->CallMethod(funcName, pArgs);
+	}
+
 	/// <summary>
 	/// Deletes the object. Warning: Also deleted in C#!
 	/// </summary>
@@ -37,42 +62,16 @@ public:
 	T Unbox() { return *(T *)UnboxObject(); }
 
 	/// <summary>
-	/// </summary>
-	template <>
-	IMonoClass *Unbox() { return gEnv->pMonoScriptSystem->GetConverter()->ToClass(this); }
-
-	// CSerializable
-	/// <summary>
-	/// Allows serialization of mono objects.
-	/// </summary>
-	virtual void Serialize(TSerialize ser) override
-	{
-		value = GetAnyValue();
-
-		CSerializable::Serialize(ser);
-	}
-	// ~CSerializable
-
-	/// <summary>
 	/// Gets the type of this Mono object.
 	/// </summary>
 	virtual EMonoAnyType GetType() = 0;
-	/// <summary>
-	/// Gets the value of this object as an MonoAnyValue.
-	/// </summary>
-	virtual MonoAnyValue GetAnyValue() = 0;
 	
 	/// <summary>
+	/// Returns the object as it is seen in managed code, can be passed directly across languages.
 	/// </summary>
-	virtual mono::object GetMonoObject() = 0;
+	virtual mono::object GetManagedObject() = 0;
 
-	/// <summary>
-	/// Simple overloaded operator to allow direct casting to Mono type object.
-	/// </summary>
-	operator mono::object() const
-	{
-		return const_cast<IMonoObject *>(this)->GetMonoObject();
-	}
+	virtual IMonoClass *GetClass() = 0;
 
 private:
 	/// <summary>

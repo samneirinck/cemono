@@ -32,10 +32,10 @@ protected:
 
 	static IUIEventSystem *CreateEventSystem(mono::string name, IUIEventSystem::EEventSystemType eventType);
 
-	static unsigned int RegisterFunction(IUIEventSystem *pEventSystem, mono::string name, mono::string desc, mono::array inputs);
-	static unsigned int RegisterEvent(IUIEventSystem *pEventSystem, mono::string name, mono::string desc, mono::array outputs);
+	static unsigned int RegisterFunction(IUIEventSystem *pEventSystem, mono::string name, mono::string desc, mono::object inputs);
+	static unsigned int RegisterEvent(IUIEventSystem *pEventSystem, mono::string name, mono::string desc, mono::object outputs);
 
-	static void SendEvent(IUIEventSystem *pEventSystem, unsigned int eventId, mono::array args);
+	static void SendEvent(IUIEventSystem *pEventSystem, unsigned int eventId, mono::object args);
 
 private:
 	static CUI *m_pUI;

@@ -37,8 +37,8 @@ public:
 	// Externals
 	static IScriptTable *GetScriptTable(EntityId entity);
 
-	static mono::object CallMethod(IScriptTable *pScriptTable, mono::string methodName, ELuaVariableType returnType, mono::array args);
-	static void CallMethodVoid(IScriptTable *pScriptTable, mono::string methodName, mono::array args);
+	static mono::object CallMethod(IScriptTable *pScriptTable, mono::string methodName, ELuaVariableType returnType, mono::object args);
+	static void CallMethodVoid(IScriptTable *pScriptTable, mono::string methodName, mono::object args);
 	// ~Externals
 };
 

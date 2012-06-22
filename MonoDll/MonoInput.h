@@ -7,7 +7,6 @@
 // 02/02/2012 : Created by Filip 'i59' Lundgren
 ////////////////////////////////////////////////////////////////////////*/
 
-#include <IMonoInput.h>
 #include <IMonoScriptBind.h>
 
 #include <IActionMapManager.h>
@@ -15,11 +14,10 @@
 
 #include "MonoCommon.h"
 
-struct IMonoClass;
+struct IMonoScript;
 
 class CInput 
-	: public IMonoInput
-	, public IMonoScriptBind
+	: public IMonoScriptBind
 	, public IActionListener
 	, public IHardwareMouseEventListener
 	, public IInputEventListener

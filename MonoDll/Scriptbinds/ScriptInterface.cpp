@@ -20,7 +20,7 @@ IScriptTable *CScriptbind_ScriptInterface::GetScriptTable(EntityId entityId)
 	return NULL;
 }
 
-mono::object CScriptbind_ScriptInterface::CallMethod(IScriptTable *pScriptTable, mono::string methodName, ELuaVariableType returnType, mono::array args)
+mono::object CScriptbind_ScriptInterface::CallMethod(IScriptTable *pScriptTable, mono::string methodName, ELuaVariableType returnType, mono::object args)
 {
 	/*HSCRIPTFUNCTION pfnScriptFunction = 0;
 	if(pScriptTable->GetValue(ToCryString(methodName), pfnScriptFunction))
@@ -44,7 +44,7 @@ mono::object CScriptbind_ScriptInterface::CallMethod(IScriptTable *pScriptTable,
 	return NULL;
 }
 
-void CScriptbind_ScriptInterface::CallMethodVoid(IScriptTable *pScriptTable, mono::string funcName, mono::array args)
+void CScriptbind_ScriptInterface::CallMethodVoid(IScriptTable *pScriptTable, mono::string funcName, mono::object args)
 {
 	const char *methodName = ToCryString(funcName);
 

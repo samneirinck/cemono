@@ -12,7 +12,7 @@
 
 #include <IMonoAssembly.h>
 
-struct IMonoClass;
+struct IMonoScript;
 struct IMonoArray;
 
 class CScriptAssembly : public IMonoAssembly
@@ -24,8 +24,7 @@ public:
 	// IMonoAssembly
 	virtual void Release() override { delete this; }
 
-	virtual IMonoClass *InstantiateClass(const char *className, const char *nameSpace = "CryEngine", IMonoArray *pConstructorArguments = NULL) override;
-	virtual IMonoClass *GetCustomClass(const char *className, const char *nameSpace = "CryEngine") override;
+	virtual IMonoClass *GetClass(const char *className, const char *nameSpace = "CryEngine") override;
 	// ~IMonoAssembly
 
 	MonoImage *GetImage() const { return m_pImage; }
@@ -33,8 +32,6 @@ public:
 	static const char *Relocate(const char *originalAssemblyPath);
 
 private:
-	MonoClass *GetClassFromName(const char* nameSpace, const char* className);
-
 	MonoAssembly *m_pAssembly;
 
 	MonoImage *m_pImage;

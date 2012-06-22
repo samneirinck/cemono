@@ -3,7 +3,6 @@
 
 #include <IMonoScriptSystem.h>
 
-#include <IMonoClass.h>
 #include <IMonoArray.h>
 #include <IMonoObject.h>
 #include <IMonoAssembly.h>

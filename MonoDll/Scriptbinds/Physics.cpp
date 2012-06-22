@@ -124,7 +124,7 @@ void CScriptbind_Physics::SetVelocity(IEntity *pEntity, Vec3 vel)
 	pPhysicalEntity->Action(&asv);
 }
 
-int CScriptbind_Physics::RayWorldIntersection(Vec3 origin, Vec3 dir, int objFlags, unsigned int flags, SMonoRayHit &monoHit, int maxHits, mono::array skipEntities)
+int CScriptbind_Physics::RayWorldIntersection(Vec3 origin, Vec3 dir, int objFlags, unsigned int flags, SMonoRayHit &monoHit, int maxHits, mono::object skipEntities)
 {
 	std::vector<IPhysicalEntity *> physEnts;
 
