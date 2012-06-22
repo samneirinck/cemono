@@ -82,7 +82,7 @@ void CScriptArray::InsertNativePointer(void *ptr, int index)
 { 
 	CRY_ASSERT((index == -1 ? m_curIndex : index) < GetSize());
 
-	mono_array_set((MonoArray *)m_pObject, void *, index != -1 ? index : m_curIndex, ptr);
+	mono_array_set((MonoArray *)m_pObject, MonoObject *, index != -1 ? index : m_curIndex, mono_value_box(mono_domain_get(), mono_get_intptr_class(), ptr));
 
 	m_curIndex++;
 }

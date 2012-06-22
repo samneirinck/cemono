@@ -28,10 +28,11 @@ namespace CryEngine
 		/// <param name="entInfo">Struct containing the IEntity pointer and EntityId.</param>
 		/// <returns>IsEntityFlowNode</returns>
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		internal virtual bool InternalSpawn(EntityInfo entInfo)
+		internal virtual bool InternalSpawn(IntPtr entPtr, uint entId)
 		{
-			EntityPointer = entInfo.IEntityPtr;
-			Id = new EntityId(entInfo.Id);
+			Debug.LogAlways("1");
+			EntityPointer = entPtr;
+			Id = new EntityId(entId);
 
 			Spawned = true;
 
