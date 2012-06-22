@@ -33,27 +33,27 @@ IMonoClass *CScriptObject::GetClass()
 	return new CScriptClass(GetMonoClass());
 }
 
-void CScriptObject::CheckType()
+EMonoAnyType CScriptObject::GetType()
 {
 	MonoClass *pClass = GetMonoClass();
 	if(pClass==mono_get_boolean_class())
-		m_type = eMonoAnyType_Boolean;
+		return eMonoAnyType_Boolean;
 	else if(pClass==mono_get_int32_class())
-		m_type = eMonoAnyType_Integer;
+		return eMonoAnyType_Integer;
 	else if(pClass==mono_get_uint32_class())
-		m_type = eMonoAnyType_UnsignedInteger;
+		return eMonoAnyType_UnsignedInteger;
 	else if(pClass==mono_get_int16_class())
-		m_type = eMonoAnyType_Short;
+		return eMonoAnyType_Short;
 	else if(pClass==mono_get_uint16_class())
-		m_type = eMonoAnyType_UnsignedShort;
+		return eMonoAnyType_UnsignedShort;
 	else if(pClass==mono_get_single_class())
-		m_type = eMonoAnyType_Float;
+		return eMonoAnyType_Float;
 	else if(pClass==mono_get_string_class())
-		m_type = eMonoAnyType_String;
+		return eMonoAnyType_String;
 	else if(!strcmp(GetClass()->GetName(), "Vec3"))
-		m_type = eMonoAnyType_Vec3;
-	else
-		m_type = eMonoAnyType_Unknown;
+		return eMonoAnyType_Vec3;
+
+	return eMonoAnyType_Unknown;
 }
 
 IMonoObject *CScriptObject::CallMethod(const char *methodName, IMonoArray *pParams, bool bStatic)
@@ -71,7 +71,6 @@ IMonoObject *CScriptObject::CallMethod(const char *methodName, IMonoArray *pPara
 		else if(pResult)
 			return *(mono::object)(pResult);
 	}
-
 
 	return NULL;
 }

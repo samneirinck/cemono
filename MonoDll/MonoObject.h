@@ -40,7 +40,7 @@ public:
 
 	virtual void Release() override { delete this; }
 
-	virtual EMonoAnyType GetType() override { return m_type; }
+	virtual EMonoAnyType GetType();
 
 	virtual mono::object GetManagedObject() override { return (mono::object)m_pObject; }
 
@@ -49,15 +49,11 @@ public:
 	static void HandleException(MonoObject *pException);
 
 protected:
-	void CheckType();
-
 	virtual void *UnboxObject() override { return mono_object_unbox(m_pObject); }
 	// ~IMonoObject
 
 	MonoObject *m_pObject;
 	int m_objectHandle;
-
-	EMonoAnyType m_type;
 };
 
 template <typename T>
