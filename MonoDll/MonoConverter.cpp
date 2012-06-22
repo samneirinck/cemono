@@ -61,7 +61,7 @@ IMonoObject *CConverter::CreateObject(MonoAnyValue &any)
 				if(IMonoClass *pClass = pCryBraryAssembly->GetClass("EntityId"))
 				{
 					IMonoArray *pArgs = CreateMonoArray(1);
-					pArgs->Insert(any.u);
+					pArgs->Insert((int)any.u);
 
 					IMonoObject *pInstance = pClass->CreateInstance(pArgs);
 					SAFE_RELEASE(pClass);
