@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using CryEngine;
 using CryEngine.Async;
+using CryEngine.Async.Jobs;
+using Moq;
 using NUnit.Framework;
 
 namespace CryBrary.Tests.Async
@@ -50,6 +52,22 @@ namespace CryBrary.Tests.Async
 
             // Assert
             Assert.AreEqual(3, Awaiter.Instance.Jobs.Count);
+        }
+
+        [Test]
+        public  void OnUpdate_MockJob_IsUpdated()
+        {
+            // Arrange
+            bool updateCalled = false;
+            Mock<IAsyncJob> job = new Mock<IAsyncJob>();
+            job.Setup(j => j.Update(It.IsAny<float>())).Callback(() => updateCalled = true).Returns(true);
+
+            // Act
+            Awaiter.Instance.Jobs.Add(job.Object);
+            Awaiter.Instance.OnUpdate(1);
+
+            // Assert
+            Assert.IsTrue(updateCalled);
         }
 
     }
