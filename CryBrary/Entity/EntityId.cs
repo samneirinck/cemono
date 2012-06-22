@@ -7,6 +7,11 @@
 	{
 		internal int _value;
 
+		public EntityId(int id)
+		{
+			_value = id;
+		}
+
 		[System.CLSCompliant(false)]
 		public EntityId(uint id)
 		{
