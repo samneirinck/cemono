@@ -11,6 +11,10 @@
 
 #define _FORCEDLL
 
+#ifndef _RELEASE
+#define USE_CRY_ASSERT
+#endif
+
 // Insert your headers here
 #include <platform.h>
 #include <algorithm>

@@ -21,7 +21,7 @@ CScriptObject::CScriptObject(MonoObject *pObject)
 CScriptObject::CScriptObject(MonoObject *object, IMonoArray *pConstructorParams)
 	: m_pObject(object)
 {
-	CRY_ASSERT(pObject);
+	CRY_ASSERT(m_pObject);
 
 	if(pConstructorParams)
 		CallMethod(".ctor", pConstructorParams);
@@ -34,6 +34,8 @@ CScriptObject::CScriptObject(MonoObject *object, IMonoArray *pConstructorParams)
 
 IMonoClass *CScriptObject::GetClass()
 {
+	CRY_ASSERT(m_pObject);
+
 	MonoClass *pMonoClass = GetMonoClass();
 	CRY_ASSERT(pMonoClass);
 
@@ -72,7 +74,6 @@ IMonoObject *CScriptObject::CallMethod(const char *methodName, IMonoArray *pPara
 	if(MonoMethod *pMethod = static_cast<CScriptClass *>(pClass)->GetMonoMethod(methodName, pParams))
 	{
 		MonoObject *pException = NULL;
-
 		MonoObject *pResult = mono_runtime_invoke_array(pMethod, bStatic ? NULL : m_pObject, pParams ? (MonoArray *)pParams->GetManagedObject() : NULL, &pException);
 
 		if(pException)
