@@ -101,8 +101,17 @@ void CScriptArray::InsertNativePointer(void *ptr, int index)
 }
 
 void CScriptArray::InsertObject(IMonoObject *pObject, int index)
-{ 
-	InsertMonoObject(pObject->GetManagedObject(), index); 
+{
+	if(!pObject)
+	{
+		InsertMonoObject(NULL, index);
+		return;
+	}
+
+	if(pObject->GetType() == eMonoAnyType_Array)
+		InsertMonoArray(pObject->GetManagedObject(), index);
+	else
+		InsertMonoObject(pObject->GetManagedObject(), index); 
 }
 
 void CScriptArray::InsertAny(MonoAnyValue value, int index)
