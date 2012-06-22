@@ -7,11 +7,6 @@
 	{
 		internal int _value;
 
-		public EntityId(int id)
-		{
-			_value = id;
-		}
-
 		[System.CLSCompliant(false)]
 		public EntityId(uint id)
 		{
@@ -51,6 +46,12 @@
 		public static bool operator !=(EntityId entId1, EntityId entId2)
 		{
 			return entId1._value != entId2._value;
+		}
+
+		[System.CLSCompliant(false)]
+		public static implicit operator EntityId(uint value)
+		{
+			return new EntityId(value);
 		}
 
 		public static implicit operator EntityId(int value)

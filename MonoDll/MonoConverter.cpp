@@ -31,45 +31,17 @@ IMonoObject *CConverter::CreateObject(MonoAnyValue &any)
 	switch(any.type)
 	{
 	case eMonoAnyType_Boolean:
-		{
-			return CreateMonoObject<bool>(any.b);
-		}
-		break;
+		return CreateMonoObject<bool>(any.b);
 	case eMonoAnyType_Integer:
-		{
-			return CreateMonoObject<int>((int)any.i);
-		}
-		break;
+		return CreateMonoObject<int>(any.i);
 	case eMonoAnyType_UnsignedInteger:
-		{
-			if(IMonoAssembly *pCryBraryAssembly = gEnv->pMonoScriptSystem->GetCryBraryAssembly())
-			{
-				if(IMonoClass *pClass = pCryBraryAssembly->GetClass("EntityId"))
-				{
-					IMonoArray *pArgs = CreateMonoArray(1);
-					pArgs->Insert((int)any.u);
-
-					IMonoObject *pInstance = pClass->CreateInstance(pArgs);
-					SAFE_RELEASE(pClass);
-					return pInstance;
-				}
-			}
-		}
-		break;
+		return CreateMonoObject<unsigned int>(any.u);
 	case eMonoAnyType_Short:
-		{
-			return CreateMonoObject<short>((short)any.i);
-		}
+		return CreateMonoObject<short>((short)any.i);
 	case eMonoAnyType_UnsignedShort:
-		{
-			return CreateMonoObject<unsigned short>((unsigned short)any.u);
-		}
-		break;
+		return CreateMonoObject<unsigned short>((unsigned short)any.u);
 	case eMonoAnyType_Float:
-		{
-			return CreateMonoObject<float>(any.f);
-		}
-		break;
+		return CreateMonoObject<float>(any.f);
 	case eMonoAnyType_Vec3:
 		{
 			if(IMonoAssembly *pCryBraryAssembly = gEnv->pMonoScriptSystem->GetCryBraryAssembly())
