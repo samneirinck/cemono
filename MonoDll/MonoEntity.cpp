@@ -46,6 +46,7 @@ bool CEntity::Init(IGameObject *pGameObject)
 			pArgs->Insert(pEntity->GetId());
 
 			pEntityInfo = pClass->CreateInstance(pArgs);
+			SAFE_RELEASE(pClass);
 		}
 	}
 

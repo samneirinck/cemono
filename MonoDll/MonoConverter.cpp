@@ -63,7 +63,9 @@ IMonoObject *CConverter::CreateObject(MonoAnyValue &any)
 					IMonoArray *pArgs = CreateMonoArray(1);
 					pArgs->Insert(any.u);
 
-					return pClass->CreateInstance(pArgs);
+					IMonoObject *pInstance = pClass->CreateInstance(pArgs);
+					SAFE_RELEASE(pClass);
+					return pInstance;
 				}
 			}
 		}
@@ -93,7 +95,9 @@ IMonoObject *CConverter::CreateObject(MonoAnyValue &any)
 					pArgs->Insert(any.vec3.y);
 					pArgs->Insert(any.vec3.z);
 
-					return pClass->CreateInstance(pArgs);
+					IMonoObject *pInstance = pClass->CreateInstance(pArgs);
+					SAFE_RELEASE(pClass);
+					return pInstance;
 				}
 			}
 		}
