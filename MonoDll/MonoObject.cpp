@@ -20,7 +20,7 @@ CScriptObject::CScriptObject(MonoObject *object, IMonoArray *pConstructorParams)
 	: m_pObject(object)
 {
 	if(pConstructorParams)
-		CallMethod(".ctor(string)", pConstructorParams);
+		CallMethod(".ctor", pConstructorParams);
 	else
 		mono_runtime_object_init(m_pObject);
 
