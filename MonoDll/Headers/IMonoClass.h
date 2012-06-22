@@ -31,6 +31,11 @@ public:
 	virtual const char *GetName() = 0;
 
 	/// <summary>
+	/// Gets the namespace the class resides in.
+	/// </summary>
+	virtual const char *GetNamespace() = 0;
+
+	/// <summary>
 	/// Instantiates the class, if not already instantiated.
 	/// </summary>
 	virtual IMonoObject *CreateInstance(IMonoArray *pConstructorParams = NULL) = 0;

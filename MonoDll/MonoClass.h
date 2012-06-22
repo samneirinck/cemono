@@ -29,6 +29,7 @@ public:
 	virtual void Release() override { delete this; }
 
 	virtual const char *GetName() override { return mono_class_get_name((MonoClass *)m_pObject); }
+	virtual const char *GetNamespace() override { return mono_class_get_namespace((MonoClass *)m_pObject); }
 
 	virtual IMonoObject *CreateInstance(IMonoArray *pConstructorParams = NULL) override;
 	// ~IMonoClass
