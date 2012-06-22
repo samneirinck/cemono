@@ -11,7 +11,7 @@ CScriptClass::CScriptClass(MonoClass *pClass)
 	CRY_ASSERT(pClass);
 
 	m_pObject = (MonoObject *)pClass; 
-	m_objectHandle = mono_gchandle_new(m_pObject, false);
+	m_objectHandle = -1;
 }
 
 IMonoObject *CScriptClass::CreateInstance(IMonoArray *pConstructorParams)

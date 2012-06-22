@@ -25,7 +25,7 @@ protected:
 public:
 	CScriptObject(MonoObject *object);
 	CScriptObject(MonoObject *object, IMonoArray *pConstructorParams);
-	virtual ~CScriptObject() { mono_gchandle_free(m_objectHandle); m_pObject = 0; }
+	virtual ~CScriptObject() { if(m_objectHandle != -1) mono_gchandle_free(m_objectHandle); m_pObject = 0; }
 
 	MonoClass *GetMonoClass() { return mono_object_get_class(m_pObject); }
 

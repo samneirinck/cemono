@@ -34,8 +34,6 @@ CScriptObject::CScriptObject(MonoObject *object, IMonoArray *pConstructorParams)
 
 IMonoClass *CScriptObject::GetClass()
 {
-	CRY_ASSERT(m_pObject);
-
 	MonoClass *pMonoClass = GetMonoClass();
 	CRY_ASSERT(pMonoClass);
 
