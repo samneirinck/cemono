@@ -125,32 +125,14 @@
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Mono.Cecil">
-      <HintPath>References\Mono.Cecil.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Mono.Cecil.Mdb">
-      <HintPath>References\Mono.Cecil.Mdb.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="PresentationCore" />
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.XML" />
-    <Reference Include="System.Xml.Linq" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Actor\Actor.cs" />
     <Compile Include="Actor\NativeActor.cs" />
-    <Compile Include="Async\AsyncJob.cs" />
+    <Compile Include="Async\Jobs\AsyncJob.cs" />
     <Compile Include="Async\Awaiter.cs" />
     <Compile Include="Async\Delay.cs" />
-    <Compile Include="Async\FrameDelayJob.cs" />
-    <Compile Include="Async\IAsyncJob.cs" />
-    <Compile Include="Async\TimeDelayJob.cs" />
+    <Compile Include="Async\Jobs\FrameDelayJob.cs" />
+    <Compile Include="Async\Jobs\IAsyncJob.cs" />
+    <Compile Include="Async\Jobs\TimeDelayJob.cs" />
     <Compile Include="Engine\Level.cs" />
     <Compile Include="Entity\EntityBase.cs" />
     <Compile Include="Engine\TimeOfDay.cs" />
@@ -244,7 +226,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <EmbeddedResource Include="Sandbox\FormLoader.resx">
       <DependentUpon>FormLoader.cs</DependentUpon>
@@ -261,6 +242,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Unit Testing\Reports\Resources\TestSuccess.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
