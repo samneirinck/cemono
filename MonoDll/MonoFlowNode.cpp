@@ -49,6 +49,7 @@ bool CFlowNode::CreatedNode(TFlowNodeId id, const char *name, TFlowNodeTypeId ty
 				pArgs->Insert(m_pActInfo->pGraph->GetGraphId());
 
 				pNodeInfo = pClass->CreateInstance(pArgs);
+				SAFE_RELEASE(pClass);
 			}
 		}
 
