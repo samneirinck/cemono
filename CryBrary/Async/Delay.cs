@@ -19,7 +19,7 @@ namespace CryEngine
         /// <returns></returns>
         public static Task CreateTaskFromJob(IAsyncJob job)
         {
-            job.Task.ConfigureAwait(false).GetAwaiter();
+//            job.Task.ConfigureAwait(false).GetAwaiter();
             Awaiter.Instance.Jobs.Add(job);
             return job.Task;
         }
