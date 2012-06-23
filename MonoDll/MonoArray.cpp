@@ -34,8 +34,11 @@ CScriptArray::~CScriptArray()
 
 void CScriptArray::Resize(int size)
 {
+	int oldArraySize = GetSize();
+	if(oldArraySize == size)
+		return;
+
 	MonoArray *pOldArray = (MonoArray *)m_pObject;
-	int oldArraySize = mono_array_length(pOldArray);
 
 	m_pObject = (MonoObject *)mono_array_new(mono_domain_get(), m_pElementClass, size);
 
