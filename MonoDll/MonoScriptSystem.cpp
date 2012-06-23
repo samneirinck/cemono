@@ -104,6 +104,9 @@ CScriptSystem::CScriptSystem()
 
 CScriptSystem::~CScriptSystem()
 {
+	for each(auto pair in CScriptClass::m_classRegistry)
+		SAFE_RELEASE(pair.second);
+
 	// Force garbage collection of all generations.
 	mono_gc_collect(mono_gc_max_generation());
 
@@ -176,11 +179,8 @@ bool CScriptSystem::CompleteInit()
 	CryModuleMemoryInfo memInfo;
 	CryModuleGetMemoryInfo(&memInfo);
 
-	IMonoClass *pCryStats = m_pCryBraryAssembly->GetClass("CryStats", "CryEngine.Utilities");
-	auto memoryUsage = pCryStats->GetProperty("MemoryUsage")->Unbox<long>();
-	SAFE_RELEASE(pCryStats);
-
-	CryLogAlways("		Initializing CryMono done, MemUsage=%iKb", (memInfo.allocated + memoryUsage) / 1024);
+	IMonoClass *pCryStats = m_pCryBraryAssembly->GetClass("CryStats", "CryEngine.Utilities");;
+	CryLogAlways("		Initializing CryMono done, MemUsage=%iKb", (memInfo.allocated + pCryStats->GetProperty("MemoryUsage")->Unbox<long>()) / 1024);
 
 	return true;
 }
@@ -309,7 +309,7 @@ bool CScriptSystem::DoReload(bool initialLoad)
 		SAFE_RELEASE(m_AppDomainSerializer);
 		SAFE_RELEASE(pNewScriptManager);
 		
-		SAFE_DELETE(pNewScriptDomain);
+		SAFE_RELEASE(pNewScriptDomain);
 
 		if(!initialLoad)
 		{
@@ -384,7 +384,6 @@ bool CScriptSystem::InitializeSystems(IMonoAssembly *pCryBraryAssembly)
 	pArray->Insert(gEnv->IsEditor());
 	pArray->Insert(gEnv->IsDedicated());
 	pClass->CallMethod("InitializeNetworkStatics", pArray, true);
-	SAFE_RELEASE(pClass);
 	SAFE_RELEASE(pArray);
 
 	return true;
@@ -473,7 +472,6 @@ IMonoAssembly *CScriptSystem::GetAssembly(const char *file, bool shadowCopy)
 				pDriverClass->CallMethod("Convert", pArgs, true);
 
 				SAFE_RELEASE(pArgs);
-				SAFE_RELEASE(pDriverClass);
 			}
 		}
 	}

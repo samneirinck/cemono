@@ -34,7 +34,7 @@ const char *CScriptAssembly::Relocate(const char *originalAssemblyPath)
 IMonoClass *CScriptAssembly::GetClass(const char *className, const char *nameSpace)
 { 
 	if(MonoClass *monoClass = mono_class_from_name(m_pImage, nameSpace, className))
-		return new CScriptClass(monoClass);
+		return CScriptClass::TryGetClass(monoClass);
 
 	MonoWarning("Failed to get class %s.%s", nameSpace, className);
 	return NULL;

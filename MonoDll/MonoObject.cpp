@@ -34,10 +34,7 @@ CScriptObject::CScriptObject(MonoObject *object, IMonoArray *pConstructorParams)
 
 IMonoClass *CScriptObject::GetClass()
 {
-	MonoClass *pMonoClass = GetMonoClass();
-	CRY_ASSERT(pMonoClass);
-
-	return new CScriptClass(pMonoClass);
+	return CScriptClass::TryGetClass(GetMonoClass());
 }
 
 EMonoAnyType CScriptObject::GetType()

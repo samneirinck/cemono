@@ -170,8 +170,6 @@ namespace CryEngine
 
 			foreach(EntityId id in ents)
 			{
-                Debug.LogAlways("[C# EntityId] {0}", id);
-
 				var ent = Get<T>(id);
 				if(ent != null)
 					yield return ent;

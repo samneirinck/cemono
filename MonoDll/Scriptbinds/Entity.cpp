@@ -114,7 +114,6 @@ bool CScriptbind_Entity::OnRemove(IEntity *pIEntity)
 		auto result = pEntityClass->CallMethod("InternalRemove", pArgs, true)->Unbox<bool>();
 
 		SAFE_RELEASE(pArgs);
-		SAFE_RELEASE(pEntityClass);
 
 		if(!result)
 			return false;
