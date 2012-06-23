@@ -57,40 +57,4 @@ protected:
 	int m_objectHandle;
 };
 
-template <typename T>
-static MonoClass *GetMonoClassOfType(T t)
-{
-	if(std::is_same<T, int>::value)
-		return mono_get_int32_class();
-	else if(std::is_same<T, uint32>::value)
-		return mono_get_uint32_class();
-	else if(std::is_same<T, short>::value)
-		return mono_get_int16_class();
-	else if(std::is_same<T, uint16>::value)
-		return mono_get_uint16_class();
-	else if(std::is_same<T, float>::value)
-		return mono_get_single_class();
-	else if(std::is_same<T, bool>::value)
-		return mono_get_boolean_class();
-
-	return NULL;
-}
-
-template <typename T>
-static IMonoObject *CreateMonoObject(T t)
-{
-	if(std::is_same<T, MonoString *>::value)
-		MonoWarning("Trying to create MonoObject using a MonoString");
-	if(std::is_same<T, const char *>::value)
-		MonoWarning("Trying to create MonoObject using string");//return mono_value_box(mono_domain_get(), mono_get_string_class(), ToMonoString((const char *)t));
-	else
-	{
-		if(MonoClass *pClass = GetMonoClassOfType<T>(t))
-			return *(mono::object)mono_value_box(mono_domain_get(), pClass, &t);
-	}
-
-	MonoWarning("Failed to create IMonoObject, try using IMonoConverter::CreateObjectOfCustomType instead.");
-	return NULL;
-}
-
 #endif //__MONO_OBJECT_H__
