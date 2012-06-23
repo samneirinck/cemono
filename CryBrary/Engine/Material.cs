@@ -154,24 +154,36 @@ namespace CryEngine
 			return _SetGetMaterialParamFloat(MaterialPointer, paramName, ref value, true);
 		}
 
-		public bool SetParam(string paramName, Vec3 value)
+		public bool SetParam(string paramName, Color value)
 		{
-			return _SetGetMaterialParamVec3(MaterialPointer, paramName, ref value, false);
+			Vec3 vecValue = new Vec3(value.R, value.G, value.B);
+			var result = _SetGetMaterialParamVec3(MaterialPointer, paramName, ref vecValue, false);
+
+			Opacity = value.A;
+
+			return result;
 		}
 
-		public Vec3 GetParamVec3(string paramName)
+		public Color GetParamColor(string paramName)
 		{
-			Vec3 value;
+			Color value;
 			TryGetParam(paramName, out value);
 
 			return value;
 		}
 
-		public bool TryGetParam(string paramName, out Vec3 value)
+		public bool TryGetParam(string paramName, out Color value)
 		{
-			value = Vec3.Zero;
+			Vec3 vecVal = Vec3.Zero;
+			bool result = _SetGetMaterialParamVec3(MaterialPointer, paramName, ref vecVal, true);
 
-			return _SetGetMaterialParamVec3(MaterialPointer, paramName, ref value, true);
+			value = new Color();
+			value.R = vecVal.X;
+			value.G = vecVal.Y;
+			value.B = vecVal.Z;
+			value.A = Opacity;
+
+			return result;
 		}
 
 		public void SetShaderParam(string paramName, float newVal)
@@ -210,21 +222,9 @@ namespace CryEngine
 		public float Glow { get { return GetParam("glow"); } set { SetParam("glow", value); } }
 		public float Shininess { get { return GetParam("shininess"); } set { SetParam("shininess", value); } }
 
-		public Vec3 DiffuseColor 
-		{
-			get { return GetParamVec3("diffuse"); }
-			set 
-			{
-				var alpha = Opacity;  
-				SetParam("diffuse", value);
-
-				// Setting diffuse overrides alpha, so we have to restore it manually.
-				Opacity = alpha;
-			}
-		}
-
-		public Vec3 EmissiveColor { get { return GetParamVec3("emissive"); } set { SetParam("emissive", value); } }
-		public Vec3 SpecularColor { get { return GetParamVec3("specular"); } set { SetParam("specular", value); } }
+		public Color DiffuseColor { get { return GetParamColor("diffuse"); } set { SetParam("diffuse", value); } }
+		public Color EmissiveColor { get { return GetParamColor("emissive"); } set { SetParam("emissive", value); } }
+		public Color SpecularColor { get { return GetParamColor("specular"); } set { SetParam("specular", value); } }
 
 		public string SurfaceType { get { return _GetSurfaceTypeName(MaterialPointer); } }
 

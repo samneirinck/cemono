@@ -1327,6 +1327,11 @@ namespace CryEngine
 			return Equals((Vec3)value);
 		}
 
+		public static implicit operator Color(Vec3 vec)
+		{
+			return new Color(vec.X, vec.Y, vec.Z);
+		}
+
 #if SlimDX1xInterop
         /// <summary>
         /// Performs an implicit conversion from <see cref="CryEngine.Vec3"/> to <see cref="SlimDX.Vector3"/>.
