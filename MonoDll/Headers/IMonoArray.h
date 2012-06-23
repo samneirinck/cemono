@@ -50,6 +50,11 @@ public:
 	virtual IMonoClass *GetElementClass() = 0;
 
 	/// <summary>
+	/// Gets the default element class, used when a specific element types isn't specified.
+	/// </summary>
+	virtual IMonoClass *GetDefaultElementClass() = 0;
+
+	/// <summary>
 	/// Retrieves an IMonoObject at the selected index of the array.
 	/// </summary>
 	virtual IMonoObject *GetItem(int index) = 0;

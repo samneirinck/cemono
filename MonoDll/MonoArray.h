@@ -34,6 +34,7 @@ public:
 	virtual int GetSize() const override { return (int)mono_array_length((MonoArray *)m_pObject); }
 
 	virtual IMonoClass *GetElementClass() override { return new CScriptClass(m_pElementClass); }
+	virtual IMonoClass *GetDefaultElementClass() { return new CScriptClass(mono_get_object_class()); }
 
 	virtual IMonoObject *GetItem(int index) override;
 	virtual const char *GetItemString(int index) override { return ToCryString(mono_array_get((MonoArray *)m_pObject, mono::string , index)); }
