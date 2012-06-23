@@ -100,7 +100,7 @@
             Gets / sets the entity flags.
             </summary>
         </member>
-        <member name="M:CryEngine.EntityBase.EntityMethods.RegisterClass(CryEngine.EntityConfig)">
+        <member name="M:CryEngine.EntityBase.EntityMethods.RegisterClass(CryEngine.Initialization.EntityRegistrationParams)">
             <summary>
             Register a new entity type.
             </summary>
@@ -5298,16 +5298,6 @@
         <member name="F:CryEngine.EntityClassFlags.Default">
             <summary>
             If this is default entity class.
-            </summary>
-        </member>
-        <member name="F:CryEngine.EntityConfig.registerParams">
-            <summary>
-            The registration information.
-            </summary>
-        </member>
-        <member name="F:CryEngine.EntityConfig.properties">
-            <summary>
-            The properties that will be displayed inside Sandbox.
             </summary>
         </member>
         <member name="M:CryEngine.FlowNode.OnPortActivated(System.Int32,System.Object)">

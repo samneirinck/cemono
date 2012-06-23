@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
+using CryEngine.Initialization;
+
 namespace CryEngine
 {
 	internal interface INativeEntityMethods
 	{
-		bool RegisterClass(EntityConfig config);
+        bool RegisterClass(EntityRegistrationParams config);
 	}
 
 	/// <summary>
@@ -27,9 +29,9 @@ namespace CryEngine
 			/// </summary>
 			/// <param name="config">The Entity configuration.</param>
 			/// <returns>True if registration succeeded, otherwise false.</returns>
-			public bool RegisterClass(EntityConfig config)
+            public bool RegisterClass(EntityRegistrationParams config)
 			{
-				return _RegisterEntityClass(config.registerParams, config.properties);
+				return _RegisterEntityClass(config);
 			}
 		}
 
@@ -55,7 +57,7 @@ namespace CryEngine
 		extern internal static object[] _GetEntitiesInBox(BoundingBox bbox, EntityQueryFlags flags);
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static bool _RegisterEntityClass(EntityRegisterParams registerParams, object[] properties);
+        extern internal static bool _RegisterEntityClass(EntityRegistrationParams registerParams);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static void _BreakIntoPieces(IntPtr ptr, int slot, int piecesSlot, BreakageParameters breakageParams);

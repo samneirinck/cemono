@@ -15,13 +15,6 @@ namespace CryEngine
 	/// </summary>
 	public abstract partial class Entity : EntityBase
 	{
-		internal static void Load(CryScript script)
-		{
-			//LoadFlowNode(ref script, true);
-
-			Methods.RegisterClass(GetEntityConfig(script.Type));
-		}
-
 		/// <summary>
 		/// Initializes the entity, not recommended to set manually.
 		/// </summary>
@@ -253,41 +246,6 @@ namespace CryEngine
 			return _GetStaticObjectFilePath(EntityPointer, slot);
 		}
 
-		internal static EntityConfig GetEntityConfig(Type type)
-		{
-			var properties = type.GetProperties();
-			var fields = type.GetFields();
-			var entityProperties = new List<object>();
-
-			//Process all properties
-			properties.ForEach(property =>
-			                   	{
-									if(property.ContainsAttribute<EditorPropertyAttribute>())
-									{
-										var attribute = property.GetAttribute<EditorPropertyAttribute>();
-										EntityPropertyType propertyType = GetEditorType(property.PropertyType, attribute.Type);
-										var limits = new EntityPropertyLimits(attribute.Min, attribute.Max);
-
-										entityProperties.Add(new EntityProperty(property.Name, attribute.Description, propertyType, limits, attribute.Flags));
-									}
-			                   	});
-
-			//Process all fields
-			fields.ForEach(field =>
-			               	{
-								if(field.ContainsAttribute<EditorPropertyAttribute>())
-								{
-									var attribute = field.GetAttribute<EditorPropertyAttribute>();
-									EntityPropertyType propertyType = GetEditorType(field.FieldType, attribute.Type);
-									var limits = new EntityPropertyLimits(attribute.Min, attribute.Max);
-
-									entityProperties.Add(new EntityProperty(field.Name, attribute.Description, propertyType, limits, attribute.Flags));
-								}
-			               	});
-
-			return new EntityConfig(GetRegistrationConfig(type), entityProperties.ToArray());
-		}
-
 		internal static EntityPropertyType GetEditorType(Type type, EntityPropertyType propertyType)
 		{
 			//If a special type is needed, do this here.
@@ -333,14 +291,6 @@ namespace CryEngine
 		{
 			return new NodeConfig(FlowNodeCategory.Approved, "", FlowNodeFlags.HideUI | FlowNodeFlags.TargetEntity);
 		}*/
-
-		internal static EntityRegisterParams GetRegistrationConfig(Type type)
-		{
-			var entityAttribute = type.ContainsAttribute<EntityAttribute>() ? type.GetAttribute<EntityAttribute>() : new EntityAttribute();
-
-			return new EntityRegisterParams(entityAttribute.Name ?? type.Name, entityAttribute.Category, entityAttribute.EditorHelper,
-					entityAttribute.Icon, entityAttribute.Flags);
-		}
 		#endregion
 	}
 

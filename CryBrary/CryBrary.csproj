@@ -168,6 +168,7 @@
     <Compile Include="Lua\ScriptTable.cs" />
     <Compile Include="Math\Collision.cs" />
     <Compile Include="Misc\NativeMethods.cs" />
+    <Compile Include="Script Handling\ScriptRegistration.cs" />
     <Compile Include="Serialization\CrySerializer.cs" />
     <Compile Include="Math\BoundingBox.cs" />
     <Compile Include="Math\BoundingSphere.cs" />

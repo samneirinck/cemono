@@ -61,18 +61,18 @@ namespace CryEngine
 		#region Statics
 		internal static void Load(CryScript script)
 		{
-			bool registerActorClass = true;
-			bool isAI = false;
+            var registrationParams = new ActorRegistrationParams();
 
 			ActorAttribute attr;
 			if(script.Type.TryGetAttribute(out attr))
 			{
-				registerActorClass = attr.useMonoActor;
-				isAI = attr.isAI;
+				registrationParams.useMonoActor = attr.useMonoActor;
+				registrationParams.isAI = attr.isAI;
 			}
+            else
+                registrationParams.useMonoActor = true;
 
-			if(registerActorClass)
-				Actormethods.RegisterClass(script.ScriptName, isAI);
+            ScriptRegistration.Register(script, registrationParams);
 		}
 
 		public static Actor Get(int channelId)

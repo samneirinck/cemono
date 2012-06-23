@@ -147,7 +147,10 @@ bool CScriptbind_Entity::RegisterEntityClass(SEntityRegistrationParams params)
 	
 		for	(int i = 0; i < numProperties; ++i)
 		{
-			SMonoEntityProperty monoProperty = propertiesArray->GetItem(i)->Unbox<SMonoEntityProperty>();
+			IMonoObject *pItem = propertiesArray->GetItem(i);
+			CRY_ASSERT(pItem);
+
+			SMonoEntityProperty monoProperty = pItem->Unbox<SMonoEntityProperty>();
 
 			IEntityPropertyHandler::SPropertyInfo propertyInfo;
 

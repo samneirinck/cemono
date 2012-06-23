@@ -1,13 +1,60 @@
 ﻿using System;
-
 using System.Collections.Generic;
 
 using CryEngine.Initialization;
+using CryEngine.Extensions;
 
 namespace CryEngine
 {
 	public partial class Entity
 	{
+        internal static void Load(CryScript script)
+        {
+            //LoadFlowNode(ref script, true);
+
+            var properties = script.Type.GetProperties();
+            var fields = script.Type.GetFields();
+            var entityProperties = new List<object>();
+
+            EditorPropertyAttribute propertyAttribute;
+            properties.ForEach(property =>
+            {
+                if (property.TryGetAttribute(out propertyAttribute))
+                {
+                    EntityPropertyType propertyType = GetEditorType(property.PropertyType, propertyAttribute.Type);
+                    var limits = new EntityPropertyLimits(propertyAttribute.Min, propertyAttribute.Max);
+
+                    entityProperties.Add(new EntityProperty(property.Name, propertyAttribute.Description, propertyType, limits, propertyAttribute.Flags));
+                }
+            });
+
+            fields.ForEach(field =>
+            {
+                if (field.TryGetAttribute(out propertyAttribute))
+                {
+                    EntityPropertyType propertyType = GetEditorType(field.FieldType, propertyAttribute.Type);
+                    var limits = new EntityPropertyLimits(propertyAttribute.Min, propertyAttribute.Max);
+
+                    entityProperties.Add(new EntityProperty(field.Name, propertyAttribute.Description, propertyType, limits, propertyAttribute.Flags));
+                }
+            });
+
+            var registrationParams = new EntityRegistrationParams();
+            registrationParams.properties = entityProperties.ToArray();
+
+            EntityAttribute entAttribute;
+            if (script.Type.TryGetAttribute(out entAttribute))
+            {
+                registrationParams.name = entAttribute.Name;
+                registrationParams.category = entAttribute.Category;
+                registrationParams.editorHelper = entAttribute.EditorHelper;
+                registrationParams.editorIcon = entAttribute.Icon;
+                registrationParams.flags = entAttribute.Flags;
+            }
+
+            ScriptRegistration.Register(script, registrationParams);
+        }
+
 		/// <summary>
 		/// Spawn a new instance of entity type T.
 		/// </summary>
@@ -238,56 +285,5 @@ namespace CryEngine
 		/// If this is default entity class.
 		/// </summary>
 		Default = 0x0002,
-	}
-
-	struct EntityConfig
-	{
-		public EntityConfig(EntityRegisterParams _params, object[] props)
-			: this()
-		{
-			registerParams = _params;
-			properties = props;
-		}
-
-		/// <summary>
-		/// The registration information.
-		/// </summary>
-		public EntityRegisterParams registerParams;
-		/// <summary>
-		/// The properties that will be displayed inside Sandbox.
-		/// </summary>
-		public object[] properties;
-	}
-
-	struct EntityRegisterParams
-	{
-		public EntityRegisterParams(string helper, string icon, EntityClassFlags flags)
-			: this()
-		{
-			EditorHelper = helper;
-			EditorIcon = icon;
-
-			Flags = flags;
-		}
-
-		public EntityRegisterParams(string name, string category, string helper, string icon, EntityClassFlags flags)
-			: this()
-		{
-			Name = name;
-			Category = category;
-
-			EditorHelper = helper;
-			EditorIcon = icon;
-
-			Flags = flags;
-		}
-
-		public string Name;
-		public string Category;
-
-		public string EditorHelper;
-		public string EditorIcon;
-
-		public EntityClassFlags Flags;
 	}
 }

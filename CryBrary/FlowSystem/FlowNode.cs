@@ -62,29 +62,19 @@ namespace CryEngine
 			if(!script.Type.GetMembers().Any(member => member.ContainsAttribute<PortAttribute>()))
 				return;
 
-			string category;
-			var nodeName = script.ScriptName;
+            var registrationParams = new FlowNodeRegistrationParams();
 
-			if(!entityNode)
+			FlowNodeAttribute nodeInfo;
+			if(script.Type.TryGetAttribute(out nodeInfo))
 			{
-				category = script.Type.Namespace;
+                if (!string.IsNullOrEmpty(nodeInfo.UICategory))
+                    registrationParams.category = nodeInfo.UICategory;
 
-				FlowNodeAttribute nodeInfo;
-				if(script.Type.TryGetAttribute(out nodeInfo))
-				{
-					if(!string.IsNullOrEmpty(nodeInfo.UICategory))
-						category = nodeInfo.UICategory;
-
-					if(!string.IsNullOrEmpty(nodeInfo.Name))
-						nodeName = nodeInfo.Name;
-				}
-
-				script.ScriptName = category + ":" + nodeName;
+                if (!string.IsNullOrEmpty(nodeInfo.Name))
+                    registrationParams.name = nodeInfo.Name;
 			}
-			else
-				category = "entity";
 
-			ScriptManager.FlowNodes.Add(category + ":" + nodeName);
+            ScriptRegistration.Register(ref script, registrationParams);
 		}
 
 		internal static void Register(string typeName)
