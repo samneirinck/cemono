@@ -36,7 +36,6 @@ enum EMonoAnyType
 
 /// <summary>
 /// Simple class used to easily convert common C++ types to their C# equivalents.
-/// Serialization support is built-in, although untested at the moment. Will be functional in time for CryMono 0.3.
 /// </summary>
 struct MonoAnyValue
 {
