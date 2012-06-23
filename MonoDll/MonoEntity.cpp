@@ -36,11 +36,10 @@ bool CEntity::Init(IGameObject *pGameObject)
 
 	m_pScript = gEnv->pMonoScriptSystem->InstantiateScript(pEntityClass->GetName(), eScriptFlag_Entity);
 
-	IMonoArray *pArgs = CreateMonoArray(2);
-	pArgs->InsertNativePointer(pEntity);
-	pArgs->Insert(pEntity->GetId());
+	IMonoClass *pEntityInfoClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("EntityInfo");
 
-	m_pScript->CallMethod("InternalSpawn", pArgs);
+	CallMonoScript<void>(m_pScript, "InternalSpawn", pEntityInfoClass->BoxObject(&SMonoEntityInfo(pEntity)));
+	SAFE_RELEASE(pEntityInfoClass);
 
 	int numProperties;
 	auto pProperties = static_cast<CEntityPropertyHandler *>(pEntityClass->GetPropertyHandler())->GetQueuedProperties(pEntity->GetId(), numProperties);

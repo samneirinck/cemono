@@ -44,20 +44,8 @@ IMonoObject *CConverter::CreateObject(MonoAnyValue &any)
 		return CreateMonoObject<float>(any.f);
 	case eMonoAnyType_Vec3:
 		{
-			if(IMonoAssembly *pCryBraryAssembly = gEnv->pMonoScriptSystem->GetCryBraryAssembly())
-			{
-				if(IMonoClass *pClass = pCryBraryAssembly->GetClass("Vec3"))
-				{
-					IMonoArray *pArgs = CreateMonoArray(3);
-					pArgs->Insert(any.vec3.x);
-					pArgs->Insert(any.vec3.y);
-					pArgs->Insert(any.vec3.z);
-
-					IMonoObject *pInstance = pClass->CreateInstance(pArgs);
-					SAFE_RELEASE(pClass);
-					return pInstance;
-				}
-			}
+			IMonoClass *pVec3Class = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("Vec3");
+			return pVec3Class->BoxObject(&any.vec3);
 		}
 		break;
 	}

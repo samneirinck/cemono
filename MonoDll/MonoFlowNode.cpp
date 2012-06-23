@@ -38,22 +38,8 @@ bool CFlowNode::CreatedNode(TFlowNodeId id, const char *name, TFlowNodeTypeId ty
 
 		IMonoObject *pScript = gEnv->pMonoScriptSystem->InstantiateScript(m_pNodeType->GetScriptName(), m_pNodeType->IsEntityNode() ? eScriptFlag_Entity : eScriptFlag_FlowNode);
 
-		IMonoObject *pNodeInfo = NULL;
-		if(IMonoAssembly *pCryBraryAssembly = gEnv->pMonoScriptSystem->GetCryBraryAssembly())
-		{
-			if(IMonoClass *pClass = pCryBraryAssembly->GetClass("NodeInfo"))
-			{
-				IMonoArray *pArgs = CreateMonoArray(3);
-				pArgs->InsertNativePointer(this);
-				pArgs->Insert(id);
-				pArgs->Insert(m_pActInfo->pGraph->GetGraphId());
-
-				pNodeInfo = pClass->CreateInstance(pArgs);
-				SAFE_RELEASE(pClass);
-			}
-		}
-
-		CallMonoScript<void>(pScript, "InternalInitialize", pNodeInfo);
+		IMonoClass *pNodeInfo = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("NodeInfo");
+		CallMonoScript<void>(pScript, "InternalInitialize", pNodeInfo->BoxObject(&SMonoNodeInfo(this, id, m_pActInfo->pGraph->GetGraphId())));
 
 		m_pScript = pScript;
 

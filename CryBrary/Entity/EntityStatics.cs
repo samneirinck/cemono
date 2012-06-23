@@ -26,7 +26,7 @@ namespace CryEngine
 				var ent = new T();
 
 				ScriptManager.AddScriptInstance(ent, ScriptType.Entity);
-				ent.InternalSpawn(info.IEntityPtr, info.Id);
+				ent.InternalSpawn(info);
 
 				return ent;
 			}
