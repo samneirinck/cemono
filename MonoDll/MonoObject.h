@@ -29,7 +29,7 @@ public:
 
 	MonoClass *GetMonoClass() { return mono_object_get_class(m_pObject); }
 
-	void SetObject(mono::object object) { m_pObject = (MonoObject *)object; }
+	void SetObject(mono::object object);
 
 	// IMonoObject
 	virtual IMonoObject *CallMethod(const char *methodName, IMonoArray *params = NULL, bool bStatic = false);

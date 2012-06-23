@@ -32,6 +32,14 @@ CScriptObject::CScriptObject(MonoObject *object, IMonoArray *pConstructorParams)
 	m_objectHandle = mono_gchandle_new(m_pObject, false);
 }
 
+void CScriptObject::SetObject(mono::object object) 
+{
+	m_pObject = (MonoObject *)object; 
+
+	if(m_objectHandle != -1) // Don't set the gc handle if we've previously refrained from it
+		m_objectHandle = mono_gchandle_new(m_pObject, false);
+}
+
 IMonoClass *CScriptObject::GetClass()
 {
 	return CScriptClass::TryGetClass(GetMonoClass());
