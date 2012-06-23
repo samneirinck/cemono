@@ -21,7 +21,7 @@ namespace CryEngine
 		/// <param name="entInfo">Struct containing the IEntity pointer and EntityId.</param>
 		/// <returns>IsEntityFlowNode</returns>
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		internal virtual bool InternalSpawn(EntityInfo entInfo)
+		internal virtual void InternalSpawn(EntityInfo entInfo)
 		{
 			EntityPointer = entInfo.IEntityPtr;
 			Id = entInfo.Id;
@@ -50,8 +50,6 @@ namespace CryEngine
 			}
 
 			OnSpawn();
-
-			return IsEntityFlowNode();
 		}
 
 		bool HasEditorPropertyBeenSet(object value, Type type)
@@ -61,19 +59,6 @@ namespace CryEngine
 				defaultVal = Activator.CreateInstance(type);
 
 			return value != defaultVal;
-		}
-
-		/// <summary>
-		/// Returns true if this entity contains input or output ports.
-		/// </summary>
-		/// <returns></returns>
-		public bool IsEntityFlowNode()
-		{
-			var members = GetType().GetMembers(BindingFlags.Instance);
-			if(!members.Any())
-				return false;
-
-			return members.Any(member => member.ContainsAttribute<PortAttribute>());
 		}
 
 		#region Methods & Fields
