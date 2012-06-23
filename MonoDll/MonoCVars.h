@@ -6,6 +6,8 @@ struct SCVars
 	int mono_exceptionsTriggerMessageBoxes;
 	int mono_exceptionsTriggerFatalErrors;
 
+	int mono_boxUnsignedIntegersAsEntityIds;
+
 	SCVars()
 	{
 		memset(this,0,sizeof(SCVars));

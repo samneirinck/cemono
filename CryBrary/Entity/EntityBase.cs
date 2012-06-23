@@ -50,9 +50,9 @@ namespace CryEngine
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static uint _FindEntity(string name);
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static EntityId[] _GetEntitiesByClass(string className);
+        extern internal static object[] _GetEntitiesByClass(string className);
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static EntityId[] _GetEntitiesInBox(BoundingBox bbox, EntityQueryFlags flags);
+		extern internal static object[] _GetEntitiesInBox(BoundingBox bbox, EntityQueryFlags flags);
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static bool _RegisterEntityClass(EntityRegisterParams registerParams, object[] properties);

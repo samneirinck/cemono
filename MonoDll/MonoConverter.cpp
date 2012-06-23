@@ -1,11 +1,12 @@
 #include "StdAfx.h"
 #include "MonoConverter.h"
 
-#include <MonoArray.h>
-#include <MonoAssembly.h>
-#include "MonoClass.h"
+#include "MonoCVars.h"
 
-#include <MonoAnyValue.h>
+#include "MonoArray.h"
+#include "MonoObject.h"
+
+#include <IMonoAssembly.h>
 
 IMonoArray *CConverter::CreateArray(int numArgs, IMonoClass *pElementClass)
 {
@@ -35,7 +36,16 @@ IMonoObject *CConverter::CreateObject(MonoAnyValue &any)
 	case eMonoAnyType_Integer:
 		return *(mono::object)mono_value_box(mono_domain_get(), mono_get_int32_class(), &any.i);
 	case eMonoAnyType_UnsignedInteger:
-		return *(mono::object)mono_value_box(mono_domain_get(), mono_get_uint32_class(), &any.u);
+		{
+			if(g_pMonoCVars->mono_boxUnsignedIntegersAsEntityIds)
+			{
+				IMonoClass *pEntityIdClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("EntityId");
+				return pEntityIdClass->BoxObject(&mono::entityId(any.u));
+			}
+			else
+				return *(mono::object)mono_value_box(mono_domain_get(), mono_get_uint32_class(), &any.u);
+		}
+		break;
 	case eMonoAnyType_Short:
 		return *(mono::object)mono_value_box(mono_domain_get(), mono_get_int16_class(), &any.i);
 	case eMonoAnyType_UnsignedShort:

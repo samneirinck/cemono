@@ -10,6 +10,8 @@
 #include "MonoArray.h"
 #include "MonoClass.h"
 
+#include "MonoCVars.h"
+
 #include <IEntityClass.h>
 
 #include <IGameObjectSystem.h>
@@ -243,9 +245,19 @@ mono::object CScriptbind_Entity::GetEntitiesByClass(mono::string _class)
 	if(classEntities.size()<1)
 		return NULL;
 
-	IMonoArray *pArray = CreateMonoArray(classEntities.size(), gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("EntityId"));
-	for(std::vector<EntityId>::iterator it = classEntities.begin(); it != classEntities.end(); ++it)
-		pArray->Insert(*it);
+	IMonoClass *pEntityIdClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("EntityId");
+
+	IMonoArray *pArray = CreateMonoArray(classEntities.size());
+	if(g_pMonoCVars->mono_boxUnsignedIntegersAsEntityIds)
+	{
+		for(std::vector<EntityId>::iterator it = classEntities.begin(); it != classEntities.end(); ++it)
+			pArray->Insert(*it);
+	}
+	else
+	{
+		for(std::vector<EntityId>::iterator it = classEntities.begin(); it != classEntities.end(); ++it)
+			pArray->Insert(pEntityIdClass->BoxObject(&mono::entityId(*it)));
+	}
 
 	return pArray->GetManagedObject();
 }
@@ -254,11 +266,21 @@ mono::object CScriptbind_Entity::GetEntitiesInBox(AABB bbox, int objTypes)
 {
 	IPhysicalEntity **pEnts = NULL;
 
-	int numEnts = gEnv->pPhysicalWorld->GetEntitiesInBox(bbox.min, bbox.max, pEnts, objTypes);
-	IMonoArray *pEntities = CreateMonoArray(numEnts, gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("EntityId"));
+	IMonoClass *pEntityIdClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("EntityId");
 
-	for(int i = 0; i < numEnts; i++)
-		pEntities->Insert(gEnv->pPhysicalWorld->GetPhysicalEntityId(pEnts[i]));
+	int numEnts = gEnv->pPhysicalWorld->GetEntitiesInBox(bbox.min, bbox.max, pEnts, objTypes);
+	IMonoArray *pEntities = CreateMonoArray(numEnts);
+
+	if(g_pMonoCVars->mono_boxUnsignedIntegersAsEntityIds)
+	{
+		for(int i = 0; i < numEnts; i++)
+			pEntities->Insert(gEnv->pPhysicalWorld->GetPhysicalEntityId(pEnts[i]));
+	}
+	else
+	{
+		for(int i = 0; i < numEnts; i++)
+			pEntities->Insert(pEntityIdClass->BoxObject(&mono::entityId(gEnv->pPhysicalWorld->GetPhysicalEntityId(pEnts[i]))));
+	}
 
 	return pEntities->GetManagedObject();
 }
