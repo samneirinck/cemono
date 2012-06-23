@@ -72,6 +72,7 @@ public:
 
 	/// <summary>
 	/// Inserts a native pointer into the array at the specified index. (-1 = back)
+	/// Note: This method is currently very unreliable.
 	/// </summary>
 	virtual void InsertNativePointer(void *ptr, int index = -1) = 0;
 
