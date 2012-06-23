@@ -163,7 +163,7 @@ namespace CryEngine
 			return GetEntitiesCommon<T>(_GetEntitiesInBox(bbox, flags));
 		}
 
-		internal static IEnumerable<T> GetEntitiesCommon<T>(object[] ents) where T : Entity
+		internal static IEnumerable<T> GetEntitiesCommon<T>(EntityId[] ents) where T : Entity
 		{
 			if(ents == null || ents.Length <= 0)
 				yield break;

@@ -243,7 +243,7 @@ mono::object CScriptbind_Entity::GetEntitiesByClass(mono::string _class)
 	if(classEntities.size()<1)
 		return NULL;
 
-	IMonoArray *pArray = CreateMonoArray(classEntities.size());
+	IMonoArray *pArray = CreateMonoArray(classEntities.size(), gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("EntityId"));
 	for(std::vector<EntityId>::iterator it = classEntities.begin(); it != classEntities.end(); ++it)
 		pArray->Insert(*it);
 
@@ -255,7 +255,7 @@ mono::object CScriptbind_Entity::GetEntitiesInBox(AABB bbox, int objTypes)
 	IPhysicalEntity **pEnts = NULL;
 
 	int numEnts = gEnv->pPhysicalWorld->GetEntitiesInBox(bbox.min, bbox.max, pEnts, objTypes);
-	IMonoArray *pEntities = CreateMonoArray(numEnts);
+	IMonoArray *pEntities = CreateMonoArray(numEnts, gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("EntityId"));
 
 	for(int i = 0; i < numEnts; i++)
 		pEntities->Insert(gEnv->pPhysicalWorld->GetPhysicalEntityId(pEnts[i]));
