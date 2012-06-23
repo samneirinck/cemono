@@ -10,6 +10,7 @@ CScriptArray::CScriptArray(mono::object managedArray)
 	CRY_ASSERT(managedArray);
 
 	m_pObject = (MonoObject *)managedArray;
+	m_pElementClass = mono_class_get_element_class(GetMonoClass());
 
 	m_objectHandle = mono_gchandle_new(m_pObject, false);
 }
@@ -19,9 +20,9 @@ CScriptArray::CScriptArray(int size, IMonoClass *pContainingType)
 {
 	CRY_ASSERT(size > 0);
 
-	MonoClass *pElementClass = pContainingType ? (MonoClass *)pContainingType->GetManagedObject() : mono_get_object_class();
+	m_pElementClass = pContainingType ? (MonoClass *)pContainingType->GetManagedObject() : mono_get_object_class();
 
-	m_pObject = (MonoObject *)mono_array_new(mono_domain_get(), pElementClass, size);
+	m_pObject = (MonoObject *)mono_array_new(mono_domain_get(), m_pElementClass, size);
 
 	m_objectHandle = mono_gchandle_new(m_pObject, false);
 }

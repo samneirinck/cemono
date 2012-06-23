@@ -11,6 +11,7 @@
 #define __MONO_ARRAY_H__
 
 #include "MonoObject.h"
+#include "MonoClass.h"
 
 #include <IMonoArray.h>
 
@@ -31,6 +32,8 @@ public:
 
 	virtual void Resize(int size);
 	virtual int GetSize() const override { return (int)mono_array_length((MonoArray *)m_pObject); }
+
+	virtual IMonoClass *GetElementClass() override { return new CScriptClass(m_pElementClass); }
 
 	virtual IMonoObject *GetItem(int index) override;
 	virtual const char *GetItemString(int index) override { return ToCryString(mono_array_get((MonoArray *)m_pObject, mono::string , index)); }
@@ -65,6 +68,8 @@ public:
 
 private:
 	int m_curIndex;
+
+	MonoClass *m_pElementClass;
 };
 
 #endif //__MONO_ARRAY_H__

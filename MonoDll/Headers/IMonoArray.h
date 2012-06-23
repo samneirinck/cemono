@@ -45,6 +45,11 @@ public:
 	virtual int GetSize() const = 0;
 
 	/// <summary>
+	/// Gets the type of objects stored in this array.
+	/// </summary>
+	virtual IMonoClass *GetElementClass() = 0;
+
+	/// <summary>
 	/// Retrieves an IMonoObject at the selected index of the array.
 	/// </summary>
 	virtual IMonoObject *GetItem(int index) = 0;
