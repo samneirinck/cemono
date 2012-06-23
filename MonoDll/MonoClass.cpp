@@ -110,3 +110,8 @@ MonoClassField *CScriptClass::GetMonoField(const char *name)
 
 	return pField;
 }
+
+IMonoObject *CScriptClass::BoxObject(void *object)
+{
+	return *(mono::object)mono_value_box(mono_domain_get(), (MonoClass *)m_pObject, object);
+}

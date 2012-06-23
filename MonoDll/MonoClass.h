@@ -30,6 +30,8 @@ public:
 	virtual const char *GetNamespace() override { return mono_class_get_namespace((MonoClass *)m_pObject); }
 
 	virtual IMonoObject *CreateInstance(IMonoArray *pConstructorParams = NULL) override;
+
+	IMonoObject *BoxObject(void *object) override;
 	// ~IMonoClass
 
 	// IMonoObject
