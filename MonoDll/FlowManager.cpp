@@ -81,7 +81,13 @@ std::shared_ptr<SNodeType> CFlowManager::GetNodeType(const char *name)
 // Used after serialization to get the valid flownode pointer.
 IFlowNode *CFlowManager::GetNode(TFlowGraphId graphId, TFlowNodeId id)
 {
-	return gEnv->pFlowSystem->GetGraphById(graphId)->GetNodeData(id)->GetNode();
+	if(IFlowGraph *pGraph = gEnv->pFlowSystem->GetGraphById(graphId))
+	{
+		if(IFlowNodeData *pNodeData = pGraph->GetNodeData(id))
+			return pNodeData->GetNode();
+	}
+
+	return NULL;
 }
 
 void CFlowManager::ActivateOutput(CFlowNode *pNode, int index) { pNode->ActivateOutput(index, 0); }
