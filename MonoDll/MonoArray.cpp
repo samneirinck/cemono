@@ -60,7 +60,7 @@ void CScriptArray::InsertMonoObject(mono::object object, int index)
 {
 	CRY_ASSERT((index == -1 ? m_curIndex : index) < GetSize());
 
-	mono_array_set((MonoArray *)m_pObject, MonoObject *, m_curIndex, (MonoObject *)object);
+	mono_array_set((MonoArray *)m_pObject, void *, m_curIndex, object);
 
 	m_curIndex++;
 }
@@ -69,7 +69,7 @@ void CScriptArray::InsertMonoString(mono::string string, int index)
 {
 	CRY_ASSERT((index == -1 ? m_curIndex : index) < GetSize());
 
-	mono_array_set((MonoArray *)m_pObject, MonoString *, index != -1 ? index : m_curIndex, (MonoString *)string);
+	mono_array_set((MonoArray *)m_pObject, void *, index != -1 ? index : m_curIndex, string);
 
 	m_curIndex++;
 }
@@ -78,7 +78,7 @@ void CScriptArray::InsertMonoArray(mono::object arr, int index)
 {
 	CRY_ASSERT((index == -1 ? m_curIndex : index) < GetSize());
 
-	mono_array_set((MonoArray *)m_pObject, MonoArray *, index != -1 ? index : m_curIndex, (MonoArray *)arr);
+	mono_array_set((MonoArray *)m_pObject, void *, index != -1 ? index : m_curIndex, arr);
 
 	m_curIndex++;
 }
@@ -87,7 +87,7 @@ void CScriptArray::InsertNativePointer(void *ptr, int index)
 { 
 	CRY_ASSERT((index == -1 ? m_curIndex : index) < GetSize());
 
-	mono_array_set((MonoArray *)m_pObject, MonoObject *, index != -1 ? index : m_curIndex, mono_value_box(mono_domain_get(), mono_get_intptr_class(), ptr));
+	mono_array_set((MonoArray *)m_pObject, void *, index != -1 ? index : m_curIndex, mono_value_box(mono_domain_get(), mono_get_intptr_class(), ptr));
 
 	m_curIndex++;
 }
