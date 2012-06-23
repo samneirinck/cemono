@@ -101,7 +101,7 @@ namespace CryEngine.Initialization
 
 		public void OnPostScriptReload()
 		{
-			ForEach(ScriptType.Any, x => x.OnScriptReload());
+			ForEach(ScriptType.CryScriptInstance, x => x.OnScriptReload());
 		}
 
 		/// <summary>
