@@ -18,6 +18,7 @@ namespace mono
 struct IMonoArray;
 struct IMonoObject;
 struct IMonoAssembly;
+struct IMonoClass;
 
 struct MonoAnyValue;
 
@@ -37,8 +38,17 @@ struct IMonoConverter
 
 	/// <summary>
 	/// Creates an IMonoArray with the pre-determined size.
+	/// If element is NULL, uses object class.
 	/// </summary>
-	virtual IMonoArray *CreateArray(int size) = 0;
+	/// <example>
+	/// [Native C++]
+	/// IMonoClass *pElementClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("Vec3");
+	/// CreateArray(3, pElementClass);
+	/// 
+	/// [Managed]
+	/// Vec3[] myElements;
+	/// </example>
+	virtual IMonoArray *CreateArray(int size, IMonoClass *pElementClass = NULL) = 0;
 	/// <summary>
 	/// Converts a mono array to a IMonoArray. (To provide GetSize, GetItem etc functionality.)
 	/// </summary>

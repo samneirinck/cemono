@@ -7,9 +7,9 @@
 
 #include <MonoAnyValue.h>
 
-IMonoArray *CConverter::CreateArray(int numArgs)
+IMonoArray *CConverter::CreateArray(int numArgs, IMonoClass *pElementClass)
 {
-	return new CScriptArray(numArgs); 
+	return new CScriptArray(numArgs, pElementClass); 
 }
 
 IMonoArray *CConverter::ToArray(mono::object arr)

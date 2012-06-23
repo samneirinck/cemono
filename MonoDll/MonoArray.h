@@ -22,7 +22,7 @@ public:
 	// Used on MonoArray's returned from C#.
 	CScriptArray(mono::object monoArray);
 	// Used to send arrays to C#.
-	CScriptArray(int size);
+	CScriptArray(int size, IMonoClass *pContainingType = NULL);
 
 	virtual ~CScriptArray();
 

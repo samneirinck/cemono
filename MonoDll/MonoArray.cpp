@@ -3,6 +3,8 @@
 
 #include "MonoObject.h"
 
+#include <IMonoClass.h>
+
 CScriptArray::CScriptArray(mono::object managedArray)
 {
 	CRY_ASSERT(managedArray);
@@ -12,12 +14,14 @@ CScriptArray::CScriptArray(mono::object managedArray)
 	m_objectHandle = mono_gchandle_new(m_pObject, false);
 }
 
-CScriptArray::CScriptArray(int size)
+CScriptArray::CScriptArray(int size, IMonoClass *pContainingType)
 	: m_curIndex(0)
 {
 	CRY_ASSERT(size > 0);
 
-	m_pObject = (MonoObject *)mono_array_new(mono_domain_get(), mono_get_object_class(), size);
+	MonoClass *pElementClass = pContainingType ? (MonoClass *)pContainingType->GetManagedObject() : mono_get_object_class();
+
+	m_pObject = (MonoObject *)mono_array_new(mono_domain_get(), pElementClass, size);
 
 	m_objectHandle = mono_gchandle_new(m_pObject, false);
 }
