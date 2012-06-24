@@ -7,7 +7,7 @@ namespace CryEngine.Async.Jobs
     /// </summary>
     public class TimeDelayJob : AsyncJob<bool>
     {
-        private readonly DateTime _beginTime;
+        private float _timeElapsed;
 
         /// <summary>
         /// Delay in milliseconds
@@ -22,7 +22,7 @@ namespace CryEngine.Async.Jobs
         public TimeDelayJob(float milliseconds)
         {
             DelayInMilliseconds = milliseconds;
-            _beginTime = DateTime.Now;
+            _timeElapsed = 0;
 
             if (milliseconds <= 0)
             {
@@ -42,7 +42,8 @@ namespace CryEngine.Async.Jobs
 
         public override bool Update(float frameTime)
         {
-            if (!IsFinished && DateTime.Now - _beginTime > TimeSpan.FromMilliseconds(DelayInMilliseconds))
+            _timeElapsed += frameTime;
+            if (!IsFinished && _timeElapsed >= DelayInMilliseconds)
             {
                 source.TrySetResult(true);
                 IsFinished = true;

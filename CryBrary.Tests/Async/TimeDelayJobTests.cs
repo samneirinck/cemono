@@ -28,5 +28,22 @@ namespace CryBrary.Tests.Async
             Assert.IsTrue(job.Task.Status == TaskStatus.RanToCompletion);
         }
 
+        [Test]
+        public void TimeDelayJobTests_500ms_UpdatedAtTheCorrectTime()
+        {
+            // Arrange
+            var job = new TimeDelayJob(TimeSpan.FromSeconds(2));
+
+            // Act & assert
+            job.Update(500);
+
+            Assert.IsFalse(job.IsFinished);
+
+            job.Update(1499);
+            Assert.IsFalse(job.IsFinished);
+            job.Update(1);
+            Assert.IsTrue(job.IsFinished);
+        }
+
     }
 }
