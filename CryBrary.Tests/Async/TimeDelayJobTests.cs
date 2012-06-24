@@ -29,7 +29,7 @@ namespace CryBrary.Tests.Async
         }
 
         [Test]
-        public void TimeDelayJobTests_500ms_UpdatedAtTheCorrectTime()
+        public void TimeDelayJobTests_2000ms_UpdatedAtTheCorrectTime()
         {
             // Arrange
             var job = new TimeDelayJob(TimeSpan.FromSeconds(2));
