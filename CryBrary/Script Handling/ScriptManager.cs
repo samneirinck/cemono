@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Xml;
+using CryEngine.Async;
 using CryEngine.Extensions;
 using CryEngine.Sandbox;
 using CryEngine.Testing;
@@ -292,6 +293,8 @@ namespace CryEngine.Initialization
 		public static void OnUpdate(float frameTime)
 		{
 			Time.DeltaTime = frameTime;
+
+            Awaiter.Instance.OnUpdate(frameTime);
 
 			Scripts.ForEach(x =>
 				{

@@ -11,6 +11,8 @@
     <RootNamespace>CryEngine</RootNamespace>
     <AssemblyName>CryBrary</AssemblyName>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -25,6 +27,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisIgnoreGeneratedCode>true</CodeAnalysisIgnoreGeneratedCode>
     <PlatformTarget>x86</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -37,11 +40,12 @@
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisRuleSet>BasicDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
     <PlatformTarget>x86</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\..\..\Bin64\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <CodeAnalysisLogFile>..\..\..\..\Engine\Mono\bin\BaseLibrary.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
@@ -55,6 +59,7 @@
     <Optimize>false</Optimize>
     <DocumentationFile>CryBrary.xml</DocumentationFile>
     <RunCodeAnalysis>false</RunCodeAnalysis>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>..\..\..\Bin64\</OutputPath>
@@ -72,6 +77,7 @@
     <WarningLevel>2</WarningLevel>
     <DocumentationFile>CryBrary.xml</DocumentationFile>
     <RunCodeAnalysis>false</RunCodeAnalysis>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Profile|AnyCPU'">
     <OutputPath>..\..\..\Bin32\</OutputPath>
@@ -92,6 +98,7 @@
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>CryBrary.xml</DocumentationFile>
     <RunCodeAnalysis>false</RunCodeAnalysis>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Profile|x64'">
     <OutputPath>..\..\..\Bin64\</OutputPath>
@@ -112,41 +119,30 @@
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>CryBrary.xml</DocumentationFile>
     <RunCodeAnalysis>false</RunCodeAnalysis>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Mono.Cecil">
-      <HintPath>References\Mono.Cecil.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Mono.Cecil.Mdb">
-      <HintPath>References\Mono.Cecil.Mdb.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="PresentationCore" />
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.XML" />
-    <Reference Include="System.Xml.Linq" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Actor\Actor.cs" />
     <Compile Include="Actor\NativeActor.cs" />
+    <Compile Include="Async\Jobs\AsyncJob.cs" />
+    <Compile Include="Async\Awaiter.cs" />
+    <Compile Include="Async\Delay.cs" />
+    <Compile Include="Async\Jobs\FrameDelayJob.cs" />
+    <Compile Include="Async\Jobs\IAsyncJob.cs" />
+    <Compile Include="Async\Jobs\TimeDelayJob.cs" />
     <Compile Include="Engine\Level.cs" />
     <Compile Include="Entity\EntityBase.cs" />
     <Compile Include="Engine\TimeOfDay.cs" />
-    <Compile Include="Extensions\Enum.cs" />
     <Compile Include="Extensions\IDictionary.cs" />
     <Compile Include="Extensions\IEnumerable.cs" />
-    <Compile Include="Extensions\WinForms.cs" />
     <Compile Include="FlowSystem\Attributes.cs" />
     <Compile Include="FlowSystem\Ports.cs" />
     <Compile Include="Misc\DelayedFunc.cs" />
+    <Compile Include="Extensions\Enum.cs" />
+    <Compile Include="Extensions\WinForms.cs" />
     <Compile Include="Network\NetworkCallAttribute.cs" />
     <Compile Include="Sandbox\Attributes.cs" />
     <Compile Include="Sandbox\FormLoader.cs">
@@ -247,6 +243,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Unit Testing\Reports\Resources\TestSuccess.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
