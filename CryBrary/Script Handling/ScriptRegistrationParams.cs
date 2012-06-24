@@ -5,15 +5,15 @@ using System.Text;
 
 namespace CryEngine.Initialization
 {
-    public interface ScriptRegistrationParams { }
+    public interface IScriptRegistrationParams { }
 
-    public struct ActorRegistrationParams : ScriptRegistrationParams
+    public struct ActorRegistrationParams : IScriptRegistrationParams
     {
         public bool isAI;
         public bool useMonoActor;
     }
 
-    public struct EntityRegistrationParams : ScriptRegistrationParams
+    public struct EntityRegistrationParams : IScriptRegistrationParams
     {
         public string name;
         public string category;
@@ -26,13 +26,13 @@ namespace CryEngine.Initialization
         public object[] properties;
     }
 
-    public struct GameRulesRegistrationParams : ScriptRegistrationParams
+    public struct GameRulesRegistrationParams : IScriptRegistrationParams
     {
         public string name;
         public bool defaultGamemode;
     }
 
-    public struct FlowNodeRegistrationParams : ScriptRegistrationParams
+    public struct FlowNodeRegistrationParams : IScriptRegistrationParams
     {
         public string name;
         public string category;
