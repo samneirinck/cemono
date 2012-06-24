@@ -742,12 +742,6 @@
             <param name="entInfo">Struct containing the IEntity pointer and EntityId.</param>
             <returns>IsEntityFlowNode</returns>
         </member>
-        <member name="M:CryEngine.Entity.IsEntityFlowNode">
-            <summary>
-            Returns true if this entity contains input or output ports.
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:CryEngine.Entity.OnRemove">
             <summary>
             Called when the entity is being removed.
@@ -6391,27 +6385,11 @@
             <returns>The filepath to the Scripts folder as a string, ex:
             <example>"C:\CryENGINE3\Game\Scripts"</example></returns>
         </member>
-        <member name="M:CryEngine.Initialization.ScriptManager.LoadLibrariesInFolder(System.String)">
-            <summary>
-            This function will automatically scan for C# dll (*.dll) files and load the types contained within them.
-            </summary>
-        </member>
-        <member name="M:CryEngine.Initialization.ScriptManager.ProcessAssembly(System.Reflection.Assembly)">
-            <summary>
-            Processes a C# assembly and adds all found types to ScriptCompiler.CompiledScripts
-            </summary>
-        </member>
         <member name="M:CryEngine.Initialization.ScriptManager.LoadAssembly(System.String)">
             <summary>
             Loads a C# assembly by location, creates a shadow-copy and generates debug database (mdb).
             </summary>
             <param name="assemblyPath"></param>
-        </member>
-        <member name="M:CryEngine.Initialization.ScriptManager.ProcessType(System.Type)">
-            <summary>
-            Adds the type to CompiledScripts
-            </summary>
-            <param name="type"></param>
         </member>
         <member name="M:CryEngine.Initialization.ScriptManager.ProcessMembers(System.Type)">
             <summary>

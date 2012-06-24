@@ -24,22 +24,6 @@ namespace CryEngine
 		#endregion
 
 		#region Statics
-		internal static void Load(CryScript script)
-		{
-            var registrationParams = new GameRulesRegistrationParams();
-
-			GameRulesAttribute gamemodeAttribute;
-            if (script.Type.TryGetAttribute(out gamemodeAttribute))
-            {
-                if (!string.IsNullOrEmpty(gamemodeAttribute.Name))
-                    registrationParams.name = gamemodeAttribute.Name;
-
-                registrationParams.defaultGamemode = gamemodeAttribute.Default;
-            }
-
-            ScriptRegistration.Register(script, registrationParams);
-		}
-
 		public static GameRules Current { get; internal set; }
 		#endregion
 

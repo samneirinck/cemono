@@ -231,7 +231,7 @@ namespace CryEngine
 			return _GetStaticObjectFilePath(EntityPointer, slot);
 		}
 
-		internal static EntityPropertyType GetEditorType(Type type, EntityPropertyType propertyType)
+		public static EntityPropertyType GetEditorType(Type type, EntityPropertyType propertyType)
 		{
 			//If a special type is needed, do this here.
 			switch(propertyType)

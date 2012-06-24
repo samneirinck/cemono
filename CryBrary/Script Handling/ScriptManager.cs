@@ -87,7 +87,78 @@ namespace CryEngine.Initialization
 
 		bool LoadPlugins()
 		{
-			LoadLibrariesInFolder(Path.Combine(PathUtils.ScriptsFolder, "Plugins"));
+            var pluginsDirectory = Path.Combine(PathUtils.ScriptsFolder, "Plugins");
+            foreach (var directory in Directory.GetDirectories(pluginsDirectory))
+            {
+                var compilerDll = Path.Combine(directory, "Compiler.dll");
+                if (File.Exists(compilerDll))
+                {
+                    var assembly = Assembly.LoadFrom(compilerDll);
+
+                    var compilerType = assembly.GetTypes().First(x => x.Implements<ScriptCompiler>());
+                    Debug.LogAlways("		Initializing {0} compiler...", compilerType.Name);
+
+                    var compiler = Activator.CreateInstance(compilerType) as ScriptCompiler;
+
+                    var assemblyPaths = Directory.GetFiles(directory, "*.dll", SearchOption.AllDirectories);
+                    var assemblies = new List<Assembly>();
+
+                    foreach (var assemblyPath in assemblyPaths)
+                    {
+                        if (assemblyPath != compilerDll)
+                            assemblies.Add(LoadAssembly(assemblyPath));
+                    }
+
+                    foreach (var unprocessedScript in compiler.Process(assemblies))
+                    {
+                        var script = unprocessedScript;
+
+                        if (script.RegistrationParams is ActorRegistrationParams)
+                        {
+                            var registrationParams = (ActorRegistrationParams)script.RegistrationParams;
+
+                            if (registrationParams.useMonoActor)
+                                Actor.Actormethods.RegisterClass(script.ScriptName, registrationParams.isAI);
+                        }
+                        else if (script.RegistrationParams is EntityRegistrationParams)
+                        {
+                            var registrationParams = (EntityRegistrationParams)script.RegistrationParams;
+
+                            if (registrationParams.name == null)
+                                registrationParams.name = script.ScriptName;
+
+                            Entity.Methods.RegisterClass(registrationParams);
+                        }
+                        else if (script.RegistrationParams is GameRulesRegistrationParams)
+                        {
+                            var registrationParams = (GameRulesRegistrationParams)script.RegistrationParams;
+
+                            if (registrationParams.name == null)
+                                registrationParams.name = script.ScriptName;
+
+                            GameRules._RegisterGameMode(registrationParams.name);
+
+                            if (registrationParams.defaultGamemode)
+                                GameRules._SetDefaultGameMode(registrationParams.name);
+                        }
+                        else if (script.RegistrationParams is FlowNodeRegistrationParams)
+                        {
+                            var registrationParams = (FlowNodeRegistrationParams)script.RegistrationParams;
+
+                            if (registrationParams.name == null)
+                                registrationParams.name = script.ScriptName;
+                            if (registrationParams.category == null)
+                                registrationParams.category = script.Type.Namespace;
+
+                            script.ScriptName = registrationParams.category + ":" + registrationParams.name;
+
+                            ScriptManager.FlowNodes.Add(script.ScriptName);
+                        }
+
+                        Scripts.Add(script);
+                    }
+                }
+            }
 
 			return true;
 		}
@@ -105,56 +176,10 @@ namespace CryEngine.Initialization
 		}
 
 		/// <summary>
-		/// This function will automatically scan for C# dll (*.dll) files and load the types contained within them.
-		/// </summary>
-		public void LoadLibrariesInFolder(string directory)
-		{
-			if(directory == null)
-				throw new ArgumentNullException("directory");
-			if(directory.Length < 1)
-				throw new ArgumentException("string cannot be empty!", "directory");
-
-			if(Directory.Exists(directory))
-			{
-				var plugins = Directory.GetFiles(directory, "*.dll", SearchOption.AllDirectories);
-
-				if(plugins.Any())
-				{
-					foreach(var plugin in plugins)
-					{
-						try
-						{
-							LoadAssembly(plugin);
-						}
-						//This exception tells us that the assembly isn't a valid .NET assembly for whatever reason
-						catch(BadImageFormatException)
-						{
-							Debug.LogAlways("Plugin loading failed for {0}; dll is not valid.", plugin);
-						}
-					}
-				}
-			}
-			else
-				Debug.LogAlways("Skipping load of plugins in {0}, directory does not exist.", directory);
-		}
-
-		/// <summary>
-		/// Processes a C# assembly and adds all found types to ScriptCompiler.CompiledScripts
-		/// </summary>
-		public static void ProcessAssembly(Assembly assembly)
-		{
-			if(assembly == null)
-				throw new ArgumentNullException("assembly");
-
-			foreach(var type in assembly.GetTypes())
-				ProcessType(type);
-		}
-
-		/// <summary>
 		/// Loads a C# assembly by location, creates a shadow-copy and generates debug database (mdb).
 		/// </summary>
 		/// <param name="assemblyPath"></param>
-		public void LoadAssembly(string assemblyPath)
+		public Assembly LoadAssembly(string assemblyPath)
 		{
 			if(assemblyPath == null)
 				throw new ArgumentNullException("assemblyPath");
@@ -176,7 +201,7 @@ namespace CryEngine.Initialization
 			}
 #endif
 
-			ProcessAssembly(Assembly.LoadFrom(newPath));
+			return Assembly.LoadFrom(newPath);
 		}
 
 		void TryCopyFile(string currentPath, ref string newPath, bool overwrite = true)
@@ -203,51 +228,10 @@ namespace CryEngine.Initialization
 		}
 
 		/// <summary>
-		/// Adds the type to CompiledScripts
-		/// </summary>
-		/// <param name="type"></param>
-		public static CryScript ProcessType(Type type)
-		{
-			if(type == null)
-				throw new ArgumentNullException("type");
-
-			if(Scripts.Any(x => x.Type == type))
-				return Scripts.FirstOrDefault(x => x.Type == type);
-
-			var script = new CryScript(type);
-			if(!type.IsAbstract && !type.ContainsAttribute<ExcludeFromCompilationAttribute>() && !IgnoreExternalCalls)
-			{
-				if(script.ScriptType.ContainsFlag(ScriptType.Actor))
-					Actor.Load(script);
-				else if(script.ScriptType.ContainsFlag(ScriptType.Entity))
-					Entity.Load(script);
-				else if(script.ScriptType.ContainsFlag(ScriptType.FlowNode))
-					FlowNode.Load(ref script);
-				else if(script.ScriptType.ContainsFlag(ScriptType.GameRules))
-					GameRules.Load(script);
-				else if(script.ScriptType.ContainsFlag(ScriptType.UIEventSystem))
-					UIEventSystem.Load(script);
-				else if(script.ScriptType.ContainsFlag(ScriptType.ScriptCompiler))
-				{
-					Debug.LogAlways("		Compiling scripts using {0}...", type.Name);
-					var compiler = Activator.CreateInstance(type) as ScriptCompiler;
-					ProcessAssembly(compiler.Compile());
-				}
-
-				if(script.ScriptType.ContainsFlag(ScriptType.CryScriptInstance))
-					ProcessMembers(type);
-			}
-
-			if(script.ScriptType.ContainsFlag(ScriptType.CryScriptInstance))
-				Scripts.Add(script);
-
-			return script;
-		}
-
-		/// <summary>
 		/// Processes all members of a type for CryMono features such as CCommands.
 		/// </summary>
 		/// <param name="type"></param>
+        [Obsolete]
 		public static void ProcessMembers(Type type)
 		{
 			if(type == null)
@@ -278,31 +262,6 @@ namespace CryEngine.Initialization
 			{
 				Debug.LogAlways("Registering Sandbox extension: {0}", attr.Name);
 				FormHelper.AvailableForms.Add(new FormInfo { Type = type, Data = attr });
-			}
-
-			foreach(var member in type.GetMembers(BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public))
-			{
-				switch(member.MemberType)
-				{
-					case MemberTypes.Method:
-						{
-							CCommandAttribute attribute;
-							if(member.TryGetAttribute(out attribute))
-								CCommand.Register(attribute.Name ?? member.Name, Delegate.CreateDelegate(typeof(CCommandDelegate), member as MethodInfo) as CCommandDelegate, attribute.Comment, attribute.Flags);
-						}
-						break;
-					case MemberTypes.Field:
-					case MemberTypes.Property:
-						{
-							CVarAttribute attribute;
-							if(member.TryGetAttribute(out attribute))
-							{
-								// There's no way to pass the variable itself by reference to properly register the CVar.
-								//CVar.Register(attribute, member, 
-							}
-						}
-						break;
-				}
 			}
 		}
 
@@ -385,16 +344,26 @@ namespace CryEngine.Initialization
 			if(!Enum.IsDefined(typeof(ScriptType), scriptType))
 				throw new ArgumentException(string.Format("scriptType: value {0} was not defined in the enum", scriptType));
 
-			var script = FindScript(scriptType, x => x.Type == instance.GetType());
-			if(script == default(CryScript))
-				script = ProcessType(instance.GetType());
+            var script = FindScript(scriptType, x => x.Type == instance.GetType());
+            if (script == default(CryScript))
+            {
+                if (CryScript.TryCreate(instance.GetType(), out script))
+                    Scripts.Add(script);
+                else
+                    return;
+            }
 
 			AddScriptInstance(script, instance);
 		}
 
 		static void AddScriptInstance(CryScript script, CryScriptInstance instance)
 		{
+            if (script == default(CryScript))
+                throw new ArgumentException("script");
+
 			var index = Scripts.IndexOf(script);
+            if (index == -1)
+                throw new ArgumentException("Provided CryScript object was not present in the script collection", "script");
 
 			instance.ScriptId = LastScriptId++;
 

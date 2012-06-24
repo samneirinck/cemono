@@ -10,7 +10,7 @@ namespace CryEngine.Initialization
 	/// </summary>
 	public struct CryScript
 	{
-		internal CryScript(Type type)
+		private CryScript(Type type)
 			: this()
 		{
 			Type = type;
@@ -39,6 +39,18 @@ namespace CryEngine.Initialization
 				ScriptType |= ScriptType.ScriptCompiler;
 		}
 
+        public static bool TryCreate(Type type, out CryScript script)
+        {
+            if (type.IsAbstract)
+            {
+                script = default(CryScript);
+                return false;
+            }
+
+            script = new CryScript(type);
+            return true;
+        }
+
 		public ScriptType ScriptType { get; private set; }
 
 		public Type Type { get; private set; }
@@ -51,6 +63,8 @@ namespace CryEngine.Initialization
 		/// Stores all instances of this class.
 		/// </summary>
 		public List<CryScriptInstance> ScriptInstances { get; internal set; }
+
+        public ScriptRegistrationParams RegistrationParams { get; set; }
 
 		#region Operators
 		public static bool operator ==(CryScript script1, CryScript script2)

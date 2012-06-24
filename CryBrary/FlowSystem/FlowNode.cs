@@ -56,27 +56,6 @@ namespace CryEngine
 		extern internal static IntPtr _GetTargetEntity(IntPtr nodePtr, out uint entId);
 		#endregion
 
-
-		internal static void Load(ref CryScript script, bool entityNode = false)
-		{
-			if(!script.Type.GetMembers().Any(member => member.ContainsAttribute<PortAttribute>()))
-				return;
-
-            var registrationParams = new FlowNodeRegistrationParams();
-
-			FlowNodeAttribute nodeInfo;
-			if(script.Type.TryGetAttribute(out nodeInfo))
-			{
-                if (!string.IsNullOrEmpty(nodeInfo.UICategory))
-                    registrationParams.category = nodeInfo.UICategory;
-
-                if (!string.IsNullOrEmpty(nodeInfo.Name))
-                    registrationParams.name = nodeInfo.Name;
-			}
-
-            ScriptRegistration.Register(ref script, registrationParams);
-		}
-
 		internal static void Register(string typeName)
 		{
 			_RegisterNode(typeName);

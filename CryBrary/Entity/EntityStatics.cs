@@ -8,53 +8,6 @@ namespace CryEngine
 {
 	public partial class Entity
 	{
-        internal static void Load(CryScript script)
-        {
-            //LoadFlowNode(ref script, true);
-
-            var properties = script.Type.GetProperties();
-            var fields = script.Type.GetFields();
-            var entityProperties = new List<object>();
-
-            EditorPropertyAttribute propertyAttribute;
-            properties.ForEach(property =>
-            {
-                if (property.TryGetAttribute(out propertyAttribute))
-                {
-                    EntityPropertyType propertyType = GetEditorType(property.PropertyType, propertyAttribute.Type);
-                    var limits = new EntityPropertyLimits(propertyAttribute.Min, propertyAttribute.Max);
-
-                    entityProperties.Add(new EntityProperty(property.Name, propertyAttribute.Description, propertyType, limits, propertyAttribute.Flags));
-                }
-            });
-
-            fields.ForEach(field =>
-            {
-                if (field.TryGetAttribute(out propertyAttribute))
-                {
-                    EntityPropertyType propertyType = GetEditorType(field.FieldType, propertyAttribute.Type);
-                    var limits = new EntityPropertyLimits(propertyAttribute.Min, propertyAttribute.Max);
-
-                    entityProperties.Add(new EntityProperty(field.Name, propertyAttribute.Description, propertyType, limits, propertyAttribute.Flags));
-                }
-            });
-
-            var registrationParams = new EntityRegistrationParams();
-            registrationParams.properties = entityProperties.ToArray();
-
-            EntityAttribute entAttribute;
-            if (script.Type.TryGetAttribute(out entAttribute))
-            {
-                registrationParams.name = entAttribute.Name;
-                registrationParams.category = entAttribute.Category;
-                registrationParams.editorHelper = entAttribute.EditorHelper;
-                registrationParams.editorIcon = entAttribute.Icon;
-                registrationParams.flags = entAttribute.Flags;
-            }
-
-            ScriptRegistration.Register(script, registrationParams);
-        }
-
 		/// <summary>
 		/// Spawn a new instance of entity type T.
 		/// </summary>

@@ -9,9 +9,7 @@ namespace CryEngine
 {
 	public abstract class UIEventSystem
 	{
-
-
-		internal static void Load(CryScript script)
+		/*internal static void Load(CryScript script)
 		{
 			bool createdToSystem = false;
 			bool createdToUI = false;
@@ -115,7 +113,7 @@ namespace CryEngine
 						break;
 				}
 			}
-		}
+		}*/
 
 		internal static Dictionary<Type, IntPtr> ToSystemPointers { get; set; }
 		internal static Dictionary<Type, IntPtr> ToUIPointers { get; set; }

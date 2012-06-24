@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CodeDom.Compiler;
 using System.Reflection;
+using System.Collections.Generic;
 
 namespace CryEngine.Initialization
 {
@@ -36,7 +37,7 @@ namespace CryEngine.Initialization
 		}
 		#endregion
 
-		public abstract Assembly Compile();
+		public abstract IEnumerable<CryScript> Process(IEnumerable<Assembly> assemblies);
 	}
 
 	[Serializable]

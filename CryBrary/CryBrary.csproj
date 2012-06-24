@@ -157,6 +157,7 @@
     </Compile>
     <Compile Include="Sandbox\Helper.cs" />
     <Compile Include="Script Handling\CryScript.cs" />
+    <Compile Include="Script Handling\ScriptRegistrationParams.cs" />
     <Compile Include="Script Handling\ScriptCompiler.cs" />
     <Compile Include="Engine\Material.cs" />
     <Compile Include="Engine\ParticleEffect.cs" />
@@ -168,7 +169,6 @@
     <Compile Include="Lua\ScriptTable.cs" />
     <Compile Include="Math\Collision.cs" />
     <Compile Include="Misc\NativeMethods.cs" />
-    <Compile Include="Script Handling\ScriptRegistration.cs" />
     <Compile Include="Serialization\CrySerializer.cs" />
     <Compile Include="Math\BoundingBox.cs" />
     <Compile Include="Math\BoundingSphere.cs" />
