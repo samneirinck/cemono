@@ -553,9 +553,8 @@ sgen_nursery_is_to_space (char *object)
 	int byte = idx / 8;
 	int bit = idx & 0x7;
 
-	/* FIXME put those asserts under a non default level */
-	g_assert (sgen_ptr_in_nursery (object));
-	g_assert (byte < sgen_space_bitmap_size);
+	DEBUG (4, g_assert (sgen_ptr_in_nursery (object)));
+	DEBUG (4, g_assert (byte < sgen_space_bitmap_size));
 
 	return (sgen_space_bitmap [byte] & (1 << bit)) != 0;
 }
@@ -658,6 +657,7 @@ struct _SgenMajorCollector {
 	void (*init_worker_thread) (void *data);
 	void (*reset_worker_data) (void *data);
 	gboolean (*is_valid_object) (char *object);
+	gboolean (*describe_pointer) (char *pointer);
 };
 
 extern SgenMajorCollector major_collector;
@@ -826,6 +826,7 @@ void sgen_los_scan_card_table (SgenGrayQueue *queue) MONO_INTERNAL;
 void sgen_major_collector_scan_card_table (SgenGrayQueue *queue) MONO_INTERNAL;
 FILE *sgen_get_logfile (void) MONO_INTERNAL;
 gboolean sgen_los_is_valid_object (char *object) MONO_INTERNAL;
+gboolean mono_sgen_los_describe_pointer (char *ptr) MONO_INTERNAL;
 
 /* nursery allocator */
 
