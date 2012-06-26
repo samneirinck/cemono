@@ -31,7 +31,7 @@ public:
 	virtual const char *GetName() override { return mono_class_get_name((MonoClass *)m_pObject); }
 	virtual const char *GetNamespace() override { return mono_class_get_namespace((MonoClass *)m_pObject); }
 
-	virtual IMonoObject *CreateInstance(IMonoArray *pConstructorParams = NULL) override;
+	virtual IMonoObject *CreateInstance(IMonoArray *pConstructorParams = nullptr) override;
 
 	IMonoObject *BoxObject(void *object) override;
 	// ~IMonoClass
@@ -39,7 +39,7 @@ public:
 	// IMonoObject
 	virtual void Release() override { delete this; }
 
-	virtual IMonoObject *CallMethod(const char *methodName, IMonoArray *params = NULL, bool bStatic = false) { return CScriptObject::CallMethod(methodName, params, true); }
+	virtual IMonoObject *CallMethod(const char *methodName, IMonoArray *params = nullptr, bool bStatic = false) { return CScriptObject::CallMethod(methodName, params, true); }
 
 	virtual IMonoObject *GetProperty(const char *propertyName, bool bStatic = false) override { return CScriptObject::GetProperty(propertyName, true); }
 	virtual void SetProperty(const char *propertyName, IMonoObject *pNewValue, bool bStatic = false) override { CScriptObject::SetProperty(propertyName, pNewValue, true); }

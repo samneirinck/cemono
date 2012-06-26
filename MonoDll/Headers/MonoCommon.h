@@ -57,7 +57,7 @@ inline mono::string ToMonoString(const char *cryString)
 /// <summary>
 /// Creates an IMonoArray with the specified size.
 /// </summary>
-static IMonoArray *CreateMonoArray(int numArgs, IMonoClass *pElementClass = NULL)
+static IMonoArray *CreateMonoArray(int numArgs, IMonoClass *pElementClass = nullptr)
 {
 	return gEnv->pMonoScriptSystem->GetConverter()->CreateArray(numArgs, pElementClass);
 }

@@ -24,7 +24,7 @@ public:
 	virtual const char *ToString(mono::string monoString) override { if(!monoString) return ""; return mono_string_to_utf8((MonoString *)monoString); }
 	virtual mono::string ToMonoString(const char *string) override { return (mono::string)mono_string_new(mono_domain_get(), string); }
 
-	virtual IMonoArray *CreateArray(int size, IMonoClass *pElementClass = NULL) override;
+	virtual IMonoArray *CreateArray(int size, IMonoClass *pElementClass = nullptr) override;
 	virtual IMonoArray *ToArray(mono::object arr) override;
 
 	virtual IMonoObject *CreateObject(MonoAnyValue &value) override;

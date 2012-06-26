@@ -37,5 +37,5 @@ IMonoClass *CScriptAssembly::GetClass(const char *className, const char *nameSpa
 		return CScriptClass::TryGetClass(monoClass);
 
 	MonoWarning("Failed to get class %s.%s", nameSpace, className);
-	return NULL;
+	return nullptr;
 }

@@ -23,12 +23,12 @@ public:
 	// Used on MonoArray's returned from C#.
 	CScriptArray(mono::object monoArray);
 	// Used to send arrays to C#.
-	CScriptArray(int size, IMonoClass *pContainingType = NULL);
+	CScriptArray(int size, IMonoClass *pContainingType = nullptr);
 
 	virtual ~CScriptArray();
 
 	// IMonoArray
-	virtual void Clear() override { for(int i = 0; i < GetSize(); i++) mono_array_set((MonoArray *)m_pObject, void *, i, NULL);  }
+	virtual void Clear() override { for(int i = 0; i < GetSize(); i++) mono_array_set((MonoArray *)m_pObject, void *, i, nullptr);  }
 
 	virtual void Resize(int size);
 	virtual int GetSize() const override { return (int)mono_array_length((MonoArray *)m_pObject); }
@@ -48,7 +48,7 @@ public:
 	// IMonoObject
 	virtual void Release() override { delete this; };
 
-	virtual IMonoObject *CallMethod(const char *methodName, IMonoArray *params = NULL, bool bStatic = false) override { return CScriptObject::CallMethod(methodName, params, bStatic); }
+	virtual IMonoObject *CallMethod(const char *methodName, IMonoArray *params = nullptr, bool bStatic = false) override { return CScriptObject::CallMethod(methodName, params, bStatic); }
 
 	virtual IMonoObject *GetProperty(const char *propertyName, bool bStatic = false) override { return CScriptObject::GetProperty(propertyName, bStatic); }
 	virtual void SetProperty(const char *propertyName, IMonoObject *pNewValue, bool bStatic = false) override { CScriptObject::SetProperty(propertyName, pNewValue, bStatic); }

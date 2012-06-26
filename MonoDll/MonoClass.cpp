@@ -40,20 +40,20 @@ IMonoObject *CScriptClass::CreateInstance(IMonoArray *pConstructorParams)
 
 MonoMethod *CScriptClass::GetMonoMethod(const char *methodName, IMonoArray *pArgs)
 {
-	MonoMethodSignature *pSignature = NULL;
+	MonoMethodSignature *pSignature = nullptr;
 
 	void *pIterator = 0;
 
 	MonoClass *pClass = (MonoClass *)m_pObject;
 	MonoType *pClassType = mono_class_get_type(pClass);
-	MonoMethod *pCurMethod = NULL;
+	MonoMethod *pCurMethod = nullptr;
 
 	int suppliedArgsCount = pArgs ? pArgs->GetSize() : 0;
 
-	while (pClass != NULL)
+	while (pClass != nullptr)
 	{
 		pCurMethod = mono_class_get_methods(pClass, &pIterator);
-		if(pCurMethod == NULL)
+		if(pCurMethod == nullptr)
 		{
 			pClass = mono_class_get_parent(pClass);
 			if(pClass == mono_get_object_class())
@@ -71,12 +71,12 @@ MonoMethod *CScriptClass::GetMonoMethod(const char *methodName, IMonoArray *pArg
 			return pCurMethod;
 		else if(bCorrectName && signatureParamCount >= suppliedArgsCount)
 		{
-			//if(bStatic != (mono_method_get_flags(pCurMethod, NULL) & METHOD_ATTRIBUTE_STATIC) > 0)
+			//if(bStatic != (mono_method_get_flags(pCurMethod, nullptr) & METHOD_ATTRIBUTE_STATIC) > 0)
 				//continue;
 
-			void *pIter = NULL;
+			void *pIter = nullptr;
 
-			MonoType *pType = NULL;
+			MonoType *pType = nullptr;
 			for(int i = 0; i < signatureParamCount; i++)
 			{
 				pType = mono_signature_get_params(pSignature, &pIter);
@@ -107,7 +107,7 @@ MonoMethod *CScriptClass::GetMonoMethod(const char *methodName, IMonoArray *pArg
 	}
 
 	MonoWarning("Failed to get method %s in class %s", methodName, GetName());
-	return NULL;
+	return nullptr;
 }
 
 MonoProperty *CScriptClass::GetMonoProperty(const char *name)

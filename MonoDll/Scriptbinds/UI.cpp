@@ -5,7 +5,7 @@
 
 #include <IMonoClass.h>
 
-CUI *CUI::m_pUI = NULL;
+CUI *CUI::m_pUI = nullptr;
 CUI::TEventHandlers CUI::m_eventHandlers = CUI::TEventHandlers();
 
 CUI::CUI()
@@ -40,7 +40,7 @@ void SEventSystemHandler::OnEvent(const SUIEvent& event)
 
 	auto pConverter = gEnv->pMonoScriptSystem->GetConverter();
 
-	IMonoObject *pPointerWrapper = NULL;
+	IMonoObject *pPointerWrapper = nullptr;
 	if(IMonoAssembly *pCryBraryAssembly = gEnv->pMonoScriptSystem->GetCryBraryAssembly())
 	{
 		if(IMonoClass *pClass = pCryBraryAssembly->GetClass("PointerWrapper"))

@@ -139,7 +139,7 @@ bool CScriptbind_Entity::RegisterEntityClass(SEntityRegistrationParams params)
 	}
 
 	std::vector<IEntityPropertyHandler::SPropertyInfo> properties;
-	if(params.Properties != NULL)
+	if(params.Properties != nullptr)
 	{
 		IMonoArray *propertiesArray = *params.Properties;
 
@@ -170,9 +170,9 @@ bool CScriptbind_Entity::RegisterEntityClass(SEntityRegistrationParams params)
 	entityClassDesc.sName = className;
 	entityClassDesc.editorClassInfo.sCategory = ToCryString(params.Category);
 
-	if(params.EditorHelper != NULL)
+	if(params.EditorHelper != nullptr)
 		entityClassDesc.editorClassInfo.sHelper = ToCryString(params.EditorHelper);
-	if(params.EditorIcon != NULL)
+	if(params.EditorIcon != nullptr)
 		entityClassDesc.editorClassInfo.sIcon = ToCryString(params.EditorIcon);
 
 	m_monoEntityClasses.push_back(className);
@@ -180,7 +180,7 @@ bool CScriptbind_Entity::RegisterEntityClass(SEntityRegistrationParams params)
 	bool result = gEnv->pEntitySystem->GetClassRegistry()->RegisterClass(new CEntityClass(entityClassDesc, properties));
 
 	static SMonoEntityCreator creator;
-	gEnv->pGameFramework->GetIGameObjectSystem()->RegisterExtension(className, &creator, NULL);
+	gEnv->pGameFramework->GetIGameObjectSystem()->RegisterExtension(className, &creator, nullptr);
 
 	return result;
 }
@@ -188,7 +188,7 @@ bool CScriptbind_Entity::RegisterEntityClass(SEntityRegistrationParams params)
 bool CScriptbind_Entity::SpawnEntity(EntitySpawnParams monoParams, bool bAutoInit, SMonoEntityInfo &entityInfo)
 {
 	IEntityClass *pClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass(ToCryString(monoParams.sClass));
-	if(pClass != NULL)
+	if(pClass != nullptr)
 	{
 		SEntitySpawnParams spawnParams;
 		spawnParams.pClass = pClass;
@@ -245,7 +245,7 @@ mono::object CScriptbind_Entity::GetEntitiesByClass(mono::string _class)
 	}
 
 	if(classEntities.size()<1)
-		return NULL;
+		return nullptr;
 
 	IMonoClass *pEntityIdClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("EntityId");
 
@@ -266,7 +266,7 @@ mono::object CScriptbind_Entity::GetEntitiesByClass(mono::string _class)
 
 mono::object CScriptbind_Entity::GetEntitiesInBox(AABB bbox, int objTypes)
 {
-	IPhysicalEntity **pEnts = NULL;
+	IPhysicalEntity **pEnts = nullptr;
 
 	IMonoClass *pEntityIdClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("EntityId");
 
@@ -432,7 +432,7 @@ IAttachmentManager *GetAttachmentManager(IEntity *pEntity)
 	if(auto pCharacter = pEntity->GetCharacter(0))
 		return pCharacter->GetIAttachmentManager();
 
-	return NULL;
+	return nullptr;
 }
 
 IMaterial *CScriptbind_Entity::GetAttachmentMaterialByIndex(IEntity *pEnt, int index)
@@ -443,7 +443,7 @@ IMaterial *CScriptbind_Entity::GetAttachmentMaterialByIndex(IEntity *pEnt, int i
 			return pAttachment->GetIAttachmentObject()->GetMaterial();
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 IMaterial *CScriptbind_Entity::GetAttachmentMaterial(IEntity *pEnt, mono::string attachmentName)
@@ -457,7 +457,7 @@ IMaterial *CScriptbind_Entity::GetAttachmentMaterial(IEntity *pEnt, mono::string
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 void CScriptbind_Entity::SetAttachmentMaterialByIndex(IEntity *pEnt, int index, IMaterial *pMaterial)

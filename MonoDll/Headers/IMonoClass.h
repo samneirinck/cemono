@@ -38,7 +38,7 @@ public:
 	/// <summary>
 	/// Instantiates the class, if not already instantiated.
 	/// </summary>
-	virtual IMonoObject *CreateInstance(IMonoArray *pConstructorParams = NULL) = 0;
+	virtual IMonoObject *CreateInstance(IMonoArray *pConstructorParams = nullptr) = 0;
 
 	/// <summary>
 	/// Boxes a type to be received as a managed type.

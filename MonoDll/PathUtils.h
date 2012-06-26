@@ -56,7 +56,7 @@ public:
 
 		DWORD attribs = GetFileAttributesA(cryMonoTempDir.c_str());
 		if(attribs == INVALID_FILE_ATTRIBUTES || attribs | FILE_ATTRIBUTE_DIRECTORY)
-			CryCreateDirectory(cryMonoTempDir.c_str(), NULL);
+			CryCreateDirectory(cryMonoTempDir.c_str(), nullptr);
 
 		return cryMonoTempDir.c_str();
 	}

@@ -46,7 +46,7 @@ Vec3 CScriptbind_Renderer::ScreenToWorld(int x, int y)
 		Vec3 dir = (Vec3(mouseX, mouseY, mouseZ) - camPos).GetNormalizedSafe();
 
 		static ray_hit hit;
-		IPhysicalEntity *pPhysEnt = NULL;
+		IPhysicalEntity *pPhysEnt = nullptr;
 
 		if (gEnv->pPhysicalWorld->RayWorldIntersection(camPos, dir * gEnv->p3DEngine->GetMaxViewDistance(), ent_all, rwi_stop_at_pierceable | rwi_colltype_any, &hit, 1, pPhysEnt))
 			return hit.pt;

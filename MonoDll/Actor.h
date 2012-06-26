@@ -36,17 +36,17 @@ public:
 	virtual bool	AllowLandingBob() override { return false; }
 
 	virtual void	PlayAction(const char *action,const char *extension, bool looping=false) override {}
-	virtual IAnimationGraphState * GetAnimationGraphState() override { return NULL; }
+	virtual IAnimationGraphState * GetAnimationGraphState() override { return nullptr; }
 	virtual void	ResetAnimGraph() override {}
 	virtual void	NotifyAnimGraphTransition(const char *anim) override {}
 	virtual void	NotifyAnimGraphInput(int id, const char *value) override {}
 	virtual void	NotifyAnimGraphInput(int id, int value) override {}
 
-	virtual void CreateScriptEvent(const char *event,float value,const char *str = NULL) override {}
+	virtual void CreateScriptEvent(const char *event,float value,const char *str = nullptr) override {}
 	virtual bool BecomeAggressiveToAgent(EntityId entityID) override { return false; }
 
 	virtual void SetFacialAlertnessLevel(int alertness) override {}
-	virtual void RequestFacialExpression(const char* pExpressionName = NULL, f32* sequenceLength = NULL) override {}
+	virtual void RequestFacialExpression(const char* pExpressionName = nullptr, f32* sequenceLength = nullptr) override {}
 	virtual void PrecacheFacialExpression(const char* pExpressionName) override {}
 
 	virtual EntityId	GetGrabbedEntityId() const override { return 0; }
@@ -64,26 +64,26 @@ public:
 
 	virtual void	CameraShake(float angle,float shift,float duration,float frequency,Vec3 pos,int ID,const char* source="") override {}
 
-	virtual IItem *GetHolsteredItem() const override { return NULL; }
+	virtual IItem *GetHolsteredItem() const override { return nullptr; }
 	virtual void HolsterItem(bool holster, bool playSelect = true) override {}
 	//virtual IItem *GetCurrentItem() const;
-	virtual IItem *GetCurrentItem(bool includeVehicle=false) const override { return NULL; }
+	virtual IItem *GetCurrentItem(bool includeVehicle=false) const override { return nullptr; }
 	virtual bool DropItem(EntityId itemId, float impulseScale=1.0f, bool selectNext=true, bool byDeath=false) override { return false; }
-	virtual IInventory *GetInventory() const override { return NULL; }
+	virtual IInventory *GetInventory() const override { return nullptr; }
 	virtual void NotifyCurrentItemChanged(IItem* newItem) override {}
 
-	virtual IMovementController *GetMovementController() const override { return NULL; }
+	virtual IMovementController *GetMovementController() const override { return nullptr; }
 
-	// get currently linked vehicle, or NULL
-	virtual IEntity *LinkToVehicle(EntityId vehicleId) override { return NULL; }
+	// get currently linked vehicle, or nullptr
+	virtual IEntity *LinkToVehicle(EntityId vehicleId) override { return nullptr; }
 
-	virtual IEntity* GetLinkedEntity() const override { return NULL; }
+	virtual IEntity* GetLinkedEntity() const override { return nullptr; }
 
 	virtual uint8 GetSpectatorMode() const override { return 0; }
 
 	virtual void SetSleepTimer(float timer) override {}
 
-	virtual IMaterial *GetReplacementMaterial() override { return NULL; }
+	virtual IMaterial *GetReplacementMaterial() override { return nullptr; }
 
 	virtual bool	IsThirdPerson() const override { return true; }
 	virtual void ToggleThirdPerson() override {}
@@ -108,8 +108,8 @@ public:
 	virtual void  SerializeLevelToLevel( TSerialize &ser ) override {}
 	virtual void	ProcessEvent( SEntityEvent& event ) override {}
 
-	virtual IAnimatedCharacter * GetAnimatedCharacter() override { return NULL; }
-	virtual const IAnimatedCharacter * GetAnimatedCharacter() const override { return NULL; }
+	virtual IAnimatedCharacter * GetAnimatedCharacter() override { return nullptr; }
+	virtual const IAnimatedCharacter * GetAnimatedCharacter() const override { return nullptr; }
 	virtual void PlayExactPositioningAnimation( const char* sAnimationName, bool bSignal, const Vec3& vPosition, const Vec3& vDirection, float startWidth, float startArcAngle, float directionTolerance ) override {}
 	virtual void CancelExactPositioningAnimation() override {}
 	virtual void PlayAnimation( const char* sAnimationName, bool bSignal ) override {}
@@ -121,7 +121,7 @@ public:
 
 	virtual void SwitchDemoModeSpectator(bool activate) override {}
 
-	virtual IVehicle *GetLinkedVehicle() const override { return NULL; }
+	virtual IVehicle *GetLinkedVehicle() const override { return nullptr; }
 
 	virtual void OnAIProxyEnabled(bool enabled) override {}
 	virtual void OnReturnedToPool() override {}
@@ -144,12 +144,12 @@ public:
 	virtual bool NetSerialize( TSerialize ser, EEntityAspects aspect, uint8 profile, int pflags ) override { return true; }
 	virtual void PostSerialize() override {}
 	virtual void SerializeSpawnInfo( TSerialize ser ) override {}
-	virtual ISerializableInfoPtr GetSpawnInfo() override { return NULL; }
+	virtual ISerializableInfoPtr GetSpawnInfo() override { return nullptr; }
 	virtual void Update( SEntityUpdateContext& ctx, int updateSlot ) override {}
 	virtual void HandleEvent( const SGameObjectEvent& event ) override;
 	virtual void SetChannelId(uint16 id) override {}
 	virtual void SetAuthority( bool auth ) override {}
-	virtual const void *GetRMIBase() const override { return NULL; }
+	virtual const void *GetRMIBase() const override { return nullptr; }
 	virtual void PostUpdate( float frameTime ) override {}
 	virtual void PostRemoteSpawn() override {}
 	// ~IGameObjectExtension

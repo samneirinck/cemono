@@ -3,7 +3,7 @@
 
 #include <IGameFramework.h>
 
-IMaterialManager *CScriptbind_MaterialManager::m_pMaterialManager = NULL;
+IMaterialManager *CScriptbind_MaterialManager::m_pMaterialManager = nullptr;
 
 CScriptbind_MaterialManager::CScriptbind_MaterialManager()
 {
@@ -57,7 +57,7 @@ IMaterial *CScriptbind_MaterialManager::GetMaterial(IEntity *pEntity, int slot)
 	if(IEntityRenderProxy *pRenderProxy =  static_cast<IEntityRenderProxy *>(pEntity->GetProxy(ENTITY_PROXY_RENDER)))
 		return pRenderProxy->GetRenderMaterial(slot);
 	
-	return NULL;
+	return nullptr;
 }
 
 void CScriptbind_MaterialManager::SetMaterial(IEntity *pEntity, IMaterial *pMaterial, int slot)

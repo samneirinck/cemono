@@ -6,9 +6,6 @@
 // Add eCryM_Mono to the ECryModule enumeration, before ECryM_Num.
 #define eCryModule eCryM_Mono
 
-#undef NULL
-#define NULL nullptr
-
 #define _FORCEDLL
 
 #ifndef _RELEASE
@@ -39,6 +36,9 @@
 
 #include <mono/mini/jit.h>
 
+#undef NULL
+#define NULL nullptr
+
 #ifndef MONODLL_EXPORTS
 #define MONODLL_EXPORTS
 #endif
@@ -58,7 +58,7 @@ inline void MonoWarning( const char *format,... )
 		return;
 	va_list args;
 	va_start(args, format);
-	GetISystem()->WarningV( VALIDATOR_MODULE_GAME,VALIDATOR_WARNING,0,NULL,format,args );
+	GetISystem()->WarningV( VALIDATOR_MODULE_GAME,VALIDATOR_WARNING,0,nullptr,format,args );
 	va_end(args);
 }
 

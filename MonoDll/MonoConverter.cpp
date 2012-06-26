@@ -62,5 +62,5 @@ IMonoObject *CConverter::CreateObject(MonoAnyValue &any)
 		break;
 	}
 
-	return NULL;
+	return nullptr;
 }

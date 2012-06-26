@@ -37,7 +37,7 @@ CScriptDomain::CScriptDomain(ERuntimeVersion runtimeVersion)
 CScriptDomain::CScriptDomain(const char *name, bool setActive)
 	: m_bRootDomain(false)
 {
-	m_pDomain = mono_domain_create_appdomain(const_cast<char *>(name), NULL);
+	m_pDomain = mono_domain_create_appdomain(const_cast<char *>(name), nullptr);
 
 	if(setActive)
 		SetActive();
@@ -68,7 +68,7 @@ CScriptDomain::~CScriptDomain()
 		{			
 			MonoWarning("An exception was raised during ScriptDomain unload:");
 			MonoMethod *pExceptionMethod = mono_method_desc_search_in_class(mono_method_desc_new("::ToString()", false),mono_get_exception_class());		
-			MonoString *exceptionString = (MonoString *)mono_runtime_invoke(pExceptionMethod, pException, NULL, NULL);		
+			MonoString *exceptionString = (MonoString *)mono_runtime_invoke(pExceptionMethod, pException, nullptr, nullptr);		
 			CryLogAlways(ToCryString((mono::string)exceptionString));
 		}
 	}

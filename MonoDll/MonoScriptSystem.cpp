@@ -53,13 +53,13 @@ SCVars *g_pMonoCVars = 0;
 CRYREGISTER_CLASS(CScriptSystem)
 
 CScriptSystem::CScriptSystem() 
-	: m_pRootDomain(NULL)
-	, m_pCryBraryAssembly(NULL)
-	, m_pPdb2MdbAssembly(NULL)
-	, m_pScriptManager(NULL)
-	, m_pScriptDomain(NULL)
-	, m_AppDomainSerializer(NULL)
-	, m_pInput(NULL)
+	: m_pRootDomain(nullptr)
+	, m_pCryBraryAssembly(nullptr)
+	, m_pPdb2MdbAssembly(nullptr)
+	, m_pScriptManager(nullptr)
+	, m_pScriptDomain(nullptr)
+	, m_AppDomainSerializer(nullptr)
+	, m_pInput(nullptr)
 	, m_bReloading(false)
 	, m_bLastCompilationSuccess(false)
 	, m_bHasPostInitialized(false)
@@ -74,7 +74,7 @@ CScriptSystem::CScriptSystem()
 	// Commandline switch -DEBUG makes the process connect to the debugging server. Warning: Failure to connect to a debugging server WILL result in a crash.
 	// This is currently a WIP feature which requires custom MonoDevelop extensions and other irritating things.
 	const ICmdLineArg* arg = gEnv->pSystem->GetICmdLine()->FindArg(eCLAT_Pre, "DEBUG");
-	if (arg != NULL)
+	if (arg != nullptr)
 		monoCmdOptions.append("--debugger-agent=transport=dt_socket,address=127.0.0.1:65432,embedding=1");
 
 	char *options = new char[monoCmdOptions.size() + 1];
@@ -149,7 +149,7 @@ CScriptSystem::~CScriptSystem()
 			}\
 		};\
 		static C##name##Creator _creator;\
-		framework->GetIGameObjectSystem()->RegisterExtension(#name, &_creator, NULL);\
+		framework->GetIGameObjectSystem()->RegisterExtension(#name, &_creator, nullptr);\
 	}
 
 bool CScriptSystem::CompleteInit()
@@ -488,5 +488,5 @@ IMonoAssembly *CScriptSystem::GetAssembly(const char *file, bool shadowCopy)
 	else
 		MonoWarning("Failed to create assembly from %s", assemblyPath);
 
-	return NULL;
+	return nullptr;
 }

@@ -38,7 +38,7 @@ struct IMonoConverter
 
 	/// <summary>
 	/// Creates an IMonoArray with the pre-determined size.
-	/// If element is NULL, uses object class.
+	/// If element is nullptr, uses object class.
 	/// </summary>
 	/// <example>
 	/// [Native C++]
@@ -48,7 +48,7 @@ struct IMonoConverter
 	/// [Managed]
 	/// Vec3[] myElements;
 	/// </example>
-	virtual IMonoArray *CreateArray(int size, IMonoClass *pElementClass = NULL) = 0;
+	virtual IMonoArray *CreateArray(int size, IMonoClass *pElementClass = nullptr) = 0;
 	/// <summary>
 	/// Converts a mono array to a IMonoArray. (To provide GetSize, GetItem etc functionality.)
 	/// </summary>

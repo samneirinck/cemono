@@ -51,7 +51,7 @@ public:
 	// ~IFlowNode
 
 	// IFlowGraphHook
-	virtual IFlowNodePtr CreateNode(IFlowNode::SActivationInfo*, TFlowNodeTypeId typeId) override { return NULL; }
+	virtual IFlowNodePtr CreateNode(IFlowNode::SActivationInfo*, TFlowNodeTypeId typeId) override { return nullptr; }
 	virtual bool CreatedNode(TFlowNodeId id, const char * name, TFlowNodeTypeId typeId, IFlowNodePtr pNode) override;
 	virtual void CancelCreatedNode(TFlowNodeId id, const char * name, TFlowNodeTypeId typeId, IFlowNodePtr pNode) override {}
 
@@ -107,11 +107,11 @@ struct SMonoInputPortConfig
 	SInputPortConfig Convert()
 	{
 		const char *sName = ToCryString(name);
-		const char *sDesc = description ? ToCryString(description) : NULL;
-		const char *sHumanName = humanName ? ToCryString(humanName) : NULL;
-		const char *sUIConfig = uiConfig ? ToCryString(uiConfig) : NULL;
+		const char *sDesc = description ? ToCryString(description) : nullptr;
+		const char *sHumanName = humanName ? ToCryString(humanName) : nullptr;
+		const char *sUIConfig = uiConfig ? ToCryString(uiConfig) : nullptr;
 
-		IMonoObject *pObject = NULL;
+		IMonoObject *pObject = nullptr;
 		if(defaultValue != 0)
 			pObject = *defaultValue;
 

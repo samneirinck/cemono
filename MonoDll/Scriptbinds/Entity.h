@@ -77,7 +77,7 @@ struct SMonoEntityInfo
 	SMonoEntityInfo(IEntity *pEnt)
 		: pEntity(pEnt)
 	{
-		if(pEnt != NULL)
+		if(pEnt != nullptr)
 			id = pEnt->GetId();
 		else
 			id = 0;

@@ -23,16 +23,16 @@ public:
 	virtual uint32 GetFlags() const { return m_flags; }
 	virtual void SetFlags(uint32 nFlags) { m_flags = nFlags; }
 	virtual const char *GetScriptFile() const { return ""; }
-	virtual IEntityScript *GetIEntityScript() const { return NULL; }
-	virtual IScriptTable *GetScriptTable() const { return NULL; }
+	virtual IEntityScript *GetIEntityScript() const { return nullptr; }
+	virtual IScriptTable *GetScriptTable() const { return nullptr; }
 	virtual const char *GetEditorHelperObjectName() const { return m_classInfo.sHelper; }
 	virtual const char *GetEditorIconName() const { return m_classInfo.sIcon; }
 	virtual bool LoadScript(bool bForceReload) { return false; }
 	virtual UserProxyCreateFunc GetUserProxyCreateFunc() const { return m_proxyCreateFunc; }
-	virtual void *GetUserProxyData() const { return NULL; }
+	virtual void *GetUserProxyData() const { return nullptr; }
 	virtual IEntityPropertyHandler *GetPropertyHandler() const { return m_pPropertyHandler;  }
 	virtual IEntityEventHandler *GetEventHandler() const { return m_pEventHandler; }
-	virtual IEntityScriptFileHandler *GetScriptFileHandler() const { return NULL; }
+	virtual IEntityScriptFileHandler *GetScriptFileHandler() const { return nullptr; }
 	virtual int GetEventCount();
 	virtual IEntityClass::SEventInfo GetEventInfo( int nIndex ) { return IEntityClass::SEventInfo(); }
 	virtual bool FindEventInfo( const char *sEvent,SEventInfo &event ) { return false; }

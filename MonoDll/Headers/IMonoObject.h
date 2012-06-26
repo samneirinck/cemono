@@ -23,7 +23,7 @@ namespace mono { class _object; typedef _object* object; }
 struct IMonoObject
 {
 public:
-	virtual IMonoObject *CallMethod(const char *methodName, IMonoArray *params = NULL, bool bStatic = false) = 0;
+	virtual IMonoObject *CallMethod(const char *methodName, IMonoArray *params = nullptr, bool bStatic = false) = 0;
 
 	virtual IMonoObject *GetProperty(const char *propertyName, bool bStatic = false) = 0;
 	virtual void SetProperty(const char *propertyName, IMonoObject *pNewValue, bool bStatic = false) = 0;
@@ -31,7 +31,7 @@ public:
 	virtual void SetField(const char *fieldName, IMonoObject *pNewValue, bool bStatic = false) = 0;
 
 	template <typename TResult>
-	static TResult CallMethod(IMonoObject *pInvokable, const char *funcName, IMonoArray *pArgs = NULL)
+	static TResult CallMethod(IMonoObject *pInvokable, const char *funcName, IMonoArray *pArgs = nullptr)
 	{
 		if(IMonoObject *pResult = pInvokable->CallMethod(funcName, pArgs))
 		{

@@ -3,7 +3,7 @@
 
 #include <IParticles.h>
 
-IParticleManager *CScriptbind_ParticleSystem::m_pParticleManager = NULL;
+IParticleManager *CScriptbind_ParticleSystem::m_pParticleManager = nullptr;
 
 CScriptbind_ParticleSystem::CScriptbind_ParticleSystem()
 {

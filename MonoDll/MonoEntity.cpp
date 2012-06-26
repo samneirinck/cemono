@@ -14,7 +14,7 @@
 #include <MonoCommon.h>
 
 CEntity::CEntity()
-	: m_pScript(NULL)
+	: m_pScript(nullptr)
 	, m_bInitialized(false)
 {
 }
@@ -143,7 +143,7 @@ void CEntity::FullSerialize(TSerialize ser)
 			IEntityPropertyHandler::SPropertyInfo propertyInfo;
 			pPropertyHandler->GetPropertyInfo(i, propertyInfo);
 
-			char *propertyValue = NULL;
+			char *propertyValue = nullptr;
 			ser.ValueChar(propertyInfo.name, propertyValue, 0);
 
 			pPropertyHandler->SetProperty(pEntity, i, propertyValue);

@@ -16,7 +16,7 @@ CGameRules::CGameRules()
 void CGameRules::RegisterGameMode(mono::string gamemode)
 {
 	// gEnv->pGameFramework is set too late, so we'll have to set it earlier in CGameStartup::InitFramework. (gEnv->pGameFramework = m_pFramework after the ModuleInitISystem call)
-	if(IGameRulesSystem *pGameRulesSystem = gEnv->pGameFramework ? gEnv->pGameFramework->GetIGameRulesSystem() : NULL)
+	if(IGameRulesSystem *pGameRulesSystem = gEnv->pGameFramework ? gEnv->pGameFramework->GetIGameRulesSystem() : nullptr)
 	{
 		if(!pGameRulesSystem->HaveGameRules(*gamemode))
 			pGameRulesSystem->RegisterGameRules(*gamemode, "GameRules");

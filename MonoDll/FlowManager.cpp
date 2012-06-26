@@ -75,7 +75,7 @@ std::shared_ptr<SNodeType> CFlowManager::GetNodeType(const char *name)
 			return nodeType;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 // Used after serialization to get the valid flownode pointer.
@@ -87,7 +87,7 @@ IFlowNode *CFlowManager::GetNode(TFlowGraphId graphId, TFlowNodeId id)
 			return pNodeData->GetNode();
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 void CFlowManager::ActivateOutput(CFlowNode *pNode, int index) { pNode->ActivateOutput(index, 0); }
@@ -142,8 +142,8 @@ IEntity *CFlowManager::GetTargetEntity(CFlowNode *pNode, EntityId &id)
 		return pEntity;
 	}
 
-	MonoWarning("CFlowManager::GetTargetEntity returning null target entity!");
-	return NULL;
+	MonoWarning("CFlowManager::GetTargetEntity returning nullptr target entity!");
+	return nullptr;
 }
 
 static const int MAX_NODE_PORT_COUNT = 20;
@@ -153,8 +153,8 @@ void SNodeType::ReloadPorts(IMonoObject *pScript)
 	{
 		auto monoConfig = pResult->Unbox<SMonoNodePortConfig>();
 
-		SInputPortConfig nullConfig = {0};
-		SOutputPortConfig nullOutputConfig = {0};
+		SInputPortConfig nullptrConfig = {0};
+		SOutputPortConfig nullptrOutputConfig = {0};
 
 		IMonoArray *pInputPorts = *monoConfig.inputs;
 
@@ -164,7 +164,7 @@ void SNodeType::ReloadPorts(IMonoObject *pScript)
 			pInputs[i] = pInputPorts->GetItem(i)->Unbox<SMonoInputPortConfig>().Convert();
 
 		for(int i = pInputPorts->GetSize(); i < MAX_NODE_PORT_COUNT; i++)
-			pInputs[i] = nullConfig;
+			pInputs[i] = nullptrConfig;
 
 		SAFE_RELEASE(pInputPorts);
 
@@ -177,7 +177,7 @@ void SNodeType::ReloadPorts(IMonoObject *pScript)
 			pOutputs[i] = pOutputPorts->GetItem(i)->Unbox<SMonoOutputPortConfig>().Convert();
 
 		for(int i = pOutputPorts->GetSize(); i < MAX_NODE_PORT_COUNT; i++)
-			pOutputs[i] = nullOutputConfig;
+			pOutputs[i] = nullptrOutputConfig;
 
 		SAFE_RELEASE(pOutputPorts);
 	}

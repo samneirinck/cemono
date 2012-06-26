@@ -14,10 +14,10 @@
 #include <IMonoClass.h>
 
 CFlowNode::CFlowNode(SActivationInfo *pActInfo)
-	: m_pScript(NULL)
+	: m_pScript(nullptr)
 	, m_pActInfo(pActInfo)
 	, m_cloneType(eNCT_Instanced)
-	, m_pNodeType(NULL)
+	, m_pNodeType(nullptr)
 {
 	// We *have* to get the id right away or inputs won't work, so lets use this fugly solution.
 	pActInfo->pGraph->RegisterHook(this);
@@ -43,7 +43,7 @@ bool CFlowNode::CreatedNode(TFlowNodeId id, const char *name, TFlowNodeTypeId ty
 
 		m_pScript = pScript;
 
-		return pScript != NULL;
+		return pScript != nullptr;
 	}
 
 	return true; 
@@ -61,7 +61,7 @@ IFlowNodePtr CFlowNode::Clone(SActivationInfo *pActInfo)
 		break;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 IEntity *CFlowNode::GetTargetEntity()
@@ -73,10 +73,10 @@ void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 {	
 	m_pActInfo = pActInfo;
 
-	if(m_pHookedGraph && m_pScript != NULL)
+	if(m_pHookedGraph && m_pScript != nullptr)
 	{
 		m_pHookedGraph->UnregisterHook(this);
-		m_pHookedGraph = NULL;
+		m_pHookedGraph = nullptr;
 	}
 
 	switch(event)
@@ -145,7 +145,7 @@ void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 		{
 			if(m_pNodeType->IsEntityNode())
 			{
-				IMonoScript *pEntityScript = NULL;
+				IMonoScript *pEntityScript = nullptr;
 				EntityId entId = pActInfo->pGraph->GetEntityId(pActInfo->myID);
 				if(pActInfo && entId)
 				{

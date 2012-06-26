@@ -18,7 +18,7 @@ struct IMonoArray;
 class CScriptAssembly : public IMonoAssembly
 {
 public:
-	CScriptAssembly(MonoImage *pImage) : m_pImage(pImage), m_pAssembly(NULL) {}
+	CScriptAssembly(MonoImage *pImage) : m_pImage(pImage), m_pAssembly(nullptr) {}
 	virtual ~CScriptAssembly();
 
 	// IMonoAssembly

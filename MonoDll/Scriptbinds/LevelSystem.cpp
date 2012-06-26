@@ -31,7 +31,7 @@ ILevelInfo *CLevelSystem::GetCurrentLevel()
 	if(ILevel *pLevel = gEnv->pGameFramework->GetILevelSystem()->GetCurrentLevel())
 		return pLevel->GetLevelInfo();
 
-	return NULL;
+	return nullptr;
 }
 
 ILevelInfo *CLevelSystem::LoadLevel(mono::string name)
@@ -39,7 +39,7 @@ ILevelInfo *CLevelSystem::LoadLevel(mono::string name)
 	if(ILevel *pLevel = gEnv->pGameFramework->GetILevelSystem()->LoadLevel(ToCryString(name)))
 		return pLevel->GetLevelInfo();
 
-	return NULL;
+	return nullptr;
 }
 
 bool CLevelSystem::IsLevelLoaded()

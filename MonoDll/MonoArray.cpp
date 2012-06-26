@@ -56,7 +56,7 @@ IMonoObject *CScriptArray::GetItem(int index)
 	if(mono::object monoObj = (mono::object)mono_array_get((MonoArray *)m_pObject, MonoObject *, index))
 		return *monoObj;
 
-	return NULL;
+	return nullptr;
 }
 
 void CScriptArray::InsertMonoObject(mono::object object, int index)
@@ -99,7 +99,7 @@ void CScriptArray::InsertObject(IMonoObject *pObject, int index)
 {
 	if(!pObject)
 	{
-		InsertMonoObject(NULL, index);
+		InsertMonoObject(nullptr, index);
 		return;
 	}
 

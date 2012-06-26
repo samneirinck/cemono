@@ -21,7 +21,7 @@ class CFlowNode;
 
 struct SNodeType
 {
-	SNodeType(const char *name) : typeName(name), pInputs(NULL), pOutputs(NULL)
+	SNodeType(const char *name) : typeName(name), pInputs(nullptr), pOutputs(nullptr)
 	{
 		if(bEntityNode = typeName.find("entity:") != string::npos)
 			scriptName = typeName.substr(7);

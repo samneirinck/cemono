@@ -46,7 +46,7 @@ SQueuedProperty *CEntityPropertyHandler::GetQueuedProperties(EntityId id, int &n
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 void CEntityPropertyHandler::LoadEntityXMLProperties(IEntity *pEntity, const XmlNodeRef& xml)
@@ -87,7 +87,7 @@ void CEntityPropertyHandler::SetProperty(IEntity *pIEntity, int index, const cha
 {
 	EntityId id = pIEntity->GetId();
 
-	CEntity *pEntity = NULL;
+	CEntity *pEntity = nullptr;
 	if(IGameObject *pGameObject = gEnv->pGameFramework->GetGameObject(id))
 		pEntity = static_cast<CEntity *>(pGameObject->QueryExtension(pIEntity->GetClass()->GetName()));
 

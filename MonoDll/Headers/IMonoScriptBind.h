@@ -24,7 +24,7 @@
 /// </summary>
 struct IMonoScriptBind
 {
-	IMonoScriptBind() : m_pClass(NULL) { }
+	IMonoScriptBind() : m_pClass(nullptr) { }
 
 	/// <summary>
 	/// The namespace in which the Mono class this scriptbind is tied to resides in; returns "CryEngine" by default if not overridden.

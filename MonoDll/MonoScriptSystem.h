@@ -90,7 +90,7 @@ public:
 
 	CFlowManager *GetFlowManager() const { return m_pFlowManager; }
 
-	bool IsInitialized() { return m_pRootDomain != NULL; }
+	bool IsInitialized() { return m_pRootDomain != nullptr; }
 
 protected:
 	bool CompleteInit();
