@@ -125,11 +125,6 @@ namespace CryEngine
 		protected virtual void OnCollision(EntityId targetEntityId, Vec3 hitPos, Vec3 dir, short materialId, Vec3 contactNormal) { }
 
 		/// <summary>
-		/// 
-		/// </summary>
-		public virtual void OnHit(HitInfo hitInfo) { }
-
-		/// <summary>
 		/// Called after level has been loaded, is not called on serialization.
 		/// Note that this is called prior to GameRules.OnClientConnect and OnClientEnteredGame!
 		/// </summary>

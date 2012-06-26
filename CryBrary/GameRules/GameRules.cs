@@ -36,9 +36,6 @@ namespace CryEngine
 
 		public virtual void OnSetTeam(EntityId actorId, EntityId teamId) { }
 
-		// Server-only
-		protected virtual void OnHit(HitInfo hitInfo) { }
-
 		public virtual void OnSpawn() { }
 
 		public virtual void OnClientConnect(int channelId, bool isReset = false, string playerName = "") { }
@@ -187,102 +184,5 @@ namespace CryEngine
 		/// Unknown cause
 		/// </summary>
 		Unknown
-	}
-
-	public struct HitInfo
-	{
-		/// <summary>
-		/// EntityId of the shooter
-		/// </summary>
-		public EntityId ShooterId { get; set; }
-		/// <summary>
-		/// EntityId of the target which got shot
-		/// </summary>
-		public EntityId TargetId { get; set; }
-		/// <summary>
-		/// EntityId of the weapon
-		/// </summary>
-		public EntityId WeaponId { get; set; }
-		/// <summary>
-		/// 0 if hit was not caused by a projectile
-		/// </summary>
-		public EntityId ProjectileId { get; set; }
-
-		/// <summary>
-		/// damage count of the hit
-		/// </summary>
-		public float Damage { get; set; }
-		public float ImpulseStrength { get; set; }
-		/// <summary>
-		/// radius of the hit
-		/// </summary>
-		public float Radius { get; set; }
-		public float Angle { get; set; }
-		/// <summary>
-		/// material id of the surface which got hit
-		/// </summary>
-		public int MaterialId { get; set; }
-		/// <summary>
-		/// type id of the hit, see IGameRules::GetHitTypeId for more information
-		/// </summary>
-		public int TypeId { get; set; }
-		/// <summary>
-		/// type of bullet, if hit was of type bullet
-		/// </summary>
-		public int BulletType { get; set; }
-
-		public float MinimumDamage { get; set; }
-		/// <summary>
-		/// bullet pierceability
-		/// </summary>
-		public float Pierceability { get; set; }
-
-		public int PartId { get; set; }
-
-		/// <summary>
-		/// position of the hit
-		/// </summary>
-		public Vec3 Position { get; set; }
-		/// <summary>
-		/// direction of the hit
-		/// </summary>
-		public Vec3 Direction { get; set; }
-		public Vec3 Normal { get; set; }
-
-		public int ProjectileClassId { get { return _projectileClassId; } set { _projectileClassId = (ushort)value; } }
-		public int WeaponClassId { get { return _weaponClassId; } set { _weaponClassId = (ushort)value; } }
-
-		internal ushort _projectileClassId;
-		internal ushort _weaponClassId;
-
-		public bool Remote { get; set; }
-		/// <summary>
-		/// set to true if shot was aimed - i.e. first bullet, zoomed in etc.
-		/// </summary>
-		public bool Aimed { get; set; }
-		/// <summary>
-		/// true if the hit should knockdown
-		/// </summary>
-		public bool KnocksDown { get; set; }
-		/// <summary>
-		/// true if the hit should knockdown when hit in a leg
-		/// </summary>
-		public bool KnocksDownLeg { get; set; }
-		/// <summary>
-		/// true if the 'shooter' didn't actually shoot, ie. a weapon acting on their behalf did (team perks)
-		/// </summary>
-		public bool HitViaProxy { get; set; }
-		/// <summary>
-		/// true if this hit directly results from an explosion
-		/// </summary>
-		public bool Explosion { get; set; }
-		/// <summary>
-		/// dynamic pierceability reduction
-		/// </summary>
-		public float ArmorHeating { get; set; }
-		/// <summary>
-		/// number of surfaces the bullet has penetrated
-		/// </summary>
-		public int PenetrationCount { get; set; }
 	}
 }
