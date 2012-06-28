@@ -292,7 +292,7 @@ namespace CryEngine.Initialization
 		/// </summary>
 		public static void OnUpdate(float frameTime)
 		{
-			Time.DeltaTime = frameTime;
+            Time.Set(frameTime);
 
             Awaiter.Instance.OnUpdate(frameTime);
 
