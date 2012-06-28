@@ -392,8 +392,12 @@ bool CScriptSystem::InitializeSystems(IMonoAssembly *pCryBraryAssembly)
 void CScriptSystem::OnPostUpdate(float fDeltaTime)
 {
 	// Updates all scripts and sets Time.FrameTime.
-	IMonoArray *pArray = CreateMonoArray(1);
+	IMonoArray *pArray = CreateMonoArray(5);
 	pArray->Insert(fDeltaTime);
+	pArray->Insert(gEnv->pTimer->GetFrameStartTime().GetMilliSeconds());
+	pArray->Insert(gEnv->pTimer->GetAsyncTime().GetMilliSeconds());
+	pArray->Insert(gEnv->pTimer->GetFrameRate());
+	pArray->Insert(gEnv->pTimer->GetTimeScale());
 	m_pScriptManager->CallMethod("OnUpdate", pArray, true);
 	SAFE_RELEASE(pArray);
 }

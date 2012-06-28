@@ -290,9 +290,9 @@ namespace CryEngine.Initialization
 		/// <summary>
 		/// Called once per frame.
 		/// </summary>
-		public static void OnUpdate(float frameTime)
+		public static void OnUpdate(float frameTime, float frameStartTime, float asyncTime, float frameRate, float timeScale)
 		{
-            Time.Set(frameTime);
+            Time.Set(frameTime, frameStartTime, asyncTime, frameRate, timeScale);
 
             Awaiter.Instance.OnUpdate(frameTime);
 

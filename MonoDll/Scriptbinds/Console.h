@@ -55,7 +55,7 @@ class CTime : public IMonoScriptBind
 public:
 	CTime()
 	{
-		REGISTER_METHOD(GetFrameStartTime);
+		REGISTER_METHOD(SetTimeScale);
 	}
 
 	~CTime() {}
@@ -65,9 +65,9 @@ protected:
 	virtual const char *GetClassName() { return "Time"; }
 	// ~IMonoScriptBind
 
-	static float GetFrameStartTime()
+	static void SetTimeScale(float scale)
 	{
-		return gEnv->pTimer->GetFrameStartTime().GetMilliSeconds();
+		gEnv->pTimer->SetTimeScale(scale);
 	}
 };
 

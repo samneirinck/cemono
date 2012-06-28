@@ -7,14 +7,18 @@ namespace CryEngine
 	/// </summary>
 	public static class Time
 	{
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static float _GetFrameStartTime();
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        extern internal static void _SetTimeScale(float scale);
 
-        internal static void Set(float frameTime)
+        internal static void Set(float frameTime, float frameStartTime, float asyncTime, float frameRate, float timeScale)
         {
             DeltaTime = frameTime;
 
-            FrameStartTime = _GetFrameStartTime();
+            // TODO: Have these sent along with ScriptManager.Update
+            FrameStartTime = frameStartTime;
+            AsyncTime = asyncTime;
+            Framerate = frameRate;
+            _timeScale = timeScale;
         }
 
 		/// <summary>
@@ -22,10 +26,27 @@ namespace CryEngine
 		/// </summary>
         public static float FrameStartTime { get; private set; }
 
+        /// <summary>
+        /// Returns the absolute current time.
+        /// Note: The value continuously changes, slower than GetFrameStartTime().
+        /// </summary>
+        public static float AsyncTime { get; private set; }
+
 		/// <summary>
 		/// The time used to render the current frame. Useful for creating framerate independent operations.
 		/// </summary>
-		/// <example>public override void OnUpdate() { this.Position.X += 10 * CryTime.DeltaTime; }</example>
+		/// <example>public override void OnUpdate() { this.Position.X += 10 * Time.DeltaTime; }</example>
 		public static float DeltaTime { get; private set; }
+
+        private static float _timeScale;
+        /// <summary>
+        /// Sets / gets the time scale applied to time values.
+        /// </summary>
+        public static float TimeScale { get { return _timeScale; } set { _SetTimeScale(value); _timeScale = value; } }
+
+        /// <summary>
+        /// Returns the current framerate in frames/second.
+        /// </summary>
+        public static float Framerate { get; private set; }
 	}
 }
