@@ -5,8 +5,11 @@ namespace CryEngine
 {
     public abstract class IDelayedFunc : CryScriptInstance
     {
-        protected void Init()
+        protected void Init(Delegate _delegate, float delay)
         {
+            Delegate = _delegate;
+            Delay = delay;
+
             Reset();
 
             ScriptManager.AddScriptInstance(this, ScriptType.CryScriptInstance);
@@ -43,12 +46,9 @@ namespace CryEngine
         /// <param name="delay">The desired delay, in milliseconds.</param>
         public DelayedFunc(Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> action, float delay, T1 param1, T2 param2, T3 param3, T4 param4, T5 param5, T6 param6, T7 param7, T8 param8, T9 param9, T10 param10)
         {
-            Delegate = action;
-            Delay = delay;
-
             _params = new object[] { param1, param2, param3, param4, param5, param6, param7, param8, param9, param10 };
 
-            Init();
+            Init(action, delay);
         }
 
         object[] _params;
@@ -62,12 +62,9 @@ namespace CryEngine
         /// <param name="delay">The desired delay, in milliseconds.</param>
         public DelayedFunc(Action<T1, T2, T3, T4, T5, T6, T7, T8, T9> action, float delay, T1 param1, T2 param2, T3 param3, T4 param4, T5 param5, T6 param6, T7 param7, T8 param8, T9 param9)
         {
-            Delegate = action;
-            Delay = delay;
-
             _params = new object[] { param1, param2, param3, param4, param5, param6, param7, param8, param9 };
 
-            Init();
+            Init(action, delay);
         }
 
         object[] _params;
@@ -81,12 +78,9 @@ namespace CryEngine
         /// <param name="delay">The desired delay, in milliseconds.</param>
         public DelayedFunc(Action<T1, T2, T3, T4, T5, T6, T7, T8> action, float delay, T1 param1, T2 param2, T3 param3, T4 param4, T5 param5, T6 param6, T7 param7, T8 param8)
         {
-            Delegate = action;
-            Delay = delay;
-
             _params = new object[] { param1, param2, param3, param4, param5, param6, param7, param8 };
 
-            Init();
+            Init(action, delay);
         }
 
         object[] _params;
@@ -100,12 +94,9 @@ namespace CryEngine
         /// <param name="delay">The desired delay, in milliseconds.</param>
         public DelayedFunc(Action<T1, T2, T3, T4, T5, T6, T7> action, float delay, T1 param1, T2 param2, T3 param3, T4 param4, T5 param5, T6 param6, T7 param7)
         {
-            Delegate = action;
-            Delay = delay;
-
             _params = new object[] { param1, param2, param3, param4, param5, param6, param7 };
 
-            Init();
+            Init(action, delay);
         }
 
         object[] _params;
@@ -119,12 +110,9 @@ namespace CryEngine
         /// <param name="delay">The desired delay, in milliseconds.</param>
         public DelayedFunc(Action<T1, T2, T3, T4, T5, T6> action, float delay, T1 param1, T2 param2, T3 param3, T4 param4, T5 param5, T6 param6)
         {
-            Delegate = action;
-            Delay = delay;
-
             _params = new object[] { param1, param2, param3, param4, param5, param6 };
 
-            Init();
+            Init(action, delay);
         }
 
         object[] _params;
@@ -138,12 +126,9 @@ namespace CryEngine
         /// <param name="delay">The desired delay, in milliseconds.</param>
         public DelayedFunc(Action<T1, T2, T3, T4, T5> action, float delay, T1 param1, T2 param2, T3 param3, T4 param4, T5 param5)
         {
-            Delegate = action;
-            Delay = delay;
-
             _params = new object[] { param1, param2, param3, param4, param5 };
 
-            Init();
+            Init(action, delay);
         }
 
         object[] _params;
@@ -157,12 +142,9 @@ namespace CryEngine
         /// <param name="delay">The desired delay, in milliseconds.</param>
         public DelayedFunc(Action<T1, T2, T3, T4> action, float delay, T1 param1, T2 param2, T3 param3, T4 param4)
         {
-            Delegate = action;
-            Delay = delay;
-
             _params = new object[] { param1, param2, param3, param4 };
 
-            Init();
+            Init(action, delay);
         }
 
         object[] _params;
@@ -176,12 +158,9 @@ namespace CryEngine
         /// <param name="delay">The desired delay, in milliseconds.</param>
         public DelayedFunc(Action<T1, T2, T3> action, float delay, T1 param1, T2 param2, T3 param3)
         {
-            Delegate = action;
-            Delay = delay;
-
             _params = new object[] { param1, param2, param3 };
 
-            Init();
+            Init(action, delay);
         }
 
         object[] _params;
@@ -195,12 +174,9 @@ namespace CryEngine
         /// <param name="delay">The desired delay, in milliseconds.</param>
         public DelayedFunc(Action<T1, T2> action, float delay, T1 param1, T2 param2)
         {
-            Delegate = action;
-            Delay = delay;
-
             _params = new object[] { param1, param2 };
 
-            Init();
+            Init(action, delay);
         }
 
         object[] _params;
@@ -214,12 +190,9 @@ namespace CryEngine
         /// <param name="delay">The desired delay, in milliseconds.</param>
         public DelayedFunc(Action<T1> action, float delay, T1 param1)
         {
-            Delegate = action;
-            Delay = delay;
-
             _params = new object[] { param1 };
 
-            Init();
+            Init(action, delay);
         }
 
         object[] _params;
@@ -233,10 +206,7 @@ namespace CryEngine
         /// <param name="delay">The desired delay, in milliseconds.</param>
         public DelayedFunc(Action action, float delay)
         {
-            Delegate = action;
-            Delay = delay;
-
-            Init();
+            Init(action, delay);
         }
 
         public override object[] Params { get { return null; } }
