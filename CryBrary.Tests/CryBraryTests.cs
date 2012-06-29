@@ -16,6 +16,13 @@ namespace CryBrary.Tests
 			ScriptManager.IgnoreExternalCalls = true;
 		}
 
+        [TearDown]
+        public void PostTest()
+        {
+            if (ScriptManager.Scripts != null)
+                ScriptManager.Scripts.Clear();
+        }
+
 		private void InitializeLoggingMethods()
 		{
 			var loggingMethodsMock = new Mock<INativeLoggingMethods>();
