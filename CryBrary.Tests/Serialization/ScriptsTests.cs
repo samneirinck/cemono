@@ -101,20 +101,28 @@ namespace CryBrary.Tests.Serialization
         }
 
         [Test]
-        public void Serialize_DelayedFunc()
+        public void Serialize_DelayedFunc_List()
         {
             var serializer = new CrySerializer();
 
             using (var stream = new MemoryStream())
             {
-                var myDelayMethod = new DelayedFunc(() => { }, 1500);
+                var list = new List<DelayedFunc>();
+                list.Add(new DelayedFunc(DelayedMethod, 1500));
+                list.Add(new DelayedFunc(() => { }, 2400));
 
-                serializer.Serialize(stream, myDelayMethod);
+                serializer.Serialize(stream, list);
 
-                myDelayMethod = serializer.Deserialize(stream) as DelayedFunc;
-                Assert.IsNotNull(myDelayMethod);
-                Assert.AreEqual(1500, myDelayMethod.Delay);
+                list = serializer.Deserialize(stream) as List<DelayedFunc>;
+                Assert.IsNotNull(list);
+                Assert.IsNotEmpty(list);
+                Assert.AreEqual(2, list.Count);
+
+                Assert.AreEqual(1500, list.ElementAt(0).Delay);
+                Assert.AreEqual(2400, list.ElementAt(1).Delay);
             }
         }
+
+        public void DelayedMethod() { }
 	}
 }
