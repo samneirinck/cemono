@@ -36,12 +36,12 @@ namespace CryEngine.Testing
 
 		internal static void Init()
 		{
-			TestCollections = new List<TestCollection>();
-			CCommand.Register("tester_run", RunTests, "Runs the feature tester");
+            TestCollections = new List<TestCollection>();
+
+            CCommand.Register("mono_tests_run", RunTests, "Runs the feature tester");
 			FormHelper.RegisterInternal<ReportForm>();
-			listener = new ConsoleTestListener();
 		}
 
-		private static ConsoleTestListener listener;
+		private static ConsoleTestListener listener = new ConsoleTestListener();
 	}
 }

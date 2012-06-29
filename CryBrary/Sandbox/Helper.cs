@@ -7,19 +7,19 @@ namespace CryEngine.Sandbox
 {
 	internal static class FormHelper
 	{
+        static FormHelper()
+        {
+            AvailableForms = new List<FormInfo>();
+            CCommand.Register("mono_extensions", (args, cmd) =>
+            {
+                if (instance == null)
+                    instance = new FormLoader();
+
+                instance.Show();
+            });
+        }
+
 		private static FormLoader instance;
-
-		internal static void Init()
-		{
-			AvailableForms = new List<FormInfo>();
-			CCommand.Register("mono_extensions", (args, cmd) =>
-			{
-				if(instance == null)
-					instance = new FormLoader();
-
-				instance.Show();
-			});
-		}
 
 		public static void RegisterInternal<T>() where T : Form
 		{
