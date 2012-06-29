@@ -87,7 +87,19 @@ namespace CryEngine.Initialization
 
 		public override int GetHashCode()
 		{
-			return Type.GetHashCode();
+            unchecked // Overflow is fine, just wrap
+            {
+                int hash = 17;
+
+                hash = hash * 23 + ScriptType.GetHashCode();
+                hash = hash * 23 + Type.GetHashCode();
+
+                if(ScriptInstances != null)
+                    hash = hash * 23 + ScriptInstances.GetHashCode();
+
+                hash = hash * 23 + RegistrationParams.GetHashCode();
+                return hash;
+            }
 		}
 
 		#endregion
