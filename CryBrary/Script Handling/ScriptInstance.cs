@@ -29,6 +29,7 @@
 			return false;
 		}
 
+        internal virtual void OnScriptReloadInternal() { OnScriptReload(); }
 		public virtual void OnScriptReload() { }
 
 		/// <summary>

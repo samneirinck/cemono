@@ -169,11 +169,12 @@ namespace CryEngine
 			get { return _physics ?? (_physics = new EntityPhysics(this)); }
 		}
 
-		public override void OnScriptReload()
+        internal override void OnScriptReloadInternal()
 		{
 			EntityPointer = _GetEntity(Id);
 
 			Physics.OnScriptReload();
+            OnScriptReload();
 		}
 
 		// TODO: Expose the attachment system properly

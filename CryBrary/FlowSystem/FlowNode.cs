@@ -557,9 +557,11 @@ namespace CryEngine
             }
         }
 
-        public override void OnScriptReload()
+        internal override void OnScriptReloadInternal()
 		{
 			NodePointer = _GetNode(GraphId, NodeId);
+
+            OnScriptReload();
 		}
         #endregion
 
