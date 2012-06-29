@@ -38,7 +38,7 @@ namespace CryEngine.Testing
 		{
             TestCollections = new List<TestCollection>();
 
-            CCommand.Register("mono_tests_run", RunTests, "Runs the feature tester");
+            ConsoleCommand.Register("mono_tests_run", RunTests, "Runs the feature tester");
 			FormHelper.RegisterInternal<ReportForm>();
 		}
 

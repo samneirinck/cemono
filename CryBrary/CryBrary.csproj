@@ -204,7 +204,7 @@
     <Compile Include="Script Handling\ScriptInstance.cs" />
     <Compile Include="Misc\CompilationAttributes.cs" />
     <Compile Include="CallbackHandler.cs" />
-    <Compile Include="Console\CCommand.cs" />
+    <Compile Include="Console\ConsoleCommand.cs" />
     <Compile Include="Entity\EntityConfig.cs" />
     <Compile Include="Console\CVar.cs" />
     <Compile Include="Misc\Time.cs" />

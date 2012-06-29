@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace CryEngine
 {
-	public delegate void CCommandDelegate(string[] args, string fullCommandLine);
+	public delegate void ConsoleCommandDelegate(string[] args, string fullCommandLine);
 
-	public static class CCommand
+	public static class ConsoleCommand
 	{
-		public static void Register(string name, CCommandDelegate func, string comment = "", CVarFlags flags = CVarFlags.None)
+		public static void Register(string name, ConsoleCommandDelegate func, string comment = "", CVarFlags flags = CVarFlags.None)
 		{
 			CVar._RegisterCommand(name, comment, flags);
 
@@ -26,11 +26,11 @@ namespace CryEngine
 			commands[name](args, fullCommandLine);
 		}
 
-		static Dictionary<string, CCommandDelegate> commands = new Dictionary<string, CCommandDelegate>();
+		static Dictionary<string, ConsoleCommandDelegate> commands = new Dictionary<string, ConsoleCommandDelegate>();
 	}
 
 	[AttributeUsage(AttributeTargets.Method)]
-	public sealed class CCommandAttribute : Attribute
+	public sealed class ConsoleCommandAttribute : Attribute
 	{
 		public string Name;
 		public string Comment;
