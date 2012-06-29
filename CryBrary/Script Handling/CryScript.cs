@@ -79,8 +79,11 @@ namespace CryEngine.Initialization
 
 		public override bool Equals(object obj)
 		{
+            if (obj == null)
+                return false;
+
 			if(obj is CryScript)
-				return (CryScript)obj == this;
+				return obj.GetHashCode() == GetHashCode();
 
 			return false;
 		}
@@ -97,7 +100,8 @@ namespace CryEngine.Initialization
                 if(ScriptInstances != null)
                     hash = hash * 23 + ScriptInstances.GetHashCode();
 
-                hash = hash * 23 + RegistrationParams.GetHashCode();
+                if(RegistrationParams != default(IScriptRegistrationParams))
+                    hash = hash * 23 + RegistrationParams.GetHashCode();
                 return hash;
             }
 		}
