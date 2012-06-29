@@ -10,7 +10,7 @@ namespace CryEngine.Initialization
 	/// </summary>
 	public struct CryScript
 	{
-		private CryScript(Type type)
+		internal CryScript(Type type)
 			: this()
 		{
 			Type = type;
