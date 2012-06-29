@@ -41,9 +41,9 @@ namespace CryBrary.Tests.Serialization
 				Assert.IsNotNull(actor);
 			}
 		}
-
+        
         [Test]
-        public void CryScript_List()
+        public void Serialize_CryScript_List()
         {
             var serializer = new CrySerializer();
 
@@ -97,6 +97,23 @@ namespace CryBrary.Tests.Serialization
                 Assert.AreEqual(8, (nativeEntityScript.ScriptInstances.ElementAt(1) as EntityBase).Id);
 
                 Assert.IsNull(nativeEntityScript.ScriptInstances.ElementAt(2));
+            }
+        }
+
+        [Test]
+        public void Serialize_DelayedFunc()
+        {
+            var serializer = new CrySerializer();
+
+            using (var stream = new MemoryStream())
+            {
+                var myDelayMethod = new DelayedFunc(() => { }, 1500);
+
+                serializer.Serialize(stream, myDelayMethod);
+
+                myDelayMethod = serializer.Deserialize(stream) as DelayedFunc;
+                Assert.IsNotNull(myDelayMethod);
+                Assert.AreEqual(1500, myDelayMethod.Delay);
             }
         }
 	}
