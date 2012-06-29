@@ -24,12 +24,12 @@ namespace CryEngine.Sandbox
 		public static void RegisterInternal<T>() where T : Form
 		{
 			var type = typeof(T);
-			SandboxExtensionAttribute attr;
 
-			if(type.TryGetAttribute(out attr))
-				AvailableForms.Add(new FormInfo { Type = type, Data = attr });
-			else
-				throw new Exception("The internal Sandbox extension of type {0} has no SandboxExtensionAttribute.");
+			SandboxExtensionAttribute attr;
+            if (type.TryGetAttribute(out attr))
+                AvailableForms.Add(new FormInfo { Type = type, Data = attr });
+            else
+                throw new Exception(string.Format("The internal Sandbox extension of type {0} has no SandboxExtensionAttribute.", type.Name));
 		}
 
 		public static List<FormInfo> AvailableForms { get; set; }
