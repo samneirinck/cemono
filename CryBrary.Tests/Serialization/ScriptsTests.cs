@@ -124,5 +124,28 @@ namespace CryBrary.Tests.Serialization
         }
 
         public void DelayedMethod() { }
+
+        class TestEntity : Entity
+        {
+            public TestEntity() { delayedFunc = new DelayedFunc(MyDelayedFunc, 1337); }
+            void MyDelayedFunc() { }
+
+            DelayedFunc delayedFunc;
+        }
+
+        [Test]
+        public void Entity_With_DelayedFunc()
+        {
+            var serializer = new CrySerializer();
+
+            using (var stream = new MemoryStream())
+            {
+                ScriptManager.AddScriptInstance(new TestEntity(), ScriptType.Entity);
+
+                serializer.Serialize(stream, ScriptManager.Scripts);
+
+                ScriptManager.Scripts = serializer.Deserialize(stream) as List<CryScript>;
+            }
+        }
 	}
 }
