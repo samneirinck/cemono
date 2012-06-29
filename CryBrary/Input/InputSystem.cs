@@ -70,9 +70,9 @@ namespace CryEngine
 			Value = value;
 		}
 
-		public string ActionName { get; set; }
-		public KeyEvent KeyEvent { get; set; }
-		public float Value { get; set; }
+        public string ActionName { get; private set; }
+        public KeyEvent KeyEvent { get; private set; }
+        public float Value { get; private set; }
 	}
 
 	public class KeyEventArgs : EventArgs
@@ -83,8 +83,8 @@ namespace CryEngine
 			Value = value;
 		}
 
-		public string ActionName { get; set; }
-		public float Value { get; set; }
+        public string ActionName { get; private set; }
+        public float Value { get; private set; }
 	}
 
 	public class MouseEventArgs : EventArgs
