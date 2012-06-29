@@ -69,12 +69,14 @@ namespace CryEngine.Serialization
 				WriteEnum(objectReference);
 			else
 			{
-				if(objectReference.Value is Type)
-					WriteType(objectReference);
-				else if(valueType.Implements<MemberInfo>())
-					WriteMemberInfo(objectReference);
-				else
-					WriteObject(objectReference);
+                if (objectReference.Value is Type)
+                    WriteType(objectReference);
+                else if (valueType.Implements<Delegate>())
+                    WriteDelegate(objectReference);
+                else if (valueType.Implements<MemberInfo>())
+                    WriteMemberInfo(objectReference);
+                else
+                    WriteObject(objectReference);
 			}
 		}
 
@@ -168,22 +170,26 @@ namespace CryEngine.Serialization
 			if(TryWriteReference(objectReference))
 				return;
 
-			var type = objectReference.Value.GetType();
-
-			WriteLine("object");
-			WriteLine(objectReference.Name);
-			WriteType(type);
-
-			while(type != null)
-			{
-				var fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-				WriteLine(fields.Length);
-				foreach(var field in fields)
-					StartWrite(new ObjectReference(field.Name, field.GetValue(objectReference.Value)));
-
-				type = type.BaseType;
-			}
+            WriteLine("object");
+            WriteLine(objectReference.Name);
+            WriteObject(objectReference.Value);
 		}
+
+        void WriteObject(object obj)
+        {
+            var type = obj.GetType();
+            WriteType(type);
+
+            while (type != null)
+            {
+                var fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+                WriteLine(fields.Length);
+                foreach (var field in fields)
+                    StartWrite(new ObjectReference(field.Name, field.GetValue(obj)));
+
+                type = type.BaseType;
+            }
+        }
 
 		void WriteMemberInfo(ObjectReference objectReference)
 		{
@@ -194,10 +200,35 @@ namespace CryEngine.Serialization
 			WriteLine(objectReference.Name);
 
 			var memberInfo = objectReference.Value as MemberInfo;
-			WriteLine(memberInfo.Name);
-			WriteType(memberInfo.ReflectedType);
-			WriteLine(memberInfo.MemberType);
+            WriteMemberInfo(memberInfo);
 		}
+
+        void WriteMemberInfo(MemberInfo memberInfo)
+        {
+            WriteLine(memberInfo.Name);
+            WriteType(memberInfo.ReflectedType);
+            WriteLine(memberInfo.MemberType);
+        }
+
+        void WriteDelegate(ObjectReference objectReference)
+        {
+            if (TryWriteReference(objectReference))
+                return;
+
+            WriteLine("delegate");
+            WriteLine(objectReference.Name);
+
+            var _delegate = objectReference.Value as Delegate;
+            WriteType(_delegate.GetType());
+            WriteMemberInfo(_delegate.Method);
+            if (_delegate.Target != null)
+            {
+                WriteLine("target");
+                WriteObject(_delegate.Target);
+            }
+            else
+                WriteLine("null_target");
+        }
 
 		void WriteType(ObjectReference objectReference)
 		{
@@ -285,6 +316,7 @@ namespace CryEngine.Serialization
 				case "string": ReadString(objReference); break;
 				case "memberinfo": ReadMemberInfo(objReference); break;
 				case "type": ReadType(objReference); break;
+                case "delegate": ReadDelegate(objReference); break;
 				default: throw new SerializationException(string.Format("Invalid object type {0} was serialized", type));
 			}
 
@@ -314,36 +346,53 @@ namespace CryEngine.Serialization
 			AddReferenceToObject(objReference);
 
 			objReference.Name = ReadLine();
-			var type = ReadType();
 
-			try
-			{
-				objReference.Value = Activator.CreateInstance(type);
-			}
-			catch(MissingMethodException) { objReference.AllowNull = true; } // types lacking default constructors can't be serialized.
-
-			while(type != null)
-			{
-				var numFields = int.Parse(ReadLine());
-
-				for(int i = 0; i < numFields; i++)
-				{
-					var fieldReference = StartRead();
-
-					var fieldInfo = type.GetField(fieldReference.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-
-					if(fieldInfo != null)
-					{
-						if(objReference.Value != null)
-							fieldInfo.SetValue(objReference.Value, fieldReference.Value);
-					}
-					else
-						throw new MissingFieldException(string.Format("Failed to find field {0} in type {1}", fieldReference.Name, type.Name));
-				}
-
-				type = type.BaseType;
-			}
+            bool allowNull = false;
+            objReference.Value = ReadObject(ref allowNull);
+            objReference.AllowNull = allowNull;
 		}
+
+        object ReadObject()
+        {
+            bool allowNull = false;
+            return ReadObject(ref allowNull);
+        }
+
+        object ReadObject(ref bool allowNull)
+        {
+            var type = ReadType();
+            object obj = null;
+
+            try
+            {
+                obj = Activator.CreateInstance(type);
+            }
+            catch (MissingMethodException) { allowNull = true; } // types lacking default constructors can't be serialized.
+
+            while (type != null)
+            {
+                var numFields = int.Parse(ReadLine());
+
+                for (int i = 0; i < numFields; i++)
+                {
+                    var fieldReference = StartRead();
+
+                    var fieldInfo = type.GetField(fieldReference.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+                    if (fieldInfo != null)
+                    {
+                        if (obj != null)
+                            fieldInfo.SetValue(obj, fieldReference.Value);
+                    }
+                    else
+                        throw new MissingFieldException(string.Format("Failed to find field {0} in type {1}", fieldReference.Name, type.Name));
+                }
+
+                type = type.BaseType;
+            }
+
+            return obj;
+        }
 
 		void ReadEnumerable(ObjectReference objReference)
 		{
@@ -421,24 +470,43 @@ namespace CryEngine.Serialization
 			AddReferenceToObject(objReference);
 
 			objReference.Name = ReadLine();
-			var memberName = ReadLine();
-
-			var reflectedType = ReadType();
-			var memberType = (MemberTypes)Enum.Parse(typeof(MemberTypes), ReadLine());
-
-			switch(memberType)
-			{
-				case MemberTypes.Method:
-					objReference.Value = reflectedType.GetMethod(memberName);
-					break;
-				case MemberTypes.Field:
-					objReference.Value = reflectedType.GetField(memberName);
-					break;
-				case MemberTypes.Property:
-					objReference.Value = reflectedType.GetProperty(memberName);
-					break;
-			}
+            objReference.Value = ReadMemberInfo();
 		}
+
+        MemberInfo ReadMemberInfo()
+        {
+            var memberName = ReadLine();
+
+            var reflectedType = ReadType();
+            var memberType = (MemberTypes)Enum.Parse(typeof(MemberTypes), ReadLine());
+
+            var bindingFlags = BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance;
+            switch (memberType)
+            {
+                case MemberTypes.Method:
+                    return reflectedType.GetMethod(memberName, bindingFlags);
+                case MemberTypes.Field:
+                    return reflectedType.GetField(memberName, bindingFlags);
+                case MemberTypes.Property:
+                    return reflectedType.GetProperty(memberName, bindingFlags);
+            }
+
+            return null;
+        }
+
+        void ReadDelegate(ObjectReference objReference)
+        {
+            AddReferenceToObject(objReference);
+
+            objReference.Name = ReadLine();
+
+            var delegateType = ReadType();
+            var methodInfo = ReadMemberInfo() as MethodInfo;
+            object target = null;
+
+            if (ReadLine() == "target")
+                objReference.Value = Delegate.CreateDelegate(delegateType, ReadObject(), methodInfo);
+        }
 
 		void ReadType(ObjectReference objReference)
 		{
