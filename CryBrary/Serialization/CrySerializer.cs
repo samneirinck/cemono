@@ -52,23 +52,25 @@ namespace CryEngine.Serialization
 		{
 			Type valueType = objectReference.Value != null ? objectReference.Value.GetType() : null;
 
-			if(valueType == null || valueType.IsPointer || valueType == typeof(IntPtr))
-				WriteNull(objectReference);
-			else  if(valueType.IsPrimitive)
-				WriteAny(objectReference);
-			else if(valueType == typeof(string))
-				WriteString(objectReference);
-			else if(valueType.Implements<IEnumerable>())
-			{
-				if(valueType.IsGenericType)
-					WriteGenericEnumerable(objectReference);
-				else
-					WriteEnumerable(objectReference);
-			}
-			else if(valueType.IsEnum)
-				WriteEnum(objectReference);
-			else
-			{
+            if (valueType == null || valueType.IsPointer)
+                WriteNull(objectReference);
+            else if (valueType == typeof(IntPtr))
+                WriteIntPtr(objectReference);
+            else if (valueType.IsPrimitive)
+                WriteAny(objectReference);
+            else if (valueType == typeof(string))
+                WriteString(objectReference);
+            else if (valueType.Implements<IEnumerable>())
+            {
+                if (valueType.IsGenericType)
+                    WriteGenericEnumerable(objectReference);
+                else
+                    WriteEnumerable(objectReference);
+            }
+            else if (valueType.IsEnum)
+                WriteEnum(objectReference);
+            else
+            {
                 if (objectReference.Value is Type)
                     WriteType(objectReference);
                 else if (valueType.Implements<Delegate>())
@@ -77,14 +79,21 @@ namespace CryEngine.Serialization
                     WriteMemberInfo(objectReference);
                 else
                     WriteObject(objectReference);
-			}
+            }
 		}
 
-		void WriteNull(ObjectReference objectReference)
-		{
-			WriteLine("null");
-			WriteLine(objectReference.Name);
-		}
+        void WriteNull(ObjectReference objectReference)
+        {
+            WriteLine("null");
+            WriteLine(objectReference.Name);
+        }
+
+        void WriteIntPtr(ObjectReference objectReference)
+        {
+            WriteLine("intptr");
+            WriteLine(objectReference.Name);
+            WriteLine(((IntPtr)objectReference.Value).ToInt64());
+        }
 
 		void WriteReference(ObjectReference objReference, int line)
 		{
@@ -294,6 +303,7 @@ namespace CryEngine.Serialization
 		string ReadLine()
 		{
 			CurrentLine++;
+
 			return Reader.ReadLine();
 		}
 
@@ -317,6 +327,7 @@ namespace CryEngine.Serialization
 				case "memberinfo": ReadMemberInfo(objReference); break;
 				case "type": ReadType(objReference); break;
                 case "delegate": ReadDelegate(objReference); break;
+                case "intptr": ReadIntPtr(objReference); break;
 				default: throw new SerializationException(string.Format("Invalid object type {0} was serialized", type));
 			}
 
@@ -331,6 +342,12 @@ namespace CryEngine.Serialization
 			objReference.Name = ReadLine();
 		}
 
+        void ReadIntPtr(ObjectReference objReference)
+        {
+            objReference.Name = ReadLine();
+            objReference.Value = new IntPtr(Int64.Parse(ReadLine()));
+        }
+
 		void ReadReference(ObjectReference objReference)
 		{
 			objReference.Name = ReadLine();
@@ -338,7 +355,7 @@ namespace CryEngine.Serialization
 			objReference.Value = ObjectReferences[referenceLine].Value;
 
 			if(objReference.Value == null)
-				throw new SerializationException(string.Format("Failed to obtain reference {0} at line {1}", objReference.Name, referenceLine));
+				throw new SerializationException(string.Format("Failed to obtain reference {0} at line {1}! Last line was {2})", objReference.Name, referenceLine, CurrentLine));
 		}
 
 		void ReadObject(ObjectReference objReference)
