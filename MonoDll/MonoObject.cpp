@@ -149,11 +149,14 @@ void CScriptObject::HandleException(MonoObject *pException)
 	MonoMethod *pExceptionMethod = mono_method_desc_search_in_class(mono_method_desc_new("::ToString()", false),mono_get_exception_class());
 	MonoString *exceptionString = (MonoString *)mono_runtime_invoke(pExceptionMethod, pException, nullptr, nullptr);
 
+	if(g_pMonoCVars->mono_exceptionsTriggerFatalErrors)
+	{
+		CryFatalError(ToCryString((mono::string)exceptionString));
+		return;
+	}
+
+	MonoWarning(ToCryString((mono::string)exceptionString));
+
 	if(g_pMonoCVars->mono_exceptionsTriggerMessageBoxes)
 		CryMessageBox(ToCryString((mono::string)exceptionString), "CryMono exception was raised", 0x00000000L);
-
-	if(g_pMonoCVars->mono_exceptionsTriggerFatalErrors)
-		CryFatalError(ToCryString((mono::string)exceptionString));
-	else
-		MonoWarning(ToCryString((mono::string)exceptionString));
 }
