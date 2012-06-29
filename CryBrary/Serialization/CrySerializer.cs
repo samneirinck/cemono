@@ -181,12 +181,8 @@ namespace CryEngine.Serialization
 
             WriteLine("object");
             WriteLine(objectReference.Name);
-            WriteObject(objectReference.Value);
-		}
 
-        void WriteObject(object obj)
-        {
-            var type = obj.GetType();
+            var type = objectReference.Value.GetType();
             WriteType(type);
 
             while (type != null)
@@ -194,11 +190,11 @@ namespace CryEngine.Serialization
                 var fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
                 WriteLine(fields.Length);
                 foreach (var field in fields)
-                    StartWrite(new ObjectReference(field.Name, field.GetValue(obj)));
+                    StartWrite(new ObjectReference(field.Name, field.GetValue(objectReference.Value)));
 
                 type = type.BaseType;
             }
-        }
+		}
 
 		void WriteMemberInfo(ObjectReference objectReference)
 		{
@@ -233,7 +229,7 @@ namespace CryEngine.Serialization
             if (_delegate.Target != null)
             {
                 WriteLine("target");
-                WriteObject(_delegate.Target);
+                StartWrite(new ObjectReference("delegateTarget", _delegate.Target));
             }
             else
                 WriteLine("null_target");
@@ -364,27 +360,13 @@ namespace CryEngine.Serialization
 
 			objReference.Name = ReadLine();
 
-            bool allowNull = false;
-            objReference.Value = ReadObject(ref allowNull);
-            objReference.AllowNull = allowNull;
-		}
-
-        object ReadObject()
-        {
-            bool allowNull = false;
-            return ReadObject(ref allowNull);
-        }
-
-        object ReadObject(ref bool allowNull)
-        {
             var type = ReadType();
-            object obj = null;
 
             try
             {
-                obj = Activator.CreateInstance(type);
+                objReference.Value = Activator.CreateInstance(type);
             }
-            catch (MissingMethodException) { allowNull = true; } // types lacking default constructors can't be serialized.
+            catch (MissingMethodException) { objReference.AllowNull = true; } // types lacking default constructors can't be serialized.
 
             while (type != null)
             {
@@ -398,8 +380,8 @@ namespace CryEngine.Serialization
 
                     if (fieldInfo != null)
                     {
-                        if (obj != null)
-                            fieldInfo.SetValue(obj, fieldReference.Value);
+                        if (objReference.Value != null)
+                            fieldInfo.SetValue(objReference.Value, fieldReference.Value);
                     }
                     else
                         throw new MissingFieldException(string.Format("Failed to find field {0} in type {1}", fieldReference.Name, type.Name));
@@ -407,9 +389,7 @@ namespace CryEngine.Serialization
 
                 type = type.BaseType;
             }
-
-            return obj;
-        }
+		}
 
 		void ReadEnumerable(ObjectReference objReference)
 		{
@@ -521,7 +501,7 @@ namespace CryEngine.Serialization
             var methodInfo = ReadMemberInfo() as MethodInfo;
 
             if (ReadLine() == "target")
-                objReference.Value = Delegate.CreateDelegate(delegateType, ReadObject(), methodInfo);
+                objReference.Value = Delegate.CreateDelegate(delegateType, StartRead().Value, methodInfo);
             else
                 objReference.Value = Delegate.CreateDelegate(delegateType, methodInfo);
         }
