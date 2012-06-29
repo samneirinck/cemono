@@ -16,10 +16,10 @@ namespace CryEngine.Testing
 		// TODO: Provide a method to selectively run tests
 		public static void RunTests()
 		{
-			RunTests(null, null);
+			RunTests(default(ConsoleCommandArgs));
 		}
 
-		private static void RunTests(string[] args, string fullCommandLine)
+        private static void RunTests(ConsoleCommandArgs e)
 		{
 			var timer = Stopwatch.StartNew();
 
