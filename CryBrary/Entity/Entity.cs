@@ -155,7 +155,6 @@ namespace CryEngine
 		#endregion
 
 		#region Base Logic
-
 		internal virtual string GetPropertyValue(string propertyName)
 		{
 			if(propertyName == null)
@@ -272,7 +271,23 @@ namespace CryEngine
 			return new NodeConfig(FlowNodeCategory.Approved, "", FlowNodeFlags.HideUI | FlowNodeFlags.TargetEntity);
 		}*/
 		#endregion
-	}
+
+        #region Overrides
+        public override int GetHashCode()
+        {
+            unchecked // Overflow is fine, just wrap
+            {
+                int hash = 17;
+
+                hash = hash * 29 + ScriptId.GetHashCode();
+                hash = hash * 29 + Id.GetHashCode();
+                hash = hash * 29 + EntityPointer.GetHashCode();
+
+                return hash;
+            }
+        }
+        #endregion
+    }
 
 	[Serializable]
 	public class EntityException : Exception

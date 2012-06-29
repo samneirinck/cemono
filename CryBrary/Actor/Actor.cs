@@ -203,14 +203,32 @@ namespace CryEngine
 			OnSpawn();
 		}
 
-		public override void OnScriptReload()
+        #region Overrides
+        public override int GetHashCode()
+        {
+            unchecked // Overflow is fine, just wrap
+            {
+                int hash = 17;
+
+                hash = hash * 29 + ScriptId.GetHashCode();
+                hash = hash * 29 + Id.GetHashCode();
+                hash = hash * 29 + ChannelId.GetHashCode();
+                hash = hash * 29 + ActorPointer.GetHashCode();
+                hash = hash * 29 + EntityPointer.GetHashCode();
+
+                return hash;
+            }
+        }
+
+        public override void OnScriptReload()
 		{
 			base.OnScriptReload();
 
 			ActorPointer = _GetActorInfoById(Id).ActorPtr;
 		}
+        #endregion
 
-		internal IntPtr ActorPointer { get; set; }
+        internal IntPtr ActorPointer { get; set; }
 		public int ChannelId { get; set; }
 
 		public float Health { get { return _GetPlayerHealth(ActorPointer); } set { _SetPlayerHealth(ActorPointer, value); } }

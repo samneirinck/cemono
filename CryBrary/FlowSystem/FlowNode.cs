@@ -541,12 +541,29 @@ namespace CryEngine
 			}
 		}
 
-		public override void OnScriptReload()
+        #region Overrides
+        public override int GetHashCode()
+        {
+            unchecked // Overflow is fine, just wrap
+            {
+                int hash = 17;
+
+                hash = hash * 29 + ScriptId.GetHashCode();
+                hash = hash * 29 + NodePointer.GetHashCode();
+                hash = hash * 29 + NodeId.GetHashCode();
+                hash = hash * 29 + GraphId.GetHashCode();
+
+                return hash;
+            }
+        }
+
+        public override void OnScriptReload()
 		{
 			NodePointer = _GetNode(GraphId, NodeId);
 		}
+        #endregion
 
-		internal IntPtr NodePointer { get; set; }
+        internal IntPtr NodePointer { get; set; }
 		internal UInt16 NodeId { get; set; }
 		internal UInt32 GraphId { get; set; }
 
