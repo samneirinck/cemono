@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Text;
 
 namespace CryEngine
 {
@@ -105,7 +105,7 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="format"></param>
 		/// <param name="args"></param>
-		public static void Warning(string format, params object[] args)
+		public static void LogWarning(string format, params object[] args)
 		{
 			Methods._Warning(String.Format(format, args));
 		}
@@ -113,9 +113,24 @@ namespace CryEngine
 		/// <summary>
 		/// Outputs a warning message
 		/// </summary>
-		public static void Warning(string msg)
+		public static void LogWarning(string msg)
 		{
 			Methods._Warning(msg);
 		}
+
+        public static void LogStackTrace()
+        {
+            var stackTrace = new System.Diagnostics.StackTrace(true);
+            Debug.LogAlways("Stack trace:");
+            for(int i = 1; i < stackTrace.FrameCount; i++)
+            {
+                var frame = stackTrace.GetFrame(i);
+
+                var method = frame.GetMethod();
+                var fileName = frame.GetFileName() ?? "<unknown>";
+
+                Debug.Log("  at {0}.{1}.{2} () in {3}:{4}", method.DeclaringType.Namespace, method.DeclaringType.Name, method.Name, fileName, frame.GetFileLineNumber());
+            }
+        }
 	}
 }
