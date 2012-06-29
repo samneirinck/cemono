@@ -11,6 +11,7 @@ using System.Linq;
 
 namespace CryBrary.Tests.Serialization
 {
+    [TestFixture]
 	class ScriptsTests : CryBraryTests
 	{
 		[Test]
