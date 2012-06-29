@@ -12,7 +12,7 @@ using System.Linq;
 namespace CryBrary.Tests.Serialization
 {
     [TestFixture]
-	class ScriptsTests : CryBraryTests
+	public class ScriptsTests : CryBraryTests
 	{
 		[Test]
 		public void Serialize_Native_Scripts()
