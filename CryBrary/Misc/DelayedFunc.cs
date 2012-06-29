@@ -41,6 +41,8 @@ namespace CryEngine
 
     public sealed class DelayedFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> : IDelayedFunc
     {
+        public DelayedFunc() { }
+
         /// <summary>
         /// </summary>
         /// <param name="delay">The desired delay, in milliseconds.</param>
@@ -57,6 +59,8 @@ namespace CryEngine
 
     public sealed class DelayedFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9> : IDelayedFunc
     {
+        public DelayedFunc() { }
+
         /// <summary>
         /// </summary>
         /// <param name="delay">The desired delay, in milliseconds.</param>
@@ -73,6 +77,8 @@ namespace CryEngine
 
     public sealed class DelayedFunc<T1, T2, T3, T4, T5, T6, T7, T8> : IDelayedFunc
     {
+        public DelayedFunc() { }
+
         /// <summary>
         /// </summary>
         /// <param name="delay">The desired delay, in milliseconds.</param>
@@ -89,6 +95,8 @@ namespace CryEngine
 
     public sealed class DelayedFunc<T1, T2, T3, T4, T5, T6, T7> : IDelayedFunc
     {
+        public DelayedFunc() { }
+
         /// <summary>
         /// </summary>
         /// <param name="delay">The desired delay, in milliseconds.</param>
@@ -105,6 +113,8 @@ namespace CryEngine
 
     public sealed class DelayedFunc<T1, T2, T3, T4, T5, T6> : IDelayedFunc
     {
+        public DelayedFunc() { }
+
         /// <summary>
         /// </summary>
         /// <param name="delay">The desired delay, in milliseconds.</param>
@@ -121,6 +131,8 @@ namespace CryEngine
 
     public sealed class DelayedFunc<T1, T2, T3, T4, T5> : IDelayedFunc
     {
+        public DelayedFunc() { }
+
         /// <summary>
         /// </summary>
         /// <param name="delay">The desired delay, in milliseconds.</param>
@@ -137,6 +149,8 @@ namespace CryEngine
 
     public sealed class DelayedFunc<T1, T2, T3, T4> : IDelayedFunc
     {
+        public DelayedFunc() { }
+
         /// <summary>
         /// </summary>
         /// <param name="delay">The desired delay, in milliseconds.</param>
@@ -153,6 +167,8 @@ namespace CryEngine
 
     public sealed class DelayedFunc<T1, T2, T3> : IDelayedFunc
     {
+        public DelayedFunc() { }
+
         /// <summary>
         /// </summary>
         /// <param name="delay">The desired delay, in milliseconds.</param>
@@ -169,6 +185,8 @@ namespace CryEngine
 
     public sealed class DelayedFunc<T1, T2> : IDelayedFunc
     {
+        public DelayedFunc() { }
+
         /// <summary>
         /// </summary>
         /// <param name="delay">The desired delay, in milliseconds.</param>
@@ -185,6 +203,8 @@ namespace CryEngine
 
     public sealed class DelayedFunc<T1> : IDelayedFunc
     {
+        public DelayedFunc() { }
+
         /// <summary>
         /// </summary>
         /// <param name="delay">The desired delay, in milliseconds.</param>
@@ -201,6 +221,8 @@ namespace CryEngine
 
     public sealed class DelayedFunc : IDelayedFunc
     {
+        public DelayedFunc() { }
+
         /// <summary>
         /// </summary>
         /// <param name="delay">The desired delay, in milliseconds.</param>

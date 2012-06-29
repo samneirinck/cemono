@@ -502,10 +502,11 @@ namespace CryEngine.Serialization
 
             var delegateType = ReadType();
             var methodInfo = ReadMemberInfo() as MethodInfo;
-            object target = null;
 
             if (ReadLine() == "target")
                 objReference.Value = Delegate.CreateDelegate(delegateType, ReadObject(), methodInfo);
+            else
+                objReference.Value = Delegate.CreateDelegate(delegateType, methodInfo);
         }
 
 		void ReadType(ObjectReference objReference)
