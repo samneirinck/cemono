@@ -88,7 +88,7 @@ namespace CryEngine.Initialization
                 var compilerDll = Path.Combine(directory, "Compiler.dll");
                 if (File.Exists(compilerDll))
                 {
-                    var assembly = Assembly.LoadFrom(compilerDll);
+                    var assembly = LoadAssembly(compilerDll);
 
                     var compilerType = assembly.GetTypes().First(x => x.Implements<ScriptCompiler>());
                     Debug.LogAlways("		Initializing {0} compiler...", compilerType.Name);
