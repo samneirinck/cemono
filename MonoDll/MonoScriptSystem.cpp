@@ -404,7 +404,7 @@ void CScriptSystem::OnPostUpdate(float fDeltaTime)
 
 void CScriptSystem::OnFileChange(const char *fileName)
 {
-	if(m_bReloading)
+	if(m_bReloading || g_pMonoCVars->mono_realtimeScripting == 0)
 		return;
 
 	const char *fileExt = PathUtil::GetExt(fileName);
