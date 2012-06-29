@@ -14,7 +14,6 @@ namespace CryEngine
         {
             DeltaTime = frameTime;
 
-            // TODO: Have these sent along with ScriptManager.Update
             FrameStartTime = frameStartTime;
             AsyncTime = asyncTime;
             Framerate = frameRate;
