@@ -220,11 +220,11 @@ namespace CryEngine
             }
         }
 
-        public override void OnScriptReload()
+        internal override void OnScriptReloadInternal()
 		{
-			base.OnScriptReload();
-
 			ActorPointer = _GetActorInfoById(Id).ActorPtr;
+
+            base.OnScriptReloadInternal();
 		}
         #endregion
 
