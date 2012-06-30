@@ -60,7 +60,6 @@ CScriptAssembly *CScriptAssembly::TryGetAssembly(MonoImage *pImage)
 {
 	CRY_ASSERT(pImage);
 
-	CryLogAlways("4");
 	for each(auto assembly in m_assemblies)
 	{
 		if(assembly->GetImage() == pImage)
@@ -75,15 +74,9 @@ CScriptClass *CScriptAssembly::TryGetClassFromRegistry(MonoClass *pClass)
 {
 	CRY_ASSERT(pClass);
 
-	CryLogAlways("1");
 	MonoImage *pImage = mono_class_get_image(pClass);
-	CryLogAlways("2");
 	if(auto pAssembly = TryGetAssembly(pImage))
-	{
-		CryLogAlways("3");
 		return pAssembly->TryGetClass(pClass);
-	}
-	CryLogAlways("~1");
 
 	return NULL;
 }
