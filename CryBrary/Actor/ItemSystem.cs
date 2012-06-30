@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using CryEngine.Native;
 
 namespace CryEngine
 {
@@ -7,24 +8,21 @@ namespace CryEngine
 	/// </summary>
 	public static class ItemSystem
 	{
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern public static void CacheItemGeometry(string itemClass);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern public static void CacheItemSound(string itemClass);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _GiveItem(uint entityId, string itemClass);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _GiveEquipmentPack(uint entityId, string equipmentPack);
+        private static INativeItemSystemMethods _itemSystemMethods;
+        internal static INativeItemSystemMethods NativeActorSystemMethods
+        {
+            get { return _itemSystemMethods ?? (_itemSystemMethods = new NativeItemSystemMethods()); }
+            set { _itemSystemMethods = value; }
+        }
 
 		public static void GiveItem(EntityId actorId, string itemClass)
 		{
-			_GiveItem(actorId, itemClass);
+			NativeActorSystemMethods.GiveItem(actorId, itemClass);
 		}
 
 		public static void GiveEquipmentPack(EntityId actorId, string equipmentPack)
 		{
-			_GiveEquipmentPack(actorId, equipmentPack);
+            NativeActorSystemMethods.GiveEquipmentPack(actorId, equipmentPack);
 		}
 	}
 }

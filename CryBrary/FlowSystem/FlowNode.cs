@@ -9,11 +9,31 @@ using CryEngine.Initialization;
 
 namespace CryEngine
 {
+    internal interface INativeFlowNodeMethods
+    {
+        void RegisterNode(string typeName);
+    }
 	public abstract class FlowNode : CryScriptInstance
 	{
+	    private static INativeFlowNodeMethods _methods;
+	    internal static INativeFlowNodeMethods Methods
+	    {
+            get { return _methods ?? (_methods = new FlowNodeMethods()); }
+            set { _methods = value; }
+	    }
+
+        class FlowNodeMethods : INativeFlowNodeMethods
+        {
+            [MethodImplAttribute(MethodImplOptions.InternalCall)]
+            extern internal static void _RegisterNode(string typeName);
+
+            public void RegisterNode(string typeName)
+            {
+                _RegisterNode(typeName);
+            }
+        }
+
 		#region Externals
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _RegisterNode(string typeName);
 
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static IntPtr _GetNode(UInt32 graphId, UInt16 nodeId);
@@ -58,7 +78,7 @@ namespace CryEngine
 
 		internal static void Register(string typeName)
 		{
-			_RegisterNode(typeName);
+			Methods.RegisterNode(typeName);
 		}
 
 		internal void InternalInitialize(NodeInfo nodeInfo)

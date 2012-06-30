@@ -13,7 +13,7 @@ namespace CryBrary.Tests.Script_Handling
         [Test]
         public void ConstructAndInitialize_ScriptManager_WithoutExceptions()
         {
-            ScriptManager manager = new ScriptManager();
+            var manager = new ScriptManager();
 
             manager.PostInit();
         }

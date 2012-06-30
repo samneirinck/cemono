@@ -126,7 +126,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Actor\Actor.cs" />
+    <Compile Include="Native\INativeActorMethods.cs" />
     <Compile Include="Actor\NativeActor.cs" />
+    <Compile Include="Native\INativeItemSystemMethods.cs" />
+    <Compile Include="Native\NativeActorMethods.cs" />
     <Compile Include="Async\Jobs\AsyncJob.cs" />
     <Compile Include="Async\Awaiter.cs" />
     <Compile Include="Async\Delay.cs" />
@@ -143,6 +146,7 @@
     <Compile Include="Misc\DelayedFunc.cs" />
     <Compile Include="Extensions\Enum.cs" />
     <Compile Include="Extensions\WinForms.cs" />
+    <Compile Include="Native\NativeItemSystemMethods.cs" />
     <Compile Include="Network\NetworkCallAttribute.cs" />
     <Compile Include="Sandbox\Attributes.cs" />
     <Compile Include="Sandbox\FormLoader.cs">

@@ -3,60 +3,21 @@ using System.Runtime.CompilerServices;
 
 using CryEngine.Initialization;
 using CryEngine.Extensions;
+using CryEngine.Native;
 
 namespace CryEngine
 {
-	internal interface INativeActorMethods
-	{
-		void RegisterClass(string className, bool isAI);
-	}
-
-	/// <summary>
+    /// <summary>
 	/// WIP Player class. TODO: Redo, currently very limited in terms of callbacks + interoperability with C++ backend
 	/// </summary>
 	public abstract class Actor : EntityBase
 	{
 		private static INativeActorMethods _actormethods;
-		internal static INativeActorMethods Actormethods
+		internal static INativeActorMethods ActorMethods
 		{
-			get { return _actormethods ?? (_actormethods = new ActorMethods()); }
+			get { return _actormethods ?? (_actormethods = new NativeActorMethods()); }
 			set { _actormethods = value; }
 		}
-
-		class ActorMethods : INativeActorMethods
-		{
-			public void RegisterClass(string className, bool isAI)
-			{
-				_RegisterActorClass(className, isAI);
-			}
-		}
-
-		#region Externals
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _RegisterActorClass(string className, bool isAI);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static float _GetPlayerHealth(IntPtr actorPtr);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _SetPlayerHealth(IntPtr actorPtr, float newHealth);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static float _GetPlayerMaxHealth(IntPtr actorPtr);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _SetPlayerMaxHealth(IntPtr actorPtr, float newMaxHealth);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static ActorInfo _GetActorInfoByChannelId(ushort channelId);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static ActorInfo _GetActorInfoById(uint entId);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern private static ActorInfo _CreateActor(int channelId, string name, string className, Vec3 pos, Vec3 angles, Vec3 scale);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _RemoveActor(uint id);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static uint _GetClientActorId();
-		#endregion
 
 		#region Statics
 		public static Actor Get(int channelId)
@@ -65,7 +26,7 @@ namespace CryEngine
 			if(actor != null)
 				return actor;
 
-			var entityInfo = _GetActorInfoByChannelId((ushort)channelId);
+			var entityInfo = ActorMethods.GetActorInfoByChannelId((ushort)channelId);
 			if(entityInfo.Id != 0)
 				return CreateNativeActor(entityInfo);
 
@@ -84,7 +45,7 @@ namespace CryEngine
 				return actor;
 
 			// Couldn't find a CryMono entity, check if a non-managed one exists.
-			var actorInfo = _GetActorInfoById(actorId);
+			var actorInfo = ActorMethods.GetActorInfoById(actorId);
 			if(actorInfo.Id != 0)
 				return CreateNativeActor(actorInfo);
 
@@ -118,7 +79,7 @@ namespace CryEngine
 		{
 			get
 			{
-				var clientActorId = _GetClientActorId();
+				var clientActorId = ActorMethods.GetClientActorId();
 				if(clientActorId == 0)
 					return null;
 
@@ -131,7 +92,7 @@ namespace CryEngine
 			// just in case
 			Remove(channelId);
 
-			var info = _CreateActor(channelId, name, className, pos, angles, scale);
+			var info = ActorMethods.CreateActor(channelId, name, className, pos, angles, scale);
 			if(info.Id == 0)
 			{
 				Debug.LogAlways("[Actor.Create] New entityId was invalid");
@@ -167,7 +128,7 @@ namespace CryEngine
 
 		public static new void Remove(EntityId id)
 		{
-			_RemoveActor(id);
+			ActorMethods.RemoveActor(id);
 
 			ScriptManager.RemoveInstances<Actor>(ScriptType.Actor, actor => actor.Id == id);
 		}
@@ -179,9 +140,9 @@ namespace CryEngine
 
 		public static void Remove(int channelId)
 		{
-			var actorInfo = _GetActorInfoByChannelId((ushort)channelId);
+			var actorInfo = ActorMethods.GetActorInfoByChannelId((ushort)channelId);
 			if(actorInfo.Id != 0)
-				_RemoveActor(actorInfo.Id);
+				ActorMethods.RemoveActor(actorInfo.Id);
 
 			ScriptManager.RemoveInstances<Actor>(ScriptType.Actor, actor => actor.ChannelId == channelId);
 		}
@@ -194,6 +155,7 @@ namespace CryEngine
 		/// <param name="channelId"></param>
 		internal void InternalSpawn(ActorInfo actorInfo, int channelId)
 		{
+            System.Diagnostics.Contracts.Contract.Requires(channelId > 0);
 			Id = new EntityId(actorInfo.Id);
 			ActorPointer = actorInfo.ActorPtr;
 			EntityPointer = actorInfo.EntityPtr;
@@ -222,7 +184,7 @@ namespace CryEngine
 
         internal override void OnScriptReloadInternal()
 		{
-			ActorPointer = _GetActorInfoById(Id).ActorPtr;
+			ActorPointer = ActorMethods.GetActorInfoById(Id).ActorPtr;
 
             base.OnScriptReloadInternal();
 		}
@@ -231,13 +193,13 @@ namespace CryEngine
         internal IntPtr ActorPointer { get; set; }
 		public int ChannelId { get; set; }
 
-		public float Health { get { return _GetPlayerHealth(ActorPointer); } set { _SetPlayerHealth(ActorPointer, value); } }
-		public float MaxHealth { get { return _GetPlayerMaxHealth(ActorPointer); } set { _SetPlayerMaxHealth(ActorPointer, value); } }
+        public float Health { get { return ActorMethods.GetPlayerHealth(ActorPointer); } set { ActorMethods.SetPlayerHealth(ActorPointer, value); } }
+        public float MaxHealth { get { return ActorMethods.GetPlayerMaxHealth(ActorPointer); } set { ActorMethods.SetPlayerMaxHealth(ActorPointer, value); } }
 
 		public bool IsDead() { return Health <= 0; }
 	}
 
-	[AttributeUsage(AttributeTargets.Class)]
+    [AttributeUsage(AttributeTargets.Class)]
 	public sealed class ActorAttribute : Attribute
 	{
 		public ActorAttribute(bool useMonoActor = true, bool isAI = false)

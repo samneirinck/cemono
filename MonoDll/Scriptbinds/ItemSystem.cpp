@@ -7,8 +7,8 @@
 
 CScriptbind_ItemSystem::CScriptbind_ItemSystem()
 {
-	REGISTER_EXPOSED_METHOD(CacheItemGeometry);
-	REGISTER_EXPOSED_METHOD(CacheItemSound);
+	REGISTER_METHOD(CacheItemGeometry);
+	REGISTER_METHOD(CacheItemSound);
 
 	REGISTER_METHOD(GiveItem);
 	REGISTER_METHOD(GiveEquipmentPack);
