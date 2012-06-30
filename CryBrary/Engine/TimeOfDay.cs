@@ -68,21 +68,21 @@
 		/// <summary>
 		/// Gets the minute value from a CE-style time float
 		/// </summary>
-		/// <param name="ceTime"></param>
+		/// <param name="cryTime"></param>
 		/// <returns></returns>
-		internal static int GetMinutes(float ceTime)
+		internal static int GetMinutes(float cryTime)
 		{
-			return (int)System.Math.Round((ceTime - (int)ceTime) * 60);
+			return (int)System.Math.Round((cryTime - (int)cryTime) * 60);
 		}
 
 		/// <summary>
 		/// Gets the hour value from a CE-style time float
 		/// </summary>
-		/// <param name="ceTime"></param>
+		/// <param name="cryTime"></param>
 		/// <returns></returns>
-		internal static int GetHours(float ceTime)
+		internal static int GetHours(float cryTime)
 		{
-			return (int)ceTime;
+			return (int)cryTime;
 		}
 
 		/// <summary>
