@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 
 using CryEngine.Initialization;
+using CryEngine.Native;
 
 namespace CryEngine
 {
@@ -21,6 +22,13 @@ namespace CryEngine
 			get { return _methods ?? (_methods = new EntityMethods()); }
 			set { _methods = value; }
 		}
+
+        private static INativePhysicsMethods _nativePhysicsMethods;
+        internal static INativePhysicsMethods NativePhysicsMethods
+        {
+            get { return _nativePhysicsMethods ?? (_nativePhysicsMethods = new NativePhysicsMethods()); }
+            set { _nativePhysicsMethods = value; }
+        }
 
 		class EntityMethods : INativeEntityMethods
 		{
@@ -158,9 +166,9 @@ namespace CryEngine
 
 		public Vec3 Velocity
 		{
-			get { return GlobalPhysics._GetVelocity(EntityPointer); }
+			get { return NativePhysicsMethods.GetVelocity(EntityPointer); }
 
-			set { GlobalPhysics._SetVelocity(EntityPointer, value); }
+            set { NativePhysicsMethods.SetVelocity(EntityPointer, value); }
 		}
 
 		EntityPhysics _physics;
