@@ -18,6 +18,8 @@ CScriptAssembly::CScriptAssembly(MonoImage *pImage, const char *path)
 	: m_pImage(pImage)
 	, m_path(path) 
 {
+	CRY_ASSERT(pImage);
+
 	m_assemblies.push_back(this);
 }
 
@@ -50,18 +52,27 @@ IMonoClass *CScriptAssembly::TryGetClass(MonoClass *pClass)
 	return pScriptClass;
 }
 
-IMonoClass *CScriptAssembly::TryGetClassFromRegistry(MonoClass *pClass)
+///////////////////////////////////////////////////////////////////
+// Statics
+///////////////////////////////////////////////////////////////////
+ 
+CScriptAssembly *CScriptAssembly::TryGetAssembly(MonoImage *pImage)
 {
-	CRY_ASSERT(pClass);
-
-	MonoImage *pImage = mono_class_get_image(pClass);
+	CRY_ASSERT(pImage);
 
 	for each(auto assembly in m_assemblies)
 	{
 		if(assembly->GetImage() == pImage)
-			return assembly->TryGetClass(pClass);
+			return assembly;
 	}
 
-	CScriptAssembly *pAssembly = new CScriptAssembly(pImage, "");
-	return pAssembly->TryGetClass(pClass);
+	// TODO: Get assembly path
+	return new CScriptAssembly(pImage, "");
+}
+
+IMonoClass *CScriptAssembly::TryGetClassFromRegistry(MonoClass *pClass)
+{
+	CRY_ASSERT(pClass);
+
+	return TryGetAssembly(mono_class_get_image(pClass))->TryGetClass(pClass);
 }

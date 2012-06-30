@@ -457,7 +457,7 @@ void CScriptSystem::RemoveScriptInstance(int id, EMonoScriptFlags scriptType)
 
 IMonoAssembly *CScriptSystem::GetCorlibAssembly()
 {
-	return new CScriptAssembly(mono_get_corlib(), "");
+	return CScriptAssembly::TryGetAssembly(mono_get_corlib());
 }
 
 IMonoAssembly *CScriptSystem::GetAssembly(const char *file, bool shadowCopy)

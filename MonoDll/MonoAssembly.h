@@ -24,6 +24,7 @@ public:
 
 	IMonoClass *TryGetClass(MonoClass *pClass);
 
+	static CScriptAssembly *TryGetAssembly(MonoImage *pImage);
 	static IMonoClass *TryGetClassFromRegistry(MonoClass *pClass);
 
 	// IMonoAssembly
