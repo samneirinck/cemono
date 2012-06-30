@@ -130,6 +130,7 @@
     <Compile Include="Native\INativeActorMethods.cs" />
     <Compile Include="Actor\NativeActor.cs" />
     <Compile Include="Native\INativeCVarMethods.cs" />
+    <Compile Include="Native\INativeDebugMethods.cs" />
     <Compile Include="Native\INativeEntityMethods.cs" />
     <Compile Include="Native\INativeFlowNodeMethods.cs" />
     <Compile Include="Native\INativeGameRulesMethods.cs" />
@@ -163,6 +164,7 @@
     <Compile Include="Extensions\Enum.cs" />
     <Compile Include="Extensions\WinForms.cs" />
     <Compile Include="Native\NativeCVarMethods.cs" />
+    <Compile Include="Native\NativeDebugMethods.cs" />
     <Compile Include="Native\NativeEntityMethods.cs" />
     <Compile Include="Native\NativeFlowNodeMethods.cs" />
     <Compile Include="Native\NativeGameRulesMethods.cs" />
