@@ -5,32 +5,20 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
+using CryEngine.Native;
 
 namespace CryEngine
 {
-    internal interface INativeCVarMethods
-    {
-        void RegisterCommand(string name, string description, CVarFlags flags);
-    }
-
     public abstract class CVar
     {
         private static INativeCVarMethods _methods;
         internal static INativeCVarMethods Methods
         {
-            get { return _methods ?? (_methods = new CVarMethods()); }
+            get { return _methods ?? (_methods = new NativeCVarMethods()); }
             set { _methods = value; }
         }
 
-        class CVarMethods : INativeCVarMethods
-        {
-            public void RegisterCommand(string name, string description, CVarFlags flags)
-            {
-                CVar._RegisterCommand(name, description, flags);
-            }
-        }
-
-		public string Name { get; protected set; }
+        public string Name { get; protected set; }
 		public string Help { get; protected set; }
 		public CVarFlags Flags { get; protected set; }
 
@@ -40,48 +28,6 @@ namespace CryEngine
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		internal static extern void _HandleException(Exception ex);
-
-		#region Externals
-
-
-		// CVars
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern void _RegisterCommand(string name, string description, CVarFlags flags);
-
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		internal static extern void _RegisterCVarFloat(string name, ref float val, float defaultVal, CVarFlags flags,
-		                                               string description);
-
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		internal static extern void _RegisterCVarInt(string name, ref int val, int defaultVal, CVarFlags flags,
-		                                             string description);
-
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		internal static extern void _RegisterCVarString(string name, [MarshalAs(UnmanagedType.LPStr)] string val,
-		                                                string defaultVal, CVarFlags flags, string description);
-
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		internal static extern float _GetCVarFloat(string name);
-
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		internal static extern int _GetCVarInt(string name);
-
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		internal static extern string _GetCVarString(string name);
-
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		internal static extern void _SetCVarFloat(string name, float value);
-
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		internal static extern void _SetCVarInt(string name, int value);
-
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		internal static extern void _SetCVarString(string name, string value);
-
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		internal static extern bool _HasCVar(string name);
-
-		#endregion
 
 		#region Statics
 
@@ -135,7 +81,7 @@ namespace CryEngine
 
 		public static CVar RegisterInt(string name, ref int value, string help = "", CVarFlags flags = CVarFlags.None)
 		{
-			_RegisterCVarInt(name, ref value, value, flags, help);
+			Methods.RegisterCVarInt(name, ref value, value, flags, help);
 
 			CVars.Add(new ExternalCVar(name));
 
@@ -144,7 +90,7 @@ namespace CryEngine
 
 		public static CVar RegisterFloat(string name, ref float value, string help = "", CVarFlags flags = CVarFlags.None)
 		{
-			_RegisterCVarFloat(name, ref value, value, flags, help);
+			Methods.RegisterCVarFloat(name, ref value, value, flags, help);
 
 			CVars.Add(new ExternalCVar(name));
 
@@ -156,7 +102,7 @@ namespace CryEngine
 			if (attribute.Name == null)
 				attribute.Name = memberInfo.Name;
 
-			_RegisterCVarInt(attribute.Name, ref value, System.Convert.ToInt32(attribute.DefaultValue), attribute.Flags,
+			Methods.RegisterCVarInt(attribute.Name, ref value, System.Convert.ToInt32(attribute.DefaultValue), attribute.Flags,
 			                 attribute.Help);
 
 			if (memberInfo.MemberType == MemberTypes.Field)
@@ -172,7 +118,7 @@ namespace CryEngine
 			if (attribute.Name == null)
 				attribute.Name = memberInfo.Name;
 
-			_RegisterCVarFloat(attribute.Name, ref value, System.Convert.ToSingle(attribute.DefaultValue), attribute.Flags,
+            Methods.RegisterCVarFloat(attribute.Name, ref value, System.Convert.ToSingle(attribute.DefaultValue), attribute.Flags,
 			                   attribute.Help);
 
 			if (memberInfo.MemberType == MemberTypes.Field)
@@ -188,7 +134,7 @@ namespace CryEngine
 			if (attribute.Name == null)
 				attribute.Name = memberInfo.Name;
 
-			_RegisterCVarString(attribute.Name, value, (string) attribute.DefaultValue ?? "", attribute.Flags, attribute.Help);
+            Methods.RegisterCVarString(attribute.Name, value, (string)attribute.DefaultValue ?? "", attribute.Flags, attribute.Help);
 
 			if (memberInfo.MemberType == MemberTypes.Field)
 				CVars.Add(new StaticCVarField(attribute, memberInfo as FieldInfo));
@@ -209,7 +155,7 @@ namespace CryEngine
 			if (cvar != default(CVar))
 				return cvar;
 
-			if (_HasCVar(name))
+            if (Methods.HasCVar(name))
 			{
 				CVars.Add(new ExternalCVar(name));
 
@@ -241,7 +187,7 @@ namespace CryEngine
         }
     }
 
-	/// <summary>
+    /// <summary>
 	/// CVar created using CVarAttribute, targeting a field.
 	/// </summary>
 	internal class StaticCVarField : CVar
@@ -337,20 +283,20 @@ namespace CryEngine
 			{
 				IntValue = (int)value;
 
-				_RegisterCVarInt(Name, ref IntValue, IntValue, Flags, Help);
+                Methods.RegisterCVarInt(Name, ref IntValue, IntValue, Flags, Help);
 			}
 			else if (value is float || value is double)
 			{
 				FloatValue = (float) value;
 
-				_RegisterCVarFloat(Name, ref FloatValue, FloatValue, Flags, Help);
+                Methods.RegisterCVarFloat(Name, ref FloatValue, FloatValue, Flags, Help);
 			}
 			else if (value is string)
 			{
 				StringValue = value as string;
 
 				// String CVars are not supported yet.
-				_RegisterCVarString(Name, StringValue, StringValue, Flags, Help);
+                Methods.RegisterCVarString(Name, StringValue, StringValue, Flags, Help);
 			}
 			else
 				throw new CVarException(string.Format("Invalid data type ({0}) used in CVar {1}.", value.GetType(), Name));
@@ -426,20 +372,20 @@ namespace CryEngine
 
 		public override string String
 		{
-			get { return _GetCVarString(Name); }
-			set { _SetCVarString(Name, value); }
+            get { return Methods.GetCVarString(Name); }
+            set { Methods.SetCVarString(Name, value); }
 		}
 
 		public override float FVal
 		{
-			get { return _GetCVarFloat(Name); }
-			set { _SetCVarFloat(Name, value); }
+            get { return Methods.GetCVarFloat(Name); }
+            set { Methods.SetCVarFloat(Name, value); }
 		}
 
 		public override int IVal
 		{
-			get { return _GetCVarInt(Name); }
-			set { _SetCVarInt(Name, value); }
+            get { return Methods.GetCVarInt(Name); }
+            set { Methods.SetCVarInt(Name, value); }
 		}
 	}
 
