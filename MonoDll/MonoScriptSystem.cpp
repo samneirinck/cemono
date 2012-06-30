@@ -42,6 +42,7 @@
 #include "Scriptbinds\UI.h"
 #include "Scriptbinds\Entity.h"
 #include "Scriptbinds\Network.h"
+#include "Scriptbinds\Time.h"
 
 #include "FlowManager.h"
 #include "MonoInput.h"

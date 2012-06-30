@@ -23,7 +23,7 @@ public:
 	~CLevelSystem() {}
 
 	// IMonoScriptBind
-	virtual const char *GetClassName() { return "Level"; }
+	virtual const char *GetClassName() { return "NativeLevelMethods"; }
 	// ~IMonoScriptBind
 
 private:

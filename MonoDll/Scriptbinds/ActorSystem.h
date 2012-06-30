@@ -38,7 +38,7 @@ public:
 
 protected:
 	// IMonoScriptBind
-	virtual const char *GetClassName() { return "Actor"; }
+	virtual const char *GetClassName() { return "NativeActorMethods"; }
 	// ~IMonoScriptBind
 
 	static float GetPlayerHealth(IActor *pActor);

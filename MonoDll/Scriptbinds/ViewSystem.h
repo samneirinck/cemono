@@ -22,7 +22,7 @@ public:
 
 protected:
 	// IMonoScriptBind
-	virtual const char *GetClassName() override { return "View"; }
+	virtual const char *GetClassName() override { return "NativeViewMethods"; }
 	// ~IMonoScriptBind
 
 	// Externals

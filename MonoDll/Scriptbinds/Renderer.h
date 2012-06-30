@@ -19,7 +19,7 @@ public:
 
 protected:
 	// IMonoScriptBind
-	virtual const char *GetClassName() override { return "Renderer"; }
+	virtual const char *GetClassName() override { return "NativeRendererMethods"; }
 	// ~IMonoScriptBind
 
 	// External methods

@@ -389,6 +389,7 @@
     <ClInclude Include="Scriptbinds\Physics.h" />
     <ClInclude Include="Scriptbinds\Renderer.h" />
     <ClInclude Include="ScriptBinds\MaterialManager.h" />
+    <ClInclude Include="Scriptbinds\Time.h" />
     <ClInclude Include="Scriptbinds\UI.h" />
     <ClInclude Include="Scriptbinds\ViewSystem.h" />
     <ClInclude Include="ScriptManager.h" />

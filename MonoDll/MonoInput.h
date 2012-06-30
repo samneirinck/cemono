@@ -27,7 +27,7 @@ public:
 	~CInput();
 
 	// IMonoScriptBind
-	virtual const char *GetClassName() { return "Input"; }
+	virtual const char *GetClassName() { return "NativeInputMethods"; }
 	// ~IMonoScriptBind
 
 	// IActionListener

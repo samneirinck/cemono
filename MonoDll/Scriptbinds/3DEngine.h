@@ -21,7 +21,7 @@ public:
 	~CScriptbind_3DEngine() {}
 
 	// IMonoScriptBind
-	virtual const char *GetClassName() { return "Engine"; }
+	virtual const char *GetClassName() { return "NativeEngineMethods"; }
 	// ~IMonoScriptBind
 
 	static float GetTerrainElevation(float x, float y, bool includeVoxels);

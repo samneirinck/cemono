@@ -66,7 +66,7 @@ public:
 	~CScriptbind_Physics() {}
 
 	// IMonoScriptBind
-	virtual const char *GetClassName() { return "GlobalPhysics"; }
+	virtual const char *GetClassName() { return "NativePhysicsMethods"; }
 	// ~IMonoScriptBind
 
 	static IPhysicalEntity *GetPhysicalEntity(IEntity *pEntity);

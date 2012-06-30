@@ -20,7 +20,7 @@ public:
 
 protected:
 	// IMonoScriptBind
-	virtual const char *GetClassName() { return "CVar"; }
+	virtual const char *GetClassName() { return "NativeCVarMethods"; }
 	// ~IMonoScriptBind
 
 	// Logging
@@ -48,27 +48,6 @@ protected:
 	static void SetCVarFloat(mono::string, float);
 	static void SetCVarInt(mono::string, int);
 	static void SetCVarString(mono::string, mono::string);
-};
-
-class CTime : public IMonoScriptBind
-{
-public:
-	CTime()
-	{
-		REGISTER_METHOD(SetTimeScale);
-	}
-
-	~CTime() {}
-
-protected:
-	// IMonoScriptBind
-	virtual const char *GetClassName() { return "Time"; }
-	// ~IMonoScriptBind
-
-	static void SetTimeScale(float scale)
-	{
-		gEnv->pTimer->SetTimeScale(scale);
-	}
 };
 
 #endif //__LOGGING_BINDING_H__

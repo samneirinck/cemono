@@ -37,7 +37,7 @@ protected:
 	static IPersistantDebug *GetIPersistentDebug();
 
 	// IMonoScriptBind
-	virtual const char *GetClassName() override { return "Debug"; }
+	virtual const char *GetClassName() override { return "NativeDebugMethods"; }
 	// ~IMonoScriptBind
 };
 

@@ -95,8 +95,6 @@ namespace CryEngine.Native
         extern internal static IntPtr _GetAttachmentMaterial(IntPtr entPtr, string name);
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern internal static int _SetAttachmentMaterial(IntPtr entPtr, string name, IntPtr materialPtr);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static void _RegisterClass(EntityRegistrationParams registrationParams);
 
 
         public bool SpawnEntity(EntitySpawnParams spawnParams, bool autoInit, out EntityInfo entityInfo)
@@ -287,7 +285,7 @@ namespace CryEngine.Native
 
         public void RegisterClass(EntityRegistrationParams registrationParams)
         {
-            _RegisterClass(registrationParams);
+            _RegisterEntityClass(registrationParams);
         }
     }
 }

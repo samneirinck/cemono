@@ -24,7 +24,7 @@ public:
 
 protected:
 	// IMonoScriptBind
-	virtual const char *GetClassName() override { return "ParticleEffect"; }
+	virtual const char *GetClassName() override { return "NativeParticleEffectMethods"; }
 	// ~IMonoScriptBind
 
 	// Externals

@@ -108,7 +108,7 @@ public:
 
 protected:
 	// IMonoScriptBind
-	virtual const char *GetClassName() { return "FlowNode"; }
+	virtual const char *GetClassName() { return "NativeFlowNodeMethods"; }
 	// ~IMonoScriptBind
 
 	static void RegisterNode(mono::string typeName);

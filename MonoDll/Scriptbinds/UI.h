@@ -26,7 +26,7 @@ public:
 	static CUI *GetInstance() { return m_pUI; }
 
 	// IMonoScriptBind
-	virtual const char *GetClassName() override { return "UI"; }
+	virtual const char *GetClassName() override { return "NativeUIMethods"; }
 	// ~IMonoScriptBind
 
 	IMonoClass *GetClass();

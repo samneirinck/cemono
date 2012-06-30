@@ -51,7 +51,7 @@ protected:
 	// ~Externals
 
 	// IMonoScriptBind
-	virtual const char *GetClassName() override { return "Material"; }
+	virtual const char *GetClassName() override { return "NativeMaterialMethods"; }
 	// ~IMonoScriptBind
 
 	static IMaterialManager *m_pMaterialManager;

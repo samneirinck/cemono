@@ -112,7 +112,7 @@ public:
 
 protected:
 	// IMonoScriptBind
-	virtual const char *GetClassName() { return "EntityBase"; }
+	virtual const char *GetClassName() { return "NativeEntityMethods"; }
 	// ~IMonoScriptBind
 
 	bool IsMonoEntity(const char *className);
