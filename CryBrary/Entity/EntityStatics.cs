@@ -104,7 +104,7 @@ namespace CryEngine
 		internal static EntityBase CreateNativeEntity(EntityId id, IntPtr entityPointer)
 		{
 			// check if actor
-			var actorInfo = Actor._GetActorInfoById((uint)id._value);
+			var actorInfo = Actor.ActorMethods.GetActorInfoById((uint)id._value);
 			if(actorInfo.Id != 0)
 				return Actor.CreateNativeActor(actorInfo);
 

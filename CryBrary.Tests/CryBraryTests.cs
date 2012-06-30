@@ -1,6 +1,7 @@
 ﻿using System;
 using CryEngine;
 using CryEngine.Initialization;
+using CryEngine.Native;
 using Moq;
 using NUnit.Framework;
 
@@ -46,7 +47,7 @@ namespace CryBrary.Tests
 			EntityBase.Methods = entityMethodsMock.Object;
 
 			var actorMethodsMock = new Mock<INativeActorMethods>();
-			Actor.Actormethods = actorMethodsMock.Object;
+			Actor.ActorMethods = actorMethodsMock.Object;
 		}
 	}
 }
