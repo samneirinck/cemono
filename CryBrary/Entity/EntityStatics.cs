@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using CryEngine.Initialization;
 using CryEngine.Extensions;
+using CryEngine.Native;
 
 namespace CryEngine
 {
@@ -21,7 +22,7 @@ namespace CryEngine
 		public static T Spawn<T>(string name, Vec3 pos, Vec3? rot = null, Vec3? scale = null, bool autoInit = true, EntityFlags flags = EntityFlags.CastShadow) where T : Entity, new()
 		{
 			EntityInfo info;
-			if(NativeEntityMethods.SpawnEntity(new EntitySpawnParams { Name = name, Class = typeof(T).Name, Pos = pos, Rot = rot ?? Vec3.Zero, Scale = scale ?? new Vec3(1, 1, 1), Flags = flags }, autoInit, out info))
+            if (NativeMethods.Entity.SpawnEntity(new EntitySpawnParams { Name = name, Class = typeof(T).Name, Pos = pos, Rot = rot ?? Vec3.Zero, Scale = scale ?? new Vec3(1, 1, 1), Flags = flags }, autoInit, out info))
 			{
 				var ent = new T();
 
@@ -40,7 +41,7 @@ namespace CryEngine
 			if(id == 0)
 				throw new ArgumentException("entityId cannot be 0!");
 
-            NativeEntityMethods.RemoveEntity(id);
+            NativeMethods.Entity.RemoveEntity(id);
 		}
 
 		public void Remove()
@@ -94,7 +95,7 @@ namespace CryEngine
 				return ent;
 
 			// Couldn't find a CryMono entity, check if a non-managed one exists.
-            var entPointer = NativeEntityMethods.GetEntity(entityId);
+            var entPointer = NativeMethods.Entity.GetEntity(entityId);
 			if(entPointer != IntPtr.Zero)
 				return CreateNativeEntity(entityId, entPointer);
 
@@ -104,7 +105,7 @@ namespace CryEngine
 		internal static EntityBase CreateNativeEntity(EntityId id, IntPtr entityPointer)
 		{
 			// check if actor
-			var actorInfo = Actor.ActorMethods.GetActorInfoById((uint)id._value);
+            var actorInfo = NativeMethods.Actor.GetActorInfoById((uint)id._value);
 			if(actorInfo.Id != 0)
 				return Actor.CreateNativeActor(actorInfo);
 
@@ -123,7 +124,7 @@ namespace CryEngine
 		/// Consider using IDs where necessary.</remarks>
 		public static EntityBase Find(string name)
 		{
-            var id = NativeEntityMethods.FindEntity(name);
+            var id = NativeMethods.Entity.FindEntity(name);
 			if(id == 0)
 				return null;
 
@@ -140,7 +141,7 @@ namespace CryEngine
 			if(String.IsNullOrEmpty(className))
 				throw new ArgumentException("className should not be null or empty", "className");
 
-            return GetEntitiesCommon<Entity>(NativeEntityMethods.GetEntitiesByClass(className));
+            return GetEntitiesCommon<Entity>(NativeMethods.Entity.GetEntitiesByClass(className));
 		}
 
 		/// <summary>
@@ -150,17 +151,17 @@ namespace CryEngine
 		/// <returns>An array of entities of type T.</returns>
 		public static IEnumerable<T> GetByClass<T>() where T : Entity
 		{
-            return GetEntitiesCommon<T>(NativeEntityMethods.GetEntitiesByClass(typeof(T).Name));
+            return GetEntitiesCommon<T>(NativeMethods.Entity.GetEntitiesByClass(typeof(T).Name));
 		}
 
 		public static IEnumerable<Entity> GetInBox(BoundingBox bbox, EntityQueryFlags flags = EntityQueryFlags.All)
 		{
-            return GetEntitiesCommon<Entity>(NativeEntityMethods.GetEntitiesInBox(bbox, flags));
+            return GetEntitiesCommon<Entity>(NativeMethods.Entity.GetEntitiesInBox(bbox, flags));
 		}
 
 		public static IEnumerable<T> GetInBox<T>(BoundingBox bbox, EntityQueryFlags flags = EntityQueryFlags.All) where T : Entity
 		{
-            return GetEntitiesCommon<T>(NativeEntityMethods.GetEntitiesInBox(bbox, flags));
+            return GetEntitiesCommon<T>(NativeMethods.Entity.GetEntitiesInBox(bbox, flags));
 		}
 
 		internal static IEnumerable<T> GetEntitiesCommon<T>(object[] ents) where T : Entity

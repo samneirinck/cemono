@@ -12,13 +12,6 @@ namespace CryEngine
 	/// </summary>
 	public abstract class Actor : EntityBase
 	{
-		private static INativeActorMethods _actormethods;
-		internal static INativeActorMethods ActorMethods
-		{
-			get { return _actormethods ?? (_actormethods = new NativeActorMethods()); }
-			set { _actormethods = value; }
-		}
-
 		#region Statics
 		public static Actor Get(int channelId)
 		{
@@ -26,7 +19,7 @@ namespace CryEngine
 			if(actor != null)
 				return actor;
 
-			var entityInfo = ActorMethods.GetActorInfoByChannelId((ushort)channelId);
+			var entityInfo = NativeMethods.Actor.GetActorInfoByChannelId((ushort)channelId);
 			if(entityInfo.Id != 0)
 				return CreateNativeActor(entityInfo);
 
@@ -45,7 +38,7 @@ namespace CryEngine
 				return actor;
 
 			// Couldn't find a CryMono entity, check if a non-managed one exists.
-			var actorInfo = ActorMethods.GetActorInfoById(actorId);
+            var actorInfo = NativeMethods.Actor.GetActorInfoById(actorId);
 			if(actorInfo.Id != 0)
 				return CreateNativeActor(actorInfo);
 
@@ -79,7 +72,7 @@ namespace CryEngine
 		{
 			get
 			{
-				var clientActorId = ActorMethods.GetClientActorId();
+                var clientActorId = NativeMethods.Actor.GetClientActorId();
 				if(clientActorId == 0)
 					return null;
 
@@ -92,7 +85,7 @@ namespace CryEngine
 			// just in case
 			Remove(channelId);
 
-			var info = ActorMethods.CreateActor(channelId, name, className, pos, angles, scale);
+            var info = NativeMethods.Actor.CreateActor(channelId, name, className, pos, angles, scale);
 			if(info.Id == 0)
 			{
 				Debug.LogAlways("[Actor.Create] New entityId was invalid");
@@ -128,7 +121,7 @@ namespace CryEngine
 
 		public static new void Remove(EntityId id)
 		{
-			ActorMethods.RemoveActor(id);
+            NativeMethods.Actor.RemoveActor(id);
 
 			ScriptManager.RemoveInstances<Actor>(ScriptType.Actor, actor => actor.Id == id);
 		}
@@ -140,9 +133,9 @@ namespace CryEngine
 
 		public static void Remove(int channelId)
 		{
-			var actorInfo = ActorMethods.GetActorInfoByChannelId((ushort)channelId);
+            var actorInfo = NativeMethods.Actor.GetActorInfoByChannelId((ushort)channelId);
 			if(actorInfo.Id != 0)
-				ActorMethods.RemoveActor(actorInfo.Id);
+                NativeMethods.Actor.RemoveActor(actorInfo.Id);
 
 			ScriptManager.RemoveInstances<Actor>(ScriptType.Actor, actor => actor.ChannelId == channelId);
 		}
@@ -184,7 +177,7 @@ namespace CryEngine
 
         internal override void OnScriptReloadInternal()
 		{
-			ActorPointer = ActorMethods.GetActorInfoById(Id).ActorPtr;
+            ActorPointer = NativeMethods.Actor.GetActorInfoById(Id).ActorPtr;
 
             base.OnScriptReloadInternal();
 		}
@@ -193,8 +186,8 @@ namespace CryEngine
         internal IntPtr ActorPointer { get; set; }
 		public int ChannelId { get; set; }
 
-        public float Health { get { return ActorMethods.GetPlayerHealth(ActorPointer); } set { ActorMethods.SetPlayerHealth(ActorPointer, value); } }
-        public float MaxHealth { get { return ActorMethods.GetPlayerMaxHealth(ActorPointer); } set { ActorMethods.SetPlayerMaxHealth(ActorPointer, value); } }
+        public float Health { get { return NativeMethods.Actor.GetPlayerHealth(ActorPointer); } set { NativeMethods.Actor.SetPlayerHealth(ActorPointer, value); } }
+        public float MaxHealth { get { return NativeMethods.Actor.GetPlayerMaxHealth(ActorPointer); } set { NativeMethods.Actor.SetPlayerMaxHealth(ActorPointer, value); } }
 
 		public bool IsDead() { return Health <= 0; }
 	}

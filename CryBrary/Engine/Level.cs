@@ -10,13 +10,6 @@ namespace CryEngine
 {
 	public class Level
 	{
-        private static INativeLevelMethods _nativeLevelMethods;
-        internal static INativeLevelMethods NativeLevelMethods
-        {
-            get { return _nativeLevelMethods ?? (_nativeLevelMethods = new NativeLevelMethods()); }
-            set { _nativeLevelMethods = value; }
-        }
-
         #region Statics
 		/// <summary>
 		/// Loads a new level and returns its level info
@@ -29,7 +22,7 @@ namespace CryEngine
 			if(Levels.TryGetValue(name, out level))
 				return level;
 
-			var ptr = NativeLevelMethods.LoadLevel(name);
+			var ptr = NativeMethods.Level.LoadLevel(name);
 			if(ptr != IntPtr.Zero)
 				return new Level(ptr);
 
@@ -41,7 +34,7 @@ namespace CryEngine
 		/// </summary>
 		public static void Unload()
 		{
-			NativeLevelMethods.UnloadLevel();
+            NativeMethods.Level.UnloadLevel();
 		}
 
 		/// <summary>
@@ -51,7 +44,7 @@ namespace CryEngine
 		{
 			get
 			{
-				var ptr = NativeLevelMethods.GetCurrentLevel();
+                var ptr = NativeMethods.Level.GetCurrentLevel();
 				if(ptr != IntPtr.Zero)
 				{
 					if(Levels.Any(x => x.Value.LevelPointer == ptr))
@@ -69,7 +62,7 @@ namespace CryEngine
 		/// <summary>
 		/// Returns true if any level is currently loaded
 		/// </summary>
-		public static bool Loaded { get { return NativeLevelMethods.IsLevelLoaded(); } }
+        public static bool Loaded { get { return NativeMethods.Level.IsLevelLoaded(); } }
 
 		private static Dictionary<string, Level> Levels = new Dictionary<string, Level>();
 		#endregion
@@ -86,7 +79,7 @@ namespace CryEngine
 		/// <returns></returns>
 		public string GetSupportedGameRules(int index)
 		{
-			return NativeLevelMethods.GetGameType(LevelPointer, index);
+            return NativeMethods.Level.GetGameType(LevelPointer, index);
 		}
 
 		/// <summary>
@@ -96,40 +89,40 @@ namespace CryEngine
 		/// <returns></returns>
 		public bool SupportsGameRules(string gamemodeName)
 		{
-			return NativeLevelMethods.SupportsGameType(LevelPointer, gamemodeName);
+            return NativeMethods.Level.SupportsGameType(LevelPointer, gamemodeName);
 		}
 
 		/// <summary>
 		/// Gets the level name.
 		/// </summary>
-		public string Name { get { return NativeLevelMethods.GetName(LevelPointer); } }
+        public string Name { get { return NativeMethods.Level.GetName(LevelPointer); } }
 		/// <summary>
 		/// Gets the level display name.
 		/// </summary>
-		public string DisplayName { get { return NativeLevelMethods.GetDisplayName(LevelPointer); } }
+        public string DisplayName { get { return NativeMethods.Level.GetDisplayName(LevelPointer); } }
 		/// <summary>
 		/// Gets the full path to the directory this level resides in.
 		/// </summary>
-		public string Path { get { return NativeLevelMethods.GetName(LevelPointer); } }
-		public string Paks { get { return NativeLevelMethods.GetName(LevelPointer); } }
+        public string Path { get { return NativeMethods.Level.GetName(LevelPointer); } }
+        public string Paks { get { return NativeMethods.Level.GetName(LevelPointer); } }
 
 		/// <summary>
 		/// Gets the heightmap size for this level.
 		/// </summary>
-		public int HeightmapSize { get { return NativeLevelMethods.GetHeightmapSize(LevelPointer); } }
+        public int HeightmapSize { get { return NativeMethods.Level.GetHeightmapSize(LevelPointer); } }
 
 		/// <summary>
 		/// Gets the number of supported game rules for this level.
 		/// </summary>
-		public int SupportedGamerules { get { return NativeLevelMethods.GetGameTypeCount(LevelPointer); } }
+        public int SupportedGamerules { get { return NativeMethods.Level.GetGameTypeCount(LevelPointer); } }
 		/// <summary>
 		/// Gets the default gamemode for this level.
 		/// </summary>
-		public string DefaultGameRules { get { return NativeLevelMethods.GetDefaultGameType(LevelPointer); } }
+        public string DefaultGameRules { get { return NativeMethods.Level.GetDefaultGameType(LevelPointer); } }
 		/// <summary>
 		/// Returns true if this level is configured to support any gamemodes.
 		/// </summary>
-		public bool HasGameRules { get { return NativeLevelMethods.HasGameRules(LevelPointer); } }
+        public bool HasGameRules { get { return NativeMethods.Level.HasGameRules(LevelPointer); } }
 
 		internal IntPtr LevelPointer { get; set; }
 	}

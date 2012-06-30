@@ -11,19 +11,6 @@ namespace CryEngine
 			AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionOccurred;
 		}
 
-		private static INativeLoggingMethods _nativeLoggingMethods;
-		internal static INativeLoggingMethods NativeLoggingMethods
-		{
-			get
-			{
-				return _nativeLoggingMethods ?? (_nativeLoggingMethods = new NativeLoggingMethods());
-			}
-			set
-			{
-				_nativeLoggingMethods = value;
-			}
-		}
-
         private static void UnhandledExceptionOccurred(object sender, UnhandledExceptionEventArgs e)
 		{
 			LogException((Exception)e.ExceptionObject);
@@ -36,7 +23,7 @@ namespace CryEngine
 		/// <param name="args"></param>
 		public static void Log(string format, params object[] args)
 		{
-			NativeLoggingMethods.Log(String.Format(format, args));
+			NativeMethods.Log.Log(String.Format(format, args));
 		}
 
 		/// <summary>
@@ -44,7 +31,7 @@ namespace CryEngine
 		/// </summary>
 		public static void Log(string msg)
 		{
-			NativeLoggingMethods.Log(msg);
+            NativeMethods.Log.Log(msg);
 		}
 
 		/// <summary>
@@ -54,7 +41,7 @@ namespace CryEngine
 		/// <param name="args"></param>
 		public static void LogAlways(string format, params object[] args)
 		{
-			NativeLoggingMethods.LogAlways(String.Format(format, args));
+            NativeMethods.Log.LogAlways(String.Format(format, args));
 		}
 
 		/// <summary>
@@ -62,7 +49,7 @@ namespace CryEngine
 		/// </summary>
 		public static void LogAlways(string msg)
 		{
-			NativeLoggingMethods.LogAlways(msg);
+            NativeMethods.Log.LogAlways(msg);
 		}
 
 		/// <summary>
@@ -72,7 +59,7 @@ namespace CryEngine
 		/// <param name="ex"></param>
 		public static void LogException(Exception ex)
 		{
-			CVar.Methods.HandleException(ex);
+            NativeMethods.CVar.HandleException(ex);
 			//Warning(ex.ToString());
 		}
 
@@ -83,7 +70,7 @@ namespace CryEngine
 		/// <param name="args"></param>
 		public static void LogWarning(string format, params object[] args)
 		{
-			NativeLoggingMethods.Warning(String.Format(format, args));
+            NativeMethods.Log.Warning(String.Format(format, args));
 		}
 
 		/// <summary>
@@ -91,7 +78,7 @@ namespace CryEngine
 		/// </summary>
 		public static void LogWarning(string msg)
 		{
-			NativeLoggingMethods.Warning(msg);
+            NativeMethods.Log.Warning(msg);
 		}
 
         public static void LogStackTrace()

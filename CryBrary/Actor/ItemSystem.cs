@@ -8,21 +8,14 @@ namespace CryEngine
 	/// </summary>
 	public static class ItemSystem
 	{
-        private static INativeItemSystemMethods _itemSystemMethods;
-        internal static INativeItemSystemMethods NativeActorSystemMethods
-        {
-            get { return _itemSystemMethods ?? (_itemSystemMethods = new NativeItemSystemMethods()); }
-            set { _itemSystemMethods = value; }
-        }
-
 		public static void GiveItem(EntityId actorId, string itemClass)
 		{
-			NativeActorSystemMethods.GiveItem(actorId, itemClass);
+			NativeMethods.ItemSystem.GiveItem(actorId, itemClass);
 		}
 
 		public static void GiveEquipmentPack(EntityId actorId, string equipmentPack)
 		{
-            NativeActorSystemMethods.GiveEquipmentPack(actorId, equipmentPack);
+            NativeMethods.ItemSystem.GiveEquipmentPack(actorId, equipmentPack);
 		}
 	}
 }

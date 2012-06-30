@@ -12,13 +12,6 @@ namespace CryEngine
 
 	public static class Input
 	{
-        private static INativeInputMethods _nativeInputMethods;
-        internal static INativeInputMethods NativeInputMethods
-        {
-            get { return _nativeInputMethods ?? (_nativeInputMethods = new NativeInputMethods()); }
-            set { _nativeInputMethods = value; }
-        }
-
 		#region Events
 		static void OnActionTriggered(string action, KeyEvent keyEvent, float value)
 		{
@@ -53,7 +46,7 @@ namespace CryEngine
 		{
 			if(!actionmapDelegates.ContainsKey(actionName))
 			{
-				NativeInputMethods.RegisterAction(actionName);
+                NativeMethods.Input.RegisterAction(actionName);
 
 				actionmapDelegates.Add(actionName, eventDelegate);
 			}

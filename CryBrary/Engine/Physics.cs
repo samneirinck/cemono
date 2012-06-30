@@ -6,15 +6,7 @@ namespace CryEngine
 {
 	public static class GlobalPhysics
 	{
-        private static INativePhysicsMethods _nativePhysicsMethods;
-        internal static INativePhysicsMethods NativePhysicsMethods
-        {
-            get { return _nativePhysicsMethods ?? (_nativePhysicsMethods = new NativePhysicsMethods()); }
-            set { _nativePhysicsMethods = value; }
-        }
-
-
-        
+      
         const string gravityCVar = "p_gravity_z";
 		public static float GravityZ
 		{
@@ -25,7 +17,7 @@ namespace CryEngine
         // This seems out of place?
         public static int RayWorldIntersection(Vec3 position, Vec3 direction, EntityQueryFlags objectTypes, RayWorldIntersectionFlags flags, ref RayHit internalRayHit, int maxHits, object[] skippedEntities)
         {
-            return NativePhysicsMethods.RayWorldIntersection(position, direction, objectTypes, flags, ref internalRayHit,
+            return NativeMethods.Physics.RayWorldIntersection(position, direction, objectTypes, flags, ref internalRayHit,
                                                              maxHits, skippedEntities);
         }
     }

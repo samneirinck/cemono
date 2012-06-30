@@ -12,13 +12,6 @@ namespace CryEngine.Lua
 	/// </summary>
 	public class ScriptTable
 	{
-        private static INativeScriptTableMethods _nativeScriptTableMethods;
-        internal static INativeScriptTableMethods NativeScriptTableMethods
-        {
-            get { return _nativeScriptTableMethods ?? (_nativeScriptTableMethods = new NativeScriptTableMethods()); }
-            set { _nativeScriptTableMethods = value; }
-        }
-
 		#region Statics
 		public static ScriptTable Get(EntityId entityId)
 		{
@@ -26,7 +19,7 @@ namespace CryEngine.Lua
 			if(scriptTable != default(ScriptTable))
 				return scriptTable;
 
-            var scriptPtr = NativeScriptTableMethods.GetScriptTable(entityId);
+            var scriptPtr = NativeMethods.ScriptTable.GetScriptTable(entityId);
 			if(scriptPtr != IntPtr.Zero)
 			{
 				ScriptTables.Add(new ScriptTable(scriptPtr));
@@ -72,12 +65,12 @@ namespace CryEngine.Lua
 			else
 				throw new NotSupportedException("Lua methods can only return Boolean, Integer, Float, Vector or String.");
 
-            return (T)NativeScriptTableMethods.CallMethod(ScriptPointer, methodName, variableType, args);
+            return (T)NativeMethods.ScriptTable.CallMethod(ScriptPointer, methodName, variableType, args);
 		}
 
 		public void CallMethod(string methodName, object[] args = null)
 		{
-            NativeScriptTableMethods.CallMethodVoid(ScriptPointer, methodName, args);
+            NativeMethods.ScriptTable.CallMethodVoid(ScriptPointer, methodName, args);
 		}
 
 		/// <summary>

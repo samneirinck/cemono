@@ -7,6 +7,7 @@ using System.Runtime.Serialization;
 using CryEngine.Extensions;
 
 using CryEngine.Initialization;
+using CryEngine.Native;
 
 namespace CryEngine
 {
@@ -211,9 +212,9 @@ namespace CryEngine
 		public bool LoadObject(string name, int slotNumber = 0)
 		{
 			if(name.EndsWith("cgf"))
-                NativeEntityMethods.LoadObject(EntityPointer, name, slotNumber);
+                NativeMethods.Entity.LoadObject(EntityPointer, name, slotNumber);
 			else if(name.EndsWith("cdf") || name.EndsWith("cga") || name.EndsWith("chr"))
-                NativeEntityMethods.LoadCharacter(EntityPointer, name, slotNumber);
+                NativeMethods.Entity.LoadCharacter(EntityPointer, name, slotNumber);
 			else
 				return false;
 
@@ -222,7 +223,7 @@ namespace CryEngine
 
 		protected string GetObjectFilePath(int slot = 0)
 		{
-            return NativeEntityMethods.GetStaticObjectFilePath(EntityPointer, slot);
+            return NativeMethods.Entity.GetStaticObjectFilePath(EntityPointer, slot);
 		}
 
 		public static EntityPropertyType GetEditorType(Type type, EntityPropertyType propertyType)
