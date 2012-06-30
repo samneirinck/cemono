@@ -8,8 +8,31 @@ using System.Runtime.Serialization;
 
 namespace CryEngine
 {
-	public abstract class CVar
-	{
+    internal interface INativeCVarMethods
+    {
+        void RegisterCommand(string name, string description, CVarFlags flags);
+    }
+
+    public abstract class CVar
+    {
+        private static INativeCVarMethods _methods;
+        internal static INativeCVarMethods Methods
+        {
+            get { return _methods ?? (_methods = new CVarMethods()); }
+            set { _methods = value; }
+        }
+
+        class CVarMethods : INativeCVarMethods
+        {
+            [MethodImpl(MethodImplOptions.InternalCall)]
+            internal static extern void _RegisterCommand(string name, string description, CVarFlags flags);
+            
+            public void RegisterCommand(string name, string description, CVarFlags flags)
+            {
+                _RegisterCommand(name, description, flags);
+            }
+        }
+
 		public string Name { get; protected set; }
 		public string Help { get; protected set; }
 		public CVarFlags Flags { get; protected set; }
@@ -23,8 +46,6 @@ namespace CryEngine
 
 		#region Externals
 
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		internal static extern void _RegisterCommand(string name, string description, CVarFlags flags);
 
 		// CVars
 		[MethodImpl(MethodImplOptions.InternalCall)]
@@ -213,7 +234,12 @@ namespace CryEngine
 		}
 
 		#endregion
-	}
+
+        public static void RegisterCommand(string name, string comment, CVarFlags flags)
+        {
+            Methods.RegisterCommand(name,comment,flags);
+        }
+    }
 
 	/// <summary>
 	/// CVar created using CVarAttribute, targeting a field.
