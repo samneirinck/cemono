@@ -42,6 +42,8 @@ public:
 	virtual bool OnInputEvent(const SInputEvent &event);
 	// ~IInputEventListener
 
+	IMonoClass *GetClass();
+
 private:
 	static void RegisterAction(mono::string);
 

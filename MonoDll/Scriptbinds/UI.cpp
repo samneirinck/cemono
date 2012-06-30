@@ -20,6 +20,11 @@ CUI::CUI()
 	REGISTER_METHOD(SendEvent);
 }
 
+IMonoClass *CUI::GetClass()
+{
+	return gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("Input");
+}
+
 CUI::~CUI()
 {
 	m_eventHandlers.clear();

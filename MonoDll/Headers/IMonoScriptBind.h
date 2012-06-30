@@ -22,29 +22,14 @@
 /// </summary>
 struct IMonoScriptBind
 {
-	IMonoScriptBind() : m_pClass(nullptr) { }
-
 	/// <summary>
-	/// The namespace in which the Mono class this scriptbind is tied to resides in; returns "CryEngine" by default if not overridden.
+	/// The namespace in which the Mono class this scriptbind is tied to resides in; returns "CryEngine.Native" by default if not overridden.
 	/// </summary>
-	virtual const char *GetNamespace() { return "CryEngine"; }
+	virtual const char *GetNamespace() { return "CryEngine.Native"; }
 	/// <summary>
 	/// The Mono class which this scriptbind is tied to. Unlike GetNameSpace and GetNameSpaceExtension, this has no default value and MUST be set.
 	/// </summary>
 	virtual const char *GetClassName() = 0;
-	/// <summary>
-	/// Returns the CryBrary class for this scriptbind.
-	/// </summary>
-	IMonoClass *GetClass()
-	{
-		if(!m_pClass)
-			m_pClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass(GetClassName(), GetNamespace());
-
-		return m_pClass;
-	}
-
-private:
-	IMonoClass *m_pClass;
 };
 
 #endif //__IMONOSCRIPTBIND_H__

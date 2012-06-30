@@ -25,11 +25,13 @@ public:
 
 	static CUI *GetInstance() { return m_pUI; }
 
-protected:
 	// IMonoScriptBind
 	virtual const char *GetClassName() override { return "UI"; }
 	// ~IMonoScriptBind
 
+	IMonoClass *GetClass();
+
+private:
 	static IUIEventSystem *CreateEventSystem(mono::string name, IUIEventSystem::EEventSystemType eventType);
 
 	static unsigned int RegisterFunction(IUIEventSystem *pEventSystem, mono::string name, mono::string desc, mono::object inputs);
@@ -37,7 +39,6 @@ protected:
 
 	static void SendEvent(IUIEventSystem *pEventSystem, unsigned int eventId, mono::object args);
 
-private:
 	static CUI *m_pUI;
 
 	typedef std::vector<SEventSystemHandler> TEventHandlers;

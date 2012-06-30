@@ -25,6 +25,11 @@ CInput::~CInput()
 	gEnv->pInput->RemoveEventListener(this);
 }
 
+IMonoClass *CInput::GetClass()
+{
+	return gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("Input");
+}
+
 void CInput::OnHardwareMouseEvent(int iX,int iY,EHARDWAREMOUSEEVENT eHardwareMouseEvent, int wheelDelta)
 {
 	IMonoArray *pParams = CreateMonoArray(4);
