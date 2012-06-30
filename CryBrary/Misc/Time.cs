@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using CryEngine.Native;
 
 namespace CryEngine
 {
@@ -7,8 +8,12 @@ namespace CryEngine
 	/// </summary>
 	public static class Time
 	{
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern internal static void _SetTimeScale(float scale);
+        private static INativeTimeMethods _nativeTimeMethods;
+        internal static INativeTimeMethods NativeTimeMethods
+        {
+            get { return _nativeTimeMethods ?? (_nativeTimeMethods = new NativeTimeMethods()); }
+            set { _nativeTimeMethods = value; }
+        }
 
         internal static void Set(float frameTime, float frameStartTime, float asyncTime, float frameRate, float timeScale)
         {
@@ -41,7 +46,7 @@ namespace CryEngine
         /// <summary>
         /// Sets / gets the time scale applied to time values.
         /// </summary>
-        public static float TimeScale { get { return _timeScale; } set { _SetTimeScale(value); _timeScale = value; } }
+        public static float TimeScale { get { return _timeScale; } set { NativeTimeMethods.SetTimeScale(value); _timeScale = value; } }
 
         /// <summary>
         /// Returns the current framerate in frames/second.

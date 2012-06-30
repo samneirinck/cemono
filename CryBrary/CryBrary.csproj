@@ -141,6 +141,7 @@
     <Compile Include="Native\INativePhysicsMethods.cs" />
     <Compile Include="Native\INativeRendererMethods.cs" />
     <Compile Include="Native\INativeScriptTableMethods.cs" />
+    <Compile Include="Native\INativeTimeMethods.cs" />
     <Compile Include="Native\INativeViewMethods.cs" />
     <Compile Include="Native\Native3DEngineMethods.cs" />
     <Compile Include="Native\NativeActorMethods.cs" />
@@ -172,6 +173,7 @@
     <Compile Include="Native\NativePhysicsMethods.cs" />
     <Compile Include="Native\NativeRendererMethods.cs" />
     <Compile Include="Native\NativeScriptTableMethods.cs" />
+    <Compile Include="Native\NativeTimeMethods.cs" />
     <Compile Include="Native\NativeViewMethods.cs" />
     <Compile Include="Network\NetworkCallAttribute.cs" />
     <Compile Include="Sandbox\Attributes.cs" />
