@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using CryEngine.Native;
 
 namespace CryEngine
 {
@@ -11,8 +12,12 @@ namespace CryEngine
 
 	public static class Input
 	{
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _RegisterAction(string actionName);
+        private static INativeInputMethods _nativeInputMethods;
+        internal static INativeInputMethods NativeInputMethods
+        {
+            get { return _nativeInputMethods ?? (_nativeInputMethods = new NativeInputMethods()); }
+            set { _nativeInputMethods = value; }
+        }
 
 		#region Events
 		static void OnActionTriggered(string action, KeyEvent keyEvent, float value)
@@ -48,7 +53,7 @@ namespace CryEngine
 		{
 			if(!actionmapDelegates.ContainsKey(actionName))
 			{
-				_RegisterAction(actionName);
+				NativeInputMethods.RegisterAction(actionName);
 
 				actionmapDelegates.Add(actionName, eventDelegate);
 			}

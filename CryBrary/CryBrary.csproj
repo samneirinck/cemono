@@ -133,6 +133,7 @@
     <Compile Include="Native\INativeEntityMethods.cs" />
     <Compile Include="Native\INativeFlowNodeMethods.cs" />
     <Compile Include="Native\INativeGameRulesMethods.cs" />
+    <Compile Include="Native\INativeInputMethods.cs" />
     <Compile Include="Native\INativeItemSystemMethods.cs" />
     <Compile Include="Native\INativeLevelMethods.cs" />
     <Compile Include="Native\INativeMaterialMethods.cs" />
@@ -162,6 +163,7 @@
     <Compile Include="Native\NativeEntityMethods.cs" />
     <Compile Include="Native\NativeFlowNodeMethods.cs" />
     <Compile Include="Native\NativeGameRulesMethods.cs" />
+    <Compile Include="Native\NativeInputMethods.cs" />
     <Compile Include="Native\NativeItemSystemMethods.cs" />
     <Compile Include="Native\NativeLevelMethods.cs" />
     <Compile Include="Native\NativeMaterialMethods.cs" />
