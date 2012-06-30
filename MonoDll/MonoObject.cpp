@@ -9,6 +9,7 @@
 #include <mono/metadata/debug-helpers.h>
 
 CScriptObject::CScriptObject(MonoObject *pObject)
+	: m_pClass(NULL)
 {
 	CRY_ASSERT(pObject);
 
@@ -20,6 +21,7 @@ CScriptObject::CScriptObject(MonoObject *pObject)
 
 CScriptObject::CScriptObject(MonoObject *object, IMonoArray *pConstructorParams)
 	: m_pObject(object)
+	, m_pClass(NULL)
 {
 	CRY_ASSERT(m_pObject);
 
@@ -42,7 +44,10 @@ void CScriptObject::SetObject(mono::object object)
 
 IMonoClass *CScriptObject::GetClass()
 {
-	return CScriptAssembly::TryGetClassFromRegistry(GetMonoClass());
+	if(!m_pClass)
+		m_pClass = CScriptAssembly::TryGetClassFromRegistry(GetMonoClass());
+
+	return m_pClass;
 }
 
 EMonoAnyType CScriptObject::GetType()
@@ -73,9 +78,10 @@ EMonoAnyType CScriptObject::GetType()
 
 IMonoObject *CScriptObject::CallMethod(const char *methodName, IMonoArray *pParams, bool bStatic)
 {
-	IMonoClass *pClass = GetClass();
+	if(!m_pClass)
+		m_pClass = CScriptAssembly::TryGetClassFromRegistry(GetMonoClass());
 
-	if(MonoMethod *pMethod = static_cast<CScriptClass *>(pClass)->GetMonoMethod(methodName, pParams))
+	if(MonoMethod *pMethod = m_pClass->GetMonoMethod(methodName, pParams))
 	{
 		MonoObject *pException = nullptr;
 		MonoObject *pResult = mono_runtime_invoke_array(pMethod, bStatic ? nullptr : m_pObject, pParams ? (MonoArray *)pParams->GetManagedObject() : nullptr, &pException);

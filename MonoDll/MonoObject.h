@@ -16,6 +16,8 @@
 
 #include <mono/mini/jit.h>
 
+class CScriptClass;
+
 class CScriptObject
 	: public IMonoObject
 {
@@ -54,6 +56,8 @@ protected:
 	// ~IMonoObject
 
 	MonoObject *m_pObject;
+	CScriptClass *m_pClass;
+
 	int m_objectHandle;
 };
 

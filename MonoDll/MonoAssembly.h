@@ -15,17 +15,19 @@
 struct IMonoScript;
 struct IMonoArray;
 
+class CScriptClass;
+
 class CScriptAssembly : public IMonoAssembly
 {
-	typedef std::map<IMonoClass *, MonoClass *> TClassMap;
+	typedef std::map<CScriptClass *, MonoClass *> TClassMap;
 public:
 	CScriptAssembly(MonoImage *pImage, const char *path);
 	virtual ~CScriptAssembly();
 
-	IMonoClass *TryGetClass(MonoClass *pClass);
+	CScriptClass *TryGetClass(MonoClass *pClass);
 
 	static CScriptAssembly *TryGetAssembly(MonoImage *pImage);
-	static IMonoClass *TryGetClassFromRegistry(MonoClass *pClass);
+	static CScriptClass *TryGetClassFromRegistry(MonoClass *pClass);
 
 	// IMonoAssembly
 	virtual void Release() override { delete this; }
@@ -35,6 +37,7 @@ public:
 	virtual const char *GetPath() override { return m_path; }
 	// ~IMonoAssembly
 
+	void SetImage(MonoImage *pImage) { m_pImage = pImage; }
 	MonoImage *GetImage() const { return m_pImage; }
 
 	// Keep all assemblies we get around, for class registries etc.

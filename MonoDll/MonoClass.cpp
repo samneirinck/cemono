@@ -14,6 +14,7 @@ CScriptClass::CScriptClass(MonoClass *pClass)
 	CRY_ASSERT(pClass);
 
 	m_pObject = (MonoObject *)pClass; 
+	m_pClass = NULL;
 	m_objectHandle = -1;
 }
 

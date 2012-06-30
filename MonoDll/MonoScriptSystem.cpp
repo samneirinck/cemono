@@ -169,6 +169,8 @@ bool CScriptSystem::CompleteInit()
 	CryLogAlways("		Registering default scriptbinds...");
 	RegisterDefaultBindings();
 
+	CScriptArray::m_pDefaultElementClass = mono_get_object_class();
+
 	if(!Reload(true))
 		return false;
 
@@ -232,15 +234,25 @@ bool CScriptSystem::DoReload(bool initialLoad)
 	IMonoDomain *pNewScriptDomain = new CScriptDomain("ScriptDomain");
 	pNewScriptDomain->SetActive(true);
 
-	IMonoAssembly *pNewCryBraryAssembly = GetAssembly(PathUtils::GetBinaryPath() + "CryBrary.dll");
-	CRY_ASSERT(pNewCryBraryAssembly);
+	MonoImage *pPrevCryBraryImage = NULL;
 
+	const char *cryBraryPath = PathUtils::GetBinaryPath() + "CryBrary.dll";
 	if(initialLoad)
+	{
 		CryLogAlways("		Initializing subsystems...");
 
-	InitializeSystems(pNewCryBraryAssembly);
+		m_pCryBraryAssembly = static_cast<CScriptAssembly *>(GetAssembly(cryBraryPath));
+		CRY_ASSERT(m_pCryBraryAssembly);
+	}
+	else
+	{
+		pPrevCryBraryImage = m_pCryBraryAssembly->GetImage();
+		m_pCryBraryAssembly->SetImage(LoadAssembly(GetAssemblyPath(cryBraryPath, false)));
+	}
 
-	IMonoObject *pNewScriptManager = pNewCryBraryAssembly->GetClass("ScriptManager", "CryEngine.Initialization")->CreateInstance();
+	InitializeSystems();
+
+	IMonoObject *pNewScriptManager = m_pCryBraryAssembly->GetClass("ScriptManager", "CryEngine.Initialization")->CreateInstance();
 
 	for each(auto listener in m_scriptReloadListeners)
 		listener->OnPreScriptCompilation(!initialLoad);
@@ -259,13 +271,11 @@ bool CScriptSystem::DoReload(bool initialLoad)
 	{
 		SAFE_RELEASE(m_AppDomainSerializer);
 		SAFE_RELEASE(m_pScriptManager);
-		SAFE_RELEASE(m_pCryBraryAssembly);
 
 		SAFE_RELEASE(m_pScriptDomain);
 
 		m_pScriptDomain = pNewScriptDomain;
 
-		m_pCryBraryAssembly = pNewCryBraryAssembly;
 		m_pScriptManager = pNewScriptManager;
 
 		m_AppDomainSerializer = m_pCryBraryAssembly->GetClass("AppDomainSerializer", "CryEngine.Serialization")->CreateInstance();
@@ -305,7 +315,6 @@ bool CScriptSystem::DoReload(bool initialLoad)
 	{
 		m_pRootDomain->SetActive();
 
-		SAFE_RELEASE(pNewCryBraryAssembly);
 		SAFE_RELEASE(m_AppDomainSerializer);
 		SAFE_RELEASE(pNewScriptManager);
 		
@@ -322,7 +331,10 @@ bool CScriptSystem::DoReload(bool initialLoad)
 			case 10: // try again (recompile)
 				return DoReload(initialLoad);
 			case 11: // continue (load previously functional script domain)
-				m_pScriptDomain->SetActive();
+				{
+					m_pScriptDomain->SetActive();
+					m_pCryBraryAssembly->SetImage(pPrevCryBraryImage);
+				}
 				break;
 			}
 		}
@@ -377,9 +389,9 @@ void CScriptSystem::RegisterDefaultBindings()
 #undef RegisterBinding
 }
 
-bool CScriptSystem::InitializeSystems(IMonoAssembly *pCryBraryAssembly)
+bool CScriptSystem::InitializeSystems()
 {
-	IMonoClass *pClass = pCryBraryAssembly->GetClass("Network");
+	IMonoClass *pClass = m_pCryBraryAssembly->GetClass("Network");
 	IMonoArray *pArray = CreateMonoArray(2);
 	pArray->Insert(gEnv->IsEditor());
 	pArray->Insert(gEnv->IsDedicated());
@@ -460,15 +472,41 @@ IMonoAssembly *CScriptSystem::GetCorlibAssembly()
 	return CScriptAssembly::TryGetAssembly(mono_get_corlib());
 }
 
+IMonoAssembly *CScriptSystem::GetCryBraryAssembly()
+{
+	return m_pCryBraryAssembly;
+}
+
+const char *CScriptSystem::GetAssemblyPath(const char *currentPath, bool shadowCopy)
+{
+	if(shadowCopy)
+		return PathUtils::GetTempPath().append(PathUtil::GetFile(currentPath));
+
+	return currentPath;
+}
+
+MonoImage *CScriptSystem::LoadAssembly(const char *path)
+{
+	if (MonoAssembly *pMonoAssembly = mono_domain_assembly_open(mono_domain_get(), path))
+	{
+		if(MonoImage *pImage = mono_assembly_get_image(pMonoAssembly))
+			return pImage;
+		else
+			MonoWarning("Failed to get image from assembly %s", path);
+	}
+	else
+		MonoWarning("Failed to create assembly from %s", path);
+
+	return NULL;
+}
+
 IMonoAssembly *CScriptSystem::GetAssembly(const char *file, bool shadowCopy)
 {
-	const char *newPath = file;
-	if(shadowCopy)
-		newPath = PathUtils::GetTempPath().append(PathUtil::GetFile(file));
+	const char *newPath = GetAssemblyPath(file, shadowCopy);
 
 	for each(auto assembly in CScriptAssembly::m_assemblies)
 	{
-		if(!strcmp(file, assembly->GetPath()))
+		if(!strcmp(newPath, assembly->GetPath()))
 			return assembly;
 	}
 
@@ -496,15 +534,5 @@ IMonoAssembly *CScriptSystem::GetAssembly(const char *file, bool shadowCopy)
 	}
 #endif
 
-	if (MonoAssembly *pMonoAssembly = mono_domain_assembly_open(mono_domain_get(), file))
-	{
-		if(MonoImage *pImage = mono_assembly_get_image(pMonoAssembly))
-			return new CScriptAssembly(pImage, file);
-		else
-			MonoWarning("Failed to get image from assembly %s", file);
-	}
-	else
-		MonoWarning("Failed to create assembly from %s", file);
-
-	return nullptr;
+	return new CScriptAssembly(LoadAssembly(file), file);
 }

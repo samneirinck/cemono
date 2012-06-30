@@ -35,7 +35,7 @@ public:
 	virtual int GetSize() const override { return (int)mono_array_length((MonoArray *)m_pObject); }
 
 	virtual IMonoClass *GetElementClass() override { return CScriptAssembly::TryGetClassFromRegistry(m_pElementClass); }
-	virtual IMonoClass *GetDefaultElementClass() { return CScriptAssembly::TryGetClassFromRegistry(mono_get_object_class()); }
+	virtual IMonoClass *GetDefaultElementClass() { return CScriptAssembly::TryGetClassFromRegistry(m_pDefaultElementClass); }
 
 	virtual IMonoObject *GetItem(int index) override;
 	virtual const char *GetItemString(int index) override { return ToCryString(mono_array_get((MonoArray *)m_pObject, mono::string , index)); }
@@ -68,7 +68,9 @@ public:
 	virtual void InsertMonoArray(mono::object arr, int index = -1);
 	virtual void InsertMonoObject(mono::object object, int index = -1);
 
+	static MonoClass *m_pDefaultElementClass;
 private:
+
 	int m_curIndex;
 
 	MonoClass *m_pElementClass;

@@ -25,6 +25,8 @@ struct IMonoEntityManager;
 
 struct SCVars;
 
+class CScriptAssembly;
+
 class CFlowManager;
 class CInput;
 
@@ -56,7 +58,7 @@ public:
 	virtual IMonoObject *InstantiateScript(const char *scriptName, EMonoScriptFlags scriptType = eScriptFlag_Any, IMonoArray *pConstructorParameters = nullptr) override;
 	virtual void RemoveScriptInstance(int id, EMonoScriptFlags scriptType = eScriptFlag_Any) override;
 	
-	virtual IMonoAssembly *GetCryBraryAssembly() override { return m_pCryBraryAssembly; }
+	virtual IMonoAssembly *GetCryBraryAssembly() override;
 	virtual IMonoAssembly *GetCorlibAssembly() override;
 	virtual IMonoAssembly *GetAssembly(const char *file, bool shadowCopy = false);
 
@@ -92,9 +94,12 @@ public:
 
 	bool IsInitialized() { return m_pRootDomain != nullptr; }
 
+	const char *GetAssemblyPath(const char *currentPath, bool shadowCopy);
+	MonoImage *LoadAssembly(const char *path);
+
 protected:
 	bool CompleteInit();
-	bool InitializeSystems(IMonoAssembly *pCryBraryAssembly);
+	bool InitializeSystems();
 
 	void PreReload();
 	bool DoReload(bool initialLoad);
@@ -119,7 +124,7 @@ protected:
 
 	IMonoConverter *m_pConverter;
 
-	IMonoAssembly *m_pCryBraryAssembly;
+	CScriptAssembly *m_pCryBraryAssembly;
 	IMonoAssembly *m_pPdb2MdbAssembly;
 
 	SCVars *m_pCVars;

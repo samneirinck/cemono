@@ -37,7 +37,7 @@ IMonoClass *CScriptAssembly::GetClass(const char *className, const char *nameSpa
 	return nullptr;
 }
 
-IMonoClass *CScriptAssembly::TryGetClass(MonoClass *pClass)
+CScriptClass *CScriptAssembly::TryGetClass(MonoClass *pClass)
 {
 	CRY_ASSERT(pClass);
 
@@ -47,7 +47,7 @@ IMonoClass *CScriptAssembly::TryGetClass(MonoClass *pClass)
 			return pair.first;
 	}
 
-	IMonoClass *pScriptClass = new CScriptClass(pClass);
+	CScriptClass *pScriptClass = new CScriptClass(pClass);
 	m_classRegistry.insert(TClassMap::value_type(pScriptClass, pClass));
 	return pScriptClass;
 }
@@ -60,6 +60,7 @@ CScriptAssembly *CScriptAssembly::TryGetAssembly(MonoImage *pImage)
 {
 	CRY_ASSERT(pImage);
 
+	CryLogAlways("4");
 	for each(auto assembly in m_assemblies)
 	{
 		if(assembly->GetImage() == pImage)
@@ -70,9 +71,19 @@ CScriptAssembly *CScriptAssembly::TryGetAssembly(MonoImage *pImage)
 	return new CScriptAssembly(pImage, "");
 }
 
-IMonoClass *CScriptAssembly::TryGetClassFromRegistry(MonoClass *pClass)
+CScriptClass *CScriptAssembly::TryGetClassFromRegistry(MonoClass *pClass)
 {
 	CRY_ASSERT(pClass);
 
-	return TryGetAssembly(mono_class_get_image(pClass))->TryGetClass(pClass);
+	CryLogAlways("1");
+	MonoImage *pImage = mono_class_get_image(pClass);
+	CryLogAlways("2");
+	if(auto pAssembly = TryGetAssembly(pImage))
+	{
+		CryLogAlways("3");
+		return pAssembly->TryGetClass(pClass);
+	}
+	CryLogAlways("~1");
+
+	return NULL;
 }
