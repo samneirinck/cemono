@@ -14,13 +14,25 @@
 
 std::vector<CScriptAssembly *> CScriptAssembly::m_assemblies = std::vector<CScriptAssembly *>();
 
-CScriptAssembly::CScriptAssembly(MonoImage *pImage, const char *path)
+CScriptAssembly::CScriptAssembly(MonoImage *pImage)
 	: m_pImage(pImage)
-	, m_path(path) 
 {
-	CRY_ASSERT(pImage);
+	CRY_ASSERT(m_pImage);
 
 	m_assemblies.push_back(this);
+}
+
+CScriptAssembly::CScriptAssembly(const char *path, bool push_back)
+	:  m_path(path) 
+{
+	MonoAssembly *pMonoAssembly = mono_domain_assembly_open(mono_domain_get(), path);
+	CRY_ASSERT(pMonoAssembly);
+
+	m_pImage = mono_assembly_get_image(pMonoAssembly);
+	CRY_ASSERT(m_pImage);
+	
+	if(push_back)
+		m_assemblies.push_back(this);
 }
 
 CScriptAssembly::~CScriptAssembly()
@@ -67,7 +79,7 @@ CScriptAssembly *CScriptAssembly::TryGetAssembly(MonoImage *pImage)
 	}
 
 	// TODO: Get assembly path
-	return new CScriptAssembly(pImage, "");
+	return new CScriptAssembly(pImage);
 }
 
 CScriptClass *CScriptAssembly::TryGetClassFromRegistry(MonoClass *pClass)

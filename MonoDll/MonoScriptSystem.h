@@ -95,7 +95,6 @@ public:
 	bool IsInitialized() { return m_pRootDomain != nullptr; }
 
 	const char *GetAssemblyPath(const char *currentPath, bool shadowCopy);
-	MonoImage *LoadAssembly(const char *path);
 
 protected:
 	bool CompleteInit();

@@ -18,11 +18,6 @@ struct IMonoAssembly
 {
 public:
 	/// <summary>
-	/// Deletes the assembly and cleans up used objects.
-	/// </summary>
-	virtual void Release() = 0;
-
-	/// <summary>
 	/// Gets a custom C# class from within the assembly.
 	/// Note: This does not construct an new instance of the class, only returns an uninitialized IMonoScript. To instantiate a class, see IMonoAssembly::InstantiateClass
 	/// </summary>

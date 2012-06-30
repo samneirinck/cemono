@@ -105,7 +105,7 @@ CScriptSystem::CScriptSystem()
 CScriptSystem::~CScriptSystem()
 {
 	for(auto it = CScriptAssembly::m_assemblies.begin(); it != CScriptAssembly::m_assemblies.end(); ++it)
-		SAFE_RELEASE(*it);
+		SAFE_DELETE(*it);
 
 	// Force garbage collection of all generations.
 	mono_gc_collect(mono_gc_max_generation());
@@ -125,7 +125,7 @@ CScriptSystem::~CScriptSystem()
 	SAFE_RELEASE(m_AppDomainSerializer);
 	SAFE_RELEASE(m_pScriptManager);
 
-	SAFE_RELEASE(m_pCryBraryAssembly);
+	SAFE_DELETE(m_pCryBraryAssembly);
 
 	SAFE_DELETE(m_pCVars);
 
@@ -247,7 +247,10 @@ bool CScriptSystem::DoReload(bool initialLoad)
 	else
 	{
 		pPrevCryBraryImage = m_pCryBraryAssembly->GetImage();
-		m_pCryBraryAssembly->SetImage(LoadAssembly(GetAssemblyPath(cryBraryPath, false)));
+
+		CScriptAssembly *pTempAssembly = new CScriptAssembly(GetAssemblyPath(cryBraryPath, false));
+		m_pCryBraryAssembly->SetImage(pTempAssembly->GetImage());
+		SAFE_DELETE(pTempAssembly);
 	}
 
 	InitializeSystems();
@@ -485,21 +488,6 @@ const char *CScriptSystem::GetAssemblyPath(const char *currentPath, bool shadowC
 	return currentPath;
 }
 
-MonoImage *CScriptSystem::LoadAssembly(const char *path)
-{
-	if (MonoAssembly *pMonoAssembly = mono_domain_assembly_open(mono_domain_get(), path))
-	{
-		if(MonoImage *pImage = mono_assembly_get_image(pMonoAssembly))
-			return pImage;
-		else
-			MonoWarning("Failed to get image from assembly %s", path);
-	}
-	else
-		MonoWarning("Failed to create assembly from %s", path);
-
-	return NULL;
-}
-
 IMonoAssembly *CScriptSystem::GetAssembly(const char *file, bool shadowCopy)
 {
 	const char *newPath = GetAssemblyPath(file, shadowCopy);
@@ -534,5 +522,5 @@ IMonoAssembly *CScriptSystem::GetAssembly(const char *file, bool shadowCopy)
 	}
 #endif
 
-	return new CScriptAssembly(LoadAssembly(file), file);
+	return new CScriptAssembly(file);
 }
