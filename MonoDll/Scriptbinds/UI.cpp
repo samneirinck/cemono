@@ -22,7 +22,7 @@ CUI::CUI()
 
 IMonoClass *CUI::GetClass()
 {
-	return gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("Input");
+	return gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("UI");
 }
 
 CUI::~CUI()
