@@ -132,6 +132,7 @@
     <Compile Include="Native\INativeCVarMethods.cs" />
     <Compile Include="Native\INativeItemSystemMethods.cs" />
     <Compile Include="Native\INativeLevelMethods.cs" />
+    <Compile Include="Native\INativeMaterialMethods.cs" />
     <Compile Include="Native\Native3DEngineMethods.cs" />
     <Compile Include="Native\NativeActorMethods.cs" />
     <Compile Include="Async\Jobs\AsyncJob.cs" />
@@ -153,6 +154,7 @@
     <Compile Include="Native\NativeCVarMethods.cs" />
     <Compile Include="Native\NativeItemSystemMethods.cs" />
     <Compile Include="Native\NativeLevelMethods.cs" />
+    <Compile Include="Native\NativeMaterialMethods.cs" />
     <Compile Include="Network\NetworkCallAttribute.cs" />
     <Compile Include="Sandbox\Attributes.cs" />
     <Compile Include="Sandbox\FormLoader.cs">
