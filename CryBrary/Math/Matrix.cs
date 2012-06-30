@@ -202,7 +202,7 @@ namespace CryEngine
 		}
 		#endregion
 
-		#region Methods
+		#region NativeEntityMethods
 		/// <summary>
 		/// apply scaling to the columns of the matrix.
 		/// </summary>

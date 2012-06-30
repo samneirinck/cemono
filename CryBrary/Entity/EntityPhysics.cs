@@ -14,6 +14,13 @@ namespace CryEngine
             get { return _nativePhysicsMethods ?? (_nativePhysicsMethods = new NativePhysicsMethods()); }
             set { _nativePhysicsMethods = value; }
         }
+        private static INativeEntityMethods _nativeEntityMethods;
+        internal static INativeEntityMethods NativeEntityMethods
+        {
+            get { return _nativeEntityMethods ?? (_nativeEntityMethods = new NativeEntityMethods()); }
+            set { _nativeEntityMethods = value; }
+        }
+
 
 
 		internal EntityPhysics() { }
@@ -37,7 +44,7 @@ namespace CryEngine
 
 		public void Break(BreakageParameters breakageParams)
 		{
-			EntityBase._BreakIntoPieces(entity.EntityPointer, 0, 0, breakageParams);
+			EntityBase.NativeEntityMethods.BreakIntoPieces(entity.EntityPointer, 0, 0, breakageParams);
 		}
 
 		#region Basics

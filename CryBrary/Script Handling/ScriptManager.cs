@@ -122,7 +122,7 @@ namespace CryEngine.Initialization
                             if (registrationParams.name == null)
                                 registrationParams.name = script.ScriptName;
 
-                            Entity.Methods.RegisterClass(registrationParams);
+                            Entity.NativeEntityMethods.RegisterClass(registrationParams);
                         }
                         else if (script.RegistrationParams is GameRulesRegistrationParams)
                         {

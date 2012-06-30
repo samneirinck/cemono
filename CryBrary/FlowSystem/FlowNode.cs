@@ -6,79 +6,22 @@ using System.Runtime.CompilerServices;
 
 using CryEngine.Extensions;
 using CryEngine.Initialization;
+using CryEngine.Native;
 
 namespace CryEngine
 {
-    internal interface INativeFlowNodeMethods
-    {
-        void RegisterNode(string typeName);
-    }
-	public abstract class FlowNode : CryScriptInstance
+    public abstract class FlowNode : CryScriptInstance
 	{
-	    private static INativeFlowNodeMethods _methods;
-	    internal static INativeFlowNodeMethods Methods
+	    private static INativeFlowNodeMethods _nativeFlowNodeMethods;
+	    internal static INativeFlowNodeMethods NativeFlowNodeMethods
 	    {
-            get { return _methods ?? (_methods = new FlowNodeMethods()); }
-            set { _methods = value; }
+            get { return _nativeFlowNodeMethods ?? (_nativeFlowNodeMethods = new FlowNodeMethods()); }
+            set { _nativeFlowNodeMethods = value; }
 	    }
-
-        class FlowNodeMethods : INativeFlowNodeMethods
-        {
-            [MethodImplAttribute(MethodImplOptions.InternalCall)]
-            extern internal static void _RegisterNode(string typeName);
-
-            public void RegisterNode(string typeName)
-            {
-                _RegisterNode(typeName);
-            }
-        }
-
-		#region Externals
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static IntPtr _GetNode(UInt32 graphId, UInt16 nodeId);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _SetRegularlyUpdated(IntPtr nodePtr, bool updated);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static bool _IsPortActive(IntPtr nodePtr, int port);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _ActivateOutput(IntPtr nodePtr, int port);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _ActivateOutputInt(IntPtr nodePtr, int port, int value);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _ActivateOutputFloat(IntPtr nodePtr, int port, float value);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _ActivateOutputEntityId(IntPtr nodePtr, int port, uint value);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _ActivateOutputString(IntPtr nodePtr, int port, string value);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _ActivateOutputBool(IntPtr nodePtr, int port, bool value);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _ActivateOutputVec3(IntPtr nodePtr, int port, Vec3 value);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static int _GetPortValueInt(IntPtr nodePtr, int port);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static float _GetPortValueFloat(IntPtr nodePtr, int port);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static uint _GetPortValueEntityId(IntPtr nodePtr, int port);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static string _GetPortValueString(IntPtr nodePtr, int port);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static bool _GetPortValueBool(IntPtr nodePtr, int port);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static Vec3 _GetPortValueVec3(IntPtr nodePtr, int port);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static IntPtr _GetTargetEntity(IntPtr nodePtr, out uint entId);
-		#endregion
 
 		internal static void Register(string typeName)
 		{
-			Methods.RegisterNode(typeName);
+			NativeFlowNodeMethods.RegisterNode(typeName);
 		}
 
 		internal void InternalInitialize(NodeInfo nodeInfo)
@@ -437,7 +380,7 @@ namespace CryEngine
 		/// <returns></returns>
 		protected int GetPortInt(Action<int> port)
 		{
-			return _GetPortValueInt(NodePointer, GetInputPortId(port.Method));
+			return NativeFlowNodeMethods.GetPortValueInt(NodePointer, GetInputPortId(port.Method));
 		}
 
 		protected bool IsIntPortActive(Action<int> port)
@@ -450,7 +393,7 @@ namespace CryEngine
 			if(!typeof(T).IsEnum)
 				throw new ArgumentException("T must be an enumerated type");
 
-			return (T)Enum.ToObject(typeof(T), _GetPortValueInt(NodePointer, GetInputPortId(port.Method)));
+            return (T)Enum.ToObject(typeof(T), NativeFlowNodeMethods.GetPortValueInt(NodePointer, GetInputPortId(port.Method)));
 		}
 
 		protected bool IsEnumPortActive(Action<Enum> port)
@@ -465,7 +408,7 @@ namespace CryEngine
 		/// <returns></returns>
 		protected float GetPortFloat(Action<float> port)
 		{
-			return _GetPortValueFloat(NodePointer, GetInputPortId(port.Method));
+            return NativeFlowNodeMethods.GetPortValueFloat(NodePointer, GetInputPortId(port.Method));
 		}
 
 		protected bool IsFloatPortActive(Action<float> port)
@@ -480,7 +423,7 @@ namespace CryEngine
 		/// <returns></returns>
 		protected Vec3 GetPortVec3(Action<Vec3> port)
 		{
-			return _GetPortValueVec3(NodePointer, GetInputPortId(port.Method));
+            return NativeFlowNodeMethods.GetPortValueVec3(NodePointer, GetInputPortId(port.Method));
 		}
 
 		protected bool IsVec3PortActive(Action<Vec3> port)
@@ -495,7 +438,7 @@ namespace CryEngine
 		/// <returns></returns>
 		protected string GetPortString(Action<string> port)
 		{
-			return _GetPortValueString(NodePointer, GetInputPortId(port.Method));
+            return NativeFlowNodeMethods.GetPortValueString(NodePointer, GetInputPortId(port.Method));
 		}
 
 		protected bool IsStringPortActive(Action<string> port)
@@ -510,7 +453,7 @@ namespace CryEngine
 		/// <returns></returns>
 		protected bool GetPortBool(Action<bool> port)
 		{
-			return _GetPortValueBool(NodePointer, GetInputPortId(port.Method));
+            return NativeFlowNodeMethods.GetPortValueBool(NodePointer, GetInputPortId(port.Method));
 		}
 
 		protected bool IsBoolPortActive(Action<bool> port)
@@ -520,7 +463,7 @@ namespace CryEngine
 
 		protected EntityId GetPortEntityId(Action<EntityId> port)
 		{
-			return new EntityId(_GetPortValueEntityId(NodePointer, GetInputPortId(port.Method)));
+            return new EntityId(NativeFlowNodeMethods.GetPortValueEntityId(NodePointer, GetInputPortId(port.Method)));
 		}
 
 		protected bool IsEntityIdPortActive(Action<EntityId> port)
@@ -544,7 +487,7 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="port"></param>
 		/// <returns></returns>
-		private bool IsPortActive(int port) { return _IsPortActive(NodePointer, port); }
+        private bool IsPortActive(int port) { return NativeFlowNodeMethods.IsPortActive(NodePointer, port); }
 		#endregion
 
 		public EntityBase TargetEntity
@@ -552,7 +495,7 @@ namespace CryEngine
 			get
 			{
 				uint entId;
-				var entPtr = _GetTargetEntity(NodePointer, out entId);
+                var entPtr = NativeFlowNodeMethods.GetTargetEntity(NodePointer, out entId);
 
 				if(entPtr != IntPtr.Zero)
 					return Entity.CreateNativeEntity(new EntityId(entId), entPtr);
@@ -579,7 +522,7 @@ namespace CryEngine
 
         internal override void OnScriptReloadInternal()
 		{
-			NodePointer = _GetNode(GraphId, NodeId);
+            NodePointer = NativeFlowNodeMethods.GetNode(GraphId, NodeId);
 
             OnScriptReload();
             base.OnScriptReloadInternal();
