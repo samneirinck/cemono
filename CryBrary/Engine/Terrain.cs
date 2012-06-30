@@ -19,12 +19,12 @@ namespace CryEngine
 		/// <summary>
 		/// The size of the terrain in metres.
 		/// </summary>
-		public static int Size { get { return Engine._GetTerrainSize(); } }
+		public static int Size { get { return Engine.GetTerrainSize(); } }
 
 		/// <summary>
 		/// The size of each terrain unit.
 		/// </summary>
-		public static int UnitsPerMetre { get { return Engine._GetTerrainUnitSize(); } }
+		public static int UnitsPerMetre { get { return Engine.GetTerrainUnitSize(); } }
 
 		/// <summary>
 		/// The size of the terrain in units.
@@ -49,7 +49,7 @@ namespace CryEngine
 		{
 			get
 			{
-				return Engine._GetTerrainZ(x, y);
+				return Engine.GetTerrainZ(x, y);
 			}
 		}
 
@@ -63,7 +63,7 @@ namespace CryEngine
 		{
 			get
 			{
-				return Engine._GetTerrainElevation(x, y, checkVoxels);
+				return Engine.GetTerrainElevation(x, y, checkVoxels);
 			}
 		}
 	}

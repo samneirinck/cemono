@@ -1,37 +1,68 @@
 ﻿using System.Runtime.CompilerServices;
+using CryEngine.Native;
 
 namespace CryEngine
 {
 	/// <summary>
 	/// Provides an direct interface to the 3DEngine.
 	/// </summary>
-	internal static class Engine
+	public static class Engine
 	{
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static float _GetTerrainElevation(float positionX, float positionY, bool includeOutdoorVoxels);
+        private static INative3DEngineMethods _native3DEngineMethods;
+        internal static INative3DEngineMethods Native3DEngineMethods
+        {
+            get { return _native3DEngineMethods ?? (_native3DEngineMethods = new Native3DEngineMethods()); }
+            set { _native3DEngineMethods = value; }
+        }
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static int _GetTerrainSize();
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static int _GetTerrainSectorSize();
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static int _GetTerrainUnitSize();
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static int _GetTerrainZ(int x, int y);
+        public static float GetTimeOfDay()
+        {
+            return Native3DEngineMethods.GetTimeOfDay();
+        }
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _SetTimeOfDay(float hour, bool forceUpdate = false);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static float _GetTimeOfDay();
+        public static int GetTerrainSize()
+        {
+            return Native3DEngineMethods.GetTerrainSize();
+        }
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static TimeOfDay.AdvancedInfo _GetTimeOfDayAdvancedInfo();
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _SetTimeOfDayAdvancedInfo(TimeOfDay.AdvancedInfo advancedInfo);
+        public static int GetTerrainUnitSize()
+        {
+            return Native3DEngineMethods.GetTerrainUnitSize();
+        }
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _SetTimeOfDayVariableValue(int id, float value);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _SetTimeOfDayVariableValueColor(int id, Vec3 value);
-	}
+        public static float GetTerrainZ(int x, int y)
+        {
+            return Native3DEngineMethods.GetTerrainZ(x, y);
+        }
+
+        public static TimeOfDay.AdvancedInfo GetTimeOfDayAdvancedInfo()
+        {
+            return Native3DEngineMethods.GetTimeOfDayAdvancedInfo();
+        }
+
+        public static void SetTimeOfDayAdvancedInfo(TimeOfDay.AdvancedInfo info)
+        {
+            Native3DEngineMethods.SetTimeOfDayAdvancedInfo(info);
+        }
+
+        public static float GetTerrainElevation(float x, float y, bool checkVoxels)
+        {
+            return Native3DEngineMethods.GetTerrainElevation(x, y, checkVoxels);
+        }
+
+        public static void SetTimeOfDay(float value, bool forceUpdates)
+        {
+            Native3DEngineMethods.SetTimeOfDay(value, forceUpdates);
+        }
+
+        public static void SetTimeOfDayVariableValue(int id, float value)
+        {
+            Native3DEngineMethods.SetTimeOfDayVariableValue(id,value);
+        }
+
+        public static void SetTimeOfDayVariableValueColor(int id, Vec3 value)
+        {
+            Native3DEngineMethods.SetTimeOfDayVariableValueColor(id, value);
+        }
+    }
 }
