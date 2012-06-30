@@ -12,11 +12,42 @@ namespace CryBrary.Tests
 		[SetUp]
 		public void Init()
 		{
-			InitializeLoggingMethods();
-		    InitializeCVarMethods();
+		    InitializeMocks();
 
 			ScriptManager.IgnoreExternalCalls = true;
 		}
+
+        private void InitializeMocks()
+        {
+            // Gotta mock em all
+            NativeMethods.Actor = new Mock<INativeActorMethods>().Object;
+            NativeMethods.CVar = new Mock<INativeCVarMethods>().Object;
+            NativeMethods.Debug = new Mock<INativeDebugMethods>().Object;
+            NativeMethods.Engine3D = new Mock<INative3DEngineMethods>().Object;
+            NativeMethods.Entity = new Mock<INativeEntityMethods>().Object;
+            NativeMethods.FlowNode = new Mock<INativeFlowNodeMethods>().Object;
+            NativeMethods.GameRules = new Mock<INativeGameRulesMethods>().Object;
+            NativeMethods.Input = new Mock<INativeInputMethods>().Object;
+            NativeMethods.ItemSystem = new Mock<INativeItemSystemMethods>().Object;
+            NativeMethods.Level = new Mock<INativeLevelMethods>().Object;
+            NativeMethods.Material = new Mock<INativeMaterialMethods>().Object;
+            NativeMethods.Particle = new Mock<INativeParticleEffectMethods>().Object;
+            NativeMethods.Physics = new Mock<INativePhysicsMethods>().Object;
+            NativeMethods.Renderer = new Mock<INativeRendererMethods>().Object;
+            NativeMethods.ScriptTable = new Mock<INativeScriptTableMethods>().Object;
+            NativeMethods.Time = new Mock<INativeTimeMethods>().Object;
+            NativeMethods.UI = new Mock<INativeUIMethods>().Object;
+            NativeMethods.View = new Mock<INativeViewMethods>().Object;
+
+            var logMock = new Mock<INativeLoggingMethods>();
+            Action<string> loggingMethod = msg => Console.WriteLine(msg);
+
+            logMock.Setup(m => m.Log(It.IsAny<string>())).Callback(loggingMethod);
+            logMock.Setup(m => m.LogAlways(It.IsAny<string>())).Callback(loggingMethod);
+            logMock.Setup(m => m.Warning(It.IsAny<string>())).Callback(loggingMethod);
+            
+            NativeMethods.Log = logMock.Object;
+        }
 
         private void InitializeCVarMethods()
         {
@@ -31,17 +62,5 @@ namespace CryBrary.Tests
             if (ScriptManager.Scripts != null)
                 ScriptManager.Scripts.Clear();
         }
-
-		private void InitializeLoggingMethods()
-		{
-			var loggingMethodsMock = new Mock<INativeLoggingMethods>();
-			Action<string> loggingMethod = msg => Console.WriteLine(msg);
-
-			loggingMethodsMock.Setup(m => m.Log(It.IsAny<string>())).Callback(loggingMethod);
-			loggingMethodsMock.Setup(m => m.LogAlways(It.IsAny<string>())).Callback(loggingMethod);
-			loggingMethodsMock.Setup(m => m.Warning(It.IsAny<string>())).Callback(loggingMethod);
-
-            NativeMethods.Log = loggingMethodsMock.Object;
-		}
-	}
+    }
 }
