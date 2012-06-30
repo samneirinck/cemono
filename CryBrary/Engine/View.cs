@@ -1,29 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using CryEngine.Native;
 
 namespace CryEngine
 {
 	public class View
 	{
-		#region Externals
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static uint _GetView(uint linkedEntityId, bool forceCreate = false);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _RemoveView(uint viewId);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static uint _GetActiveView();
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _SetActiveView(uint viewId);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static ViewParams _GetViewParams(uint viewId);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _SetViewParams(uint viewId, ViewParams cam);
-		#endregion
-
-		#region Statics
+        private static INativeViewMethods _nativeViewMethods;
+        internal static INativeViewMethods NativeViewMethods
+        {
+            get { return _nativeViewMethods ?? (_nativeViewMethods = new NativeViewMethods()); }
+            set { _nativeViewMethods = value; }
+        }
+        
+        #region Statics
 		/// <summary>
 		/// Gets a view linked to a specific entity id.
 		/// </summary>
@@ -37,7 +28,7 @@ namespace CryEngine
 		/// </summary>
 		public static View Get(EntityId linkedEntity, bool forceCreate = false)
 		{
-			var viewId = _GetView(linkedEntity, forceCreate);
+			var viewId = NativeViewMethods.GetView(linkedEntity, forceCreate);
 			if(viewId == 0)
 				return null;
 
@@ -54,7 +45,7 @@ namespace CryEngine
 		{
 			Views.Remove(view);
 
-			_RemoveView(view.Id);
+			NativeViewMethods.RemoveView(view.Id);
 		}
 
 		/// <summary>
@@ -64,7 +55,7 @@ namespace CryEngine
 		{
 			get
 			{
-				var viewId = _GetActiveView();
+				var viewId = NativeViewMethods.GetActiveView();
 				if(viewId == 0)
 					return null;
 
@@ -77,7 +68,7 @@ namespace CryEngine
 			}
 			set
 			{
-				_SetActiveView(value.Id);
+				NativeViewMethods.SetActiveView(value.Id);
 			}
 		}
 		#endregion
@@ -97,14 +88,14 @@ namespace CryEngine
 
 		public EntityId TargetId { get { return new EntityId(ViewParams.TargetId); } set { var viewParams = ViewParams; viewParams.TargetId = (uint)value._value; ViewParams = viewParams; } }
 
-		internal ViewParams ViewParams { get { return _GetViewParams(Id); } set { _SetViewParams(Id, value); } }
+        internal ViewParams ViewParams { get { return NativeViewMethods.GetViewParams(Id); } set { NativeViewMethods.SetViewParams(Id, value); } }
 		
 		internal uint Id;
 
 		static List<View> Views = new List<View>();
 	}
 
-	internal struct ViewParams
+	public struct ViewParams
 	{
 		/// <summary>
 		/// view position

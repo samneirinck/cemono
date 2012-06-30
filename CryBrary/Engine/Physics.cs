@@ -1,40 +1,36 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using CryEngine.Native;
 
 namespace CryEngine
 {
 	public static class GlobalPhysics
 	{
-		#region Externals
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static IntPtr _GetPhysicalEntity(IntPtr entityPointer);
+        private static INativePhysicsMethods _nativePhysicsMethods;
+        internal static INativePhysicsMethods NativePhysicsMethods
+        {
+            get { return _nativePhysicsMethods ?? (_nativePhysicsMethods = new NativePhysicsMethods()); }
+            set { _nativePhysicsMethods = value; }
+        }
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static int _RayWorldIntersection(Vec3 origin, Vec3 dir, EntityQueryFlags objFlags, RayWorldIntersectionFlags flags, ref RayHit rayHit, int maxHits, object[] skipEnts);
 
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _Physicalize(IntPtr entPtr, PhysicalizationParams physicalizationParams);
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _Sleep(IntPtr entPtr, bool sleep);
-
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _AddImpulse(IntPtr entPtr, ActionImpulse actionImpulse);
-
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static Vec3 _GetVelocity(IntPtr entPtr);
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _SetVelocity(IntPtr entPtr, Vec3 velocity);
-		#endregion
-
-		const string gravityCVar = "p_gravity_z";
+        
+        const string gravityCVar = "p_gravity_z";
 		public static float GravityZ
 		{
 			get { return CVar.Get(gravityCVar).FVal; }
 			set { CVar.Get(gravityCVar).FVal = value; }
 		}
-	}
 
-	internal struct RayHit
+        // This seems out of place?
+        public static int RayWorldIntersection(Vec3 position, Vec3 direction, EntityQueryFlags objectTypes, RayWorldIntersectionFlags flags, ref RayHit internalRayHit, int maxHits, object[] skippedEntities)
+        {
+            return NativePhysicsMethods.RayWorldIntersection(position, direction, objectTypes, flags, ref internalRayHit,
+                                                             maxHits, skippedEntities);
+        }
+    }
+
+	public struct RayHit
 	{
 		internal float dist;
 		internal int colliderId;

@@ -37,17 +37,11 @@ namespace CryBrary.Tests
 			var loggingMethodsMock = new Mock<INativeLoggingMethods>();
 			Action<string> loggingMethod = msg => Console.WriteLine(msg);
 
-			loggingMethodsMock.Setup(m => m._Log(It.IsAny<string>())).Callback(loggingMethod);
-			loggingMethodsMock.Setup(m => m._LogAlways(It.IsAny<string>())).Callback(loggingMethod);
-			loggingMethodsMock.Setup(m => m._Warning(It.IsAny<string>())).Callback(loggingMethod);
+			loggingMethodsMock.Setup(m => m.Log(It.IsAny<string>())).Callback(loggingMethod);
+			loggingMethodsMock.Setup(m => m.LogAlways(It.IsAny<string>())).Callback(loggingMethod);
+			loggingMethodsMock.Setup(m => m.Warning(It.IsAny<string>())).Callback(loggingMethod);
 
-			Debug.Methods = loggingMethodsMock.Object;
-
-			var entityMethodsMock = new Mock<INativeEntityMethods>();
-			EntityBase.Methods = entityMethodsMock.Object;
-
-			var actorMethodsMock = new Mock<INativeActorMethods>();
-			Actor.ActorMethods = actorMethodsMock.Object;
+			Debug.NativeLoggingMethods = loggingMethodsMock.Object;
 		}
 	}
 }

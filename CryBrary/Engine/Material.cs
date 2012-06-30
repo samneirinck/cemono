@@ -3,72 +3,37 @@ using System.Runtime.CompilerServices;
 
 using System.Collections.Generic;
 using System.Linq;
+using CryEngine.Native;
 
 namespace CryEngine
 {
 	public class Material
 	{
-		#region Externals
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static IntPtr _FindMaterial(string name);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static IntPtr _CreateMaterial(string name);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static IntPtr _LoadMaterial(string name, bool makeIfNotFound = true, bool nonRemovable = false);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static IntPtr _GetSubMaterial(IntPtr materialPtr, int slot);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static IntPtr _GetMaterial(IntPtr entityPtr, int slot);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _SetMaterial(IntPtr entityPtr, IntPtr materialPtr, int slot);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static IntPtr _CloneMaterial(IntPtr materialPtr, int subMtl);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static string _GetSurfaceTypeName(IntPtr ptr);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static bool _SetGetMaterialParamFloat(IntPtr ptr, string paramName, ref float v, bool get);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static bool _SetGetMaterialParamVec3(IntPtr ptr, string paramName, ref Vec3 v, bool get);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static int _GetShaderParamCount(IntPtr ptr);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static string _GetShaderParamName(IntPtr ptr, int index);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _SetShaderParam(IntPtr ptr, string paramName, float newVal);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _SetShaderParam(IntPtr ptr, string paramName, Color newVal);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static MaterialFlags _GetFlags(IntPtr ptr);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _SetFlags(IntPtr ptr, MaterialFlags flags);
-		#endregion
+        private static INativeMaterialMethods _nativeMaterialMethods;
+        internal static INativeMaterialMethods NativeMaterialMethods
+        {
+            get { return _nativeMaterialMethods ?? (_nativeMaterialMethods = new NativeMaterialMethods()); }
+            set { _nativeMaterialMethods = value; }
+        }
 
 		#region Statics
 		public static Material Find(string name)
 		{
-			var ptr = _FindMaterial(name);
+			var ptr = NativeMaterialMethods.FindMaterial(name);
 
 			return TryAdd(ptr);
 		}
 
 		public static Material Create(string name, bool makeIfNotFound = true, bool nonRemovable = false)
 		{
-			var ptr = _CreateMaterial(name);
+			var ptr = NativeMaterialMethods.CreateMaterial(name);
 
 			return TryAdd(ptr);
 		}
 
 		public static Material Load(string name, bool makeIfNotFound = true, bool nonRemovable = false)
 		{
-			var ptr = _LoadMaterial(name, makeIfNotFound, nonRemovable);
+			var ptr = NativeMaterialMethods.LoadMaterial(name, makeIfNotFound, nonRemovable);
 
 			return TryAdd(ptr);
 		}
@@ -78,7 +43,7 @@ namespace CryEngine
 			if(entity == null)
 				throw new ArgumentNullException("entity");
 
-			var ptr = _GetMaterial(entity.EntityPointer, slot);
+			var ptr = NativeMaterialMethods.GetMaterial(entity.EntityPointer, slot);
 			return TryAdd(ptr);
 		}
 
@@ -89,7 +54,7 @@ namespace CryEngine
 			if(mat == null)
 				throw new ArgumentNullException("mat");
 
-			_SetMaterial(entity.EntityPointer, mat.MaterialPointer, slot);
+			NativeMaterialMethods.SetMaterial(entity.EntityPointer, mat.MaterialPointer, slot);
 		}
 
 		internal static Material TryAdd(IntPtr ptr)
@@ -117,7 +82,7 @@ namespace CryEngine
 
 		public Material GetSubmaterial(int slot)
 		{
-			var ptr = _GetSubMaterial(MaterialPointer, slot);
+			var ptr = NativeMaterialMethods.GetSubMaterial(MaterialPointer, slot);
 
 			return TryAdd(ptr);
 		}
@@ -129,14 +94,14 @@ namespace CryEngine
 		/// <returns></returns>
 		public Material Clone(int subMaterial = -1)
 		{
-			var ptr = _CloneMaterial(MaterialPointer, subMaterial);
+			var ptr = NativeMaterialMethods.CloneMaterial(MaterialPointer, subMaterial);
 
 			return TryAdd(ptr);
 		}
 
 		public bool SetParam(string paramName, float value)
 		{
-			return _SetGetMaterialParamFloat(MaterialPointer, paramName, ref value, false);
+			return NativeMaterialMethods.SetGetMaterialParamFloat(MaterialPointer, paramName, ref value, false);
 		}
 
 		public float GetParam(string paramName)
@@ -151,13 +116,13 @@ namespace CryEngine
 		{
 			value = 0;
 
-			return _SetGetMaterialParamFloat(MaterialPointer, paramName, ref value, true);
+			return NativeMaterialMethods.SetGetMaterialParamFloat(MaterialPointer, paramName, ref value, true);
 		}
 
 		public bool SetParam(string paramName, Color value)
 		{
 			Vec3 vecValue = new Vec3(value.R, value.G, value.B);
-			var result = _SetGetMaterialParamVec3(MaterialPointer, paramName, ref vecValue, false);
+			var result = NativeMaterialMethods.SetGetMaterialParamVec3(MaterialPointer, paramName, ref vecValue, false);
 
 			Opacity = value.A;
 
@@ -175,7 +140,7 @@ namespace CryEngine
 		public bool TryGetParam(string paramName, out Color value)
 		{
 			Vec3 vecVal = Vec3.Zero;
-			bool result = _SetGetMaterialParamVec3(MaterialPointer, paramName, ref vecVal, true);
+			bool result = NativeMaterialMethods.SetGetMaterialParamVec3(MaterialPointer, paramName, ref vecVal, true);
 
 			value = new Color();
 			value.R = vecVal.X;
@@ -188,7 +153,7 @@ namespace CryEngine
 
 		public void SetShaderParam(string paramName, float newVal)
 		{
-			_SetShaderParam(MaterialPointer, paramName, newVal);
+			NativeMaterialMethods.SetShaderParam(MaterialPointer, paramName, newVal);
 		}
 
 		public void SetShaderParam(ShaderFloatParameter param, float value)
@@ -198,7 +163,7 @@ namespace CryEngine
 
 		public void SetShaderParam(string paramName, Color newVal)
 		{
-			_SetShaderParam(MaterialPointer, paramName, newVal);
+			NativeMaterialMethods.SetShaderParam(MaterialPointer, paramName, newVal);
 		}
 
 		public void SetShaderParam(ShaderColorParameter param, Color value)
@@ -213,7 +178,7 @@ namespace CryEngine
 
 		public string GetShaderParamName(int index)
 		{
-			return _GetShaderParamName(MaterialPointer, index);
+			return NativeMaterialMethods.GetShaderParamName(MaterialPointer, index);
 		}
 
 		#region Fields & Properties
@@ -226,9 +191,9 @@ namespace CryEngine
 		public Color EmissiveColor { get { return GetParamColor("emissive"); } set { SetParam("emissive", value); } }
 		public Color SpecularColor { get { return GetParamColor("specular"); } set { SetParam("specular", value); } }
 
-		public string SurfaceType { get { return _GetSurfaceTypeName(MaterialPointer); } }
+		public string SurfaceType { get { return NativeMaterialMethods.GetSurfaceTypeName(MaterialPointer); } }
 
-		public int ShaderParamCount { get { return _GetShaderParamCount(MaterialPointer);  } }
+		public int ShaderParamCount { get { return NativeMaterialMethods.GetShaderParamCount(MaterialPointer);  } }
 
 		internal IntPtr MaterialPointer { get; set; }
 		#endregion

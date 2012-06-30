@@ -1,4 +1,5 @@
 ﻿using System;
+using CryEngine.Native;
 
 namespace CryEngine
 {
@@ -7,6 +8,21 @@ namespace CryEngine
 	/// </summary>
 	public class EntityPhysics
 	{
+        private static INativePhysicsMethods _nativePhysicsMethods;
+        internal static INativePhysicsMethods NativePhysicsMethods
+        {
+            get { return _nativePhysicsMethods ?? (_nativePhysicsMethods = new NativePhysicsMethods()); }
+            set { _nativePhysicsMethods = value; }
+        }
+        private static INativeEntityMethods _nativeEntityMethods;
+        internal static INativeEntityMethods NativeEntityMethods
+        {
+            get { return _nativeEntityMethods ?? (_nativeEntityMethods = new NativeEntityMethods()); }
+            set { _nativeEntityMethods = value; }
+        }
+
+
+
 		internal EntityPhysics() { }
 
 		internal EntityPhysics(EntityBase _entity)
@@ -14,21 +30,21 @@ namespace CryEngine
 			entity = _entity;
 
 			_params = new PhysicalizationParams { mass = -1, slot = 0 };
-			GlobalPhysics._Physicalize(_entity.EntityPointer, _params);
+            NativePhysicsMethods.Physicalize(_entity.EntityPointer, _params);
 
-			PhysicsPointer = GlobalPhysics._GetPhysicalEntity(entity.EntityPointer);
+            PhysicsPointer = NativePhysicsMethods.GetPhysicalEntity(entity.EntityPointer);
 
 			AutoUpdate = true;
 		}
 
 		internal void OnScriptReload()
 		{
-			PhysicsPointer = GlobalPhysics._GetPhysicalEntity(entity.EntityPointer);
+            PhysicsPointer = NativePhysicsMethods.GetPhysicalEntity(entity.EntityPointer);
 		}
 
 		public void Break(BreakageParameters breakageParams)
 		{
-			EntityBase._BreakIntoPieces(entity.EntityPointer, 0, 0, breakageParams);
+			EntityBase.NativeEntityMethods.BreakIntoPieces(entity.EntityPointer, 0, 0, breakageParams);
 		}
 
 		#region Basics
@@ -42,7 +58,7 @@ namespace CryEngine
 		/// Determines if this physical entity is in a sleeping state or not. (Will not be affected by gravity)
 		/// Autoamtically wakes upon collision.
 		/// </summary>
-		public bool Resting { get { return resting; } set { resting = value; GlobalPhysics._Sleep(entity.EntityPointer, value); } }
+		public bool Resting { get { return resting; } set { resting = value; NativePhysicsMethods.Sleep(entity.EntityPointer, value); } }
 
 		/// <summary>
 		/// Save the current physics settings.
@@ -52,7 +68,7 @@ namespace CryEngine
 			if(_params.type == 0)
 				_params.type = PhysicalizationType.Rigid;
 
-			GlobalPhysics._Physicalize(entity.EntityPointer, _params);
+			NativePhysicsMethods.Physicalize(entity.EntityPointer, _params);
 		}
 
 		/// <summary>
@@ -67,7 +83,7 @@ namespace CryEngine
 		{
 			var actionImpulse = new ActionImpulse { impulse = impulse, angImpulse = angImpulse, point = point ?? Entity.Get(entity.Id).Position };
 
-			GlobalPhysics._AddImpulse(entity.EntityPointer, actionImpulse);
+			NativePhysicsMethods.AddImpulse(entity.EntityPointer, actionImpulse);
 		}
 
 		/// <summary>

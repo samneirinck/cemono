@@ -26,9 +26,6 @@ namespace CryEngine
 		public virtual float FVal { get; set; }
 		public virtual int IVal { get; set; }
 
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		internal static extern void _HandleException(Exception ex);
-
 		#region Statics
 
 		private static readonly List<CVar> CVars = new List<CVar>();

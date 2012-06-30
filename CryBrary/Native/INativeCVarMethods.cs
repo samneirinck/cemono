@@ -20,5 +20,7 @@ namespace CryEngine.Native
         void SetCVarInt(string name, int value);
         void SetCVarString(string name, string value);
         bool HasCVar(string name);
+
+        void HandleException(System.Exception ex);
     }
 }

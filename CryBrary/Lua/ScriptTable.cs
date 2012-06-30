@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using System.Runtime.CompilerServices;
+using CryEngine.Native;
 
 namespace CryEngine.Lua
 {
@@ -11,16 +12,12 @@ namespace CryEngine.Lua
 	/// </summary>
 	public class ScriptTable
 	{
-		#region Externals
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static IntPtr _GetScriptTable(EntityId entityId);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static object _CallMethod(IntPtr scriptTable, string methodName, LuaVariableType returnType, object[] args);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _CallMethodVoid(IntPtr scriptTable, string methodName, object[] args);
-
-		#endregion
+        private static INativeScriptTableMethods _nativeScriptTableMethods;
+        internal static INativeScriptTableMethods NativeScriptTableMethods
+        {
+            get { return _nativeScriptTableMethods ?? (_nativeScriptTableMethods = new NativeScriptTableMethods()); }
+            set { _nativeScriptTableMethods = value; }
+        }
 
 		#region Statics
 		public static ScriptTable Get(EntityId entityId)
@@ -29,7 +26,7 @@ namespace CryEngine.Lua
 			if(scriptTable != default(ScriptTable))
 				return scriptTable;
 
-			var scriptPtr = _GetScriptTable(entityId);
+            var scriptPtr = NativeScriptTableMethods.GetScriptTable(entityId);
 			if(scriptPtr != IntPtr.Zero)
 			{
 				ScriptTables.Add(new ScriptTable(scriptPtr));
@@ -75,12 +72,12 @@ namespace CryEngine.Lua
 			else
 				throw new NotSupportedException("Lua methods can only return Boolean, Integer, Float, Vector or String.");
 
-			return (T)_CallMethod(ScriptPointer, methodName, variableType, args);
+            return (T)NativeScriptTableMethods.CallMethod(ScriptPointer, methodName, variableType, args);
 		}
 
 		public void CallMethod(string methodName, object[] args = null)
 		{
-			_CallMethodVoid(ScriptPointer, methodName, args);
+            NativeScriptTableMethods.CallMethodVoid(ScriptPointer, methodName, args);
 		}
 
 		/// <summary>

@@ -122,7 +122,7 @@ namespace CryEngine.Initialization
                             if (registrationParams.name == null)
                                 registrationParams.name = script.ScriptName;
 
-                            Entity.Methods.RegisterClass(registrationParams);
+                            Entity.NativeEntityMethods.RegisterClass(registrationParams);
                         }
                         else if (script.RegistrationParams is GameRulesRegistrationParams)
                         {
@@ -131,10 +131,10 @@ namespace CryEngine.Initialization
                             if (registrationParams.name == null)
                                 registrationParams.name = script.ScriptName;
 
-                            GameRules._RegisterGameMode(registrationParams.name);
+                            GameRules.NativeGameRulesMethods.RegisterGameMode(registrationParams.name);
 
                             if (registrationParams.defaultGamemode)
-                                GameRules._SetDefaultGameMode(registrationParams.name);
+                                GameRules.NativeGameRulesMethods.SetDefaultGameMode(registrationParams.name);
                         }
                         else if (script.RegistrationParams is FlowNodeRegistrationParams)
                         {

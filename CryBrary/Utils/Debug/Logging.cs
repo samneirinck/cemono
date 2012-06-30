@@ -1,54 +1,30 @@
 ﻿using System;
 using System.Text;
+using CryEngine.Native;
 
 namespace CryEngine
 {
-	internal interface INativeLoggingMethods
-	{
-		void _LogAlways(string msg);
-		void _Log(string msg);
-		void _Warning(string msg);
-	}
-
-	public static partial class Debug
+    public static partial class Debug
 	{
 		static Debug()
 		{
 			AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionOccurred;
 		}
 
-		private static INativeLoggingMethods _methods;
-		internal static INativeLoggingMethods Methods
+		private static INativeLoggingMethods _nativeLoggingMethods;
+		internal static INativeLoggingMethods NativeLoggingMethods
 		{
 			get
 			{
-				return _methods ?? (_methods = new LoggingMethods());
+				return _nativeLoggingMethods ?? (_nativeLoggingMethods = new NativeLoggingMethods());
 			}
 			set
 			{
-				_methods = value;
+				_nativeLoggingMethods = value;
 			}
 		}
 
-		class LoggingMethods : INativeLoggingMethods
-		{
-			// Logging is using DllImport, which requires a static extern method
-			public void _LogAlways(string msg)
-			{
-				NativeMethods._LogAlways(msg);
-			}
-
-			public void _Log(string msg)
-			{
-				NativeMethods._Log(msg);
-			}
-			public void _Warning(string msg)
-			{
-				NativeMethods._Warning(msg);
-			}
-		}
-
-		private static void UnhandledExceptionOccurred(object sender, UnhandledExceptionEventArgs e)
+        private static void UnhandledExceptionOccurred(object sender, UnhandledExceptionEventArgs e)
 		{
 			LogException((Exception)e.ExceptionObject);
 		}
@@ -60,7 +36,7 @@ namespace CryEngine
 		/// <param name="args"></param>
 		public static void Log(string format, params object[] args)
 		{
-			Methods._Log(String.Format(format, args));
+			NativeLoggingMethods.Log(String.Format(format, args));
 		}
 
 		/// <summary>
@@ -68,7 +44,7 @@ namespace CryEngine
 		/// </summary>
 		public static void Log(string msg)
 		{
-			Methods._Log(msg);
+			NativeLoggingMethods.Log(msg);
 		}
 
 		/// <summary>
@@ -78,7 +54,7 @@ namespace CryEngine
 		/// <param name="args"></param>
 		public static void LogAlways(string format, params object[] args)
 		{
-			Methods._LogAlways(String.Format(format, args));
+			NativeLoggingMethods.LogAlways(String.Format(format, args));
 		}
 
 		/// <summary>
@@ -86,7 +62,7 @@ namespace CryEngine
 		/// </summary>
 		public static void LogAlways(string msg)
 		{
-			Methods._LogAlways(msg);
+			NativeLoggingMethods.LogAlways(msg);
 		}
 
 		/// <summary>
@@ -96,7 +72,7 @@ namespace CryEngine
 		/// <param name="ex"></param>
 		public static void LogException(Exception ex)
 		{
-			CVar._HandleException(ex);
+			CVar.Methods.HandleException(ex);
 			//Warning(ex.ToString());
 		}
 
@@ -107,7 +83,7 @@ namespace CryEngine
 		/// <param name="args"></param>
 		public static void LogWarning(string format, params object[] args)
 		{
-			Methods._Warning(String.Format(format, args));
+			NativeLoggingMethods.Warning(String.Format(format, args));
 		}
 
 		/// <summary>
@@ -115,7 +91,7 @@ namespace CryEngine
 		/// </summary>
 		public static void LogWarning(string msg)
 		{
-			Methods._Warning(msg);
+			NativeLoggingMethods.Warning(msg);
 		}
 
         public static void LogStackTrace()

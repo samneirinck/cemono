@@ -61,7 +61,7 @@ namespace CryEngine
 			return value != defaultVal;
 		}
 
-		#region Methods & Fields
+		#region NativeEntityMethods & Fields
 		internal bool Spawned;
 		#endregion
 
@@ -211,9 +211,9 @@ namespace CryEngine
 		public bool LoadObject(string name, int slotNumber = 0)
 		{
 			if(name.EndsWith("cgf"))
-				_LoadObject(EntityPointer, name, slotNumber);
+                NativeEntityMethods.LoadObject(EntityPointer, name, slotNumber);
 			else if(name.EndsWith("cdf") || name.EndsWith("cga") || name.EndsWith("chr"))
-				_LoadCharacter(EntityPointer, name, slotNumber);
+                NativeEntityMethods.LoadCharacter(EntityPointer, name, slotNumber);
 			else
 				return false;
 
@@ -222,7 +222,7 @@ namespace CryEngine
 
 		protected string GetObjectFilePath(int slot = 0)
 		{
-			return _GetStaticObjectFilePath(EntityPointer, slot);
+            return NativeEntityMethods.GetStaticObjectFilePath(EntityPointer, slot);
 		}
 
 		public static EntityPropertyType GetEditorType(Type type, EntityPropertyType propertyType)
