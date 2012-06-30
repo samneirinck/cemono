@@ -104,8 +104,8 @@ CScriptSystem::CScriptSystem()
 
 CScriptSystem::~CScriptSystem()
 {
-	for each(auto pair in CScriptClass::m_classRegistry)
-		SAFE_RELEASE(pair.second);
+	for(auto it = CScriptAssembly::m_assemblies.begin(); it != CScriptAssembly::m_assemblies.end(); ++it)
+		SAFE_RELEASE(*it);
 
 	// Force garbage collection of all generations.
 	mono_gc_collect(mono_gc_max_generation());
@@ -457,13 +457,28 @@ void CScriptSystem::RemoveScriptInstance(int id, EMonoScriptFlags scriptType)
 
 IMonoAssembly *CScriptSystem::GetCorlibAssembly()
 {
-	return new CScriptAssembly(mono_get_corlib());
+	return new CScriptAssembly(mono_get_corlib(), "");
 }
 
 IMonoAssembly *CScriptSystem::GetAssembly(const char *file, bool shadowCopy)
 {
-	string sAssemblyPath = string(file);
+	const char *newPath = file;
+	if(shadowCopy)
+		newPath = PathUtils::GetTempPath().append(PathUtil::GetFile(file));
 
+	for each(auto assembly in CScriptAssembly::m_assemblies)
+	{
+		if(!strcmp(file, assembly->GetPath()))
+			return assembly;
+	}
+
+	if(shadowCopy)
+	{
+		CopyFile(file, newPath, false);
+		file = newPath;
+	}
+
+	string sAssemblyPath(file);
 #ifndef _RELEASE
 	if(sAssemblyPath.find("pdb2mdb")==-1)
 	{
@@ -481,16 +496,15 @@ IMonoAssembly *CScriptSystem::GetAssembly(const char *file, bool shadowCopy)
 	}
 #endif
 
-	const char *assemblyPath = shadowCopy ? CScriptAssembly::Relocate(file) : file;
-	if (MonoAssembly *pMonoAssembly = mono_domain_assembly_open(mono_domain_get(), assemblyPath))
+	if (MonoAssembly *pMonoAssembly = mono_domain_assembly_open(mono_domain_get(), file))
 	{
 		if(MonoImage *pImage = mono_assembly_get_image(pMonoAssembly))
-			return new CScriptAssembly(pImage);
+			return new CScriptAssembly(pImage, file);
 		else
-			MonoWarning("Failed to get image from assembly %s", assemblyPath);
+			MonoWarning("Failed to get image from assembly %s", file);
 	}
 	else
-		MonoWarning("Failed to create assembly from %s", assemblyPath);
+		MonoWarning("Failed to create assembly from %s", file);
 
 	return nullptr;
 }

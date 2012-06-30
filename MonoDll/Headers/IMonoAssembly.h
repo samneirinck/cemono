@@ -30,6 +30,11 @@ public:
 	/// IMonoScript *pClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetCustomClass("Vec3");
 	/// </example>
 	virtual IMonoClass *GetClass(const char *className, const char *nameSpace = "CryEngine") = 0;
+
+	/// <summary>
+	/// Gets the full path to this assembly on disk.
+	/// </summary>
+	virtual const char *GetPath() = 0;
 };
 
 #endif //__I_MONO_ASSEMBLY__`	

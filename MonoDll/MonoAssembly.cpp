@@ -12,30 +12,56 @@
 
 #include <MonoClass.h>
 
-CScriptAssembly::~CScriptAssembly()
+std::vector<CScriptAssembly *> CScriptAssembly::m_assemblies = std::vector<CScriptAssembly *>();
+
+CScriptAssembly::CScriptAssembly(MonoImage *pImage, const char *path)
+	: m_pImage(pImage)
+	, m_path(path) 
 {
-	m_pAssembly = 0;
-	m_pImage = 0;
+	m_assemblies.push_back(this);
 }
 
-const char *CScriptAssembly::Relocate(const char *originalAssemblyPath)
+CScriptAssembly::~CScriptAssembly()
 {
-	string newAssemblyPath = PathUtils::GetTempPath() + PathUtil::GetFile(originalAssemblyPath);
-
-	CopyFile(originalAssemblyPath, newAssemblyPath, false);
-
-#ifndef _RELEASE
-	CopyFile(string(originalAssemblyPath).append(".mdb"), newAssemblyPath.append(".mdb"), false);
-#endif
-
-	return newAssemblyPath.c_str();
+	m_pImage = 0;
 }
 
 IMonoClass *CScriptAssembly::GetClass(const char *className, const char *nameSpace)
 { 
 	if(MonoClass *monoClass = mono_class_from_name(m_pImage, nameSpace, className))
-		return CScriptClass::TryGetClass(monoClass);
+		return TryGetClass(monoClass);
 
 	MonoWarning("Failed to get class %s.%s", nameSpace, className);
 	return nullptr;
+}
+
+IMonoClass *CScriptAssembly::TryGetClass(MonoClass *pClass)
+{
+	CRY_ASSERT(pClass);
+
+	for each(auto pair in m_classRegistry)
+	{
+		if(pair.second == pClass)
+			return pair.first;
+	}
+
+	IMonoClass *pScriptClass = new CScriptClass(pClass);
+	m_classRegistry.insert(TClassMap::value_type(pScriptClass, pClass));
+	return pScriptClass;
+}
+
+IMonoClass *CScriptAssembly::TryGetClassFromRegistry(MonoClass *pClass)
+{
+	CRY_ASSERT(pClass);
+
+	MonoImage *pImage = mono_class_get_image(pClass);
+
+	for each(auto assembly in m_assemblies)
+	{
+		if(assembly->GetImage() == pImage)
+			return assembly->TryGetClass(pClass);
+	}
+
+	CScriptAssembly *pAssembly = new CScriptAssembly(pImage, "");
+	return pAssembly->TryGetClass(pClass);
 }

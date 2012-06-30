@@ -12,6 +12,7 @@
 
 #include "MonoObject.h"
 #include "MonoClass.h"
+#include "MonoAssembly.h"
 
 #include <IMonoArray.h>
 
@@ -33,8 +34,8 @@ public:
 	virtual void Resize(int size);
 	virtual int GetSize() const override { return (int)mono_array_length((MonoArray *)m_pObject); }
 
-	virtual IMonoClass *GetElementClass() override { return CScriptClass::TryGetClass(m_pElementClass); }
-	virtual IMonoClass *GetDefaultElementClass() { return CScriptClass::TryGetClass(mono_get_object_class()); }
+	virtual IMonoClass *GetElementClass() override { return CScriptAssembly::TryGetClassFromRegistry(m_pElementClass); }
+	virtual IMonoClass *GetDefaultElementClass() { return CScriptAssembly::TryGetClassFromRegistry(mono_get_object_class()); }
 
 	virtual IMonoObject *GetItem(int index) override;
 	virtual const char *GetItemString(int index) override { return ToCryString(mono_array_get((MonoArray *)m_pObject, mono::string , index)); }

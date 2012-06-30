@@ -1,27 +1,13 @@
 #include "StdAfx.h"
 #include "MonoClass.h"
 
+#include "MonoScriptSystem.h"
+
 #include "MonoArray.h"
 #include "MonoObject.h"
+#include "MonoAssembly.h"
 
 #include "MonoCVars.h"
-
-CScriptClass::TClassMap CScriptClass::m_classRegistry = CScriptClass::TClassMap();
-
-CScriptClass *CScriptClass::TryGetClass(MonoClass *pClass)
-{
-	CRY_ASSERT(pClass);
-
-	for each(auto pair in m_classRegistry)
-	{
-		if(pair.first == pClass)
-			return pair.second;
-	}
-
-	CScriptClass *pScriptClass = new CScriptClass(pClass);
-	m_classRegistry.insert(TClassMap::value_type(pClass, pScriptClass));
-	return pScriptClass;
-}
 
 CScriptClass::CScriptClass(MonoClass *pClass)
 {

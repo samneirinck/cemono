@@ -2,9 +2,9 @@
 #include "MonoObject.h"
 
 #include "MonoClass.h"
-#include "MonoCVars.h"
+#include "MonoAssembly.h"
 
-#include <IMonoAssembly.h>
+#include "MonoCVars.h"
 
 #include <mono/metadata/debug-helpers.h>
 
@@ -42,7 +42,7 @@ void CScriptObject::SetObject(mono::object object)
 
 IMonoClass *CScriptObject::GetClass()
 {
-	return CScriptClass::TryGetClass(GetMonoClass());
+	return CScriptAssembly::TryGetClassFromRegistry(GetMonoClass());
 }
 
 EMonoAnyType CScriptObject::GetType()

@@ -21,10 +21,8 @@ class CScriptClass
 	: public CScriptObject
 	, public IMonoClass
 {
-	typedef std::map<MonoClass *, CScriptClass *> TClassMap;
-	CScriptClass(MonoClass *pClass);
 public:
-	static CScriptClass *TryGetClass(MonoClass *pClass);
+	CScriptClass(MonoClass *pClass);
 	virtual ~CScriptClass() {}
 
 	// IMonoClass
@@ -58,8 +56,6 @@ public:
 	MonoMethod *GetMonoMethod(const char *name, IMonoArray *pArgs);
 	MonoProperty *GetMonoProperty(const char *name);
 	MonoClassField *GetMonoField(const char *name);
-
-	static TClassMap m_classRegistry;
 };
 
 #endif //__MONO_CLASS_H__
