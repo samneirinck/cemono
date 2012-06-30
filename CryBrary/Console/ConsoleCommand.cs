@@ -9,7 +9,7 @@ namespace CryEngine
 	{
 		public static void Register(string name, ConsoleCommandDelegate func, string comment = "", CVarFlags flags = CVarFlags.None)
 		{
-			CVar._RegisterCommand(name, comment, flags);
+			CVar.RegisterCommand(name, comment, flags);
 
 			commands.Add(name, func);
 		}

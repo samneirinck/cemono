@@ -222,44 +222,6 @@ namespace CryEngine.Initialization
 			}
 		}
 
-		/// <summary>
-		/// Processes all members of a type for CryMono features such as CCommands.
-		/// </summary>
-		/// <param name="type"></param>
-        [Obsolete]
-		public static void ProcessMembers(Type type)
-		{
-			if(type == null)
-				throw new ArgumentNullException("type");
-
-#if !RELEASE
-			if(type.ContainsAttribute<TestCollectionAttribute>())
-			{
-				var ctor = type.GetConstructor(Type.EmptyTypes);
-				if(ctor != null)
-				{
-					var collection = new TestCollection
-					{
-						Instance = ctor.Invoke(Type.EmptyTypes),
-						Tests = from method in type.GetMethods()
-								where method.ContainsAttribute<TestAttribute>()
-									&& method.GetParameters().Length == 0
-								select method
-					};
-
-					TestManager.TestCollections.Add(collection);
-				}
-			}
-#endif
-
-			SandboxExtensionAttribute attr;
-			if(type.TryGetAttribute(out attr) && type.Implements<Form>())
-			{
-				Debug.LogAlways("Registering Sandbox extension: {0}", attr.Name);
-				FormHelper.AvailableForms.Add(new FormInfo { Type = type, Data = attr });
-			}
-		}
-
 		public void GenerateDebugDatabaseForAssembly(string assemblyPath)
 		{
 			if(assemblyPath == null)

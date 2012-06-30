@@ -12,9 +12,17 @@ namespace CryBrary.Tests
 		public void Init()
 		{
 			InitializeLoggingMethods();
+		    InitializeCVarMethods();
 
 			ScriptManager.IgnoreExternalCalls = true;
 		}
+
+        private void InitializeCVarMethods()
+        {
+            var cvarMethodsMock = new Mock<INativeCVarMethods>();
+
+            CVar.Methods = cvarMethodsMock.Object;
+        }
 
         [TearDown]
         public void PostTest()
