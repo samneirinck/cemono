@@ -24,12 +24,9 @@ namespace CryEngine
 
         class CVarMethods : INativeCVarMethods
         {
-            [MethodImpl(MethodImplOptions.InternalCall)]
-            internal static extern void _RegisterCommand(string name, string description, CVarFlags flags);
-            
             public void RegisterCommand(string name, string description, CVarFlags flags)
             {
-                _RegisterCommand(name, description, flags);
+                CVar._RegisterCommand(name, description, flags);
             }
         }
 
@@ -48,6 +45,9 @@ namespace CryEngine
 
 
 		// CVars
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void _RegisterCommand(string name, string description, CVarFlags flags);
+
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		internal static extern void _RegisterCVarFloat(string name, ref float val, float defaultVal, CVarFlags flags,
 		                                               string description);
