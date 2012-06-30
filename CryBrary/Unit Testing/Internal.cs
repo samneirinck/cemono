@@ -5,9 +5,9 @@ using System.Linq;
 using System.Reflection;
 using CryEngine.Extensions;
 
-namespace CryEngine.Testing.Internals
+namespace CryEngine.Testing
 {
-	internal sealed class TestCollection
+	public sealed class TestCollection
 	{
 		public object Instance { get; set; }
 		public IEnumerable<MethodInfo> Tests { get; set; }

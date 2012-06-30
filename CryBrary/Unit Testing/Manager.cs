@@ -9,7 +9,7 @@ namespace CryEngine.Testing
 {
 	public static class TestManager
 	{
-		internal static List<TestCollection> TestCollections { get; private set; }
+		public static List<TestCollection> TestCollections { get; private set; }
 
 		public static event Action<TestReport> Run;
 
