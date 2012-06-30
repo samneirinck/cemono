@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -42,6 +43,8 @@ namespace CryEngine.Native
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern bool _HasCVar(string name);
 
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void _HandleException(Exception ex);
 
 
         public void RegisterCommand(string name, string description, CVarFlags flags)
@@ -102,5 +105,9 @@ namespace CryEngine.Native
             return _HasCVar(name);
         }
 
+        public void HandleException(Exception ex)
+        {
+            _HandleException(ex);
+        }
     }
 }

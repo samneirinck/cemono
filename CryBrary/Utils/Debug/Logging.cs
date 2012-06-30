@@ -96,7 +96,7 @@ namespace CryEngine
 		/// <param name="ex"></param>
 		public static void LogException(Exception ex)
 		{
-			CVar._HandleException(ex);
+			CVar.Methods.HandleException(ex);
 			//Warning(ex.ToString());
 		}
 
