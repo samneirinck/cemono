@@ -137,6 +137,7 @@
     <Compile Include="Native\INativeInputMethods.cs" />
     <Compile Include="Native\INativeItemSystemMethods.cs" />
     <Compile Include="Native\INativeLevelMethods.cs" />
+    <Compile Include="Native\INativeLoggingMethods.cs" />
     <Compile Include="Native\INativeMaterialMethods.cs" />
     <Compile Include="Native\INativeParticleEffectMethods.cs" />
     <Compile Include="Native\INativePhysicsMethods.cs" />
@@ -171,6 +172,7 @@
     <Compile Include="Native\NativeInputMethods.cs" />
     <Compile Include="Native\NativeItemSystemMethods.cs" />
     <Compile Include="Native\NativeLevelMethods.cs" />
+    <Compile Include="Native\NativeLoggingMethods.cs" />
     <Compile Include="Native\NativeMaterialMethods.cs" />
     <Compile Include="Native\NativeParticleEffectMethods.cs" />
     <Compile Include="Native\NativePhysicsMethods.cs" />
@@ -200,7 +202,6 @@
     <Compile Include="Entity\EntityPhysics.cs" />
     <Compile Include="Lua\ScriptTable.cs" />
     <Compile Include="Math\Collision.cs" />
-    <Compile Include="Misc\NativeMethods.cs" />
     <Compile Include="Serialization\CrySerializer.cs" />
     <Compile Include="Math\BoundingBox.cs" />
     <Compile Include="Math\BoundingSphere.cs" />
@@ -239,7 +240,6 @@
     <Compile Include="Entity\Interface.cs" />
     <Compile Include="Script Handling\ScriptInstance.cs" />
     <Compile Include="Misc\CompilationAttributes.cs" />
-    <Compile Include="CallbackHandler.cs" />
     <Compile Include="Console\ConsoleCommand.cs" />
     <Compile Include="Entity\EntityConfig.cs" />
     <Compile Include="Console\CVar.cs" />
