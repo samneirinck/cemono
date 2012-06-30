@@ -15,7 +15,7 @@
 		{
 			get
 			{
-				return (int)Engine._GetTimeOfDay();
+				return (int)Engine.GetTimeOfDay();
 			}
 			set
 			{
@@ -40,7 +40,7 @@
 		{
 			get
 			{
-				return GetMinutes(Engine._GetTimeOfDay());
+				return GetMinutes(Engine.GetTimeOfDay());
 			}
 			set
 			{
@@ -55,13 +55,13 @@
 		{
 			get
 			{
-				return Engine._GetTimeOfDayAdvancedInfo().fAnimSpeed;
+				return Engine.GetTimeOfDayAdvancedInfo().fAnimSpeed;
 			}
 			set
 			{
-				var info = Engine._GetTimeOfDayAdvancedInfo();
+				var info = Engine.GetTimeOfDayAdvancedInfo();
 				info.fAnimSpeed = value;
-				Engine._SetTimeOfDayAdvancedInfo(info);
+				Engine.SetTimeOfDayAdvancedInfo(info);
 			}
 		}
 
@@ -103,15 +103,15 @@
 		{
 			get
 			{
-				return Engine._GetTimeOfDay();
+				return Engine.GetTimeOfDay();
 			}
 			set
 			{
-				Engine._SetTimeOfDay(value, ForceUpdates);
+				Engine.SetTimeOfDay(value, ForceUpdates);
 			}
 		}
 
-		internal struct AdvancedInfo
+		public struct AdvancedInfo
 		{
 			public float fStartTime;
 			public float fEndTime;
@@ -122,92 +122,92 @@
 		#region SetVariableValue methods
 		public static void SetVariableValue(SkyParams param, float value)
 		{
-			Engine._SetTimeOfDayVariableValue((int)param, value);
+			Engine.SetTimeOfDayVariableValue((int)param, value);
 		}
 
 		public static void SetVariableValue(SkyParams param, Vec3 value)
 		{
-			Engine._SetTimeOfDayVariableValueColor((int)param, value);
+			Engine.SetTimeOfDayVariableValueColor((int)param, value);
 		}
 
 		public static void SetVariableValue(FogParams param, float value)
 		{
-			Engine._SetTimeOfDayVariableValue((int)param, value);
+			Engine.SetTimeOfDayVariableValue((int)param, value);
 		}
 
 		public static void SetVariableValue(FogParams param, Vec3 value)
 		{
-			Engine._SetTimeOfDayVariableValueColor((int)param, value);
+			Engine.SetTimeOfDayVariableValueColor((int)param, value);
 		}
 
 		public static void SetVariableValue(SkyLightParams param, float value)
 		{
-			Engine._SetTimeOfDayVariableValue((int)param, value);
+			Engine.SetTimeOfDayVariableValue((int)param, value);
 		}
 
 		public static void SetVariableValue(SkyLightParams param, Vec3 value)
 		{
-			Engine._SetTimeOfDayVariableValueColor((int)param, value);
+			Engine.SetTimeOfDayVariableValueColor((int)param, value);
 		}
 
 		public static void SetVariableValue(NightSkyParams param, float value)
 		{
-			Engine._SetTimeOfDayVariableValue((int)param, value);
+			Engine.SetTimeOfDayVariableValue((int)param, value);
 		}
 
 		public static void SetVariableValue(NightSkyParams param, Vec3 value)
 		{
-			Engine._SetTimeOfDayVariableValueColor((int)param, value);
+			Engine.SetTimeOfDayVariableValueColor((int)param, value);
 		}
 
 		public static void SetVariableValue(CloudShadingParams param, float value)
 		{
-			Engine._SetTimeOfDayVariableValue((int)param, value);
+			Engine.SetTimeOfDayVariableValue((int)param, value);
 		}
 
 		public static void SetVariableValue(CloudShadingParams param, Vec3 value)
 		{
-			Engine._SetTimeOfDayVariableValueColor((int)param, value);
+			Engine.SetTimeOfDayVariableValueColor((int)param, value);
 		}
 
 		public static void SetVariableValue(SunRaysEffectParams param, float value)
 		{
-			Engine._SetTimeOfDayVariableValue((int)param, value);
+			Engine.SetTimeOfDayVariableValue((int)param, value);
 		}
 
 		public static void SetVariableValue(SunRaysEffectParams param, Vec3 value)
 		{
-			Engine._SetTimeOfDayVariableValueColor((int)param, value);
+			Engine.SetTimeOfDayVariableValueColor((int)param, value);
 		}
 
 		public static void SetVariableValue(ColorGradingParams param, float value)
 		{
-			Engine._SetTimeOfDayVariableValue((int)param, value);
+			Engine.SetTimeOfDayVariableValue((int)param, value);
 		}
 
 		public static void SetVariableValue(ColorGradingParams param, Vec3 value)
 		{
-			Engine._SetTimeOfDayVariableValueColor((int)param, value);
+			Engine.SetTimeOfDayVariableValueColor((int)param, value);
 		}
 
 		public static void SetVariableValue(ShadowParams param, float value)
 		{
-			Engine._SetTimeOfDayVariableValue((int)param, value);
+			Engine.SetTimeOfDayVariableValue((int)param, value);
 		}
 
 		public static void SetVariableValue(ShadowParams param, Vec3 value)
 		{
-			Engine._SetTimeOfDayVariableValueColor((int)param, value);
+			Engine.SetTimeOfDayVariableValueColor((int)param, value);
 		}
 
 		public static void SetVariableValue(HDRParams param, float value)
 		{
-			Engine._SetTimeOfDayVariableValue((int)param, value);
+			Engine.SetTimeOfDayVariableValue((int)param, value);
 		}
 
 		public static void SetVariableValue(HDRParams param, Vec3 value)
 		{
-			Engine._SetTimeOfDayVariableValueColor((int)param, value);
+			Engine.SetTimeOfDayVariableValueColor((int)param, value);
 		}
 		#endregion
 
