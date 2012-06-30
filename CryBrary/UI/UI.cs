@@ -10,16 +10,9 @@ namespace CryEngine
 
 	public class UI
 	{
-        private static INativeUIMethods _nativeUIMethods;
-        internal static INativeUIMethods NativeUIMethods
-        {
-            get { return _nativeUIMethods ?? (_nativeUIMethods = new NativeUIMethods()); }
-            set { _nativeUIMethods = value; }
-        }
-
 		internal static IntPtr CreateEventSystem(string name, EventSystemType type)
 		{
-			var ptr = NativeUIMethods.CreateEventSystem(name, type);
+			var ptr = NativeMethods.UI.CreateEventSystem(name, type);
 
 			Delegates.Add(ptr, new Dictionary<uint, MethodInfo>());
 			return ptr;
@@ -27,7 +20,7 @@ namespace CryEngine
 
 		internal static void RegisterFunction(IntPtr eventSystemPtr, string name, string desc, object[] inputs, MethodInfo methodInfo)
 		{
-            Delegates[eventSystemPtr].Add(NativeUIMethods.RegisterFunction(eventSystemPtr, name, desc, inputs), methodInfo);
+            Delegates[eventSystemPtr].Add(NativeMethods.UI.RegisterFunction(eventSystemPtr, name, desc, inputs), methodInfo);
 		}
 
 		internal static void OnEvent(PointerWrapper ptrWrapper, uint eventId, object[] args)

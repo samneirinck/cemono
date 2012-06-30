@@ -6,7 +6,7 @@ using System.Text;
 
 namespace CryEngine.Native
 {
-    internal class FlowNodeMethods : INativeFlowNodeMethods
+    internal class NativeFlowNodeMethods : INativeFlowNodeMethods
     {
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static void _RegisterNode(string typeName);

@@ -8,13 +8,6 @@ namespace CryEngine
 	/// </summary>
 	public static class Time
 	{
-        private static INativeTimeMethods _nativeTimeMethods;
-        internal static INativeTimeMethods NativeTimeMethods
-        {
-            get { return _nativeTimeMethods ?? (_nativeTimeMethods = new NativeTimeMethods()); }
-            set { _nativeTimeMethods = value; }
-        }
-
         internal static void Set(float frameTime, float frameStartTime, float asyncTime, float frameRate, float timeScale)
         {
             DeltaTime = frameTime;
@@ -46,7 +39,7 @@ namespace CryEngine
         /// <summary>
         /// Sets / gets the time scale applied to time values.
         /// </summary>
-        public static float TimeScale { get { return _timeScale; } set { NativeTimeMethods.SetTimeScale(value); _timeScale = value; } }
+        public static float TimeScale { get { return _timeScale; } set { NativeMethods.Time.SetTimeScale(value); _timeScale = value; } }
 
         /// <summary>
         /// Returns the current framerate in frames/second.

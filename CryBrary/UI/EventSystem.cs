@@ -4,6 +4,7 @@ using System.Reflection;
 
 using CryEngine.Initialization;
 using CryEngine.Extensions;
+using CryEngine.Native;
 
 namespace CryEngine
 {
@@ -124,7 +125,7 @@ namespace CryEngine
 			{
 				object[] args = { t1, t2, t3 };
 
-                UI.NativeUIMethods.SendEvent(EventSystemPointer, EventId, args);
+                NativeMethods.UI.SendEvent(EventSystemPointer, EventId, args);
 			}
 
 			private uint EventId { get; set; }

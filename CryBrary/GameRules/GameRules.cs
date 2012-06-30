@@ -13,12 +13,6 @@ namespace CryEngine
 	/// <remarks>For most use cases, deriving from CryGameCode's BaseGameRules is a more efficient solution.</remarks>
 	public abstract class GameRules : CryScriptInstance
 	{
-        private static INativeGameRulesMethods _nativeGameRulesMethods;
-        internal static INativeGameRulesMethods NativeGameRulesMethods
-        {
-            get { return _nativeGameRulesMethods ?? (_nativeGameRulesMethods = new NativeGameRulesMethods()); }
-            set { _nativeGameRulesMethods = value; }
-        }
         #region Statics
 		public static GameRules Current { get; internal set; }
 		#endregion

@@ -22,7 +22,7 @@ namespace CryBrary.Tests
         {
             var cvarMethodsMock = new Mock<INativeCVarMethods>();
 
-            CVar.Methods = cvarMethodsMock.Object;
+            NativeMethods.CVar = cvarMethodsMock.Object;
         }
 
         [TearDown]
@@ -41,7 +41,7 @@ namespace CryBrary.Tests
 			loggingMethodsMock.Setup(m => m.LogAlways(It.IsAny<string>())).Callback(loggingMethod);
 			loggingMethodsMock.Setup(m => m.Warning(It.IsAny<string>())).Callback(loggingMethod);
 
-			Debug.NativeLoggingMethods = loggingMethodsMock.Object;
+            NativeMethods.Log = loggingMethodsMock.Object;
 		}
 	}
 }

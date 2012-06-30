@@ -6,14 +6,6 @@ namespace CryEngine
 {
 	public class ParticleEffect
 	{
-        private static INativeParticleEffectMethods _nativeParticleEffectMethods;
-        internal static INativeParticleEffectMethods NativeParticleEffectMethods
-        {
-            get { return _nativeParticleEffectMethods ?? (_nativeParticleEffectMethods = new NativeParticleEffectMethods()); }
-            set { _nativeParticleEffectMethods = value; }
-        }
-
-
 		/// <summary>
 		/// </summary>
 		/// <param name="effectName"></param>
@@ -21,7 +13,7 @@ namespace CryEngine
 		/// <returns></returns>
 		public static ParticleEffect Get(string effectName, bool loadResources = true)
 		{
-            var ptr = NativeParticleEffectMethods.FindEffect(effectName, loadResources);
+            var ptr = NativeMethods.Particle.FindEffect(effectName, loadResources);
 			if(ptr != IntPtr.Zero)
 				return new ParticleEffect(ptr);
 
@@ -42,7 +34,7 @@ namespace CryEngine
 		/// <param name="scale"></param>
 		public void Spawn(Vec3 pos, Vec3? dir = null, float scale = 1f, bool independent = true)
 		{
-            NativeParticleEffectMethods.Spawn(Pointer, independent, pos, dir ?? Vec3.Up, scale);
+            NativeMethods.Particle.Spawn(Pointer, independent, pos, dir ?? Vec3.Up, scale);
 		}
 
 		internal IntPtr Pointer { get; set; }

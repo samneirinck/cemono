@@ -7,13 +7,6 @@ namespace CryEngine
 {
 	public class View
 	{
-        private static INativeViewMethods _nativeViewMethods;
-        internal static INativeViewMethods NativeViewMethods
-        {
-            get { return _nativeViewMethods ?? (_nativeViewMethods = new NativeViewMethods()); }
-            set { _nativeViewMethods = value; }
-        }
-        
         #region Statics
 		/// <summary>
 		/// Gets a view linked to a specific entity id.
@@ -28,7 +21,7 @@ namespace CryEngine
 		/// </summary>
 		public static View Get(EntityId linkedEntity, bool forceCreate = false)
 		{
-			var viewId = NativeViewMethods.GetView(linkedEntity, forceCreate);
+			var viewId = NativeMethods.View.GetView(linkedEntity, forceCreate);
 			if(viewId == 0)
 				return null;
 
@@ -45,7 +38,7 @@ namespace CryEngine
 		{
 			Views.Remove(view);
 
-			NativeViewMethods.RemoveView(view.Id);
+            NativeMethods.View.RemoveView(view.Id);
 		}
 
 		/// <summary>
@@ -55,7 +48,7 @@ namespace CryEngine
 		{
 			get
 			{
-				var viewId = NativeViewMethods.GetActiveView();
+                var viewId = NativeMethods.View.GetActiveView();
 				if(viewId == 0)
 					return null;
 
@@ -68,7 +61,7 @@ namespace CryEngine
 			}
 			set
 			{
-				NativeViewMethods.SetActiveView(value.Id);
+                NativeMethods.View.SetActiveView(value.Id);
 			}
 		}
 		#endregion
@@ -88,7 +81,7 @@ namespace CryEngine
 
 		public EntityId TargetId { get { return new EntityId(ViewParams.TargetId); } set { var viewParams = ViewParams; viewParams.TargetId = (uint)value._value; ViewParams = viewParams; } }
 
-        internal ViewParams ViewParams { get { return NativeViewMethods.GetViewParams(Id); } set { NativeViewMethods.SetViewParams(Id, value); } }
+        internal ViewParams ViewParams { get { return NativeMethods.View.GetViewParams(Id); } set { NativeMethods.View.SetViewParams(Id, value); } }
 		
 		internal uint Id;
 

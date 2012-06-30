@@ -146,6 +146,7 @@
     <Compile Include="Native\Interfaces\INativeTimeMethods.cs" />
     <Compile Include="Native\Interfaces\INativeUIMethods.cs" />
     <Compile Include="Native\Interfaces\INativeViewMethods.cs" />
+    <Compile Include="Native\NativeMethods.cs" />
     <Compile Include="Native\Native3DEngineMethods.cs" />
     <Compile Include="Native\NativeActorMethods.cs" />
     <Compile Include="Async\Jobs\AsyncJob.cs" />

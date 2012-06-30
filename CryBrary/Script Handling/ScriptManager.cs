@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using System.Xml;
 using CryEngine.Async;
 using CryEngine.Extensions;
+using CryEngine.Native;
 using CryEngine.Sandbox;
 using CryEngine.Testing;
 using CryEngine.Testing.Internals;
@@ -113,7 +114,7 @@ namespace CryEngine.Initialization
                             var registrationParams = (ActorRegistrationParams)script.RegistrationParams;
 
                             if (registrationParams.useMonoActor)
-                                Actor.ActorMethods.RegisterClass(script.ScriptName, registrationParams.isAI);
+                                NativeMethods.Actor.RegisterClass(script.ScriptName, registrationParams.isAI);
                         }
                         else if (script.RegistrationParams is EntityRegistrationParams)
                         {
@@ -122,7 +123,7 @@ namespace CryEngine.Initialization
                             if (registrationParams.name == null)
                                 registrationParams.name = script.ScriptName;
 
-                            Entity.NativeEntityMethods.RegisterClass(registrationParams);
+                            NativeMethods.Entity.RegisterClass(registrationParams);
                         }
                         else if (script.RegistrationParams is GameRulesRegistrationParams)
                         {
@@ -131,10 +132,10 @@ namespace CryEngine.Initialization
                             if (registrationParams.name == null)
                                 registrationParams.name = script.ScriptName;
 
-                            GameRules.NativeGameRulesMethods.RegisterGameMode(registrationParams.name);
+                            NativeMethods.GameRules.RegisterGameMode(registrationParams.name);
 
                             if (registrationParams.defaultGamemode)
-                                GameRules.NativeGameRulesMethods.SetDefaultGameMode(registrationParams.name);
+                                NativeMethods.GameRules.SetDefaultGameMode(registrationParams.name);
                         }
                         else if (script.RegistrationParams is FlowNodeRegistrationParams)
                         {
