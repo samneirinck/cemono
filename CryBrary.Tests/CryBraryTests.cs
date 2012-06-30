@@ -41,7 +41,7 @@ namespace CryBrary.Tests
 			loggingMethodsMock.Setup(m => m._LogAlways(It.IsAny<string>())).Callback(loggingMethod);
 			loggingMethodsMock.Setup(m => m._Warning(It.IsAny<string>())).Callback(loggingMethod);
 
-			Debug.Methods = loggingMethodsMock.Object;
+			Debug.NativeLoggingMethods = loggingMethodsMock.Object;
 		}
 	}
 }

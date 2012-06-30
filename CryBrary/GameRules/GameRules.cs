@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 
 using CryEngine.Initialization;
 using CryEngine.Extensions;
+using CryEngine.Native;
 
 namespace CryEngine
 {
@@ -12,18 +13,13 @@ namespace CryEngine
 	/// <remarks>For most use cases, deriving from CryGameCode's BaseGameRules is a more efficient solution.</remarks>
 	public abstract class GameRules : CryScriptInstance
 	{
-		#region Externals
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _RegisterGameMode(string gamemode);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _AddGameModeAlias(string gamemode, string alias);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _AddGameModeLevelLocation(string gamemode, string location);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _SetDefaultGameMode(string gamemode);
-		#endregion
-
-		#region Statics
+        private static INativeGameRulesMethods _nativeGameRulesMethods;
+        internal static INativeGameRulesMethods NativeGameRulesMethods
+        {
+            get { return _nativeGameRulesMethods ?? (_nativeGameRulesMethods = new NativeGameRulesMethods()); }
+            set { _nativeGameRulesMethods = value; }
+        }
+        #region Statics
 		public static GameRules Current { get; internal set; }
 		#endregion
 

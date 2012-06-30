@@ -17,16 +17,16 @@ namespace CryEngine
 			AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionOccurred;
 		}
 
-		private static INativeLoggingMethods _methods;
-		internal static INativeLoggingMethods Methods
+		private static INativeLoggingMethods _nativeLoggingMethods;
+		internal static INativeLoggingMethods NativeLoggingMethods
 		{
 			get
 			{
-				return _methods ?? (_methods = new LoggingMethods());
+				return _nativeLoggingMethods ?? (_nativeLoggingMethods = new LoggingMethods());
 			}
 			set
 			{
-				_methods = value;
+				_nativeLoggingMethods = value;
 			}
 		}
 
@@ -60,7 +60,7 @@ namespace CryEngine
 		/// <param name="args"></param>
 		public static void Log(string format, params object[] args)
 		{
-			Methods._Log(String.Format(format, args));
+			NativeLoggingMethods._Log(String.Format(format, args));
 		}
 
 		/// <summary>
@@ -68,7 +68,7 @@ namespace CryEngine
 		/// </summary>
 		public static void Log(string msg)
 		{
-			Methods._Log(msg);
+			NativeLoggingMethods._Log(msg);
 		}
 
 		/// <summary>
@@ -78,7 +78,7 @@ namespace CryEngine
 		/// <param name="args"></param>
 		public static void LogAlways(string format, params object[] args)
 		{
-			Methods._LogAlways(String.Format(format, args));
+			NativeLoggingMethods._LogAlways(String.Format(format, args));
 		}
 
 		/// <summary>
@@ -86,7 +86,7 @@ namespace CryEngine
 		/// </summary>
 		public static void LogAlways(string msg)
 		{
-			Methods._LogAlways(msg);
+			NativeLoggingMethods._LogAlways(msg);
 		}
 
 		/// <summary>
@@ -107,7 +107,7 @@ namespace CryEngine
 		/// <param name="args"></param>
 		public static void LogWarning(string format, params object[] args)
 		{
-			Methods._Warning(String.Format(format, args));
+			NativeLoggingMethods._Warning(String.Format(format, args));
 		}
 
 		/// <summary>
@@ -115,7 +115,7 @@ namespace CryEngine
 		/// </summary>
 		public static void LogWarning(string msg)
 		{
-			Methods._Warning(msg);
+			NativeLoggingMethods._Warning(msg);
 		}
 
         public static void LogStackTrace()
