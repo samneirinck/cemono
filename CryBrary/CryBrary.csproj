@@ -213,19 +213,19 @@
     <Compile Include="Math\Vec2.cs" />
     <Compile Include="Math\Vec4.cs" />
     <Compile Include="Serialization\SerializedObjectReference.cs" />
-    <Compile Include="Unit Testing\Assertion.cs" />
-    <Compile Include="Unit Testing\Attributes.cs" />
-    <Compile Include="Unit Testing\Exceptions.cs" />
-    <Compile Include="Unit Testing\Reports\ConsoleListener.cs" />
-    <Compile Include="Unit Testing\Reports\ReportForm.cs">
+    <Compile Include="Testing\Assertion.cs" />
+    <Compile Include="Testing\Attributes.cs" />
+    <Compile Include="Testing\Exceptions.cs" />
+    <Compile Include="Testing\Reports\ConsoleListener.cs" />
+    <Compile Include="Testing\Reports\ReportForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Unit Testing\Reports\ReportForm.Designer.cs">
+    <Compile Include="Testing\Reports\ReportForm.Designer.cs">
       <DependentUpon>ReportForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Unit Testing\Internal.cs" />
-    <Compile Include="Unit Testing\Results.cs" />
-    <Compile Include="Unit Testing\Manager.cs" />
+    <Compile Include="Testing\Internal.cs" />
+    <Compile Include="Testing\Results.cs" />
+    <Compile Include="Testing\Manager.cs" />
     <Compile Include="UI\EventSystem.cs" />
     <Compile Include="UI\UI.cs" />
     <Compile Include="Serialization\AppDomainSerializer.cs" />
@@ -268,18 +268,18 @@
     <EmbeddedResource Include="Sandbox\FormLoader.resx">
       <DependentUpon>FormLoader.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Unit Testing\Reports\ReportForm.resx">
+    <EmbeddedResource Include="Testing\Reports\ReportForm.resx">
       <DependentUpon>ReportForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Unit Testing\Reports\Resources\TestFailed.png" />
+    <None Include="Testing\Reports\Resources\TestFailed.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Unit Testing\Reports\Resources\TestIgnored.png" />
+    <None Include="Testing\Reports\Resources\TestIgnored.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Unit Testing\Reports\Resources\TestSuccess.png" />
+    <None Include="Testing\Reports\Resources\TestSuccess.png" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
