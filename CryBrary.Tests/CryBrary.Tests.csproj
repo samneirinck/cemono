@@ -58,6 +58,7 @@
     <Compile Include="Async\AwaiterTests.cs" />
     <Compile Include="Async\FrameDelayJobTests.cs" />
     <Compile Include="Async\TimeDelayJobTests.cs" />
+    <Compile Include="Console\CVarTests.cs" />
     <Compile Include="CryBraryTests.cs" />
     <Compile Include="Misc\ConvertTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
