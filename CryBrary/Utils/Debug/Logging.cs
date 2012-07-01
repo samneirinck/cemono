@@ -59,8 +59,7 @@ namespace CryEngine
 		/// <param name="ex"></param>
 		public static void LogException(Exception ex)
 		{
-            NativeMethods.CVar.HandleException(ex);
-			//Warning(ex.ToString());
+			LogWarning(ex.ToString());
 		}
 
 		/// <summary>
