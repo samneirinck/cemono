@@ -13,7 +13,7 @@ namespace CryEngine
 
         private static void UnhandledExceptionOccurred(object sender, UnhandledExceptionEventArgs e)
 		{
-			LogException((Exception)e.ExceptionObject);
+            throw (Exception)e.ExceptionObject;
 		}
 
 		/// <summary>
@@ -61,6 +61,16 @@ namespace CryEngine
 		{
 			LogWarning(ex.ToString());
 		}
+
+        /// <summary>
+        /// Displays an exception via the CryMono exception form.
+        /// </summary>
+        /// <param name="ex"></param>
+        public static void DisplayException(Exception ex)
+        {
+            var form = new ExceptionMessage(ex, false);
+            form.ShowDialog();
+        }
 
 		/// <summary>
 		/// Outputs a warning message
