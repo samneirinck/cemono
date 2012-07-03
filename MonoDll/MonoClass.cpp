@@ -32,8 +32,8 @@ IMonoObject *CScriptClass::CreateInstance(IMonoArray *pConstructorParams)
 
 void CScriptClass::OnPostScriptReload(bool initialLoad)
 {
+	m_pObject = (MonoObject *)mono_class_from_name(static_cast<CScriptAssembly *>(m_pDeclaringAssembly)->GetImage(), m_namespace, m_name);
 	m_pClass = NULL;
-	m_pObject = NULL;
 }
 
 MonoMethod *CScriptClass::GetMonoMethod(const char *methodName, IMonoArray *pArgs)
