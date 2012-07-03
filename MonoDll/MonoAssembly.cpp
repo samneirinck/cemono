@@ -52,7 +52,7 @@ CScriptClass *CScriptAssembly::TryGetClass(MonoClass *pClass)
 			return pair.first;
 	}
 
-	CScriptClass *pScriptClass = new CScriptClass(pClass);
+	CScriptClass *pScriptClass = new CScriptClass(pClass, this);
 	m_classRegistry.insert(TClassMap::value_type(pScriptClass, pClass));
 	return pScriptClass;
 }

@@ -36,6 +36,11 @@ public:
 	virtual const char *GetNamespace() = 0;
 
 	/// <summary>
+	/// Gets the assembly that declares this type.
+	/// </summary>
+	virtual IMonoAssembly *GetAssembly() = 0;
+
+	/// <summary>
 	/// Instantiates the class, if not already instantiated.
 	/// </summary>
 	virtual IMonoObject *CreateInstance(IMonoArray *pConstructorParams = nullptr) = 0;

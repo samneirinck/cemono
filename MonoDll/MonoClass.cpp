@@ -9,7 +9,8 @@
 
 #include "MonoCVars.h"
 
-CScriptClass::CScriptClass(MonoClass *pClass)
+CScriptClass::CScriptClass(MonoClass *pClass, IMonoAssembly *pDeclaringAssembly)
+	: m_pDeclaringAssembly(pDeclaringAssembly)
 {
 	CRY_ASSERT(pClass);
 
@@ -17,6 +18,9 @@ CScriptClass::CScriptClass(MonoClass *pClass)
 	m_objectHandle = -1;
 	m_pClass = NULL;
 	m_scriptId = -1;
+
+	m_name = mono_class_get_name(pClass);
+	m_namespace = mono_class_get_namespace(pClass);
 }
 
 IMonoObject *CScriptClass::CreateInstance(IMonoArray *pConstructorParams)

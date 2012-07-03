@@ -22,12 +22,14 @@ class CScriptClass
 	, public IMonoClass
 {
 public:
-	CScriptClass(MonoClass *pClass);
+	CScriptClass(MonoClass *pClass, IMonoAssembly *pDeclaringAssembly);
 	virtual ~CScriptClass() {}
 
 	// IMonoClass
-	virtual const char *GetName() override { return mono_class_get_name((MonoClass *)m_pObject); }
-	virtual const char *GetNamespace() override { return mono_class_get_namespace((MonoClass *)m_pObject); }
+	virtual const char *GetName() override { return m_name; }
+	virtual const char *GetNamespace() override { return m_namespace; }
+
+	virtual IMonoAssembly *GetAssembly() { return m_pDeclaringAssembly; }
 
 	virtual IMonoObject *CreateInstance(IMonoArray *pConstructorParams = nullptr) override;
 
@@ -60,6 +62,12 @@ public:
 	MonoMethod *GetMonoMethod(const char *name, IMonoArray *pArgs);
 	MonoProperty *GetMonoProperty(const char *name);
 	MonoClassField *GetMonoField(const char *name);
+
+private:
+	const char *m_name;
+	const char *m_namespace;
+
+	IMonoAssembly *m_pDeclaringAssembly;
 };
 
 #endif //__MONO_CLASS_H__
