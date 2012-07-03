@@ -152,17 +152,22 @@ void CScriptObject::SetField(const char *fieldName, IMonoObject *pNewValue, bool
 
 void CScriptObject::HandleException(MonoObject *pException)
 {
-	MonoMethod *pExceptionMethod = mono_method_desc_search_in_class(mono_method_desc_new("::ToString()", false),mono_get_exception_class());
-	MonoString *exceptionString = (MonoString *)mono_runtime_invoke(pExceptionMethod, pException, nullptr, nullptr);
+	// Fatal errors override disabling the message box option
+	bool isFatal = g_pMonoCVars->mono_exceptionsTriggerFatalErrors != 0;
 
-	if(g_pMonoCVars->mono_exceptionsTriggerFatalErrors)
+	if(g_pMonoCVars->mono_exceptionsTriggerMessageBoxes || isFatal)
 	{
-		CryFatalError(ToCryString((mono::string)exceptionString));
-		return;
+		auto args = CreateMonoArray(2);
+		args->InsertObject(*(mono::object)pException);
+		args->Insert(isFatal);
+
+		auto form = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("ExceptionMessage")->CreateInstance(args);
+		form->CallMethod("ShowDialog");
 	}
-
-	MonoWarning(ToCryString((mono::string)exceptionString));
-
-	if(g_pMonoCVars->mono_exceptionsTriggerMessageBoxes)
-		CryMessageBox(ToCryString((mono::string)exceptionString), "CryMono exception was raised", 0x00000000L);
+	else
+	{
+		auto method = mono_method_desc_search_in_class(mono_method_desc_new("::ToString()", false), mono_get_exception_class());
+		auto stacktrace = (MonoString*)mono_runtime_invoke(method, pException, nullptr, nullptr);
+		MonoWarning(ToCryString((mono::string)stacktrace));
+	}
 }
