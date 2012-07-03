@@ -31,16 +31,9 @@ namespace CryEngine
 
 			foreach(var property in GetType().GetProperties())
 			{
-				try
-				{
-					EditorPropertyAttribute attr;
-					if(property.TryGetAttribute(out attr) && attr.DefaultValue != null && !HasEditorPropertyBeenSet(property.GetValue(this, null), property.PropertyType))// && !storedPropertyNames.Contains(property.Name))
-						property.SetValue(this, attr.DefaultValue, null);
-				}
-				catch(Exception ex)
-				{
-					Debug.LogException(ex);
-				}
+				EditorPropertyAttribute attr;
+				if(property.TryGetAttribute(out attr) && attr.DefaultValue != null && !HasEditorPropertyBeenSet(property.GetValue(this, null), property.PropertyType))// && !storedPropertyNames.Contains(property.Name))
+					property.SetValue(this, attr.DefaultValue, null);
 			}
 
 			foreach(var field in GetType().GetFields())
