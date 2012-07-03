@@ -163,6 +163,7 @@ void CScriptObject::HandleException(MonoObject *pException)
 
 		auto form = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("ExceptionMessage")->CreateInstance(args);
 		form->CallMethod("ShowDialog");
+		SAFE_RELEASE(args);
 	}
 	else
 	{
