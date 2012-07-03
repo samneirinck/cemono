@@ -13,7 +13,7 @@ namespace CryEngine
 
         private static void UnhandledExceptionOccurred(object sender, UnhandledExceptionEventArgs e)
 		{
-            throw (Exception)e.ExceptionObject;
+            DisplayException((Exception)e.ExceptionObject);
 		}
 
 		/// <summary>
