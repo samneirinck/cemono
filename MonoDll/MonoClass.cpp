@@ -93,26 +93,17 @@ MonoMethod *CScriptClass::GetMonoMethod(const char *methodName, IMonoArray *pArg
 		}
 	}
 
-	MonoWarning("Failed to get method %s in class %s", methodName, GetName());
 	return nullptr;
 }
 
 MonoProperty *CScriptClass::GetMonoProperty(const char *name)
 {
-	MonoProperty *pProperty = mono_class_get_property_from_name((MonoClass *)m_pObject, name);
-	if(!pProperty)
-		MonoWarning("Failed to get property %s in class %s", name, GetName());
-
-	return pProperty;
+	return mono_class_get_property_from_name((MonoClass *)m_pObject, name);
 }
 
 MonoClassField *CScriptClass::GetMonoField(const char *name)
 {
-	MonoClassField *pField = mono_class_get_field_from_name((MonoClass *)m_pObject, name);
-	if(!pField)
-		MonoWarning("Failed to get field %s in class %s", name, GetName());
-
-	return pField;
+	return mono_class_get_field_from_name((MonoClass *)m_pObject, name);
 }
 
 IMonoObject *CScriptClass::BoxObject(void *object)
