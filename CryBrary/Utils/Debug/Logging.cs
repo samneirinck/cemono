@@ -13,7 +13,13 @@ namespace CryEngine
 
         private static void UnhandledExceptionOccurred(object sender, UnhandledExceptionEventArgs e)
 		{
-            DisplayException((Exception)e.ExceptionObject);
+			var exception = e.ExceptionObject as Exception;
+
+			// The CLS doesn't force exceptions to derive from System.Exception
+			if(exception == null)
+				throw new NotSupportedException("An exception that does not derive from System.Exception was thrown.");
+
+			DisplayException(exception);
 		}
 
 		/// <summary>
