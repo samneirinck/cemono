@@ -81,16 +81,16 @@ IMonoObject *CScriptObject::CallMethod(const char *methodName, IMonoArray *pPara
 	if(!m_pClass)
 		m_pClass = CScriptAssembly::TryGetClassFromRegistry(GetMonoClass());
 
-	if(MonoMethod *pMethod = m_pClass->GetMonoMethod(methodName, pParams))
-	{
-		MonoObject *pException = nullptr;
-		MonoObject *pResult = mono_runtime_invoke_array(pMethod, bStatic ? nullptr : m_pObject, pParams ? (MonoArray *)pParams->GetManagedObject() : nullptr, &pException);
+	MonoMethod *pMethod = m_pClass->GetMonoMethod(methodName, pParams);
+	CRY_ASSERT(pMethod);
 
-		if(pException)
-			HandleException(pException);
-		else if(pResult)
-			return *(mono::object)(pResult);
-	}
+	MonoObject *pException = nullptr;
+	MonoObject *pResult = mono_runtime_invoke_array(pMethod, bStatic ? nullptr : m_pObject, pParams ? (MonoArray *)pParams->GetManagedObject() : nullptr, &pException);
+
+	if(pException)
+		HandleException(pException);
+	else if(pResult)
+		return *(mono::object)(pResult);
 
 	return nullptr;
 }
@@ -99,17 +99,17 @@ IMonoObject *CScriptObject::GetProperty(const char *propertyName, bool bStatic)
 {
 	IMonoClass *pClass = GetClass();
 
-	if(MonoProperty *pProperty = static_cast<CScriptClass *>(pClass)->GetMonoProperty(propertyName))
-	{
-		MonoObject *pException = nullptr;
+	MonoProperty *pProperty = static_cast<CScriptClass *>(pClass)->GetMonoProperty(propertyName);
+	CRY_ASSERT(pProperty);
 
-		MonoObject *propertyValue = mono_property_get_value(pProperty, bStatic ? nullptr : m_pObject, nullptr, &pException);
+	MonoObject *pException = nullptr;
 
-		if(pException)
-			HandleException(pException);
-		else if(propertyValue)
-			return *(mono::object)propertyValue;
-	}
+	MonoObject *propertyValue = mono_property_get_value(pProperty, bStatic ? nullptr : m_pObject, nullptr, &pException);
+
+	if(pException)
+		HandleException(pException);
+	else if(propertyValue)
+		return *(mono::object)propertyValue;
 
 	return nullptr;
 }
@@ -118,26 +118,26 @@ void CScriptObject::SetProperty(const char *propertyName, IMonoObject *pNewValue
 {
 	IMonoClass *pClass = GetClass();
 
-	if(MonoProperty *pProperty = static_cast<CScriptClass *>(pClass)->GetMonoProperty(propertyName))
-	{
-		void *args[1];
-		args[0] = pNewValue->GetManagedObject();
+	MonoProperty *pProperty = static_cast<CScriptClass *>(pClass)->GetMonoProperty(propertyName);
+	CRY_ASSERT(pProperty);
 
-		return mono_property_set_value(pProperty, bStatic ? nullptr : m_pObject, args, nullptr);
-	}
+	void *args[1];
+	args[0] = pNewValue->GetManagedObject();
+
+	return mono_property_set_value(pProperty, bStatic ? nullptr : m_pObject, args, nullptr);
 }
 
 IMonoObject *CScriptObject::GetField(const char *fieldName, bool bStatic)
 {
 	IMonoClass *pClass = GetClass();
 
-	if(MonoClassField *pField = static_cast<CScriptClass *>(pClass)->GetMonoField(fieldName))
-	{
-		MonoObject *fieldValue = mono_field_get_value_object(mono_domain_get(), pField, bStatic ? nullptr : (MonoObject *)m_pObject);
+	MonoClassField *pField = static_cast<CScriptClass *>(pClass)->GetMonoField(fieldName);
+	CRY_ASSERT(pField);
 
-		if(fieldValue)
-			return *(mono::object)fieldValue;
-	}
+	MonoObject *fieldValue = mono_field_get_value_object(mono_domain_get(), pField, bStatic ? nullptr : (MonoObject *)m_pObject);
+
+	if(fieldValue)
+		return *(mono::object)fieldValue;
 
 	return nullptr;
 }
@@ -146,8 +146,10 @@ void CScriptObject::SetField(const char *fieldName, IMonoObject *pNewValue, bool
 {
 	IMonoClass *pClass = GetClass();
 
-	if(MonoClassField *pField = static_cast<CScriptClass *>(pClass)->GetMonoField(fieldName))
-		return mono_field_set_value(bStatic ? nullptr : (MonoObject *)m_pObject, pField, pNewValue->GetManagedObject());
+	MonoClassField *pField = static_cast<CScriptClass *>(pClass)->GetMonoField(fieldName);
+	CRY_ASSERT(pField);
+
+	return mono_field_set_value(bStatic ? nullptr : (MonoObject *)m_pObject, pField, pNewValue->GetManagedObject());
 }
 
 void CScriptObject::HandleException(MonoObject *pException)
