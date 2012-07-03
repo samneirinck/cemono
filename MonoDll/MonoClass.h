@@ -53,6 +53,10 @@ public:
 	virtual void *UnboxObject() override { return CScriptObject::UnboxObject(); }
 	// ~IMonoObject
 
+	// CScriptObject
+	virtual void OnPostScriptReload(bool initialLoad) override;
+	// ~CScriptObject
+
 	MonoMethod *GetMonoMethod(const char *name, IMonoArray *pArgs);
 	MonoProperty *GetMonoProperty(const char *name);
 	MonoClassField *GetMonoField(const char *name);

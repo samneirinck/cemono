@@ -105,8 +105,10 @@ CScriptSystem::CScriptSystem()
 
 CScriptSystem::~CScriptSystem()
 {
-	for(auto it = CScriptAssembly::m_assemblies.begin(); it != CScriptAssembly::m_assemblies.end(); ++it)
+	for(auto it = m_assemblies.begin(); it != m_assemblies.end(); ++it)
 		SAFE_DELETE(*it);
+
+	m_assemblies.clear();
 
 	// Force garbage collection of all generations.
 	mono_gc_collect(mono_gc_max_generation());
@@ -119,7 +121,7 @@ CScriptSystem::~CScriptSystem()
 
 	m_methodBindings.clear();
 
-	m_scripts.clear();
+	m_scriptInstances.clear();
 
 	SAFE_DELETE(m_pConverter);
 
@@ -238,21 +240,15 @@ bool CScriptSystem::DoReload(bool initialLoad)
 	MonoImage *pPrevCryBraryImage = NULL;
 
 	const char *cryBraryPath = PathUtils::GetBinaryPath() + "CryBrary.dll";
+
+	m_assemblies.clear();
+	CScriptAssembly *pPrevCryBraryAssembly = m_pCryBraryAssembly;
+
+	m_pCryBraryAssembly = static_cast<CScriptAssembly *>(GetAssembly(cryBraryPath));
+	CRY_ASSERT(m_pCryBraryAssembly);
+
 	if(initialLoad)
-	{
 		CryLogAlways("		Initializing subsystems...");
-
-		m_pCryBraryAssembly = static_cast<CScriptAssembly *>(GetAssembly(cryBraryPath));
-		CRY_ASSERT(m_pCryBraryAssembly);
-	}
-	else
-	{
-		pPrevCryBraryImage = m_pCryBraryAssembly->GetImage();
-
-		CScriptAssembly *pTempAssembly = new CScriptAssembly(GetAssemblyPath(cryBraryPath, false));
-		m_pCryBraryAssembly->SetImage(pTempAssembly->GetImage());
-		SAFE_DELETE(pTempAssembly);
-	}
 
 	InitializeSystems();
 
@@ -293,23 +289,8 @@ bool CScriptSystem::DoReload(bool initialLoad)
 				gEnv->pSystem->Quit();
 
 			m_AppDomainSerializer->CallMethod("TrySetScriptData");
-
-			// Since we've destructed all previous scripts, assemblies and script domains, pointers to these are now invalid.
-			// Iterate through all scripts and get the new script instance objects.
-			for each(auto script in m_scripts)
-			{
-				IMonoArray *pParams = CreateMonoArray(2);
-				pParams->Insert(script.second);
-				pParams->Insert(eScriptFlag_Any);
-				if(IMonoObject *pScriptInstance = m_pScriptManager->CallMethod("GetScriptInstanceById", pParams, true))
-					static_cast<CScriptObject *>(script.first)->SetObject(pScriptInstance->GetManagedObject());
-
-				SAFE_RELEASE(pParams);
-			}
-
 			m_pScriptManager->CallMethod("OnPostScriptReload");
 		}
-
 		m_bReloading = false;
 
 		for each(auto listener in m_scriptReloadListeners)
@@ -330,14 +311,15 @@ bool CScriptSystem::DoReload(bool initialLoad)
 			switch(CryMessageBox("Script compilation failed, check log for more information. Do you want to continue by reloading the last successful script compilation?", "Script compilation failed!", 0x00000006L))
 			{
 			case 2: // cancel (quit)
-				gEnv->pSystem->Quit();
 				return false;
 			case 10: // try again (recompile)
 				return DoReload(initialLoad);
 			case 11: // continue (load previously functional script domain)
 				{
 					m_pScriptDomain->SetActive();
-					m_pCryBraryAssembly->SetImage(pPrevCryBraryImage);
+
+					m_pCryBraryAssembly = pPrevCryBraryAssembly;
+					pPrevCryBraryAssembly = 0;
 				}
 				break;
 			}
@@ -355,6 +337,8 @@ bool CScriptSystem::DoReload(bool initialLoad)
 		}
 	}
 
+	SAFE_DELETE(pPrevCryBraryAssembly);
+	m_assemblies.push_back(m_pCryBraryAssembly);
 	return true;
 }
 
@@ -425,7 +409,10 @@ void CScriptSystem::OnFileChange(const char *fileName)
 
 	const char *fileExt = PathUtil::GetExt(fileName);
 	if(!strcmp(fileExt, "cs") || !strcmp(fileExt, "dll"))
-		Reload();
+	{
+		if(!Reload())
+			gEnv->pSystem->Quit();
+	}
 }
 
 void CScriptSystem::RegisterMethodBinding(const void *method, const char *fullMethodName)
@@ -445,10 +432,10 @@ IMonoObject *CScriptSystem::InstantiateScript(const char *scriptName, EMonoScrip
 	IMonoObject *pResult = m_pScriptManager->CallMethod("CreateScriptInstance", pArray, true);
 	SAFE_RELEASE(pArray);
 
-	if(pResult)
-		m_scripts.insert(TScripts::value_type(pResult, pResult->GetProperty("ScriptId")->Unbox<int>()));
-	else
+	if(!pResult)
 		MonoWarning("Failed to instantiate script %s", scriptName);
+	else
+		RegisterScriptInstance(pResult, pResult->GetProperty("ScriptId")->Unbox<int>());
 
 	return pResult;
 }
@@ -458,11 +445,11 @@ void CScriptSystem::RemoveScriptInstance(int id, EMonoScriptFlags scriptType)
 	if(id==-1)
 		return;
 
-	for(TScripts::iterator it=m_scripts.begin(); it != m_scripts.end(); ++it)
+	for(TScripts::iterator it=m_scriptInstances.begin(); it != m_scriptInstances.end(); ++it)
 	{
 		if((*it).second==id)
 		{
-			m_scripts.erase(it);
+			m_scriptInstances.erase(it);
 
 			break;
 		}
@@ -493,7 +480,7 @@ IMonoAssembly *CScriptSystem::GetAssembly(const char *file, bool shadowCopy)
 {
 	const char *newPath = GetAssemblyPath(file, shadowCopy);
 
-	for each(auto assembly in CScriptAssembly::m_assemblies)
+	for each(auto assembly in m_assemblies)
 	{
 		if(!strcmp(newPath, assembly->GetPath()))
 			return assembly;
@@ -523,5 +510,7 @@ IMonoAssembly *CScriptSystem::GetAssembly(const char *file, bool shadowCopy)
 	}
 #endif
 
-	return new CScriptAssembly(file);
+	CScriptAssembly *pAssembly = new CScriptAssembly(file);
+	m_assemblies.push_back(pAssembly);
+	return pAssembly;
 }

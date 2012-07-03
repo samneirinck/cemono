@@ -21,7 +21,7 @@ class CScriptAssembly : public IMonoAssembly
 {
 	typedef std::map<CScriptClass *, MonoClass *> TClassMap;
 public:
-	CScriptAssembly(const char *path, bool push_back = true);
+	CScriptAssembly(const char *path);
 	CScriptAssembly(MonoImage *pImage);
 	virtual ~CScriptAssembly();
 
@@ -38,9 +38,6 @@ public:
 
 	void SetImage(MonoImage *pImage) { m_pImage = pImage; }
 	MonoImage *GetImage() const { return m_pImage; }
-
-	// Keep all assemblies we get around, for class registries etc.
-	static std::vector<CScriptAssembly *> m_assemblies;
 
 private:
 	const char *m_path;

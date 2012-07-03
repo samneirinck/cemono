@@ -124,6 +124,8 @@ struct IMonoScriptSystem : ICryUnknown
 	/// </summary>
 	virtual void RemoveScriptInstance(int id, EMonoScriptFlags scriptType = eScriptFlag_Any) = 0;
 
+	virtual IMonoObject *GetScriptManager() = 0;
+
 	/// <summary>
 	/// Gets a pointer to the CryBrary assembly containing all default managed CryMono types.
 	/// </summary>

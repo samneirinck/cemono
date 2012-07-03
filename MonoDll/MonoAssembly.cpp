@@ -12,17 +12,13 @@
 
 #include <MonoClass.h>
 
-std::vector<CScriptAssembly *> CScriptAssembly::m_assemblies = std::vector<CScriptAssembly *>();
-
 CScriptAssembly::CScriptAssembly(MonoImage *pImage)
 	: m_pImage(pImage)
 {
 	CRY_ASSERT(m_pImage);
-
-	m_assemblies.push_back(this);
 }
 
-CScriptAssembly::CScriptAssembly(const char *path, bool push_back)
+CScriptAssembly::CScriptAssembly(const char *path)
 	:  m_path(path) 
 {
 	MonoAssembly *pMonoAssembly = mono_domain_assembly_open(mono_domain_get(), path);
@@ -30,9 +26,6 @@ CScriptAssembly::CScriptAssembly(const char *path, bool push_back)
 
 	m_pImage = mono_assembly_get_image(pMonoAssembly);
 	CRY_ASSERT(m_pImage);
-	
-	if(push_back)
-		m_assemblies.push_back(this);
 }
 
 CScriptAssembly::~CScriptAssembly()
@@ -72,7 +65,7 @@ CScriptAssembly *CScriptAssembly::TryGetAssembly(MonoImage *pImage)
 {
 	CRY_ASSERT(pImage);
 
-	for each(auto assembly in m_assemblies)
+	for each(auto assembly in static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->m_assemblies)
 	{
 		if(assembly->GetImage() == pImage)
 			return assembly;
@@ -87,6 +80,7 @@ CScriptClass *CScriptAssembly::TryGetClassFromRegistry(MonoClass *pClass)
 	CRY_ASSERT(pClass);
 
 	MonoImage *pImage = mono_class_get_image(pClass);
+
 	if(auto pAssembly = TryGetAssembly(pImage))
 		return pAssembly->TryGetClass(pClass);
 

@@ -5,6 +5,7 @@
 #include "MonoAssembly.h"
 
 #include "MonoCVars.h"
+#include "MonoScriptSystem.h"
 
 #include <mono/metadata/debug-helpers.h>
 
@@ -17,11 +18,19 @@ CScriptObject::CScriptObject(MonoObject *pObject)
 
 	// We need this to allow the GC to collect the class object later on.
 	m_objectHandle = mono_gchandle_new(m_pObject, false);
+
+	if(MonoProperty *pScriptIdProperty = static_cast<CScriptClass *>(GetClass())->GetMonoProperty("ScriptId"))
+		m_scriptId = (int)mono_object_unbox(mono_property_get_value(pScriptIdProperty, m_pObject, nullptr, nullptr));
+	else
+		m_scriptId = -1;
+
+	gEnv->pMonoScriptSystem->RegisterListener(this);
 }
 
 CScriptObject::CScriptObject(MonoObject *object, IMonoArray *pConstructorParams)
 	: m_pObject(object)
 	, m_pClass(NULL)
+	, m_scriptId(-1)
 {
 	CRY_ASSERT(m_pObject);
 
@@ -32,20 +41,58 @@ CScriptObject::CScriptObject(MonoObject *object, IMonoArray *pConstructorParams)
 
 	// We need this to allow the GC to collect the class object later on.
 	m_objectHandle = mono_gchandle_new(m_pObject, false);
+
+	gEnv->pMonoScriptSystem->RegisterListener(this);
 }
 
-void CScriptObject::SetObject(mono::object object) 
+CScriptObject::~CScriptObject()
 {
-	m_pObject = (MonoObject *)object; 
+	gEnv->pMonoScriptSystem->UnregisterListener(this);
 
-	if(m_objectHandle != -1) // Don't set the gc handle if we've previously refrained from it
-		m_objectHandle = mono_gchandle_new(m_pObject, false);
+	 if(m_objectHandle != -1)
+		 mono_gchandle_free(m_objectHandle);
+	 
+	 m_pObject = 0;
+}
+
+void CScriptObject::OnPostScriptReload(bool initialLoad)
+{
+	m_pClass = NULL;
+
+	if(m_scriptId != -1)
+	{
+		IMonoArray *pParams = CreateMonoArray(2);
+		pParams->Insert(m_scriptId);
+		pParams->Insert(eScriptFlag_Any);
+
+		if(IMonoObject *pScriptInstance = gEnv->pMonoScriptSystem->GetScriptManager()->CallMethod("GetScriptInstanceById", pParams, true))
+		{
+			m_pObject = (MonoObject *)pScriptInstance->GetManagedObject();
+
+			if(m_objectHandle != -1)
+				m_objectHandle = mono_gchandle_new(m_pObject, false);
+		}
+		else
+			m_pObject = NULL;
+
+		SAFE_RELEASE(pParams);
+	}
+}
+
+MonoClass *CScriptObject::GetMonoClass() 
+{
+	MonoClass *pClass = mono_object_get_class(m_pObject);
+	CRY_ASSERT(pClass);
+
+	return pClass;
 }
 
 IMonoClass *CScriptObject::GetClass()
 {
 	if(!m_pClass)
 		m_pClass = CScriptAssembly::TryGetClassFromRegistry(GetMonoClass());
+
+	CRY_ASSERT(m_pClass);
 
 	return m_pClass;
 }
@@ -78,10 +125,7 @@ EMonoAnyType CScriptObject::GetType()
 
 IMonoObject *CScriptObject::CallMethod(const char *methodName, IMonoArray *pParams, bool bStatic)
 {
-	if(!m_pClass)
-		m_pClass = CScriptAssembly::TryGetClassFromRegistry(GetMonoClass());
-
-	MonoMethod *pMethod = m_pClass->GetMonoMethod(methodName, pParams);
+	MonoMethod *pMethod = static_cast<CScriptClass *>(GetClass())->GetMonoMethod(methodName, pParams);
 	CRY_ASSERT(pMethod);
 
 	MonoObject *pException = nullptr;
@@ -97,9 +141,7 @@ IMonoObject *CScriptObject::CallMethod(const char *methodName, IMonoArray *pPara
 
 IMonoObject *CScriptObject::GetProperty(const char *propertyName, bool bStatic)
 {
-	IMonoClass *pClass = GetClass();
-
-	MonoProperty *pProperty = static_cast<CScriptClass *>(pClass)->GetMonoProperty(propertyName);
+	MonoProperty *pProperty = static_cast<CScriptClass *>(GetClass())->GetMonoProperty(propertyName);
 	CRY_ASSERT(pProperty);
 
 	MonoObject *pException = nullptr;
@@ -116,9 +158,7 @@ IMonoObject *CScriptObject::GetProperty(const char *propertyName, bool bStatic)
 
 void CScriptObject::SetProperty(const char *propertyName, IMonoObject *pNewValue, bool bStatic)
 {
-	IMonoClass *pClass = GetClass();
-
-	MonoProperty *pProperty = static_cast<CScriptClass *>(pClass)->GetMonoProperty(propertyName);
+	MonoProperty *pProperty = static_cast<CScriptClass *>(GetClass())->GetMonoProperty(propertyName);
 	CRY_ASSERT(pProperty);
 
 	void *args[1];
@@ -129,9 +169,7 @@ void CScriptObject::SetProperty(const char *propertyName, IMonoObject *pNewValue
 
 IMonoObject *CScriptObject::GetField(const char *fieldName, bool bStatic)
 {
-	IMonoClass *pClass = GetClass();
-
-	MonoClassField *pField = static_cast<CScriptClass *>(pClass)->GetMonoField(fieldName);
+	MonoClassField *pField = static_cast<CScriptClass *>(GetClass())->GetMonoField(fieldName);
 	CRY_ASSERT(pField);
 
 	MonoObject *fieldValue = mono_field_get_value_object(mono_domain_get(), pField, bStatic ? nullptr : (MonoObject *)m_pObject);

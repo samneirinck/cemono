@@ -20,6 +20,7 @@ class CScriptClass;
 
 class CScriptObject
 	: public IMonoObject
+	, public IMonoScriptSystemListener
 {
 protected:
 	CScriptObject() {}
@@ -27,11 +28,9 @@ protected:
 public:
 	CScriptObject(MonoObject *object);
 	CScriptObject(MonoObject *object, IMonoArray *pConstructorParams);
-	virtual ~CScriptObject() { if(m_objectHandle != -1) mono_gchandle_free(m_objectHandle); m_pObject = 0; }
+	virtual ~CScriptObject();
 
-	MonoClass *GetMonoClass() { return mono_object_get_class(m_pObject); }
-
-	void SetObject(mono::object object);
+	MonoClass *GetMonoClass();
 
 	// IMonoObject
 	virtual IMonoObject *CallMethod(const char *methodName, IMonoArray *params = nullptr, bool bStatic = false);
@@ -48,6 +47,15 @@ public:
 	virtual mono::object GetManagedObject() override { return (mono::object)m_pObject; }
 
 	virtual IMonoClass *GetClass();
+	// ~IMonoObject
+
+	// IMonoScriptSystemListener
+	virtual void OnPreScriptCompilation(bool isReload) {}
+	virtual void OnPostScriptCompilation(bool isReload, bool compilationSuccess) {}
+
+	virtual void OnPreScriptReload(bool initialLoad) {}
+	virtual void OnPostScriptReload(bool initialLoad);
+	// ~IMonoScriptSystemListener
 
 	static void HandleException(MonoObject *pException);
 
@@ -56,9 +64,11 @@ protected:
 	// ~IMonoObject
 
 	MonoObject *m_pObject;
-	CScriptClass *m_pClass;
+	IMonoClass *m_pClass;
 
 	int m_objectHandle;
+	// CryScriptInstance.ScriptId
+	int m_scriptId;
 };
 
 #endif //__MONO_OBJECT_H__

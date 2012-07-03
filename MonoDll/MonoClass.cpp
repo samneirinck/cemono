@@ -14,8 +14,9 @@ CScriptClass::CScriptClass(MonoClass *pClass)
 	CRY_ASSERT(pClass);
 
 	m_pObject = (MonoObject *)pClass; 
-	m_pClass = NULL;
 	m_objectHandle = -1;
+	m_pClass = NULL;
+	m_scriptId = -1;
 }
 
 IMonoObject *CScriptClass::CreateInstance(IMonoArray *pConstructorParams)
@@ -23,6 +24,12 @@ IMonoObject *CScriptClass::CreateInstance(IMonoArray *pConstructorParams)
 	MonoObject *pInstance = mono_object_new(mono_domain_get(), (MonoClass *)m_pObject);
 
 	return new CScriptObject(pInstance, pConstructorParams);
+}
+
+void CScriptClass::OnPostScriptReload(bool initialLoad)
+{
+	m_pClass = NULL;
+	m_pObject = NULL;
 }
 
 MonoMethod *CScriptClass::GetMonoMethod(const char *methodName, IMonoArray *pArgs)
@@ -93,6 +100,7 @@ MonoMethod *CScriptClass::GetMonoMethod(const char *methodName, IMonoArray *pArg
 		}
 	}
 
+	MonoWarning("Failed to get method %s in class %s", methodName, GetName());
 	return nullptr;
 }
 
