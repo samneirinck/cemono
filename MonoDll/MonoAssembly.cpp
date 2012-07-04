@@ -12,8 +12,9 @@
 
 #include <MonoClass.h>
 
-CScriptAssembly::CScriptAssembly(MonoImage *pImage, const char *path)
+CScriptAssembly::CScriptAssembly(MonoImage *pImage, const char *path, bool nativeAssembly)
 	: m_pImage(pImage)
+	, m_bNative(nativeAssembly) // true if this assembly was loaded via C++.
 {
 	CRY_ASSERT(m_pImage);
 
@@ -65,8 +66,8 @@ CScriptAssembly *CScriptAssembly::TryGetAssembly(MonoImage *pImage)
 			return assembly;
 	}
 
-	// TODO: Get assembly path
-	CScriptAssembly *pAssembly = new CScriptAssembly(pImage, mono_image_get_filename(pImage));
+	// This assembly was loaded from managed code.
+	CScriptAssembly *pAssembly = new CScriptAssembly(pImage, mono_image_get_filename(pImage), false);
 	pScriptSystem->m_assemblies.push_back(pAssembly);
 
 	return pAssembly;

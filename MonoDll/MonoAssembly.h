@@ -21,7 +21,7 @@ class CScriptAssembly : public IMonoAssembly
 {
 	typedef std::map<CScriptClass *, MonoClass *> TClassMap;
 public:
-	CScriptAssembly(MonoImage *pImage, const char *path);
+	CScriptAssembly(MonoImage *pImage, const char *path, bool nativeAssembly = true);
 	virtual ~CScriptAssembly();
 
 	CScriptClass *TryGetClass(MonoClass *pClass);
@@ -33,14 +33,19 @@ public:
 	virtual IMonoClass *GetClass(const char *className, const char *nameSpace = "CryEngine") override;
 
 	virtual const char *GetPath() override { return m_path.c_str(); }
+	virtual bool IsNative() override { return m_bNative; }
 	// ~IMonoAssembly
 
 	void SetImage(MonoImage *pImage) { m_pImage = pImage; }
 	MonoImage *GetImage() const { return m_pImage; }
 
+	void SetPath(const char *path) { m_path = string(path); }
+
 private:
 	string m_path;
 	MonoImage *m_pImage;
+
+	bool m_bNative;
 
 	TClassMap m_classRegistry;
 };

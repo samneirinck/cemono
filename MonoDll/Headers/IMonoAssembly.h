@@ -30,6 +30,11 @@ public:
 	/// Gets the full path to this assembly on disk.
 	/// </summary>
 	virtual const char *GetPath() = 0;
+
+	/// <summary>
+	/// Determines if this assembly was loaded from C++.
+	/// </summary>
+	virtual bool IsNative() = 0;
 };
 
 #endif //__I_MONO_ASSEMBLY__`	
