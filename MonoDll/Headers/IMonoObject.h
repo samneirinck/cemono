@@ -23,51 +23,56 @@ namespace mono { class _object; typedef _object* object; }
 struct IMonoObject
 {
 public:
-	virtual IMonoObject *CallMethod(const char *methodName, IMonoArray *params = nullptr, bool bStatic = false) = 0;
+	virtual IMonoObject *CallMethodWithArray(const char *methodName, IMonoArray *params = nullptr, bool bStatic = false) = 0;
 
 	virtual IMonoObject *GetProperty(const char *propertyName, bool bStatic = false) = 0;
 	virtual void SetProperty(const char *propertyName, IMonoObject *pNewValue, bool bStatic = false) = 0;
 	virtual IMonoObject *GetField(const char *fieldName, bool bStatic = false) = 0;
 	virtual void SetField(const char *fieldName, IMonoObject *pNewValue, bool bStatic = false) = 0;
 
+	inline IMonoObject *CallMethod(const char *funcName)
+	{
+		return CallMethodWithArray(funcName);
+	}
+
 	template<typename P1> 
-	inline IMonoObject *CallMethod(const char *funcName, const P1 &p1, bool bStatic = false)
+	inline IMonoObject *CallMethod(const char *funcName, const P1 &p1)
 	{
 		IMonoArray *pArgs = CreateMonoArray(1);
 		pArgs->Insert(p1);
 
-		IMonoObject *pResult = CallMethod(funcName, pArgs, bStatic);
+		IMonoObject *pResult = CallMethodWithArray(funcName, pArgs);
 		SAFE_RELEASE(pArgs);
 		return pResult;
 	};
 
 	template<typename P1, typename P2> 
-	inline IMonoObject *CallMethod(const char *funcName, const P1 &p1, const P2 &p2, bool bStatic = false)
+	inline IMonoObject *CallMethod(const char *funcName, const P1 &p1, const P2 &p2)
 	{
 		IMonoArray *pArgs = CreateMonoArray(2);
 		pArgs->Insert(p1);
 		pArgs->Insert(p2);
 
-		IMonoObject *pResult = CallMethod(funcName, pArgs, bStatic);
+		IMonoObject *pResult = CallMethodWithArray(funcName, pArgs);
 		SAFE_RELEASE(pArgs);
 		return pResult;
 	};
 
 	template<typename P1, typename P2, typename P3> 
-	inline IMonoObject *CallMethod(const char *funcName, const P1 &p1, const P2 &p2, const P3 &p3, bool bStatic = false)
+	inline IMonoObject *CallMethod(const char *funcName, const P1 &p1, const P2 &p2, const P3 &p3)
 	{
 		IMonoArray *pArgs = CreateMonoArray(3);
 		pArgs->Insert(p1);
 		pArgs->Insert(p2);
 		pArgs->Insert(p3);
 	
-		IMonoObject *pResult = CallMethod(funcName, pArgs, bStatic);
+		IMonoObject *pResult = CallMethodWithArray(funcName, pArgs);
 		SAFE_RELEASE(pArgs);
 		return pResult;
 	};
 
 	template<typename P1, typename P2, typename P3, typename P4> 
-	inline IMonoObject *CallMethod(const char *funcName, const P1 &p1, const P2 &p2, const P3 &p3, const P4 &p4, bool bStatic = false)
+	inline IMonoObject *CallMethod(const char *funcName, const P1 &p1, const P2 &p2, const P3 &p3, const P4 &p4)
 	{
 		IMonoArray *pArgs = CreateMonoArray(4);
 		pArgs->Insert(p1);
@@ -75,13 +80,13 @@ public:
 		pArgs->Insert(p3);
 		pArgs->Insert(p4);
 	
-		IMonoObject *pResult = CallMethod(funcName, pArgs, bStatic);
+		IMonoObject *pResult = CallMethodWithArray(funcName, pArgs);
 		SAFE_RELEASE(pArgs);
 		return pResult;
 	};
 
 	template<typename P1, typename P2, typename P3, typename P4, typename P5> 
-	inline IMonoObject *CallMethod(const char *funcName, const P1 &p1, const P2 &p2, const P3 &p3, const P4 &p4, const P5 &p5, bool bStatic = false)
+	inline IMonoObject *CallMethod(const char *funcName, const P1 &p1, const P2 &p2, const P3 &p3, const P4 &p4, const P5 &p5)
 	{
 		IMonoArray *pArgs = CreateMonoArray(5);
 		pArgs->Insert(p1);
@@ -90,13 +95,13 @@ public:
 		pArgs->Insert(p4);
 		pArgs->Insert(p5);
 	
-		IMonoObject *pResult = CallMethod(funcName, pArgs, bStatic);
+		IMonoObject *pResult = CallMethodWithArray(funcName, pArgs);
 		SAFE_RELEASE(pArgs);
 		return pResult;
 	};
 
 	template<typename P1, typename P2, typename P3, typename P4, typename P5, typename P6>
-	inline IMonoObject *CallMethod(const char *funcName, const P1 &p1, const P2 &p2, const P3 &p3, const P4 &p4, const P5 &p5, const P6 &p6, bool bStatic = false)
+	inline IMonoObject *CallMethod(const char *funcName, const P1 &p1, const P2 &p2, const P3 &p3, const P4 &p4, const P5 &p5, const P6 &p6)
 	{
 		IMonoArray *pArgs = CreateMonoArray(6);
 		pArgs->Insert(p1);
@@ -106,7 +111,7 @@ public:
 		pArgs->Insert(p5);
 		pArgs->Insert(p6);
 	
-		IMonoObject *pResult = CallMethod(funcName, pArgs, bStatic);
+		IMonoObject *pResult = CallMethodWithArray(funcName, pArgs);
 		SAFE_RELEASE(pArgs);
 		return pResult;
 	};

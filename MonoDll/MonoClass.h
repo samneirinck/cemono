@@ -39,7 +39,7 @@ public:
 	// IMonoObject
 	virtual void Release() override { delete this; }
 
-	virtual IMonoObject *CallMethod(const char *methodName, IMonoArray *params = nullptr, bool bStatic = false) { return CScriptObject::CallMethod(methodName, params, true); }
+	virtual IMonoObject *CallMethodWithArray(const char *methodName, IMonoArray *params = nullptr, bool bStatic = false) { return CScriptObject::CallMethodWithArray(methodName, params, true); }
 
 	virtual IMonoObject *GetProperty(const char *propertyName, bool bStatic = false) override { return CScriptObject::GetProperty(propertyName, true); }
 	virtual void SetProperty(const char *propertyName, IMonoObject *pNewValue, bool bStatic = false) override { CScriptObject::SetProperty(propertyName, pNewValue, true); }

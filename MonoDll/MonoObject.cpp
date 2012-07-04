@@ -121,7 +121,7 @@ EMonoAnyType CScriptObject::GetType()
 	return eMonoAnyType_Unknown;
 }
 
-IMonoObject *CScriptObject::CallMethod(const char *methodName, IMonoArray *pParams, bool bStatic)
+IMonoObject *CScriptObject::CallMethodWithArray(const char *methodName, IMonoArray *pParams, bool bStatic)
 {
 	MonoMethod *pMethod = static_cast<CScriptClass *>(GetClass())->GetMonoMethod(methodName, pParams);
 	CRY_ASSERT(pMethod);

@@ -38,7 +38,7 @@ void CInput::OnHardwareMouseEvent(int iX,int iY,EHARDWAREMOUSEEVENT eHardwareMou
 	pParams->Insert(eHardwareMouseEvent);
 	pParams->Insert(wheelDelta);
 
-	GetClass()->CallMethod("OnMouseEvent", pParams, true);
+	GetClass()->CallMethodWithArray("OnMouseEvent", pParams, true);
 	SAFE_RELEASE(pParams);
 }
 
@@ -48,7 +48,7 @@ bool CInput::OnInputEvent(const SInputEvent &event)
 	pParams->Insert(event.keyName.c_str());
 	pParams->Insert(event.value);
 
-	GetClass()->CallMethod("OnKeyEvent", pParams, true);
+	GetClass()->CallMethodWithArray("OnKeyEvent", pParams, true);
 	SAFE_RELEASE(pParams);
 
 	return false;
@@ -66,7 +66,7 @@ bool CInput::OnActionTriggered(EntityId entityId, const ActionId& actionId, int 
 	pParams->Insert(activationMode);
 	pParams->Insert(value);
 
-	GetClass()->CallMethod("OnActionTriggered", pParams, true);
+	GetClass()->CallMethodWithArray("OnActionTriggered", pParams, true);
 	SAFE_RELEASE(pParams);
 
 	return false;

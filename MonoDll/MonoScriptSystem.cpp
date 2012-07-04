@@ -162,6 +162,8 @@ bool CScriptSystem::CompleteInit()
 	// Create root domain and determine the runtime version we'll be using.
 	m_pRootDomain = new CScriptDomain(eRV_4_30319);
 
+	CScriptArray::m_pDefaultElementClass = mono_get_object_class();
+
 #ifndef _RELEASE
 	m_pPdb2MdbAssembly = GetAssembly(PathUtils::GetMonoPath() + "bin\\pdb2mdb.dll");
 #endif
@@ -171,8 +173,6 @@ bool CScriptSystem::CompleteInit()
 
 	CryLogAlways("		Registering default scriptbinds...");
 	RegisterDefaultBindings();
-
-	CScriptArray::m_pDefaultElementClass = mono_get_object_class();
 
 	if(!Reload(true))
 		return false;
@@ -409,7 +409,11 @@ bool CScriptSystem::InitializeSystems()
 {
 	IMonoClass *pClass = m_pCryBraryAssembly->GetClass("Network");
 
-	pClass->CallMethod("InitializeNetworkStatics", gEnv->IsEditor(), gEnv->IsDedicated(), true);
+	IMonoArray *pArgs = CreateMonoArray(2);
+	pArgs->Insert(gEnv->IsEditor());
+	pArgs->Insert(gEnv->IsDedicated());
+	pClass->CallMethodWithArray("InitializeNetworkStatics", pArgs, true);
+	SAFE_RELEASE(pArgs);
 
 	return true;
 }
@@ -417,7 +421,7 @@ bool CScriptSystem::InitializeSystems()
 void CScriptSystem::OnPostUpdate(float fDeltaTime)
 {
 	// Updates all scripts and sets Time.FrameTime.
-	m_pScriptManager->CallMethod("OnUpdate", fDeltaTime, gEnv->pTimer->GetFrameStartTime().GetMilliSeconds(), gEnv->pTimer->GetAsyncTime().GetMilliSeconds(), gEnv->pTimer->GetFrameRate(), gEnv->pTimer->GetTimeScale(), true);
+	m_pScriptManager->CallMethod("OnUpdate", fDeltaTime, gEnv->pTimer->GetFrameStartTime().GetMilliSeconds(), gEnv->pTimer->GetAsyncTime().GetMilliSeconds(), gEnv->pTimer->GetFrameRate(), gEnv->pTimer->GetTimeScale());
 }
 
 void CScriptSystem::OnFileChange(const char *fileName)
@@ -443,7 +447,7 @@ void CScriptSystem::RegisterMethodBinding(const void *method, const char *fullMe
 
 IMonoObject *CScriptSystem::InstantiateScript(const char *scriptName, EMonoScriptFlags scriptType, IMonoArray *pConstructorParameters)
 {
-	IMonoObject *pResult = m_pScriptManager->CallMethod("CreateScriptInstance", scriptName, scriptType, pConstructorParameters, true);
+	IMonoObject *pResult = m_pScriptManager->CallMethod("CreateScriptInstance", scriptName, scriptType, pConstructorParameters);
 
 	if(!pResult)
 		MonoWarning("Failed to instantiate script %s", scriptName);
@@ -520,7 +524,12 @@ IMonoAssembly *CScriptSystem::GetAssembly(const char *file, bool shadowCopy)
 		if(IMonoAssembly *pDebugDatabaseCreator = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetDebugDatabaseCreator())
 		{
 			if(IMonoClass *pDriverClass = pDebugDatabaseCreator->GetClass("Driver", ""))
-				pDriverClass->CallMethod("Convert", file, true);
+			{
+				IMonoArray *pArgs = CreateMonoArray(1);
+				pArgs->Insert(file);
+				pDriverClass->CallMethodWithArray("Convert", pArgs, true);
+				SAFE_RELEASE(pArgs);
+			}
 		}
 	}
 #endif

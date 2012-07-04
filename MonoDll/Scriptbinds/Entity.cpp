@@ -111,7 +111,7 @@ bool CScriptbind_Entity::OnRemove(IEntity *pIEntity)
 		IMonoArray *pArgs = CreateMonoArray(1);
 		pArgs->Insert(pIEntity->GetId());
 
-		auto result = pEntityClass->CallMethod("InternalRemove", pArgs, true)->Unbox<bool>();
+		auto result = pEntityClass->CallMethodWithArray("InternalRemove", pArgs, true)->Unbox<bool>();
 
 		SAFE_RELEASE(pArgs);
 

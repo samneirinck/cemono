@@ -247,7 +247,7 @@ namespace CryEngine.Initialization
 		/// <summary>
 		/// Called once per frame.
 		/// </summary>
-		public static void OnUpdate(float frameTime, float frameStartTime, float asyncTime, float frameRate, float timeScale)
+		public void OnUpdate(float frameTime, float frameStartTime, float asyncTime, float frameRate, float timeScale)
 		{
             Time.Set(frameTime, frameStartTime, asyncTime, frameRate, timeScale);
 
@@ -272,7 +272,7 @@ namespace CryEngine.Initialization
 		/// <param name="scriptName"></param>
 		/// <param name="constructorParams"></param>
 		/// <returns>New instance scriptId or -1 if instantiation failed.</returns>
-		public static CryScriptInstance CreateScriptInstance(string scriptName, ScriptType scriptType, object[] constructorParams = null)
+		public CryScriptInstance CreateScriptInstance(string scriptName, ScriptType scriptType, object[] constructorParams = null)
 		{
 			if(scriptName == null)
 				throw new ArgumentNullException("scriptName");
@@ -335,7 +335,7 @@ namespace CryEngine.Initialization
 			Scripts[index] = script;
 		}
 
-		public static void RemoveInstance(int instanceId, ScriptType scriptType)
+		public void RemoveInstance(int instanceId, ScriptType scriptType)
 		{
 			RemoveInstances<CryScriptInstance>(scriptType, x => x.ScriptId == instanceId);
 		}
