@@ -10,7 +10,7 @@ namespace CryEngine.Serialization
 	/// </summary>
 	public class AppDomainSerializer
 	{
-		AppDomainSerializer()
+		public AppDomainSerializer()
 		{
 			Formatter = new CrySerializer();
 		}

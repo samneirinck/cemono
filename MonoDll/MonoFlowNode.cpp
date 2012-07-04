@@ -39,7 +39,7 @@ bool CFlowNode::CreatedNode(TFlowNodeId id, const char *name, TFlowNodeTypeId ty
 		IMonoObject *pScript = gEnv->pMonoScriptSystem->InstantiateScript(m_pNodeType->GetScriptName(), m_pNodeType->IsEntityNode() ? eScriptFlag_Entity : eScriptFlag_FlowNode);
 
 		IMonoClass *pNodeInfo = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("NodeInfo");
-		CallMonoScript<void>(pScript, "InternalInitialize", pNodeInfo->BoxObject(&SMonoNodeInfo(this, id, m_pActInfo->pGraph->GetGraphId())));
+		pScript->CallMethod("InternalInitialize", pNodeInfo->BoxObject(&SMonoNodeInfo(this, id, m_pActInfo->pGraph->GetGraphId())));
 
 		m_pScript = pScript;
 
@@ -95,37 +95,37 @@ void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 					{
 					case eFDT_Void:
 						{
-							CallMonoScript<void>(m_pScript, "OnPortActivated", i);
+							m_pScript->CallMethod("OnPortActivated", i);
 						}
 						break;
 					case eFDT_Int:
 						{
-							CallMonoScript<void>(m_pScript, "OnPortActivated", i, CFlowBaseNodeInternal::GetPortInt(pActInfo, i));
+							m_pScript->CallMethod("OnPortActivated", i, CFlowBaseNodeInternal::GetPortInt(pActInfo, i));
 						}
 						break;
 					case eFDT_Float:
 						{
-							CallMonoScript<void>(m_pScript, "OnPortActivated", i, CFlowBaseNodeInternal::GetPortFloat(pActInfo, i));
+							m_pScript->CallMethod("OnPortActivated", i, CFlowBaseNodeInternal::GetPortFloat(pActInfo, i));
 						}
 						break;
 					case eFDT_EntityId:
 						{
-							CallMonoScript<void>(m_pScript, "OnPortActivated", i, CFlowBaseNodeInternal::GetPortEntityId(pActInfo, i));
+							m_pScript->CallMethod("OnPortActivated", i, CFlowBaseNodeInternal::GetPortEntityId(pActInfo, i));
 						}
 						break;
 					case eFDT_Vec3:
 						{
-							CallMonoScript<void>(m_pScript, "OnPortActivated", i, CFlowBaseNodeInternal::GetPortVec3(pActInfo, i));
+							m_pScript->CallMethod("OnPortActivated", i, CFlowBaseNodeInternal::GetPortVec3(pActInfo, i));
 						}
 						break;
 					case eFDT_String:
 						{
-							CallMonoScript<void>(m_pScript, "OnPortActivated", i, CFlowBaseNodeInternal::GetPortString(pActInfo, i));
+							m_pScript->CallMethod("OnPortActivated", i, CFlowBaseNodeInternal::GetPortString(pActInfo, i));
 						}
 						break;
 					case eFDT_Bool:
 						{
-							CallMonoScript<void>(m_pScript, "OnPortActivated", i, CFlowBaseNodeInternal::GetPortBool(pActInfo, i));
+							m_pScript->CallMethod("OnPortActivated", i, CFlowBaseNodeInternal::GetPortBool(pActInfo, i));
 						}
 						break;
 					default:
@@ -138,7 +138,7 @@ void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 		break;
 	case eFE_Initialize:
 		{
-			CallMonoScript<void>(m_pScript, "OnInit");
+			m_pScript->CallMethod("OnInit");
 		}
 		break;
 	case eFE_SetEntityId:

@@ -22,12 +22,14 @@ class CScriptClass
 	, public IMonoClass
 {
 public:
-	CScriptClass(MonoClass *pClass);
-	virtual ~CScriptClass() {}
+	CScriptClass(MonoClass *pClass, IMonoAssembly *pDeclaringAssembly);
+	virtual ~CScriptClass();
 
 	// IMonoClass
-	virtual const char *GetName() override { return mono_class_get_name((MonoClass *)m_pObject); }
-	virtual const char *GetNamespace() override { return mono_class_get_namespace((MonoClass *)m_pObject); }
+	virtual const char *GetName() override { return m_name.c_str(); }
+	virtual const char *GetNamespace() override { return m_namespace.c_str(); }
+
+	virtual IMonoAssembly *GetAssembly() { return m_pDeclaringAssembly; }
 
 	virtual IMonoObject *CreateInstance(IMonoArray *pConstructorParams = nullptr) override;
 
@@ -48,14 +50,24 @@ public:
 
 	virtual mono::object GetManagedObject() override { return CScriptObject::GetManagedObject(); }
 
-	virtual IMonoClass *GetClass() override { return CScriptObject::GetClass(); }
+	virtual IMonoClass *GetClass() override { return this; }
 
 	virtual void *UnboxObject() override { return CScriptObject::UnboxObject(); }
 	// ~IMonoObject
 
+	// CScriptObject
+	virtual void OnPostScriptReload(bool initialLoad) override;
+	// ~CScriptObject
+
 	MonoMethod *GetMonoMethod(const char *name, IMonoArray *pArgs);
 	MonoProperty *GetMonoProperty(const char *name);
 	MonoClassField *GetMonoField(const char *name);
+
+private:
+	string m_name;
+	string m_namespace;
+
+	IMonoAssembly *m_pDeclaringAssembly;
 };
 
 #endif //__MONO_CLASS_H__

@@ -58,6 +58,8 @@ public:
 	virtual IMonoObject *InstantiateScript(const char *scriptName, EMonoScriptFlags scriptType = eScriptFlag_Any, IMonoArray *pConstructorParameters = nullptr) override;
 	virtual void RemoveScriptInstance(int id, EMonoScriptFlags scriptType = eScriptFlag_Any) override;
 	
+	virtual IMonoObject *GetScriptManager() { return m_pScriptManager; }
+
 	virtual IMonoAssembly *GetCryBraryAssembly() override;
 	virtual IMonoAssembly *GetCorlibAssembly() override;
 	virtual IMonoAssembly *GetAssembly(const char *file, bool shadowCopy = false);
@@ -94,7 +96,12 @@ public:
 
 	bool IsInitialized() { return m_pRootDomain != nullptr; }
 
+	MonoImage *GetAssemblyImage(const char *file);
 	const char *GetAssemblyPath(const char *currentPath, bool shadowCopy);
+
+	std::vector<CScriptAssembly *> m_assemblies;
+
+	void RegisterScriptInstance(IMonoObject *pObject, int scriptId) { m_scriptInstances.insert(TScripts::value_type(pObject, scriptId)); }
 
 protected:
 	bool CompleteInit();
@@ -116,7 +123,7 @@ protected:
 	IMonoObject *m_AppDomainSerializer;
 
 	// Map containing all scripts and their id's for quick access.
-	TScripts m_scripts;
+	TScripts m_scriptInstances;
 
 	CFlowManager *m_pFlowManager;
 	CInput *m_pInput;

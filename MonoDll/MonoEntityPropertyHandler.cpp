@@ -122,7 +122,7 @@ const char *CEntityPropertyHandler::GetProperty(IEntity *pIEntity, int index) co
 	if(IGameObject *pGameObject = gEnv->pGameFramework->GetGameObject(pIEntity->GetId()))
 	{
 		if(CEntity *pEntity = static_cast<CEntity *>(pGameObject->QueryExtension(pIEntity->GetClass()->GetName())))
-			return CallMonoScript<const char *>(pEntity->GetScript(), "GetPropertyValue", m_properties.at(index).name);
+			return pEntity->GetScript()->CallMethod("GetPropertyValue", m_properties.at(index).name)->Unbox<const char *>();
 	}
 
 	return "";

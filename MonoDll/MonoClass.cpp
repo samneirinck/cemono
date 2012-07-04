@@ -9,13 +9,28 @@
 
 #include "MonoCVars.h"
 
-CScriptClass::CScriptClass(MonoClass *pClass)
+CScriptClass::CScriptClass(MonoClass *pClass, IMonoAssembly *pDeclaringAssembly)
+	: m_pDeclaringAssembly(pDeclaringAssembly)
 {
 	CRY_ASSERT(pClass);
 
 	m_pObject = (MonoObject *)pClass; 
-	m_pClass = NULL;
 	m_objectHandle = -1;
+	m_pClass = NULL;
+	m_scriptId = -1;
+
+	m_name = string(mono_class_get_name(pClass));
+	m_namespace = string(mono_class_get_namespace(pClass));
+
+	gEnv->pMonoScriptSystem->RegisterListener(this);
+}
+
+CScriptClass::~CScriptClass()
+{
+	gEnv->pMonoScriptSystem->UnregisterListener(this);
+
+	m_name.clear();
+	m_namespace.clear();
 }
 
 IMonoObject *CScriptClass::CreateInstance(IMonoArray *pConstructorParams)
@@ -23,6 +38,12 @@ IMonoObject *CScriptClass::CreateInstance(IMonoArray *pConstructorParams)
 	MonoObject *pInstance = mono_object_new(mono_domain_get(), (MonoClass *)m_pObject);
 
 	return new CScriptObject(pInstance, pConstructorParams);
+}
+
+void CScriptClass::OnPostScriptReload(bool initialLoad)
+{
+	if(!initialLoad)
+		m_pObject = (MonoObject *)mono_class_from_name(static_cast<CScriptAssembly *>(m_pDeclaringAssembly)->GetImage(), m_namespace.c_str(), m_name.c_str());
 }
 
 MonoMethod *CScriptClass::GetMonoMethod(const char *methodName, IMonoArray *pArgs)
@@ -93,6 +114,7 @@ MonoMethod *CScriptClass::GetMonoMethod(const char *methodName, IMonoArray *pArg
 		}
 	}
 
+	MonoWarning("Failed to get method %s in class %s", methodName, GetName());
 	return nullptr;
 }
 

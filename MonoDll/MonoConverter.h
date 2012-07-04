@@ -27,7 +27,7 @@ public:
 	virtual IMonoArray *CreateArray(int size, IMonoClass *pElementClass = nullptr) override;
 	virtual IMonoArray *ToArray(mono::object arr) override;
 
-	virtual IMonoObject *CreateObject(MonoAnyValue &value) override;
+	virtual mono::object BoxAnyValue(MonoAnyValue &value) override;
 
 	virtual IMonoObject *ToObject(mono::object obj) override;
 	// ~IMonoConverter

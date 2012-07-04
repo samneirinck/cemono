@@ -54,10 +54,8 @@ struct IMonoConverter
 	/// </summary>
 	virtual IMonoArray *ToArray(mono::object arr) = 0;
 
-	/// <summary>
-	/// Creates a IMonoObject out of a MonoAnyValue.
-	/// </summary>
-	virtual IMonoObject *CreateObject(MonoAnyValue &value) = 0;
+	virtual mono::object BoxAnyValue(MonoAnyValue &value) = 0;
+
 	/// <summary>
 	/// Converts an mono object to a IMonoObject.
 	/// </summary>
