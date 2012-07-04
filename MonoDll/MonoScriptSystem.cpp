@@ -237,7 +237,8 @@ bool CScriptSystem::DoReload(bool initialLoad)
 	IMonoDomain *pNewScriptDomain = new CScriptDomain("ScriptDomain");
 	pNewScriptDomain->SetActive(true);
 
-	MonoImage *pPrevCryBraryImage = NULL;
+	// Store the old images in case we need to revert to the old state.
+	std::vector<MonoImage *> m_prevAssemblyImages;
 
 	if(initialLoad)
 	{
@@ -248,10 +249,11 @@ bool CScriptSystem::DoReload(bool initialLoad)
 	}
 	else
 	{
-		pPrevCryBraryImage = m_pCryBraryAssembly->GetImage();
-
 		for each(auto assembly in m_assemblies)
+		{
+			m_prevAssemblyImages.push_back(assembly->GetImage());
 			assembly->SetImage(GetAssemblyImage(assembly->GetPath()));
+		}
 	}
 
 	CRY_ASSERT(m_pCryBraryAssembly);
@@ -331,12 +333,18 @@ bool CScriptSystem::DoReload(bool initialLoad)
 			case 2: // cancel (quit)
 				return false;
 			case 10: // try again (recompile)
-				return DoReload(initialLoad);
+				{
+					
+					return DoReload(initialLoad);
+				}
 			case 11: // continue (load previously functional script domain)
 				{
 					m_pScriptDomain->SetActive();
 
-					m_pCryBraryAssembly->SetImage(pPrevCryBraryImage);
+					for(int i = 0; i < m_assemblies.size(); i++)
+						m_assemblies[i]->SetImage(m_prevAssemblyImages[i]);
+
+					m_prevAssemblyImages.clear();
 				}
 				break;
 			}
