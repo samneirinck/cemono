@@ -38,7 +38,7 @@ bool CEntity::Init(IGameObject *pGameObject)
 
 	IMonoClass *pEntityInfoClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("EntityInfo");
 
-	CallMonoScript<void>(m_pScript, "InternalSpawn", pEntityInfoClass->BoxObject(&SMonoEntityInfo(pEntity)));
+	m_pScript->CallMethod("InternalSpawn", pEntityInfoClass->BoxObject(&SMonoEntityInfo(pEntity)));
 
 	int numProperties;
 	auto pProperties = static_cast<CEntityPropertyHandler *>(pEntityClass->GetPropertyHandler())->GetQueuedProperties(pEntity->GetId(), numProperties);
@@ -69,7 +69,7 @@ void CEntity::ProcessEvent(SEntityEvent &event)
 		m_pScript->CallMethod("OnInit");
 		break;
 	case ENTITY_EVENT_RESET:
-		CallMonoScript<void>(m_pScript, "OnReset", event.nParam[0]==1);
+		m_pScript->CallMethod("OnReset", event.nParam[0]==1);
 		break;
 	case ENTITY_EVENT_COLLISION:
 		{
@@ -81,7 +81,7 @@ void CEntity::ProcessEvent(SEntityEvent &event)
 			if(pTarget)
 				targetId = pTarget->GetId();
 
-			CallMonoScript<void>(m_pScript, "OnCollision", targetId, pCollision->pt, pCollision->vloc[0].GetNormalizedSafe(), pCollision->idmat[0], pCollision->n);
+			m_pScript->CallMethod("OnCollision", targetId, pCollision->pt, pCollision->vloc[0].GetNormalizedSafe(), pCollision->idmat[0], pCollision->n);
 		}
 		break;
 	case ENTITY_EVENT_START_GAME:
@@ -91,34 +91,34 @@ void CEntity::ProcessEvent(SEntityEvent &event)
 		m_pScript->CallMethod("OnStartLevel");
 		break;
 	case ENTITY_EVENT_ENTERAREA:
-		CallMonoScript<void>(m_pScript, "OnEnterArea", (EntityId)event.nParam[0], (int)event.nParam[1], event.fParam[0]);
+		m_pScript->CallMethod("OnEnterArea", (EntityId)event.nParam[0], (int)event.nParam[1], event.fParam[0]);
 		break;
 	case ENTITY_EVENT_MOVEINSIDEAREA:
-		CallMonoScript<void>(m_pScript, "OnMoveInsideArea", (EntityId)event.nParam[0], (int)event.nParam[1], event.fParam[0]);
+		m_pScript->CallMethod("OnMoveInsideArea", (EntityId)event.nParam[0], (int)event.nParam[1], event.fParam[0]);
 		break;
 	case ENTITY_EVENT_LEAVEAREA:
-		CallMonoScript<void>(m_pScript, "OnLeaveArea", (EntityId)event.nParam[0], (int)event.nParam[1], event.fParam[0]);
+		m_pScript->CallMethod("OnLeaveArea", (EntityId)event.nParam[0], (int)event.nParam[1], event.fParam[0]);
 		break;
 	case ENTITY_EVENT_ENTERNEARAREA:
-		CallMonoScript<void>(m_pScript, "OnEnterNearArea", (EntityId)event.nParam[0], (int)event.nParam[1], event.fParam[0]);
+		m_pScript->CallMethod("OnEnterNearArea", (EntityId)event.nParam[0], (int)event.nParam[1], event.fParam[0]);
 		break;
 	case ENTITY_EVENT_MOVENEARAREA:
-		CallMonoScript<void>(m_pScript, "OnMoveNearArea", (EntityId)event.nParam[0], (int)event.nParam[1], event.fParam[0]);
+		m_pScript->CallMethod("OnMoveNearArea", (EntityId)event.nParam[0], (int)event.nParam[1], event.fParam[0]);
 		break;
 	case ENTITY_EVENT_LEAVENEARAREA:
-		CallMonoScript<void>(m_pScript, "OnLeaveNearArea", (EntityId)event.nParam[0], (int)event.nParam[1], event.fParam[0]);
+		m_pScript->CallMethod("OnLeaveNearArea", (EntityId)event.nParam[0], (int)event.nParam[1], event.fParam[0]);
 		break;
 	case ENTITY_EVENT_XFORM:
 		m_pScript->CallMethod("OnMove");
 		break;
 	case ENTITY_EVENT_ATTACH:
-		CallMonoScript<void>(m_pScript, "OnAttach", (EntityId)event.nParam[0]);
+		m_pScript->CallMethod("OnAttach", (EntityId)event.nParam[0]);
 		break;
 	case ENTITY_EVENT_DETACH:
-		CallMonoScript<void>(m_pScript, "OnDetach", (EntityId)event.nParam[0]);
+		m_pScript->CallMethod("OnDetach", (EntityId)event.nParam[0]);
 		break;
 	case ENTITY_EVENT_DETACH_THIS:
-		CallMonoScript<void>(m_pScript, "OnDetachThis", (EntityId)event.nParam[0]);
+		m_pScript->CallMethod("OnDetachThis", (EntityId)event.nParam[0]);
 		break;
 	}
 }
@@ -154,5 +154,5 @@ void CEntity::FullSerialize(TSerialize ser)
 
 void CEntity::SetPropertyValue(IEntityPropertyHandler::SPropertyInfo propertyInfo, const char *value)
 {
-	CallMonoScript<void>(m_pScript, "SetPropertyValue", propertyInfo.name, propertyInfo.type, value);
+	m_pScript->CallMethod("SetPropertyValue", propertyInfo.name, propertyInfo.type, value);
 }

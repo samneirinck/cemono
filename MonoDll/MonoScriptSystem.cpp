@@ -455,7 +455,7 @@ void CScriptSystem::RemoveScriptInstance(int id, EMonoScriptFlags scriptType)
 		}
 	}
 
-	CallMonoScript<void>(m_pScriptManager, "RemoveInstance", id, scriptType);
+	m_pScriptManager->CallMethod("RemoveInstance", id, scriptType);
 }
 
 IMonoAssembly *CScriptSystem::GetCorlibAssembly()
