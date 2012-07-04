@@ -32,7 +32,9 @@ public:
 	// IMonoAssembly
 	virtual IMonoClass *GetClass(const char *className, const char *nameSpace = "CryEngine") override;
 
+	virtual const char *GetName() override { return mono_image_get_name(m_pImage); }
 	virtual const char *GetPath() override { return m_path.c_str(); }
+
 	virtual bool IsNative() override { return m_bNative; }
 	// ~IMonoAssembly
 

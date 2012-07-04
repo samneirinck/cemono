@@ -27,6 +27,11 @@ public:
 	virtual IMonoClass *GetClass(const char *className, const char *nameSpace = "CryEngine") = 0;
 
 	/// <summary>
+	/// Gets the name of this assembly.
+	/// </summary>
+	virtual const char *GetName() = 0;
+
+	/// <summary>
 	/// Gets the full path to this assembly on disk.
 	/// </summary>
 	virtual const char *GetPath() = 0;
