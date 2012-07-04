@@ -96,6 +96,7 @@ public:
 
 	bool IsInitialized() { return m_pRootDomain != nullptr; }
 
+	MonoImage *GetAssemblyImage(const char *file);
 	const char *GetAssemblyPath(const char *currentPath, bool shadowCopy);
 
 	std::vector<CScriptAssembly *> m_assemblies;

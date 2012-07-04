@@ -105,8 +105,8 @@ CScriptSystem::CScriptSystem()
 
 CScriptSystem::~CScriptSystem()
 {
-	for(auto it = m_assemblies.begin(); it != m_assemblies.end(); ++it)
-		SAFE_DELETE(*it);
+	//for(auto it = m_assemblies.begin(); it != m_assemblies.end(); ++it)
+		//SAFE_DELETE(*it);
 
 	m_assemblies.clear();
 
@@ -239,12 +239,21 @@ bool CScriptSystem::DoReload(bool initialLoad)
 
 	MonoImage *pPrevCryBraryImage = NULL;
 
-	const char *cryBraryPath = PathUtils::GetBinaryPath() + "CryBrary.dll";
+	if(initialLoad)
+	{
+		const char *cryBraryPath = PathUtils::GetBinaryPath() + "CryBrary.dll";
 
-	m_assemblies.clear();
-	CScriptAssembly *pPrevCryBraryAssembly = m_pCryBraryAssembly;
+		m_pCryBraryAssembly = static_cast<CScriptAssembly *>(GetAssembly(cryBraryPath));
+		m_assemblies.push_back(m_pCryBraryAssembly);
+	}
+	else
+	{
+		pPrevCryBraryImage = m_pCryBraryAssembly->GetImage();
 
-	m_pCryBraryAssembly = static_cast<CScriptAssembly *>(GetAssembly(cryBraryPath));
+		for each(auto assembly in m_assemblies)
+			assembly->SetImage(GetAssemblyImage(assembly->GetPath()));
+	}
+
 	CRY_ASSERT(m_pCryBraryAssembly);
 
 	if(initialLoad)
@@ -289,12 +298,21 @@ bool CScriptSystem::DoReload(bool initialLoad)
 				gEnv->pSystem->Quit();
 
 			m_AppDomainSerializer->CallMethod("TrySetScriptData");
+
+			for(auto it = m_scriptReloadListeners.begin(); it != m_scriptReloadListeners.end(); ++it)
+			{
+				(*it)->OnPostScriptReload(false);
+			}
+
 			m_pScriptManager->CallMethod("OnPostScriptReload");
 		}
-		m_bReloading = false;
+		else
+		{
+			for each(auto listener in m_scriptReloadListeners)
+				listener->OnPostScriptReload(true);
+		}
 
-		for each(auto listener in m_scriptReloadListeners)
-			listener->OnPostScriptReload(initialLoad);
+		m_bReloading = false;
 	}
 	else
 	{
@@ -318,8 +336,7 @@ bool CScriptSystem::DoReload(bool initialLoad)
 				{
 					m_pScriptDomain->SetActive();
 
-					m_pCryBraryAssembly = pPrevCryBraryAssembly;
-					pPrevCryBraryAssembly = 0;
+					m_pCryBraryAssembly->SetImage(pPrevCryBraryImage);
 				}
 				break;
 			}
@@ -337,8 +354,6 @@ bool CScriptSystem::DoReload(bool initialLoad)
 		}
 	}
 
-	SAFE_DELETE(pPrevCryBraryAssembly);
-	m_assemblies.push_back(m_pCryBraryAssembly);
 	return true;
 }
 
@@ -461,6 +476,14 @@ const char *CScriptSystem::GetAssemblyPath(const char *currentPath, bool shadowC
 	return currentPath;
 }
 
+MonoImage *CScriptSystem::GetAssemblyImage(const char *file)
+{
+	MonoAssembly *pMonoAssembly = mono_domain_assembly_open(mono_domain_get(), file);
+	CRY_ASSERT(pMonoAssembly);
+
+	return mono_assembly_get_image(pMonoAssembly);
+}
+
 IMonoAssembly *CScriptSystem::GetAssembly(const char *file, bool shadowCopy)
 {
 	const char *newPath = GetAssemblyPath(file, shadowCopy);
@@ -489,7 +512,7 @@ IMonoAssembly *CScriptSystem::GetAssembly(const char *file, bool shadowCopy)
 	}
 #endif
 
-	CScriptAssembly *pAssembly = new CScriptAssembly(file);
+	CScriptAssembly *pAssembly = new CScriptAssembly(GetAssemblyImage(file), file);
 	m_assemblies.push_back(pAssembly);
 	return pAssembly;
 }

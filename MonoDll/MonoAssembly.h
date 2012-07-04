@@ -21,8 +21,7 @@ class CScriptAssembly : public IMonoAssembly
 {
 	typedef std::map<CScriptClass *, MonoClass *> TClassMap;
 public:
-	CScriptAssembly(const char *path);
-	CScriptAssembly(MonoImage *pImage);
+	CScriptAssembly(MonoImage *pImage, const char *path);
 	virtual ~CScriptAssembly();
 
 	CScriptClass *TryGetClass(MonoClass *pClass);
@@ -33,14 +32,14 @@ public:
 	// IMonoAssembly
 	virtual IMonoClass *GetClass(const char *className, const char *nameSpace = "CryEngine") override;
 
-	virtual const char *GetPath() override { return m_path; }
+	virtual const char *GetPath() override { return m_path.c_str(); }
 	// ~IMonoAssembly
 
 	void SetImage(MonoImage *pImage) { m_pImage = pImage; }
 	MonoImage *GetImage() const { return m_pImage; }
 
 private:
-	const char *m_path;
+	string m_path;
 	MonoImage *m_pImage;
 
 	TClassMap m_classRegistry;

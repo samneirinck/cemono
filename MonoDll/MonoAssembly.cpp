@@ -12,20 +12,12 @@
 
 #include <MonoClass.h>
 
-CScriptAssembly::CScriptAssembly(MonoImage *pImage)
+CScriptAssembly::CScriptAssembly(MonoImage *pImage, const char *path)
 	: m_pImage(pImage)
 {
 	CRY_ASSERT(m_pImage);
-}
 
-CScriptAssembly::CScriptAssembly(const char *path)
-	:  m_path(path) 
-{
-	MonoAssembly *pMonoAssembly = mono_domain_assembly_open(mono_domain_get(), path);
-	CRY_ASSERT(pMonoAssembly);
-
-	m_pImage = mono_assembly_get_image(pMonoAssembly);
-	CRY_ASSERT(m_pImage);
+	m_path = string(path);
 }
 
 CScriptAssembly::~CScriptAssembly()
@@ -72,7 +64,7 @@ CScriptAssembly *CScriptAssembly::TryGetAssembly(MonoImage *pImage)
 	}
 
 	// TODO: Get assembly path
-	return new CScriptAssembly(pImage);
+	return new CScriptAssembly(pImage, mono_image_get_filename(pImage));
 }
 
 CScriptClass *CScriptAssembly::TryGetClassFromRegistry(MonoClass *pClass)
