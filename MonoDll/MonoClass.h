@@ -23,11 +23,11 @@ class CScriptClass
 {
 public:
 	CScriptClass(MonoClass *pClass, IMonoAssembly *pDeclaringAssembly);
-	virtual ~CScriptClass() {}
+	virtual ~CScriptClass();
 
 	// IMonoClass
-	virtual const char *GetName() override { return m_name; }
-	virtual const char *GetNamespace() override { return m_namespace; }
+	virtual const char *GetName() override { return m_name.c_str(); }
+	virtual const char *GetNamespace() override { return m_namespace.c_str(); }
 
 	virtual IMonoAssembly *GetAssembly() { return m_pDeclaringAssembly; }
 
@@ -50,7 +50,7 @@ public:
 
 	virtual mono::object GetManagedObject() override { return CScriptObject::GetManagedObject(); }
 
-	virtual IMonoClass *GetClass() override { return CScriptObject::GetClass(); }
+	virtual IMonoClass *GetClass() override { return this; }
 
 	virtual void *UnboxObject() override { return CScriptObject::UnboxObject(); }
 	// ~IMonoObject
@@ -64,8 +64,8 @@ public:
 	MonoClassField *GetMonoField(const char *name);
 
 private:
-	const char *m_name;
-	const char *m_namespace;
+	string m_name;
+	string m_namespace;
 
 	IMonoAssembly *m_pDeclaringAssembly;
 };

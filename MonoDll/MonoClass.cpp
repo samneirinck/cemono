@@ -19,8 +19,18 @@ CScriptClass::CScriptClass(MonoClass *pClass, IMonoAssembly *pDeclaringAssembly)
 	m_pClass = NULL;
 	m_scriptId = -1;
 
-	m_name = mono_class_get_name(pClass);
-	m_namespace = mono_class_get_namespace(pClass);
+	m_name = string(mono_class_get_name(pClass));
+	m_namespace = string(mono_class_get_namespace(pClass));
+
+	gEnv->pMonoScriptSystem->RegisterListener(this);
+}
+
+CScriptClass::~CScriptClass()
+{
+	gEnv->pMonoScriptSystem->UnregisterListener(this);
+
+	m_name.clear();
+	m_namespace.clear();
 }
 
 IMonoObject *CScriptClass::CreateInstance(IMonoArray *pConstructorParams)
@@ -32,8 +42,8 @@ IMonoObject *CScriptClass::CreateInstance(IMonoArray *pConstructorParams)
 
 void CScriptClass::OnPostScriptReload(bool initialLoad)
 {
-	m_pObject = (MonoObject *)mono_class_from_name(static_cast<CScriptAssembly *>(m_pDeclaringAssembly)->GetImage(), m_namespace, m_name);
-	m_pClass = NULL;
+	if(!initialLoad)
+		m_pObject = (MonoObject *)mono_class_from_name(static_cast<CScriptAssembly *>(m_pDeclaringAssembly)->GetImage(), m_namespace.c_str(), m_name.c_str());
 }
 
 MonoMethod *CScriptClass::GetMonoMethod(const char *methodName, IMonoArray *pArgs)
