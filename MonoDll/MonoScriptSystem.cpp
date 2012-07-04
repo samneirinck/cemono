@@ -380,11 +380,8 @@ void CScriptSystem::RegisterDefaultBindings()
 bool CScriptSystem::InitializeSystems()
 {
 	IMonoClass *pClass = m_pCryBraryAssembly->GetClass("Network");
-	IMonoArray *pArray = CreateMonoArray(2);
-	pArray->Insert(gEnv->IsEditor());
-	pArray->Insert(gEnv->IsDedicated());
-	pClass->CallMethod("InitializeNetworkStatics", pArray, true);
-	SAFE_RELEASE(pArray);
+
+	pClass->CallMethod("InitializeNetworkStatics", gEnv->IsEditor(), gEnv->IsDedicated(), true);
 
 	return true;
 }
@@ -392,14 +389,7 @@ bool CScriptSystem::InitializeSystems()
 void CScriptSystem::OnPostUpdate(float fDeltaTime)
 {
 	// Updates all scripts and sets Time.FrameTime.
-	IMonoArray *pArray = CreateMonoArray(5);
-	pArray->Insert(fDeltaTime);
-	pArray->Insert(gEnv->pTimer->GetFrameStartTime().GetMilliSeconds());
-	pArray->Insert(gEnv->pTimer->GetAsyncTime().GetMilliSeconds());
-	pArray->Insert(gEnv->pTimer->GetFrameRate());
-	pArray->Insert(gEnv->pTimer->GetTimeScale());
-	m_pScriptManager->CallMethod("OnUpdate", pArray, true);
-	SAFE_RELEASE(pArray);
+	m_pScriptManager->CallMethod("OnUpdate", fDeltaTime, gEnv->pTimer->GetFrameStartTime().GetMilliSeconds(), gEnv->pTimer->GetAsyncTime().GetMilliSeconds(), gEnv->pTimer->GetFrameRate(), gEnv->pTimer->GetTimeScale(), true);
 }
 
 void CScriptSystem::OnFileChange(const char *fileName)
@@ -425,12 +415,7 @@ void CScriptSystem::RegisterMethodBinding(const void *method, const char *fullMe
 
 IMonoObject *CScriptSystem::InstantiateScript(const char *scriptName, EMonoScriptFlags scriptType, IMonoArray *pConstructorParameters)
 {
-	IMonoArray *pArray = CreateMonoArray(3);
-	pArray->Insert(scriptName);
-	pArray->Insert(scriptType);
-	pArray->Insert(pConstructorParameters);
-	IMonoObject *pResult = m_pScriptManager->CallMethod("CreateScriptInstance", pArray, true);
-	SAFE_RELEASE(pArray);
+	IMonoObject *pResult = m_pScriptManager->CallMethod("CreateScriptInstance", scriptName, scriptType, pConstructorParameters, true);
 
 	if(!pResult)
 		MonoWarning("Failed to instantiate script %s", scriptName);
@@ -499,13 +484,7 @@ IMonoAssembly *CScriptSystem::GetAssembly(const char *file, bool shadowCopy)
 		if(IMonoAssembly *pDebugDatabaseCreator = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetDebugDatabaseCreator())
 		{
 			if(IMonoClass *pDriverClass = pDebugDatabaseCreator->GetClass("Driver", ""))
-			{
-				IMonoArray *pArgs = CreateMonoArray(1);
-				pArgs->Insert(file);
-				pDriverClass->CallMethod("Convert", pArgs, true);
-
-				SAFE_RELEASE(pArgs);
-			}
+				pDriverClass->CallMethod("Convert", file, true);
 		}
 	}
 #endif
