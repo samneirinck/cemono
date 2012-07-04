@@ -209,6 +209,12 @@
     <Compile Include="Entity\EntityPhysics.cs" />
     <Compile Include="Lua\ScriptTable.cs" />
     <Compile Include="Math\Collision.cs" />
+    <Compile Include="Script Handling\ScriptReloadMessage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Script Handling\ScriptReloadMessage.Designer.cs">
+      <DependentUpon>ScriptReloadMessage.cs</DependentUpon>
+    </Compile>
     <Compile Include="Serialization\CrySerializer.cs" />
     <Compile Include="Math\BoundingBox.cs" />
     <Compile Include="Math\BoundingSphere.cs" />
@@ -276,6 +282,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Script Handling\ExceptionMessage.resx">
       <DependentUpon>ExceptionMessage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Script Handling\ScriptReloadMessage.resx">
+      <DependentUpon>ScriptReloadMessage.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Testing\Reports\ReportForm.resx">
       <DependentUpon>ReportForm.cs</DependentUpon>
