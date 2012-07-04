@@ -36,6 +36,7 @@ public:
 	virtual const char *GetPath() override { return m_path.c_str(); }
 
 	virtual bool IsNative() override { return m_bNative; }
+	virtual mono::object GetManagedObject() { return (mono::object)mono_assembly_get_object(mono_domain_get(), mono_image_get_assembly(m_pImage)); }
 	// ~IMonoAssembly
 
 	void SetImage(MonoImage *pImage) { m_pImage = pImage; }

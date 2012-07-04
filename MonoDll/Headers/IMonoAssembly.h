@@ -11,6 +11,8 @@
 
 struct IMonoClass;
 
+namespace mono { class _object; typedef _object* object; }
+
 /// <summary>
 /// Reference to a Mono assembly; used to for example instantiate classes contained within a C# dll.
 /// </summary>
@@ -40,6 +42,8 @@ public:
 	/// Determines if this assembly was loaded from C++.
 	/// </summary>
 	virtual bool IsNative() = 0;
+
+	virtual mono::object GetManagedObject() = 0;
 };
 
 #endif //__I_MONO_ASSEMBLY__`	
