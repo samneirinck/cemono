@@ -57,9 +57,7 @@ CScriptObject::~CScriptObject()
 
 void CScriptObject::OnPostScriptReload(bool initialLoad)
 {
-	m_pClass = NULL;
-
-	if(m_scriptId != -1)
+	if(!initialLoad && m_scriptId != -1)
 	{
 		IMonoArray *pParams = CreateMonoArray(2);
 		pParams->Insert(m_scriptId);
