@@ -25,6 +25,7 @@ CScriptArray::CScriptArray(int size, IMonoClass *pContainingType)
 	CRY_ASSERT(size > 0);
 
 	m_pElementClass = (pContainingType ? (MonoClass *)(pContainingType)->GetManagedObject() : m_pDefaultElementClass);
+	CRY_ASSERT(m_pElementClass);
 
 	m_pObject = (MonoObject *)mono_array_new(mono_domain_get(), m_pElementClass, size);
 
@@ -120,5 +121,7 @@ void CScriptArray::InsertAny(MonoAnyValue value, int index)
 	if(value.type==eMonoAnyType_String)
 		InsertMonoString(ToMonoString(value.str), index);
 	else
-		Insert(gEnv->pMonoScriptSystem->GetConverter()->CreateObject(value), index);
+	{
+		InsertMonoObject(gEnv->pMonoScriptSystem->GetConverter()->BoxAnyValue(value), index);
+	}
 }
