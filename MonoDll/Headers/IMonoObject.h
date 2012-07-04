@@ -67,7 +67,7 @@ public:
 	};
 
 	template<typename P1, typename P2, typename P3, typename P4> 
-	inline IMonoObject *CallMethod(const char *funcName, const P1 &p1, const P2 &p2, const P3 &p3, const P4 &p, bool bStatic = false)
+	inline IMonoObject *CallMethod(const char *funcName, const P1 &p1, const P2 &p2, const P3 &p3, const P4 &p4, bool bStatic = false)
 	{
 		IMonoArray *pArgs = CreateMonoArray(4);
 		pArgs->Insert(p1);
