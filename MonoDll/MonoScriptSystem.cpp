@@ -251,8 +251,12 @@ bool CScriptSystem::DoReload(bool initialLoad)
 	{
 		for each(auto assembly in m_assemblies)
 		{
-			m_prevAssemblyImages.push_back(assembly->GetImage());
-			assembly->SetImage(GetAssemblyImage(assembly->GetPath()));
+			// Don't re-assign managed assemblies
+			if(assembly->IsNative())
+			{
+				m_prevAssemblyImages.push_back(assembly->GetImage());
+				assembly->SetImage(GetAssemblyImage(assembly->GetPath()));
+			}
 		}
 	}
 
@@ -303,9 +307,7 @@ bool CScriptSystem::DoReload(bool initialLoad)
 			m_AppDomainSerializer->CallMethod("TrySetScriptData");
 
 			for(auto it = m_scriptReloadListeners.begin(); it != m_scriptReloadListeners.end(); ++it)
-			{
 				(*it)->OnPostScriptReload(false);
-			}
 
 			m_pScriptManager->CallMethod("OnPostScriptReload");
 		}
