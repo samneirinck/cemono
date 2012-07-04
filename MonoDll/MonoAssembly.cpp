@@ -57,14 +57,19 @@ CScriptAssembly *CScriptAssembly::TryGetAssembly(MonoImage *pImage)
 {
 	CRY_ASSERT(pImage);
 
-	for each(auto assembly in static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->m_assemblies)
+	CScriptSystem *pScriptSystem = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem);
+
+	for each(auto assembly in pScriptSystem->m_assemblies)
 	{
 		if(assembly->GetImage() == pImage)
 			return assembly;
 	}
 
 	// TODO: Get assembly path
-	return new CScriptAssembly(pImage, mono_image_get_filename(pImage));
+	CScriptAssembly *pAssembly = new CScriptAssembly(pImage, mono_image_get_filename(pImage));
+	pScriptSystem->m_assemblies.push_back(pAssembly);
+
+	return pAssembly;
 }
 
 CScriptClass *CScriptAssembly::TryGetClassFromRegistry(MonoClass *pClass)
