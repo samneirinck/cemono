@@ -272,12 +272,13 @@ bool CScriptSystem::DoReload(bool initialLoad)
 		CryLogAlways("		Loading plugins...");
 
 	IMonoObject *pInitializationResult = pNewScriptManager->CallMethod("LoadPlugins");
-
 	m_bLastCompilationSuccess = pInitializationResult ? pInitializationResult->Unbox<bool>() : false;
+	SAFE_RELEASE(pInitializationResult);
 
 	for each(auto listener in m_scriptReloadListeners)
 		listener->OnPostScriptCompilation(!initialLoad, m_bLastCompilationSuccess);
 
+	bool result = true;
 	if(m_bLastCompilationSuccess)
 	{
 		SAFE_RELEASE(m_AppDomainSerializer);
@@ -331,20 +332,17 @@ bool CScriptSystem::DoReload(bool initialLoad)
 			switch(CryMessageBox("Script compilation failed, check log for more information. Do you want to continue by reloading the last successful script compilation?", "Script compilation failed!", 0x00000006L))
 			{
 			case 2: // cancel (quit)
-				return false;
+				result = false;
+				break;
 			case 10: // try again (recompile)
-				{
-					
-					return DoReload(initialLoad);
-				}
+				result = DoReload(initialLoad);
+				break;
 			case 11: // continue (load previously functional script domain)
 				{
 					m_pScriptDomain->SetActive();
 
 					for(int i = 0; i < m_assemblies.size(); i++)
 						m_assemblies[i]->SetImage(m_prevAssemblyImages[i]);
-
-					m_prevAssemblyImages.clear();
 				}
 				break;
 			}
@@ -355,14 +353,19 @@ bool CScriptSystem::DoReload(bool initialLoad)
 			switch(CryMessageBox("Script compilation failed, check log for more information.", "Script compilation failed!", 0x00000005L))
 			{
 			case 2: // cancel (quit)
-				return false;
+				result = false;
+				break;
 			case 4: // retry (recompile)
-				return DoReload(initialLoad);
+				result = DoReload(initialLoad);
+				break;
 			}
 		}
 	}
 
-	return true;
+	m_prevAssemblyImages.clear();
+
+
+	return result;
 }
 
 void CScriptSystem::RegisterDefaultBindings()
