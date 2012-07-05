@@ -23,6 +23,9 @@ CScriptAssembly::CScriptAssembly(MonoImage *pImage, const char *path, bool nativ
 
 CScriptAssembly::~CScriptAssembly()
 {
+	for each(auto classPair in m_classRegistry)
+		classPair.first->Release();
+
 	CScriptSystem *pScriptSystem = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem);
 	stl::find_and_erase(pScriptSystem->m_assemblies, this);
 
