@@ -11,7 +11,7 @@ namespace CryEngine
 			InitializeComponent();
 
 			uxContinueBtn.Click += (s, a) => Close();
-			uxReportBtn.Click += (s, a) => Process.Start("http://www.crydev.net/posting.php?mode=post&f=314");
+			uxReportBtn.Click += (s, a) => Process.Start("http://www.crydev.net/posting.php?mode=post&f=375");
 			uxCancelBtn.Click += (s, a) => Process.GetCurrentProcess().Kill();
 
 			if(fatal)
