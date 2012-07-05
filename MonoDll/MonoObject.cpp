@@ -47,6 +47,9 @@ CScriptObject::CScriptObject(MonoObject *object, IMonoArray *pConstructorParams)
 
 CScriptObject::~CScriptObject()
 {
+	// Decrement ref counter in the class, released if no longer used.
+	SAFE_RELEASE(m_pClass);
+
 	gEnv->pMonoScriptSystem->UnregisterListener(this);
 
 	 if(m_objectHandle != -1)
@@ -88,7 +91,10 @@ MonoClass *CScriptObject::GetMonoClass()
 IMonoClass *CScriptObject::GetClass()
 {
 	if(!m_pClass)
+	{
 		m_pClass = CScriptAssembly::TryGetClassFromRegistry(GetMonoClass());
+		m_pClass->AddRef();
+	}
 
 	CRY_ASSERT(m_pClass);
 

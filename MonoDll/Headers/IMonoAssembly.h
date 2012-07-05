@@ -26,6 +26,8 @@ public:
 	virtual IMonoClass *GetClass() = 0;
 	// ~IMonoObject
 
+	virtual void AddRef() = 0;
+
 	/// <summary>
 	/// Gets a custom C# class from within the assembly.
 	/// Note: This does not construct an new instance of the class, only returns an uninitialized IMonoScript. To instantiate a class, see IMonoAssembly::InstantiateClass

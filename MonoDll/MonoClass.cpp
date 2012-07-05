@@ -9,7 +9,7 @@
 
 #include "MonoCVars.h"
 
-CScriptClass::CScriptClass(MonoClass *pClass, IMonoAssembly *pDeclaringAssembly)
+CScriptClass::CScriptClass(MonoClass *pClass, CScriptAssembly *pDeclaringAssembly)
 	: m_pDeclaringAssembly(pDeclaringAssembly)
 {
 	CRY_ASSERT(pClass);
@@ -22,11 +22,16 @@ CScriptClass::CScriptClass(MonoClass *pClass, IMonoAssembly *pDeclaringAssembly)
 	m_name = string(mono_class_get_name(pClass));
 	m_namespace = string(mono_class_get_namespace(pClass));
 
+	m_pDeclaringAssembly->AddRef();
+
 	gEnv->pMonoScriptSystem->RegisterListener(this);
 }
 
 CScriptClass::~CScriptClass()
 {
+	m_pDeclaringAssembly->OnClassReleased(this);
+	SAFE_RELEASE(m_pDeclaringAssembly);
+
 	gEnv->pMonoScriptSystem->UnregisterListener(this);
 
 	m_name.clear();

@@ -25,6 +25,8 @@ struct IMonoClass
 	: public IMonoObject
 {
 public:
+	virtual void AddRef() = 0;
+
 	/// <summary>
 	/// Gets the class name.
 	/// </summary>
