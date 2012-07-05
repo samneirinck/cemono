@@ -243,7 +243,6 @@ bool CScriptSystem::DoReload(bool initialLoad)
 		const char *cryBraryPath = PathUtils::GetBinaryPath() + "CryBrary.dll";
 
 		m_pCryBraryAssembly = static_cast<CScriptAssembly *>(GetAssembly(cryBraryPath));
-		m_assemblies.push_back(m_pCryBraryAssembly);
 	}
 	else
 	{
