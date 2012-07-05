@@ -91,10 +91,7 @@ MonoClass *CScriptObject::GetMonoClass()
 IMonoClass *CScriptObject::GetClass()
 {
 	if(!m_pClass)
-	{
 		m_pClass = CScriptAssembly::TryGetClassFromRegistry(GetMonoClass());
-		m_pClass->AddRef();
-	}
 
 	CRY_ASSERT(m_pClass);
 

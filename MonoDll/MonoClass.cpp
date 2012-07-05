@@ -22,13 +22,12 @@ CScriptClass::CScriptClass(MonoClass *pClass, CScriptAssembly *pDeclaringAssembl
 	m_name = string(mono_class_get_name(pClass));
 	m_namespace = string(mono_class_get_namespace(pClass));
 
-	m_pDeclaringAssembly->AddRef();
-
 	gEnv->pMonoScriptSystem->RegisterListener(this);
 }
 
 CScriptClass::~CScriptClass()
 {
+	// Remove this class from the assembly's class registry, and decrement its release counter.
 	m_pDeclaringAssembly->OnClassReleased(this);
 	SAFE_RELEASE(m_pDeclaringAssembly);
 

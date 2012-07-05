@@ -45,11 +45,16 @@ CScriptClass *CScriptAssembly::TryGetClass(MonoClass *pClass)
 	for each(auto pair in m_classRegistry)
 	{
 		if(pair.second == pClass)
+		{
 			return pair.first;
+			pair.first->AddRef();
+		}
 	}
 
 	CScriptClass *pScriptClass = new CScriptClass(pClass, this);
 	m_classRegistry.insert(TClassMap::value_type(pScriptClass, pClass));
+	pScriptClass->AddRef();
+
 	return pScriptClass;
 }
 
@@ -66,12 +71,16 @@ CScriptAssembly *CScriptAssembly::TryGetAssembly(MonoImage *pImage)
 	for each(auto assembly in pScriptSystem->m_assemblies)
 	{
 		if(assembly->GetImage() == pImage)
+		{
+			assembly->AddRef();
 			return assembly;
+		}
 	}
 
 	// This assembly was loaded from managed code.
 	CScriptAssembly *pAssembly = new CScriptAssembly(pImage, mono_image_get_filename(pImage), false);
 	pScriptSystem->m_assemblies.push_back(pAssembly);
+	pAssembly->AddRef();
 
 	return pAssembly;
 }
