@@ -28,15 +28,12 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.components = new System.ComponentModel.Container();
 			this.label1 = new System.Windows.Forms.Label();
-			this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
 			this.label3 = new System.Windows.Forms.Label();
 			this.uxStackTextbox = new System.Windows.Forms.TextBox();
 			this.uxContinueBtn = new System.Windows.Forms.Button();
 			this.uxCancelBtn = new System.Windows.Forms.Button();
 			this.uxReportBtn = new System.Windows.Forms.Button();
-			((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// label1
@@ -119,7 +116,6 @@
 			this.Controls.Add(this.label1);
 			this.Name = "ExceptionMessage";
 			this.Text = "CryMono Error";
-			((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -128,7 +124,6 @@
 		#endregion
 
 		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.BindingSource bindingSource1;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.TextBox uxStackTextbox;
 		private System.Windows.Forms.Button uxContinueBtn;
