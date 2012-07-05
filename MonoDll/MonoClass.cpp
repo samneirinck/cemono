@@ -11,6 +11,7 @@
 
 CScriptClass::CScriptClass(MonoClass *pClass, CScriptAssembly *pDeclaringAssembly)
 	: m_pDeclaringAssembly(pDeclaringAssembly)
+	, m_refs(0)
 {
 	CRY_ASSERT(pClass);
 

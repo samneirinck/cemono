@@ -14,6 +14,7 @@
 
 CScriptAssembly::CScriptAssembly(MonoImage *pImage, const char *path, bool nativeAssembly)
 	: m_bNative(nativeAssembly) // true if this assembly was loaded via C++.
+	, m_refs(0)
 {
 	CRY_ASSERT(pImage);
 	m_pObject = (MonoObject *)pImage;
