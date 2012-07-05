@@ -72,6 +72,12 @@ CScriptSystem::CScriptSystem()
 
 	string monoCmdOptions = "";
 
+#ifndef _RELEASE
+	// Prevents managed null reference exceptions causing crashes in unmanaged code
+	// See: https://bugzilla.xamarin.com/show_bug.cgi?id=5963
+	monoCmdOptions.append("--soft-breakpoints");
+#endif
+
 	// Commandline switch -DEBUG makes the process connect to the debugging server. Warning: Failure to connect to a debugging server WILL result in a crash.
 	// This is currently a WIP feature which requires custom MonoDevelop extensions and other irritating things.
 	const ICmdLineArg* arg = gEnv->pSystem->GetICmdLine()->FindArg(eCLAT_Pre, "DEBUG");
