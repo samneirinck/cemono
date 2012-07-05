@@ -10,6 +10,8 @@
 #ifndef __MONO_ASSEMBLY_H__
 #define __MONO_ASSEMBLY_H__
 
+#include "MonoObject.h"
+
 #include <IMonoAssembly.h>
 
 struct IMonoScript;
@@ -17,7 +19,9 @@ struct IMonoArray;
 
 class CScriptClass;
 
-class CScriptAssembly : public IMonoAssembly
+class CScriptAssembly 
+	: public CScriptObject
+	, public IMonoAssembly
 {
 	typedef std::map<CScriptClass *, MonoClass *> TClassMap;
 public:
@@ -32,25 +36,51 @@ public:
 	// IMonoAssembly
 	virtual IMonoClass *GetClass(const char *className, const char *nameSpace = "CryEngine") override;
 
-	virtual const char *GetName() override { return mono_image_get_name(m_pImage); }
+	virtual const char *GetName() override { return mono_image_get_name((MonoImage *)m_pObject); }
 	virtual const char *GetPath() override { return m_path.c_str(); }
 
 	virtual bool IsNative() override { return m_bNative; }
-	virtual mono::object GetManagedObject() { return (mono::object)mono_assembly_get_object(mono_domain_get(), mono_image_get_assembly(m_pImage)); }
+
+	virtual void AddRef() override { ++m_refs; }
 	// ~IMonoAssembly
 
-	void SetImage(MonoImage *pImage) { m_pImage = pImage; }
-	MonoImage *GetImage() const { return m_pImage; }
+	// IMonoObject
+	virtual void Release() override { if(0 >= --m_refs) delete this; }
+
+	virtual IMonoObject *CallMethodWithArray(const char *methodName, IMonoArray *params = nullptr, bool bStatic = false) override { return CScriptObject::CallMethodWithArray(methodName, params, bStatic); }
+
+	virtual IMonoObject *GetProperty(const char *propertyName, bool bStatic = false) override { return CScriptObject::GetProperty(propertyName, bStatic); }
+	virtual void SetProperty(const char *propertyName, IMonoObject *pNewValue, bool bStatic = false) override { CScriptObject::SetProperty(propertyName, pNewValue, bStatic); }
+	virtual IMonoObject *GetField(const char *fieldName, bool bStatic = false) override { return CScriptObject::GetField(fieldName, bStatic); }
+	virtual void SetField(const char *fieldName, IMonoObject *pNewValue, bool bStatic = false) override { CScriptObject::SetField(fieldName, pNewValue, bStatic); }
+
+	virtual EMonoAnyType GetType() override { return eMonoAnyType_Assembly; }
+
+	virtual mono::object GetManagedObject() override { return (mono::object)mono_assembly_get_object(mono_domain_get(), mono_image_get_assembly((MonoImage *)m_pObject)); }
+
+	virtual IMonoClass *GetClass() override { return CScriptObject::GetClass(); }
+
+	virtual void *UnboxObject() override { return CScriptObject::UnboxObject(); }
+	// ~IMonoObject
+
+	/// <summary>
+	/// Called when a IMonoClass created from this assembly is released.
+	/// </summary>
+	void OnClassReleased(CScriptClass *pClass) { m_classRegistry.erase(pClass); }
+
+	void SetImage(MonoImage *pImage) { m_pObject = (MonoObject *)pImage; }
+	MonoImage *GetImage() const { return (MonoImage *)m_pObject; }
 
 	void SetPath(const char *path) { m_path = string(path); }
 
 private:
 	string m_path;
-	MonoImage *m_pImage;
 
 	bool m_bNative;
 
 	TClassMap m_classRegistry;
+
+	int m_refs;
 };
 
 #endif //__MONO_ASSEMBLY_H__

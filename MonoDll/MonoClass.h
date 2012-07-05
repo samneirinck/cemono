@@ -11,18 +11,20 @@
 #define __MONO_CLASS_H__
 
 #include "MonoObject.h"
+#include "MonoAssembly.h"
 
 #include <MonoCommon.h>
 #include <IMonoClass.h>
 
 struct IMonoArray;
 
+
 class CScriptClass 
 	: public CScriptObject
 	, public IMonoClass
 {
 public:
-	CScriptClass(MonoClass *pClass, IMonoAssembly *pDeclaringAssembly);
+	CScriptClass(MonoClass *pClass, CScriptAssembly *pDeclaringAssembly);
 	virtual ~CScriptClass();
 
 	// IMonoClass
@@ -34,12 +36,14 @@ public:
 	virtual IMonoObject *CreateInstance(IMonoArray *pConstructorParams = nullptr) override;
 
 	IMonoObject *BoxObject(void *object) override;
+
+	virtual void AddRef() override { ++m_refs; }
 	// ~IMonoClass
 
 	// IMonoObject
-	virtual void Release() override { delete this; }
+	virtual void Release() override { if(0 >= --m_refs) delete this; }
 
-	virtual IMonoObject *CallMethodWithArray(const char *methodName, IMonoArray *params = nullptr, bool bStatic = false) { return CScriptObject::CallMethodWithArray(methodName, params, true); }
+	virtual IMonoObject *CallMethodWithArray(const char *methodName, IMonoArray *params = nullptr, bool bStatic = false) override { return CScriptObject::CallMethodWithArray(methodName, params, true); }
 
 	virtual IMonoObject *GetProperty(const char *propertyName, bool bStatic = false) override { return CScriptObject::GetProperty(propertyName, true); }
 	virtual void SetProperty(const char *propertyName, IMonoObject *pNewValue, bool bStatic = false) override { CScriptObject::SetProperty(propertyName, pNewValue, true); }
@@ -67,7 +71,9 @@ private:
 	string m_name;
 	string m_namespace;
 
-	IMonoAssembly *m_pDeclaringAssembly;
+	CScriptAssembly *m_pDeclaringAssembly;
+
+	int m_refs;
 };
 
 #endif //__MONO_CLASS_H__

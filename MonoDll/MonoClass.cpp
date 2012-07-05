@@ -9,7 +9,7 @@
 
 #include "MonoCVars.h"
 
-CScriptClass::CScriptClass(MonoClass *pClass, IMonoAssembly *pDeclaringAssembly)
+CScriptClass::CScriptClass(MonoClass *pClass, CScriptAssembly *pDeclaringAssembly)
 	: m_pDeclaringAssembly(pDeclaringAssembly)
 {
 	CRY_ASSERT(pClass);
@@ -27,6 +27,10 @@ CScriptClass::CScriptClass(MonoClass *pClass, IMonoAssembly *pDeclaringAssembly)
 
 CScriptClass::~CScriptClass()
 {
+	// Remove this class from the assembly's class registry, and decrement its release counter.
+	m_pDeclaringAssembly->OnClassReleased(this);
+	SAFE_RELEASE(m_pDeclaringAssembly);
+
 	gEnv->pMonoScriptSystem->UnregisterListener(this);
 
 	m_name.clear();

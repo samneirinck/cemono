@@ -111,10 +111,8 @@ CScriptSystem::CScriptSystem()
 
 CScriptSystem::~CScriptSystem()
 {
-	//for(auto it = m_assemblies.begin(); it != m_assemblies.end(); ++it)
-		//SAFE_DELETE(*it);
-
-	m_assemblies.clear();
+	for(auto it = m_assemblies.begin(); it != m_assemblies.end(); ++it)
+		SAFE_RELEASE(*it);
 
 	// Force garbage collection of all generations.
 	mono_gc_collect(mono_gc_max_generation());

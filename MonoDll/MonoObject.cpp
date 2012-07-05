@@ -47,6 +47,9 @@ CScriptObject::CScriptObject(MonoObject *object, IMonoArray *pConstructorParams)
 
 CScriptObject::~CScriptObject()
 {
+	// Decrement ref counter in the class, released if no longer used.
+	SAFE_RELEASE(m_pClass);
+
 	gEnv->pMonoScriptSystem->UnregisterListener(this);
 
 	 if(m_objectHandle != -1)
