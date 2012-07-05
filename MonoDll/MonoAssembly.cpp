@@ -13,22 +13,22 @@
 #include <MonoClass.h>
 
 CScriptAssembly::CScriptAssembly(MonoImage *pImage, const char *path, bool nativeAssembly)
-	: m_pImage(pImage)
-	, m_bNative(nativeAssembly) // true if this assembly was loaded via C++.
+	: m_bNative(nativeAssembly) // true if this assembly was loaded via C++.
 {
-	CRY_ASSERT(m_pImage);
+	CRY_ASSERT(pImage);
+	m_pObject = (MonoObject *)pImage;
 
 	m_path = string(path);
 }
 
 CScriptAssembly::~CScriptAssembly()
 {
-	m_pImage = 0;
+	m_pObject = 0;
 }
 
 IMonoClass *CScriptAssembly::GetClass(const char *className, const char *nameSpace)
 { 
-	if(MonoClass *monoClass = mono_class_from_name(m_pImage, nameSpace, className))
+	if(MonoClass *monoClass = mono_class_from_name((MonoImage *)m_pObject, nameSpace, className))
 		return TryGetClass(monoClass);
 
 	MonoWarning("Failed to get class %s.%s", nameSpace, className);

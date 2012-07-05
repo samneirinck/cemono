@@ -29,6 +29,7 @@ enum EMonoAnyType
 	eMonoAnyType_String,
 	eMonoAnyType_Array,
 	eMonoAnyType_Class,
+	eMonoAnyType_Assembly,
 	eMonoAnyType_IntPtr,
 
 	eMonoAnyType_Last

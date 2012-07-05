@@ -36,10 +36,7 @@ public:
 	IMonoObject *BoxObject(void *object) override;
 	// ~IMonoClass
 
-	// IMonoObject
-	virtual void Release() override { delete this; }
-
-	virtual IMonoObject *CallMethodWithArray(const char *methodName, IMonoArray *params = nullptr, bool bStatic = false) { return CScriptObject::CallMethodWithArray(methodName, params, true); }
+	virtual IMonoObject *CallMethodWithArray(const char *methodName, IMonoArray *params = nullptr, bool bStatic = false) override { return CScriptObject::CallMethodWithArray(methodName, params, true); }
 
 	virtual IMonoObject *GetProperty(const char *propertyName, bool bStatic = false) override { return CScriptObject::GetProperty(propertyName, true); }
 	virtual void SetProperty(const char *propertyName, IMonoObject *pNewValue, bool bStatic = false) override { CScriptObject::SetProperty(propertyName, pNewValue, true); }
@@ -53,6 +50,9 @@ public:
 	virtual IMonoClass *GetClass() override { return this; }
 
 	virtual void *UnboxObject() override { return CScriptObject::UnboxObject(); }
+	virtual void Release() override { delete this; }
+
+	
 	// ~IMonoObject
 
 	// CScriptObject
