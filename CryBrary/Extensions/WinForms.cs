@@ -26,5 +26,17 @@ namespace CryEngine.Extensions
 			for(var i = 0; i < count; i++)
 				textBox.Append(Environment.NewLine);
 		}
+
+		/// <summary>
+		/// Scrolls the contents of the text box to the given position.
+		/// The value is clamped to the length of the text.
+		/// </summary>
+		/// <param name="textBox"></param>
+		/// <param name="position"></param>
+		public static void ScrollTo(this TextBoxBase textBox, int position)
+		{
+			textBox.SelectionStart = Math.Clamp(position, 0, textBox.TextLength);
+			textBox.ScrollToCaret();
+		}
 	}
 }

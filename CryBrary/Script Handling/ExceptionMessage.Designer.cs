@@ -66,6 +66,7 @@
 			this.uxStackTextbox.Multiline = true;
 			this.uxStackTextbox.Name = "uxStackTextbox";
 			this.uxStackTextbox.ReadOnly = true;
+			this.uxStackTextbox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.uxStackTextbox.Size = new System.Drawing.Size(500, 163);
 			this.uxStackTextbox.TabIndex = 3;
 			// 

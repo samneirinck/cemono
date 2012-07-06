@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Windows.Forms;
+using CryEngine.Extensions;
 
 namespace CryEngine
 {
@@ -16,11 +17,18 @@ namespace CryEngine
 
 			if(fatal)
 			{
-				uxStackTextbox.AppendText("Exceptions are currently treated as fatal errors (mono_exceptionsTriggerFatalErrors is true).\n");
-				uxStackTextbox.AppendText("The application cannot continue.\n\n");
+				uxStackTextbox.Append("Exceptions are currently treated as fatal errors (mono_exceptionsTriggerFatalErrors is true).");
+				uxStackTextbox.NewLine();
+				uxStackTextbox.Append("The application cannot continue.");
+				uxStackTextbox.NewLine(2);
 			}
 
-			uxStackTextbox.AppendText(ex.ToString());
+			uxStackTextbox.Append(ex.ToString());
+
+			var selected = ActiveControl;
+			ActiveControl = uxStackTextbox;
+			uxStackTextbox.ScrollTo(0);
+			ActiveControl = selected;
 
 			if(fatal)
 				uxContinueBtn.Enabled = false;
