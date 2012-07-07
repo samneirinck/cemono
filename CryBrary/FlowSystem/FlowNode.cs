@@ -517,7 +517,6 @@ namespace CryEngine
 		{
             NodePointer = NativeMethods.FlowNode.GetNode(GraphId, NodeId);
 
-            OnScriptReload();
             base.OnScriptReloadInternal();
 		}
         #endregion
