@@ -32,8 +32,6 @@ CScriptClass::~CScriptClass()
 	m_pDeclaringAssembly->OnClassReleased(this);
 	SAFE_RELEASE(m_pDeclaringAssembly);
 
-	gEnv->pMonoScriptSystem->UnregisterListener(this);
-
 	m_name.clear();
 	m_namespace.clear();
 }
