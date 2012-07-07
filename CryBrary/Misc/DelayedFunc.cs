@@ -3,7 +3,7 @@ using CryEngine.Initialization;
 
 namespace CryEngine
 {
-    public abstract class IDelayedFunc : CryScriptInstance
+    public abstract class DelayedFuncBase : CryScriptInstance
     {
         protected void Init(Delegate _delegate, float delay)
         {
@@ -39,7 +39,7 @@ namespace CryEngine
         public Delegate Delegate { get; set; }
     }
 
-    public sealed class DelayedFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> : IDelayedFunc
+    public sealed class DelayedFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> : DelayedFuncBase
     {
         public DelayedFunc() { }
 
@@ -57,7 +57,7 @@ namespace CryEngine
         public override object[] Params { get { return _params; } }
     }
 
-    public sealed class DelayedFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9> : IDelayedFunc
+    public sealed class DelayedFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9> : DelayedFuncBase
     {
         public DelayedFunc() { }
 
@@ -75,7 +75,7 @@ namespace CryEngine
         public override object[] Params { get { return _params; } }
     }
 
-    public sealed class DelayedFunc<T1, T2, T3, T4, T5, T6, T7, T8> : IDelayedFunc
+    public sealed class DelayedFunc<T1, T2, T3, T4, T5, T6, T7, T8> : DelayedFuncBase
     {
         public DelayedFunc() { }
 
@@ -93,7 +93,7 @@ namespace CryEngine
         public override object[] Params { get { return _params; } }
     }
 
-    public sealed class DelayedFunc<T1, T2, T3, T4, T5, T6, T7> : IDelayedFunc
+    public sealed class DelayedFunc<T1, T2, T3, T4, T5, T6, T7> : DelayedFuncBase
     {
         public DelayedFunc() { }
 
@@ -111,7 +111,7 @@ namespace CryEngine
         public override object[] Params { get { return _params; } }
     }
 
-    public sealed class DelayedFunc<T1, T2, T3, T4, T5, T6> : IDelayedFunc
+    public sealed class DelayedFunc<T1, T2, T3, T4, T5, T6> : DelayedFuncBase
     {
         public DelayedFunc() { }
 
@@ -129,7 +129,7 @@ namespace CryEngine
         public override object[] Params { get { return _params; } }
     }
 
-    public sealed class DelayedFunc<T1, T2, T3, T4, T5> : IDelayedFunc
+    public sealed class DelayedFunc<T1, T2, T3, T4, T5> : DelayedFuncBase
     {
         public DelayedFunc() { }
 
@@ -147,7 +147,7 @@ namespace CryEngine
         public override object[] Params { get { return _params; } }
     }
 
-    public sealed class DelayedFunc<T1, T2, T3, T4> : IDelayedFunc
+    public sealed class DelayedFunc<T1, T2, T3, T4> : DelayedFuncBase
     {
         public DelayedFunc() { }
 
@@ -165,7 +165,7 @@ namespace CryEngine
         public override object[] Params { get { return _params; } }
     }
 
-    public sealed class DelayedFunc<T1, T2, T3> : IDelayedFunc
+    public sealed class DelayedFunc<T1, T2, T3> : DelayedFuncBase
     {
         public DelayedFunc() { }
 
@@ -183,7 +183,7 @@ namespace CryEngine
         public override object[] Params { get { return _params; } }
     }
 
-    public sealed class DelayedFunc<T1, T2> : IDelayedFunc
+    public sealed class DelayedFunc<T1, T2> : DelayedFuncBase
     {
         public DelayedFunc() { }
 
@@ -201,7 +201,7 @@ namespace CryEngine
         public override object[] Params { get { return _params; } }
     }
 
-    public sealed class DelayedFunc<T1> : IDelayedFunc
+    public sealed class DelayedFunc<T1> : DelayedFuncBase
     {
         public DelayedFunc() { }
 
@@ -219,7 +219,7 @@ namespace CryEngine
         public override object[] Params { get { return _params; } }
     }
 
-    public sealed class DelayedFunc : IDelayedFunc
+    public sealed class DelayedFunc : DelayedFuncBase
     {
         public DelayedFunc() { }
 
