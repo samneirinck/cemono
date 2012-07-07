@@ -28,7 +28,7 @@ namespace CryEngine
 
 		public static T Get<T>(int channelId) where T : Actor
 		{
-			return ScriptManager.Find<T>(ScriptType.Actor, x => x.ChannelId == channelId);
+			return ScriptManager.Instance.Find<T>(ScriptType.Actor, x => x.ChannelId == channelId);
 		}
 
 		public static Actor Get(EntityId actorId)
@@ -50,7 +50,7 @@ namespace CryEngine
 			if(actorId == 0)
 				throw new ArgumentException("actorId cannot be 0!");
 
-			return ScriptManager.Find<T>(ScriptType.Actor, x => x.Id == actorId);
+			return ScriptManager.Instance.Find<T>(ScriptType.Actor, x => x.Id == actorId);
 		}
 
 		internal static Actor CreateNativeActor(ActorInfo actorInfo)
@@ -63,7 +63,7 @@ namespace CryEngine
 				throw new ArgumentException("actorInfo.EntityPtr cannot be 0!");
 
 			var nativeActor = new NativeActor(actorInfo);
-			ScriptManager.AddScriptInstance(nativeActor, ScriptType.Actor);
+			ScriptManager.Instance.AddScriptInstance(nativeActor, ScriptType.Actor);
 
 			return nativeActor;
 		}
@@ -93,7 +93,7 @@ namespace CryEngine
 			}
 
 			var player = new T();
-			ScriptManager.AddScriptInstance(player, ScriptType.Actor);
+			ScriptManager.Instance.AddScriptInstance(player, ScriptType.Actor);
 			player.InternalSpawn(info, channelId);
 
 			return player;
@@ -123,7 +123,7 @@ namespace CryEngine
 		{
             NativeMethods.Actor.RemoveActor(id);
 
-			ScriptManager.RemoveInstances<Actor>(ScriptType.Actor, actor => actor.Id == id);
+			ScriptManager.Instance.RemoveInstances<Actor>(ScriptType.Actor, actor => actor.Id == id);
 		}
 
 		public static void Remove(Actor actor)
@@ -137,7 +137,7 @@ namespace CryEngine
 			if(actorInfo.Id != 0)
                 NativeMethods.Actor.RemoveActor(actorInfo.Id);
 
-			ScriptManager.RemoveInstances<Actor>(ScriptType.Actor, actor => actor.ChannelId == channelId);
+			ScriptManager.Instance.RemoveInstances<Actor>(ScriptType.Actor, actor => actor.ChannelId == channelId);
 		}
 		#endregion
 

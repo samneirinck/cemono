@@ -26,7 +26,7 @@ namespace CryEngine
 			{
 				var ent = new T();
 
-				ScriptManager.AddScriptInstance(ent, ScriptType.Entity);
+				ScriptManager.Instance.AddScriptInstance(ent, ScriptType.Entity);
 				ent.InternalSpawn(info);
 
 				return ent;
@@ -51,7 +51,7 @@ namespace CryEngine
 
 		internal static bool InternalRemove(EntityId id)
 		{
-			int numRemoved = ScriptManager.RemoveInstances(ScriptType.Entity, instance =>
+			int numRemoved = ScriptManager.Instance.RemoveInstances(ScriptType.Entity, instance =>
 				{
 					var entity = instance as Entity;
 							if(entity != null && entity.Id == id && entity.OnRemove())
@@ -75,7 +75,7 @@ namespace CryEngine
 			if(entityId == 0)
 				throw new ArgumentException("entityId cannot be 0!");
 
-			return ScriptManager.Find<T>(ScriptType.Entity, x => x.Id == entityId);
+			return ScriptManager.Instance.Find<T>(ScriptType.Entity, x => x.Id == entityId);
 		}
 
 		/// <summary>
@@ -110,7 +110,7 @@ namespace CryEngine
 				return Actor.CreateNativeActor(actorInfo);
 
 			var nativeEntity = new NativeEntity(id, entityPointer);
-			ScriptManager.AddScriptInstance(nativeEntity, ScriptType.Entity);
+			ScriptManager.Instance.AddScriptInstance(nativeEntity, ScriptType.Entity);
 
 			return nativeEntity;
 		}

@@ -23,8 +23,6 @@ namespace CryBrary.Tests
 		public void Init()
 		{
 		    InitializeMocks();
-
-            ScriptManager.IgnoreExternalCalls = true;
 		}
 
         private void InitializeMocks()
@@ -119,13 +117,6 @@ namespace CryBrary.Tests
             var cvarMethodsMock = new Mock<INativeCVarMethods>();
 
             NativeMethods.CVar = cvarMethodsMock.Object;
-        }
-
-        [TearDown]
-        public void PostTest()
-        {
-            if (ScriptManager.Scripts != null)
-                ScriptManager.Scripts.Clear();
         }
     }
 }

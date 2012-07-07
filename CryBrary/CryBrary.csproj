@@ -240,7 +240,6 @@
     <Compile Include="Testing\Manager.cs" />
     <Compile Include="UI\EventSystem.cs" />
     <Compile Include="UI\UI.cs" />
-    <Compile Include="Serialization\AppDomainSerializer.cs" />
     <Compile Include="Misc\Convert.cs" />
     <Compile Include="Math\Math.cs" />
     <Compile Include="Engine\3DEngine.cs" />
