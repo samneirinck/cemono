@@ -230,6 +230,16 @@ void CScriptSystem::PreReload()
 	// Force dump of instance data if last script reload was successful. (Otherwise we'd override the existing script dump with an invalid one)
 	if(m_bLastCompilationSuccess)
 		m_AppDomainSerializer->CallMethod("DumpScriptData");
+
+	Reset();
+}
+
+void CScriptSystem::Reset()
+{
+	SAFE_RELEASE(m_pScriptManager);
+	SAFE_RELEASE(m_AppDomainSerializer);
+
+	SAFE_RELEASE(m_pScriptDomain);
 }
 
 bool CScriptSystem::DoReload(bool initialLoad)
@@ -238,8 +248,8 @@ bool CScriptSystem::DoReload(bool initialLoad)
 	m_pRootDomain->SetActive(true);
 
 	// The script domain as to which all loaded assemblies and scripts will be contained within.
-	IMonoDomain *pNewScriptDomain = new CScriptDomain("ScriptDomain");
-	pNewScriptDomain->SetActive(true);
+	m_pScriptDomain = new CScriptDomain("ScriptDomain");
+	m_pScriptDomain->SetActive(true);
 
 	// Store the old images in case we need to revert to the old state.
 	std::vector<MonoImage *> m_prevAssemblyImages;
@@ -270,7 +280,7 @@ bool CScriptSystem::DoReload(bool initialLoad)
 
 	InitializeSystems();
 
-	IMonoObject *pNewScriptManager = m_pCryBraryAssembly->GetClass("ScriptManager", "CryEngine.Initialization")->CreateInstance();
+	m_pScriptManager = m_pCryBraryAssembly->GetClass("ScriptManager", "CryEngine.Initialization")->CreateInstance();
 
 	for each(auto listener in m_scriptReloadListeners)
 		listener->OnPreScriptCompilation(!initialLoad);
@@ -278,7 +288,7 @@ bool CScriptSystem::DoReload(bool initialLoad)
 	if(initialLoad)
 		CryLogAlways("		Loading plugins...");
 
-	IMonoObject *pInitializationResult = pNewScriptManager->CallMethod("LoadPlugins");
+	IMonoObject *pInitializationResult = m_pScriptManager->CallMethod("LoadPlugins");
 	m_bLastCompilationSuccess = pInitializationResult ? pInitializationResult->Unbox<bool>() : false;
 	SAFE_RELEASE(pInitializationResult);
 
@@ -288,24 +298,12 @@ bool CScriptSystem::DoReload(bool initialLoad)
 	bool result = true;
 	if(m_bLastCompilationSuccess)
 	{
-		SAFE_RELEASE(m_AppDomainSerializer);
-		SAFE_RELEASE(m_pScriptManager);
-
-		SAFE_RELEASE(m_pScriptDomain);
-
-		m_pScriptDomain = pNewScriptDomain;
-
-		m_pScriptManager = pNewScriptManager;
-
 		m_AppDomainSerializer = m_pCryBraryAssembly->GetClass("AppDomainSerializer", "CryEngine.Serialization")->CreateInstance();
 
 		// Nodes won't get recompiled if we forget this.
 		if(!initialLoad)
 		{
-			if(m_pScriptManager)
-				m_pScriptManager->CallMethod("PostInit");
-			else
-				gEnv->pSystem->Quit();
+			m_pScriptManager->CallMethod("PostInit");
 
 			m_AppDomainSerializer->CallMethod("TrySetScriptData");
 
@@ -325,11 +323,6 @@ bool CScriptSystem::DoReload(bool initialLoad)
 	else
 	{
 		m_pRootDomain->SetActive();
-
-		SAFE_RELEASE(m_AppDomainSerializer);
-		SAFE_RELEASE(pNewScriptManager);
-		
-		SAFE_RELEASE(pNewScriptDomain);
 
 		if(!initialLoad)
 		{
@@ -368,7 +361,6 @@ bool CScriptSystem::DoReload(bool initialLoad)
 	}
 
 	m_prevAssemblyImages.clear();
-
 
 	return result;
 }

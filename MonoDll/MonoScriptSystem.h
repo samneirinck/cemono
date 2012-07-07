@@ -110,6 +110,8 @@ protected:
 	void PreReload();
 	bool DoReload(bool initialLoad);
 
+	void Reset();
+
 	void RegisterDefaultBindings();
 
 	// The primary app domain, not really used for anything besides holding the script domain. Do *not* unload this at runtime, we cannot execute another root domain again without restarting.
