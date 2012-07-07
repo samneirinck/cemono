@@ -9,9 +9,12 @@ namespace CryEngine
 	{
 		public static void Register(string name, ConsoleCommandDelegate func, string comment = "", CVarFlags flags = CVarFlags.None)
 		{
-			CVar.RegisterCommand(name, comment, flags);
+			if (!commands.ContainsKey(name))
+			{
+				CVar.RegisterCommand(name, comment, flags);
 
-			commands.Add(name, func);
+				commands.Add(name, func);
+			}
 		}
 
 		internal static void OnCommand(string fullCommandLine)
