@@ -14,30 +14,18 @@ namespace CryEngine.Initialization
 {
 	public partial class ScriptReloadMessage : Form
 	{
-		public ScriptReloadMessage(CompilerResults compilationResults, bool canRevert)
+		public ScriptReloadMessage(Exception exception, bool canRevert)
 		{
 			InitializeComponent();
 
-			//tryAgainButton.Click += (s, a) => ;
-			//revertButton.Click += (s, a) => ;
+			tryAgainButton.Click += (s, a) => ScriptManager.Instance.OnReload();
+			revertButton.Click += (s, a) => ScriptManager.Instance.OnRevert();
 			exitButton.Click += (s, a) => Process.GetCurrentProcess().Kill();
 
 			if (!canRevert)
 				revertButton.Enabled = false;
 
-			string compilationError = string.Format("Compilation failed; {0} errors: ", compilationResults.Errors.Count);
-
-			foreach (CompilerError error in compilationResults.Errors)
-			{
-				compilationError += Environment.NewLine;
-
-				if (!error.ErrorText.Contains("(Location of the symbol related to previous error)"))
-					compilationError += string.Format("{0}({1},{2}): {3} {4}: {5}", error.FileName, error.Line, error.Column, error.IsWarning ? "warning" : "error", error.ErrorNumber, error.ErrorText);
-				else
-					compilationError += "	" + error.ErrorText;
-			}
-
-			errorBox.Text = compilationError;
+			errorBox.Text = exception.ToString();
 		}
 	}
 }

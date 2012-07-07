@@ -27,6 +27,8 @@ namespace CryEngine.Initialization
 
 		public ScriptManager()
 		{
+			Instance = this;
+
 			if(!Directory.Exists(PathUtils.TempFolder))
 				Directory.CreateDirectory(PathUtils.TempFolder);
 			else
@@ -56,7 +58,16 @@ namespace CryEngine.Initialization
 
 			ScriptDomain = AppDomain.CreateDomain("ScriptDomain");
 
-			if (LoadPlugins())
+			try
+			{
+				LoadPlugins();
+			}
+			catch (Exception ex)
+			{
+				var scriptReloadMessage = new ScriptReloadMessage(ex, !initialLoad);
+				scriptReloadMessage.ShowDialog();
+			}
+			finally
 			{
 				// These have to be registered later on due to the flow system being initialized late.
 				foreach (var node in FlowNodes)
@@ -69,11 +80,6 @@ namespace CryEngine.Initialization
 					ForEach(ScriptType.CryScriptInstance, x => x.OnScriptReloadInternal());
 				}
 			}
-			else
-			{
-				var scriptReloadMessage = new ScriptReloadMessage(null, !initialLoad);
-				scriptReloadMessage.ShowDialog();
-			}
 		}
 
 		public void OnReload()
@@ -81,8 +87,15 @@ namespace CryEngine.Initialization
 			InitializeScriptDomain();
 		}
 
+		public void OnRevert()
+		{
+			// Revert to previous state
+		}
+
 		AppDomain ScriptDomain { get; set; }
 		AppDomainSerializer Serializer { get; set; }
+
+		public static ScriptManager Instance;
 
 		void PopulateAssemblyLookup()
 		{
@@ -124,7 +137,7 @@ namespace CryEngine.Initialization
 #endif
 		}
 
-		bool LoadPlugins()
+		void LoadPlugins()
 		{
             var pluginsDirectory = Path.Combine(PathUtils.ScriptsFolder, "Plugins");
             foreach (var directory in Directory.GetDirectories(pluginsDirectory))
@@ -198,8 +211,6 @@ namespace CryEngine.Initialization
                     }
                 }
             }
-
-			return true;
 		}
 
 		/// <summary>
