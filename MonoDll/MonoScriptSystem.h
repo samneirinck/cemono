@@ -44,13 +44,9 @@ class CScriptSystem
 
 	typedef std::map<const void *, const char *> TMethodBindings;
 	typedef std::map<IMonoObject *, int> TScripts;
-	typedef std::vector<IMonoScriptSystemListener *> TScriptCompilationListeners;
 
 public:
 	// IMonoScriptSystem
-	virtual bool Reload(bool initialLoad = false) override;
-	virtual bool IsReloading() override { return m_bReloading; }
-
 	virtual void Release() override { delete this; }
 
 	virtual void RegisterMethodBinding(const void *method, const char *fullMethodName) override;
@@ -67,9 +63,6 @@ public:
 	virtual IMonoDomain *GetRootDomain() override { return m_pRootDomain; }
 
 	virtual IMonoConverter *GetConverter() override { return m_pConverter; }
-
-	virtual void RegisterListener(IMonoScriptSystemListener *pListener) override { stl::push_back_unique(m_scriptReloadListeners, pListener); }
-	virtual void UnregisterListener(IMonoScriptSystemListener *pListener) override { stl::find_and_erase(m_scriptReloadListeners, pListener); }
 
 	virtual void RegisterFlownodes() { OnSystemEvent(ESYSTEM_EVENT_GAME_POST_INIT, 0, 0); }
 	// ~IMonoScriptSystem
@@ -107,22 +100,12 @@ protected:
 	bool CompleteInit();
 	bool InitializeSystems();
 
-	void PreReload();
-	bool DoReload(bool initialLoad);
-
-	void Reset();
-
 	void RegisterDefaultBindings();
 
 	// The primary app domain, not really used for anything besides holding the script domain. Do *not* unload this at runtime, we cannot execute another root domain again without restarting.
 	IMonoDomain *m_pRootDomain;
 
-	// The app domain in which we load scripts into. Killed and reloaded on script reload.
-	IMonoDomain *m_pScriptDomain;
-
 	IMonoObject *m_pScriptManager;
-	// Hard pointer to the AppDomainSerializer class to quickly dump and restore scripts.
-	IMonoObject *m_AppDomainSerializer;
 
 	// Map containing all scripts and their id's for quick access.
 	TScripts m_scriptInstances;
@@ -132,7 +115,7 @@ protected:
 
 	IMonoConverter *m_pConverter;
 
-	CScriptAssembly *m_pCryBraryAssembly;
+	IMonoAssembly *m_pCryBraryAssembly;
 	IMonoAssembly *m_pPdb2MdbAssembly;
 
 	SCVars *m_pCVars;
@@ -142,16 +125,6 @@ protected:
 
 	// ScriptBinds declared in this project are stored here to make sure they are destructed on shutdown.
 	std::vector<std::shared_ptr<IMonoScriptBind>> m_localScriptBinds;
-
-	TScriptCompilationListeners m_scriptReloadListeners;
-
-	// If true, the last script reload was successful. This is necessary to make sure we don't override with invalid script dumps.
-	bool m_bLastCompilationSuccess;
-	// True when currently recompiling scripts / serializing app domain.
-	bool m_bReloading;
-
-	// If true when PostInit is called, does not forward call to ScriptManager
-	bool m_bHasPostInitialized;
 };
 
 #endif //__MONO_H__

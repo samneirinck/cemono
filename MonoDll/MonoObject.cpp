@@ -23,8 +23,6 @@ CScriptObject::CScriptObject(MonoObject *pObject)
 		m_scriptId = (int)mono_object_unbox(mono_property_get_value(pScriptIdProperty, m_pObject, nullptr, nullptr));
 	else
 		m_scriptId = -1;
-
-	gEnv->pMonoScriptSystem->RegisterListener(this);
 }
 
 CScriptObject::CScriptObject(MonoObject *object, IMonoArray *pConstructorParams)
@@ -41,16 +39,12 @@ CScriptObject::CScriptObject(MonoObject *object, IMonoArray *pConstructorParams)
 
 	// We need this to allow the GC to collect the class object later on.
 	m_objectHandle = mono_gchandle_new(m_pObject, false);
-
-	gEnv->pMonoScriptSystem->RegisterListener(this);
 }
 
 CScriptObject::~CScriptObject()
 {
 	// Decrement ref counter in the class, released if no longer used.
 	SAFE_RELEASE(m_pClass);
-
-	gEnv->pMonoScriptSystem->UnregisterListener(this);
 
 	 if(m_objectHandle != -1)
 		 mono_gchandle_free(m_objectHandle);

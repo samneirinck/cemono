@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using System.CodeDom.Compiler;
 
-namespace CryEngine.Script_Handling
+namespace CryEngine.Initialization
 {
 	public partial class ScriptReloadMessage : Form
 	{

@@ -58,12 +58,7 @@ CScriptSystem::CScriptSystem()
 	, m_pCryBraryAssembly(nullptr)
 	, m_pPdb2MdbAssembly(nullptr)
 	, m_pScriptManager(nullptr)
-	, m_pScriptDomain(nullptr)
-	, m_AppDomainSerializer(nullptr)
 	, m_pInput(nullptr)
-	, m_bReloading(false)
-	, m_bLastCompilationSuccess(false)
-	, m_bHasPostInitialized(false)
 {
 	//CryLogAlways("Initializing Mono Script System");
 	
@@ -129,16 +124,12 @@ CScriptSystem::~CScriptSystem()
 
 	SAFE_DELETE(m_pConverter);
 
-	SAFE_RELEASE(m_AppDomainSerializer);
 	SAFE_RELEASE(m_pScriptManager);
 
 	SAFE_DELETE(m_pCryBraryAssembly);
 
 	SAFE_DELETE(m_pCVars);
 
-	m_scriptReloadListeners.clear();
-
-	SAFE_RELEASE(m_pScriptDomain);
 	SAFE_RELEASE(m_pRootDomain);
 }
 
@@ -171,15 +162,13 @@ bool CScriptSystem::CompleteInit()
 #ifndef _RELEASE
 	m_pPdb2MdbAssembly = GetAssembly(PathUtils::GetMonoPath() + "bin\\pdb2mdb.dll");
 #endif
-	
-	// WIP ScriptManager game object, to be used for CryMono RMI support etc in the future.
-	REGISTER_GAME_OBJECT_EXTENSION(gEnv->pGameFramework, ScriptManager);
+
+	m_pCryBraryAssembly = GetAssembly(PathUtils::GetBinaryPath() + "CryBrary.dll");
 
 	CryLogAlways("		Registering default scriptbinds...");
 	RegisterDefaultBindings();
 
-	if(!Reload(true))
-		return false;
+	m_pScriptManager = m_pCryBraryAssembly->GetClass("ScriptManager", "CryEngine.Initialization")->CreateInstance();
 
 	gEnv->pGameFramework->RegisterListener(this, "CryMono", eFLPriority_Game);
 
@@ -200,169 +189,16 @@ void CScriptSystem::OnSystemEvent(ESystemEvent event,UINT_PTR wparam,UINT_PTR lp
 	{
 	case ESYSTEM_EVENT_GAME_POST_INIT:
 		{
+			/* TODO: Reimplement UI Flownode workaround
 			if(!m_bHasPostInitialized && gEnv->pGameFramework->GetIFlowSystem())
 			{
 				m_pScriptManager->CallMethod("PostInit");
 
 				m_bHasPostInitialized = true;
-			}
+			}*/
 		}
 		break;
 	}
-}
-
-bool CScriptSystem::Reload(bool initialLoad)
-{
-	PreReload();
-
-	for each(auto listener in m_scriptReloadListeners)
-		listener->OnPreScriptReload(initialLoad);
-
-	// Reload is split into Reload & DoReload to make sure we don't call PreReload multiple times.
-	return DoReload(initialLoad);
-}
-
-void CScriptSystem::PreReload()
-{
-	// Don't allow another reload to commence while we're already reloading.
-	m_bReloading = true;
-
-	// Force dump of instance data if last script reload was successful. (Otherwise we'd override the existing script dump with an invalid one)
-	if(m_bLastCompilationSuccess)
-		m_AppDomainSerializer->CallMethod("DumpScriptData");
-
-	Reset();
-}
-
-void CScriptSystem::Reset()
-{
-	SAFE_RELEASE(m_pScriptManager);
-	SAFE_RELEASE(m_AppDomainSerializer);
-
-	SAFE_RELEASE(m_pScriptDomain);
-}
-
-bool CScriptSystem::DoReload(bool initialLoad)
-{
-	// Make sure the new script domain is created under root
-	m_pRootDomain->SetActive(true);
-
-	// The script domain as to which all loaded assemblies and scripts will be contained within.
-	m_pScriptDomain = new CScriptDomain("ScriptDomain");
-	m_pScriptDomain->SetActive(true);
-
-	// Store the old images in case we need to revert to the old state.
-	std::vector<MonoImage *> m_prevAssemblyImages;
-
-	if(initialLoad)
-	{
-		const char *cryBraryPath = PathUtils::GetBinaryPath() + "CryBrary.dll";
-
-		m_pCryBraryAssembly = static_cast<CScriptAssembly *>(GetAssembly(cryBraryPath));
-	}
-	else
-	{
-		for each(auto assembly in m_assemblies)
-		{
-			// Don't re-assign managed assemblies
-			if(assembly->IsNative())
-			{
-				m_prevAssemblyImages.push_back(assembly->GetImage());
-				assembly->SetImage(GetAssemblyImage(assembly->GetPath()));
-			}
-		}
-	}
-
-	CRY_ASSERT(m_pCryBraryAssembly);
-
-	if(initialLoad)
-		CryLogAlways("		Initializing subsystems...");
-
-	InitializeSystems();
-
-	m_pScriptManager = m_pCryBraryAssembly->GetClass("ScriptManager", "CryEngine.Initialization")->CreateInstance();
-
-	for each(auto listener in m_scriptReloadListeners)
-		listener->OnPreScriptCompilation(!initialLoad);
-
-	if(initialLoad)
-		CryLogAlways("		Loading plugins...");
-
-	IMonoObject *pInitializationResult = m_pScriptManager->CallMethod("LoadPlugins");
-	m_bLastCompilationSuccess = pInitializationResult ? pInitializationResult->Unbox<bool>() : false;
-	SAFE_RELEASE(pInitializationResult);
-
-	for each(auto listener in m_scriptReloadListeners)
-		listener->OnPostScriptCompilation(!initialLoad, m_bLastCompilationSuccess);
-
-	bool result = true;
-	if(m_bLastCompilationSuccess)
-	{
-		m_AppDomainSerializer = m_pCryBraryAssembly->GetClass("AppDomainSerializer", "CryEngine.Serialization")->CreateInstance();
-
-		// Nodes won't get recompiled if we forget this.
-		if(!initialLoad)
-		{
-			m_pScriptManager->CallMethod("PostInit");
-
-			m_AppDomainSerializer->CallMethod("TrySetScriptData");
-
-			for(auto it = m_scriptReloadListeners.begin(); it != m_scriptReloadListeners.end(); ++it)
-				(*it)->OnPostScriptReload(false);
-
-			m_pScriptManager->CallMethod("OnPostScriptReload");
-		}
-		else
-		{
-			for each(auto listener in m_scriptReloadListeners)
-				listener->OnPostScriptReload(true);
-		}
-
-		m_bReloading = false;
-	}
-	else
-	{
-		m_pRootDomain->SetActive();
-
-		if(!initialLoad)
-		{
-			//Cancel, Try Again, Continue
-			switch(CryMessageBox("Script compilation failed, check log for more information. Do you want to continue by reloading the last successful script compilation?", "Script compilation failed!", 0x00000006L))
-			{
-			case 2: // cancel (quit)
-				result = false;
-				break;
-			case 10: // try again (recompile)
-				result = DoReload(initialLoad);
-				break;
-			case 11: // continue (load previously functional script domain)
-				{
-					m_pScriptDomain->SetActive();
-
-					for(int i = 0; i < m_assemblies.size(); i++)
-						m_assemblies[i]->SetImage(m_prevAssemblyImages[i]);
-				}
-				break;
-			}
-		}
-		else
-		{
-			//Cancel, Retry
-			switch(CryMessageBox("Script compilation failed, check log for more information.", "Script compilation failed!", 0x00000005L))
-			{
-			case 2: // cancel (quit)
-				result = false;
-				break;
-			case 4: // retry (recompile)
-				result = DoReload(initialLoad);
-				break;
-			}
-		}
-	}
-
-	m_prevAssemblyImages.clear();
-
-	return result;
 }
 
 void CScriptSystem::RegisterDefaultBindings()
@@ -421,15 +257,12 @@ void CScriptSystem::OnPostUpdate(float fDeltaTime)
 
 void CScriptSystem::OnFileChange(const char *fileName)
 {
-	if(m_bReloading || g_pMonoCVars->mono_realtimeScripting == 0)
+	if(g_pMonoCVars->mono_realtimeScripting == 0)
 		return;
 
 	const char *fileExt = PathUtil::GetExt(fileName);
 	if(!strcmp(fileExt, "cs") || !strcmp(fileExt, "dll"))
-	{
-		if(!Reload())
-			gEnv->pSystem->Quit();
-	}
+		m_pScriptManager->CallMethod("OnReload");
 }
 
 void CScriptSystem::RegisterMethodBinding(const void *method, const char *fullMethodName)

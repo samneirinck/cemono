@@ -22,8 +22,6 @@ CScriptClass::CScriptClass(MonoClass *pClass, CScriptAssembly *pDeclaringAssembl
 
 	m_name = string(mono_class_get_name(pClass));
 	m_namespace = string(mono_class_get_namespace(pClass));
-
-	gEnv->pMonoScriptSystem->RegisterListener(this);
 }
 
 CScriptClass::~CScriptClass()

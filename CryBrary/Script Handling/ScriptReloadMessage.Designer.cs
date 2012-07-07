@@ -1,4 +1,4 @@
-﻿namespace CryEngine.Script_Handling
+﻿namespace CryEngine.Initialization
 {
 	partial class ScriptReloadMessage
 	{

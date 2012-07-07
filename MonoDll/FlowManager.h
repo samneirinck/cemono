@@ -74,7 +74,6 @@ struct SMonoNodeInfo
 class CFlowManager
 	: public IMonoScriptBind
 	, public IFlowNodeFactory
-	, public IMonoScriptSystemListener
 {
 public:
 	CFlowManager();

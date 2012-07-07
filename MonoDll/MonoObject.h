@@ -20,7 +20,6 @@ class CScriptClass;
 
 class CScriptObject
 	: public IMonoObject
-	, public IMonoScriptSystemListener
 {
 protected:
 	CScriptObject() {}

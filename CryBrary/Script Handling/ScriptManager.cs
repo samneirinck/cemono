@@ -11,6 +11,7 @@ using CryEngine.Native;
 using CryEngine.Sandbox;
 using CryEngine.Testing;
 using CryEngine.Testing.Internals;
+using CryEngine.Serialization;
 
 namespace CryEngine.Initialization
 {
@@ -39,7 +40,49 @@ namespace CryEngine.Initialization
 			}
 
             TestManager.Init();
+
+			InitializeScriptDomain(true);
+
+			Serializer = new AppDomainSerializer();
 		}
+
+		void InitializeScriptDomain(bool initialLoad = false)
+		{
+			if (!initialLoad)
+			{
+				Serializer.DumpScriptData();
+				AppDomain.Unload(ScriptDomain);
+			}
+
+			ScriptDomain = AppDomain.CreateDomain("ScriptDomain");
+
+			if (LoadPlugins())
+			{
+				// These have to be registered later on due to the flow system being initialized late.
+				foreach (var node in FlowNodes)
+					FlowNode.Register(node);
+
+				if (!initialLoad)
+				{
+					Serializer.TrySetScriptData();
+
+					ForEach(ScriptType.CryScriptInstance, x => x.OnScriptReloadInternal());
+				}
+			}
+			else
+			{
+				var scriptReloadMessage = new ScriptReloadMessage(null, !initialLoad);
+				scriptReloadMessage.ShowDialog();
+			}
+		}
+
+		public void OnReload()
+		{
+			InitializeScriptDomain();
+		}
+
+		AppDomain ScriptDomain { get; set; }
+		AppDomainSerializer Serializer { get; set; }
 
 		void PopulateAssemblyLookup()
 		{
@@ -157,18 +200,6 @@ namespace CryEngine.Initialization
             }
 
 			return true;
-		}
-
-		public void PostInit()
-		{
-			// These have to be registered later on due to the flow system being initialized late.
-			foreach(var node in FlowNodes)
-				FlowNode.Register(node);
-		}
-
-		public void OnPostScriptReload()
-		{
-			ForEach(ScriptType.CryScriptInstance, x => x.OnScriptReloadInternal());
 		}
 
 		/// <summary>
