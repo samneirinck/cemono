@@ -191,7 +191,7 @@ void CScriptSystem::OnSystemEvent(ESystemEvent event,UINT_PTR wparam,UINT_PTR lp
 			{
 				m_pScriptManager->CallMethod("PostInit");
 
-				if(!gEnv->pEntitySystem->FindEntityByName("ScriptManager"))
+				if(!gEnv->pEntitySystem->FindEntityByName("ScriptManager") && gEnv->bServer)
 				{
 					SEntitySpawnParams params;
 					params.pClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass("ScriptManager");

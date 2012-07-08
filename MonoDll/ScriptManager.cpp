@@ -29,21 +29,8 @@ bool CScriptManager::Init(IGameObject *pGameObject)
 {
 	SetGameObject(pGameObject);
 
-	GetGameObject()->EnablePostUpdates(this);
+	if (!GetGameObject()->BindToNetwork())
+		return false;
 
 	return true;
-}
-
-void CScriptManager::Update(SEntityUpdateContext& ctx, int updateSlot)
-{
-}
-
-void CScriptManager::PostUpdate(float frameTime)
-{
-	/*IMonoArray *pArgs = CreateMonoArray(1);
-	pArgs->Insert(frameTime);
-
-	m_pScriptManager->CallMethod("OnUpdate", pArgs);
-
-	SAFE_RELEASE(pArgs);*/
 }
