@@ -125,6 +125,8 @@ protected:
 
 	// ScriptBinds declared in this project are stored here to make sure they are destructed on shutdown.
 	std::vector<std::shared_ptr<IMonoScriptBind>> m_localScriptBinds;
+
+	bool m_bHasPostInitialized;
 };
 
 #endif //__MONO_H__

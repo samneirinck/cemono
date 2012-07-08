@@ -70,12 +70,10 @@ namespace CryEngine.Initialization
 			}
 			finally
 			{
-				// These have to be registered later on due to the flow system being initialized late.
-				foreach (var node in FlowNodes)
-					FlowNode.Register(node);
-
 				if (!initialLoad)
 				{
+					PostInit();
+
 					using (var stream = File.Open(Path.Combine(PathUtils.TempFolder, "ScriptManager.CompiledScripts.scriptdump"), FileMode.Open))
 						Scripts = Formatter.Deserialize(stream) as List<CryScript>;
 
@@ -90,6 +88,13 @@ namespace CryEngine.Initialization
 					ForEach(ScriptType.CryScriptInstance, x => x.OnScriptReloadInternal());
 				}
 			}
+		}
+
+		public void PostInit()
+		{
+			// These have to be registered later on due to the flow system being initialized late.
+			foreach (var node in FlowNodes)
+				FlowNode.Register(node);
 		}
 
 		public void OnReload()

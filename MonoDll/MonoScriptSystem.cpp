@@ -59,6 +59,7 @@ CScriptSystem::CScriptSystem()
 	, m_pPdb2MdbAssembly(nullptr)
 	, m_pScriptManager(nullptr)
 	, m_pInput(nullptr)
+	, m_bHasPostInitialized(false)
 {
 	//CryLogAlways("Initializing Mono Script System");
 	
@@ -165,6 +166,8 @@ bool CScriptSystem::CompleteInit()
 
 	m_pCryBraryAssembly = GetAssembly(PathUtils::GetBinaryPath() + "CryBrary.dll");
 
+	REGISTER_GAME_OBJECT_EXTENSION(gEnv->pGameFramework, ScriptManager);
+
 	CryLogAlways("		Registering default scriptbinds...");
 	RegisterDefaultBindings();
 
@@ -189,13 +192,12 @@ void CScriptSystem::OnSystemEvent(ESystemEvent event,UINT_PTR wparam,UINT_PTR lp
 	{
 	case ESYSTEM_EVENT_GAME_POST_INIT:
 		{
-			/* TODO: Reimplement UI Flownode workaround
 			if(!m_bHasPostInitialized && gEnv->pGameFramework->GetIFlowSystem())
 			{
 				m_pScriptManager->CallMethod("PostInit");
 
 				m_bHasPostInitialized = true;
-			}*/
+			}
 		}
 		break;
 	}
