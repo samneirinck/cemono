@@ -134,22 +134,12 @@ CScriptSystem::~CScriptSystem()
 	SAFE_RELEASE(m_pRootDomain);
 }
 
-#define REGISTER_GAME_OBJECT_EXTENSION(framework, name)\
-	{\
-		struct C##name##Creator : public IGameObjectExtensionCreatorBase\
-		{\
-		C##name *Create()\
-			{\
-			return new C##name();\
-			}\
-			void GetGameObjectExtensionRMIData( void ** ppRMI, size_t * nCount )\
-			{\
-			C##name::GetGameObjectExtensionRMIData( ppRMI, nCount );\
-			}\
-		};\
-		static C##name##Creator _creator;\
-		framework->GetIGameObjectSystem()->RegisterExtension(#name, &_creator, nullptr);\
-	}
+struct SScriptManagerCreator : public IGameObjectExtensionCreatorBase
+{
+	CScriptManager *Create() { return new CScriptManager(); }
+
+	void GetGameObjectExtensionRMIData(void **ppRMI, size_t *nCount) { CScriptManager::GetGameObjectExtensionRMIData(ppRMI, nCount); }
+};
 
 bool CScriptSystem::CompleteInit()
 {
@@ -166,7 +156,12 @@ bool CScriptSystem::CompleteInit()
 
 	m_pCryBraryAssembly = GetAssembly(PathUtils::GetBinaryPath() + "CryBrary.dll");
 
-	REGISTER_GAME_OBJECT_EXTENSION(gEnv->pGameFramework, ScriptManager);
+	static SScriptManagerCreator scriptManagerCreator;
+
+	IEntityClassRegistry::SEntityClassDesc scriptManagerClassDesc;
+	scriptManagerClassDesc.flags |= ECLF_INVISIBLE;
+	scriptManagerClassDesc.sName = "ScriptManager";
+	gEnv->pGameFramework->GetIGameObjectSystem()->RegisterExtension("ScriptManager", &scriptManagerCreator, &scriptManagerClassDesc);
 
 	CryLogAlways("		Registering default scriptbinds...");
 	RegisterDefaultBindings();
@@ -195,6 +190,16 @@ void CScriptSystem::OnSystemEvent(ESystemEvent event,UINT_PTR wparam,UINT_PTR lp
 			if(!m_bHasPostInitialized && gEnv->pGameFramework->GetIFlowSystem())
 			{
 				m_pScriptManager->CallMethod("PostInit");
+
+				if(!gEnv->pEntitySystem->FindEntityByName("ScriptManager"))
+				{
+					SEntitySpawnParams params;
+					params.pClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass("ScriptManager");
+					params.sName = "ScriptManager";
+					params.nFlags = ENTITY_FLAG_SPAWNED | ENTITY_FLAG_UNREMOVABLE;
+					params.vPosition = Vec3(0,0,0);
+					gEnv->pEntitySystem->SpawnEntity(params);
+				}
 
 				m_bHasPostInitialized = true;
 			}

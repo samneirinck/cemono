@@ -47,4 +47,3 @@ void CScriptManager::PostUpdate(float frameTime)
 
 	SAFE_RELEASE(pArgs);*/
 }
-
