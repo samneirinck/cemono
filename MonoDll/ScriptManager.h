@@ -15,7 +15,7 @@ struct IMonoScript;
 struct IMonoArray;
 
 class CScriptManager
-	: public CGameObjectExtensionHelper <CScriptManager, IGameObjectExtension>
+	: public CGameObjectExtensionHelper <CScriptManager, IGameObjectExtension, 128 /* max RMI's */>
 {
 public:
 	CScriptManager();
