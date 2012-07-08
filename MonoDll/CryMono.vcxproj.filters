@@ -102,9 +102,6 @@
     <ClInclude Include="FlowBaseNode.h">
       <Filter>FlowSystem</Filter>
     </ClInclude>
-    <ClInclude Include="ScriptManager.h">
-      <Filter>Mono</Filter>
-    </ClInclude>
     <ClInclude Include="Headers\IMonoDomain.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
@@ -205,9 +202,6 @@
     </ClCompile>
     <ClCompile Include="Scriptbinds\ActorSystem.cpp">
       <Filter>ScriptBinds\Game Logic</Filter>
-    </ClCompile>
-    <ClCompile Include="ScriptManager.cpp">
-      <Filter>Mono</Filter>
     </ClCompile>
     <ClCompile Include="MonoInput.cpp">
       <Filter>ScriptBinds</Filter>

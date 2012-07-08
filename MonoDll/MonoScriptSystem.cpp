@@ -22,8 +22,6 @@
 #include <ICmdLine.h>
 #include <ISystem.h>
 
-#include "ScriptManager.h"
-
 #include "MonoConverter.h"
 
 // Bindings
@@ -134,13 +132,6 @@ CScriptSystem::~CScriptSystem()
 	SAFE_RELEASE(m_pRootDomain);
 }
 
-struct SScriptManagerCreator : public IGameObjectExtensionCreatorBase
-{
-	CScriptManager *Create() { return new CScriptManager(); }
-
-	void GetGameObjectExtensionRMIData(void **ppRMI, size_t *nCount) { CScriptManager::GetGameObjectExtensionRMIData(ppRMI, nCount); }
-};
-
 bool CScriptSystem::CompleteInit()
 {
 	CryLogAlways("		Initializing CryMono...");
@@ -155,13 +146,6 @@ bool CScriptSystem::CompleteInit()
 #endif
 
 	m_pCryBraryAssembly = GetAssembly(PathUtils::GetBinaryPath() + "CryBrary.dll");
-
-	static SScriptManagerCreator scriptManagerCreator;
-
-	IEntityClassRegistry::SEntityClassDesc scriptManagerClassDesc;
-	scriptManagerClassDesc.flags |= ECLF_INVISIBLE;
-	scriptManagerClassDesc.sName = "ScriptManager";
-	gEnv->pGameFramework->GetIGameObjectSystem()->RegisterExtension("ScriptManager", &scriptManagerCreator, &scriptManagerClassDesc);
 
 	CryLogAlways("		Registering default scriptbinds...");
 	RegisterDefaultBindings();
