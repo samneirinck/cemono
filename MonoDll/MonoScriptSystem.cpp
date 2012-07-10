@@ -175,16 +175,6 @@ void CScriptSystem::OnSystemEvent(ESystemEvent event,UINT_PTR wparam,UINT_PTR lp
 			{
 				m_pScriptManager->CallMethod("PostInit");
 
-				if(!gEnv->pEntitySystem->FindEntityByName("ScriptManager") && gEnv->bServer)
-				{
-					SEntitySpawnParams params;
-					params.pClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass("ScriptManager");
-					params.sName = "ScriptManager";
-					params.nFlags = ENTITY_FLAG_SPAWNED | ENTITY_FLAG_UNREMOVABLE;
-					params.vPosition = Vec3(0,0,0);
-					gEnv->pEntitySystem->SpawnEntity(params);
-				}
-
 				m_bHasPostInitialized = true;
 			}
 		}
