@@ -5,6 +5,8 @@ namespace CryEngine.Native
 {
     internal interface INativeEntityMethods
     {
+		void PlayAnimation(IntPtr ptr, string animationName, int slot, int layer, float blend, float speed, AnimationFlags flags);
+
         bool SpawnEntity(EntitySpawnParams spawnParams, bool autoInit, out EntityInfo entityInfo);
         void RemoveEntity(uint entityId);
 

@@ -93,6 +93,15 @@ struct SMonoEntityInfo
 	EntityId id;
 };
 
+enum EAnimationFlags
+{
+	EAnimFlag_CleanBending = 1 << 1,
+	EAnimFlag_NoBlend = 1 << 2,
+	EAnimFlag_RestartAnimation = 1 << 4,
+	EAnimFlag_RepeatLastFrame = 1 << 8,
+	EAnimFlag_Loop = 1 << 16,
+};
+
 class CScriptbind_Entity 
 	: public IMonoScriptBind
 	, public IEntitySystemSink
@@ -114,6 +123,8 @@ protected:
 	// IMonoScriptBind
 	virtual const char *GetClassName() { return "NativeEntityMethods"; }
 	// ~IMonoScriptBind
+
+	static void PlayAnimation(IEntity *pEnt, mono::string animationName, int slot, int layer, float blend, float speed, EAnimationFlags flags);
 
 	bool IsMonoEntity(const char *className);
 

@@ -206,12 +206,17 @@ namespace CryEngine
 		{
 			if(name.EndsWith("cgf"))
                 NativeMethods.Entity.LoadObject(EntityPointer, name, slotNumber);
-			else if(name.EndsWith("cdf") || name.EndsWith("cga") || name.EndsWith("chr"))
-                NativeMethods.Entity.LoadCharacter(EntityPointer, name, slotNumber);
+			else if (name.EndsWith("cdf") || name.EndsWith("cga") || name.EndsWith("chr"))
+				NativeMethods.Entity.LoadCharacter(EntityPointer, name, slotNumber);
 			else
 				return false;
 
 			return true;
+		}
+
+		public void PlayAnimation(string animationName, AnimationFlags flags = 0, int slot = 0, int layer = 0, float blend = 0.175f, float speed = 1.0f)
+		{
+			NativeMethods.Entity.PlayAnimation(EntityPointer, animationName, slot, layer, blend, speed, flags);
 		}
 
 		protected string GetObjectFilePath(int slot = 0)

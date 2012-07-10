@@ -76,7 +76,48 @@ CScriptbind_Entity::CScriptbind_Entity()
 	REGISTER_METHOD(SetVisionParams);
 	REGISTER_METHOD(SetHUDSilhouettesParams);
 
+	REGISTER_METHOD(PlayAnimation);
+
 	gEnv->pEntitySystem->AddSink(this, IEntitySystem::OnSpawn | IEntitySystem::OnRemove, 0);
+}
+
+void CScriptbind_Entity::PlayAnimation(IEntity *pEntity, mono::string animationName, int slot, int layer, float blend, float speed, EAnimationFlags flags)
+{
+	// Animation graph input
+	/*if(IGameObject *pGameObject = gEnv->pGameFramework->GetGameObject(pEntity->GetId()))
+	{
+		if(IAnimatedCharacter *pAniamtedCharacter = static_cast<IAnimatedCharacter*>(pGameObject->AcquireExtension("AnimatedCharacter")))	
+		{
+			pAniamtedCharacter->GetAnimationGraphState()->SetInput("Action / "Signal"
+		}
+	}*/
+
+	ICharacterInstance *pCharacter = pEntity->GetCharacter(slot);
+	if(!pCharacter)
+		return;
+
+	ISkeletonAnim *pSkeletonAnim = pCharacter->GetISkeletonAnim();
+	if(!pSkeletonAnim)
+		return;
+
+	if(flags & EAnimFlag_CleanBending)
+	{
+		while(pSkeletonAnim->GetNumAnimsInFIFO(layer)>1)
+		{
+			if (!pSkeletonAnim->RemoveAnimFromFIFO(layer, pSkeletonAnim->GetNumAnimsInFIFO(layer)-1))
+				break;
+		}
+	}
+
+	if (flags & EAnimFlag_NoBlend)
+		blend = 0.0f;
+
+	CryCharAnimationParams params;
+	params.m_fTransTime = blend;
+	params.m_nLayerID = layer;
+	params.m_nFlags = (flags & EAnimFlag_Loop ? CA_LOOP_ANIMATION : 0) | (flags & EAnimFlag_RestartAnimation ? CA_ALLOW_ANIM_RESTART : 0) | (flags & EAnimFlag_RepeatLastFrame ? CA_REPEAT_LAST_KEY : 0);
+	pSkeletonAnim->StartAnimation(ToCryString(animationName),  params);
+	pSkeletonAnim->SetLayerUpdateMultiplier(layer, speed);
 }
 
 bool CScriptbind_Entity::IsMonoEntity(const char *className)

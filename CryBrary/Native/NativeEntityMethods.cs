@@ -6,6 +6,9 @@ namespace CryEngine.Native
 {
     internal class NativeEntityMethods : INativeEntityMethods
     {
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static void _PlayAnimation(IntPtr ptr, string animationName, int slot, int layer, float blend, float speed, AnimationFlags flags);
+
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static bool _SpawnEntity(EntitySpawnParams spawnParams, bool autoInit, out EntityInfo entityInfo);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
@@ -96,6 +99,10 @@ namespace CryEngine.Native
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern internal static int _SetAttachmentMaterial(IntPtr entPtr, string name, IntPtr materialPtr);
 
+		public void PlayAnimation(IntPtr ptr, string animationName, int slot, int layer, float blend, float speed, AnimationFlags flags)
+		{
+			_PlayAnimation(ptr, animationName, slot, layer, blend, speed, flags);
+		}
 
         public bool SpawnEntity(EntitySpawnParams spawnParams, bool autoInit, out EntityInfo entityInfo)
         {
