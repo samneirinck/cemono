@@ -79,7 +79,6 @@ namespace CryEngine
 		Float,
 		Vec3,
 		String,
-		Entity,
 		Object,
 		Texture,
 		File,
