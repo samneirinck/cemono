@@ -74,6 +74,9 @@ namespace CryEngine
         /// <param name="ex"></param>
         public static void DisplayException(Exception ex)
         {
+            // Log exception as well
+            LogException(ex);
+            
             var form = new ExceptionMessage(ex, false);
             form.ShowDialog();
         }
