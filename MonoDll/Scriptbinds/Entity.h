@@ -66,6 +66,8 @@ struct SMonoEntityProperty
 	mono::string description;
 	mono::string editType;
 
+	mono::string folder;
+
 	IEntityPropertyHandler::EPropertyType type;
 	uint32 flags;
 

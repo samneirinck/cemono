@@ -186,12 +186,24 @@ bool CScriptbind_Entity::RegisterEntityClass(SEntityRegistrationParams params)
 
 		int numProperties = propertiesArray->GetSize();
 	
+		const char *currentFolder = NULL;
 		for	(int i = 0; i < numProperties; ++i)
 		{
 			IMonoObject *pItem = propertiesArray->GetItem(i);
 			CRY_ASSERT(pItem);
 
 			SMonoEntityProperty monoProperty = pItem->Unbox<SMonoEntityProperty>();
+
+			if(monoProperty.folder)
+			{
+				currentFolder = ToCryString(monoProperty.folder);
+
+				IEntityPropertyHandler::SPropertyInfo groupInfo;
+				groupInfo.name = currentFolder;
+				groupInfo.type = IEntityPropertyHandler::FolderBegin;
+
+				properties.push_back(groupInfo);
+			}
 
 			IEntityPropertyHandler::SPropertyInfo propertyInfo;
 
@@ -203,6 +215,17 @@ bool CScriptbind_Entity::RegisterEntityClass(SEntityRegistrationParams params)
 			propertyInfo.limits.max = monoProperty.limits.max;
 
 			properties.push_back(propertyInfo);
+
+			if(currentFolder)
+			{
+				IEntityPropertyHandler::SPropertyInfo groupInfo;
+				groupInfo.name = currentFolder;
+				groupInfo.type = IEntityPropertyHandler::FolderEnd;
+
+				properties.push_back(groupInfo);
+				
+				currentFolder = NULL;
+			}
 		}
 	}
 

@@ -66,6 +66,11 @@ namespace CryEngine
 		/// The description to display when the user hovers over this property inside Sandbox.
 		/// </summary>
 		public string Description { get; set; }
+
+		/// <summary>
+		/// The folder in which this property is grouped into, within the Editor.
+		/// </summary>
+		public string Folder { get; set; }
 	}
 
 	/// <summary>
@@ -133,6 +138,8 @@ namespace CryEngine
 #pragma warning disable 414
 		private string editType;
 #pragma warning restore 414
+
+		public string folder;
 
 		public EntityPropertyType type
 		{
