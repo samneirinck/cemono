@@ -18,6 +18,52 @@ CScriptbind_3DEngine::CScriptbind_3DEngine()
 
 	REGISTER_METHOD(SetTimeOfDayVariableValue);
 	REGISTER_METHOD(SetTimeOfDayVariableValueColor);
+
+	REGISTER_METHOD(CreateLightSource);
+	REGISTER_METHOD(SetLightSourceParams);
+	REGISTER_METHOD(GetLightSourceParams);
+}
+
+ILightSource *CScriptbind_3DEngine::CreateLightSource()
+{
+	ILightSource *pLightSource = gEnv->p3DEngine->CreateLightSource();
+
+	return pLightSource;
+}
+
+void CScriptbind_3DEngine::SetLightSourceParams(ILightSource *pLightSource, MonoLightParams params)
+{
+	CDLight light;
+	light.m_nLightStyle = params.lightStyle;
+	light.m_Origin = params.origin;
+	light.m_fLightFrustumAngle = params.lightFrustumAngle;
+	light.m_fRadius = params.radius;
+	light.m_Flags = params.flags;
+
+	light.m_fCoronaScale = params.coronaScale;
+	light.m_fCoronaDistSizeFactor = params.coronaDistSizeFactor;
+	light.m_fCoronaDistIntensityFactor = params.coronaDistIntensityFactor;
+
+	if(params.specularCubemap)
+		light.SetSpecularCubemap(gEnv->pRenderer->EF_LoadTexture(ToCryString(params.specularCubemap)));
+	if(params.diffuseCubemap)
+		light.SetDiffuseCubemap(gEnv->pRenderer->EF_LoadTexture(ToCryString(params.diffuseCubemap)));
+
+	light.SetLightColor(params.diffuseColor);
+	light.SetSpecularMult(params.specularMultiplier);
+	light.m_nPostEffect = params.postEffect;
+
+	light.m_fHDRDynamic = params.hdrDynamic;
+
+	light.m_fProjectorNearPlane = params.projectNearPlane;
+
+	pLightSource->SetLightProperties(light);
+}
+
+MonoLightParams CScriptbind_3DEngine::GetLightSourceParams(ILightSource *pLightSource)
+{
+	MonoLightParams params;
+	return params;
 }
 
 float CScriptbind_3DEngine::GetTerrainElevation(float x, float y, bool includeOutdoorVoxels)

@@ -1,3 +1,5 @@
+using System;
+
 namespace CryEngine.Native
 {
     internal interface INative3DEngineMethods
@@ -13,5 +15,9 @@ namespace CryEngine.Native
         void SetTimeOfDayAdvancedInfo(TimeOfDay.AdvancedInfo advancedInfo);
         void SetTimeOfDayVariableValue(int id, float value);
         void SetTimeOfDayVariableValueColor(int id, Vec3 value);
+
+		IntPtr CreateLightSource();
+		void SetLightSourceParams(IntPtr lightSourcePtr, LightParams lightParams);
+		LightParams GetLightSourceParams(IntPtr lightSourcePtr);
     }
 }
