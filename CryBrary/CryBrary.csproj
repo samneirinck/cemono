@@ -126,6 +126,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Actor\Actor.cs" />
+    <Compile Include="Engine\LightSource.cs" />
     <Compile Include="Entity\AnimationFlags.cs" />
     <Compile Include="Native\Interfaces\INative3DEngineMethods.cs" />
     <Compile Include="Native\Interfaces\INativeActorMethods.cs" />
