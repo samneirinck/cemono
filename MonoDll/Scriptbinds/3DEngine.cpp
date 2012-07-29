@@ -22,6 +22,9 @@ CScriptbind_3DEngine::CScriptbind_3DEngine()
 	REGISTER_METHOD(CreateLightSource);
 	REGISTER_METHOD(SetLightSourceParams);
 	REGISTER_METHOD(GetLightSourceParams);
+
+	REGISTER_METHOD(SetLightSourceMatrix);
+	REGISTER_METHOD(GetLightSourceMatrix);
 }
 
 ILightSource *CScriptbind_3DEngine::CreateLightSource()
@@ -29,6 +32,19 @@ ILightSource *CScriptbind_3DEngine::CreateLightSource()
 	ILightSource *pLightSource = gEnv->p3DEngine->CreateLightSource();
 
 	return pLightSource;
+}
+
+void CScriptbind_3DEngine::SetLightSourceMatrix(ILightSource *pLightSource, Matrix34 matrix)
+{
+	CDLight *pLight = &pLightSource->GetLightProperties();
+	pLight->SetMatrix(matrix);
+
+	pLightSource->SetMatrix(matrix);
+}
+
+Matrix34 CScriptbind_3DEngine::GetLightSourceMatrix(ILightSource *pLightSource)
+{
+	return pLightSource->GetMatrix();
 }
 
 void CScriptbind_3DEngine::SetLightSourceParams(ILightSource *pLightSource, MonoLightParams params)
@@ -44,10 +60,16 @@ void CScriptbind_3DEngine::SetLightSourceParams(ILightSource *pLightSource, Mono
 	light.m_fCoronaDistSizeFactor = params.coronaDistSizeFactor;
 	light.m_fCoronaDistIntensityFactor = params.coronaDistIntensityFactor;
 
-	if(params.specularCubemap)
-		light.SetSpecularCubemap(gEnv->pRenderer->EF_LoadTexture(ToCryString(params.specularCubemap)));
-	if(params.diffuseCubemap)
-		light.SetDiffuseCubemap(gEnv->pRenderer->EF_LoadTexture(ToCryString(params.diffuseCubemap)));
+	if(const char *spec = ToCryString(params.specularCubemap))
+	{
+		if(strcmp(spec, ""))
+			light.SetSpecularCubemap(gEnv->pRenderer->EF_LoadTexture(spec));
+	}
+	if(const char *diff = ToCryString(params.diffuseCubemap))
+	{
+		if(strcmp(diff, ""))
+			light.SetDiffuseCubemap(gEnv->pRenderer->EF_LoadTexture(diff));
+	}
 
 	light.SetLightColor(params.diffuseColor);
 	light.SetSpecularMult(params.specularMultiplier);

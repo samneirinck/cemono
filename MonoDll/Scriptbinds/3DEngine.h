@@ -47,6 +47,9 @@ public:
 	static ILightSource *CreateLightSource();
 	static void SetLightSourceParams(ILightSource *pLightSource, MonoLightParams params);
 	static MonoLightParams GetLightSourceParams(ILightSource *pLightSource);
+
+	static void SetLightSourceMatrix(ILightSource *pLightSource, Matrix34 matrix);
+	static Matrix34 GetLightSourceMatrix(ILightSource *pLightSource);
 };
 
 struct MonoLightParams

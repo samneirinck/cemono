@@ -197,13 +197,19 @@ bool CScriptbind_Entity::RegisterEntityClass(SEntityRegistrationParams params)
 			if(monoProperty.folder)
 			{
 				currentFolder = ToCryString(monoProperty.folder);
+				if(currentFolder && strcmp(currentFolder, ""))
+				{
+					IEntityPropertyHandler::SPropertyInfo groupInfo;
+					groupInfo.name = currentFolder;
+					groupInfo.type = IEntityPropertyHandler::FolderBegin;
 
-				IEntityPropertyHandler::SPropertyInfo groupInfo;
-				groupInfo.name = currentFolder;
-				groupInfo.type = IEntityPropertyHandler::FolderBegin;
-
-				properties.push_back(groupInfo);
+					properties.push_back(groupInfo);
+				}
+				else
+					currentFolder = NULL;
 			}
+			else
+				currentFolder = NULL;
 
 			IEntityPropertyHandler::SPropertyInfo propertyInfo;
 
@@ -223,8 +229,6 @@ bool CScriptbind_Entity::RegisterEntityClass(SEntityRegistrationParams params)
 				groupInfo.type = IEntityPropertyHandler::FolderEnd;
 
 				properties.push_back(groupInfo);
-				
-				currentFolder = NULL;
 			}
 		}
 	}

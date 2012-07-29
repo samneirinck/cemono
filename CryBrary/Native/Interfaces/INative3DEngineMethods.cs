@@ -19,5 +19,7 @@ namespace CryEngine.Native
 		IntPtr CreateLightSource();
 		void SetLightSourceParams(IntPtr lightSourcePtr, LightParams lightParams);
 		LightParams GetLightSourceParams(IntPtr lightSourcePtr);
+		void SetLightSourceMatrix(IntPtr lightSourcePtr, Matrix34 matrix);
+		Matrix34 GetLightSourceMatrix(IntPtr lightSourcePtr);
     }
 }

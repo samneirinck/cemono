@@ -39,6 +39,11 @@ namespace CryEngine.Native
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static LightParams _GetLightSourceParams(IntPtr lightSourcePtr);
 
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static void _SetLightSourceMatrix(IntPtr lightSourcePtr, Matrix34 matrix);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static Matrix34 _GetLightSourceMatrix(IntPtr lightSourcePtr);
+
         public float GetTerrainElevation(float positionX, float positionY, bool includeOutdoorVoxels)
         {
             return _GetTerrainElevation(positionX, positionY, includeOutdoorVoxels);
@@ -107,6 +112,16 @@ namespace CryEngine.Native
 		public LightParams GetLightSourceParams(IntPtr lightSourcePtr)
 		{
 			return _GetLightSourceParams(lightSourcePtr);
+		}
+
+		public void SetLightSourceMatrix(IntPtr lightSourcePtr, Matrix34 matrix)
+		{
+			_SetLightSourceMatrix(lightSourcePtr, matrix);
+		}
+
+		public Matrix34 GetLightSourceMatrix(IntPtr lightSourcePtr)
+		{
+			return _GetLightSourceMatrix(lightSourcePtr);
 		}
     }
 }

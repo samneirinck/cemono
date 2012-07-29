@@ -66,12 +66,10 @@ namespace CryEngine
 		/// The description to display when the user hovers over this property inside Sandbox.
 		/// </summary>
 		public string Description { get; set; }
-
-		/// <summary>
-		/// The folder in which this property is grouped into, within the Editor.
-		/// </summary>
-		public string Folder { get; set; }
 	}
+
+	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
+	public sealed class EditorPropertyFolderAttribute : Attribute { }
 
 	/// <summary>
 	/// Defines the list of supported editor types.
