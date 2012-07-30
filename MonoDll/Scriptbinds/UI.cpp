@@ -90,7 +90,7 @@ void SEventSystemHandler::OnEvent(const SUIEvent& event)
 
 	pArgs->Insert(pArray);
 
-	CUI::GetInstance()->GetClass()->CallMethodWithArray("OnEvent", pArgs, true);
+	CUI::GetInstance()->GetClass()->InvokeArray("OnEvent", pArgs, true);
 }
 
 IUIEventSystem *CUI::CreateEventSystem(mono::string name, IUIEventSystem::EEventSystemType eventType)

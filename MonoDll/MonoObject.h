@@ -32,7 +32,8 @@ public:
 	MonoClass *GetMonoClass();
 
 	// IMonoObject
-	virtual IMonoObject *CallMethodWithArray(const char *methodName, IMonoArray *params = nullptr, bool bStatic = false);
+	virtual IMonoObject *InvokeArray(const char *methodName, IMonoArray *params = nullptr, bool bStatic = false);
+	virtual IMonoObject *Invoke(const char *methodName, void **params = nullptr, int numParams = 0, bool bStatic = false);
 
 	virtual IMonoObject *GetProperty(const char *propertyName, bool bStatic = false);
 	virtual void SetProperty(const char *propertyName, IMonoObject *pNewValue, bool bStatic = false);

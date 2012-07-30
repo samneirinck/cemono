@@ -23,7 +23,8 @@ namespace mono { class _object; typedef _object* object; }
 struct IMonoObject
 {
 public:
-	virtual IMonoObject *CallMethodWithArray(const char *methodName, IMonoArray *params = nullptr, bool bStatic = false) = 0;
+	virtual IMonoObject *InvokeArray(const char *methodName, IMonoArray *params = nullptr, bool bStatic = false) = 0;
+	virtual IMonoObject *Invoke(const char *methodName, void **params = nullptr, int numParams = 0,  bool bStatic = false) = 0;
 
 	virtual IMonoObject *GetProperty(const char *propertyName, bool bStatic = false) = 0;
 	virtual void SetProperty(const char *propertyName, IMonoObject *pNewValue, bool bStatic = false) = 0;
@@ -32,7 +33,7 @@ public:
 
 	inline IMonoObject *CallMethod(const char *funcName)
 	{
-		return CallMethodWithArray(funcName);
+		return Invoke(funcName);
 	}
 
 	template<typename P1> 
@@ -41,7 +42,7 @@ public:
 		IMonoArray *pArgs = CreateMonoArray(1);
 		pArgs->Insert(p1);
 
-		IMonoObject *pResult = CallMethodWithArray(funcName, pArgs);
+		IMonoObject *pResult = InvokeArray(funcName, pArgs);
 		SAFE_RELEASE(pArgs);
 		return pResult;
 	};
@@ -53,7 +54,7 @@ public:
 		pArgs->Insert(p1);
 		pArgs->Insert(p2);
 
-		IMonoObject *pResult = CallMethodWithArray(funcName, pArgs);
+		IMonoObject *pResult = InvokeArray(funcName, pArgs);
 		SAFE_RELEASE(pArgs);
 		return pResult;
 	};
@@ -66,7 +67,7 @@ public:
 		pArgs->Insert(p2);
 		pArgs->Insert(p3);
 	
-		IMonoObject *pResult = CallMethodWithArray(funcName, pArgs);
+		IMonoObject *pResult = InvokeArray(funcName, pArgs);
 		SAFE_RELEASE(pArgs);
 		return pResult;
 	};
@@ -80,7 +81,7 @@ public:
 		pArgs->Insert(p3);
 		pArgs->Insert(p4);
 	
-		IMonoObject *pResult = CallMethodWithArray(funcName, pArgs);
+		IMonoObject *pResult = InvokeArray(funcName, pArgs);
 		SAFE_RELEASE(pArgs);
 		return pResult;
 	};
@@ -95,7 +96,7 @@ public:
 		pArgs->Insert(p4);
 		pArgs->Insert(p5);
 	
-		IMonoObject *pResult = CallMethodWithArray(funcName, pArgs);
+		IMonoObject *pResult = InvokeArray(funcName, pArgs);
 		SAFE_RELEASE(pArgs);
 		return pResult;
 	};
@@ -111,7 +112,7 @@ public:
 		pArgs->Insert(p5);
 		pArgs->Insert(p6);
 	
-		IMonoObject *pResult = CallMethodWithArray(funcName, pArgs);
+		IMonoObject *pResult = InvokeArray(funcName, pArgs);
 		SAFE_RELEASE(pArgs);
 		return pResult;
 	};

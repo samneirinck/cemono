@@ -33,7 +33,7 @@ CScriptObject::CScriptObject(MonoObject *object, IMonoArray *pConstructorParams)
 	CRY_ASSERT(m_pObject);
 
 	if(pConstructorParams)
-		CallMethodWithArray(".ctor", pConstructorParams);
+		InvokeArray(".ctor", pConstructorParams);
 	else
 		mono_runtime_object_init(m_pObject);
 
@@ -118,13 +118,29 @@ EMonoAnyType CScriptObject::GetType()
 	return eMonoAnyType_Unknown;
 }
 
-IMonoObject *CScriptObject::CallMethodWithArray(const char *methodName, IMonoArray *pParams, bool bStatic)
+IMonoObject *CScriptObject::InvokeArray(const char *methodName, IMonoArray *pParams, bool bStatic)
 {
 	MonoMethod *pMethod = static_cast<CScriptClass *>(GetClass())->GetMonoMethod(methodName, pParams);
 	CRY_ASSERT(pMethod);
 
 	MonoObject *pException = nullptr;
 	MonoObject *pResult = mono_runtime_invoke_array(pMethod, bStatic ? nullptr : m_pObject, pParams ? (MonoArray *)pParams->GetManagedObject() : nullptr, &pException);
+
+	if(pException)
+		HandleException(pException);
+	else if(pResult)
+		return *(mono::object)(pResult);
+
+	return nullptr;
+}
+
+IMonoObject *CScriptObject::Invoke(const char *methodName, void **pParams, int numParams, bool bStatic)
+{
+	MonoMethod *pMethod = mono_class_get_method_from_name(GetMonoClass(), methodName, numParams);;
+	CRY_ASSERT(pMethod);
+
+	MonoObject *pException = nullptr;
+	MonoObject *pResult = mono_runtime_invoke(pMethod, bStatic ? nullptr : m_pObject, pParams, &pException);
 
 	if(pException)
 		HandleException(pException);

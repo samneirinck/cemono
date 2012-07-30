@@ -151,7 +151,7 @@ bool CScriptSystem::CompleteInit()
 	RegisterDefaultBindings();
 
 	m_pScriptManager = m_pCryBraryAssembly->GetClass("ScriptManager", "CryEngine.Initialization")->CreateInstance();
-
+	
 	gEnv->pGameFramework->RegisterListener(this, "CryMono", eFLPriority_Game);
 
 	gEnv->pSystem->GetISystemEventDispatcher()->RegisterListener(this);
@@ -224,7 +224,7 @@ bool CScriptSystem::InitializeSystems()
 	IMonoArray *pArgs = CreateMonoArray(2);
 	pArgs->Insert(gEnv->IsEditor());
 	pArgs->Insert(gEnv->IsDedicated());
-	pClass->CallMethodWithArray("InitializeNetworkStatics", pArgs, true);
+	pClass->InvokeArray("InitializeNetworkStatics", pArgs, true);
 	SAFE_RELEASE(pArgs);
 
 	return true;
@@ -336,7 +336,7 @@ IMonoAssembly *CScriptSystem::GetAssembly(const char *file, bool shadowCopy)
 			{
 				IMonoArray *pArgs = CreateMonoArray(1);
 				pArgs->Insert(file);
-				pDriverClass->CallMethodWithArray("Convert", pArgs, true);
+				pDriverClass->InvokeArray("Convert", pArgs, true);
 				SAFE_RELEASE(pArgs);
 			}
 		}
