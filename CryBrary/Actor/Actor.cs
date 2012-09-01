@@ -151,8 +151,8 @@ namespace CryEngine
 		{
             System.Diagnostics.Contracts.Contract.Requires(channelId > 0);
 			Id = new EntityId(actorInfo.Id);
-			ActorPointer = actorInfo.ActorPtr;
-			HandleRef = new HandleRef(this, actorInfo.EntityPtr);
+			HandleRef = new HandleRef(this, actorInfo.ActorPtr);
+			base.HandleRef = new HandleRef(this, actorInfo.EntityPtr);
 
 			ChannelId = channelId;
 
@@ -169,8 +169,8 @@ namespace CryEngine
                 hash = hash * 29 + ScriptId.GetHashCode();
                 hash = hash * 29 + Id.GetHashCode();
                 hash = hash * 29 + ChannelId.GetHashCode();
-                hash = hash * 29 + ActorPointer.GetHashCode();
-                hash = hash * 29 + HandleRef.GetHashCode();
+				hash = hash * 29 + HandleRef.GetHashCode();
+                hash = hash * 29 + base.HandleRef.GetHashCode();
 
                 return hash;
             }
@@ -178,17 +178,17 @@ namespace CryEngine
 
         internal override void OnScriptReloadInternal()
 		{
-            ActorPointer = NativeMethods.Actor.GetActorInfoById(Id).ActorPtr;
+            HandleRef = new HandleRef(this, NativeMethods.Actor.GetActorInfoById(Id).ActorPtr);
 
             base.OnScriptReloadInternal();
 		}
         #endregion
 
-        internal IntPtr ActorPointer { get; set; }
+		public new HandleRef HandleRef { get; set; }
 		public int ChannelId { get; set; }
 
-        public float Health { get { return NativeMethods.Actor.GetPlayerHealth(ActorPointer); } set { NativeMethods.Actor.SetPlayerHealth(ActorPointer, value); } }
-        public float MaxHealth { get { return NativeMethods.Actor.GetPlayerMaxHealth(ActorPointer); } set { NativeMethods.Actor.SetPlayerMaxHealth(ActorPointer, value); } }
+		public float Health { get { return NativeMethods.Actor.GetPlayerHealth(HandleRef.Handle); } set { NativeMethods.Actor.SetPlayerHealth(HandleRef.Handle, value); } }
+		public float MaxHealth { get { return NativeMethods.Actor.GetPlayerMaxHealth(HandleRef.Handle); } set { NativeMethods.Actor.SetPlayerMaxHealth(HandleRef.Handle, value); } }
 
 		public bool IsDead() { return Health <= 0; }
 	}
