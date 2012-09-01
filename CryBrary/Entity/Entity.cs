@@ -4,8 +4,9 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
-using CryEngine.Extensions;
+using System.Runtime.InteropServices;
 
+using CryEngine.Extensions;
 using CryEngine.Initialization;
 using CryEngine.Native;
 
@@ -24,7 +25,7 @@ namespace CryEngine
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		internal virtual void InternalSpawn(EntityInfo entInfo)
 		{
-			EntityPointer = entInfo.IEntityPtr;
+			HandleRef = new HandleRef(this, entInfo.IEntityPtr);
 			Id = entInfo.Id;
 
 			Spawned = true;
@@ -205,9 +206,9 @@ namespace CryEngine
 		public bool LoadObject(string name, int slotNumber = 0)
 		{
 			if(name.EndsWith("cgf"))
-                NativeMethods.Entity.LoadObject(EntityPointer, name, slotNumber);
+				NativeMethods.Entity.LoadObject(HandleRef.Handle, name, slotNumber);
 			else if (name.EndsWith("cdf") || name.EndsWith("cga") || name.EndsWith("chr"))
-				NativeMethods.Entity.LoadCharacter(EntityPointer, name, slotNumber);
+				NativeMethods.Entity.LoadCharacter(HandleRef.Handle, name, slotNumber);
 			else
 				return false;
 
@@ -216,12 +217,12 @@ namespace CryEngine
 
 		public void PlayAnimation(string animationName, AnimationFlags flags = 0, int slot = 0, int layer = 0, float blend = 0.175f, float speed = 1.0f)
 		{
-			NativeMethods.Entity.PlayAnimation(EntityPointer, animationName, slot, layer, blend, speed, flags);
+			NativeMethods.Entity.PlayAnimation(HandleRef.Handle, animationName, slot, layer, blend, speed, flags);
 		}
 
 		protected string GetObjectFilePath(int slot = 0)
 		{
-            return NativeMethods.Entity.GetStaticObjectFilePath(EntityPointer, slot);
+			return NativeMethods.Entity.GetStaticObjectFilePath(HandleRef.Handle, slot);
 		}
 
 		public static EntityPropertyType GetEditorType(Type type, EntityPropertyType propertyType)
@@ -280,7 +281,7 @@ namespace CryEngine
 
                 hash = hash * 29 + ScriptId.GetHashCode();
                 hash = hash * 29 + Id.GetHashCode();
-                hash = hash * 29 + EntityPointer.GetHashCode();
+                hash = hash * 29 + HandleRef.GetHashCode();
 
                 return hash;
             }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 namespace CryEngine
 {
@@ -12,7 +13,7 @@ namespace CryEngine
 		public NativeEntity(EntityId id, IntPtr ptr)
 		{ 
 			Id = id;
-			EntityPointer = ptr;
+			HandleRef = new HandleRef(this, ptr);
 		}
 	}
 }

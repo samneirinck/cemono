@@ -1,4 +1,5 @@
-﻿
+﻿using System.Runtime.InteropServices;
+
 namespace CryEngine
 {
 	/// <summary>
@@ -12,7 +13,7 @@ namespace CryEngine
 		public NativeActor(ActorInfo actorInfo)
 		{
 			Id = new EntityId(actorInfo.Id);
-			EntityPointer = actorInfo.EntityPtr;
+			HandleRef = new HandleRef(this, actorInfo.EntityPtr);
 			ActorPointer = actorInfo.ActorPtr;
 		}
 

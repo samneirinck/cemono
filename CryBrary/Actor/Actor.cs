@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 using CryEngine.Initialization;
 using CryEngine.Extensions;
@@ -151,7 +152,7 @@ namespace CryEngine
             System.Diagnostics.Contracts.Contract.Requires(channelId > 0);
 			Id = new EntityId(actorInfo.Id);
 			ActorPointer = actorInfo.ActorPtr;
-			EntityPointer = actorInfo.EntityPtr;
+			HandleRef = new HandleRef(this, actorInfo.EntityPtr);
 
 			ChannelId = channelId;
 
@@ -169,7 +170,7 @@ namespace CryEngine
                 hash = hash * 29 + Id.GetHashCode();
                 hash = hash * 29 + ChannelId.GetHashCode();
                 hash = hash * 29 + ActorPointer.GetHashCode();
-                hash = hash * 29 + EntityPointer.GetHashCode();
+                hash = hash * 29 + HandleRef.GetHashCode();
 
                 return hash;
             }
