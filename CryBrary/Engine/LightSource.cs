@@ -36,7 +36,7 @@ namespace CryEngine
 		public float LightFrustumAngle { get { return Params.lightFrustumAngle; } set { var parameters = Params; parameters.lightFrustumAngle = value; Params = parameters; } }
 		public float Radius { get { return Params.radius; } set { var parameters = Params; parameters.radius = value; Params = parameters; } }
 
-		public LightFlags Flags { get { return Params.flags; } set { var parameters = Params; parameters.flags = value; Params = parameters; } }
+		internal LightFlags Flags { get { return Params.flags; } set { var parameters = Params; parameters.flags = value; Params = parameters; } }
 
 		public float CoronaScale { get { return Params.coronaScale; } set { var parameters = Params; parameters.coronaScale = value; Params = parameters; } }
 		public float CoronaDistSizeFactor { get { return Params.coronaDistSizeFactor; } set { var parameters = Params; parameters.coronaDistSizeFactor = value; Params = parameters; } }
@@ -57,7 +57,7 @@ namespace CryEngine
 	}
 
 	[Flags]
-	public enum LightFlags : uint
+	internal enum LightFlags : uint
 	{
 		Directional = 2,
 		CastShadows = 0x10,
