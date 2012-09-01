@@ -67,12 +67,12 @@ namespace CryEngine
 
 		public void SetAttachmentMaterial(int index, Material newMaterial)
 		{
-            NativeMethods.Entity.SetAttachmentMaterialByIndex(EntityPointer, index, newMaterial.MaterialPointer);
+			NativeMethods.Entity.SetAttachmentMaterialByIndex(EntityPointer, index, newMaterial.HandleRef.Handle);
 		}
 
 		public void SetAttachmentMaterial(string name, Material newMaterial)
 		{
-            NativeMethods.Entity.SetAttachmentMaterial(EntityPointer, name, newMaterial.MaterialPointer);
+			NativeMethods.Entity.SetAttachmentMaterial(EntityPointer, name, newMaterial.HandleRef.Handle);
 		}
 
         public int AttachmentCount { get { return NativeMethods.Entity.GetAttachmentCount(EntityPointer); } }

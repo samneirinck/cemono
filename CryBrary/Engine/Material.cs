@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 using System.Collections.Generic;
 using System.Linq;
+
 using CryEngine.Native;
 
 namespace CryEngine
@@ -47,7 +49,7 @@ namespace CryEngine
 			if(mat == null)
 				throw new ArgumentNullException("mat");
 
-            NativeMethods.Material.SetMaterial(entity.EntityPointer, mat.MaterialPointer, slot);
+            NativeMethods.Material.SetMaterial(entity.EntityPointer, mat.HandleRef.Handle, slot);
 		}
 
 		internal static Material TryAdd(IntPtr ptr)
@@ -55,7 +57,7 @@ namespace CryEngine
 			if(ptr == IntPtr.Zero)
 				return null;
 
-			var mat = Materials.FirstOrDefault(x => x.MaterialPointer == ptr);
+			var mat = Materials.FirstOrDefault(x => x.HandleRef.Handle == ptr);
 			if(mat != default(Material))
 				return mat;
 
@@ -70,12 +72,12 @@ namespace CryEngine
 
 		internal Material(IntPtr ptr)
 		{
-			MaterialPointer = ptr;
+			HandleRef = new HandleRef(this, ptr);
 		}
 
 		public Material GetSubmaterial(int slot)
 		{
-            var ptr = NativeMethods.Material.GetSubMaterial(MaterialPointer, slot);
+			var ptr = NativeMethods.Material.GetSubMaterial(HandleRef.Handle, slot);
 
 			return TryAdd(ptr);
 		}
@@ -87,14 +89,14 @@ namespace CryEngine
 		/// <returns></returns>
 		public Material Clone(int subMaterial = -1)
 		{
-            var ptr = NativeMethods.Material.CloneMaterial(MaterialPointer, subMaterial);
+			var ptr = NativeMethods.Material.CloneMaterial(HandleRef.Handle, subMaterial);
 
 			return TryAdd(ptr);
 		}
 
 		public bool SetParam(string paramName, float value)
 		{
-            return NativeMethods.Material.SetGetMaterialParamFloat(MaterialPointer, paramName, ref value, false);
+			return NativeMethods.Material.SetGetMaterialParamFloat(HandleRef.Handle, paramName, ref value, false);
 		}
 
 		public float GetParam(string paramName)
@@ -109,13 +111,13 @@ namespace CryEngine
 		{
 			value = 0;
 
-            return NativeMethods.Material.SetGetMaterialParamFloat(MaterialPointer, paramName, ref value, true);
+			return NativeMethods.Material.SetGetMaterialParamFloat(HandleRef.Handle, paramName, ref value, true);
 		}
 
 		public bool SetParam(string paramName, Color value)
 		{
 			Vec3 vecValue = new Vec3(value.R, value.G, value.B);
-            var result = NativeMethods.Material.SetGetMaterialParamVec3(MaterialPointer, paramName, ref vecValue, false);
+			var result = NativeMethods.Material.SetGetMaterialParamVec3(HandleRef.Handle, paramName, ref vecValue, false);
 
 			Opacity = value.A;
 
@@ -133,7 +135,7 @@ namespace CryEngine
 		public bool TryGetParam(string paramName, out Color value)
 		{
 			Vec3 vecVal = Vec3.Zero;
-            bool result = NativeMethods.Material.SetGetMaterialParamVec3(MaterialPointer, paramName, ref vecVal, true);
+			bool result = NativeMethods.Material.SetGetMaterialParamVec3(HandleRef.Handle, paramName, ref vecVal, true);
 
 			value = new Color();
 			value.R = vecVal.X;
@@ -146,7 +148,7 @@ namespace CryEngine
 
 		public void SetShaderParam(string paramName, float newVal)
 		{
-            NativeMethods.Material.SetShaderParam(MaterialPointer, paramName, newVal);
+			NativeMethods.Material.SetShaderParam(HandleRef.Handle, paramName, newVal);
 		}
 
 		public void SetShaderParam(ShaderFloatParameter param, float value)
@@ -156,7 +158,7 @@ namespace CryEngine
 
 		public void SetShaderParam(string paramName, Color newVal)
 		{
-            NativeMethods.Material.SetShaderParam(MaterialPointer, paramName, newVal);
+			NativeMethods.Material.SetShaderParam(HandleRef.Handle, paramName, newVal);
 		}
 
 		public void SetShaderParam(ShaderColorParameter param, Color value)
@@ -171,7 +173,7 @@ namespace CryEngine
 
 		public string GetShaderParamName(int index)
 		{
-            return NativeMethods.Material.GetShaderParamName(MaterialPointer, index);
+			return NativeMethods.Material.GetShaderParamName(HandleRef.Handle, index);
 		}
 
 		#region Fields & Properties
@@ -184,11 +186,11 @@ namespace CryEngine
 		public Color EmissiveColor { get { return GetParamColor("emissive"); } set { SetParam("emissive", value); } }
 		public Color SpecularColor { get { return GetParamColor("specular"); } set { SetParam("specular", value); } }
 
-        public string SurfaceType { get { return NativeMethods.Material.GetSurfaceTypeName(MaterialPointer); } }
+		public string SurfaceType { get { return NativeMethods.Material.GetSurfaceTypeName(HandleRef.Handle); } }
 
-        public int ShaderParamCount { get { return NativeMethods.Material.GetShaderParamCount(MaterialPointer); } }
+        public int ShaderParamCount { get { return NativeMethods.Material.GetShaderParamCount(HandleRef.Handle); } }
 
-		internal IntPtr MaterialPointer { get; set; }
+		public HandleRef HandleRef { get; set; }
 		#endregion
 	}
 
