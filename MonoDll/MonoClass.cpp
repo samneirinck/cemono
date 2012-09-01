@@ -119,6 +119,41 @@ MonoMethod *CScriptClass::GetMonoMethod(const char *methodName, IMonoArray *pArg
 	return nullptr;
 }
 
+MonoMethod *CScriptClass::GetMonoMethod(const char *methodName, int numParams)
+{
+	MonoMethodSignature *pSignature = nullptr;
+
+	void *pIterator = 0;
+
+	MonoClass *pClass = (MonoClass *)m_pObject;
+	MonoType *pClassType = mono_class_get_type(pClass);
+	MonoMethod *pCurMethod = nullptr;
+
+	while (pClass != nullptr)
+	{
+		pCurMethod = mono_class_get_methods(pClass, &pIterator);
+		if(pCurMethod == nullptr)
+		{
+			pClass = mono_class_get_parent(pClass);
+			if(pClass == mono_get_object_class())
+				break;
+
+			pIterator = 0;
+			continue;
+		}
+
+		pSignature = mono_method_signature(pCurMethod);
+		int signatureParamCount = mono_signature_get_param_count(pSignature);
+
+		bool bCorrectName = !strcmp(mono_method_get_name(pCurMethod), methodName);
+		if(bCorrectName && signatureParamCount == numParams)
+			return pCurMethod;
+	}
+
+	MonoWarning("Failed to get method %s in class %s", methodName, GetName());
+	return nullptr;
+}
+
 MonoProperty *CScriptClass::GetMonoProperty(const char *name)
 {
 	return mono_class_get_property_from_name((MonoClass *)m_pObject, name);

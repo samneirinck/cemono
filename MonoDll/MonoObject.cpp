@@ -136,7 +136,7 @@ IMonoObject *CScriptObject::InvokeArray(const char *methodName, IMonoArray *pPar
 
 IMonoObject *CScriptObject::Invoke(const char *methodName, void **pParams, int numParams, bool bStatic)
 {
-	MonoMethod *pMethod = mono_class_get_method_from_name(GetMonoClass(), methodName, numParams);;
+	MonoMethod *pMethod = static_cast<CScriptClass *>(GetClass())->GetMonoMethod(methodName, numParams);
 	CRY_ASSERT(pMethod);
 
 	MonoObject *pException = nullptr;

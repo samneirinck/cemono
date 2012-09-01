@@ -65,6 +65,8 @@ public:
 	// ~CScriptObject
 
 	MonoMethod *GetMonoMethod(const char *name, IMonoArray *pArgs);
+	MonoMethod *GetMonoMethod(const char *name, int numParams);
+
 	MonoProperty *GetMonoProperty(const char *name);
 	MonoClassField *GetMonoField(const char *name);
 
