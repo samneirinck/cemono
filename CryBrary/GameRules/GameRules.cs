@@ -61,13 +61,7 @@ namespace CryEngine
 		public virtual void OnVehicleDestroyed(EntityId vehicleId) { }
 		public virtual void OnVehicleSubmerged(EntityId vehicleId, float ratio) { }
 
-		public EntityBase Entity
-		{
-			get
-			{
-				return CryEngine.Entity.Get(1);
-			}
-		}
+		public EntityBase Entity { get { return CryEngine.Entity.Get(1); } }
 	}
 
 	[AttributeUsage(AttributeTargets.Class)]

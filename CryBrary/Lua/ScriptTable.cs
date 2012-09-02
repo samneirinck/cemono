@@ -15,18 +15,18 @@ namespace CryEngine.Lua
 	public class ScriptTable
 	{
 		#region Statics
-		internal static ScriptTable Get(IntPtr entityPtr, EntityId entityId)
+		internal static ScriptTable Get(IntPtr entityPtr)
 		{
 			if (ScriptTables == null)
 				ScriptTables = new List<ScriptTable>();
 
-			var scriptTable = ScriptTables.FirstOrDefault(x => x.EntityId == entityId);
-			if (scriptTable != default(ScriptTable))
-				return scriptTable;
-
 			var scriptPtr = NativeMethods.ScriptTable.GetScriptTable(entityPtr);
 			if (scriptPtr != IntPtr.Zero)
 			{
+				var scriptTable = ScriptTables.FirstOrDefault(x => x.HandleRef.Handle == scriptPtr);
+				if (scriptTable != default(ScriptTable))
+					return scriptTable;
+
 				scriptTable = new ScriptTable(scriptPtr);
 				ScriptTables.Add(scriptTable);
 				return scriptTable;
@@ -41,8 +41,6 @@ namespace CryEngine.Lua
 		internal ScriptTable(IntPtr scriptPtr)
 		{
 			HandleRef = new HandleRef(this, scriptPtr);
-
-			IsSubtable = false;
 		}
 
 		public object CallMethod(string methodName, params object[] args)
@@ -83,12 +81,6 @@ namespace CryEngine.Lua
 			return null;
 		}
 
-		public EntityId EntityId { get; set; }
-
-		/// <summary>
-		/// Determines if this is a SmartScriptTable, retrieved from a ScriptTable.
-		/// </summary>
-		internal bool IsSubtable { get; set; }
 		/// <summary>
 		/// Handle to the native IScriptTable object
 		/// </summary>

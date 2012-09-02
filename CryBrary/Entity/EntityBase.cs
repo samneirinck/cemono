@@ -101,7 +101,7 @@ namespace CryEngine
 			NativeMethods.Entity.RemoveEntityLink(otherEntityId);
 		}
 
-		public Lua.ScriptTable ScriptTable { get { return Lua.ScriptTable.Get(HandleRef.Handle, Id); } }
+		public Lua.ScriptTable ScriptTable { get { return Lua.ScriptTable.Get(HandleRef.Handle); } }
 
 		/// <summary>
 		/// Sets / gets the world space entity position.
