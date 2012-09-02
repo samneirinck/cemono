@@ -146,10 +146,6 @@ void CScriptbind_Entity::OnSpawn(IEntity *pEntity,SEntitySpawnParams &params)
 
 bool CScriptbind_Entity::OnRemove(IEntity *pIEntity)
 {
-	const char *className = pIEntity->GetClass()->GetName();
-	if(!IsMonoEntity(className))
-		return true;
-
 	if(IMonoClass *pEntityClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("Entity"))
 	{
 		IMonoArray *pArgs = CreateMonoArray(1);
