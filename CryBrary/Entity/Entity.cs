@@ -147,6 +147,14 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="parent"></param>
 		protected virtual void OnDetachThis(EntityId parent) { }
+
+		/// <summary>
+		/// Called when the user changes a property from within the Editor.
+		/// </summary>
+		/// <param name="propertyName"></param>
+		/// <param name="propertyType"></param>
+		/// <param name="valueString"></param>
+		protected virtual void OnPropertyChanged(string propertyName, EntityPropertyType propertyType, string valueString) { }
 		#endregion
 
 		#region Base Logic
@@ -195,6 +203,8 @@ namespace CryEngine
 				field.SetValue(this, value);
 			else
 				throw new ArgumentException(string.Format("member {0} could not be located", propertyName));
+
+			OnPropertyChanged(propertyName, propertyType, valueString);
 		}
 
 		/// <summary>
