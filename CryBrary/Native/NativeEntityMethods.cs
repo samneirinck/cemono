@@ -15,7 +15,7 @@ namespace CryEngine.Native
         extern internal static void _RemoveEntity(uint entityId);
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern internal static IntPtr _GetEntity(uint entityId);
+		extern internal static IntPtr _GetEntity(uint entityId);
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern internal static uint _FindEntity(string name);
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -99,6 +99,11 @@ namespace CryEngine.Native
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern internal static int _SetAttachmentMaterial(IntPtr entPtr, string name, IntPtr materialPtr);
 
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static bool _AddEntityLink(string linkName, uint otherId, Quat relativeRot, Vec3 relativePos);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static void _RemoveEntityLink(uint otherId);
+
 		public void PlayAnimation(IntPtr ptr, string animationName, int slot, int layer, float blend, float speed, AnimationFlags flags)
 		{
 			_PlayAnimation(ptr, animationName, slot, layer, blend, speed, flags);
@@ -109,12 +114,12 @@ namespace CryEngine.Native
             return _SpawnEntity(spawnParams, autoInit, out entityInfo);
         }
 
-        public void RemoveEntity(uint entityId)
+        public void RemoveEntity(EntityId entityId)
         {
             _RemoveEntity(entityId);
         }
 
-        public IntPtr GetEntity(uint entityId)
+		public IntPtr GetEntity(EntityId entityId)
         {
             return _GetEntity(entityId);
         }
@@ -294,5 +299,15 @@ namespace CryEngine.Native
         {
             _RegisterEntityClass(registrationParams);
         }
+
+		public bool AddEntityLink(string linkName, EntityId otherId, Quat relativeRot, Vec3 relativePos)
+		{
+			return _AddEntityLink(linkName, otherId, relativeRot, relativePos);
+		}
+
+		public void RemoveEntityLink(EntityId otherId)
+		{
+			_RemoveEntityLink(otherId);
+		}
     }
 }

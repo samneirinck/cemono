@@ -78,6 +78,9 @@ CScriptbind_Entity::CScriptbind_Entity()
 
 	REGISTER_METHOD(PlayAnimation);
 
+	REGISTER_METHOD(AddEntityLink);
+	REGISTER_METHOD(RemoveEntityLink);
+
 	gEnv->pEntitySystem->AddSink(this, IEntitySystem::OnSpawn | IEntitySystem::OnRemove, 0);
 }
 
@@ -562,4 +565,21 @@ void CScriptbind_Entity::SetHUDSilhouettesParams(IEntity *pEntity, float r, floa
 		return;
 
 	pRenderProxy->SetVisionParams(r, g, b, a);
+}
+
+bool CScriptbind_Entity::AddEntityLink(IEntity *pEntity, mono::string linkName, EntityId otherId, Quat relativeRot, Vec3 relativePos)
+{
+	return pEntity->AddEntityLink(ToCryString(linkName), otherId, relativeRot, relativePos) != nullptr;
+}
+
+void CScriptbind_Entity::RemoveEntityLink(IEntity *pEntity, EntityId otherId)
+{
+	for (IEntityLink *pLink = pEntity->GetEntityLinks();; pLink = pLink->next)
+    {
+		if(pLink->entityId == otherId)
+		{
+			pEntity->RemoveEntityLink(pLink);
+			break;
+		}
+	}
 }

@@ -185,6 +185,9 @@ protected:
 
 	static void SetVisionParams(IEntity *pEntity, float r, float g, float b, float a);
 	static void SetHUDSilhouettesParams(IEntity *pEntity, float r, float g, float b, float a);
+
+	static bool AddEntityLink(IEntity *pEntity, mono::string linkName, EntityId otherId, Quat relativeRot, Vec3 relativePos);
+	static void RemoveEntityLink(IEntity *pEntity, EntityId otherId);
 	// ~Scriptbinds
 
 	static std::vector<const char *> m_monoEntityClasses;

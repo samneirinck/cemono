@@ -8,9 +8,9 @@ namespace CryEngine.Native
 		void PlayAnimation(IntPtr ptr, string animationName, int slot, int layer, float blend, float speed, AnimationFlags flags);
 
         bool SpawnEntity(EntitySpawnParams spawnParams, bool autoInit, out EntityInfo entityInfo);
-        void RemoveEntity(uint entityId);
+		void RemoveEntity(EntityId entityId);
 
-        IntPtr GetEntity(uint entityId);
+		IntPtr GetEntity(EntityId entityId);
         uint FindEntity(string name);
         object[] GetEntitiesByClass(string className);
         object[] GetEntitiesInBox(BoundingBox bbox, EntityQueryFlags flags);
@@ -61,5 +61,8 @@ namespace CryEngine.Native
         int SetAttachmentMaterial(IntPtr entPtr, string name, IntPtr materialPtr);
 
         void RegisterClass(EntityRegistrationParams registrationParams);
+
+		bool AddEntityLink(string linkName, EntityId otherId, Quat relativeRot, Vec3 relativePos);
+		void RemoveEntityLink(EntityId otherId);
     }
 }

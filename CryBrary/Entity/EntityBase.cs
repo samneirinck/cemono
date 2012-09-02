@@ -80,6 +80,28 @@ namespace CryEngine
 #endregion
 
 		/// <summary>
+		/// Links to another entity, becoming the parent. Any change to the parent object is propagated to all child (linked) objects.
+		/// </summary>
+		/// <param name="linkName"></param>
+		/// <param name="otherEntityId"></param>
+		/// <param name="relativeRot"></param>
+		/// <param name="relativePos"></param>
+		/// <returns></returns>
+		public bool Link(string linkName, EntityId otherEntityId, Quat relativeRot, Vec3 relativePos)
+		{
+			return NativeMethods.Entity.AddEntityLink(linkName, otherEntityId, relativeRot, relativePos);
+		}
+
+		/// <summary>
+		/// Removes an entity link, see Link.
+		/// </summary>
+		/// <param name="otherEntityId"></param>
+		public void Unlink(EntityId otherEntityId)
+		{
+			NativeMethods.Entity.RemoveEntityLink(otherEntityId);
+		}
+
+		/// <summary>
 		/// Sets / gets the world space entity position.
 		/// </summary>
         public Vec3 Position { get { return NativeMethods.Entity.GetWorldPos(HandleRef.Handle); } set { NativeMethods.Entity.SetWorldPos(HandleRef.Handle, value); } }
