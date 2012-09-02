@@ -5647,14 +5647,8 @@ is_supported_tail_call (MonoCompile *cfg, MonoMethod *method, MonoMethod *cmetho
 	/* Debugging support */
 #if 0
 	if (supported_tail_call) {
-		static int count = 0;
-		count ++;
-		if (getenv ("COUNT")) {
-			if (count == atoi (getenv ("COUNT")))
-				printf ("LAST: %s\n", mono_method_full_name (cmethod, TRUE));
-			if (count > atoi (getenv ("COUNT")))
-				supported_tail_call = FALSE;
-		}
+		if (!mono_debug_count ())
+			supported_tail_call = FALSE;
 	}
 #endif
 
@@ -8958,7 +8952,8 @@ mono_method_to_ir (MonoCompile *cfg, MonoMethod *method, MonoBasicBlock *start_b
 
 			ftype = mono_field_get_type (field);
 
-			g_assert (!(ftype->attrs & FIELD_ATTRIBUTE_LITERAL));
+			if (ftype->attrs & FIELD_ATTRIBUTE_LITERAL)
+				UNVERIFIED;
 
 			/* The special_static_fields field is init'd in mono_class_vtable, so it needs
 			 * to be called here.

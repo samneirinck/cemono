@@ -246,6 +246,7 @@ struct _MonoException {
 	MonoString *source;
 	MonoObject *_data;
 	MonoObject *captured_traces;
+	MonoArray  *native_trace_ips;
 };
 
 typedef struct {
@@ -411,6 +412,7 @@ struct _MonoInternalThread {
 	gpointer android_tid;
 	gpointer thread_pinning_ref;
 	gint32 managed_id;
+	gint32 ignore_next_signal;
 	/* 
 	 * These fields are used to avoid having to increment corlib versions
 	 * when a new field is added to the unmanaged MonoThread structure.
@@ -1382,7 +1384,7 @@ mono_reflection_bind_generic_parameters (MonoReflectionType *type, int type_argc
 MonoReflectionMethod*
 mono_reflection_bind_generic_method_parameters (MonoReflectionMethod *method, MonoArray *types) MONO_INTERNAL;
 void
-mono_reflection_generic_class_initialize (MonoReflectionGenericClass *type, MonoArray *methods, MonoArray *ctors, MonoArray *fields, MonoArray *properties, MonoArray *events) MONO_INTERNAL;
+mono_reflection_generic_class_initialize (MonoReflectionGenericClass *type, MonoArray *fields) MONO_INTERNAL;
 MonoReflectionEvent *
 mono_reflection_event_builder_get_event_info (MonoReflectionTypeBuilder *tb, MonoReflectionEventBuilder *eb) MONO_INTERNAL;
 
@@ -1571,6 +1573,12 @@ mono_string_to_utf8_mp_ignore (MonoMemPool *mp, MonoString *s) MONO_INTERNAL;
 
 gboolean
 mono_monitor_is_il_fastpath_wrapper (MonoMethod *method) MONO_INTERNAL;
+
+char *
+mono_exception_get_native_backtrace (MonoException *exc) MONO_INTERNAL;
+
+MonoString *
+ves_icall_Mono_Runtime_GetNativeStackTrace (MonoException *exc) MONO_INTERNAL;
 
 #endif /* __MONO_OBJECT_INTERNALS_H__ */
 

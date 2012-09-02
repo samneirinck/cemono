@@ -601,6 +601,35 @@ mono_tramp_info_free (MonoTrampInfo *info)
 	g_free (info);
 }
 
+G_GNUC_UNUSED static void
+break_count (void)
+{
+}
+
+/*
+ * Runtime debugging tool, use if (debug_count ()) <x> else <y> to do <x> the first COUNT times, then do <y> afterwards.
+ * Set a breakpoint in break_count () to break the last time <x> is done.
+ */
+G_GNUC_UNUSED gboolean
+mono_debug_count (void)
+{
+	static int count = 0;
+	count ++;
+
+	if (!getenv ("COUNT"))
+		return TRUE;
+
+	if (count == atoi (getenv ("COUNT"))) {
+		break_count ();
+	}
+
+	if (count > atoi (getenv ("COUNT"))) {
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
 #define MONO_INIT_VARINFO(vi,id) do { \
 	(vi)->range.first_use.pos.bid = 0xffff; \
 	(vi)->reg = -1; \
@@ -3221,14 +3250,14 @@ mono_resolve_patch_target (MonoMethod *method, MonoDomain *domain, guint8 *code,
 
 		switch (entry->data->type) {
 		case MONO_PATCH_INFO_CLASS:
-			slot = mono_method_lookup_or_register_other_info (entry->method, entry->in_mrgctx, &entry->data->data.klass->byval_arg, entry->info_type, mono_method_get_context (entry->method));
+			slot = mono_method_lookup_or_register_info (entry->method, entry->in_mrgctx, &entry->data->data.klass->byval_arg, entry->info_type, mono_method_get_context (entry->method));
 			break;
 		case MONO_PATCH_INFO_METHOD:
 		case MONO_PATCH_INFO_METHODCONST:
-			slot = mono_method_lookup_or_register_other_info (entry->method, entry->in_mrgctx, entry->data->data.method, entry->info_type, mono_method_get_context (entry->method));
+			slot = mono_method_lookup_or_register_info (entry->method, entry->in_mrgctx, entry->data->data.method, entry->info_type, mono_method_get_context (entry->method));
 			break;
 		case MONO_PATCH_INFO_FIELD:
-			slot = mono_method_lookup_or_register_other_info (entry->method, entry->in_mrgctx, entry->data->data.field, entry->info_type, mono_method_get_context (entry->method));
+			slot = mono_method_lookup_or_register_info (entry->method, entry->in_mrgctx, entry->data->data.field, entry->info_type, mono_method_get_context (entry->method));
 			break;
 		default:
 			g_assert_not_reached ();
@@ -3883,7 +3912,7 @@ create_jit_info (MonoCompile *cfg, MonoMethod *method_to_compile)
 	MonoJitInfo *jinfo;
 	int num_clauses;
 	int generic_info_size, arch_eh_info_size = 0;
-	int holes_size = 0, num_holes = 0;
+	int holes_size = 0, num_holes = 0, cas_size = 0;
 	guint32 stack_size = 0;
 
 	g_assert (method_to_compile == cfg->method);
@@ -3903,7 +3932,7 @@ create_jit_info (MonoCompile *cfg, MonoMethod *method_to_compile)
 		 * mono_arch_get_argument_info () is not signal safe.
 		 */
 		arg_info = g_newa (MonoJitArgumentInfo, sig->param_count + 1);
-		stack_size = mono_arch_get_argument_info (sig, sig->param_count, arg_info);
+		stack_size = mono_arch_get_argument_info (cfg->generic_sharing_context, sig, sig->param_count, arg_info);
 
 		if (stack_size)
 			arch_eh_info_size = sizeof (MonoArchEHJitInfo);
@@ -3927,6 +3956,10 @@ create_jit_info (MonoCompile *cfg, MonoMethod *method_to_compile)
 			printf ("Number of try block holes %d\n", num_holes);
 	}
 
+	if (mono_method_has_declsec (cfg->method_to_register)) {
+		cas_size = sizeof (MonoMethodCasInfo);
+	}
+
 	if (COMPILE_LLVM (cfg))
 		num_clauses = cfg->llvm_ex_info_len;
 	else
@@ -3934,11 +3967,11 @@ create_jit_info (MonoCompile *cfg, MonoMethod *method_to_compile)
 
 	if (cfg->method->dynamic) {
 		jinfo = g_malloc0 (MONO_SIZEOF_JIT_INFO + (num_clauses * sizeof (MonoJitExceptionInfo)) +
-				generic_info_size + holes_size + arch_eh_info_size);
+				generic_info_size + holes_size + arch_eh_info_size + cas_size);
 	} else {
 		jinfo = mono_domain_alloc0 (cfg->domain, MONO_SIZEOF_JIT_INFO +
 				(num_clauses * sizeof (MonoJitExceptionInfo)) +
-				generic_info_size + holes_size + arch_eh_info_size);
+				generic_info_size + holes_size + arch_eh_info_size + cas_size);
 	}
 
 	jinfo->method = cfg->method_to_register;
@@ -3946,8 +3979,8 @@ create_jit_info (MonoCompile *cfg, MonoMethod *method_to_compile)
 	jinfo->code_size = cfg->code_len;
 	jinfo->used_regs = cfg->used_int_regs;
 	jinfo->domain_neutral = (cfg->opt & MONO_OPT_SHARED) != 0;
-	jinfo->cas_inited = FALSE; /* initialization delayed at the first stalk walk using this method */
 	jinfo->num_clauses = num_clauses;
+
 	if (COMPILE_LLVM (cfg))
 		jinfo->from_llvm = TRUE;
 
@@ -4063,6 +4096,10 @@ create_jit_info (MonoCompile *cfg, MonoMethod *method_to_compile)
 		info = mono_jit_info_get_arch_eh_info (jinfo);
 
 		info->stack_size = stack_size;
+	}
+
+	if (cas_size) {
+		jinfo->has_cas_info = 1;
 	}
 
 	if (COMPILE_LLVM (cfg)) {
