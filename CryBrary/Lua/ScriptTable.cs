@@ -45,38 +45,9 @@ namespace CryEngine.Lua
 			IsSubtable = false;
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <typeparam name="T">Boolean, Integer, Float or String.</typeparam>
-		/// <param name="methodName"></param>
-		/// <param name="args"></param>
-		/// <returns></returns>
-		public T CallMethod<T>(string methodName, object[] args = null)
+		public object CallMethod(string methodName, params object[] args)
 		{
-			Type retType = typeof(T);
-			LuaVariableType variableType = LuaVariableType.None;
-
-			if(retType.IsPrimitive)
-			{
-				if(retType == typeof(bool))
-					variableType = LuaVariableType.Boolean;
-				else if(retType == typeof(int))
-					variableType = LuaVariableType.Integer;
-				else if(retType == typeof(float))
-					variableType = LuaVariableType.Float;
-			}
-			else if(retType == typeof(string))
-				variableType = LuaVariableType.String;
-			else
-				throw new NotSupportedException("Lua methods can only return Boolean, Integer, Float, Vector or String.");
-
-			return (T)NativeMethods.ScriptTable.CallMethod(HandleRef.Handle, methodName, variableType, args);
-		}
-
-		public void CallMethod(string methodName, object[] args = null)
-		{
-			NativeMethods.ScriptTable.CallMethodVoid(HandleRef.Handle, methodName, args);
+			return NativeMethods.ScriptTable.CallMethod(HandleRef.Handle, methodName, args);
 		}
 
 		/// <summary>
@@ -85,9 +56,9 @@ namespace CryEngine.Lua
 		/// <typeparam name="T"></typeparam>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		public T GetValue<T>(string name)
+		public object GetValue(string name)
 		{
-			throw new NotImplementedException();
+			return NativeMethods.ScriptTable.GetValue(HandleRef.Handle, name);
 		}
 
 		/// <summary>
@@ -97,7 +68,19 @@ namespace CryEngine.Lua
 		/// <returns></returns>
 		public ScriptTable GetTable(string name)
 		{
-			throw new NotImplementedException();
+			var scriptPtr = NativeMethods.ScriptTable.GetSubScriptTable(HandleRef.Handle, name);
+			if (scriptPtr != IntPtr.Zero)
+			{
+				var scriptTable = ScriptTables.FirstOrDefault(x => x.HandleRef.Handle == scriptPtr);
+				if (scriptTable != default(ScriptTable))
+					return scriptTable;
+
+				scriptTable = new ScriptTable(scriptPtr);
+				ScriptTables.Add(scriptTable);
+				return scriptTable;
+			}
+
+			return null;
 		}
 
 		public EntityId EntityId { get; set; }

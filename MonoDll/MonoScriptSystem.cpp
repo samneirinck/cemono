@@ -41,6 +41,7 @@
 #include "Scriptbinds\Entity.h"
 #include "Scriptbinds\Network.h"
 #include "Scriptbinds\Time.h"
+#include "Scriptbinds\ScriptTable.h" 
 
 #include "FlowManager.h"
 #include "MonoInput.h"
@@ -213,6 +214,7 @@ void CScriptSystem::RegisterDefaultBindings()
 	RegisterBinding(CUI);
 	RegisterBinding(CScriptbind_Entity);
 	RegisterBinding(CNetwork);
+	RegisterBinding(CScriptbind_ScriptTable);
 
 #define RegisterBindingAndSet(var, T) RegisterBinding(T); var = (T *)m_localScriptBinds.back().get();
 	RegisterBindingAndSet(m_pFlowManager, CFlowManager);

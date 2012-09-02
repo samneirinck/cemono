@@ -6,8 +6,9 @@ namespace CryEngine.Native
     internal interface INativeScriptTableMethods
     {
 		IntPtr GetScriptTable(IntPtr entityPtr);
+		IntPtr GetSubScriptTable(IntPtr scriptTablePtr, string tableName);
 
-        object CallMethod(IntPtr scriptTable, string methodName, LuaVariableType returnType, object[] args);
-        void CallMethodVoid(IntPtr scriptTable, string methodName, object[] args);
+		object CallMethod(IntPtr scriptTablePtr, string methodName, object[] parameters);
+		object GetValue(IntPtr scriptTablePtr, string keyName);
     }
 }

@@ -24,4 +24,8 @@ public:
 
 private:
 	static IScriptTable *GetScriptTable(IEntity *pEntity);
+	static IScriptTable *GetSubScriptTable(IScriptTable *pScriptTable, mono::string subTableName);
+
+	static mono::object CallMethod(IScriptTable *pScriptTable, mono::string methodName, mono::object params);
+	static mono::object GetValue(IScriptTable *pScriptTable, mono::string keyName);
 };
