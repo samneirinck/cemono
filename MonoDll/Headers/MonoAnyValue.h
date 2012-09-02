@@ -88,6 +88,8 @@ struct MonoAnyValue : public ISerializable
 			}
 			break;
 		}
+
+		ser.EnumValue("type", type, eMonoAnyType_Unknown, eMonoAnyType_Last);
 	}
 
 	void *GetValue()
