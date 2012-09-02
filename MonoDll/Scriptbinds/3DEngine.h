@@ -14,8 +14,6 @@
 
 #include "Renderer.h"
 
-struct MonoLightParams;
-
 class CScriptbind_3DEngine : public IMonoScriptBind
 {
 public:
@@ -43,37 +41,6 @@ public:
 
 	static void SetTimeOfDayVariableValue(ITimeOfDay::ETimeOfDayParamID id, float value);
 	static void SetTimeOfDayVariableValueColor(ITimeOfDay::ETimeOfDayParamID id, Vec3 value);
-
-	static ILightSource *CreateLightSource();
-	static void SetLightSourceParams(ILightSource *pLightSource, MonoLightParams params);
-	static MonoLightParams GetLightSourceParams(ILightSource *pLightSource);
-
-	static void SetLightSourceMatrix(ILightSource *pLightSource, Matrix34 matrix);
-	static Matrix34 GetLightSourceMatrix(ILightSource *pLightSource);
-};
-
-struct MonoLightParams
-{
-	int lightStyle;
-	Vec3 origin;
-	float lightFrustumAngle;
-	float radius;
-	uint32 flags;
-
-	float coronaScale;
-	float coronaDistSizeFactor;
-	float coronaDistIntensityFactor;
-
-	mono::string specularCubemap;
-	mono::string diffuseCubemap;
-
-	ColorF diffuseColor;
-	float specularMultiplier;
-	int postEffect;
-
-	float hdrDynamic;
-
-	float projectNearPlane;
 };
 
 #endif //__SCRIPTBIND_3DENGINE__

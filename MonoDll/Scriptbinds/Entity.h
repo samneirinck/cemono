@@ -104,6 +104,50 @@ enum EAnimationFlags
 	EAnimFlag_Loop = 1 << 16,
 };
 
+struct SMonoLightParams
+{
+	 mono::string specularCubemap;
+	 mono::string diffuseCubemap;
+	 mono::string lightImage;
+	 mono::string lightAttenMap;
+
+	 ColorF color;
+	 Vec3 origin;
+
+	 float shadowBias;
+	 float shadowSlopeBias;
+
+	 float radius;
+	 float specularMultiplier;
+
+	 float hdrDynamic;
+
+	 float animSpeed;
+	 float coronaScale;
+	 float coronaIntensity;
+	 float coronaDistSizeFactor;
+	 float coronaDistIntensityFactor;
+
+	 float shaftSrcSize;
+	 float shaftLength;
+	 float shaftBrightness;
+	 float shaftBlendFactor;
+	 float shaftDecayFactor;
+
+	 float lightFrustumAngle;
+	 float projectNearPlane;
+
+	 float shadowUpdateMinRadius;
+	 int16 shadowUpdateRatio;
+
+	 int lightStyle;
+	 int lightPhase;
+	 int postEffect;
+	 int shadowChanMask;
+
+	 uint32 flags;
+};
+
 class CScriptbind_Entity 
 	: public IMonoScriptBind
 	, public IEntitySystemSink
@@ -188,6 +232,9 @@ protected:
 
 	static bool AddEntityLink(IEntity *pEntity, mono::string linkName, EntityId otherId, Quat relativeRot, Vec3 relativePos);
 	static void RemoveEntityLink(IEntity *pEntity, EntityId otherId);
+
+	static int LoadLight(IEntity *pEntity, int slot, SMonoLightParams light);
+	static void FreeSlot(IEntity *pEntity, int slot);
 	// ~Scriptbinds
 
 	static std::vector<const char *> m_monoEntityClasses;

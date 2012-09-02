@@ -43,6 +43,9 @@ namespace mono
 /// </summary>
 inline const char *ToCryString(mono::string monoString)
 {
+	if(!monoString)
+		return "";
+
 	return gEnv->pMonoScriptSystem->GetConverter()->ToString(monoString);
 }
 

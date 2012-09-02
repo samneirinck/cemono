@@ -62,7 +62,10 @@ namespace CryEngine.Native
 
         void RegisterClass(EntityRegistrationParams registrationParams);
 
-		bool AddEntityLink(string linkName, EntityId otherId, Quat relativeRot, Vec3 relativePos);
-		void RemoveEntityLink(EntityId otherId);
+		bool AddEntityLink(IntPtr entPtr, string linkName, EntityId otherId, Quat relativeRot, Vec3 relativePos);
+		void RemoveEntityLink(IntPtr entPtr, EntityId otherId);
+
+		int LoadLight(IntPtr entPtr, int slot, LightParams lightParams);
+		void FreeSlot(IntPtr entPtr, int slot);
     }
 }

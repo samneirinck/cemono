@@ -15,11 +15,5 @@ namespace CryEngine.Native
         void SetTimeOfDayAdvancedInfo(TimeOfDay.AdvancedInfo advancedInfo);
         void SetTimeOfDayVariableValue(int id, float value);
         void SetTimeOfDayVariableValueColor(int id, Vec3 value);
-
-		IntPtr CreateLightSource();
-		void SetLightSourceParams(IntPtr lightSourcePtr, LightParams lightParams);
-		LightParams GetLightSourceParams(IntPtr lightSourcePtr);
-		void SetLightSourceMatrix(IntPtr lightSourcePtr, Matrix34 matrix);
-		Matrix34 GetLightSourceMatrix(IntPtr lightSourcePtr);
     }
 }

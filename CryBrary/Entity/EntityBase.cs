@@ -89,7 +89,7 @@ namespace CryEngine
 		/// <returns></returns>
 		public bool Link(string linkName, EntityId otherEntityId, Quat relativeRot, Vec3 relativePos)
 		{
-			return NativeMethods.Entity.AddEntityLink(linkName, otherEntityId, relativeRot, relativePos);
+			return NativeMethods.Entity.AddEntityLink(HandleRef.Handle, linkName, otherEntityId, relativeRot, relativePos);
 		}
 
 		/// <summary>
@@ -98,7 +98,23 @@ namespace CryEngine
 		/// <param name="otherEntityId"></param>
 		public void Unlink(EntityId otherEntityId)
 		{
-			NativeMethods.Entity.RemoveEntityLink(otherEntityId);
+			NativeMethods.Entity.RemoveEntityLink(HandleRef.Handle, otherEntityId);
+		}
+
+		/// <summary>
+		/// Loads a light source to the specified slot, or to the next available slot.
+		/// </summary>
+		/// <param name="parameters"></param>
+		/// <param name="slot"></param>
+		/// <returns>The slot where the light source was loaded, or -1 if loading failed.</returns>
+		public int LoadLight(LightParams parameters, int slot = 1)
+		{
+			return NativeMethods.Entity.LoadLight(HandleRef.Handle, slot, parameters);
+		}
+
+		public void FreeSlot(int slot)
+		{
+			NativeMethods.Entity.FreeSlot(HandleRef.Handle, slot);
 		}
 
 		public Lua.ScriptTable ScriptTable { get { return Lua.ScriptTable.Get(HandleRef.Handle); } }

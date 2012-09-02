@@ -81,6 +81,10 @@ CScriptbind_Entity::CScriptbind_Entity()
 	REGISTER_METHOD(AddEntityLink);
 	REGISTER_METHOD(RemoveEntityLink);
 
+	REGISTER_METHOD(LoadLight);
+
+	REGISTER_METHOD(FreeSlot);
+
 	gEnv->pEntitySystem->AddSink(this, IEntitySystem::OnSpawn | IEntitySystem::OnRemove, 0);
 }
 
@@ -578,4 +582,70 @@ void CScriptbind_Entity::RemoveEntityLink(IEntity *pEntity, EntityId otherId)
 			break;
 		}
 	}
+}
+
+int CScriptbind_Entity::LoadLight(IEntity *pEntity, int slot, SMonoLightParams params)
+{
+	CDLight light;
+
+	if(const char *spec = ToCryString(params.specularCubemap))
+	{
+		if(strcmp(spec, ""))
+			light.SetSpecularCubemap(gEnv->pRenderer->EF_LoadTexture(spec));
+	}
+	if(const char *diff = ToCryString(params.diffuseCubemap))
+	{
+		if(strcmp(diff, ""))
+			light.SetDiffuseCubemap(gEnv->pRenderer->EF_LoadTexture(diff));
+	}
+	if(const char *lightImage = ToCryString(params.lightImage))
+	{
+		if(strcmp(lightImage, ""))
+			light.m_pLightImage = gEnv->pRenderer->EF_LoadTexture(lightImage);
+	}
+	if(const char *lightAttenMap = ToCryString(params.lightAttenMap))
+	{
+		if(strcmp(lightAttenMap, ""))
+			light.SetLightAttenMap(gEnv->pRenderer->EF_LoadTexture(lightAttenMap));
+	}
+
+	light.SetLightColor(params.color);
+	light.SetPosition(params.origin);
+
+	light.SetShadowBiasParams(params.shadowBias, params.shadowSlopeBias);
+
+	light.m_fRadius = params.radius;
+	light.SetSpecularMult(params.specularMultiplier);
+
+	light.m_fHDRDynamic = params.hdrDynamic;
+
+	light.m_fAnimSpeed = params.animSpeed;
+	light.m_fCoronaScale = params.coronaScale;
+	light.m_fCoronaIntensity = params.coronaIntensity;
+	light.m_fCoronaDistSizeFactor = params.coronaDistSizeFactor;
+	light.m_fCoronaDistIntensityFactor = params.coronaDistIntensityFactor;
+
+	light.m_fShaftSrcSize = params.shaftSrcSize;
+	light.m_fShaftLength = params.shaftLength;
+	light.m_fShaftBrightness = params.shaftBrightness;
+	light.m_fShaftBlendFactor = params.shaftBlendFactor;
+	light.m_fShaftDecayFactor = params.shaftDecayFactor;
+
+	light.m_fLightFrustumAngle = params.lightFrustumAngle;
+
+	light.m_fShadowUpdateMinRadius = params.shadowUpdateMinRadius;
+	light.m_nShadowUpdateRatio = params.shadowUpdateRatio;
+
+
+	light.m_nLightStyle = params.lightStyle;
+	light.m_nLightPhase = params.lightPhase;
+	light.m_nPostEffect = params.postEffect;
+	light.m_ShadowChanMask = params.shadowChanMask;
+
+	return pEntity->LoadLight(slot, &light);
+}
+
+void CScriptbind_Entity::FreeSlot(IEntity *pEntity, int slot)
+{
+	pEntity->FreeSlot(slot);
 }

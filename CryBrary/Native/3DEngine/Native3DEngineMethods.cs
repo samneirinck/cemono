@@ -32,18 +32,6 @@ namespace CryEngine.Native
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static void _SetTimeOfDayVariableValueColor(int id, Vec3 value);
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static IntPtr _CreateLightSource();
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _SetLightSourceParams(IntPtr lightSourcePtr, LightParams lightParams);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static LightParams _GetLightSourceParams(IntPtr lightSourcePtr);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _SetLightSourceMatrix(IntPtr lightSourcePtr, Matrix34 matrix);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static Matrix34 _GetLightSourceMatrix(IntPtr lightSourcePtr);
-
         public float GetTerrainElevation(float positionX, float positionY, bool includeOutdoorVoxels)
         {
             return _GetTerrainElevation(positionX, positionY, includeOutdoorVoxels);
@@ -98,30 +86,5 @@ namespace CryEngine.Native
         {
             _SetTimeOfDayVariableValueColor(id, value);
         }
-
-		public IntPtr CreateLightSource()
-		{
-			return _CreateLightSource();
-		}
-
-		public void SetLightSourceParams(IntPtr lightSourcePtr, LightParams lightParams)
-		{
-			_SetLightSourceParams(lightSourcePtr, lightParams);
-		}
-
-		public LightParams GetLightSourceParams(IntPtr lightSourcePtr)
-		{
-			return _GetLightSourceParams(lightSourcePtr);
-		}
-
-		public void SetLightSourceMatrix(IntPtr lightSourcePtr, Matrix34 matrix)
-		{
-			_SetLightSourceMatrix(lightSourcePtr, matrix);
-		}
-
-		public Matrix34 GetLightSourceMatrix(IntPtr lightSourcePtr)
-		{
-			return _GetLightSourceMatrix(lightSourcePtr);
-		}
     }
 }

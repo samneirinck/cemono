@@ -100,9 +100,15 @@ namespace CryEngine.Native
         extern internal static int _SetAttachmentMaterial(IntPtr entPtr, string name, IntPtr materialPtr);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static bool _AddEntityLink(string linkName, uint otherId, Quat relativeRot, Vec3 relativePos);
+		extern internal static bool _AddEntityLink(IntPtr entPtr, string linkName, uint otherId, Quat relativeRot, Vec3 relativePos);
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _RemoveEntityLink(uint otherId);
+		extern internal static void _RemoveEntityLink(IntPtr entPtr, uint otherId);
+
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static int _LoadLight(IntPtr entPtr, int slot, LightParams lightParams);
+
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static void _FreeSlot(IntPtr entPtr, int slot);
 
 		public void PlayAnimation(IntPtr ptr, string animationName, int slot, int layer, float blend, float speed, AnimationFlags flags)
 		{
@@ -294,20 +300,29 @@ namespace CryEngine.Native
             return _SetAttachmentMaterial(entPtr, name, materialPtr);
         }
 
-
         public void RegisterClass(EntityRegistrationParams registrationParams)
         {
             _RegisterEntityClass(registrationParams);
         }
 
-		public bool AddEntityLink(string linkName, EntityId otherId, Quat relativeRot, Vec3 relativePos)
+		public bool AddEntityLink(IntPtr entPtr, string linkName, EntityId otherId, Quat relativeRot, Vec3 relativePos)
 		{
-			return _AddEntityLink(linkName, otherId, relativeRot, relativePos);
+			return _AddEntityLink(entPtr, linkName, otherId, relativeRot, relativePos);
 		}
 
-		public void RemoveEntityLink(EntityId otherId)
+		public void RemoveEntityLink(IntPtr entPtr, EntityId otherId)
 		{
-			_RemoveEntityLink(otherId);
+			_RemoveEntityLink(entPtr, otherId);
+		}
+
+		public int LoadLight(IntPtr entPtr, int slot, LightParams lightParams)
+		{
+			return _LoadLight(entPtr, slot, lightParams);
+		}
+
+		public void FreeSlot(IntPtr entPtr, int slot)
+		{
+			_FreeSlot(entPtr, slot);
 		}
     }
 }
