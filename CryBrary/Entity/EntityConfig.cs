@@ -73,7 +73,6 @@ namespace CryEngine
 
 	/// <summary>
 	/// Defines the list of supported editor types.
-	/// Bool is not currently functioning.
 	/// </summary>
 	public enum EntityPropertyType
 	{
@@ -82,6 +81,7 @@ namespace CryEngine
 		Float,
 		Vec3,
 		String,
+		Entity,
 		Object,
 		Texture,
 		File,
@@ -127,6 +127,7 @@ namespace CryEngine
 		{
 			name = Name;
 			description = Desc;
+
 			type = Type;
 		}
 
@@ -139,6 +140,7 @@ namespace CryEngine
 
 		public string folder;
 
+		private EntityPropertyType _type;
 		public EntityPropertyType type
 		{
 			get
@@ -149,12 +151,12 @@ namespace CryEngine
 			{
 				_type = value;
 
-				switch(value)
+				switch (value)
 				{
 					//VALUE TYPES
 					case EntityPropertyType.Bool:
 						{
-							editType = "b"; // Start automagically working right now or I'll roundhouse kick you to the Pegasus galaxy >:(
+							editType = "b";
 						}
 						break;
 					case EntityPropertyType.Int:
@@ -206,6 +208,7 @@ namespace CryEngine
 					case EntityPropertyType.Color:
 						{
 							editType = "color";
+							_type = EntityPropertyType.Vec3;
 						}
 						break;
 					case EntityPropertyType.Vec3:
@@ -226,7 +229,6 @@ namespace CryEngine
 			}
 		}
 
-		private EntityPropertyType _type;
 		public int flags;
 
 		public EntityPropertyLimits limits;
