@@ -133,6 +133,9 @@
     <ClInclude Include="Scriptbinds\Time.h">
       <Filter>ScriptBinds\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="Scriptbinds\ScriptTable.h">
+      <Filter>ScriptBinds</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -225,6 +228,9 @@
       <Filter>ScriptBinds</Filter>
     </ClCompile>
     <ClCompile Include="Scriptbinds\Network.cpp" />
+    <ClCompile Include="Scriptbinds\ScriptTable.cpp">
+      <Filter>ScriptBinds</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ScriptBinds">

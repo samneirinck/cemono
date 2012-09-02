@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
 using CryEngine.Native;
 
 namespace CryEngine.Lua
@@ -13,17 +15,21 @@ namespace CryEngine.Lua
 	public class ScriptTable
 	{
 		#region Statics
-		public static ScriptTable Get(EntityId entityId)
+		internal static ScriptTable Get(IntPtr entityPtr, EntityId entityId)
 		{
-			var scriptTable = ScriptTables.Find(x => x.EntityId == entityId);
-			if(scriptTable != default(ScriptTable))
+			if (ScriptTables == null)
+				ScriptTables = new List<ScriptTable>();
+
+			var scriptTable = ScriptTables.FirstOrDefault(x => x.EntityId == entityId);
+			if (scriptTable != default(ScriptTable))
 				return scriptTable;
 
-            var scriptPtr = NativeMethods.ScriptTable.GetScriptTable(entityId);
-			if(scriptPtr != IntPtr.Zero)
+			var scriptPtr = NativeMethods.ScriptTable.GetScriptTable(entityPtr);
+			if (scriptPtr != IntPtr.Zero)
 			{
-				ScriptTables.Add(new ScriptTable(scriptPtr));
-				return ScriptTables.Last();
+				scriptTable = new ScriptTable(scriptPtr);
+				ScriptTables.Add(scriptTable);
+				return scriptTable;
 			}
 
 			return null;
@@ -34,7 +40,7 @@ namespace CryEngine.Lua
 
 		internal ScriptTable(IntPtr scriptPtr)
 		{
-			ScriptPointer = scriptPtr;
+			HandleRef = new HandleRef(this, scriptPtr);
 
 			IsSubtable = false;
 		}
@@ -65,12 +71,12 @@ namespace CryEngine.Lua
 			else
 				throw new NotSupportedException("Lua methods can only return Boolean, Integer, Float, Vector or String.");
 
-            return (T)NativeMethods.ScriptTable.CallMethod(ScriptPointer, methodName, variableType, args);
+			return (T)NativeMethods.ScriptTable.CallMethod(HandleRef.Handle, methodName, variableType, args);
 		}
 
 		public void CallMethod(string methodName, object[] args = null)
 		{
-            NativeMethods.ScriptTable.CallMethodVoid(ScriptPointer, methodName, args);
+			NativeMethods.ScriptTable.CallMethodVoid(HandleRef.Handle, methodName, args);
 		}
 
 		/// <summary>
@@ -81,7 +87,7 @@ namespace CryEngine.Lua
 		/// <returns></returns>
 		public T GetValue<T>(string name)
 		{
-			return default(T);
+			throw new NotImplementedException();
 		}
 
 		/// <summary>
@@ -91,7 +97,7 @@ namespace CryEngine.Lua
 		/// <returns></returns>
 		public ScriptTable GetTable(string name)
 		{
-			return null;
+			throw new NotImplementedException();
 		}
 
 		public EntityId EntityId { get; set; }
@@ -100,7 +106,10 @@ namespace CryEngine.Lua
 		/// Determines if this is a SmartScriptTable, retrieved from a ScriptTable.
 		/// </summary>
 		internal bool IsSubtable { get; set; }
-		internal IntPtr ScriptPointer { get; set; }
+		/// <summary>
+		/// Handle to the native IScriptTable object
+		/// </summary>
+		public HandleRef HandleRef { get; set; }
 	}
 
 	enum LuaVariableType
