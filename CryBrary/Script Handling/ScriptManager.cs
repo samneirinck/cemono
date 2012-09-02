@@ -150,6 +150,9 @@ namespace CryEngine.Initialization
 		void LoadPlugins()
 		{
             var pluginsDirectory = Path.Combine(PathUtils.ScriptsFolder, "Plugins");
+			if (!Directory.Exists(pluginsDirectory))
+				return;
+
             foreach (var directory in Directory.GetDirectories(pluginsDirectory))
             {
                 var compilerDll = Path.Combine(directory, "Compiler.dll");
