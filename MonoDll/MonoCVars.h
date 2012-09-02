@@ -9,6 +9,8 @@ struct SCVars
 	int mono_boxUnsignedIntegersAsEntityIds;
 	int mono_realtimeScripting;
 
+	int mono_softBreakpoints;
+
 	SCVars()
 	{
 		memset(this,0,sizeof(SCVars));

@@ -9,6 +9,7 @@ void SCVars::InitCVars(IConsole *pConsole)
 	REGISTER_CVAR(mono_boxUnsignedIntegersAsEntityIds, 1, VF_NULL, "Determines if all unsigned integers will be boxed as entity id's");
 	REGISTER_CVAR(mono_realtimeScripting, 0, VF_NULL, "Enables / Disables Realtime Scripting functionality. (Editor-only)");
 
+	REGISTER_CVAR(mono_softBreakpoints, 1, VF_REQUIRE_APP_RESTART, "[Performance Warning] Enables / Disables soft breakpoints, preventing managed null reference exceptions causing crashes in unmanaged code.");
 }
 
 //------------------------------------------------------------------------

@@ -59,7 +59,10 @@ CScriptSystem::CScriptSystem()
 	, m_pInput(nullptr)
 	, m_bHasPostInitialized(false)
 {
-	//CryLogAlways("Initializing Mono Script System");
+	CryLogAlways("Initializing Mono Script System");
+
+	m_pCVars = new SCVars();
+	g_pMonoCVars = m_pCVars;
 	
 	// We should look into storing mono binaries, configuration as well as scripts via CryPak.
 	mono_set_dirs(PathUtils::GetLibPath(), PathUtils::GetConfigPath());
@@ -67,9 +70,14 @@ CScriptSystem::CScriptSystem()
 	string monoCmdOptions = "";
 
 #ifndef _RELEASE
-	// Prevents managed null reference exceptions causing crashes in unmanaged code
-	// See: https://bugzilla.xamarin.com/show_bug.cgi?id=5963
-	monoCmdOptions.append("--soft-breakpoints");
+	if(g_pMonoCVars->mono_softBreakpoints)
+	{
+		CryLogAlways("		[Performance Warning] Mono soft breakpoints are enabled!");
+
+		// Prevents managed null reference exceptions causing crashes in unmanaged code
+		// See: https://bugzilla.xamarin.com/show_bug.cgi?id=5963
+		monoCmdOptions.append("--soft-breakpoints");
+	}
 #endif
 
 	// Commandline switch -DEBUG makes the process connect to the debugging server. Warning: Failure to connect to a debugging server WILL result in a crash.
@@ -92,9 +100,6 @@ CScriptSystem::CScriptSystem()
 	m_pConverter = new CConverter();
 
 	gEnv->pMonoScriptSystem = this;
-
-	m_pCVars = new SCVars();
-	g_pMonoCVars = m_pCVars;
 
 	if(!CompleteInit())
 		return;
@@ -134,7 +139,7 @@ CScriptSystem::~CScriptSystem()
 
 bool CScriptSystem::CompleteInit()
 {
-	CryLogAlways("		Initializing CryMono...");
+	CryLogAlways("		Initializing CryMono ...");
 	
 	// Create root domain and determine the runtime version we'll be using.
 	m_pRootDomain = new CScriptDomain(eRV_4_30319);
