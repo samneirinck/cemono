@@ -57,5 +57,10 @@ namespace CryEngine
         {
             NativeMethods.Engine3D.SetTimeOfDayVariableValueColor(id, value);
         }
+
+		public static void ActivatePortal(Vec3 pos, bool activate, string entityName)
+		{
+			NativeMethods.Engine3D.ActivatePortal(pos, activate, entityName);
+		}
     }
 }

@@ -41,6 +41,8 @@ public:
 
 	static void SetTimeOfDayVariableValue(ITimeOfDay::ETimeOfDayParamID id, float value);
 	static void SetTimeOfDayVariableValueColor(ITimeOfDay::ETimeOfDayParamID id, Vec3 value);
+
+	static void ActivatePortal(Vec3 pos, bool activate, mono::string entityName);
 };
 
 #endif //__SCRIPTBIND_3DENGINE__
