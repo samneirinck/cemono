@@ -118,6 +118,29 @@ EMonoAnyType CScriptObject::GetType()
 	return eMonoAnyType_Unknown;
 }
 
+MonoAnyValue CScriptObject::GetAnyValue()
+{
+	switch(GetType())
+	{
+	case eMonoAnyType_Boolean:
+		return Unbox<bool>();
+	case eMonoAnyType_Integer:
+		return Unbox<int>();
+	case eMonoAnyType_UnsignedInteger:
+		return Unbox<uint>();
+	case eMonoAnyType_Short:
+		return Unbox<short>();
+	case eMonoAnyType_UnsignedShort:
+		return Unbox<unsigned short>();
+	case eMonoAnyType_Float:
+		return Unbox<float>();
+	case eMonoAnyType_String:
+		return ToCryString((mono::string)GetManagedObject());
+	}
+
+	return MonoAnyValue();
+}
+
 IMonoObject *CScriptObject::InvokeArray(const char *methodName, IMonoArray *pParams, bool bStatic)
 {
 	MonoMethod *pMethod = static_cast<CScriptClass *>(GetClass())->GetMonoMethod(methodName, pParams);

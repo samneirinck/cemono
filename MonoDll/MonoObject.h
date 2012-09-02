@@ -42,11 +42,12 @@ public:
 
 	virtual void Release() override { delete this; }
 
-	virtual EMonoAnyType GetType();
+	virtual EMonoAnyType GetType() override;
+	virtual MonoAnyValue GetAnyValue() override;
 
 	virtual mono::object GetManagedObject() override { return (mono::object)m_pObject; }
 
-	virtual IMonoClass *GetClass();
+	virtual IMonoClass *GetClass() override;
 	// ~IMonoObject
 
 	// IMonoScriptSystemListener

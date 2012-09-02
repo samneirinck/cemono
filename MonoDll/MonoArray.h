@@ -58,6 +58,7 @@ public:
 	virtual void SetField(const char *fieldName, IMonoObject *pNewValue, bool bStatic = false) override { CScriptObject::SetField(fieldName, pNewValue, bStatic); }
 
 	virtual EMonoAnyType GetType() override { return eMonoAnyType_Array; }
+	virtual MonoAnyValue GetAnyValue() override { return MonoAnyValue(); }
 
 	virtual mono::object GetManagedObject() override { return CScriptObject::GetManagedObject(); }
 

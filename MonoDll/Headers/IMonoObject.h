@@ -132,6 +132,8 @@ public:
 	/// Gets the type of this Mono object.
 	/// </summary>
 	virtual EMonoAnyType GetType() = 0;
+
+	virtual MonoAnyValue GetAnyValue() = 0;
 	
 	/// <summary>
 	/// Returns the object as it is seen in managed code, can be passed directly across languages.
