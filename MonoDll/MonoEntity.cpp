@@ -156,3 +156,34 @@ void CEntity::SetPropertyValue(IEntityPropertyHandler::SPropertyInfo propertyInf
 {
 	m_pScript->CallMethod("SetPropertyValue", propertyInfo.name, propertyInfo.type, value);
 }
+
+///////////////////////////////////////////////////
+// Entity RMI's
+///////////////////////////////////////////////////
+CEntity::RMIParams::RMIParams(IMonoArray *pArray)
+{
+	length = pArray->GetSize();
+
+	anyValues = new MonoAnyValue[length];
+
+	for(int i = 0; i < length; i++)
+		anyValues[i] = pArray->GetItem(i)->GetAnyValue();
+}
+
+void CEntity::RMIParams::SerializeWith(TSerialize ser)
+{
+	ser.Value("length", length);
+
+	for(int i = 0; i < length; i++)
+		anyValues[i].SerializeWith(ser);
+}
+
+IMPLEMENT_RMI(CEntity, SvScriptRMI)
+{
+	return true;
+}
+
+IMPLEMENT_RMI(CEntity, ClScriptRMI)
+{
+	return true;
+}

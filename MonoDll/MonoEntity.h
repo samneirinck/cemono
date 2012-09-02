@@ -10,9 +10,12 @@
 #ifndef __MONO_ENTITY__
 #define __MONO_ENTITY__
 
+#include <MonoCommon.h>
+
 #include <IGameObject.h>
 
 struct IMonoObject;
+struct IMonoArray;
 
 struct SQueuedProperty
 {
@@ -56,6 +59,20 @@ public:
 	virtual void SetAuthority( bool auth ) {}
 	virtual void GetMemoryUsage( ICrySizer* s ) const { s->Add( *this ); }
 	// ~IGameObjectExtension
+
+	struct RMIParams
+	{
+		RMIParams() {}
+		RMIParams(IMonoArray *pArray);
+
+		void SerializeWith(TSerialize ser);
+
+		MonoAnyValue *anyValues;
+		int length;
+	};
+
+	DECLARE_SERVER_RMI_NOATTACH(SvScriptRMI, RMIParams, eNRT_ReliableUnordered);
+	DECLARE_CLIENT_RMI_NOATTACH(ClScriptRMI, RMIParams, eNRT_ReliableUnordered);
 
 	IMonoObject *GetScript() { return m_pScript; }
 
