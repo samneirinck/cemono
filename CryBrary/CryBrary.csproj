@@ -126,6 +126,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Actor\Actor.cs" />
+    <Compile Include="ProjectSettings.cs" />
     <Compile Include="Engine\Texture.cs" />
     <Compile Include="Entity\AnimationFlags.cs" />
     <Compile Include="Entity\EntityLight.cs" />
@@ -185,7 +186,7 @@
     <Compile Include="Native\Utils\NativeTimeMethods.cs" />
     <Compile Include="Native\Viewport\UI\NativeUIMethods.cs" />
     <Compile Include="Native\Viewport\NativeViewMethods.cs" />
-    <Compile Include="Network\NetworkCallAttribute.cs" />
+    <Compile Include="Network\RemoteInvocationAttribute.cs" />
     <Compile Include="Sandbox\Attributes.cs" />
     <Compile Include="Sandbox\FormLoader.cs">
       <SubType>Form</SubType>

@@ -232,10 +232,12 @@ namespace CryEngine.Initialization
 		/// <param name="assemblyPath"></param>
 		public Assembly LoadAssembly(string assemblyPath)
 		{
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if(assemblyPath == null)
 				throw new ArgumentNullException("assemblyPath");
 			if(assemblyPath.Length < 1)
 				throw new ArgumentException("string cannot be empty!", "assemblyPath");
+#endif
 
 			var newPath = Path.Combine(PathUtils.TempFolder, Path.GetFileName(assemblyPath));
 
@@ -280,10 +282,12 @@ namespace CryEngine.Initialization
 
 		public void GenerateDebugDatabaseForAssembly(string assemblyPath)
 		{
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if(assemblyPath == null)
 				throw new ArgumentNullException("assemblyPath");
 			if(assemblyPath.Length < 1)
 				throw new ArgumentException("string cannot be empty!", "assemblyPath");
+#endif
 
 			if(File.Exists(Path.ChangeExtension(assemblyPath, "pdb")))
 			{
@@ -326,20 +330,26 @@ namespace CryEngine.Initialization
 		/// <returns>New instance scriptId or -1 if instantiation failed.</returns>
 		public CryScriptInstance CreateScriptInstance(string scriptName, ScriptType scriptType, object[] constructorParams = null)
 		{
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if (scriptName == null)
 				throw new ArgumentNullException("scriptName");
 			if (scriptName.Length < 1)
 				throw new ArgumentException("string cannot be empty!", "scriptName");
 			if (!Enum.IsDefined(typeof(ScriptType), scriptType))
 				throw new ArgumentException(string.Format("scriptType: value {0} was not defined in the enum", scriptType));
+#endif
 
 			var script = Scripts.FirstOrDefault(x => x.ScriptType.ContainsFlag(scriptType) && x.ScriptName.Equals(scriptName));
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if (script == default(CryScript))
 				throw new ScriptNotFoundException(string.Format("Script {0} of ScriptType {1} could not be found.", scriptName, scriptType));
+#endif
 
 			var scriptInstance = Activator.CreateInstance(script.Type, constructorParams) as CryScriptInstance;
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if (scriptInstance == null)
 				throw new ArgumentException("Failed to create instance, make sure type derives from CryScriptInstance", "scriptName");
+#endif
 
 			if (scriptType == ScriptType.GameRules)
 				GameRules.Current = scriptInstance as GameRules;
@@ -351,10 +361,12 @@ namespace CryEngine.Initialization
 
 		public void AddScriptInstance(CryScriptInstance instance, ScriptType scriptType)
 		{
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if (instance == null)
 				throw new ArgumentNullException("instance");
 			if (!Enum.IsDefined(typeof(ScriptType), scriptType))
 				throw new ArgumentException(string.Format("scriptType: value {0} was not defined in the enum", scriptType));
+#endif
 
 			var script = FindScript(scriptType, x => x.Type == instance.GetType());
 			if (script == default(CryScript))
@@ -370,12 +382,17 @@ namespace CryEngine.Initialization
 
 		void AddScriptInstance(CryScript script, CryScriptInstance instance)
 		{
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if (script == default(CryScript))
 				throw new ArgumentException("script");
+#endif
 
 			var index = Scripts.IndexOf(script);
+
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if (index == -1)
 				throw new ArgumentException("Provided CryScript object was not present in the script collection", "script");
+#endif
 
 			instance.ScriptId = LastScriptId++;
 
@@ -397,8 +414,10 @@ namespace CryEngine.Initialization
 		/// </summary>
 		public int RemoveInstances<T>(ScriptType scriptType, Predicate<T> match) where T : CryScriptInstance
 		{
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if (!Enum.IsDefined(typeof(ScriptType), scriptType))
 				throw new ArgumentException(string.Format("scriptType: value {0} was not defined in the enum", scriptType));
+#endif
 
 			int numRemoved = 0;
 			for (int i = 0; i < Scripts.Count; i++)
@@ -424,8 +443,10 @@ namespace CryEngine.Initialization
 
 		public CryScriptInstance GetScriptInstanceById(int id, ScriptType scriptType)
 		{
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if (id == 0)
 				throw new ArgumentException("instance id cannot be 0!");
+#endif
 
 			return Find<CryScriptInstance>(scriptType, x => x.ScriptId == id);
 		}
@@ -433,16 +454,20 @@ namespace CryEngine.Initialization
 		#region Linq statements
 		public CryScript FindScript(ScriptType scriptType, Func<CryScript, bool> predicate)
 		{
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if (!Enum.IsDefined(typeof(ScriptType), scriptType))
 				throw new ArgumentException(string.Format("scriptType: value {0} was not defined in the enum", scriptType));
+#endif
 
 			return Scripts.FirstOrDefault(x => x.ScriptType.ContainsFlag(scriptType) && predicate(x));
 		}
 
 		public void ForEachScript(ScriptType scriptType, Action<CryScript> action)
 		{
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if (!Enum.IsDefined(typeof(ScriptType), scriptType))
 				throw new ArgumentException(string.Format("scriptType: value {0} was not defined in the enum", scriptType));
+#endif
 
 			Scripts.ForEach(x =>
 			{
@@ -453,8 +478,10 @@ namespace CryEngine.Initialization
 
 		public void ForEach(ScriptType scriptType, Action<CryScriptInstance> action)
 		{
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if (!Enum.IsDefined(typeof(ScriptType), scriptType))
 				throw new ArgumentException(string.Format("scriptType: value {0} was not defined in the enum", scriptType));
+#endif
 
 			ForEachScript(scriptType, script =>
 			{
@@ -465,8 +492,10 @@ namespace CryEngine.Initialization
 
 		public T Find<T>(ScriptType scriptType, Func<T, bool> predicate) where T : CryScriptInstance
 		{
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if (!Enum.IsDefined(typeof(ScriptType), scriptType))
 				throw new ArgumentException(string.Format("scriptType: value {0} was not defined in the enum", scriptType));
+#endif
 
 			T scriptInstance = null;
 

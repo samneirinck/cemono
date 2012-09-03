@@ -345,10 +345,12 @@ namespace CryEngine
 		/// </summary>
 		internal void OnPortActivated(int index, object value = null)
 		{
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if(InputMethods == null)
 				throw new Exception("InputMethods was null!");
 			if(!InputMethods.ContainsKey(GetType()))
 				throw new Exception("InputMethods did not contain the flownode type!");
+#endif
 
 			var method = InputMethods[GetType()].ElementAt(index);
 
@@ -384,8 +386,10 @@ namespace CryEngine
 
 		protected T GetPortEnum<T>(Action<T> port) where T : struct
 		{
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if(!typeof(T).IsEnum)
 				throw new ArgumentException("T must be an enumerated type");
+#endif
 
 			return (T)Enum.ToObject(typeof(T), NativeMethods.FlowNode.GetPortValueInt(HandleRef.Handle, GetInputPortId(port.Method)));
 		}

@@ -35,8 +35,10 @@ namespace CryEngine
 
 		public static Material Get(EntityBase entity, int slot = 0)
 		{
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if(entity == null)
 				throw new ArgumentNullException("entity");
+#endif
 
 			var ptr = NativeMethods.Material.GetMaterial(entity.HandleRef.Handle, slot);
 			return TryAdd(ptr);
@@ -44,10 +46,12 @@ namespace CryEngine
 
 		public static void Set(EntityBase entity, Material mat, int slot = 0)
 		{
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if(entity == null)
 				throw new ArgumentNullException("entity");
 			if(mat == null)
 				throw new ArgumentNullException("mat");
+#endif
 
 			NativeMethods.Material.SetMaterial(entity.HandleRef.Handle, mat.HandleRef.Handle, slot);
 		}

@@ -114,10 +114,12 @@ namespace CryEngine
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
 		public Vec4(float[] values)
 		{
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if(values == null)
 				throw new ArgumentNullException("values");
 			if(values.Length != 4)
 				throw new ArgumentOutOfRangeException("values", "There must be four and only four input values for Vector4.");
+#endif
 
 			X = values[0];
 			Y = values[1];
@@ -781,12 +783,14 @@ namespace CryEngine
 			//q4 = m4 - ((q1 ⋅ m4) / (q1 ⋅ q1)) * q1 - ((q2 ⋅ m4) / (q2 ⋅ q2)) * q2 - ((q3 ⋅ m4) / (q3 ⋅ q3)) * q3
 			//q5 = ...
 
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if(source == null)
 				throw new ArgumentNullException("source");
 			if(destination == null)
 				throw new ArgumentNullException("destination");
 			if(destination.Length < source.Length)
 				throw new ArgumentOutOfRangeException("destination", "The destination array must be of same length or larger length than the source array.");
+#endif
 
 			for(int i = 0; i < source.Length; ++i)
 			{
@@ -828,12 +832,14 @@ namespace CryEngine
 			//q4 = (m4 - (q1 ⋅ m4) * q1 - (q2 ⋅ m4) * q2 - (q3 ⋅ m4) * q3) / |m4 - (q1 ⋅ m4) * q1 - (q2 ⋅ m4) * q2 - (q3 ⋅ m4) * q3|
 			//q5 = ...
 
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if(source == null)
 				throw new ArgumentNullException("source");
 			if(destination == null)
 				throw new ArgumentNullException("destination");
 			if(destination.Length < source.Length)
 				throw new ArgumentOutOfRangeException("destination", "The destination array must be of same length or larger length than the source array.");
+#endif
 
 			for(int i = 0; i < source.Length; ++i)
 			{
@@ -901,12 +907,14 @@ namespace CryEngine
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="destination"/> is shorter in length than <paramref name="source"/>.</exception>
 		public static void Transform(Vec4[] source, ref Quat rotation, Vec4[] destination)
 		{
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if(source == null)
 				throw new ArgumentNullException("source");
 			if(destination == null)
 				throw new ArgumentNullException("destination");
 			if(destination.Length < source.Length)
 				throw new ArgumentOutOfRangeException("destination", "The destination array must be of same length or larger length than the source array.");
+#endif
 
 			float x = rotation.V.X + rotation.V.X;
 			float y = rotation.V.Y + rotation.V.Y;

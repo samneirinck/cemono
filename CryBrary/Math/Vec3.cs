@@ -95,10 +95,12 @@ namespace CryEngine
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than three elements.</exception>
 		public Vec3(float[] values)
 		{
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if(values == null)
 				throw new ArgumentNullException("values");
 			if(values.Length != 3)
 				throw new ArgumentOutOfRangeException("values", "There must be three and only three input values for Vector3.");
+#endif
 
 			X = values[0];
 			Y = values[1];
@@ -911,12 +913,14 @@ namespace CryEngine
 			//q4 = m4 - ((q1 ⋅ m4) / (q1 ⋅ q1)) * q1 - ((q2 ⋅ m4) / (q2 ⋅ q2)) * q2 - ((q3 ⋅ m4) / (q3 ⋅ q3)) * q3
 			//q5 = ...
 
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if(source == null)
 				throw new ArgumentNullException("source");
 			if(destination == null)
 				throw new ArgumentNullException("destination");
 			if(destination.Length < source.Length)
 				throw new ArgumentOutOfRangeException("destination", "The destination array must be of same length or larger length than the source array.");
+#endif
 
 			for(int i = 0; i < source.Length; ++i)
 			{
@@ -958,12 +962,14 @@ namespace CryEngine
 			//q4 = (m4 - (q1 ⋅ m4) * q1 - (q2 ⋅ m4) * q2 - (q3 ⋅ m4) * q3) / |m4 - (q1 ⋅ m4) * q1 - (q2 ⋅ m4) * q2 - (q3 ⋅ m4) * q3|
 			//q5 = ...
 
-			if(source == null)
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
+			if (source == null)
 				throw new ArgumentNullException("source");
 			if(destination == null)
 				throw new ArgumentNullException("destination");
 			if(destination.Length < source.Length)
 				throw new ArgumentOutOfRangeException("destination", "The destination array must be of same length or larger length than the source array.");
+#endif
 
 			for(int i = 0; i < source.Length; ++i)
 			{
@@ -1030,12 +1036,14 @@ namespace CryEngine
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="destination"/> is shorter in length than <paramref name="source"/>.</exception>
 		public static void Transform(Vec3[] source, ref Quat rotation, Vec3[] destination)
 		{
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if(source == null)
 				throw new ArgumentNullException("source");
 			if(destination == null)
 				throw new ArgumentNullException("destination");
 			if(destination.Length < source.Length)
 				throw new ArgumentOutOfRangeException("destination", "The destination array must be of same length or larger length than the source array.");
+#endif
 
 			float x = rotation.V.X + rotation.V.X;
 			float y = rotation.V.Y + rotation.V.Y;
@@ -1242,14 +1250,19 @@ namespace CryEngine
 
 		public static Vec3 Parse(string value)
 		{
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if(value == null)
 				throw new ArgumentNullException("value");
 			if(value.Length < 1)
 				throw new ArgumentException("value string was empty");
+#endif
 
 			string[] split = value.Split(',');
+
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if(split.Length != 3)
 				throw new ArgumentException("value string was invalid");
+#endif
 
 			return new Vec3(System.Convert.ToSingle(split[0]), System.Convert.ToSingle(split[1]), System.Convert.ToSingle(split[2]));
 		}

@@ -11,8 +11,10 @@ namespace CryEngine
 		{
 			InitializeComponent();
 
+			label1.Text = ProjectSettings.ExceptionMessage;
+
 			uxContinueBtn.Click += (s, a) => Close();
-			uxReportBtn.Click += (s, a) => Process.Start("http://www.crydev.net/posting.php?mode=post&f=375");
+			uxReportBtn.Click += (s, a) => Process.Start(ProjectSettings.BugReportLink);
 			uxCancelBtn.Click += (s, a) => Process.GetCurrentProcess().Kill();
 
 			if(fatal)

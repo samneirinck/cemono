@@ -38,8 +38,10 @@ namespace CryEngine
 
 		public static void Remove(EntityId id)
 		{
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if(id == 0)
 				throw new ArgumentException("entityId cannot be 0!");
+#endif
 
             NativeMethods.Entity.RemoveEntity(id);
 		}
@@ -72,8 +74,10 @@ namespace CryEngine
 		/// a C++ entity with the specified ID></remarks>
 		public static T Get<T>(EntityId entityId) where T : EntityBase
 		{
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if(entityId == 0)
 				throw new ArgumentException("entityId cannot be 0!");
+#endif
 
 			return ScriptManager.Instance.Find<T>(ScriptType.Entity, x => x.Id == entityId);
 		}
@@ -87,8 +91,10 @@ namespace CryEngine
 		/// a C++ entity with the specified ID></remarks>
 		public static EntityBase Get(EntityId entityId)
 		{
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if(entityId == 0)
 				throw new ArgumentException("entityId cannot be 0!");
+#endif
 
 			var ent = Get<EntityBase>(entityId);
 			if(ent != null)
@@ -138,8 +144,10 @@ namespace CryEngine
 		/// <returns>An array of entities.</returns>
 		public static IEnumerable<Entity> GetByClass(string className)
 		{
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if(String.IsNullOrEmpty(className))
 				throw new ArgumentException("className should not be null or empty", "className");
+#endif
 
             return GetEntitiesCommon<Entity>(NativeMethods.Entity.GetEntitiesByClass(className));
 		}

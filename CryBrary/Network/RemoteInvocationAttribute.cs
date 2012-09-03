@@ -3,9 +3,14 @@
 namespace CryEngine
 {
 	[AttributeUsage(AttributeTargets.Method)]
-	public sealed class NetworkCallAttribute : Attribute
+	public sealed class RemoteInvocationAttribute : Attribute
 	{
-		public NetworkCallAttribute(NetworkTarget target)
+		public RemoteInvocationAttribute()
+		{
+			Target = NetworkTarget.Any;
+		}
+
+		public RemoteInvocationAttribute(NetworkTarget target)
 		{
 			Target = target;
 		}

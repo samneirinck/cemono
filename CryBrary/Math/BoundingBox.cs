@@ -202,8 +202,10 @@ namespace CryEngine
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="points"/> is <c>null</c>.</exception>
 		public static void FromPoints(Vec3[] points, out BoundingBox result)
 		{
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if(points == null)
 				throw new ArgumentNullException("points");
+#endif
 
 			var min = new Vec3(float.MaxValue);
 			var max = new Vec3(float.MinValue);
@@ -225,8 +227,10 @@ namespace CryEngine
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="points"/> is <c>null</c>.</exception>
 		public static BoundingBox FromPoints(Vec3[] points)
 		{
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if(points == null)
 				throw new ArgumentNullException("points");
+#endif
 
 			var min = new Vec3(float.MaxValue);
 			var max = new Vec3(float.MinValue);

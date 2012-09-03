@@ -6,11 +6,12 @@
 		{
 			if(type == EntityPropertyType.String)
 				return value;
-
+#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if(value == null)
 				throw new System.ArgumentNullException("value");
 			if(value.Length < 1)
 				throw new System.ArgumentException("value string was empty");
+#endif
 
 			switch(type)
 			{
