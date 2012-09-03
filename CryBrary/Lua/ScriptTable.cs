@@ -51,7 +51,6 @@ namespace CryEngine.Lua
 		/// <summary>
 		/// Gets a value within the table.
 		/// </summary>
-		/// <typeparam name="T"></typeparam>
 		/// <param name="name"></param>
 		/// <returns></returns>
 		public object GetValue(string name)
