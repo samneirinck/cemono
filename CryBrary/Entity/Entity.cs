@@ -154,7 +154,7 @@ namespace CryEngine
 		/// <param name="propertyName"></param>
 		/// <param name="propertyType"></param>
 		/// <param name="valueString"></param>
-		protected virtual void OnPropertyChanged(string propertyName, EntityPropertyType propertyType, string valueString) { }
+		protected virtual void OnPropertyChanged(MemberInfo memberInfo, EntityPropertyType propertyType, object newValue) { }
 		#endregion
 
 		#region Base Logic
@@ -193,22 +193,16 @@ namespace CryEngine
 
 			var value = Convert.FromString(propertyType, valueString);
 
-			// Perhaps we should exclude properties entirely, and just utilize fields (including backing fields)
-			var property = GetType().GetProperty(propertyName);
-			if(property != null)
-			{
-				property.SetValue(this, value, null);
-
-				return;
-			}
-
-			var field = GetType().GetField(propertyName);
-			if(field != null)
-				field.SetValue(this, value);
-			else
+			var member = GetType().GetMember(propertyName).First(x => x.MemberType == MemberTypes.Field || x.MemberType == MemberTypes.Property);
+			if(member == null)
 				throw new ArgumentException(string.Format("member {0} could not be located", propertyName));
 
-			OnPropertyChanged(propertyName, propertyType, valueString);
+			if (member.MemberType == MemberTypes.Property)
+				(member as PropertyInfo).SetValue(this, value, null);
+			else
+				(member as FieldInfo).SetValue(this, value);
+
+			OnPropertyChanged(member, propertyType, value);
 		}
 
 		/// <summary>
