@@ -19,10 +19,10 @@ namespace CryEngine
 		/// <param name="scale"></param>
 		/// <param name="autoInit"></param>
 		/// <returns></returns>
-		public static T Spawn<T>(string name, Vec3 pos, Vec3? rot = null, Vec3? scale = null, bool autoInit = true, EntityFlags flags = EntityFlags.CastShadow) where T : Entity, new()
+		public static T Spawn<T>(string name, Vec3? pos = null, Vec3? rot = null, Vec3? scale = null, bool autoInit = true, EntityFlags flags = EntityFlags.CastShadow) where T : Entity, new()
 		{
 			EntityInfo info;
-            if (NativeMethods.Entity.SpawnEntity(new EntitySpawnParams { Name = name, Class = typeof(T).Name, Pos = pos, Rot = rot ?? Vec3.Zero, Scale = scale ?? new Vec3(1, 1, 1), Flags = flags }, autoInit, out info))
+            if (NativeMethods.Entity.SpawnEntity(new EntitySpawnParams { Name = name, Class = typeof(T).Name, Pos = pos ?? new Vec3(1, 1, 1), Rot = rot ?? Vec3.Zero, Scale = scale ?? new Vec3(1, 1, 1), Flags = flags }, autoInit, out info))
 			{
 				var ent = new T();
 
@@ -38,7 +38,7 @@ namespace CryEngine
 
 		public static void Remove(EntityId id)
 		{
-#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
+#if !((RELEASE && RELEASE_DISABLE_CHECKS))
 			if(id == 0)
 				throw new ArgumentException("entityId cannot be 0!");
 #endif
@@ -74,7 +74,7 @@ namespace CryEngine
 		/// a C++ entity with the specified ID></remarks>
 		public static T Get<T>(EntityId entityId) where T : EntityBase
 		{
-#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
+#if !((RELEASE && RELEASE_DISABLE_CHECKS))
 			if(entityId == 0)
 				throw new ArgumentException("entityId cannot be 0!");
 #endif
@@ -91,7 +91,7 @@ namespace CryEngine
 		/// a C++ entity with the specified ID></remarks>
 		public static EntityBase Get(EntityId entityId)
 		{
-#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
+#if !((RELEASE && RELEASE_DISABLE_CHECKS))
 			if(entityId == 0)
 				throw new ArgumentException("entityId cannot be 0!");
 #endif
@@ -144,7 +144,7 @@ namespace CryEngine
 		/// <returns>An array of entities.</returns>
 		public static IEnumerable<Entity> GetByClass(string className)
 		{
-#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
+#if !((RELEASE && RELEASE_DISABLE_CHECKS))
 			if(String.IsNullOrEmpty(className))
 				throw new ArgumentException("className should not be null or empty", "className");
 #endif

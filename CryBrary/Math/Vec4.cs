@@ -114,7 +114,7 @@ namespace CryEngine
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
 		public Vec4(float[] values)
 		{
-#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
+#if !((RELEASE && RELEASE_DISABLE_CHECKS))
 			if(values == null)
 				throw new ArgumentNullException("values");
 			if(values.Length != 4)
@@ -783,7 +783,7 @@ namespace CryEngine
 			//q4 = m4 - ((q1 ⋅ m4) / (q1 ⋅ q1)) * q1 - ((q2 ⋅ m4) / (q2 ⋅ q2)) * q2 - ((q3 ⋅ m4) / (q3 ⋅ q3)) * q3
 			//q5 = ...
 
-#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
+#if !((RELEASE && RELEASE_DISABLE_CHECKS))
 			if(source == null)
 				throw new ArgumentNullException("source");
 			if(destination == null)
@@ -832,7 +832,7 @@ namespace CryEngine
 			//q4 = (m4 - (q1 ⋅ m4) * q1 - (q2 ⋅ m4) * q2 - (q3 ⋅ m4) * q3) / |m4 - (q1 ⋅ m4) * q1 - (q2 ⋅ m4) * q2 - (q3 ⋅ m4) * q3|
 			//q5 = ...
 
-#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
+#if !((RELEASE && RELEASE_DISABLE_CHECKS))
 			if(source == null)
 				throw new ArgumentNullException("source");
 			if(destination == null)
@@ -907,7 +907,7 @@ namespace CryEngine
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="destination"/> is shorter in length than <paramref name="source"/>.</exception>
 		public static void Transform(Vec4[] source, ref Quat rotation, Vec4[] destination)
 		{
-#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
+#if !((RELEASE && RELEASE_DISABLE_CHECKS))
 			if(source == null)
 				throw new ArgumentNullException("source");
 			if(destination == null)

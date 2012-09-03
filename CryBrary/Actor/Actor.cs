@@ -48,7 +48,7 @@ namespace CryEngine
 
 		public static T Get<T>(EntityId actorId) where T : Actor
 		{
-#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
+#if !((RELEASE && RELEASE_DISABLE_CHECKS))
 			if(actorId == 0)
 				throw new ArgumentException("actorId cannot be 0!");
 #endif
@@ -58,7 +58,7 @@ namespace CryEngine
 
 		internal static Actor CreateNativeActor(ActorInfo actorInfo)
 		{
-#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
+#if !((RELEASE && RELEASE_DISABLE_CHECKS))
 			if(actorInfo.Id == 0)
 				throw new ArgumentException("actorInfo.Id cannot be 0!");
 			if(actorInfo.ActorPtr == IntPtr.Zero)

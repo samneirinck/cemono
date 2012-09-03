@@ -121,7 +121,7 @@ namespace CryEngine
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
 		public Quat(float[] values)
 		{
-#if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
+#if !((RELEASE && RELEASE_DISABLE_CHECKS))
 			if(values == null)
 				throw new ArgumentNullException("values");
 			if(values.Length != 4)

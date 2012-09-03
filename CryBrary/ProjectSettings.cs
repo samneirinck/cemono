@@ -1,5 +1,5 @@
 ﻿/// List of definitions that can be used: (Apply via project settings)
-/// RELEASE_ENABLE_CHECKS - enable non-vital checks in release mode, if not set, CryMono will ignore most safety checks and disable the large majority of exceptions.
+/// RELEASE_DISABLE_CHECKS - disable non-vital checks in release mode, if set, CryMono will ignore most safety checks and disable the large majority of exceptions.
 
 namespace CryEngine
 {
