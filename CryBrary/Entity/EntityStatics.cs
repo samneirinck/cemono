@@ -38,7 +38,7 @@ namespace CryEngine
 
 		public static void Remove(EntityId id)
 		{
-#if !((RELEASE && RELEASE_DISABLE_CHECKS))
+#if !(RELEASE && RELEASE_DISABLE_CHECKS)
 			if(id == 0)
 				throw new ArgumentException("entityId cannot be 0!");
 #endif
@@ -74,7 +74,7 @@ namespace CryEngine
 		/// a C++ entity with the specified ID></remarks>
 		public static T Get<T>(EntityId entityId) where T : EntityBase
 		{
-#if !((RELEASE && RELEASE_DISABLE_CHECKS))
+#if !(RELEASE && RELEASE_DISABLE_CHECKS)
 			if(entityId == 0)
 				throw new ArgumentException("entityId cannot be 0!");
 #endif
@@ -91,7 +91,7 @@ namespace CryEngine
 		/// a C++ entity with the specified ID></remarks>
 		public static EntityBase Get(EntityId entityId)
 		{
-#if !((RELEASE && RELEASE_DISABLE_CHECKS))
+#if !(RELEASE && RELEASE_DISABLE_CHECKS)
 			if(entityId == 0)
 				throw new ArgumentException("entityId cannot be 0!");
 #endif
@@ -144,7 +144,7 @@ namespace CryEngine
 		/// <returns>An array of entities.</returns>
 		public static IEnumerable<Entity> GetByClass(string className)
 		{
-#if !((RELEASE && RELEASE_DISABLE_CHECKS))
+#if !(RELEASE && RELEASE_DISABLE_CHECKS)
 			if(String.IsNullOrEmpty(className))
 				throw new ArgumentException("className should not be null or empty", "className");
 #endif

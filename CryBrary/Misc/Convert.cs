@@ -6,7 +6,7 @@
 		{
 			if(type == EntityPropertyType.String)
 				return value;
-#if !((RELEASE && RELEASE_DISABLE_CHECKS))
+#if !(RELEASE && RELEASE_DISABLE_CHECKS)
 			if(value == null)
 				throw new System.ArgumentNullException("value");
 			if(value.Length < 1)

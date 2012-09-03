@@ -35,7 +35,7 @@ namespace CryEngine
 
 		public static Material Get(EntityBase entity, int slot = 0)
 		{
-#if !((RELEASE && RELEASE_DISABLE_CHECKS))
+#if !(RELEASE && RELEASE_DISABLE_CHECKS)
 			if(entity == null)
 				throw new ArgumentNullException("entity");
 #endif
@@ -46,7 +46,7 @@ namespace CryEngine
 
 		public static void Set(EntityBase entity, Material mat, int slot = 0)
 		{
-#if !((RELEASE && RELEASE_DISABLE_CHECKS))
+#if !(RELEASE && RELEASE_DISABLE_CHECKS)
 			if(entity == null)
 				throw new ArgumentNullException("entity");
 			if(mat == null)

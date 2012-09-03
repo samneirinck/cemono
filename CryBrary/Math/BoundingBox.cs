@@ -202,7 +202,7 @@ namespace CryEngine
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="points"/> is <c>null</c>.</exception>
 		public static void FromPoints(Vec3[] points, out BoundingBox result)
 		{
-#if !((RELEASE && RELEASE_DISABLE_CHECKS))
+#if !(RELEASE && RELEASE_DISABLE_CHECKS)
 			if(points == null)
 				throw new ArgumentNullException("points");
 #endif
@@ -227,7 +227,7 @@ namespace CryEngine
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="points"/> is <c>null</c>.</exception>
 		public static BoundingBox FromPoints(Vec3[] points)
 		{
-#if !((RELEASE && RELEASE_DISABLE_CHECKS))
+#if !(RELEASE && RELEASE_DISABLE_CHECKS)
 			if(points == null)
 				throw new ArgumentNullException("points");
 #endif

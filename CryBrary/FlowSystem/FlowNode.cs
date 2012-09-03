@@ -345,7 +345,7 @@ namespace CryEngine
 		/// </summary>
 		internal void OnPortActivated(int index, object value = null)
 		{
-#if !((RELEASE && RELEASE_DISABLE_CHECKS))
+#if !(RELEASE && RELEASE_DISABLE_CHECKS)
 			if(InputMethods == null)
 				throw new Exception("InputMethods was null!");
 			if(!InputMethods.ContainsKey(GetType()))
@@ -386,7 +386,7 @@ namespace CryEngine
 
 		protected T GetPortEnum<T>(Action<T> port) where T : struct
 		{
-#if !((RELEASE && RELEASE_DISABLE_CHECKS))
+#if !(RELEASE && RELEASE_DISABLE_CHECKS)
 			if(!typeof(T).IsEnum)
 				throw new ArgumentException("T must be an enumerated type");
 #endif

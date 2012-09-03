@@ -121,7 +121,7 @@ namespace CryEngine
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
 		public Plane(float[] values)
 		{
-#if !((RELEASE && RELEASE_DISABLE_CHECKS))
+#if !(RELEASE && RELEASE_DISABLE_CHECKS)
 			if(values == null)
 				throw new ArgumentNullException("values");
 			if(values.Length != 4)
@@ -513,7 +513,7 @@ namespace CryEngine
 		/// <exception cref="ArgumentNullException">Thrown when <paramref name="planes"/> is <c>null</c>.</exception>
 		public static void Transform(Plane[] planes, ref Quat rotation)
 		{
-#if !((RELEASE && RELEASE_DISABLE_CHECKS))
+#if !(RELEASE && RELEASE_DISABLE_CHECKS)
 			if(planes == null)
 				throw new ArgumentNullException("planes");
 #endif

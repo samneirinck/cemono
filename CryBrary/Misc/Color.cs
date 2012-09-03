@@ -17,7 +17,7 @@ namespace CryEngine
 		public Color(float red, float green, float blue, float alpha)
 			: this()
 		{
-#if !((RELEASE && RELEASE_DISABLE_CHECKS))
+#if !(RELEASE && RELEASE_DISABLE_CHECKS)
 			if(!Math.IsInRange(red, 0, 1) || !Math.IsInRange(green, 0, 1) || !Math.IsInRange(blue, 0, 1) || !Math.IsInRange(alpha, 0, 1))
 				throw new ArgumentException("Color and alpha values must be between 0 and 1.");
 #endif

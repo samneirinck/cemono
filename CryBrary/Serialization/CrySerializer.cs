@@ -28,7 +28,7 @@ namespace CryEngine.Serialization
 
 		public void Serialize(Stream stream, object graph)
 		{
-#if !((RELEASE && RELEASE_DISABLE_CHECKS))
+#if !(RELEASE && RELEASE_DISABLE_CHECKS)
 			if(stream == null)
 				throw new ArgumentNullException("stream");
 			if(graph == null)
@@ -287,7 +287,7 @@ namespace CryEngine.Serialization
 
 		public object Deserialize(Stream stream)
 		{
-#if !((RELEASE && RELEASE_DISABLE_CHECKS))
+#if !(RELEASE && RELEASE_DISABLE_CHECKS)
 			if(stream == null || stream.Length == 0)
 				throw new ArgumentNullException("stream");
 #endif
@@ -331,7 +331,7 @@ namespace CryEngine.Serialization
 				default: throw new SerializationException(string.Format("Invalid object type {0} was serialized", type));
 			}
 
-#if !((RELEASE && RELEASE_DISABLE_CHECKS))
+#if !(RELEASE && RELEASE_DISABLE_CHECKS)
 			if(!objReference.AllowNull && objReference.Value == null && type != "null")
 				throw new SerializationException(string.Format("Failed to deserialize {0} {1} at line {2}!", type, objReference.Name, line));
 #endif
@@ -356,7 +356,7 @@ namespace CryEngine.Serialization
 			int referenceLine = int.Parse(ReadLine());
 			objReference.Value = ObjectReferences[referenceLine].Value;
 
-#if !((RELEASE && RELEASE_DISABLE_CHECKS))
+#if !(RELEASE && RELEASE_DISABLE_CHECKS)
 			if(objReference.Value == null)
 				throw new SerializationException(string.Format("Failed to obtain reference {0} at line {1}! Last line was {2})", objReference.Name, referenceLine, CurrentLine));
 #endif
@@ -543,7 +543,7 @@ namespace CryEngine.Serialization
 
 		Type GetType(string typeName)
 		{
-#if !((RELEASE && RELEASE_DISABLE_CHECKS))
+#if !(RELEASE && RELEASE_DISABLE_CHECKS)
 			if(typeName == null)
 				throw new ArgumentNullException("typeName");
 			if(typeName.Length == 0)
