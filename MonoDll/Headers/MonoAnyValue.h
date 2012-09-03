@@ -47,8 +47,8 @@ struct MonoAnyValue : public ISerializable
 	MonoAnyValue(short value) : type(eMonoAnyType_Short) { i = value; }
 	MonoAnyValue(unsigned short value) : type(eMonoAnyType_UnsignedShort) { u = value; }
 	MonoAnyValue(float value) : type(eMonoAnyType_Float) { f = value; }
-	MonoAnyValue(const char *value) : type(eMonoAnyType_String) { cchar = value; }
-	MonoAnyValue(string value) : type(eMonoAnyType_String) { cchar = value.c_str(); }
+	MonoAnyValue(const char *value) : type(eMonoAnyType_String) { str = value; }
+	MonoAnyValue(string value) : type(eMonoAnyType_String) { str = value.c_str(); }
 	MonoAnyValue(Vec3 value) : type(eMonoAnyType_Vec3) { vec3.x = value.x; vec3.y = value.y; vec3.z = value.z; }
 	MonoAnyValue(Ang3 value) : type(eMonoAnyType_Vec3) { vec3.x = value.x; vec3.y = value.y; vec3.z = value.z; }
 
@@ -77,13 +77,13 @@ struct MonoAnyValue : public ISerializable
 			{
 				if(ser.IsReading())
 				{
-					str = cchar;
-					ser.Value("str", str); 
+					serializedString = str;
+					ser.Value("str", serializedString); 
 				}
 				else
 				{
-					ser.Value("str", str);
-					cchar = str.c_str();
+					ser.Value("str", serializedString);
+					str = serializedString.c_str();
 				}
 			}
 			break;
@@ -109,7 +109,7 @@ struct MonoAnyValue : public ISerializable
 		case eMonoAnyType_Vec3:
 			return Vec3(vec3.x, vec3.y, vec3.z);
 		case eMonoAnyType_String:
-			return &cchar;
+			return &str;
 		}
 	}
 
@@ -120,11 +120,11 @@ struct MonoAnyValue : public ISerializable
 		float			f;
 		int				i;
 		unsigned int	u;
-		const char*		cchar;
+		const char*		str;
 		struct { float x,y,z; } vec3;
 	};
 
-	string str;
+	string serializedString;
 };
 
 #endif //__MONO_ANY_VALUE__
