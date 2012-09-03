@@ -59,6 +59,8 @@ namespace CryEngine.Initialization
 
 			ScriptDomain = AppDomain.CreateDomain("ScriptDomain");
 
+			RegisterInternalTypes();
+
 			try
 			{
 				LoadPlugins();
@@ -145,6 +147,27 @@ namespace CryEngine.Initialization
 				}
 			}
 #endif
+		}
+
+		void RegisterInternalTypes()
+		{
+			CryScript script;
+			if (CryScript.TryCreate(typeof(NativeActor), out script))
+			{
+				NativeMethods.Actor.RegisterClass(script.ScriptName, false);
+				Scripts.Add(script);
+			}
+
+			if (CryScript.TryCreate(typeof(NativeEntity), out script))
+			{
+				var entityRegistrationParams = new EntityRegistrationParams();
+
+				entityRegistrationParams.name = script.ScriptName;
+				entityRegistrationParams.flags = EntityClassFlags.Default | EntityClassFlags.Invisible; 
+
+				NativeMethods.Entity.RegisterClass(entityRegistrationParams);
+				Scripts.Add(script);
+			}
 		}
 
 		void LoadPlugins()
@@ -340,6 +363,7 @@ namespace CryEngine.Initialization
 #endif
 
 			var script = Scripts.FirstOrDefault(x => x.ScriptType.ContainsFlag(scriptType) && x.ScriptName.Equals(scriptName));
+
 #if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
 			if (script == default(CryScript))
 				throw new ScriptNotFoundException(string.Format("Script {0} of ScriptType {1} could not be found.", scriptName, scriptType));
@@ -347,6 +371,7 @@ namespace CryEngine.Initialization
 
 			var scriptInstance = Activator.CreateInstance(script.Type, constructorParams) as CryScriptInstance;
 #if ((RELEASE && RELEASE_ENABLE_CHECKS) || !RELEASE)
+
 			if (scriptInstance == null)
 				throw new ArgumentException("Failed to create instance, make sure type derives from CryScriptInstance", "scriptName");
 #endif
