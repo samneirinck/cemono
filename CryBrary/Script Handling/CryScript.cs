@@ -10,44 +10,52 @@ namespace CryEngine.Initialization
 	/// </summary>
 	public struct CryScript
 	{
-		internal CryScript(Type type)
+		internal CryScript(Type type, ScriptType scriptType)
 			: this()
 		{
 			Type = type;
 			ScriptName = type.Name;
 
-			ScriptType |= ScriptType.Any;
-			if(type.Implements<CryScriptInstance>())
-			{
-				ScriptType |= ScriptType.CryScriptInstance;
-
-				if(type.Implements<EntityBase>())
-				{
-					ScriptType |= ScriptType.Entity;
-
-					if(type.Implements<Actor>())
-						ScriptType |= ScriptType.Actor;
-				}
-				if(type.Implements<FlowNode>())
-					ScriptType |= ScriptType.FlowNode;
-				else if(type.Implements<GameRules>())
-					ScriptType |= ScriptType.GameRules;
-			}
-			else if(type.Implements<UIEventSystem>())
-				ScriptType |= ScriptType.UIEventSystem;
-			else if(type.Implements<ScriptCompiler>())
-				ScriptType |= ScriptType.ScriptCompiler;
+			ScriptType = scriptType;
 		}
 
         public static bool TryCreate(Type type, out CryScript script)
         {
-            if (type.IsAbstract)
+            if (type.IsAbstract || type.IsEnum)
             {
                 script = default(CryScript);
                 return false;
             }
 
-            script = new CryScript(type);
+			var scriptType = ScriptType.Any;
+			if (type.Implements<CryScriptInstance>())
+			{
+				scriptType |= ScriptType.CryScriptInstance;
+
+				if (type.Implements<EntityBase>())
+				{
+					scriptType |= ScriptType.Entity;
+
+					if (type.Implements<Actor>())
+						scriptType |= ScriptType.Actor;
+					else if (type.Implements<GameRules>())
+						scriptType |= ScriptType.GameRules;
+				}
+				if (type.Implements<FlowNode>())
+					scriptType |= ScriptType.FlowNode;
+			}
+			else if (type.Implements<UIEventSystem>())
+				scriptType |= ScriptType.UIEventSystem;
+			else if (type.Implements<ScriptCompiler>())
+				scriptType |= ScriptType.ScriptCompiler;
+
+			if ((scriptType & (scriptType - 1)) == 0) // only had Any set.
+			{
+				script = default(CryScript);
+				return false;
+			}
+
+			script = new CryScript(type, scriptType);
             return true;
         }
 
