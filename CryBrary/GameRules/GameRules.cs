@@ -11,15 +11,15 @@ namespace CryEngine
 	/// This is the base GameRules interface. All game rules must implement this.
 	/// </summary>
 	/// <remarks>For most use cases, deriving from CryGameCode's BaseGameRules is a more efficient solution.</remarks>
-	public abstract class GameRules : CryScriptInstance
+	public abstract class GameRules : EntityBase
 	{
         #region Statics
 		internal void InternalInitialize()
 		{
 			GameRules.Current = this;
 
-			//Id = 1;
-			//SetEntityHandle(NativeMethods.Entity.GetEntity(Id));
+			Id = 1;
+			SetEntityHandle(NativeMethods.Entity.GetEntity(Id));
 		}
 
 		public static GameRules Current { get; internal set; }
