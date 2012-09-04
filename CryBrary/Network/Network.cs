@@ -49,7 +49,7 @@ namespace CryEngine
 
 		public static void RemoteInvocation<T1, T2>(Action<T1, T2> action, NetworkTarget netTarget, T1 param1, T2 param2)
 		{
-			object[] args = new object[1];
+			object[] args = new object[2];
 			args[0] = param1;
 			args[1] = param2;
 
