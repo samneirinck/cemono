@@ -38,11 +38,11 @@ namespace CryEngine.Initialization
 
 					if (type.Implements<Actor>())
 						scriptType |= ScriptType.Actor;
-					else if (type.Implements<GameRules>())
-						scriptType |= ScriptType.GameRules;
 				}
 				if (type.Implements<FlowNode>())
 					scriptType |= ScriptType.FlowNode;
+				else if (type.Implements<GameRules>())
+					scriptType |= ScriptType.GameRules;
 			}
 			else if (type.Implements<UIEventSystem>())
 				scriptType |= ScriptType.UIEventSystem;
