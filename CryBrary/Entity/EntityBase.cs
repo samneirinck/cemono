@@ -19,6 +19,11 @@ namespace CryEngine
 		public virtual void OnSpawn() { }
 		#endregion
 
+		internal void SetEntityHandle(IntPtr ptr)
+		{
+			HandleRef = new HandleRef(this, ptr);
+		}
+
 		public EntitySlotFlags GetSlotFlags(int slot = 0)
 		{
 			return NativeMethods.Entity.GetSlotFlags(HandleRef.Handle, slot);
@@ -166,7 +171,7 @@ namespace CryEngine
 
 		public Material Material { get { return Material.Get(this); } set { Material.Set(this, value); } }
 
-		public HandleRef HandleRef { get; set; }
+		public HandleRef HandleRef { get; private set; }
 		public EntityId Id { get; set; }
 	}
 }

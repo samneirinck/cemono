@@ -25,7 +25,7 @@ namespace CryEngine
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		internal virtual void InternalSpawn(EntityInfo entInfo)
 		{
-			HandleRef = new HandleRef(this, entInfo.IEntityPtr);
+			SetEntityHandle(entInfo.IEntityPtr);
 			Id = entInfo.Id;
 
 			Spawned = true;

@@ -159,7 +159,7 @@ namespace CryEngine
             System.Diagnostics.Contracts.Contract.Requires(channelId > 0);
 			Id = new EntityId(actorInfo.Id);
 			HandleRef = new HandleRef(this, actorInfo.ActorPtr);
-			base.HandleRef = new HandleRef(this, actorInfo.EntityPtr);
+			SetEntityHandle(actorInfo.EntityPtr);
 
 			ChannelId = channelId;
 
