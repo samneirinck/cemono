@@ -98,7 +98,6 @@ public:
 
 protected:
 	bool CompleteInit();
-	bool InitializeSystems();
 
 	void RegisterDefaultBindings();
 

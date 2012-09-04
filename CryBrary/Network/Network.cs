@@ -20,19 +20,6 @@ namespace CryEngine
 			IsDedicated = isDedicated;
 		}
 
-		/// <summary>
-		/// Initializes variables which change, i.e. IsServer.
-		/// </summary>
-		/// <param name="isMultiplayer"></param>
-		/// <param name="isClient"></param>
-		/// <param name="isServer"></param>
-		internal static void InitializeNetwork(bool isMultiplayer, bool isClient, bool isServer)
-		{
-			IsMultiplayer = isMultiplayer;
-			IsClient = isClient;
-			IsServer = isServer;
-		}
-
 		public static void RemoteInvocation(Action action, NetworkTarget netTarget)
 		{
 			RemoteInvocation(action.Target as CryScriptInstance, action.Method, netTarget, null);
@@ -125,9 +112,10 @@ namespace CryEngine
 		internal static Entity NetworkManager { get; set; }
 
 		#region Properties
-		public static bool IsMultiplayer { private set; get; }
-		public static bool IsServer { private set; get; }
-		public static bool IsClient { private set; get; }
+		public static bool IsMultiplayer { get { return NativeMethods.Network.IsMultiplayer(); } }
+		public static bool IsServer { get { return NativeMethods.Network.IsServer(); } }
+		public static bool IsClient { get { return NativeMethods.Network.IsClient(); } }
+
 		// TODO: Find another place for this? - not quite so networky.
 		public static bool IsEditor { private set; get; }
 		public static bool IsDedicated { private set; get; }

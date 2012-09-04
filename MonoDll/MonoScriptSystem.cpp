@@ -158,6 +158,14 @@ bool CScriptSystem::CompleteInit()
 
 	m_pScriptManager = m_pCryBraryAssembly->GetClass("ScriptManager", "CryEngine.Initialization")->CreateInstance();
 	
+	IMonoClass *pClass = m_pCryBraryAssembly->GetClass("Network");
+
+	IMonoArray *pArgs = CreateMonoArray(2);
+	pArgs->Insert(gEnv->IsEditor());
+	pArgs->Insert(gEnv->IsDedicated());
+	pClass->InvokeArray("InitializeNetworkStatics", pArgs, true);
+	SAFE_RELEASE(pArgs);
+
 	gEnv->pGameFramework->RegisterListener(this, "CryMono", eFLPriority_Game);
 
 	gEnv->pSystem->GetISystemEventDispatcher()->RegisterListener(this);
@@ -222,19 +230,6 @@ void CScriptSystem::RegisterDefaultBindings()
 
 #undef RegisterBindingAndSet
 #undef RegisterBinding
-}
-
-bool CScriptSystem::InitializeSystems()
-{
-	IMonoClass *pClass = m_pCryBraryAssembly->GetClass("Network");
-
-	IMonoArray *pArgs = CreateMonoArray(2);
-	pArgs->Insert(gEnv->IsEditor());
-	pArgs->Insert(gEnv->IsDedicated());
-	pClass->InvokeArray("InitializeNetworkStatics", pArgs, true);
-	SAFE_RELEASE(pArgs);
-
-	return true;
 }
 
 void CScriptSystem::OnPostUpdate(float fDeltaTime)

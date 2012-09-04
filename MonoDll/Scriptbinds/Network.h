@@ -26,6 +26,10 @@ public:
 	// ~IMonoScriptbind
 
 	static void RemoteInvocation(EntityId entityId, int targetScriptId, mono::string methodName, mono::object args, ERMInvocation target, int channelId);
+
+	static bool IsMultiplayer();
+	static bool IsServer();
+	static bool IsClient();
 };
 
 #endif __SCRIPTBIND_NETWORK_H__

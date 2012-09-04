@@ -8,6 +8,10 @@
 CNetwork::CNetwork()
 {
 	REGISTER_METHOD(RemoteInvocation);
+
+	REGISTER_METHOD(IsMultiplayer);
+	REGISTER_METHOD(IsServer);
+	REGISTER_METHOD(IsClient);
 }
 
 CNetwork::~CNetwork()
@@ -27,4 +31,19 @@ void CNetwork::RemoteInvocation(EntityId entityId, int scriptId, mono::string me
 		pGameObject->InvokeRMI(CEntity::SvScriptRMI(), params, target, channelId);
 	else
 		pGameObject->InvokeRMI(CEntity::ClScriptRMI(), params, target, channelId);
+}
+
+bool CNetwork::IsMultiplayer()
+{
+	return gEnv->bMultiplayer;
+}
+
+bool CNetwork::IsServer()
+{
+	return gEnv->bServer;
+}
+
+bool CNetwork::IsClient()
+{
+	return gEnv->IsClient();
 }
