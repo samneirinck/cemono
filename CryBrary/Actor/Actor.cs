@@ -101,6 +101,9 @@ namespace CryEngine
 			ScriptManager.Instance.AddScriptInstance(player, ScriptType.Actor);
 			player.InternalSpawn(info, channelId);
 
+			// player must have physics
+			player.Physics.Type = PhysicalizationType.Rigid;
+
 			return player;
 		}
 
