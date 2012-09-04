@@ -14,6 +14,14 @@ namespace CryEngine
 	public abstract class GameRules : CryScriptInstance
 	{
         #region Statics
+		internal void InternalInitialize()
+		{
+			GameRules.Current = this;
+
+			//Id = 1;
+			//SetEntityHandle(NativeMethods.Entity.GetEntity(Id));
+		}
+
 		public static GameRules Current { get; internal set; }
 		#endregion
 
@@ -60,8 +68,6 @@ namespace CryEngine
 
 		public virtual void OnVehicleDestroyed(EntityId vehicleId) { }
 		public virtual void OnVehicleSubmerged(EntityId vehicleId, float ratio) { }
-
-		public EntityBase Entity { get { return CryEngine.Entity.Get(1); } }
 	}
 
 	[AttributeUsage(AttributeTargets.Class)]

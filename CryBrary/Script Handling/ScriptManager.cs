@@ -201,7 +201,9 @@ namespace CryEngine.Initialization
                     {
                         var script = unprocessedScript;
 
-                        if (script.RegistrationParams is ActorRegistrationParams)
+						if (script.RegistrationParams == null)
+							continue;
+						else if (script.RegistrationParams is ActorRegistrationParams)
                         {
                             var registrationParams = (ActorRegistrationParams)script.RegistrationParams;
 
@@ -377,7 +379,7 @@ namespace CryEngine.Initialization
 #endif
 
 			if (scriptType == ScriptType.GameRules)
-				GameRules.Current = scriptInstance as GameRules;
+				(scriptInstance as GameRules).InternalInitialize();
 
 			AddScriptInstance(script, scriptInstance);
 
