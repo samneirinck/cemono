@@ -160,30 +160,69 @@ void CEntity::SetPropertyValue(IEntityPropertyHandler::SPropertyInfo propertyInf
 ///////////////////////////////////////////////////
 // Entity RMI's
 ///////////////////////////////////////////////////
-CEntity::RMIParams::RMIParams(IMonoArray *pArray)
+CEntity::RMIParams::RMIParams(IMonoArray *pArray, const char *funcName, int targetScript)
+	: methodName(funcName)
+	, scriptId(targetScript)
 {
 	length = pArray->GetSize();
 
-	anyValues = new MonoAnyValue[length];
+	if(length > 0)
+	{
+		anyValues = new MonoAnyValue[length];
 
-	for(int i = 0; i < length; i++)
-		anyValues[i] = pArray->GetItem(i)->GetAnyValue();
+		for(int i = 0; i < length; i++)
+			anyValues[i] = pArray->GetItem(i)->GetAnyValue();
+	}
 }
 
 void CEntity::RMIParams::SerializeWith(TSerialize ser)
 {
 	ser.Value("length", length);
+	ser.Value("methodName", methodName);
+	ser.Value("scriptId", scriptId);
 
-	for(int i = 0; i < length; i++)
-		anyValues[i].SerializeWith(ser);
+	if(length > 0)
+	{
+		if(!anyValues)
+			anyValues = new MonoAnyValue[length];
+
+		for(int i = 0; i < length; i++)
+			anyValues[i].SerializeWith(ser);
+	}
 }
 
 IMPLEMENT_RMI(CEntity, SvScriptRMI)
 {
+	IMonoArray *pArgs = NULL;
+	if(params.length > 0)
+	{
+		pArgs = CreateMonoArray(params.length);
+
+		for(int i = 0; i < params.length; i++)
+			pArgs->Insert(params.anyValues[i]);
+	}
+
+	IMonoObject *pScriptInstance = gEnv->pMonoScriptSystem->GetScriptManager()->CallMethod("GetScriptInstanceById", params.scriptId, eScriptFlag_Any);
+
+	pScriptInstance->InvokeArray(params.methodName.c_str(), pArgs);
+
 	return true;
 }
 
 IMPLEMENT_RMI(CEntity, ClScriptRMI)
 {
+	IMonoArray *pArgs = NULL;
+	if(params.length > 0)
+	{
+		pArgs = CreateMonoArray(params.length);
+
+		for(int i = 0; i < params.length; i++)
+			pArgs->Insert(params.anyValues[i]);
+	}
+
+	IMonoObject *pScriptInstance = gEnv->pMonoScriptSystem->GetScriptManager()->CallMethod("GetScriptInstanceById", params.scriptId, eScriptFlag_Any);
+
+	pScriptInstance->InvokeArray(params.methodName.c_str(), pArgs);
+
 	return true;
 }

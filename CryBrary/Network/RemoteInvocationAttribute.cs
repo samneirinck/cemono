@@ -7,21 +7,22 @@ namespace CryEngine
 	{
 		public RemoteInvocationAttribute()
 		{
-			Target = NetworkTarget.Any;
 		}
-
-		public RemoteInvocationAttribute(NetworkTarget target)
-		{
-			Target = target;
-		}
-
-		public NetworkTarget Target;
 	}
 
+	[Flags]
 	public enum NetworkTarget
 	{
-		Any,
-		Server,
-		Client
+		ToClientChannel = 0x01,
+		ToOwnClient = 0x02,
+		ToOtherClients = 0x04,
+		ToAllClients = 0x08,
+
+		ToServer = 0x100,
+
+		NoLocalCalls = 0x10000,
+		NoRemoteCalls = 0x20000,
+
+		ToRemoteClients = NoLocalCalls | ToAllClients
 	}
 }

@@ -62,13 +62,15 @@ public:
 
 	struct RMIParams
 	{
-		RMIParams() {}
-		RMIParams(IMonoArray *pArray);
+		RMIParams() : anyValues(NULL) {}
+		RMIParams(IMonoArray *pArray, const char *funcName, int targetScript);
 
 		void SerializeWith(TSerialize ser);
 
 		MonoAnyValue *anyValues;
 		int length;
+		string methodName;
+		int scriptId;
 	};
 
 	DECLARE_SERVER_RMI_NOATTACH(SvScriptRMI, RMIParams, eNRT_ReliableUnordered);

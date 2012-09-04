@@ -54,6 +54,8 @@ struct MonoAnyValue : public ISerializable
 
 	virtual void SerializeWith(TSerialize ser) override
 	{
+		ser.EnumValue("type", type, eMonoAnyType_Unknown, eMonoAnyType_Last);
+
 		switch(type)
 		{
 		case eMonoAnyType_Boolean:
@@ -75,9 +77,9 @@ struct MonoAnyValue : public ISerializable
 			break;
 		case eMonoAnyType_String:
 			{
-				if(ser.IsReading())
+				if(ser.IsWriting())
 				{
-					serializedString = str;
+					serializedString = string(str);
 					ser.Value("str", serializedString); 
 				}
 				else
@@ -88,8 +90,6 @@ struct MonoAnyValue : public ISerializable
 			}
 			break;
 		}
-
-		ser.EnumValue("type", type, eMonoAnyType_Unknown, eMonoAnyType_Last);
 	}
 
 	void *GetValue()

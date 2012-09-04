@@ -98,9 +98,13 @@ namespace CryBrary.Tests
             _mocks.Add(uiMock);
             NativeMethods.UI = uiMock.Object;
 
-            var viewMock = new Mock<INativeViewMethods>();
-            _mocks.Add(viewMock);
-            NativeMethods.View = viewMock.Object;
+			var viewMock = new Mock<INativeViewMethods>();
+			_mocks.Add(viewMock);
+			NativeMethods.View = viewMock.Object;
+
+			var networkMock = new Mock<INativeNetworkMethods>();
+			_mocks.Add(networkMock);
+			NativeMethods.Network = networkMock.Object;
 
             var logMock = new Mock<INativeLoggingMethods>();
             Action<string> loggingMethod = msg => System.Console.WriteLine(msg);
