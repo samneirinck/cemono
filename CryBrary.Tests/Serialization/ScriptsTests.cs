@@ -53,19 +53,25 @@ namespace CryBrary.Tests.Serialization
             {
                 var list = new List<CryScript>();
 
-                var nativeActorScript = new CryScript(typeof(NativeActor));
-                nativeActorScript.ScriptInstances = new List<CryScriptInstance>();
-                nativeActorScript.ScriptInstances.Add(new NativeActor(759));
-                nativeActorScript.ScriptInstances.Add(new NativeActor(5));
+				CryScript script;
+				if (CryScript.TryCreate(typeof(NativeActor), out script))
+				{
+					script.ScriptInstances = new List<CryScriptInstance>();
+					script.ScriptInstances.Add(new NativeActor(759));
+					script.ScriptInstances.Add(new NativeActor(5));
 
-                var nativeEntityScript = new CryScript(typeof(NativeEntity));
-                nativeEntityScript.ScriptInstances = new List<CryScriptInstance>();
-                nativeEntityScript.ScriptInstances.Add(new NativeEntity(987, IntPtr.Zero));
-                nativeEntityScript.ScriptInstances.Add(new NativeEntity(8, IntPtr.Zero));
-                nativeEntityScript.ScriptInstances.Add(null);
+					list.Add(script);
+				}
 
-                list.Add(nativeActorScript);
-                list.Add(nativeEntityScript);
+				if (CryScript.TryCreate(typeof(NativeEntity), out script))
+				{
+					script.ScriptInstances = new List<CryScriptInstance>();
+					script.ScriptInstances.Add(new NativeEntity(987, IntPtr.Zero));
+					script.ScriptInstances.Add(new NativeEntity(8, IntPtr.Zero));
+					script.ScriptInstances.Add(null);
+
+					list.Add(script);
+				}
 
                 serializer.Serialize(stream, list);
 
@@ -77,7 +83,7 @@ namespace CryBrary.Tests.Serialization
 
                 Assert.AreEqual(2, list.Count);
 
-                nativeActorScript = list.ElementAt(0);
+                var nativeActorScript = list.ElementAt(0);
                 Assert.IsNotNull(nativeActorScript.ScriptInstances);
                 Assert.AreEqual(2, nativeActorScript.ScriptInstances.Count);
 
@@ -87,7 +93,7 @@ namespace CryBrary.Tests.Serialization
                 Assert.IsNotNull(nativeActorScript.ScriptInstances.ElementAt(1));
                 Assert.AreEqual(5, (nativeActorScript.ScriptInstances.ElementAt(1) as EntityBase).Id);
 
-                nativeEntityScript = list.ElementAt(1);
+               var  nativeEntityScript = list.ElementAt(1);
 
                 Assert.IsNotNull(nativeEntityScript.ScriptInstances);
                 Assert.AreEqual(3, nativeEntityScript.ScriptInstances.Count);

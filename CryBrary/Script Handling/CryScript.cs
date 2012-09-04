@@ -10,7 +10,7 @@ namespace CryEngine.Initialization
 	/// </summary>
 	public struct CryScript
 	{
-		internal CryScript(Type type, ScriptType scriptType)
+		private CryScript(Type type, ScriptType scriptType)
 			: this()
 		{
 			Type = type;
@@ -19,7 +19,7 @@ namespace CryEngine.Initialization
 			ScriptType = scriptType;
 		}
 
-        public static bool TryCreate(Type type, out CryScript script)
+		public static bool TryCreate(Type type, out CryScript script)
         {
             if (type.IsAbstract || type.IsEnum)
             {
