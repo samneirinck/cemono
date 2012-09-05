@@ -92,6 +92,7 @@ namespace CryEngine.Initialization
 			}
 		}
 
+		// Consult with me before modifying this method - filip
 		public void PostInit()
 		{
 			// These have to be registered later on due to the flow system being initialized late.
