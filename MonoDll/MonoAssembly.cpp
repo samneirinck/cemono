@@ -50,8 +50,8 @@ CScriptClass *CScriptAssembly::TryGetClass(MonoClass *pClass)
 	{
 		if(pair.second == pClass)
 		{
-			return pair.first;
 			pair.first->AddRef();
+			return pair.first;
 		}
 	}
 
