@@ -125,7 +125,10 @@ namespace CryEngine
 		/// <returns></returns>
 		public bool LoadObject(string name, int slotNumber = 0)
 		{
-			if (name == null || name.EndsWith("cgf"))
+			if (name == null)
+				throw new ArgumentNullException("name");
+
+			if (name.EndsWith("cgf"))
 				NativeMethods.Entity.LoadObject(EntityHandleRef.Handle, name, slotNumber);
 			else if (name.EndsWith("cdf") || name.EndsWith("cga") || name.EndsWith("chr"))
 				NativeMethods.Entity.LoadCharacter(EntityHandleRef.Handle, name, slotNumber);
@@ -135,14 +138,14 @@ namespace CryEngine
 			return true;
 		}
 
-		public void PlayAnimation(string animationName, AnimationFlags flags = 0, int slot = 0, int layer = 0, float blend = 0.175f, float speed = 1.0f)
-		{
-			NativeMethods.Entity.PlayAnimation(EntityHandleRef.Handle, animationName, slot, layer, blend, speed, flags);
-		}
-
 		protected string GetObjectFilePath(int slot = 0)
 		{
 			return NativeMethods.Entity.GetStaticObjectFilePath(EntityHandleRef.Handle, slot);
+		}
+
+		public void PlayAnimation(string animationName, AnimationFlags flags = 0, int slot = 0, int layer = 0, float blend = 0.175f, float speed = 1.0f)
+		{
+			NativeMethods.Entity.PlayAnimation(EntityHandleRef.Handle, animationName, slot, layer, blend, speed, flags);
 		}
 
 		public void FreeSlot(int slot)
