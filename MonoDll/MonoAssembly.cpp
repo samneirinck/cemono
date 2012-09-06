@@ -14,7 +14,6 @@
 
 CScriptAssembly::CScriptAssembly(MonoImage *pImage, const char *path, bool nativeAssembly)
 	: m_bNative(nativeAssembly) // true if this assembly was loaded via C++.
-	, m_refs(0)
 {
 	CRY_ASSERT(pImage);
 	m_pObject = (MonoObject *)pImage;
@@ -31,6 +30,19 @@ CScriptAssembly::~CScriptAssembly()
 	stl::find_and_erase(pScriptSystem->m_assemblies, this);
 
 	m_pObject = 0;
+}
+
+void CScriptAssembly::Release()
+{
+	if(m_classRegistry.empty())
+		delete this;
+}
+
+void CScriptAssembly::OnClassReleased(CScriptClass *pClass)
+{
+	m_classRegistry.erase(pClass);
+
+	Release();
 }
 
 IMonoClass *CScriptAssembly::GetClass(const char *className, const char *nameSpace)
@@ -75,16 +87,12 @@ CScriptAssembly *CScriptAssembly::TryGetAssembly(MonoImage *pImage)
 	for each(auto assembly in pScriptSystem->m_assemblies)
 	{
 		if(assembly->GetImage() == pImage)
-		{
-			assembly->AddRef();
 			return assembly;
-		}
 	}
 
 	// This assembly was loaded from managed code.
 	CScriptAssembly *pAssembly = new CScriptAssembly(pImage, mono_image_get_filename(pImage), false);
 	pScriptSystem->m_assemblies.push_back(pAssembly);
-	pAssembly->AddRef();
 
 	return pAssembly;
 }

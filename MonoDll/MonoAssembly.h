@@ -40,12 +40,10 @@ public:
 	virtual const char *GetPath() override { return m_path.c_str(); }
 
 	virtual bool IsNative() override { return m_bNative; }
-
-	virtual void AddRef() override { ++m_refs; }
 	// ~IMonoAssembly
 
 	// IMonoObject
-	virtual void Release() override { if(0 >= --m_refs) delete this; }
+	virtual void Release() override;
 
 	virtual EMonoAnyType GetType() override { return eMonoAnyType_Assembly; }
 	virtual MonoAnyValue GetAnyValue() override { return MonoAnyValue(); }
@@ -60,7 +58,7 @@ public:
 	/// <summary>
 	/// Called when a IMonoClass created from this assembly is released.
 	/// </summary>
-	void OnClassReleased(CScriptClass *pClass) { m_classRegistry.erase(pClass); }
+	void OnClassReleased(CScriptClass *pClass);
 
 	void SetImage(MonoImage *pImage) { m_pObject = (MonoObject *)pImage; }
 	MonoImage *GetImage() const { return (MonoImage *)m_pObject; }
@@ -73,8 +71,6 @@ private:
 	bool m_bNative;
 
 	TClassMap m_classRegistry;
-
-	int m_refs;
 };
 
 #endif //__MONO_ASSEMBLY_H__

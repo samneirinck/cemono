@@ -26,12 +26,11 @@ CScriptClass::CScriptClass(MonoClass *pClass, CScriptAssembly *pDeclaringAssembl
 
 CScriptClass::~CScriptClass()
 {
-	// Remove this class from the assembly's class registry, and decrement its release counter.
-	m_pDeclaringAssembly->OnClassReleased(this);
-	SAFE_RELEASE(m_pDeclaringAssembly);
-
 	m_name.clear();
 	m_namespace.clear();
+
+	// Remove this class from the assembly's class registry, and decrement its release counter.
+	m_pDeclaringAssembly->OnClassReleased(this);
 }
 
 IMonoObject *CScriptClass::CreateInstance(IMonoArray *pConstructorParams)
