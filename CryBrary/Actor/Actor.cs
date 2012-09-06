@@ -85,12 +85,12 @@ namespace CryEngine
 			} 
 		}
 
-		public static T Create<T>(int channelId, string name, string className,  Vec3 pos, Vec3 angles, Vec3 scale) where T : Actor, new()
+		public static T Create<T>(int channelId, string name = "Dude", Vec3? pos = null, Vec3? angles = null, Vec3? scale = null, string className = null) where T : Actor, new()
 		{
 			// just in case
 			Remove(channelId);
 
-            var info = NativeMethods.Actor.CreateActor(channelId, name, className, pos, angles, scale);
+			var info = NativeMethods.Actor.CreateActor(channelId, name, className ?? typeof(T).Name, pos ?? new Vec3(0,0,0), angles ?? new Vec3(0,0,0), scale ?? new Vec3(1,1,1));
 			if(info.Id == 0)
 			{
 				Debug.LogAlways("[Actor.Create] New entityId was invalid");
@@ -105,26 +105,6 @@ namespace CryEngine
 			player.Physics.Type = PhysicalizationType.Rigid;
 
 			return player;
-		}
-
-		public static T Create<T>(int channelId, string name, Vec3 pos, Vec3 angles, Vec3 scale) where T : Actor, new()
-		{
-			return Create<T>(channelId, name, typeof(T).Name, pos, angles, scale);
-		}
-
-		public static T Create<T>(int channelId, string name, Vec3 pos, Vec3 angles) where T : Actor, new()
-		{
-			return Create<T>(channelId, name, pos, angles, new Vec3(1, 1, 1));
-		}
-
-		public static T Create<T>(int channelId, string name, Vec3 pos) where T : Actor, new()
-		{
-			return Create<T>(channelId, name, pos, Vec3.Zero, new Vec3(1, 1, 1));
-		}
-
-		public static T Create<T>(int channelId, string name) where T : Actor, new()
-		{
-			return Create<T>(channelId, name, Vec3.Zero, Vec3.Zero, new Vec3(1, 1, 1));
 		}
 
 		public static new void Remove(EntityId id)
