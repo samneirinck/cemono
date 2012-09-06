@@ -146,6 +146,12 @@ namespace CryEngine
 			OnSpawn();
 		}
 
+		internal void SetActorHandle(IntPtr ptr)
+		{
+			HandleRef = new HandleRef(this, ptr);
+		}
+
+
         #region Overrides
         public override int GetHashCode()
         {
@@ -171,7 +177,7 @@ namespace CryEngine
 		}
         #endregion
 
-		public new HandleRef HandleRef { get; set; }
+		public HandleRef HandleRef { get; private set; }
 		public int ChannelId { get; set; }
 
 		public float Health { get { return NativeMethods.Actor.GetPlayerHealth(HandleRef.Handle); } set { NativeMethods.Actor.SetPlayerHealth(HandleRef.Handle, value); } }
