@@ -12,7 +12,7 @@ script:
 - echo "-- START TEST BUILD --"
 - xbuild CryBrary.Tests/CryBrary.Tests.csproj
 - echo "-- START TEST RUN --"
-- mono NUnit-2.6.1/bin/nunit-console.exe CryBrary.Tests/bin/Debug/CryBrary.Tests.dll
+- mono NUnit-2.6.1/bin/nunit-console.exe CryBrary.Tests/bin/Debug/CryBrary.Tests.dll /xmlconsole
 - echo "-- Done --"
 
 notifications:
