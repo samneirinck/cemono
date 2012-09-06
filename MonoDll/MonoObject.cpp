@@ -33,7 +33,7 @@ CScriptObject::CScriptObject(MonoObject *object, IMonoArray *pConstructorParams)
 	CRY_ASSERT(m_pObject);
 
 	if(pConstructorParams)
-		CallMethod(".ctor", pConstructorParams);
+		GetClass()->InvokeArray(this, ".ctor", pConstructorParams);
 	else
 		mono_runtime_object_init(m_pObject);
 
