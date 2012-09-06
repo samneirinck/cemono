@@ -32,14 +32,6 @@ public:
 	MonoClass *GetMonoClass();
 
 	// IMonoObject
-	virtual IMonoObject *InvokeArray(const char *methodName, IMonoArray *params = nullptr, bool bStatic = false);
-	virtual IMonoObject *Invoke(const char *methodName, void **params = nullptr, int numParams = 0, bool bStatic = false);
-
-	virtual IMonoObject *GetProperty(const char *propertyName, bool bStatic = false);
-	virtual void SetProperty(const char *propertyName, IMonoObject *pNewValue, bool bStatic = false);
-	virtual IMonoObject *GetField(const char *fieldName, bool bStatic = false);
-	virtual void SetField(const char *fieldName, IMonoObject *pNewValue, bool bStatic = false);
-
 	virtual void Release() override { delete this; }
 
 	virtual EMonoAnyType GetType() override;
@@ -49,14 +41,6 @@ public:
 
 	virtual IMonoClass *GetClass() override;
 	// ~IMonoObject
-
-	// IMonoScriptSystemListener
-	virtual void OnPreScriptCompilation(bool isReload) {}
-	virtual void OnPostScriptCompilation(bool isReload, bool compilationSuccess) {}
-
-	virtual void OnPreScriptReload(bool initialLoad) {}
-	virtual void OnPostScriptReload(bool initialLoad);
-	// ~IMonoScriptSystemListener
 
 	static void HandleException(MonoObject *pException);
 

@@ -38,18 +38,18 @@ public:
 	IMonoObject *BoxObject(void *object) override;
 
 	virtual void AddRef() override { ++m_refs; }
+
+	virtual IMonoObject *InvokeArray(IMonoObject *pObject, const char *methodName, IMonoArray *params = nullptr) override;
+	virtual IMonoObject *Invoke(IMonoObject *pObject, const char *methodName, void **params = nullptr, int numParams = 0) override;
+
+	virtual IMonoObject *GetPropertyValue(IMonoObject *pObject, const char *propertyName) override;
+	virtual void SetPropertyValue(IMonoObject *pObject, const char *propertyName, IMonoObject *pNewValue) override;
+	virtual IMonoObject *GetFieldValue(IMonoObject *pObject, const char *fieldName) override;
+	virtual void SetFieldValue(IMonoObject *pObject, const char *fieldName, IMonoObject *pNewValue) override;
 	// ~IMonoClass
 
 	// IMonoObject
 	virtual void Release() override { if(0 >= --m_refs) delete this; }
-
-	virtual IMonoObject *InvokeArray(const char *methodName, IMonoArray *params = nullptr, bool bStatic = false) override { return CScriptObject::InvokeArray(methodName, params, true); }
-	virtual IMonoObject *Invoke(const char *methodName, void **params = nullptr, int numParams = 0,  bool bStatic = false) override { return CScriptObject::Invoke(methodName, params, numParams, bStatic); }
-
-	virtual IMonoObject *GetProperty(const char *propertyName, bool bStatic = false) override { return CScriptObject::GetProperty(propertyName, true); }
-	virtual void SetProperty(const char *propertyName, IMonoObject *pNewValue, bool bStatic = false) override { CScriptObject::SetProperty(propertyName, pNewValue, true); }
-	virtual IMonoObject *GetField(const char *fieldName, bool bStatic = false) override { return CScriptObject::GetField(fieldName, true); }
-	virtual void SetField(const char *fieldName, IMonoObject *pNewValue, bool bStatic = false) override { CScriptObject::SetField(fieldName, pNewValue, true); }
 
 	virtual EMonoAnyType GetType() override { return eMonoAnyType_Class; }
 	virtual MonoAnyValue GetAnyValue() override { return MonoAnyValue(); }
@@ -61,17 +61,13 @@ public:
 	virtual void *UnboxObject() override { return CScriptObject::UnboxObject(); }
 	// ~IMonoObject
 
-	// CScriptObject
-	virtual void OnPostScriptReload(bool initialLoad) override;
-	// ~CScriptObject
-
+private:
 	MonoMethod *GetMonoMethod(const char *name, IMonoArray *pArgs);
 	MonoMethod *GetMonoMethod(const char *name, int numParams);
 
 	MonoProperty *GetMonoProperty(const char *name);
 	MonoClassField *GetMonoField(const char *name);
 
-private:
 	string m_name;
 	string m_namespace;
 

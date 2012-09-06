@@ -163,7 +163,7 @@ bool CScriptSystem::CompleteInit()
 	IMonoArray *pArgs = CreateMonoArray(2);
 	pArgs->Insert(gEnv->IsEditor());
 	pArgs->Insert(gEnv->IsDedicated());
-	pClass->InvokeArray("InitializeNetworkStatics", pArgs, true);
+	pClass->InvokeArray(NULL, "InitializeNetworkStatics", pArgs);
 	SAFE_RELEASE(pArgs);
 
 	gEnv->pGameFramework->RegisterListener(this, "CryMono", eFLPriority_Game);
@@ -174,7 +174,7 @@ bool CScriptSystem::CompleteInit()
 	CryModuleGetMemoryInfo(&memInfo);
 
 	IMonoClass *pCryStats = m_pCryBraryAssembly->GetClass("CryStats", "CryEngine.Utilities");
-	CryLogAlways("		Initializing CryMono done, MemUsage=%iKb", (memInfo.allocated + pCryStats->GetProperty("MemoryUsage")->Unbox<long>()) / 1024);
+	CryLogAlways("		Initializing CryMono done, MemUsage=%iKb", (memInfo.allocated + pCryStats->GetPropertyValue(NULL, "MemoryUsage")->Unbox<long>()) / 1024);
 
 	return true;
 }
@@ -263,7 +263,7 @@ IMonoObject *CScriptSystem::InstantiateScript(const char *scriptName, EMonoScrip
 	if(!pResult)
 		MonoWarning("Failed to instantiate script %s", scriptName);
 	else
-		RegisterScriptInstance(pResult, pResult->GetProperty("ScriptId")->Unbox<int>());
+		RegisterScriptInstance(pResult, pResult->GetPropertyValue("ScriptId")->Unbox<int>());
 
 	return pResult;
 }
@@ -338,7 +338,7 @@ IMonoAssembly *CScriptSystem::GetAssembly(const char *file, bool shadowCopy)
 			{
 				IMonoArray *pArgs = CreateMonoArray(1);
 				pArgs->Insert(file);
-				pDriverClass->InvokeArray("Convert", pArgs, true);
+				pDriverClass->InvokeArray(NULL, "Convert", pArgs);
 				SAFE_RELEASE(pArgs);
 			}
 		}

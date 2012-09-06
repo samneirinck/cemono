@@ -204,7 +204,7 @@ IMPLEMENT_RMI(CEntity, SvScriptRMI)
 
 	IMonoObject *pScriptInstance = gEnv->pMonoScriptSystem->GetScriptManager()->CallMethod("GetScriptInstanceById", params.scriptId, eScriptFlag_Any);
 
-	pScriptInstance->InvokeArray(params.methodName.c_str(), pArgs);
+	pScriptInstance->CallMethod(params.methodName.c_str(), pArgs);
 
 	return true;
 }
@@ -222,7 +222,7 @@ IMPLEMENT_RMI(CEntity, ClScriptRMI)
 
 	IMonoObject *pScriptInstance = gEnv->pMonoScriptSystem->GetScriptManager()->CallMethod("GetScriptInstanceById", params.scriptId, eScriptFlag_Any);
 
-	pScriptInstance->InvokeArray(params.methodName.c_str(), pArgs);
+	pScriptInstance->CallMethod(params.methodName.c_str(), pArgs);
 
 	return true;
 }

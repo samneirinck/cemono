@@ -2,18 +2,18 @@
 //Ink Studios Source File.
 //Copyright (C), Ink Studios, 2011.
 //////////////////////////////////////////////////////////////////////////
-// IMonoScript interface for external projects, i.e. CryGame.
+// IMonoClass interface for external projects, i.e. CryGame.
 // Represents a managed type.
 //////////////////////////////////////////////////////////////////////////
 // 18/12/2011 : Created by Filip 'i59' Lundgren
 ////////////////////////////////////////////////////////////////////////*/
-#ifndef __I_MONO_SCRIPT_H__
-#define __I_MONO_SCRIPT_H__
+#ifndef __I_MONO_CLASS_H__
+#define __I_MONO_CLASS_H__
 
-#include <IMonoScriptSystem.h>
-#include <IMonoArray.h>
+#include <IMonoObject.h>
 
-struct IMonoObject;
+struct IMonoAssembly;
+struct IMonoArray;
 
 /// <summary>
 /// Reference to a Mono class, used to call static methods and etc.
@@ -51,6 +51,32 @@ public:
 	/// Boxes a type to be received as a managed type.
 	/// </summary>
 	virtual IMonoObject *BoxObject(void *object) = 0;
+
+	/// <summary>
+	/// TODO
+	/// </summary>
+	virtual IMonoObject *InvokeArray(IMonoObject *pObject, const char *methodName, IMonoArray *params = nullptr) = 0;
+	/// <summary>
+	/// TODO
+	/// </summary>
+	virtual IMonoObject *Invoke(IMonoObject *pObject, const char *methodName, void **params = nullptr, int numParams = 0) = 0;
+
+	/// <summary>
+	/// TODO
+	/// </summary>
+	virtual IMonoObject *GetPropertyValue(IMonoObject *pObject, const char *propertyName) = 0;
+	/// <summary>
+	/// TODO
+	/// </summary>
+	virtual void SetPropertyValue(IMonoObject *pObject, const char *propertyName, IMonoObject *pNewValue) = 0;
+	/// <summary>
+	/// TODO
+	/// </summary>
+	virtual IMonoObject *GetFieldValue(IMonoObject *pObject, const char *fieldName) = 0;
+	/// <summary>
+	/// TODO
+	/// </summary>
+	virtual void SetFieldValue(IMonoObject *pObject, const char *fieldName, IMonoObject *pNewValue) = 0;
 };
 
-#endif //__I_MONO_SCRIPT_H__
+#endif //__I_MONO_CLASS_H__

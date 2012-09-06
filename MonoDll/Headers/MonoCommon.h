@@ -33,10 +33,10 @@ namespace mono
 	};
 };
 
-#include <IMonoArray.h>
-
 #include <IMonoScriptSystem.h>
 #include <IMonoConverter.h>
+
+#include <IMonoObject.h>
 
 /// <summary>
 /// Converts a C++ string to the C# equivalent.
