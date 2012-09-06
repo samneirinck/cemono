@@ -20,9 +20,18 @@ CInput::CInput()
 
 CInput::~CInput()
 {
-	gEnv->pGameFramework->GetIActionMapManager()->RemoveExtraActionListener(this);
-	gEnv->pHardwareMouse->RemoveListener(this);
-	gEnv->pInput->RemoveEventListener(this);
+	// The code below currently crashes the Launcher at shutdown
+	/*if(gEnv->pGameFramework)
+	{
+		if(IActionMapManager *pActionmapManager = gEnv->pGameFramework->GetIActionMapManager())
+			pActionmapManager->RemoveExtraActionListener(this);
+	}*/
+
+	if(gEnv->pHardwareMouse)
+		gEnv->pHardwareMouse->RemoveListener(this);
+
+	if(gEnv->pInput)
+		gEnv->pInput->RemoveEventListener(this);
 }
 
 IMonoClass *CInput::GetClass()
