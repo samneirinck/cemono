@@ -72,12 +72,12 @@ namespace CryEngine
         /// Displays an exception via the CryMono exception form.
         /// </summary>
         /// <param name="ex"></param>
-        public static void DisplayException(Exception ex)
+        public static void DisplayException(Exception ex, bool fatal = false)
         {
             // Log exception as well
             LogException(ex);
-            
-            var form = new ExceptionMessage(ex, false);
+
+			var form = new ExceptionMessage(ex, fatal);
             form.ShowDialog();
         }
 

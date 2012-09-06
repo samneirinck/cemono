@@ -130,8 +130,8 @@ void CScriptObject::HandleException(MonoObject *pException)
 		args->InsertObject(*(mono::object)pException);
 		args->Insert(isFatal);
 
-		auto form = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("ExceptionMessage")->CreateInstance(args);
-		form->CallMethod("ShowDialog");
+		IMonoClass *pDebugClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("Debug");
+		pDebugClass->InvokeArray(NULL, "DisplayException", args);
 		SAFE_RELEASE(args);
 	}
 	else
