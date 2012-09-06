@@ -25,11 +25,14 @@ CScriptbind_MaterialManager::CScriptbind_MaterialManager()
 	REGISTER_METHOD(SetGetMaterialParamFloat);
 	REGISTER_METHOD(SetGetMaterialParamVec3);
 
+	REGISTER_METHOD(GetFlags);
+	REGISTER_METHOD(SetFlags);
+
 	REGISTER_METHOD(SetShaderParam);
 	REGISTER_METHOD(SetShaderParamColorF);
 
-	REGISTER_METHOD(GetFlags);
-	REGISTER_METHOD(SetFlags);
+	REGISTER_METHOD(GetShaderParamCount);
+	REGISTER_METHOD(GetShaderParamName);
 }
 
 IMaterial *CScriptbind_MaterialManager::FindMaterial(mono::string name)
