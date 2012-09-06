@@ -36,7 +36,7 @@ namespace CryEngine
 
 		public virtual void OnSpawn() { }
 
-		public virtual void OnClientConnect(int channelId, bool isReset = false, string playerName = "") { }
+		public virtual void OnClientConnect(int channelId, bool isReset = false, string playerName = "Dude") { }
 		public virtual void OnClientDisconnect(int channelId) { }
 
 		public virtual void OnClientEnteredGame(int channelId, EntityId playerId, bool reset, bool loadingSaveGame) { }
