@@ -114,6 +114,9 @@ CScriptSystem::~CScriptSystem()
 	for(auto it = m_assemblies.begin(); it != m_assemblies.end(); ++it)
 		SAFE_RELEASE(*it);
 
+	for(auto it = m_localScriptBinds.begin(); it != m_localScriptBinds.end(); ++it)
+		(*it).reset();
+
 	// Force garbage collection of all generations.
 	mono_gc_collect(mono_gc_max_generation());
 
