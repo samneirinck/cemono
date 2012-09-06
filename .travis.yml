@@ -1,0 +1,12 @@
+language: c
+
+install:
+- sudo apt-get install cmake mono-devel mono-gmcs
+
+script:
+- xbuild CryBrary/CryBrary.csproj
+- xbuild CryBrary.Tests/CryBrary.Tests.csproj
+
+notifications:
+  email: false
+  irc: "irc.gamesurge.net#crymono"
