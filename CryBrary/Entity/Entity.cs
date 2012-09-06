@@ -205,34 +205,6 @@ namespace CryEngine
 			OnPropertyChanged(member, propertyType, value);
 		}
 
-		/// <summary>
-		/// Loads a mesh for this entity. Can optionally load multiple meshes using entity slots.
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="slotNumber"></param>
-		/// <returns></returns>
-		public bool LoadObject(string name, int slotNumber = 0)
-		{
-			if(name.EndsWith("cgf"))
-				NativeMethods.Entity.LoadObject(HandleRef.Handle, name, slotNumber);
-			else if (name.EndsWith("cdf") || name.EndsWith("cga") || name.EndsWith("chr"))
-				NativeMethods.Entity.LoadCharacter(HandleRef.Handle, name, slotNumber);
-			else
-				return false;
-
-			return true;
-		}
-
-		public void PlayAnimation(string animationName, AnimationFlags flags = 0, int slot = 0, int layer = 0, float blend = 0.175f, float speed = 1.0f)
-		{
-			NativeMethods.Entity.PlayAnimation(HandleRef.Handle, animationName, slot, layer, blend, speed, flags);
-		}
-
-		protected string GetObjectFilePath(int slot = 0)
-		{
-			return NativeMethods.Entity.GetStaticObjectFilePath(HandleRef.Handle, slot);
-		}
-
 		public static EntityPropertyType GetEditorType(Type type, EntityPropertyType propertyType)
 		{
 			//If a special type is needed, do this here.
@@ -289,7 +261,7 @@ namespace CryEngine
 
                 hash = hash * 29 + ScriptId.GetHashCode();
                 hash = hash * 29 + Id.GetHashCode();
-                hash = hash * 29 + HandleRef.GetHashCode();
+                hash = hash * 29 + EntityHandleRef.GetHashCode();
 
                 return hash;
             }
