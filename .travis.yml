@@ -3,6 +3,8 @@ language: c
 install:
 - sudo apt-get install cmake mono-devel mono-gmcs unzip
 - wget http://launchpad.net/nunitv2/2.6.1/2.6.1/+download/NUnit-2.6.1.zip
+- unzip NUnit-2.6.1.zip
+
 
 script:
 - echo "-- START MAIN BUILD --"
