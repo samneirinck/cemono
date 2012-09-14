@@ -261,7 +261,7 @@ namespace CryEngine
 
                 hash = hash * 29 + ScriptId.GetHashCode();
                 hash = hash * 29 + Id.GetHashCode();
-                hash = hash * 29 + EntityHandleRef.GetHashCode();
+				hash = hash * 29 + EntityHandleRef.Handle.GetHashCode();
 
                 return hash;
             }
