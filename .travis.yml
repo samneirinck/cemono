@@ -1,11 +1,19 @@
 language: c
 
 install:
-- sudo apt-get install cmake mono-devel mono-gmcs
+- sudo apt-get install cmake mono-devel mono-gmcs unzip
+- wget http://launchpad.net/nunitv2/2.6.1/2.6.1/+download/NUnit-2.6.1.zip
+- unzip NUnit-2.6.1.zip
+
 
 script:
+- echo "-- START MAIN BUILD --"
 - xbuild CryBrary/CryBrary.csproj
+- echo "-- START TEST BUILD --"
 - xbuild CryBrary.Tests/CryBrary.Tests.csproj
+- echo "-- START TEST RUN --"
+- mono NUnit-2.6.1/bin/nunit-console.exe CryBrary.Tests/bin/Debug/CryBrary.Tests.dll
+- echo "-- Done --"
 
 notifications:
   email: false
