@@ -177,6 +177,7 @@ namespace CryEngine.Initialization
 			if (!Directory.Exists(pluginsDirectory))
 				return;
 
+			bool hasDefaultGameRules = false;
             foreach (var directory in Directory.GetDirectories(pluginsDirectory))
             {
                 var compilerDll = Path.Combine(directory, "Compiler.dll");
@@ -229,8 +230,12 @@ namespace CryEngine.Initialization
 
                             NativeMethods.GameRules.RegisterGameMode(registrationParams.name);
 
-                            if (registrationParams.defaultGamemode)
-                                NativeMethods.GameRules.SetDefaultGameMode(registrationParams.name);
+							if (registrationParams.defaultGamemode || !hasDefaultGameRules)
+							{
+								NativeMethods.GameRules.SetDefaultGameMode(registrationParams.name);
+
+								hasDefaultGameRules = true;
+							}
                         }
                         else if (script.RegistrationParams is FlowNodeRegistrationParams)
                         {
