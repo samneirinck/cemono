@@ -90,16 +90,7 @@ namespace CryEngine
 			// just in case
 			Remove(channelId);
 
-			Type actorType = typeof(T);
-			ActorAttribute attribute;
-
-			if (actorType.TryGetAttribute(out attribute))
-			{
-				if (attribute.useMonoActor) // force class name if this is set to use the built-in actor.
-					className = typeof(T).Name;
-			}
-
-			var info = NativeMethods.Actor.CreateActor(channelId, name, className ?? actorType.Name, pos ?? new Vec3(0,0,0), angles ?? new Vec3(0,0,0), scale ?? new Vec3(1,1,1));
+			var info = NativeMethods.Actor.CreateActor(channelId, name, className ?? typeof(T).Name, pos ?? new Vec3(0,0,0), angles ?? new Vec3(0,0,0), scale ?? new Vec3(1,1,1));
 			if(info.Id == 0)
 			{
 				Debug.LogAlways("[Actor.Create] New entityId was invalid");
@@ -192,29 +183,8 @@ namespace CryEngine
 		public float Health { get { return NativeMethods.Actor.GetPlayerHealth(ActorHandleRef.Handle); } set { NativeMethods.Actor.SetPlayerHealth(ActorHandleRef.Handle, value); } }
 		public float MaxHealth { get { return NativeMethods.Actor.GetPlayerMaxHealth(ActorHandleRef.Handle); } set { NativeMethods.Actor.SetPlayerMaxHealth(ActorHandleRef.Handle, value); } }
 
-		public bool IsDead() { return Health <= 0; }
-	}
-
-    [AttributeUsage(AttributeTargets.Class)]
-	public sealed class ActorAttribute : Attribute
-	{
-		public ActorAttribute(bool useMonoActor = true, bool isAI = false)
-		{
-			this.useMonoActor = useMonoActor;
-			this.isAI = isAI;
-		}
-
-		/// <summary>
-		/// Utilize the C++ Actor class contained within CryMono.dll
-		/// Otherwise the engine will require one created in the game dll. 
-		/// </summary>
-		public bool useMonoActor;
-
-		/// <summary>
-		/// Determines if this is an AI actor class.
-		/// Only applied when UseMonoActor is set to true.
-		/// </summary>
-		public bool isAI;
+		public bool IsPlayer { get { return NativeMethods.Actor.IsPlayer(ActorHandleRef.Handle); } }
+		public bool IsClient { get { return NativeMethods.Actor.IsClient(ActorHandleRef.Handle); } }
 	}
 
 	internal struct ActorInfo

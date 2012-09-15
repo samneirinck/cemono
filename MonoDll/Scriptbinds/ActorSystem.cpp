@@ -1,8 +1,6 @@
 #include "StdAfx.h"
 #include "ActorSystem.h"
 
-#include "Actor.h"
-
 #include <IGameFramework.h>
 
 CActorSystem::CActorSystem()
@@ -12,6 +10,9 @@ CActorSystem::CActorSystem()
 	REGISTER_METHOD(GetPlayerMaxHealth);
 	REGISTER_METHOD(SetPlayerMaxHealth);
 
+	REGISTER_METHOD(IsPlayer);
+	REGISTER_METHOD(IsClient);
+
 	REGISTER_METHOD(GetActorInfoByChannelId);
 	REGISTER_METHOD(GetActorInfoById);
 
@@ -19,8 +20,6 @@ CActorSystem::CActorSystem()
 	REGISTER_METHOD(RemoveActor);
 
 	REGISTER_METHOD(GetClientActorId);
-
-	REGISTER_METHOD(RegisterActorClass);
 }
 
 SMonoActorInfo CActorSystem::GetActorInfoByChannelId(uint16 channelId)
@@ -60,14 +59,6 @@ EntityId CActorSystem::GetClientActorId()
 	return gEnv->pGameFramework->GetClientActorId();
 }
 
-void CActorSystem::RegisterActorClass(mono::string className, bool isAI)
-{
-	if(gEnv->pGameFramework->GetIGameObjectSystem()->GetID(ToCryString(className)) != IGameObjectSystem::InvalidExtensionID)
-		return; // already registered
-
-	gEnv->pGameFramework->RegisterFactory(ToCryString(className), (CActor *)0, (isAI), (CActor *)0);
-}
-
 float CActorSystem::GetPlayerHealth(IActor *pActor)
 {
 	return pActor->GetHealth();
@@ -86,4 +77,14 @@ float CActorSystem::GetPlayerMaxHealth(IActor *pActor)
 void CActorSystem::SetPlayerMaxHealth(IActor *pActor, float newMaxHealth)
 {
 	pActor->SetMaxHealth(newMaxHealth);
+}
+
+bool CActorSystem::IsPlayer(IActor *pActor)
+{
+	return pActor->IsPlayer();
+}
+
+bool CActorSystem::IsClient(IActor *pActor)
+{
+	return pActor->IsClient();
 }

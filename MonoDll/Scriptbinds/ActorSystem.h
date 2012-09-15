@@ -46,6 +46,9 @@ protected:
 	static float GetPlayerMaxHealth(IActor *pActor);
 	static void SetPlayerMaxHealth(IActor *pActor, float);
 
+	static bool IsPlayer(IActor *pActor);
+	static bool IsClient(IActor *pActor);
+
 	static SMonoActorInfo GetActorInfoByChannelId(uint16 channelId);
 	static SMonoActorInfo GetActorInfoById(EntityId id);
 
@@ -53,8 +56,6 @@ protected:
 	static void RemoveActor(EntityId id);
 
 	static EntityId GetClientActorId();
-
-	static void RegisterActorClass(mono::string, bool);
 };
 
 #endif //__SCRIPTBIND_ACTORSYSTEM_H__

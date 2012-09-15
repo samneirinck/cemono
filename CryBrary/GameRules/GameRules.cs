@@ -34,8 +34,6 @@ namespace CryEngine
 
 		public virtual void OnSetTeam(EntityId actorId, EntityId teamId) { }
 
-		public virtual void OnSpawn() { }
-
 		public virtual void OnClientConnect(int channelId, bool isReset = false, string playerName = "Dude") { }
 		public virtual void OnClientDisconnect(int channelId) { }
 

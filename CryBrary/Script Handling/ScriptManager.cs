@@ -154,10 +154,7 @@ namespace CryEngine.Initialization
 		{
 			CryScript script;
 			if (CryScript.TryCreate(typeof(NativeActor), out script))
-			{
-				NativeMethods.Actor.RegisterClass(script.ScriptName, false);
 				Scripts.Add(script);
-			}
 
 			if (CryScript.TryCreate(typeof(NativeEntity), out script))
 			{
@@ -205,13 +202,6 @@ namespace CryEngine.Initialization
 
 						if (script.RegistrationParams == null)
 							continue;
-						else if (script.RegistrationParams is ActorRegistrationParams)
-                        {
-                            var registrationParams = (ActorRegistrationParams)script.RegistrationParams;
-
-                            if (registrationParams.useMonoActor)
-                                NativeMethods.Actor.RegisterClass(script.ScriptName, registrationParams.isAI);
-                        }
                         else if (script.RegistrationParams is EntityRegistrationParams)
                         {
                             var registrationParams = (EntityRegistrationParams)script.RegistrationParams;
