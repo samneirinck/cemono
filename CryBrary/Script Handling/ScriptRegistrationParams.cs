@@ -7,6 +7,12 @@ namespace CryEngine.Initialization
 {
     public interface IScriptRegistrationParams { }
 
+    public struct ActorRegistrationParams : IScriptRegistrationParams
+    {
+        public bool isAI;
+        public bool useMonoActor;
+    }
+
     public struct EntityRegistrationParams : IScriptRegistrationParams
     {
         public string name;

@@ -18,11 +18,6 @@ namespace CryEngine.Native
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static void _SetPlayerMaxHealth(IntPtr actorPtr, float newMaxHealth);
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static bool _IsPlayer(IntPtr actorPtr);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static bool _IsClient(IntPtr actorPtr);
-
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static ActorInfo _GetActorInfoByChannelId(ushort channelId);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
@@ -67,16 +62,6 @@ namespace CryEngine.Native
         {
             _SetPlayerMaxHealth(actorPtr, newMaxHealth);
         }
-
-		public bool IsPlayer(IntPtr actorPtr)
-		{
-			return _IsPlayer(actorPtr);
-		}
-
-		public bool IsClient(IntPtr actorPtr)
-		{
-			return _IsClient(actorPtr);
-		}
 
         public ActorInfo GetActorInfoByChannelId(ushort channelId)
         {
