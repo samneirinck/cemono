@@ -232,12 +232,22 @@ namespace CryEngine
 		/// <returns></returns>
 		public static T Clamp<T>(T value, T min, T max) where T : IComparable<T>
 		{
-			if(value.CompareTo(min) < 0)
+			if (value.CompareTo(min) < 0)
 				return min;
-			if(value.CompareTo(max) > 0)
+			if (value.CompareTo(max) > 0)
 				return max;
 
 			return value;
+		}
+
+		public static float ClampAngle(float angle, float min, float max)
+		{
+			if (angle < -360)
+				angle += 360;
+			if(angle > 360)
+				angle -= 360;
+
+			return Clamp(angle, min, max);
 		}
 
 		public static T Max<T>(T val1, T val2) where T : IComparable<T>
