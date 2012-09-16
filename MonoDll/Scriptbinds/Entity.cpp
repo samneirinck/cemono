@@ -265,7 +265,7 @@ bool CScriptbind_Entity::SpawnEntity(EntitySpawnParams monoParams, bool bAutoIni
 		spawnParams.pClass = pClass;
 		spawnParams.sName = ToCryString(monoParams.sName);
 
-		spawnParams.nFlags = monoParams.flags;
+		spawnParams.nFlags = monoParams.flags | ENTITY_FLAG_NO_SAVE;
 		spawnParams.vPosition = monoParams.pos;
 		spawnParams.qRotation = Quat(Ang3(monoParams.rot));
 		spawnParams.vScale = monoParams.scale;
