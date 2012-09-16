@@ -8,7 +8,7 @@ namespace CryEngine.Native
 		public static HandleRef GetEntityHandle(this EntityBase entity)
 		{
 			if (entity.IsDestroyed)
-				throw new EntityDestroyedException();
+				throw new EntityDestroyedException("Attempted to access native actor handle on a destroyed entity");
 
 			return entity.EntityHandleRef;
 		}
