@@ -61,9 +61,9 @@ namespace CryEngine.Native
 		int LoadLight(IntPtr entPtr, int slot, LightParams lightParams);
 		void FreeSlot(IntPtr entPtr, int slot);
 
-		int GetAttachmentCount(IntPtr entPtr);
-		IntPtr GetAttachmentByIndex(IntPtr entPtr, int index);
-		IntPtr GetAttachmentByName(IntPtr entPtr, string name);
+		int GetAttachmentCount(IntPtr entPtr, int slot);
+		IntPtr GetAttachmentByIndex(IntPtr entPtr, int index, int slot);
+		IntPtr GetAttachmentByName(IntPtr entPtr, string name, int slot);
 
 		Quat GetAttachmentWorldRotation(IntPtr attachmentPtr);
 		Quat GetAttachmentLocalRotation(IntPtr attachmentPtr);

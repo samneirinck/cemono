@@ -234,9 +234,9 @@ protected:
 
 	static void AddMovement(IAnimatedCharacter *pAnimatedCharacter, SCharacterMoveRequest& moveRequest);
 
-	static int GetAttachmentCount(IEntity *pEnt);
-	static IAttachment *GetAttachmentByIndex(IEntity *pEnt, int index);
-	static IAttachment *GetAttachmentByName(IEntity *pEnt, mono::string name);
+	static int GetAttachmentCount(IEntity *pEnt, int slot);
+	static IAttachment *GetAttachmentByIndex(IEntity *pEnt, int index, int slot);
+	static IAttachment *GetAttachmentByName(IEntity *pEnt, mono::string name, int slot);
 
 	static Quat GetAttachmentWorldRotation(IAttachment *pAttachment);
 	static Quat GetAttachmentLocalRotation(IAttachment *pAttachment);

@@ -52,23 +52,26 @@ namespace CryEngine
 
 		// TODO: Expose the attachment system properly
 #region Attachments
-		public Attachment GetAttachment(int index)
+		public Attachment GetAttachment(int index, int characterSlot = 0)
 		{
-			var ptr = NativeMethods.Entity.GetAttachmentByIndex(this.GetEntityHandle().Handle, index);
+			var ptr = NativeMethods.Entity.GetAttachmentByIndex(this.GetEntityHandle().Handle, index, characterSlot);
 
 			// TODO: Storage to not create a new instance each time
 			return new Attachment(ptr);
 		}
 
-		public Attachment GetAttachment(string name)
+		public Attachment GetAttachment(string name, int characterSlot = 0)
 		{
-			var ptr = NativeMethods.Entity.GetAttachmentByName(this.GetEntityHandle().Handle, name);
+			var ptr = NativeMethods.Entity.GetAttachmentByName(this.GetEntityHandle().Handle, name, characterSlot);
 
 			// TODO: Storage to not create a new instance each time
 			return new Attachment(ptr);
 		}
 
-        public int AttachmentCount { get { return NativeMethods.Entity.GetAttachmentCount(this.GetEntityHandle().Handle); } }
+        public int GetAttachmentCount(int characterSlot = 0)
+		{
+			return NativeMethods.Entity.GetAttachmentCount(this.GetEntityHandle().Handle, characterSlot); 
+		}
 #endregion
 
 		/// <summary>

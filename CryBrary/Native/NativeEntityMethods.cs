@@ -99,11 +99,11 @@ namespace CryEngine.Native
 		extern internal static void _FreeSlot(IntPtr entPtr, int slot);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static int _GetAttachmentCount(IntPtr entPtr);
+		extern internal static int _GetAttachmentCount(IntPtr entPtr, int slot);
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static IntPtr _GetAttachmentByIndex(IntPtr entPtr, int index);
+		extern internal static IntPtr _GetAttachmentByIndex(IntPtr entPtr, int index, int slot);
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static IntPtr _GetAttachmentByName(IntPtr entPtr, string name);
+		extern internal static IntPtr _GetAttachmentByName(IntPtr entPtr, string name, int slot);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static Quat _GetAttachmentWorldRotation(IntPtr attachmentPtr);
@@ -326,19 +326,19 @@ namespace CryEngine.Native
 			_FreeSlot(entPtr, slot);
 		}
 
-		public int GetAttachmentCount(IntPtr entPtr)
+		public int GetAttachmentCount(IntPtr entPtr, int slot)
 		{
-			return _GetAttachmentCount(entPtr);
+			return _GetAttachmentCount(entPtr, slot);
 		}
 
-		public IntPtr GetAttachmentByIndex(IntPtr entPtr, int index)
+		public IntPtr GetAttachmentByIndex(IntPtr entPtr, int index, int slot)
 		{
-			return _GetAttachmentByIndex(entPtr, index);
+			return _GetAttachmentByIndex(entPtr, index, slot);
 		}
 
-		public IntPtr GetAttachmentByName(IntPtr entPtr, string name)
+		public IntPtr GetAttachmentByName(IntPtr entPtr, string name, int slot)
 		{
-			return _GetAttachmentByName(entPtr, name);
+			return _GetAttachmentByName(entPtr, name, slot);
 		}
 
 		public Quat GetAttachmentWorldRotation(IntPtr attachmentPtr)

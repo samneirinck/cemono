@@ -619,33 +619,33 @@ void CScriptbind_Entity::AddMovement(IAnimatedCharacter *pAnimatedCharacter, SCh
 ////////////////////////////////////////////////////
 // Attachments
 ////////////////////////////////////////////////////
-IAttachmentManager *GetAttachmentManager(IEntity *pEntity)
+IAttachmentManager *GetAttachmentManager(IEntity *pEntity, int slot)
 {
-	if(auto pCharacter = pEntity->GetCharacter(0))
+	if(auto pCharacter = pEntity->GetCharacter(slot))
 		return pCharacter->GetIAttachmentManager();
 
 	return nullptr;
 }
 
-int CScriptbind_Entity::GetAttachmentCount(IEntity *pEnt)
+int CScriptbind_Entity::GetAttachmentCount(IEntity *pEnt, int slot)
 {
-	if(auto pAttachmentManager = GetAttachmentManager(pEnt))
+	if(auto pAttachmentManager = GetAttachmentManager(pEnt, slot))
 		return pAttachmentManager->GetAttachmentCount();
 
 	return 0;
 }
 
-IAttachment *CScriptbind_Entity::GetAttachmentByIndex(IEntity *pEnt, int index)
+IAttachment *CScriptbind_Entity::GetAttachmentByIndex(IEntity *pEnt, int index, int slot)
 {
-	if(auto pAttachmentManager = GetAttachmentManager(pEnt))
+	if(auto pAttachmentManager = GetAttachmentManager(pEnt, slot))
 		return pAttachmentManager->GetInterfaceByIndex(index);
 
 	return nullptr;
 }
 
-IAttachment *CScriptbind_Entity::GetAttachmentByName(IEntity *pEnt, mono::string name)
+IAttachment *CScriptbind_Entity::GetAttachmentByName(IEntity *pEnt, mono::string name, int slot)
 {
-	if(auto pAttachmentManager = GetAttachmentManager(pEnt))
+	if(auto pAttachmentManager = GetAttachmentManager(pEnt, slot))
 		return pAttachmentManager->GetInterfaceByName(ToCryString(name));
 
 	return nullptr;
