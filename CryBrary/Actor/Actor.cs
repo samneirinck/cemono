@@ -148,17 +148,12 @@ namespace CryEngine
 		{
             System.Diagnostics.Contracts.Contract.Requires(channelId > 0);
 			Id = new EntityId(actorInfo.Id);
-			ActorHandleRef = new HandleRef(this, actorInfo.ActorPtr);
-			SetEntityHandle(actorInfo.EntityPtr);
+			this.SetActorHandle(new HandleRef(this, actorInfo.ActorPtr));
+			this.SetEntityHandle(new HandleRef(this, actorInfo.EntityPtr));
 
 			ChannelId = channelId;
 
 			OnSpawn();
-		}
-
-		internal void SetActorHandle(IntPtr ptr)
-		{
-			ActorHandleRef = new HandleRef(this, ptr);
 		}
 
 		#region Callbacks
@@ -175,8 +170,8 @@ namespace CryEngine
                 hash = hash * 29 + ScriptId.GetHashCode();
                 hash = hash * 29 + Id.GetHashCode();
                 hash = hash * 29 + ChannelId.GetHashCode();
-				hash = hash * 29 + ActorHandleRef.Handle.GetHashCode();
-                hash = hash * 29 + base.EntityHandleRef.Handle.GetHashCode();
+				hash = hash * 29 + this.GetActorHandle().Handle.GetHashCode();
+                hash = hash * 29 + this.GetEntityHandle().Handle.GetHashCode();
 
                 return hash;
             }
@@ -184,17 +179,17 @@ namespace CryEngine
 
         internal override void OnScriptReloadInternal()
 		{
-            ActorHandleRef = new HandleRef(this, NativeMethods.Actor.GetActorInfoById(Id).ActorPtr);
+            this.SetActorHandle(new HandleRef(this, NativeMethods.Actor.GetActorInfoById(Id).ActorPtr));
 
             base.OnScriptReloadInternal();
 		}
         #endregion
 
-		public HandleRef ActorHandleRef { get; private set; }
+		internal HandleRef ActorHandleRef { get; set; }
 		public int ChannelId { get; set; }
 
-		public float Health { get { return NativeMethods.Actor.GetPlayerHealth(ActorHandleRef.Handle); } set { NativeMethods.Actor.SetPlayerHealth(ActorHandleRef.Handle, value); } }
-		public float MaxHealth { get { return NativeMethods.Actor.GetPlayerMaxHealth(ActorHandleRef.Handle); } set { NativeMethods.Actor.SetPlayerMaxHealth(ActorHandleRef.Handle, value); } }
+		public float Health { get { return NativeMethods.Actor.GetPlayerHealth(this.GetActorHandle().Handle); } set { NativeMethods.Actor.SetPlayerHealth(this.GetActorHandle().Handle, value); } }
+		public float MaxHealth { get { return NativeMethods.Actor.GetPlayerMaxHealth(this.GetActorHandle().Handle); } set { NativeMethods.Actor.SetPlayerMaxHealth(this.GetActorHandle().Handle, value); } }
 
 		public bool IsDead() { return Health <= 0; }
 	}

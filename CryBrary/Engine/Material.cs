@@ -40,7 +40,7 @@ namespace CryEngine
 				throw new ArgumentNullException("entity");
 #endif
 
-			var ptr = NativeMethods.Material.GetMaterial(entity.EntityHandleRef.Handle, slot);
+			var ptr = NativeMethods.Material.GetMaterial(entity.GetEntityHandle().Handle, slot);
 			return TryAdd(ptr);
 		}
 
@@ -53,7 +53,7 @@ namespace CryEngine
 				throw new ArgumentNullException("mat");
 #endif
 
-			NativeMethods.Material.SetMaterial(entity.EntityHandleRef.Handle, mat.HandleRef.Handle, slot);
+			NativeMethods.Material.SetMaterial(entity.GetEntityHandle().Handle, mat.HandleRef.Handle, slot);
 		}
 
 		internal static Material TryAdd(IntPtr ptr)

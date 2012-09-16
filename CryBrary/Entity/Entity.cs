@@ -25,7 +25,7 @@ namespace CryEngine
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		internal virtual void InternalSpawn(EntityInfo entInfo)
 		{
-			SetEntityHandle(entInfo.IEntityPtr);
+			this.SetEntityHandle(new HandleRef(this, entInfo.IEntityPtr));
 			Id = entInfo.Id;
 
 			foreach(var property in GetType().GetProperties())
@@ -255,13 +255,13 @@ namespace CryEngine
 
                 hash = hash * 29 + ScriptId.GetHashCode();
                 hash = hash * 29 + Id.GetHashCode();
-				hash = hash * 29 + EntityHandleRef.Handle.GetHashCode();
+				hash = hash * 29 + this.GetEntityHandle().Handle.GetHashCode();
 
                 return hash;
             }
         }
         #endregion
-    }
+	}
 
 	[Serializable]
 	public class EntityException : Exception

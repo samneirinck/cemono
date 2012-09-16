@@ -1,5 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 
+using CryEngine.Native;
+
 namespace CryEngine
 {
 	/// <summary>
@@ -13,8 +15,8 @@ namespace CryEngine
 		internal NativeActor(ActorInfo actorInfo)
 		{
 			Id = new EntityId(actorInfo.Id);
-			SetEntityHandle(actorInfo.EntityPtr);
-			SetActorHandle(actorInfo.ActorPtr);
+			this.SetEntityHandle(new HandleRef(this, actorInfo.EntityPtr));
+			this.SetActorHandle(new HandleRef(this, actorInfo.ActorPtr));
 		}
 
 		internal NativeActor(EntityId id)

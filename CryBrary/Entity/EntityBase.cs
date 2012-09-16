@@ -19,11 +19,6 @@ namespace CryEngine
 		public virtual void OnSpawn() { }
 		#endregion
 
-		internal void SetEntityHandle(IntPtr ptr)
-		{
-			EntityHandleRef = new HandleRef(this, ptr);
-		}
-
 		public EntitySlotFlags GetSlotFlags(int slot = 0)
 		{
 			return NativeMethods.Entity.GetSlotFlags(EntityHandleRef.Handle, slot);
@@ -49,7 +44,7 @@ namespace CryEngine
 
         internal override void OnScriptReloadInternal()
 		{
-            EntityHandleRef = new HandleRef(this, NativeMethods.Entity.GetEntity(Id));
+            this.SetEntityHandle(new HandleRef(this, NativeMethods.Entity.GetEntity(Id)));
 
 			Physics.OnScriptReload();
             base.OnScriptReloadInternal();
@@ -202,7 +197,7 @@ namespace CryEngine
 
 		public Material Material { get { return Material.Get(this); } set { Material.Set(this, value); } }
 
-		public HandleRef EntityHandleRef { get; private set; }
+		internal HandleRef EntityHandleRef { get; set; }
 		public EntityId Id { get; set; }
 	}
 }

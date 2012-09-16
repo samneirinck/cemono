@@ -15,21 +15,21 @@ namespace CryEngine
 			entity = _entity;
 
 			_params = new PhysicalizationParams { mass = -1, slot = 0 };
-			NativeMethods.Physics.Physicalize(_entity.EntityHandleRef.Handle, _params);
+			NativeMethods.Physics.Physicalize(_entity.GetEntityHandle().Handle, _params);
 
-			PhysicsPointer = NativeMethods.Physics.GetPhysicalEntity(entity.EntityHandleRef.Handle);
+			PhysicsPointer = NativeMethods.Physics.GetPhysicalEntity(entity.GetEntityHandle().Handle);
 
 			AutoUpdate = true;
 		}
 
 		internal void OnScriptReload()
 		{
-			PhysicsPointer = NativeMethods.Physics.GetPhysicalEntity(entity.EntityHandleRef.Handle);
+			PhysicsPointer = NativeMethods.Physics.GetPhysicalEntity(entity.GetEntityHandle().Handle);
 		}
 
 		public void Break(BreakageParameters breakageParams)
 		{
-			NativeMethods.Entity.BreakIntoPieces(entity.EntityHandleRef.Handle, 0, 0, breakageParams);
+			NativeMethods.Entity.BreakIntoPieces(entity.GetEntityHandle().Handle, 0, 0, breakageParams);
 		}
 
 		#region Basics
@@ -43,7 +43,7 @@ namespace CryEngine
 		/// Determines if this physical entity is in a sleeping state or not. (Will not be affected by gravity)
 		/// Autoamtically wakes upon collision.
 		/// </summary>
-		public bool Resting { get { return resting; } set { resting = value; NativeMethods.Physics.Sleep(entity.EntityHandleRef.Handle, value); } }
+		public bool Resting { get { return resting; } set { resting = value; NativeMethods.Physics.Sleep(entity.GetEntityHandle().Handle, value); } }
 
 		/// <summary>
 		/// Save the current physics settings.
@@ -53,7 +53,7 @@ namespace CryEngine
 			if(_params.type == 0)
 				_params.type = PhysicalizationType.Rigid;
 
-			NativeMethods.Physics.Physicalize(entity.EntityHandleRef.Handle, _params);
+			NativeMethods.Physics.Physicalize(entity.GetEntityHandle().Handle, _params);
 		}
 
 		/// <summary>
@@ -68,7 +68,7 @@ namespace CryEngine
 		{
 			var actionImpulse = new ActionImpulse { impulse = impulse, angImpulse = angImpulse, point = point ?? Entity.Get(entity.Id).Position };
 
-			NativeMethods.Physics.AddImpulse(entity.EntityHandleRef.Handle, actionImpulse);
+			NativeMethods.Physics.AddImpulse(entity.GetEntityHandle().Handle, actionImpulse);
 		}
 
 		/// <summary>

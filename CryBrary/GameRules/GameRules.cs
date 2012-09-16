@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 using CryEngine.Initialization;
 using CryEngine.Extensions;
@@ -18,7 +19,7 @@ namespace CryEngine
 			GameRules.Current = this;
 
 			Id = 1;
-			SetEntityHandle(NativeMethods.Entity.GetEntity(Id));
+			this.SetEntityHandle(new HandleRef(this, NativeMethods.Entity.GetEntity(Id)));
 		}
 
 		public static GameRules Current { get; internal set; }

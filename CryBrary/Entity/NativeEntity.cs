@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
+using CryEngine.Native;
+
 namespace CryEngine
 {
 	/// <summary>
@@ -13,7 +15,7 @@ namespace CryEngine
 		public NativeEntity(EntityId id, IntPtr ptr)
 		{ 
 			Id = id;
-			SetEntityHandle(ptr);
+			this.SetEntityHandle(new HandleRef(this, ptr));
 		}
 	}
 }
