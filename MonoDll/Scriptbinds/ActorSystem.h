@@ -49,7 +49,7 @@ protected:
 	static SMonoActorInfo GetActorInfoByChannelId(uint16 channelId);
 	static SMonoActorInfo GetActorInfoById(EntityId id);
 
-	static SMonoActorInfo CreateActor(int channelId, mono::string name, mono::string className, Vec3 pos, Vec3 angles, Vec3 scale);
+	static SMonoActorInfo CreateActor(mono::object actor, int channelId, mono::string name, mono::string className, Vec3 pos, Vec3 angles, Vec3 scale);
 	static void RemoveActor(EntityId id);
 
 	static EntityId GetClientActorId();

@@ -24,7 +24,7 @@ namespace CryEngine.Native
         extern internal static ActorInfo _GetActorInfoById(uint entId);
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern private static ActorInfo _CreateActor(int channelId, string name, string className, Vec3 pos, Vec3 angles, Vec3 scale);
+        extern private static ActorInfo _CreateActor(Actor actor, int channelId, string name, string className, Vec3 pos, Vec3 angles, Vec3 scale);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static void _RemoveActor(uint id);
 
@@ -73,9 +73,9 @@ namespace CryEngine.Native
             return _GetActorInfoById(entId);
         }
 
-        public ActorInfo CreateActor(int channelId, string name, string className, Vec3 pos, Vec3 angles, Vec3 scale)
+        public ActorInfo CreateActor(Actor actor, int channelId, string name, string className, Vec3 pos, Vec3 angles, Vec3 scale)
         {
-            return _CreateActor(channelId, name, className, pos, angles, scale);
+            return _CreateActor(actor, channelId, name, className, pos, angles, scale);
         }
 
         public void RemoveActor(uint id)

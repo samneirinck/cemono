@@ -97,7 +97,9 @@ namespace CryEngine
 			// just in case
 			Remove(channelId);
 
-			var info = NativeMethods.Actor.CreateActor(channelId, name, className, pos ?? new Vec3(0,0,0), angles ?? new Vec3(0,0,0), scale ?? new Vec3(1,1,1));
+			var actor = new T();
+
+			var info = NativeMethods.Actor.CreateActor(actor, channelId, name, className, pos ?? new Vec3(0, 0, 0), angles ?? new Vec3(0, 0, 0), scale ?? new Vec3(1, 1, 1));
 			if(info.Id == 0)
 			{
 				if (isNative)
@@ -106,14 +108,13 @@ namespace CryEngine
 					throw new Exception("Actor creation failed");
 			}
 
-			var player = new T();
-			ScriptManager.Instance.AddScriptInstance(player, ScriptType.Actor);
-			player.InternalSpawn(info, channelId);
+			ScriptManager.Instance.AddScriptInstance(actor, ScriptType.Actor);
+			actor.InternalSpawn(info, channelId);
 
-			// player must have physics
-			player.Physics.Type = PhysicalizationType.Rigid;
+			// actor must have physics
+			actor.Physics.Type = PhysicalizationType.Rigid;
 
-			return player;
+			return actor;
 		}
 
 		public static new void Remove(EntityId id)

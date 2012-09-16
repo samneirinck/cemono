@@ -4,8 +4,12 @@
 #include <IGameRulesSystem.h>
 #include <IViewSystem.h>
 
+#include <IMonoAssembly.h>
+#include <IMonoClass.h>
+
 CActor::CActor()
 	: m_bClient(false)
+	, m_pScript(nullptr)
 {
 }
 
@@ -16,7 +20,7 @@ CActor::~CActor()
 		pActorSystem->RemoveActor(GetEntityId());
 }
 
-bool CActor::Init( IGameObject * pGameObject ) 
+bool CActor::Init(IGameObject *pGameObject)
 { 
 	SetGameObject(pGameObject);
 

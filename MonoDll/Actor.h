@@ -12,6 +12,8 @@
 
 #include <IActorSystem.h>
 
+struct IMonoObject;
+
 class CActor 
 	: public CGameObjectExtensionHelper<CActor, IActor>
 	, public IGameObjectView
@@ -23,20 +25,20 @@ public:
 	// IActor
 	virtual void	SetHealth( float health ) override {}
 	virtual float	GetHealth() const override { return 1.0f; }
-	virtual int	GetHealthAsRoundedPercentage() const override { return 1; }
+	virtual int		GetHealthAsRoundedPercentage() const override { return 1; }
 	virtual void	SetMaxHealth( float maxHealth ) override {}
 	virtual float	GetMaxHealth() const override { return 1.0f; }
-	virtual int	GetArmor() const override { return 0; }
-	virtual int	GetMaxArmor() const override { return 0; }
+	virtual int		GetArmor() const override { return 0; }
+	virtual int		GetMaxArmor() const override { return 0; }
 
 	virtual bool	IsFallen() const override { return false; }
 	virtual bool	IsDead() const override { return false; }
-	virtual int	IsGod() override { return false; }
+	virtual int		IsGod() override { return false; }
 	virtual void	Fall(Vec3 hitPos = Vec3(0,0,0), float time = 0.0f) override {}
 	virtual bool	AllowLandingBob() override { return false; }
 
 	virtual void	PlayAction(const char *action,const char *extension, bool looping=false) override {}
-	virtual IAnimationGraphState * GetAnimationGraphState() override { return nullptr; }
+	virtual IAnimationGraphState *GetAnimationGraphState() override { return nullptr; }
 	virtual void	ResetAnimGraph() override {}
 	virtual void	NotifyAnimGraphTransition(const char *anim) override {}
 	virtual void	NotifyAnimGraphInput(int id, const char *value) override {}
@@ -159,7 +161,10 @@ public:
 	virtual void PostUpdateView(SViewParams& params) {}
 	// ~IGameObjectView
 
+	void SetScript(IMonoObject *pObject) { m_pScript = pObject; }
+
 protected:
+	IMonoObject *m_pScript;
 
 	bool m_bClient;
 };
