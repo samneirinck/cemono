@@ -43,7 +43,7 @@ IMonoObject *CScriptClass::CreateInstance(IMonoArray *pConstructorParams)
 IMonoObject *CScriptClass::InvokeArray(IMonoObject *pObject, const char *methodName, IMonoArray *pParams)
 {
 	MonoMethod *pMethod = GetMonoMethod(methodName, pParams);
-	CRY_ASSERT(pMethod);
+	CRY_ASSERT_MESSAGE(pMethod, "Failed to find the specified method.");
 
 	MonoObject *pException = nullptr;
 	MonoObject *pResult = mono_runtime_invoke_array(pMethod, pObject ? pObject->GetManagedObject() : nullptr, pParams ? (MonoArray *)pParams->GetManagedObject() : nullptr, &pException);
@@ -59,7 +59,7 @@ IMonoObject *CScriptClass::InvokeArray(IMonoObject *pObject, const char *methodN
 IMonoObject *CScriptClass::Invoke(IMonoObject *pObject, const char *methodName, void **pParams, int numParams)
 {
 	MonoMethod *pMethod = GetMonoMethod(methodName, numParams);
-	CRY_ASSERT(pMethod);
+	CRY_ASSERT_MESSAGE(pMethod, "Failed to find the specified method.");
 
 	MonoObject *pException = nullptr;
 	MonoObject *pResult = mono_runtime_invoke(pMethod, pObject ? pObject->GetManagedObject() : nullptr, pParams, &pException);
