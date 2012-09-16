@@ -66,13 +66,6 @@ CScriptbind_Entity::CScriptbind_Entity()
 	REGISTER_METHOD(GetFlags);
 	REGISTER_METHOD(SetFlags);
 
-	REGISTER_METHOD(GetAttachmentCount);
-	REGISTER_METHOD(GetAttachmentMaterialByIndex);
-	REGISTER_METHOD(SetAttachmentMaterialByIndex);
-
-	REGISTER_METHOD(SetAttachmentMaterial);
-	REGISTER_METHOD(GetAttachmentMaterial);
-
 	REGISTER_METHOD(SetVisionParams);
 	REGISTER_METHOD(SetHUDSilhouettesParams);
 
@@ -86,6 +79,28 @@ CScriptbind_Entity::CScriptbind_Entity()
 	REGISTER_METHOD(FreeSlot);
 
 	REGISTER_METHOD(AddMovement);
+
+	// Attachments
+	REGISTER_METHOD(GetAttachmentCount);
+	REGISTER_METHOD(GetAttachmentByIndex);
+	REGISTER_METHOD(GetAttachmentByName);
+
+	REGISTER_METHOD(GetAttachmentWorldRotation);
+	REGISTER_METHOD(GetAttachmentLocalRotation);
+	REGISTER_METHOD(SetAttachmentWorldRotation);
+	REGISTER_METHOD(SetAttachmentLocalRotation);
+	REGISTER_METHOD(GetAttachmentWorldPosition);
+	REGISTER_METHOD(GetAttachmentLocalPosition);
+	REGISTER_METHOD(SetAttachmentWorldPosition);
+	REGISTER_METHOD(SetAttachmentLocalPosition);
+
+	REGISTER_METHOD(GetAttachmentDefaultWorldRotation);
+	REGISTER_METHOD(GetAttachmentDefaultLocalRotation);
+	REGISTER_METHOD(GetAttachmentDefaultWorldPosition);
+	REGISTER_METHOD(GetAttachmentDefaultLocalPosition);
+
+	REGISTER_METHOD(GetAttachmentMaterial);
+	REGISTER_METHOD(SetAttachmentMaterial);
 
 	gEnv->pEntitySystem->AddSink(this, IEntitySystem::OnSpawn | IEntitySystem::OnRemove, 0);
 }
@@ -494,68 +509,6 @@ void CScriptbind_Entity::SetFlags(IEntity *pEntity, EEntityFlags flags)
 	pEntity->SetFlags(flags);
 }
 
-int CScriptbind_Entity::GetAttachmentCount(IEntity *pEnt)
-{
-	if(auto pCharacter = pEnt->GetCharacter(0))
-	{
-		if(auto pAttachmentManager = pCharacter->GetIAttachmentManager())
-			return pAttachmentManager->GetAttachmentCount();
-	}
-
-	return 0;
-}
-
-IAttachmentManager *GetAttachmentManager(IEntity *pEntity)
-{
-	if(auto pCharacter = pEntity->GetCharacter(0))
-		return pCharacter->GetIAttachmentManager();
-
-	return nullptr;
-}
-
-IMaterial *CScriptbind_Entity::GetAttachmentMaterialByIndex(IEntity *pEnt, int index)
-{
-	if(auto pAttachmentManager = GetAttachmentManager(pEnt))
-	{
-		if(auto pAttachment = pAttachmentManager->GetInterfaceByIndex(index))
-			return pAttachment->GetIAttachmentObject()->GetMaterial();
-	}
-
-	return nullptr;
-}
-
-IMaterial *CScriptbind_Entity::GetAttachmentMaterial(IEntity *pEnt, mono::string attachmentName)
-{
-	if(auto pAttachmentManager = GetAttachmentManager(pEnt))
-	{
-		if(auto pAttachment = pAttachmentManager->GetInterfaceByName(ToCryString(attachmentName)))
-		{
-			if(auto pAttachmentObject = pAttachment->GetIAttachmentObject())
-				return pAttachmentObject->GetMaterial();
-		}
-	}
-
-	return nullptr;
-}
-
-void CScriptbind_Entity::SetAttachmentMaterialByIndex(IEntity *pEnt, int index, IMaterial *pMaterial)
-{
-	if(auto pAttachmentManager = GetAttachmentManager(pEnt))
-	{
-		if(auto pAttachment = pAttachmentManager->GetInterfaceByIndex(index))
-			pAttachment->GetIAttachmentObject()->SetMaterial(pMaterial);
-	}
-}
-
-void CScriptbind_Entity::SetAttachmentMaterial(IEntity *pEnt, mono::string attachmentName, IMaterial *pMaterial)
-{
-	if(auto pAttachmentManager = GetAttachmentManager(pEnt))
-	{
-		if(auto pAttachment = pAttachmentManager->GetInterfaceByName(ToCryString(attachmentName)))
-			return pAttachment->GetIAttachmentObject()->SetMaterial(pMaterial);;
-	}
-}
-
 void CScriptbind_Entity::SetVisionParams(IEntity *pEntity, float r, float g, float b, float a)
 {
 	IEntityRenderProxy *pRenderProxy = static_cast<IEntityRenderProxy *>(pEntity->GetProxy(ENTITY_PROXY_RENDER));
@@ -661,4 +614,125 @@ void CScriptbind_Entity::AddMovement(IAnimatedCharacter *pAnimatedCharacter, SCh
 {
 	if(pAnimatedCharacter)
 		pAnimatedCharacter->AddMovement(moveRequest);
+}
+
+////////////////////////////////////////////////////
+// Attachments
+////////////////////////////////////////////////////
+IAttachmentManager *GetAttachmentManager(IEntity *pEntity)
+{
+	if(auto pCharacter = pEntity->GetCharacter(0))
+		return pCharacter->GetIAttachmentManager();
+
+	return nullptr;
+}
+
+int CScriptbind_Entity::GetAttachmentCount(IEntity *pEnt)
+{
+	if(auto pAttachmentManager = GetAttachmentManager(pEnt))
+		return pAttachmentManager->GetAttachmentCount();
+
+	return 0;
+}
+
+IAttachment *CScriptbind_Entity::GetAttachmentByIndex(IEntity *pEnt, int index)
+{
+	if(auto pAttachmentManager = GetAttachmentManager(pEnt))
+		return pAttachmentManager->GetInterfaceByIndex(index);
+
+	return nullptr;
+}
+
+IAttachment *CScriptbind_Entity::GetAttachmentByName(IEntity *pEnt, mono::string name)
+{
+	if(auto pAttachmentManager = GetAttachmentManager(pEnt))
+		return pAttachmentManager->GetInterfaceByName(ToCryString(name));
+
+	return nullptr;
+}
+
+Quat CScriptbind_Entity::GetAttachmentWorldRotation(IAttachment *pAttachment)
+{
+	return pAttachment->GetAttWorldAbsolute().q;
+}
+
+Quat CScriptbind_Entity::GetAttachmentLocalRotation(IAttachment *pAttachment)
+{
+	return pAttachment->GetAttModelRelative().q;
+}
+
+void CScriptbind_Entity::SetAttachmentWorldRotation(IAttachment *pAttachment, Quat rot)
+{
+	QuatT q = pAttachment->GetAttWorldAbsolute();
+
+	q.q = rot;
+	pAttachment->SetAttAbsoluteDefault(q);
+}
+
+void CScriptbind_Entity::SetAttachmentLocalRotation(IAttachment *pAttachment, Quat rot)
+{
+	QuatT q = pAttachment->GetAttModelRelative();
+
+	q.q = rot;
+	pAttachment->SetAttRelativeDefault(q);
+}
+
+Vec3 CScriptbind_Entity::GetAttachmentWorldPosition(IAttachment *pAttachment)
+{
+	return pAttachment->GetAttWorldAbsolute().t;
+}
+
+Vec3 CScriptbind_Entity::GetAttachmentLocalPosition(IAttachment *pAttachment)
+{
+	return pAttachment->GetAttModelRelative().t;
+}
+
+void CScriptbind_Entity::SetAttachmentWorldPosition(IAttachment *pAttachment, Vec3 pos)
+{
+	QuatT q = pAttachment->GetAttWorldAbsolute();
+
+	q.t = pos;
+	pAttachment->SetAttAbsoluteDefault(q);
+}
+
+void CScriptbind_Entity::SetAttachmentLocalPosition(IAttachment *pAttachment, Vec3 pos)
+{
+	QuatT q = pAttachment->GetAttModelRelative();
+
+	q.t = pos;
+	pAttachment->SetAttRelativeDefault(q);
+}
+
+Quat CScriptbind_Entity::GetAttachmentDefaultWorldRotation(IAttachment *pAttachment)
+{
+	return pAttachment->GetAttAbsoluteDefault().q;
+}
+	
+Quat CScriptbind_Entity::GetAttachmentDefaultLocalRotation(IAttachment *pAttachment)
+{
+	return pAttachment->GetAttRelativeDefault().q;
+}
+	 
+Vec3 CScriptbind_Entity::GetAttachmentDefaultWorldPosition(IAttachment *pAttachment)
+{
+	return pAttachment->GetAttAbsoluteDefault().t;
+}
+
+Vec3 CScriptbind_Entity::GetAttachmentDefaultLocalPosition(IAttachment *pAttachment)
+{
+	return pAttachment->GetAttRelativeDefault().t;
+}
+
+IMaterial *CScriptbind_Entity::GetAttachmentMaterial(IAttachment *pAttachment)
+{
+	if(IAttachmentObject *pObject = pAttachment->GetIAttachmentObject())
+		return pObject->GetMaterial();;
+
+	return nullptr;
+}
+
+void CScriptbind_Entity::SetAttachmentMaterial(IAttachment *pAttachment, IMaterial *pMaterial)
+{
+	if(IAttachmentObject *pObject = pAttachment->GetIAttachmentObject())
+		pObject->SetMaterial(pMaterial);
 }

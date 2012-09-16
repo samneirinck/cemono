@@ -127,9 +127,11 @@
   <ItemGroup>
     <Compile Include="Actor\Actor.cs" />
     <Compile Include="Actor\ViewParams.cs" />
+    <Compile Include="Entity\Attachment.cs" />
     <Compile Include="Entity\EntityDestroyedException.cs" />
     <Compile Include="Misc\MissingAttributeException.cs" />
     <Compile Include="Native\Extensions\NativeActorExtensions.cs" />
+    <Compile Include="Native\Extensions\NativeAttachmentExtensions.cs" />
     <Compile Include="Native\Extensions\NativeEntityExtensions.cs" />
     <Compile Include="Native\Interfaces\INativeNetworkMethods.cs" />
     <Compile Include="Native\NativeNetworkMethods.cs" />

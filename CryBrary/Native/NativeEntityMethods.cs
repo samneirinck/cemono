@@ -87,18 +87,6 @@ namespace CryEngine.Native
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern internal static void _LoadCharacter(IntPtr ptr, string fileName, int slot);
 
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static int _GetAttachmentCount(IntPtr entPtr);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static IntPtr _GetAttachmentMaterialByIndex(IntPtr entPtr, int index);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static void _SetAttachmentMaterialByIndex(IntPtr entPtr, int index, IntPtr materialPtr);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static IntPtr _GetAttachmentMaterial(IntPtr entPtr, string name);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static int _SetAttachmentMaterial(IntPtr entPtr, string name, IntPtr materialPtr);
-
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static bool _AddEntityLink(IntPtr entPtr, string linkName, uint otherId, Quat relativeRot, Vec3 relativePos);
 		[MethodImpl(MethodImplOptions.InternalCall)]
@@ -109,6 +97,44 @@ namespace CryEngine.Native
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static void _FreeSlot(IntPtr entPtr, int slot);
+
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static int _GetAttachmentCount(IntPtr entPtr);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static IntPtr _GetAttachmentByIndex(IntPtr entPtr, int index);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static IntPtr _GetAttachmentByName(IntPtr entPtr, string name);
+
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static Quat _GetAttachmentWorldRotation(IntPtr attachmentPtr);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static Quat _GetAttachmentLocalRotation(IntPtr attachmentPtr);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static void _SetAttachmentWorldRotation(IntPtr attachmentPtr, Quat rot);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static void _SetAttachmentLocalRotation(IntPtr attachmentPtr, Quat rot);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static Vec3 _GetAttachmentWorldPosition(IntPtr attachmentPtr);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static Vec3 _GetAttachmentLocalPosition(IntPtr attachmentPtr);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static void _SetAttachmentWorldPosition(IntPtr attachmentPtr, Vec3 pos);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static void _SetAttachmentLocalPosition(IntPtr attachmentPtr, Vec3 pos);
+
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static Quat _GetAttachmentDefaultWorldRotation(IntPtr attachmentPtr);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static Quat _GetAttachmentDefaultLocalRotation(IntPtr attachmentPtr);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static Vec3 _GetAttachmentDefaultWorldPosition(IntPtr attachmentPtr);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static Vec3 _GetAttachmentDefaultLocalPosition(IntPtr attachmentPtr);
+
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static IntPtr _GetAttachmentMaterial(IntPtr attachmentPtr);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static void _SetAttachmentMaterial(IntPtr attachmentPtr, IntPtr materialPtr);
 
 		public void PlayAnimation(IntPtr ptr, string animationName, int slot, int layer, float blend, float speed, AnimationFlags flags)
 		{
@@ -275,31 +301,6 @@ namespace CryEngine.Native
             _LoadCharacter(ptr,fileName,slot);
         }
 
-        public int GetAttachmentCount(IntPtr entPtr)
-        {
-            return _GetAttachmentCount(entPtr);
-        }
-
-        public IntPtr GetAttachmentMaterialByIndex(IntPtr entPtr, int index)
-        {
-            return _GetAttachmentMaterialByIndex(entPtr, index);
-        }
-
-        public void SetAttachmentMaterialByIndex(IntPtr entPtr, int index, IntPtr materialPtr)
-        {
-            _SetAttachmentMaterialByIndex(entPtr,index,materialPtr);
-        }
-
-        public IntPtr GetAttachmentMaterial(IntPtr entPtr, string name)
-        {
-            return _GetAttachmentMaterial(entPtr, name);
-        }
-
-        public int SetAttachmentMaterial(IntPtr entPtr, string name, IntPtr materialPtr)
-        {
-            return _SetAttachmentMaterial(entPtr, name, materialPtr);
-        }
-
         public void RegisterClass(EntityRegistrationParams registrationParams)
         {
             _RegisterEntityClass(registrationParams);
@@ -323,6 +324,91 @@ namespace CryEngine.Native
 		public void FreeSlot(IntPtr entPtr, int slot)
 		{
 			_FreeSlot(entPtr, slot);
+		}
+
+		public int GetAttachmentCount(IntPtr entPtr)
+		{
+			return _GetAttachmentCount(entPtr);
+		}
+
+		public IntPtr GetAttachmentByIndex(IntPtr entPtr, int index)
+		{
+			return _GetAttachmentByIndex(entPtr, index);
+		}
+
+		public IntPtr GetAttachmentByName(IntPtr entPtr, string name)
+		{
+			return _GetAttachmentByName(entPtr, name);
+		}
+
+		public Quat GetAttachmentWorldRotation(IntPtr attachmentPtr)
+		{
+			return _GetAttachmentWorldRotation(attachmentPtr);
+		}
+
+		public Quat GetAttachmentLocalRotation(IntPtr attachmentPtr)
+		{
+			return _GetAttachmentLocalRotation(attachmentPtr);
+		}
+
+		public void SetAttachmentWorldRotation(IntPtr attachmentPtr, Quat rot)
+		{
+			_SetAttachmentWorldRotation(attachmentPtr, rot);
+		}
+
+		public void SetAttachmentLocalRotation(IntPtr attachmentPtr, Quat rot)
+		{
+			_SetAttachmentLocalRotation(attachmentPtr, rot);
+		}
+
+		public Vec3 GetAttachmentWorldPosition(IntPtr attachmentPtr)
+		{
+			return _GetAttachmentWorldPosition(attachmentPtr);
+		}
+
+		public Vec3 GetAttachmentLocalPosition(IntPtr attachmentPtr)
+		{
+			return GetAttachmentLocalPosition(attachmentPtr);
+		}
+
+		public void SetAttachmentWorldPosition(IntPtr attachmentPtr, Vec3 pos)
+		{
+			_SetAttachmentWorldPosition(attachmentPtr, pos);
+		}
+
+		public void SetAttachmentLocalPosition(IntPtr attachmentPtr, Vec3 pos)
+		{
+			_SetAttachmentLocalPosition(attachmentPtr, pos);
+		}
+
+		public Quat GetAttachmentDefaultWorldRotation(IntPtr attachmentPtr)
+		{
+			return _GetAttachmentDefaultWorldRotation(attachmentPtr);
+		}
+
+		public Quat GetAttachmentDefaultLocalRotation(IntPtr attachmentPtr)
+		{
+			return _GetAttachmentDefaultLocalRotation(attachmentPtr);
+		}
+
+		public Vec3 GetAttachmentDefaultWorldPosition(IntPtr attachmentPtr)
+		{
+			return _GetAttachmentDefaultWorldPosition(attachmentPtr);
+		}
+
+		public Vec3 GetAttachmentDefaultLocalPosition(IntPtr attachmentPtr)
+		{
+			return _GetAttachmentDefaultLocalPosition(attachmentPtr);
+		}
+
+		public IntPtr GetAttachmentMaterial(IntPtr attachmentPtr)
+		{
+			return _GetAttachmentMaterial(attachmentPtr); 
+		}
+
+		public void SetAttachmentMaterial(IntPtr attachmentPtr, IntPtr materialPtr)
+		{
+			_SetAttachmentMaterial(attachmentPtr, materialPtr);
 		}
     }
 }

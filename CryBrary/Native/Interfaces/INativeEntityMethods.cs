@@ -53,13 +53,6 @@ namespace CryEngine.Native
 
         void LoadCharacter(IntPtr ptr, string fileName, int slot);
 
-        int GetAttachmentCount(IntPtr entPtr);
-        IntPtr GetAttachmentMaterialByIndex(IntPtr entPtr, int index);
-        void SetAttachmentMaterialByIndex(IntPtr entPtr, int index, IntPtr materialPtr);
-
-        IntPtr GetAttachmentMaterial(IntPtr entPtr, string name);
-        int SetAttachmentMaterial(IntPtr entPtr, string name, IntPtr materialPtr);
-
         void RegisterClass(EntityRegistrationParams registrationParams);
 
 		bool AddEntityLink(IntPtr entPtr, string linkName, EntityId otherId, Quat relativeRot, Vec3 relativePos);
@@ -67,5 +60,26 @@ namespace CryEngine.Native
 
 		int LoadLight(IntPtr entPtr, int slot, LightParams lightParams);
 		void FreeSlot(IntPtr entPtr, int slot);
+
+		int GetAttachmentCount(IntPtr entPtr);
+		IntPtr GetAttachmentByIndex(IntPtr entPtr, int index);
+		IntPtr GetAttachmentByName(IntPtr entPtr, string name);
+
+		Quat GetAttachmentWorldRotation(IntPtr attachmentPtr);
+		Quat GetAttachmentLocalRotation(IntPtr attachmentPtr);
+		void SetAttachmentWorldRotation(IntPtr attachmentPtr, Quat rot);
+		void SetAttachmentLocalRotation(IntPtr attachmentPtr, Quat rot);
+		Vec3 GetAttachmentWorldPosition(IntPtr attachmentPtr);
+		Vec3 GetAttachmentLocalPosition(IntPtr attachmentPtr);
+		void SetAttachmentWorldPosition(IntPtr attachmentPtr, Vec3 pos);
+		void SetAttachmentLocalPosition(IntPtr attachmentPtr, Vec3 pos);
+
+		Quat GetAttachmentDefaultWorldRotation(IntPtr attachmentPtr);
+		Quat GetAttachmentDefaultLocalRotation(IntPtr attachmentPtr);
+		Vec3 GetAttachmentDefaultWorldPosition(IntPtr attachmentPtr);
+		Vec3 GetAttachmentDefaultLocalPosition(IntPtr attachmentPtr);
+
+		IntPtr GetAttachmentMaterial(IntPtr attachmentPtr);
+		void SetAttachmentMaterial(IntPtr attachmentPtr, IntPtr materialPtr);
     }
 }

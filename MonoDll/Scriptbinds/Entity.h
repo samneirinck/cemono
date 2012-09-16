@@ -223,13 +223,6 @@ protected:
 	static EEntityFlags GetFlags(IEntity *pEnt);
 	static void SetFlags(IEntity *pEnt, EEntityFlags flags);
 
-	static int GetAttachmentCount(IEntity *pEnt);
-	static IMaterial *GetAttachmentMaterialByIndex(IEntity *pEnt, int index);
-	static void SetAttachmentMaterialByIndex(IEntity *pEnt, int index, IMaterial *pMaterial);
-
-	static IMaterial *GetAttachmentMaterial(IEntity *pEnt, mono::string name);
-	static void SetAttachmentMaterial(IEntity *pEnt, mono::string attachmentName, IMaterial *pMaterial);
-
 	static void SetVisionParams(IEntity *pEntity, float r, float g, float b, float a);
 	static void SetHUDSilhouettesParams(IEntity *pEntity, float r, float g, float b, float a);
 
@@ -240,6 +233,27 @@ protected:
 	static void FreeSlot(IEntity *pEntity, int slot);
 
 	static void AddMovement(IAnimatedCharacter *pAnimatedCharacter, SCharacterMoveRequest& moveRequest);
+
+	static int GetAttachmentCount(IEntity *pEnt);
+	static IAttachment *GetAttachmentByIndex(IEntity *pEnt, int index);
+	static IAttachment *GetAttachmentByName(IEntity *pEnt, mono::string name);
+
+	static Quat GetAttachmentWorldRotation(IAttachment *pAttachment);
+	static Quat GetAttachmentLocalRotation(IAttachment *pAttachment);
+	static void SetAttachmentWorldRotation(IAttachment *pAttachment, Quat rot);
+	static void SetAttachmentLocalRotation(IAttachment *pAttachment, Quat rot);
+	static Vec3 GetAttachmentWorldPosition(IAttachment *pAttachment);
+	static Vec3 GetAttachmentLocalPosition(IAttachment *pAttachment);
+	static void SetAttachmentWorldPosition(IAttachment *pAttachment, Vec3 pos);
+	static void SetAttachmentLocalPosition(IAttachment *pAttachment, Vec3 pos);
+
+	static Quat GetAttachmentDefaultWorldRotation(IAttachment *pAttachment);
+	static Quat GetAttachmentDefaultLocalRotation(IAttachment *pAttachment);
+	static Vec3 GetAttachmentDefaultWorldPosition(IAttachment *pAttachment);
+	static Vec3 GetAttachmentDefaultLocalPosition(IAttachment *pAttachment);
+
+	static IMaterial *GetAttachmentMaterial(IAttachment *pAttachment);
+	static void SetAttachmentMaterial(IAttachment *pAttachment, IMaterial *pMaterial);
 	// ~Scriptbinds
 
 	static std::vector<const char *> m_monoEntityClasses;
