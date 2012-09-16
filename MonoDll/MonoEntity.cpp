@@ -16,17 +16,26 @@
 CEntity::CEntity()
 	: m_pScript(nullptr)
 	, m_bInitialized(false)
+	, m_pAnimatedCharacter(nullptr)
 {
 }
 
 CEntity::~CEntity()
 {
 	SAFE_RELEASE(m_pScript);
+
+	if (m_pAnimatedCharacter)
+	{
+		IGameObject *pGameObject = GetGameObject();
+		pGameObject->ReleaseExtension("AnimatedCharacter");
+	}
 }
 
 bool CEntity::Init(IGameObject *pGameObject)
 {
 	SetGameObject(pGameObject);
+
+	m_pAnimatedCharacter = static_cast<IAnimatedCharacter *>(pGameObject->AcquireExtension( "AnimatedCharacter" ));
 
 	pGameObject->EnablePrePhysicsUpdate( ePPU_Always );
 	pGameObject->EnablePhysicsEvent( true, eEPE_OnPostStepImmediate );
@@ -38,7 +47,10 @@ bool CEntity::Init(IGameObject *pGameObject)
 
 	IMonoClass *pEntityInfoClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("EntityInfo");
 
-	m_pScript->CallMethod("InternalSpawn", pEntityInfoClass->BoxObject(&SMonoEntityInfo(pEntity)));
+	SMonoEntityInfo entityInfo(pEntity);
+	entityInfo.pAnimatedCharacter = m_pAnimatedCharacter;
+
+	m_pScript->CallMethod("InternalSpawn", pEntityInfoClass->BoxObject(&entityInfo));
 
 	int numProperties;
 	auto pProperties = static_cast<CEntityPropertyHandler *>(pEntityClass->GetPropertyHandler())->GetQueuedProperties(pEntity->GetId(), numProperties);
@@ -61,6 +73,17 @@ bool CEntity::Init(IGameObject *pGameObject)
 	return true;
 }
 
+void CEntity::PostInit(IGameObject *pGameObject)
+{
+	Reset(false);
+}
+
+void CEntity::Reset(bool enteringGamemode)
+{
+	if(m_pAnimatedCharacter)
+		m_pAnimatedCharacter->ResetState();
+}
+
 void CEntity::ProcessEvent(SEntityEvent &event)
 {
 	switch(event.event)
@@ -76,6 +99,8 @@ void CEntity::ProcessEvent(SEntityEvent &event)
 
 			if(!enterGamemode && GetEntity()->GetFlags() & ENTITY_FLAG_NO_SAVE)
 				gEnv->pEntitySystem->RemoveEntity(GetEntityId());
+
+			Reset(enterGamemode);
 		}
 		break;
 	case ENTITY_EVENT_COLLISION:

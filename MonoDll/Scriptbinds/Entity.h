@@ -78,6 +78,7 @@ struct SMonoEntityInfo
 {
 	SMonoEntityInfo(IEntity *pEnt)
 		: pEntity(pEnt)
+		, pAnimatedCharacter(NULL)
 	{
 		if(pEnt != nullptr)
 			id = pEnt->GetId();
@@ -88,10 +89,12 @@ struct SMonoEntityInfo
 	SMonoEntityInfo(IEntity *pEnt, EntityId entId)
 		: pEntity(pEnt)
 		, id(entId)
+		, pAnimatedCharacter(NULL)
 	{
 	}
 
 	IEntity *pEntity;
+	IAnimatedCharacter *pAnimatedCharacter;
 	EntityId id;
 };
 
@@ -235,6 +238,8 @@ protected:
 
 	static int LoadLight(IEntity *pEntity, int slot, SMonoLightParams light);
 	static void FreeSlot(IEntity *pEntity, int slot);
+
+	static void AddMovement(IAnimatedCharacter *pAnimatedCharacter, SCharacterMoveRequest& moveRequest);
 	// ~Scriptbinds
 
 	static std::vector<const char *> m_monoEntityClasses;

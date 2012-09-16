@@ -85,6 +85,8 @@ CScriptbind_Entity::CScriptbind_Entity()
 
 	REGISTER_METHOD(FreeSlot);
 
+	REGISTER_METHOD(AddMovement);
+
 	gEnv->pEntitySystem->AddSink(this, IEntitySystem::OnSpawn | IEntitySystem::OnRemove, 0);
 }
 
@@ -276,11 +278,15 @@ mono::object CScriptbind_Entity::SpawnEntity(EntitySpawnParams monoParams, bool 
 			entityInfo.pEntity = pEntity;
 			entityInfo.id = pEntity->GetId();
 
-			return true;
+			if(IGameObject *pGameObject = gEnv->pGameFramework->GetGameObject(spawnParams.id))
+			{
+				if(CEntity *pEntity = static_cast<CEntity *>(pGameObject->QueryExtension(className)))
+					return pEntity->GetScript()->GetManagedObject();
+			}
 		}
 	}
 
-	return false;
+	return nullptr;
 }
 
 void CScriptbind_Entity::RemoveEntity(EntityId id)
@@ -649,4 +655,10 @@ int CScriptbind_Entity::LoadLight(IEntity *pEntity, int slot, SMonoLightParams p
 void CScriptbind_Entity::FreeSlot(IEntity *pEntity, int slot)
 {
 	pEntity->FreeSlot(slot);
+}
+
+void CScriptbind_Entity::AddMovement(IAnimatedCharacter *pAnimatedCharacter, SCharacterMoveRequest &moveRequest)
+{
+	if(pAnimatedCharacter)
+		pAnimatedCharacter->AddMovement(moveRequest);
 }

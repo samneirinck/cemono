@@ -193,9 +193,11 @@ namespace CryEngine
 		{
 			IEntityPtr = ptr;
 			Id = id;
+			IAnimatedCharacterPtr = IntPtr.Zero;
 		}
 
 		public IntPtr IEntityPtr;
+		public IntPtr IAnimatedCharacterPtr;
 		public uint Id;
 	}
 

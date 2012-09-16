@@ -26,6 +26,7 @@ namespace CryEngine
 		internal virtual void InternalSpawn(EntityInfo entInfo)
 		{
 			this.SetEntityHandle(new HandleRef(this, entInfo.IEntityPtr));
+			this.SetAnimatedCharacterHandle(new HandleRef(this, entInfo.IAnimatedCharacterPtr));
 			Id = entInfo.Id;
 
 			foreach(var property in GetType().GetProperties())

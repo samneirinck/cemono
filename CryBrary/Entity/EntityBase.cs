@@ -148,6 +148,11 @@ namespace CryEngine
 			NativeMethods.Entity.FreeSlot(this.GetEntityHandle().Handle, slot);
 		}
 
+		public void AddMovement(ref EntityMovementRequest request)
+		{
+			NativeMethods.Entity.AddMovement(this.GetAnimatedCharacterHandle().Handle, ref request);
+		}
+
 		public Lua.ScriptTable ScriptTable { get { return Lua.ScriptTable.Get(this.GetEntityHandle().Handle); } }
 
 		/// <summary>
@@ -202,7 +207,17 @@ namespace CryEngine
 		/// </summary>
 		public bool IsDestroyed { get; internal set; }
 
-		internal HandleRef EntityHandleRef { get; set; }
 		public EntityId Id { get; set; }
+
+		#region Native handles
+		/// <summary>
+		/// IEntity handle
+		/// </summary>
+		internal HandleRef EntityHandleRef { get; set; }
+		/// <summary>
+		/// IAnimatedCharacter handle
+		/// </summary>
+		internal HandleRef AnimatedCharacterHandleRef { get; set; }
+		#endregion
 	}
 }

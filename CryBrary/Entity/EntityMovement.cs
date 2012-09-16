@@ -1,6 +1,6 @@
 ﻿namespace CryEngine
 {
-	enum EntityMoveType
+	public enum EntityMoveType
 	{
 		None = 0,
 		Normal,
@@ -13,10 +13,24 @@
 		JumpAccumulate
 	}
 
-	struct EntityMovementRequest
+	public struct PredictedCharacterStates
+	{
+		object motionParameter;
+		object motionParameterId;
+		ushort numParams;
+	}
+
+	public struct EntityMovementRequest
 	{
 		public EntityMoveType type;
 
 		public Vec3 velocity;
+		public Quat rotation;
+
+		public PredictedCharacterStates predictedCharacterStates;
+
+		public bool allowStrafe;
+		public float proceduralLeaning;
+		public bool jumping;
 	}
 }
