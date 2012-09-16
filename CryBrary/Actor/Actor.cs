@@ -90,7 +90,8 @@ namespace CryEngine
 			string className = "MonoActor";
 			var actorType = typeof(T);
 
-			if (actorType.Implements(typeof(NativeActor)))
+			bool isNative = actorType.Implements(typeof(NativeActor));
+			if (isNative)
 				className = actorType.Name;
 
 			// just in case
@@ -99,8 +100,10 @@ namespace CryEngine
 			var info = NativeMethods.Actor.CreateActor(channelId, name, className, pos ?? new Vec3(0,0,0), angles ?? new Vec3(0,0,0), scale ?? new Vec3(1,1,1));
 			if(info.Id == 0)
 			{
-				Debug.LogAlways("[Actor.Create] New entityId was invalid");
-				return null;
+				if (isNative)
+					throw new Exception("Actor creation failed, make sure your IActor implementation is registered with the same name as your managed actor class.");
+				else
+					throw new Exception("Actor creation failed");
 			}
 
 			var player = new T();
