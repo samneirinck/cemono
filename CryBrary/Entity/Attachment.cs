@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 using CryEngine.Native;
@@ -7,6 +9,25 @@ namespace CryEngine
 {
 	public class Attachment
 	{
+		#region Statics
+		internal static Attachment TryAdd(IntPtr ptr)
+		{
+			if (ptr == IntPtr.Zero)
+				return null;
+
+			var attachment = Attachments.FirstOrDefault(x => x.AttachmentHandleRef.Handle == ptr);
+			if (attachment != default(Attachment))
+				return attachment;
+
+			attachment = new Attachment(ptr);
+			Attachments.Add(attachment);
+
+			return attachment;
+		}
+
+		static List<Attachment> Attachments = new List<Attachment>();
+		#endregion
+
 		internal Attachment(IntPtr ptr)
 		{
 			this.SetAttachmentHandle(new HandleRef(this, ptr));

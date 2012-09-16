@@ -58,18 +58,14 @@ namespace CryEngine
 			if (ptr == IntPtr.Zero)
 				return null;
 
-			// TODO: Storage to not create a new instance each time
-			return new Attachment(ptr);
+			return Attachment.TryAdd(ptr);
 		}
 
 		public Attachment GetAttachment(string name, int characterSlot = 0)
 		{
 			var ptr = NativeMethods.Entity.GetAttachmentByName(this.GetEntityHandle().Handle, name, characterSlot);
-			if (ptr == IntPtr.Zero)
-				return null;
 
-			// TODO: Storage to not create a new instance each time
-			return new Attachment(ptr);
+			return Attachment.TryAdd(ptr);
 		}
 
         public int GetAttachmentCount(int characterSlot = 0)
