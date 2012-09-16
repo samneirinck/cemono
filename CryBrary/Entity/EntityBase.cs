@@ -21,19 +21,19 @@ namespace CryEngine
 
 		public EntitySlotFlags GetSlotFlags(int slot = 0)
 		{
-			return NativeMethods.Entity.GetSlotFlags(EntityHandleRef.Handle, slot);
+			return NativeMethods.Entity.GetSlotFlags(this.GetEntityHandle().Handle, slot);
 		}
 
 		public void SetSlotFlags(EntitySlotFlags flags, int slot = 0)
 		{
-			NativeMethods.Entity.SetSlotFlags(EntityHandleRef.Handle, slot, flags);
+			NativeMethods.Entity.SetSlotFlags(this.GetEntityHandle().Handle, slot, flags);
 		}
 
 		public Vec3 Velocity
 		{
-			get { return NativeMethods.Physics.GetVelocity(EntityHandleRef.Handle); }
+			get { return NativeMethods.Physics.GetVelocity(this.GetEntityHandle().Handle); }
 
-			set { NativeMethods.Physics.SetVelocity(EntityHandleRef.Handle, value); }
+			set { NativeMethods.Physics.SetVelocity(this.GetEntityHandle().Handle, value); }
 		}
 
 		EntityPhysics _physics;
@@ -54,29 +54,29 @@ namespace CryEngine
 #region Attachments
 		public Material GetAttachmentMaterial(int index)
 		{
-			var ptr = NativeMethods.Entity.GetAttachmentMaterialByIndex(EntityHandleRef.Handle, index);
+			var ptr = NativeMethods.Entity.GetAttachmentMaterialByIndex(this.GetEntityHandle().Handle, index);
 
 			return Material.TryAdd(ptr);
 		}
 
 		public Material GetAttachmentMaterial(string attachmentName)
 		{
-			var ptr = NativeMethods.Entity.GetAttachmentMaterial(EntityHandleRef.Handle, attachmentName);
+			var ptr = NativeMethods.Entity.GetAttachmentMaterial(this.GetEntityHandle().Handle, attachmentName);
 
 			return Material.TryAdd(ptr);
 		}
 
 		public void SetAttachmentMaterial(int index, Material newMaterial)
 		{
-			NativeMethods.Entity.SetAttachmentMaterialByIndex(EntityHandleRef.Handle, index, newMaterial.HandleRef.Handle);
+			NativeMethods.Entity.SetAttachmentMaterialByIndex(this.GetEntityHandle().Handle, index, newMaterial.HandleRef.Handle);
 		}
 
 		public void SetAttachmentMaterial(string name, Material newMaterial)
 		{
-			NativeMethods.Entity.SetAttachmentMaterial(EntityHandleRef.Handle, name, newMaterial.HandleRef.Handle);
+			NativeMethods.Entity.SetAttachmentMaterial(this.GetEntityHandle().Handle, name, newMaterial.HandleRef.Handle);
 		}
 
-        public int AttachmentCount { get { return NativeMethods.Entity.GetAttachmentCount(EntityHandleRef.Handle); } }
+        public int AttachmentCount { get { return NativeMethods.Entity.GetAttachmentCount(this.GetEntityHandle().Handle); } }
 #endregion
 
 		/// <summary>
@@ -89,7 +89,7 @@ namespace CryEngine
 		/// <returns></returns>
 		public bool Link(string linkName, EntityId otherEntityId, Quat relativeRot, Vec3 relativePos)
 		{
-			return NativeMethods.Entity.AddEntityLink(EntityHandleRef.Handle, linkName, otherEntityId, relativeRot, relativePos);
+			return NativeMethods.Entity.AddEntityLink(this.GetEntityHandle().Handle, linkName, otherEntityId, relativeRot, relativePos);
 		}
 
 		/// <summary>
@@ -98,7 +98,7 @@ namespace CryEngine
 		/// <param name="otherEntityId"></param>
 		public void Unlink(EntityId otherEntityId)
 		{
-			NativeMethods.Entity.RemoveEntityLink(EntityHandleRef.Handle, otherEntityId);
+			NativeMethods.Entity.RemoveEntityLink(this.GetEntityHandle().Handle, otherEntityId);
 		}
 
 		/// <summary>
@@ -109,7 +109,7 @@ namespace CryEngine
 		/// <returns>The slot where the light source was loaded, or -1 if loading failed.</returns>
 		public int LoadLight(LightParams parameters, int slot = 1)
 		{
-			return NativeMethods.Entity.LoadLight(EntityHandleRef.Handle, slot, parameters);
+			return NativeMethods.Entity.LoadLight(this.GetEntityHandle().Handle, slot, parameters);
 		}
 
 		/// <summary>
@@ -124,9 +124,9 @@ namespace CryEngine
 				throw new ArgumentNullException("name");
 
 			if (name.EndsWith("cgf"))
-				NativeMethods.Entity.LoadObject(EntityHandleRef.Handle, name, slotNumber);
+				NativeMethods.Entity.LoadObject(this.GetEntityHandle().Handle, name, slotNumber);
 			else if (name.EndsWith("cdf") || name.EndsWith("cga") || name.EndsWith("chr"))
-				NativeMethods.Entity.LoadCharacter(EntityHandleRef.Handle, name, slotNumber);
+				NativeMethods.Entity.LoadCharacter(this.GetEntityHandle().Handle, name, slotNumber);
 			else
 				return false;
 
@@ -135,65 +135,65 @@ namespace CryEngine
 
 		protected string GetObjectFilePath(int slot = 0)
 		{
-			return NativeMethods.Entity.GetStaticObjectFilePath(EntityHandleRef.Handle, slot);
+			return NativeMethods.Entity.GetStaticObjectFilePath(this.GetEntityHandle().Handle, slot);
 		}
 
 		public void PlayAnimation(string animationName, AnimationFlags flags = 0, int slot = 0, int layer = 0, float blend = 0.175f, float speed = 1.0f)
 		{
-			NativeMethods.Entity.PlayAnimation(EntityHandleRef.Handle, animationName, slot, layer, blend, speed, flags);
+			NativeMethods.Entity.PlayAnimation(this.GetEntityHandle().Handle, animationName, slot, layer, blend, speed, flags);
 		}
 
 		public void FreeSlot(int slot)
 		{
-			NativeMethods.Entity.FreeSlot(EntityHandleRef.Handle, slot);
+			NativeMethods.Entity.FreeSlot(this.GetEntityHandle().Handle, slot);
 		}
 
-		public Lua.ScriptTable ScriptTable { get { return Lua.ScriptTable.Get(EntityHandleRef.Handle); } }
+		public Lua.ScriptTable ScriptTable { get { return Lua.ScriptTable.Get(this.GetEntityHandle().Handle); } }
 
 		/// <summary>
 		/// Sets / gets the world space entity position.
 		/// </summary>
-        public Vec3 Position { get { return NativeMethods.Entity.GetWorldPos(EntityHandleRef.Handle); } set { NativeMethods.Entity.SetWorldPos(EntityHandleRef.Handle, value); } }
+        public Vec3 Position { get { return NativeMethods.Entity.GetWorldPos(this.GetEntityHandle().Handle); } set { NativeMethods.Entity.SetWorldPos(this.GetEntityHandle().Handle, value); } }
 		/// <summary>
 		/// Sets / gets the world space entity orientation quaternion.
 		/// </summary>
-        public Quat Rotation { get { return NativeMethods.Entity.GetWorldRotation(EntityHandleRef.Handle); } set { NativeMethods.Entity.SetWorldRotation(EntityHandleRef.Handle, value); } }
+        public Quat Rotation { get { return NativeMethods.Entity.GetWorldRotation(this.GetEntityHandle().Handle); } set { NativeMethods.Entity.SetWorldRotation(this.GetEntityHandle().Handle, value); } }
 
 		/// <summary>
 		/// Sets / gets the local space entity position.
 		/// </summary>
-        public Vec3 LocalPosition { get { return NativeMethods.Entity.GetPos(EntityHandleRef.Handle); } set { NativeMethods.Entity.SetPos(EntityHandleRef.Handle, value); } }
+        public Vec3 LocalPosition { get { return NativeMethods.Entity.GetPos(this.GetEntityHandle().Handle); } set { NativeMethods.Entity.SetPos(this.GetEntityHandle().Handle, value); } }
 		/// <summary>
 		/// Sets / gets the local space entity orientation quaternion.
 		/// </summary>
-        public Quat LocalRotation { get { return NativeMethods.Entity.GetRotation(EntityHandleRef.Handle); } set { NativeMethods.Entity.SetRotation(EntityHandleRef.Handle, value); } }
+        public Quat LocalRotation { get { return NativeMethods.Entity.GetRotation(this.GetEntityHandle().Handle); } set { NativeMethods.Entity.SetRotation(this.GetEntityHandle().Handle, value); } }
 
 		/// <summary>
 		/// Sets / gets the world space entity transformation matrix.
 		/// </summary>
-        public Matrix34 Transform { get { return NativeMethods.Entity.GetWorldTM(EntityHandleRef.Handle); } set { NativeMethods.Entity.SetWorldTM(EntityHandleRef.Handle, value); } }
+        public Matrix34 Transform { get { return NativeMethods.Entity.GetWorldTM(this.GetEntityHandle().Handle); } set { NativeMethods.Entity.SetWorldTM(this.GetEntityHandle().Handle, value); } }
 		/// <summary>
 		/// Sets / gets the local space entity transformation matrix.
 		/// </summary>
-        public Matrix34 LocalTransform { get { return NativeMethods.Entity.GetLocalTM(EntityHandleRef.Handle); } set { NativeMethods.Entity.SetLocalTM(EntityHandleRef.Handle, value); } }
+        public Matrix34 LocalTransform { get { return NativeMethods.Entity.GetLocalTM(this.GetEntityHandle().Handle); } set { NativeMethods.Entity.SetLocalTM(this.GetEntityHandle().Handle, value); } }
 
 		/// <summary>
 		/// Gets the entity axis aligned bounding box in the world space.
 		/// </summary>
-		public BoundingBox BoundingBox { get { return NativeMethods.Entity.GetWorldBoundingBox(EntityHandleRef.Handle); } }
+		public BoundingBox BoundingBox { get { return NativeMethods.Entity.GetWorldBoundingBox(this.GetEntityHandle().Handle); } }
 		/// <summary>
 		/// Gets the entity axis aligned bounding box in the world space.
 		/// </summary>
-		public BoundingBox LocalBoundingBox { get { return NativeMethods.Entity.GetBoundingBox(EntityHandleRef.Handle); } }
+		public BoundingBox LocalBoundingBox { get { return NativeMethods.Entity.GetBoundingBox(this.GetEntityHandle().Handle); } }
 
 		/// <summary>
 		/// Gets / sets the entity name.
 		/// </summary>
-		public string Name { get { return NativeMethods.Entity.GetName(EntityHandleRef.Handle); } set { NativeMethods.Entity.SetName(EntityHandleRef.Handle, value); } }
+		public string Name { get { return NativeMethods.Entity.GetName(this.GetEntityHandle().Handle); } set { NativeMethods.Entity.SetName(this.GetEntityHandle().Handle, value); } }
 		/// <summary>
 		/// Gets / sets the entity flags.
 		/// </summary>
-		public EntityFlags Flags { get { return NativeMethods.Entity.GetFlags(EntityHandleRef.Handle); } set { NativeMethods.Entity.SetFlags(EntityHandleRef.Handle, value); } }
+		public EntityFlags Flags { get { return NativeMethods.Entity.GetFlags(this.GetEntityHandle().Handle); } set { NativeMethods.Entity.SetFlags(this.GetEntityHandle().Handle, value); } }
 
 		public Material Material { get { return Material.Get(this); } set { Material.Set(this, value); } }
 
