@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace CryEngine
 {
 	/// <summary>
-	/// Used for non-CryMono entities, i.e. Lua / C++ such.
+	/// Represents an entity registered outside of CryMono, e.g. in CryGame.dll.
 	/// </summary>
 	[ExcludeFromCompilation]
 	internal class NativeEntity : Entity
