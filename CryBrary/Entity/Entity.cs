@@ -28,8 +28,6 @@ namespace CryEngine
 			SetEntityHandle(entInfo.IEntityPtr);
 			Id = entInfo.Id;
 
-			Spawned = true;
-
 			foreach(var property in GetType().GetProperties())
 			{
 				EditorPropertyAttribute attr;
@@ -55,10 +53,6 @@ namespace CryEngine
 
 			return value != defaultVal;
 		}
-
-		#region NativeEntityMethods & Fields
-		internal bool Spawned;
-		#endregion
 
 		#region Callbacks
 		/// <summary>
