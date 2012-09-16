@@ -134,6 +134,58 @@ namespace CryEngine
 			W = values[3];
 		}
 
+		public Quat(Matrix33 matrix)
+			: this(0)
+		{
+			float s, p, tr = matrix.M00 + matrix.M11 + matrix.M22;
+
+			//check the diagonal
+			if (tr > 0)
+			{
+				s = Math.Sqrt(tr + 1.0f); 
+				p = 0.5f / s;
+
+				V.X = s * 0.5f;
+				V.Y = (matrix.M21 - matrix.M12) * p;
+				V.Z = (matrix.M02 - matrix.M20) * p;
+				W = (matrix.M10 - matrix.M01) * p;
+			}
+			//diagonal is negative. now we have to find the biggest element on the diagonal
+			//check if "M00" is the biggest element
+			if ((matrix.M00 >= matrix.M11) && (matrix.M00 >= matrix.M22))
+			{
+				s = Math.Sqrt(matrix.M00 - matrix.M11 - matrix.M22 + 1.0f); 
+				p = 0.5f / s;
+
+				V.X = (matrix.M21 - matrix.M12) * p;
+				V.Y = s * 0.5f;
+				V.Z = (matrix.M10 + matrix.M01) * p;
+				W = (matrix.M20 + matrix.M02) * p;
+			}
+			//check if "M11" is the biggest element
+			if ((matrix.M11 >= matrix.M00) && (matrix.M11 >= matrix.M22))
+			{
+				s = Math.Sqrt(matrix.M11 - matrix.M22 - matrix.M00 + 1.0f); 
+				p = 0.5f / s;
+
+				V.X = (matrix.M02 - matrix.M20) * p;
+				V.Y = (matrix.M01 + matrix.M10) * p;
+				V.Z = s * 0.5f;
+				W = (matrix.M21 + matrix.M12) * p;
+			}
+			//check if "M22" is the biggest element
+			if ((matrix.M22 >= matrix.M00) && (matrix.M22 >= matrix.M11))
+			{
+				s = Math.Sqrt(matrix.M22 - matrix.M00 - matrix.M11 + 1.0f); 
+				p = 0.5f / s;
+
+				V.X = (matrix.M10 - matrix.M01) * p;
+				V.Y = (matrix.M02 + matrix.M20) * p;
+				V.Z = (matrix.M12 + matrix.M21) * p;
+				W = s * 0.5f;
+			}
+		}
+
 		public Vec3 Column0 { get { return new Vec3(2 * (V.X * V.X + W * W) - 1, 2 * (V.Y * V.X + V.Z * W), 2 * (V.Z * V.X - V.Y * W)); } }
 		public Vec3 Column1 { get { return new Vec3(2 * (V.X * V.Y - V.Z * W), 2 * (V.Y * V.Y + W * W) - 1, 2 * (V.Z * V.Y + V.X * W)); } }
 		public Vec3 Column2 { get { return new Vec3(2 * (V.X * V.Z + V.Y * W), 2 * (V.Y * V.Z - V.X * W), 2 * (V.Z * V.Z + W * W) - 1); } }

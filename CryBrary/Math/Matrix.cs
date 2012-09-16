@@ -148,6 +148,21 @@ namespace CryEngine
 			return matrix;
 		}
 
+		public void SetFromVectors(Vec3 vx, Vec3 vy, Vec3 vz)
+		{
+			M00 = vx.X; M01 = vy.X; M02 = vz.X;
+			M10 = vx.Y; M11 = vy.Y; M12 = vz.Y;
+			M20 = vx.Z; M21 = vy.Z; M22 = vz.Z;
+		}
+
+		public static Matrix33 CreateFromVectors(Vec3 vx, Vec3 vy, Vec3 vz)
+		{
+			var matrix = new Matrix33();
+			matrix.SetFromVectors(vx, vy, vz);
+
+			return matrix;
+		}
+
 		public void SetScale(Vec3 s)
 		{
 			M00 = s.X; M01 = 0; M02 = 0;
