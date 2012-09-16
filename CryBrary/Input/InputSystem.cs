@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Linq;
+
 using CryEngine.Native;
 
 namespace CryEngine
@@ -50,6 +52,34 @@ namespace CryEngine
 
 				actionmapDelegates.Add(actionName, eventDelegate);
 			}
+		}
+
+		/// <summary>
+		/// Removes the delegate from
+		/// </summary>
+		/// <param name="eventDelegate"></param>
+		/// <returns>The number of removed actions</returns>
+		public static bool UnregisterAction(ActionMapEventDelegate eventDelegate)
+		{
+			var matches = actionmapDelegates.Where(x => x.Value == eventDelegate).ToList();
+			foreach (var match in matches)
+				actionmapDelegates.Remove(match.Key);
+
+			return matches.Count() > 0;
+		}
+
+		/// <summary>
+		/// Removes all actions linked to the specified object.
+		/// </summary>
+		/// <param name="owner"></param>
+		/// <returns>The number of removed actions</returns>
+		public static int UnregisterActions(object owner)
+		{
+			var matches = actionmapDelegates.Where(x => x.Value.Target == owner).ToList();
+			foreach (var match in matches)
+				actionmapDelegates.Remove(match.Key);
+
+			return matches.Count();
 		}
 
 		static Dictionary<string, ActionMapEventDelegate> actionmapDelegates = new Dictionary<string, ActionMapEventDelegate>();
