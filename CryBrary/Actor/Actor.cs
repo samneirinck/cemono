@@ -85,12 +85,13 @@ namespace CryEngine
 			} 
 		}
 
-		public static T Create<T>(int channelId, string name = "Dude", Vec3? pos = null, Vec3? angles = null, Vec3? scale = null, string className = "MonoActor") where T : Actor, new()
+		public static T Create<T>(int channelId, string name = "Dude", Vec3? pos = null, Vec3? angles = null, Vec3? scale = null) where T : Actor, new()
 		{
-#if !(RELEASE && RELEASE_DISABLE_CHECKS)
-			if(string.IsNullOrEmpty(className))
-				throw new ArgumentNullException("className");
-#endif
+			string className = "MonoActor";
+			var actorType = typeof(T);
+
+			if (actorType.Implements(typeof(NativeActor)))
+				className = actorType.Name;
 
 			// just in case
 			Remove(channelId);
