@@ -21,5 +21,10 @@ namespace CryEngine
 		{
 			Id = id;
 		}
+
+		public override void UpdateView(ref ViewParams viewParams)
+		{
+			throw new System.NotImplementedException();
+		}
 	}
 }

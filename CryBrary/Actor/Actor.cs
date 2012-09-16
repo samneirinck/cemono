@@ -161,9 +161,12 @@ namespace CryEngine
 			ActorHandleRef = new HandleRef(this, ptr);
 		}
 
+		#region Callbacks
+		public abstract void UpdateView(ref ViewParams viewParams);
+		#endregion
 
-        #region Overrides
-        public override int GetHashCode()
+		#region Overrides
+		public override int GetHashCode()
         {
             unchecked // Overflow is fine, just wrap
             {

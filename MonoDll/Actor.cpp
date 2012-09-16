@@ -36,12 +36,6 @@ bool CActor::Init(IGameObject *pGameObject)
 
 void CActor::PostInit(IGameObject *pGameObject)
 {
-	if(IViewSystem *pViewSystem = gEnv->pGameFramework->GetIViewSystem())
-	{
-		if(IView *pView = pViewSystem->GetViewByEntityId(GetEntityId(), true))
-		{
-		}
-	}
 }
 
 void CActor::HandleEvent(const SGameObjectEvent &event)
@@ -64,9 +58,8 @@ void CActor::HandleEvent(const SGameObjectEvent &event)
 
 void CActor::UpdateView(SViewParams &viewParams)
 {
-	if(IViewSystem *pViewSystem = gEnv->pGameFramework->GetIViewSystem())
-	{
-		if(IView *pView = pViewSystem->GetViewByEntityId(GetEntityId()))
-			viewParams = *pView->GetCurrentParams();
-	}
+	void *args[1];
+	args[0] = &viewParams;
+
+	m_pScript->GetClass()->Invoke(m_pScript, "UpdateView", args, 1);
 }
