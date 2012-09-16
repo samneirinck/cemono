@@ -7,6 +7,9 @@ namespace CryEngine.Native
 	{
 		public static HandleRef GetActorHandle(this Actor actor)
 		{
+			if (actor.IsDestroyed)
+				throw new EntityDestroyedException();
+
 			return actor.ActorHandleRef;
 		}
 

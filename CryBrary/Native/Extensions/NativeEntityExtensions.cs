@@ -7,6 +7,9 @@ namespace CryEngine.Native
 	{
 		public static HandleRef GetEntityHandle(this EntityBase entity)
 		{
+			if (entity.IsDestroyed)
+				throw new EntityDestroyedException();
+
 			return entity.EntityHandleRef;
 		}
 

@@ -197,6 +197,11 @@ namespace CryEngine
 
 		public Material Material { get { return Material.Get(this); } set { Material.Set(this, value); } }
 
+		/// <summary>
+		/// Set to true when the entity has been removed from the CryENGINE world.
+		/// </summary>
+		public bool IsDestroyed { get; internal set; }
+
 		internal HandleRef EntityHandleRef { get; set; }
 		public EntityId Id { get; set; }
 	}
