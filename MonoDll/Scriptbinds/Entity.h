@@ -175,7 +175,7 @@ protected:
 	bool IsMonoEntity(const char *className);
 
 	// Scriptbinds
-	static bool SpawnEntity(EntitySpawnParams, bool, SMonoEntityInfo &entityInfo);
+	static mono::object SpawnEntity(EntitySpawnParams, bool, SMonoEntityInfo &entityInfo);
 	static void RemoveEntity(EntityId);
 
 	static IEntity *GetEntity(EntityId id);

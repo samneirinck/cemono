@@ -22,15 +22,12 @@ namespace CryEngine
 		public static T Spawn<T>(string name, Vec3? pos = null, Vec3? rot = null, Vec3? scale = null, bool autoInit = true, EntityFlags flags = EntityFlags.CastShadow) where T : Entity, new()
 		{
 			EntityInfo info;
-            if (NativeMethods.Entity.SpawnEntity(new EntitySpawnParams { Name = name, Class = typeof(T).Name, Pos = pos ?? new Vec3(1, 1, 1), Rot = rot ?? Vec3.Zero, Scale = scale ?? new Vec3(1, 1, 1), Flags = flags }, autoInit, out info))
-			{
-				var ent = new T();
 
-				ScriptManager.Instance.AddScriptInstance(ent, ScriptType.Entity);
-				ent.InternalSpawn(info);
-
+			var ent = NativeMethods.Entity.SpawnEntity(new EntitySpawnParams { Name = name, Class = typeof(T).Name, Pos = pos ?? new Vec3(1, 1, 1), Rot = rot ?? Vec3.Zero, Scale = scale ?? new Vec3(1, 1, 1), Flags = flags }, autoInit, out info) as T;
+			if (ent != null)
 				return ent;
-			}
+			else if (info.Id != 0)
+				return CreateNativeEntity(info.Id, info.IEntityPtr) as T;
 
 			Debug.LogAlways("[Entity.Spawn] Failed to spawn entity of class {0} with name {1}", typeof(T).Name, name);
 			return null;

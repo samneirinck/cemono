@@ -10,7 +10,7 @@ namespace CryEngine.Native
 		extern internal static void _PlayAnimation(IntPtr ptr, string animationName, int slot, int layer, float blend, float speed, AnimationFlags flags);
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern internal static bool _SpawnEntity(EntitySpawnParams spawnParams, bool autoInit, out EntityInfo entityInfo);
+		extern internal static EntityBase _SpawnEntity(EntitySpawnParams spawnParams, bool autoInit, out EntityInfo entityInfo);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static void _RemoveEntity(uint entityId);
 
@@ -40,7 +40,7 @@ namespace CryEngine.Native
         extern internal static void _SetFlags(IntPtr ptr, EntityFlags name);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static void _AddMovement(IntPtr ptr, ref EntityMovementRequest request);
+		extern internal static void _AddMovement(IntPtr animatedCharacterPtr, ref EntityMovementRequest request);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern internal static void _SetWorldTM(IntPtr ptr, Matrix34 tm);
@@ -115,7 +115,7 @@ namespace CryEngine.Native
 			_PlayAnimation(ptr, animationName, slot, layer, blend, speed, flags);
 		}
 
-        public bool SpawnEntity(EntitySpawnParams spawnParams, bool autoInit, out EntityInfo entityInfo)
+		public EntityBase SpawnEntity(EntitySpawnParams spawnParams, bool autoInit, out EntityInfo entityInfo)
         {
             return _SpawnEntity(spawnParams, autoInit, out entityInfo);
         }
@@ -177,7 +177,7 @@ namespace CryEngine.Native
 
         public void AddMovement(IntPtr ptr, ref EntityMovementRequest request)
         {
-            _AddMovement(ptr,ref request);
+            _AddMovement(ptr, ref request);
         }
 
         public void SetWorldTM(IntPtr ptr, Matrix34 tm)

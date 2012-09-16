@@ -256,10 +256,11 @@ bool CScriptbind_Entity::RegisterEntityClass(SEntityRegistrationParams params)
 	return result;
 }
 
-bool CScriptbind_Entity::SpawnEntity(EntitySpawnParams monoParams, bool bAutoInit, SMonoEntityInfo &entityInfo)
+mono::object CScriptbind_Entity::SpawnEntity(EntitySpawnParams monoParams, bool bAutoInit, SMonoEntityInfo &entityInfo)
 {
-	IEntityClass *pClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass(ToCryString(monoParams.sClass));
-	if(pClass != nullptr)
+	const char *className = ToCryString(monoParams.sClass);
+
+	if(IEntityClass *pClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass(className))
 	{
 		SEntitySpawnParams spawnParams;
 		spawnParams.pClass = pClass;
