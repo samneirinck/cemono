@@ -53,8 +53,6 @@ protected:
 	static void RemoveActor(EntityId id);
 
 	static EntityId GetClientActorId();
-
-	static void RegisterActorClass(mono::string, bool);
 };
 
 #endif //__SCRIPTBIND_ACTORSYSTEM_H__

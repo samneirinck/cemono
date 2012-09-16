@@ -85,21 +85,17 @@ namespace CryEngine
 			} 
 		}
 
-		public static T Create<T>(int channelId, string name = "Dude", Vec3? pos = null, Vec3? angles = null, Vec3? scale = null, string className = null) where T : Actor, new()
+		public static T Create<T>(int channelId, string name = "Dude", Vec3? pos = null, Vec3? angles = null, Vec3? scale = null, string className = "MonoActor") where T : Actor, new()
 		{
+#if !(RELEASE && RELEASE_DISABLE_CHECKS)
+			if(string.IsNullOrEmpty(className))
+				throw new ArgumentNullException("className");
+#endif
+
 			// just in case
 			Remove(channelId);
 
-			Type actorType = typeof(T);
-			ActorAttribute attribute;
-
-			if (actorType.TryGetAttribute(out attribute))
-			{
-				if (attribute.useMonoActor) // force class name if this is set to use the built-in actor.
-					className = actorType.Name;
-			}
-
-			var info = NativeMethods.Actor.CreateActor(channelId, name, className ?? actorType.Name, pos ?? new Vec3(0,0,0), angles ?? new Vec3(0,0,0), scale ?? new Vec3(1,1,1));
+			var info = NativeMethods.Actor.CreateActor(channelId, name, className, pos ?? new Vec3(0,0,0), angles ?? new Vec3(0,0,0), scale ?? new Vec3(1,1,1));
 			if(info.Id == 0)
 			{
 				Debug.LogAlways("[Actor.Create] New entityId was invalid");
@@ -193,28 +189,6 @@ namespace CryEngine
 		public float MaxHealth { get { return NativeMethods.Actor.GetPlayerMaxHealth(ActorHandleRef.Handle); } set { NativeMethods.Actor.SetPlayerMaxHealth(ActorHandleRef.Handle, value); } }
 
 		public bool IsDead() { return Health <= 0; }
-	}
-
-    [AttributeUsage(AttributeTargets.Class)]
-	public sealed class ActorAttribute : Attribute
-	{
-		public ActorAttribute(bool useMonoActor = true, bool isAI = false)
-		{
-			this.useMonoActor = useMonoActor;
-			this.isAI = isAI;
-		}
-
-		/// <summary>
-		/// Utilize the C++ Actor class contained within CryMono.dll
-		/// Otherwise the engine will require one created in the game dll. 
-		/// </summary>
-		public bool useMonoActor;
-
-		/// <summary>
-		/// Determines if this is an AI actor class.
-		/// Only applied when UseMonoActor is set to true.
-		/// </summary>
-		public bool isAI;
 	}
 
 	internal struct ActorInfo

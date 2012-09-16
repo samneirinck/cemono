@@ -9,8 +9,6 @@ namespace CryEngine.Initialization
 
     public struct ActorRegistrationParams : IScriptRegistrationParams
     {
-        public bool isAI;
-        public bool useMonoActor;
     }
 
     public struct EntityRegistrationParams : IScriptRegistrationParams
