@@ -69,7 +69,14 @@ void CEntity::ProcessEvent(SEntityEvent &event)
 		m_pScript->CallMethod("OnInit");
 		break;
 	case ENTITY_EVENT_RESET:
-		m_pScript->CallMethod("OnReset", event.nParam[0]==1);
+		{
+			bool enterGamemode = event.nParam[0]==1;
+
+			m_pScript->CallMethod("OnReset", enterGamemode);
+
+			if(!enterGamemode && GetEntity()->GetFlags() & ENTITY_FLAG_NO_SAVE)
+				gEnv->pEntitySystem->RemoveEntity(GetEntityId());
+		}
 		break;
 	case ENTITY_EVENT_COLLISION:
 		{
