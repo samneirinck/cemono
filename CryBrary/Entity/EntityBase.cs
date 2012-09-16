@@ -55,6 +55,8 @@ namespace CryEngine
 		public Attachment GetAttachment(int index, int characterSlot = 0)
 		{
 			var ptr = NativeMethods.Entity.GetAttachmentByIndex(this.GetEntityHandle().Handle, index, characterSlot);
+			if (ptr == IntPtr.Zero)
+				return null;
 
 			// TODO: Storage to not create a new instance each time
 			return new Attachment(ptr);
@@ -63,6 +65,8 @@ namespace CryEngine
 		public Attachment GetAttachment(string name, int characterSlot = 0)
 		{
 			var ptr = NativeMethods.Entity.GetAttachmentByName(this.GetEntityHandle().Handle, name, characterSlot);
+			if (ptr == IntPtr.Zero)
+				return null;
 
 			// TODO: Storage to not create a new instance each time
 			return new Attachment(ptr);
