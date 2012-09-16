@@ -96,7 +96,7 @@ namespace CryEngine
 			if (actorType.TryGetAttribute(out attribute))
 			{
 				if (attribute.useMonoActor) // force class name if this is set to use the built-in actor.
-					className = typeof(T).Name;
+					className = actorType.Name;
 			}
 
 			var info = NativeMethods.Actor.CreateActor(channelId, name, className ?? actorType.Name, pos ?? new Vec3(0,0,0), angles ?? new Vec3(0,0,0), scale ?? new Vec3(1,1,1));
