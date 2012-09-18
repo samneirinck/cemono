@@ -40,7 +40,7 @@ namespace CryEngine
 			AttachmentEntity = Entity.Spawn<NativeEntity>("AttachmentEntity");
 			NativeMethods.Entity.LinkEntityToAttachment(this.GetAttachmentHandle().Handle, AttachmentEntity.Id);
 
-			AttachmentEntity.LoadObject("objects/tanks/turret_heavy.chr");
+			AttachmentEntity.LoadObject(attachmentObject );
 		}
 
 		public Vec3 Position 
