@@ -42,7 +42,7 @@ void CScriptAssembly::OnClassReleased(CScriptClass *pClass)
 {
 	m_classRegistry.erase(pClass);
 
-	Release();
+	//Release();
 }
 
 IMonoClass *CScriptAssembly::GetClass(const char *className, const char *nameSpace)
