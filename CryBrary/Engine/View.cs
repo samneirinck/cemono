@@ -71,18 +71,14 @@ namespace CryEngine
 			Id = viewId;
 		}
 
-		public Vec3 Position { get { return ViewParams.Position; } set { var viewParams = ViewParams; viewParams.Position = value; ViewParams = viewParams; } }
-		public Quat Rotation { get { return ViewParams.Rotation; } set { var viewParams = ViewParams; viewParams.Rotation = value; ViewParams = viewParams; } }
+		public Vec3 Position { get { return NativeMethods.View.GetViewPosition(Id); } set { NativeMethods.View.SetViewPosition(Id, value); } }
+		public Quat Rotation { get { return NativeMethods.View.GetViewRotation(Id); } set { NativeMethods.View.SetViewRotation(Id, value); } }
 
 		/// <summary>
 		/// The current field of view.
 		/// </summary>
-		public float FieldOfView { get { return ViewParams.FieldOfView; } set { var viewParams = ViewParams; viewParams.FieldOfView = value; ViewParams = viewParams; } }
+		public float FieldOfView { get { return NativeMethods.View.GetViewFieldOfView(Id); } set { NativeMethods.View.SetViewFieldOfView(Id, value); } }
 
-		public EntityId TargetId { get { return new EntityId(ViewParams.TargetId); } set { var viewParams = ViewParams; viewParams.TargetId = (uint)value._value; ViewParams = viewParams; } }
-
-        internal ViewParams ViewParams { get { return NativeMethods.View.GetViewParams(Id); } set { NativeMethods.View.SetViewParams(Id, value); } }
-		
 		internal uint Id;
 
 		static List<View> Views = new List<View>();

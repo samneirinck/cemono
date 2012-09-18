@@ -40,9 +40,21 @@ namespace CryEngine
 		public float BlendFOVOffset;
 		public bool JustActivated;
 
-		public ushort ViewIDLast;
-		public Vec3 PositionLast;//last view position
-		public Quat RotationLast;//last view orientation
-		public float FOVLast;
+		private ushort ViewIDLast;
+		private Vec3 PositionLast;//last view position
+		private Quat RotationLast;//last view orientation
+		private float FOVLast;
+
+		public void SaveLast()
+		{
+			if (ViewIDLast != 0xff)
+			{
+				PositionLast = Position;
+				RotationLast = Rotation;
+				FOVLast = FieldOfView;
+			}
+			else
+				ViewIDLast = 0xfe;
+		}
 	}
 }

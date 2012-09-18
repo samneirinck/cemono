@@ -32,8 +32,14 @@ protected:
 	static EntityId GetActiveView();
 	static void SetActiveView(unsigned int viewId);
 
-	static SViewParams GetViewParams(unsigned int viewId);
-	static void SetViewParams(unsigned int viewId, SViewParams);
+	static Vec3 GetViewPosition(unsigned int viewId);
+	static Quat GetViewRotation(unsigned int viewId);
+	static float GetViewNearPlane(unsigned int viewId);
+	static float GetViewFieldOfView(unsigned int viewId);
+	static void SetViewPosition(unsigned int viewId, Vec3 pos);
+	static void SetViewRotation(unsigned int viewId, Quat rot);
+	static void SetViewNearPlane(unsigned int viewId, float nearPlane);
+	static void SetViewFieldOfView(unsigned int viewId, float fov);
 	// ~Externals
 };
 
