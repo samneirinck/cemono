@@ -157,7 +157,7 @@ namespace CryEngine
 		}
 
 		#region Callbacks
-		public abstract void UpdateView(ref ViewParams viewParams);
+		public virtual void UpdateView(ref ViewParams viewParams) { }
 		#endregion
 
 		#region Overrides
