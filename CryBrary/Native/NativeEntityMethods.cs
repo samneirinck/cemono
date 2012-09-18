@@ -106,21 +106,18 @@ namespace CryEngine.Native
 		extern internal static IntPtr _GetAttachmentByName(IntPtr entPtr, string name, int slot);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static void _LinkEntityToAttachment(IntPtr attachmentPtr, uint entityId);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static string _GetAttachmentObject(IntPtr attachmentPtr);
+
+		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static Quat _GetAttachmentWorldRotation(IntPtr attachmentPtr);
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static Quat _GetAttachmentLocalRotation(IntPtr attachmentPtr);
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _SetAttachmentWorldRotation(IntPtr attachmentPtr, Quat rot);
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _SetAttachmentLocalRotation(IntPtr attachmentPtr, Quat rot);
-		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static Vec3 _GetAttachmentWorldPosition(IntPtr attachmentPtr);
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static Vec3 _GetAttachmentLocalPosition(IntPtr attachmentPtr);
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _SetAttachmentWorldPosition(IntPtr attachmentPtr, Vec3 pos);
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _SetAttachmentLocalPosition(IntPtr attachmentPtr, Vec3 pos);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static Quat _GetAttachmentDefaultWorldRotation(IntPtr attachmentPtr);
@@ -341,6 +338,16 @@ namespace CryEngine.Native
 			return _GetAttachmentByName(entPtr, name, slot);
 		}
 
+		public void LinkEntityToAttachment(IntPtr attachmentPtr, uint entityId)
+		{
+			_LinkEntityToAttachment(attachmentPtr, entityId);
+		}
+
+		public string GetAttachmentObject(IntPtr attachmentPtr)
+		{
+			return _GetAttachmentObject(attachmentPtr);
+		}
+
 		public Quat GetAttachmentWorldRotation(IntPtr attachmentPtr)
 		{
 			return _GetAttachmentWorldRotation(attachmentPtr);
@@ -351,16 +358,6 @@ namespace CryEngine.Native
 			return _GetAttachmentLocalRotation(attachmentPtr);
 		}
 
-		public void SetAttachmentWorldRotation(IntPtr attachmentPtr, Quat rot)
-		{
-			_SetAttachmentWorldRotation(attachmentPtr, rot);
-		}
-
-		public void SetAttachmentLocalRotation(IntPtr attachmentPtr, Quat rot)
-		{
-			_SetAttachmentLocalRotation(attachmentPtr, rot);
-		}
-
 		public Vec3 GetAttachmentWorldPosition(IntPtr attachmentPtr)
 		{
 			return _GetAttachmentWorldPosition(attachmentPtr);
@@ -369,16 +366,6 @@ namespace CryEngine.Native
 		public Vec3 GetAttachmentLocalPosition(IntPtr attachmentPtr)
 		{
 			return GetAttachmentLocalPosition(attachmentPtr);
-		}
-
-		public void SetAttachmentWorldPosition(IntPtr attachmentPtr, Vec3 pos)
-		{
-			_SetAttachmentWorldPosition(attachmentPtr, pos);
-		}
-
-		public void SetAttachmentLocalPosition(IntPtr attachmentPtr, Vec3 pos)
-		{
-			_SetAttachmentLocalPosition(attachmentPtr, pos);
 		}
 
 		public Quat GetAttachmentDefaultWorldRotation(IntPtr attachmentPtr)

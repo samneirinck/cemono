@@ -238,14 +238,13 @@ protected:
 	static IAttachment *GetAttachmentByIndex(IEntity *pEnt, int index, int slot);
 	static IAttachment *GetAttachmentByName(IEntity *pEnt, mono::string name, int slot);
 
+	static void LinkEntityToAttachment(IAttachment *pAttachment, EntityId id);
+	static mono::string GetAttachmentObject(IAttachment *pAttachment);
+
 	static Quat GetAttachmentWorldRotation(IAttachment *pAttachment);
 	static Quat GetAttachmentLocalRotation(IAttachment *pAttachment);
-	static void SetAttachmentWorldRotation(IAttachment *pAttachment, Quat rot);
-	static void SetAttachmentLocalRotation(IAttachment *pAttachment, Quat rot);
 	static Vec3 GetAttachmentWorldPosition(IAttachment *pAttachment);
 	static Vec3 GetAttachmentLocalPosition(IAttachment *pAttachment);
-	static void SetAttachmentWorldPosition(IAttachment *pAttachment, Vec3 pos);
-	static void SetAttachmentLocalPosition(IAttachment *pAttachment, Vec3 pos);
 
 	static Quat GetAttachmentDefaultWorldRotation(IAttachment *pAttachment);
 	static Quat GetAttachmentDefaultLocalRotation(IAttachment *pAttachment);

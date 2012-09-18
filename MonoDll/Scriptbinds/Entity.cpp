@@ -85,14 +85,13 @@ CScriptbind_Entity::CScriptbind_Entity()
 	REGISTER_METHOD(GetAttachmentByIndex);
 	REGISTER_METHOD(GetAttachmentByName);
 
+	REGISTER_METHOD(LinkEntityToAttachment);
+	REGISTER_METHOD(GetAttachmentObject);
+
 	REGISTER_METHOD(GetAttachmentWorldRotation);
 	REGISTER_METHOD(GetAttachmentLocalRotation);
-	REGISTER_METHOD(SetAttachmentWorldRotation);
-	REGISTER_METHOD(SetAttachmentLocalRotation);
 	REGISTER_METHOD(GetAttachmentWorldPosition);
 	REGISTER_METHOD(GetAttachmentLocalPosition);
-	REGISTER_METHOD(SetAttachmentWorldPosition);
-	REGISTER_METHOD(SetAttachmentLocalPosition);
 
 	REGISTER_METHOD(GetAttachmentDefaultWorldRotation);
 	REGISTER_METHOD(GetAttachmentDefaultLocalRotation);
@@ -651,6 +650,41 @@ IAttachment *CScriptbind_Entity::GetAttachmentByName(IEntity *pEnt, mono::string
 	return nullptr;
 }
 
+class CMonoEntityAttachment : public CEntityAttachment
+{
+	virtual void UpdateAttachment(IAttachment *pIAttachment,const QuatT &m, float fZoomAdjustedDistanceFromCamera, uint32 OnRender ) override
+	{
+		const QuatT& quatT = pIAttachment->GetAttWorldAbsolute();
+
+		IEntity *pEntity = gEnv->pEntitySystem->GetEntity(GetEntityId());
+		if(pEntity)
+			pEntity->SetPosRotScale(quatT.t, pEntity->GetRotation(), pEntity->GetScale(), ENTITY_XFORM_NO_PROPOGATE);
+	}
+};
+
+void CScriptbind_Entity::LinkEntityToAttachment(IAttachment *pAttachment, EntityId id)
+{
+	pAttachment->ClearBinding();
+
+	CMonoEntityAttachment *pEntityAttachment = new CMonoEntityAttachment();
+	pEntityAttachment->SetEntityId(id);
+
+	pAttachment->AddBinding(pEntityAttachment);
+}
+
+mono::string CScriptbind_Entity::GetAttachmentObject(IAttachment *pAttachment)
+{
+	if(IAttachmentObject *pObject = pAttachment->GetIAttachmentObject())
+	{
+		if(ICharacterInstance *pCharacterInstance = pObject->GetICharacterInstance())
+			return ToMonoString(pCharacterInstance->GetFilePath());
+		else if(IStatObj *pStatObj = pObject->GetIStatObj())
+			return ToMonoString(pStatObj->GetFilePath());
+	}
+
+	return nullptr;
+}
+
 Quat CScriptbind_Entity::GetAttachmentWorldRotation(IAttachment *pAttachment)
 {
 	return pAttachment->GetAttWorldAbsolute().q;
@@ -661,22 +695,6 @@ Quat CScriptbind_Entity::GetAttachmentLocalRotation(IAttachment *pAttachment)
 	return pAttachment->GetAttModelRelative().q;
 }
 
-void CScriptbind_Entity::SetAttachmentWorldRotation(IAttachment *pAttachment, Quat rot)
-{
-	QuatT q = pAttachment->GetAttWorldAbsolute();
-
-	q.q = rot;
-	pAttachment->SetAttAbsoluteDefault(q);
-}
-
-void CScriptbind_Entity::SetAttachmentLocalRotation(IAttachment *pAttachment, Quat rot)
-{
-	QuatT q = pAttachment->GetAttModelRelative();
-
-	q.q = rot;
-	pAttachment->SetAttRelativeDefault(q);
-}
-
 Vec3 CScriptbind_Entity::GetAttachmentWorldPosition(IAttachment *pAttachment)
 {
 	return pAttachment->GetAttWorldAbsolute().t;
@@ -685,22 +703,6 @@ Vec3 CScriptbind_Entity::GetAttachmentWorldPosition(IAttachment *pAttachment)
 Vec3 CScriptbind_Entity::GetAttachmentLocalPosition(IAttachment *pAttachment)
 {
 	return pAttachment->GetAttModelRelative().t;
-}
-
-void CScriptbind_Entity::SetAttachmentWorldPosition(IAttachment *pAttachment, Vec3 pos)
-{
-	QuatT q = pAttachment->GetAttWorldAbsolute();
-
-	q.t = pos;
-	pAttachment->SetAttAbsoluteDefault(q);
-}
-
-void CScriptbind_Entity::SetAttachmentLocalPosition(IAttachment *pAttachment, Vec3 pos)
-{
-	QuatT q = pAttachment->GetAttModelRelative();
-
-	q.t = pos;
-	pAttachment->SetAttRelativeDefault(q);
 }
 
 Quat CScriptbind_Entity::GetAttachmentDefaultWorldRotation(IAttachment *pAttachment)
@@ -726,7 +728,7 @@ Vec3 CScriptbind_Entity::GetAttachmentDefaultLocalPosition(IAttachment *pAttachm
 IMaterial *CScriptbind_Entity::GetAttachmentMaterial(IAttachment *pAttachment)
 {
 	if(IAttachmentObject *pObject = pAttachment->GetIAttachmentObject())
-		return pObject->GetMaterial();;
+		return pObject->GetMaterial();
 
 	return nullptr;
 }

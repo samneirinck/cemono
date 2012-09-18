@@ -65,14 +65,13 @@ namespace CryEngine.Native
 		IntPtr GetAttachmentByIndex(IntPtr entPtr, int index, int slot);
 		IntPtr GetAttachmentByName(IntPtr entPtr, string name, int slot);
 
+		void LinkEntityToAttachment(IntPtr attachmentPtr, uint entityId);
+		string GetAttachmentObject(IntPtr attachmentPtr);
+
 		Quat GetAttachmentWorldRotation(IntPtr attachmentPtr);
 		Quat GetAttachmentLocalRotation(IntPtr attachmentPtr);
-		void SetAttachmentWorldRotation(IntPtr attachmentPtr, Quat rot);
-		void SetAttachmentLocalRotation(IntPtr attachmentPtr, Quat rot);
 		Vec3 GetAttachmentWorldPosition(IntPtr attachmentPtr);
 		Vec3 GetAttachmentLocalPosition(IntPtr attachmentPtr);
-		void SetAttachmentWorldPosition(IntPtr attachmentPtr, Vec3 pos);
-		void SetAttachmentLocalPosition(IntPtr attachmentPtr, Vec3 pos);
 
 		Quat GetAttachmentDefaultWorldRotation(IntPtr attachmentPtr);
 		Quat GetAttachmentDefaultLocalRotation(IntPtr attachmentPtr);
