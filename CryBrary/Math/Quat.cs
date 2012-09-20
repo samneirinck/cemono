@@ -348,6 +348,50 @@ namespace CryEngine
 			W = c; V.X = 0; V.Y = 0; V.Z = s;
 		}
 
+		public static Quat CreateRotationDir(Vec3 dir)
+		{
+			var q = new Quat();
+			q.SetRotationDir(dir);
+
+			return q;
+		}
+
+		public void SetRotationDir(Vec3 dir)
+		{
+			//set default initialisation for up-vector	
+			W = 0.70710676908493042f;
+			V.X = (dir.Z + dir.Z) * 0.35355338454246521f;
+			V.Y = 0; 
+			V.Z = 0;
+
+			var l = Math.Sqrt(dir.X * dir.X + dir.Y * dir.Y);
+			if (l > 0.00001)
+			{
+				//calculate LookAt quaternion
+				Vec3 hv = new Vec3(dir.X / l, dir.Y / l + 1.0f, l + 1.0f);
+				var r = Math.Sqrt(hv.X * hv.X + hv.Y * hv.Y);
+				var s = Math.Sqrt(hv.Z * hv.Z + dir.Z * dir.Z);
+				//generate the half-angle sine&cosine
+
+				var hacos0 = 0.0f; 
+				var hasin0 = -1.0f;
+
+				if (r > 0.00001)
+				{ 
+					hacos0 = hv.Y / r;
+					hasin0 = -hv.X / r; 
+				}	//yaw
+
+				var hacos1 = hv.Z / s; 
+				var hasin1 = dir.Z / s;					//pitch
+
+				W = hacos0 * hacos1;
+				V.X = hacos0 * hasin1;
+				V.Y = hasin0 * hasin1; 
+				V.Z = hasin0 * hacos1;
+			}
+		}
+
 		/// <summary>
 		/// Conjugates the quaternion.
 		/// </summary>
