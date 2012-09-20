@@ -152,6 +152,9 @@ void CEntity::ProcessEvent(SEntityEvent &event)
 	case ENTITY_EVENT_DETACH_THIS:
 		m_pScript->CallMethod("OnDetachThis", (EntityId)event.nParam[0]);
 		break;
+	case ENTITY_EVENT_PREPHYSICSUPDATE:
+		m_pScript->CallMethod("OnPrePhysicsUpdate");
+		break;
 	}
 }
 

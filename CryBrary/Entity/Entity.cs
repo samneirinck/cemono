@@ -150,6 +150,8 @@ namespace CryEngine
 		/// <param name="propertyType"></param>
 		/// <param name="valueString"></param>
 		protected virtual void OnPropertyChanged(MemberInfo memberInfo, EntityPropertyType propertyType, object newValue) { }
+		
+		protected virtual void OnPrePhysicsUpdate() {}
 		#endregion
 
 		#region Base Logic
