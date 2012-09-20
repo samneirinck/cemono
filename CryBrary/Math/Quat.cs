@@ -370,6 +370,17 @@ namespace CryEngine
 			this = !this;
 		}
 
+		public Quat Inverted
+		{
+			get
+			{
+				var quat = this;
+				quat.Invert();
+
+				return quat;
+			}
+		}
+
 		/// <summary>
 		/// Calculates the length of the quaternion.
 		/// </summary>
@@ -409,6 +420,17 @@ namespace CryEngine
 				V.Y *= inverse;
 				V.Z *= inverse;
 				W *= inverse;
+			}
+		}
+
+		public Quat Normalized
+		{
+			get
+			{
+				var quat = this;
+				quat.Normalize();
+
+				return quat;
 			}
 		}
 
