@@ -20,4 +20,10 @@ script:
 
 notifications:
   email: false
-  irc: "irc.gamesurge.net#crymono"
+  irc: 
+    channels:
+      - "irc.gamesurge.net#crymono"
+      - "irc.gamesurge.net#crymonobuild"
+    on_success: always
+    on_failure: always
+    skip_join: true
