@@ -138,6 +138,9 @@
     <ClInclude Include="Scriptbinds\Network.h">
       <Filter>ScriptBinds</Filter>
     </ClInclude>
+    <ClInclude Include="CryMonoPlugin.h">
+      <Filter>Startup</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -168,7 +171,6 @@
     <ClCompile Include="MonoObject.cpp">
       <Filter>Wrappers</Filter>
     </ClCompile>
-    <ClCompile Include="CryMonoDll.cpp" />
     <ClCompile Include="MonoConverter.cpp">
       <Filter>Mono</Filter>
     </ClCompile>
@@ -235,6 +237,9 @@
     <ClCompile Include="Scriptbinds\Network.cpp">
       <Filter>ScriptBinds</Filter>
     </ClCompile>
+    <ClCompile Include="CryMonoDll.cpp">
+      <Filter>Startup</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ScriptBinds">
@@ -275,6 +280,9 @@
     </Filter>
     <Filter Include="ScriptBinds\Viewport\UI">
       <UniqueIdentifier>{35c9343f-03fb-4c50-9c85-fa0b95fafeb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Startup">
+      <UniqueIdentifier>{4e363826-3e0d-4ab5-a8ca-b9ff90942058}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

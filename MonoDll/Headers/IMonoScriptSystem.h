@@ -11,9 +11,6 @@
 
 #include <MonoAnyValue.h>
 
-#include <CryExtension/ICryUnknown.h>
-#include <IEngineModule.h>
-
 struct IMonoScriptManager;
 
 struct IMonoObject;
@@ -63,10 +60,8 @@ enum EMonoScriptFlags
 /// <summary>
 /// The main module in CryMono; initializes mono domain and handles calls to C# scripts.
 /// </summary>
-struct IMonoScriptSystem : ICryUnknown
+struct IMonoScriptSystem
 {
-	CRYINTERFACE_DECLARE(IMonoScriptSystem, 0x86169744ce38420f, 0x9768a98386be991f)
-
 	/// <summary>
 	/// Deletes script system instance; cleans up mono objects etc.
 	/// Called from the dll which implements CryMono on engine shutdown (CGameStartup destructor within the sample project)
@@ -120,13 +115,6 @@ struct IMonoScriptSystem : ICryUnknown
 	/// If called prior to default CryMono flownode registration time (IGameFramework PostInit); flownodes are immediately registered.
 	/// </summary>
 	virtual void RegisterFlownodes() = 0;
-
-	/// <summary>
-	/// Entry point of the dll, used to set up CryMono.
-	/// </summary>
-	typedef void *(*TEntryFunction)(ISystem* pSystem);
 };
-
-typedef boost::shared_ptr<IMonoScriptSystem> IMonoPtr;
 
 #endif //__I_MONO_SCRIPT_SYSTEM_H__

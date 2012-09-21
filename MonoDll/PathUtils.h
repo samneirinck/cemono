@@ -21,10 +21,10 @@ public:
 	static string GetBinaryPath()
 	{
 #ifdef WIN64
-		return "Bin64\\";
+		return "Bin64\\Plugins\\";
 #endif
 
-		return "Bin32\\";
+		return "Bin32\\Plugins\\";
 	}
 
 	static string GetEnginePath()

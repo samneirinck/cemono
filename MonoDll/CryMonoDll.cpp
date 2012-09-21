@@ -1,5 +1,8 @@
 #include "stdafx.h"
 
+#include <IPluginManager.h>
+#include "CryMonoPlugin.h"
+
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
@@ -20,6 +23,16 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 
 
 	return TRUE;
+}
+
+extern "C"
+{
+    MONO_API PluginManager::IPluginBase* GetPluginInterface( const char* sInterfaceVersion )
+    {
+        // This function should not create a new interface class each call.
+		static CCryMonoPlugin *modulePlugin = new CCryMonoPlugin();
+		return modulePlugin;
+    }
 }
 
 extern "C"

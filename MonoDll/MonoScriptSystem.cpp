@@ -50,8 +50,6 @@
 
 SCVars *g_pMonoCVars = 0;
 
-CRYREGISTER_CLASS(CScriptSystem)
-
 CScriptSystem::CScriptSystem() 
 	: m_pRootDomain(nullptr)
 	, m_pCryBraryAssembly(nullptr)
