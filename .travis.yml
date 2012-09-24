@@ -13,9 +13,6 @@ script:
 - xbuild CryBrary.Tests/CryBrary.Tests.csproj
 - echo "-- START TEST RUN --"
 - mono NUnit-2.6.1/bin/nunit-console.exe --xmlConsole CryBrary.Tests/bin/Debug/CryBrary.Tests.dll
-- echo "-- NUnit XML result--"
-- cat TestResult.xml
-- echo "-- End of NUNit XML result--"
 - echo "-- Done --"
 
 notifications:
