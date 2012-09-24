@@ -11,8 +11,6 @@ namespace CryBrary.Tests.Console
         [Test]
         public void CreateCvar_Integer_RegisteredSuccessfully()
         {
-// Temp break
-Assert.IsTrue(false);
             // Arrange
             var cvarMock = GetMock<INativeCVarMethods>();
 
