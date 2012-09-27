@@ -56,7 +56,6 @@ CScriptSystem::CScriptSystem()
 	, m_pPdb2MdbAssembly(nullptr)
 	, m_pScriptManager(nullptr)
 	, m_pInput(nullptr)
-	, m_bHasPostInitialized(false)
 {
 	CryLogAlways("Initializing Mono Script System");
 
@@ -186,11 +185,11 @@ void CScriptSystem::OnSystemEvent(ESystemEvent event,UINT_PTR wparam,UINT_PTR lp
 	{
 	case ESYSTEM_EVENT_GAME_POST_INIT:
 		{
-			if(!m_bHasPostInitialized && gEnv->pGameFramework->GetIFlowSystem())
+			if(gEnv->pGameFramework->GetIFlowSystem())
 			{
-				m_pScriptManager->CallMethod("PostInit");
+				gEnv->pSystem->GetISystemEventDispatcher()->RemoveListener(this);
 
-				m_bHasPostInitialized = true;
+				m_pScriptManager->CallMethod("RegisterFlownodes");
 			}
 		}
 		break;

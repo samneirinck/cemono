@@ -74,8 +74,6 @@ namespace CryEngine.Initialization
 			{
 				if (!initialLoad)
 				{
-					PostInit();
-
 					using (var stream = File.Open(Path.Combine(PathUtils.TempFolder, "ScriptManager.CompiledScripts.scriptdump"), FileMode.Open))
 						Scripts = Formatter.Deserialize(stream) as List<CryScript>;
 
@@ -92,10 +90,13 @@ namespace CryEngine.Initialization
 			}
 		}
 
-		// Consult with me before modifying this method - filip
-		public void PostInit()
+		/// <summary>
+		/// Called from GameDll
+		/// </summary>
+		public void RegisterFlownodes()
 		{
 			// These have to be registered later on due to the flow system being initialized late.
+			// Note: Flow nodes have to be registered from IGame::CompleteInit in order to be usable from within UI graphs. (Use IMonoScriptSystem::RegisterFlownodes)
 			foreach (var node in FlowNodes)
 				FlowNode.Register(node);
 		}
