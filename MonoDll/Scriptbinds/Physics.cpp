@@ -57,7 +57,6 @@ void CScriptbind_Physics::Physicalize(IEntity *pEntity, SMonoPhysicalizeParams p
 			pp.pAttachToEntity = pPhysEnt;
 	}
 
-	pp.nFlagsOR = pef_monitor_poststep;
 	pp.type = PE_LIVING;
 
 	pe_player_dimensions playerDim;
