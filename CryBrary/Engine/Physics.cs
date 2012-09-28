@@ -55,6 +55,16 @@ namespace CryEngine
 			return false;
 		}
 
+        public static bool operator ==(RaycastHit a, RaycastHit b)
+        {
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(RaycastHit a, RaycastHit b)
+        {
+            return !(a == b);
+        }
+
 		public override int GetHashCode()
 		{
 			int hash = 17;
