@@ -14,7 +14,7 @@ namespace CryEngine
 		public float NearPlane;//custom near clipping plane, 0 means use engine defaults
 		public float FieldOfView;
 
-		public ushort ViewID;
+		internal ushort ViewID;
 
 		//view shake status
 		public bool GroundOnly;
