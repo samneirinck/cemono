@@ -71,7 +71,8 @@ namespace CryEngine
         /// <summary>
         /// Displays an exception via the CryMono exception form.
         /// </summary>
-        /// <param name="ex"></param>
+        /// <param name="ex">The exception that occurred</param>
+        /// <param name="fatal">Indicates if this exception is fatal</param>
         public static void DisplayException(Exception ex, bool fatal = false)
         {
             // Log exception as well

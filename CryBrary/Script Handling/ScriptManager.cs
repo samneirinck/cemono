@@ -354,8 +354,9 @@ namespace CryEngine.Initialization
 		/// <summary>
 		/// Instantiates a script using its name and interface.
 		/// </summary>
-		/// <param name="scriptName"></param>
-		/// <param name="constructorParams"></param>
+        /// <param name="scriptName"></param>
+        /// <param name="scriptType"></param>
+        /// <param name="constructorParams"></param>
 		/// <returns>New instance scriptId or -1 if instantiation failed.</returns>
 		public CryScriptInstance CreateScriptInstance(string scriptName, ScriptType scriptType, object[] constructorParams = null)
 		{

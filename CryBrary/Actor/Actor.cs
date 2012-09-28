@@ -117,7 +117,7 @@ namespace CryEngine
 			return actor;
 		}
 
-		public static new void Remove(EntityId id)
+		public static void Remove(EntityId id)
 		{
             NativeMethods.Actor.RemoveActor(id);
 

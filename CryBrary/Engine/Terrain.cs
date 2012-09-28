@@ -57,8 +57,9 @@ namespace CryEngine
 		/// Accesses the elevation at a specified location, with support for interpolated values.
 		/// </summary>
 		/// <param name="x"></param>
-		/// <param name="y"></param>
-		/// <returns></returns>
+        /// <param name="y"></param>
+        /// <param name="checkVoxels"></param>
+        /// <returns></returns>
 		public float this[float x, float y, bool checkVoxels = false]
 		{
 			get

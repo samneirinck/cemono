@@ -17,8 +17,9 @@ namespace CryEngine
 		/// <param name="pos"></param>
 		/// <param name="rot"></param>
 		/// <param name="scale"></param>
-		/// <param name="autoInit"></param>
-		/// <returns></returns>
+        /// <param name="autoInit"></param>
+        /// <param name="flags"></param>
+        /// <returns></returns>
 		public static T Spawn<T>(string name, Vec3? pos = null, Vec3? rot = null, Vec3? scale = null, bool autoInit = true, EntityFlags flags = EntityFlags.CastShadow) where T : Entity, new()
 		{
 			EntityInfo info;

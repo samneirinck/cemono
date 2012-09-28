@@ -146,9 +146,9 @@ namespace CryEngine
 		/// <summary>
 		/// Called when the user changes a property from within the Editor.
 		/// </summary>
-		/// <param name="propertyName"></param>
+        /// <param name="memberInfo"></param>
 		/// <param name="propertyType"></param>
-		/// <param name="valueString"></param>
+		/// <param name="newValue"></param>
 		protected virtual void OnPropertyChanged(MemberInfo memberInfo, EntityPropertyType propertyType, object newValue) { }
 		
 		protected virtual void OnPrePhysicsUpdate() {}
