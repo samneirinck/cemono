@@ -57,6 +57,18 @@ void CScriptbind_Physics::Physicalize(IEntity *pEntity, SMonoPhysicalizeParams p
 			pp.pAttachToEntity = pPhysEnt;
 	}
 
+	pp.nFlagsOR = pef_monitor_poststep;
+	pp.type = PE_LIVING;
+
+	pe_player_dimensions playerDim;
+	pp.pPlayerDimensions = &playerDim;
+
+	pe_player_dynamics playerDyn;
+	pp.pPlayerDynamics = &playerDyn;
+
+	playerDyn.gravity = Vec3(0, 0, 9.81f);
+	playerDyn.mass = params.mass;
+
 	pEntity->Physicalize(pp);
 
 	if(IPhysicalEntity *pPhysicalEntity = pEntity->GetPhysics())
