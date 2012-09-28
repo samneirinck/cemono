@@ -29,6 +29,21 @@ struct SMonoRayHit
 	int iPrim; // hit triangle index
 };
 
+struct SMonoPlayerPhysicalizeParams
+{
+	float heightCollider;
+	Vec3 sizeCollider;
+	float heightPivot;
+	bool useCapsule;
+
+	Vec3 gravity;
+	float airControl;
+	float minSlideAngle;
+	float maxClimbAngle;
+	float minFallAngle;
+	float maxVelGround;
+};
+
 struct SMonoPhysicalizeParams
 {
 	int type;
@@ -71,7 +86,8 @@ public:
 
 	static IPhysicalEntity *GetPhysicalEntity(IEntity *pEntity);
 
-	static void Physicalize(IEntity *pEntity, SMonoPhysicalizeParams params);
+	static void Physicalize(IEntity *pEntity, SMonoPhysicalizeParams params, SMonoPlayerPhysicalizeParams playerParams);
+
 	static void Sleep(IEntity *pEntity, bool sleep);
 
 	static void AddImpulse(IEntity *pEntity, SMonoActionImpulse impulse);

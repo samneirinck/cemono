@@ -15,7 +15,8 @@ namespace CryEngine
 			entity = _entity;
 
 			_params = new PhysicalizationParams { mass = -1, slot = 0 };
-			NativeMethods.Physics.Physicalize(_entity.GetEntityHandle().Handle, _params);
+			_playerParams = new PlayerPhysicalizationParams();
+			NativeMethods.Physics.Physicalize(_entity.GetEntityHandle().Handle, _params, _playerParams);
 
 			PhysicsPointer = NativeMethods.Physics.GetPhysicalEntity(entity.GetEntityHandle().Handle);
 
@@ -38,22 +39,15 @@ namespace CryEngine
 		/// </summary>
 		public bool AutoUpdate { get; set; }
 
-		internal bool resting;
-		/// <summary>
-		/// Determines if this physical entity is in a sleeping state or not. (Will not be affected by gravity)
-		/// Autoamtically wakes upon collision.
-		/// </summary>
-		public bool Resting { get { return resting; } set { resting = value; NativeMethods.Physics.Sleep(entity.GetEntityHandle().Handle, value); } }
-
 		/// <summary>
 		/// Save the current physics settings.
 		/// </summary>
 		public void Save()
 		{
-			if(_params.type == 0)
+			if (_params.type == PhysicalizationType.None)
 				_params.type = PhysicalizationType.Rigid;
 
-			NativeMethods.Physics.Physicalize(entity.GetEntityHandle().Handle, _params);
+			NativeMethods.Physics.Physicalize(entity.GetEntityHandle().Handle, _params, _playerParams);
 		}
 
 		/// <summary>
@@ -62,6 +56,7 @@ namespace CryEngine
 		public void Clear()
 		{
 			_params = new PhysicalizationParams();
+			_playerParams = new PlayerPhysicalizationParams();
 		}
 
 		public void AddImpulse(Vec3 impulse, Vec3 angImpulse = default(Vec3), Vec3? point = null)
@@ -71,18 +66,29 @@ namespace CryEngine
 			NativeMethods.Physics.AddImpulse(entity.GetEntityHandle().Handle, actionImpulse);
 		}
 
+		internal bool resting;
+		/// <summary>
+		/// Determines if this physical entity is in a sleeping state or not. (Will not be affected by gravity)
+		/// Autoamtically wakes upon collision.
+		/// </summary>
+		public bool Resting
+		{
+			get { throw new NotImplementedException(); }
+			set { resting = value; NativeMethods.Physics.Sleep(entity.GetEntityHandle().Handle, value); }
+		}
+
 		/// <summary>
 		/// The mass of the entity in kg.
 		/// </summary>
 		public float Mass
 		{
-			get { return _params.mass; }
+			get { throw new NotImplementedException(); }
 			set { _params.mass = value; _params.density = -1; if(AutoUpdate) Save(); }
 		}
 
 		public float Density
 		{
-			get { return _params.density; }
+			get { throw new NotImplementedException(); }
 			set { _params.density = value; _params.mass = -1; if(AutoUpdate) Save(); }
 		}
 
@@ -91,27 +97,86 @@ namespace CryEngine
 		/// </summary>
 		public int Slot
 		{
-			get { return _params.slot; }
+			get { throw new NotImplementedException(); }
 			set { _params.slot = value; if(AutoUpdate) Save(); }
 		}
 
 		public PhysicalizationType Type
 		{
-			get { return _params.type; }
+			get { throw new NotImplementedException(); }
 			set { _params.type = value; if(AutoUpdate) Save(); }
 		}
-		#endregion
 
-		#region Characters
 		/// <summary>
 		/// For characters: the scale of force in joint springs.
 		/// </summary>
 		public float Stiffness
 		{
-			get { return _params.stiffnessScale; }
-			set { _params.stiffnessScale = value; if(AutoUpdate) Save(); }
+			get { throw new NotImplementedException(); }
+			set { _params.stiffnessScale = value; if (AutoUpdate) Save(); }
 		}
 
+		#region Temporary workaround to get player dynamics / dimensions working
+		public float HeightCollider
+		{
+			get { throw new NotImplementedException(); }
+			set { _playerParams.heightCollider = value; if (AutoUpdate) Save(); }
+		}
+
+		public Vec3 SizeCollider
+		{
+			get { throw new NotImplementedException(); }
+			set { _playerParams.sizeCollider = value; if (AutoUpdate) Save(); }
+		}
+
+		public float HeightPivot
+		{
+			get { throw new NotImplementedException(); }
+			set { _playerParams.heightPivot = value; if (AutoUpdate) Save(); }
+		}
+
+		public bool UseCapsule
+		{
+			get { throw new NotImplementedException(); }
+			set { _playerParams.useCapsule = value; if (AutoUpdate) Save(); }
+		}
+
+		public Vec3 Gravity
+		{
+			get { throw new NotImplementedException(); }
+			set { _playerParams.gravity = value; if (AutoUpdate) Save(); }
+		}
+
+		public float AirControl
+		{
+			get { throw new NotImplementedException(); }
+			set { _playerParams.airControl = value; if (AutoUpdate) Save(); }
+		}
+
+		public float MinSlideAngle
+		{
+			get { throw new NotImplementedException(); }
+			set { _playerParams.minSlideAngle = value; if (AutoUpdate) Save(); }
+		}
+
+		public float MaxClimbAngle
+		{
+			get { throw new NotImplementedException(); }
+			set { _playerParams.maxClimbAngle = value; if (AutoUpdate) Save(); }
+		}
+
+		public float MinFallAngle
+		{
+			get { throw new NotImplementedException(); }
+			set { _playerParams.minFallAngle = value; if (AutoUpdate) Save(); }
+		}
+
+		public float MaxVelGround
+		{
+			get { throw new NotImplementedException(); }
+			set { _playerParams.maxVelGround = value; if (AutoUpdate) Save(); }
+		}
+		#endregion
 		#endregion
 
 		internal IntPtr PhysicsPointer { get; set; }
@@ -119,6 +184,7 @@ namespace CryEngine
 
 		// Sent directly to the engine
 		internal PhysicalizationParams _params;
+		internal PlayerPhysicalizationParams _playerParams;
 	}
 
 	internal struct ActionImpulse
@@ -160,7 +226,22 @@ namespace CryEngine
 		public Vec3 vHitPoint;
 	}
 
-	public struct PhysicalizationParams
+	internal struct PlayerPhysicalizationParams
+	{
+		public float heightCollider;
+		public Vec3 sizeCollider;
+		public float heightPivot;
+		public bool useCapsule;
+
+		public Vec3 gravity;
+		public float airControl;
+		public float minSlideAngle;
+		public float maxClimbAngle;
+		public float minFallAngle;
+		public float maxVelGround;
+	}
+
+	internal struct PhysicalizationParams
 	{
 		public PhysicalizationType type;
 
@@ -200,126 +281,6 @@ namespace CryEngine
 		/// Copy joints velocities when converting a character to ragdoll.
 		/// </summary>
 		public bool copyJointVelocities;
-	}
-
-	public struct PlayerDynamics
-	{
-		/// <summary>
-		/// inertia koefficient, the more it is, the less inertia is; 0 means no inertia
-		/// </summary>
-		public float kInertia;
-		/// <summary>
-		/// inertia on acceleration
-		/// </summary>
-		public float kInertiaAccel;
-		/// <summary>
-		/// air control koefficient 0..1, 1 - special value (total control of movement)
-		/// </summary>
-		public float kAirControl;
-		/// <summary>
-		/// standard air resistance 
-		/// </summary>
-		public float kAirResistance;
-		/// <summary>
-		/// gravity vector, utilizes sv_gravity if null.
-		/// </summary>
-		public Vec3 gravity;
-		/// <summary>
-		/// vertical camera shake speed after landings
-		/// </summary>
-		public float nodSpeed;
-		/// <summary>
-		/// whether entity is swimming (is not bound to ground plane)
-		/// </summary>
-		public bool swimming;
-		/// <summary>
-		/// mass (in kg)
-		/// </summary>
-		public float mass;
-		/// <summary>
-		/// surface identifier for collisions
-		/// </summary>
-		public int surface_idx;
-		/// <summary>
-		/// if surface slope is more than this angle, player starts sliding (angle is in radians)
-		/// </summary>
-		public float minSlideAngle;
-		/// <summary>
-		/// player cannot climb surface which slope is steeper than this angle
-		/// </summary>
-		public float maxClimbAngle;
-		/// <summary>
-		/// player is not allowed to jump towards ground if this angle is exceeded
-		/// </summary>
-		public float maxJumpAngle;
-		/// <summary>
-		/// player starts falling when slope is steeper than this
-		/// </summary>
-		public float minFallAngle;
-		/// <summary>
-		/// player cannot stand of surfaces that are moving faster than this
-		/// </summary>
-		public float maxVelGround;
-		/// <summary>
-		/// forcefully turns on inertia for that duration after receiving an impulse
-		/// </summary>
-		public float timeImpulseRecover;
-		/// <summary>
-		/// entity types to check collisions against
-		/// </summary>
-		public int collTypes;
-		/// <summary>
-		/// ignore collisions with this *living entity* (doesn't work with other entity types)
-		/// </summary>
-		public EntityId livingEntToIgnore;
-		/// <summary>
-		/// 0 disables all simulation for the character, apart from moving along the requested velocity
-		/// </summary>
-		public bool active;
-		/// <summary>
-		/// requests that the player rolls back to that time and re-exucutes pending actions during the next step
-		/// </summary>
-		public int iRequestedTime;
-	}
-
-	public struct PlayerDimensions
-	{
-		/// <summary>
-		/// offset from central ground position that is considered entity center
-		/// </summary>
-		public float heightPivot;
-		/// <summary>
-		/// vertical offset of camera
-		/// </summary>
-		public float heightEye;
-		/// <summary>
-		/// collision cylinder dimensions
-		/// </summary>
-		public Vec3 sizeCollider;
-		/// <summary>
-		/// vertical offset of collision geometry center
-		/// </summary>
-		public float heightCollider;
-		/// <summary>
-		/// radius of the 'head' geometry (used for camera offset)
-		/// </summary>
-		public float headRadius;
-		/// <summary>
-		/// center.z of the head geometry
-		/// </summary>
-		public float heightHead;
-		/// <summary>
-		/// unprojection direction to test in case the new position overlaps with the environment (can be 0 for 'auto')
-		/// </summary>
-		public Vec3 dirUnproj;
-		/// <summary>
-		/// maximum allowed unprojection
-		/// </summary>
-		public float maxUnproj;
-		/// <summary>
-		/// switches between capsule and cylinder collider geometry
-		/// </summary>
-		public bool useCapsule;
 	}
 
 	public enum PhysicalizationType

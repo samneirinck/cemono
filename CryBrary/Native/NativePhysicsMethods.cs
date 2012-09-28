@@ -12,7 +12,7 @@ namespace CryEngine.Native
         extern internal static int _RayWorldIntersection(Vec3 origin, Vec3 dir, EntityQueryFlags objFlags, RayWorldIntersectionFlags flags, ref RayHit rayHit, int maxHits, object[] skipEnts);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static void _Physicalize(IntPtr entPtr, PhysicalizationParams physicalizationParams);
+		extern internal static void _Physicalize(IntPtr entPtr, PhysicalizationParams physicalizationParams, PlayerPhysicalizationParams playerPhysicalizationParams);
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern internal static void _Sleep(IntPtr entPtr, bool sleep);
 
@@ -34,9 +34,9 @@ namespace CryEngine.Native
             return _RayWorldIntersection(origin, dir, objFlags, flags, ref rayHit, maxHits, skipEnts);
         }
 
-        public void Physicalize(IntPtr entPtr, PhysicalizationParams physicalizationParams)
+		public void Physicalize(IntPtr entPtr, PhysicalizationParams physicalizationParams, PlayerPhysicalizationParams playerPhysicalizationParams)
         {
-            _Physicalize(entPtr, physicalizationParams);
+			_Physicalize(entPtr, physicalizationParams, playerPhysicalizationParams);
         }
 
         public void Sleep(IntPtr entPtr, bool sleep)
