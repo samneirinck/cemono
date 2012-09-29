@@ -50,7 +50,7 @@ namespace CryEngine
 	}
 
 	[Flags]
-	public enum LightFlags : uint
+	public enum LightFlags : long
 	{
 		Directional = 2,
 		CastShadows = 0x10,
