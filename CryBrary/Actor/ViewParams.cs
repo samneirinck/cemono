@@ -14,7 +14,24 @@ namespace CryEngine
 		public float NearPlane;//custom near clipping plane, 0 means use engine defaults
 		public float FieldOfView;
 
-		internal ushort ViewID;
+		private ushort _viewID;
+        public int ViewId
+        {
+            get
+            {
+                return _viewID;
+            }
+            set
+            {
+                if (_viewID < ushort.MinValue)
+                    throw new InvalidOperationException("ViewId cannot be less than " + ushort.MinValue);
+
+                if (_viewID > ushort.MaxValue)
+                    throw new ArgumentOutOfRangeException("ViewId is too large for the containing ushort type");
+
+                _viewID = (ushort)value;
+            }
+        }
 
 		//view shake status
 		public bool GroundOnly;
