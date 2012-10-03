@@ -107,7 +107,7 @@
     <Compile Include="Native\Interfaces\INativeNetworkMethods.cs" />
     <Compile Include="Native\NativeNetworkMethods.cs" />
     <Compile Include="Network\RemoteInvocationException.cs" />
-    <Compile Include="ProjectSettings.cs" />
+    <Compile Include="Utils\ProjectSettings.cs" />
     <Compile Include="Engine\Texture.cs" />
     <Compile Include="Entity\AnimationFlags.cs" />
     <Compile Include="Entity\EntityLight.cs" />
