@@ -412,9 +412,9 @@ namespace CryEngine
 
 		public void Set(Vec3 s, Quat q, Vec3 t = default(Vec3))
 		{
-			float vxvx = q.Axis.X * q.Axis.X; float vzvz = q.Axis.Z * q.Axis.Z; float vyvy = q.Axis.Y * q.Axis.Y;
-			float vxvy = q.Axis.X * q.Axis.Y; float vxvz = q.Axis.X * q.Axis.Z; float vyvz = q.Axis.Y * q.Axis.Z;
-			float svx = q.Angle * q.Axis.X; float svy = q.Angle * q.Axis.Y; float svz = q.Angle * q.Axis.Z;
+			float vxvx = q.V.X * q.V.X; float vzvz = q.V.Z * q.V.Z; float vyvy = q.V.Y * q.V.Y;
+			float vxvy = q.V.X * q.V.Y; float vxvz = q.V.X * q.V.Z; float vyvz = q.V.Y * q.V.Z;
+			float svx = q.W * q.V.X; float svy = q.W * q.V.Y; float svz = q.W * q.V.Z;
 			M00 = (1 - (vyvy + vzvz) * 2) * s.X; M01 = (vxvy - svz) * 2 * s.Y; M02 = (vxvz + svy) * 2 * s.Z; M03 = t.X;
 			M10 = (vxvy + svz) * 2 * s.X; M11 = (1 - (vxvx + vzvz) * 2) * s.Y; M12 = (vyvz - svx) * 2 * s.Z; M13 = t.Y;
 			M20 = (vxvz - svy) * 2 * s.X; M21 = (vyvz + svx) * 2 * s.Y; M22 = (1 - (vxvx + vyvy) * 2) * s.Z; M23 = t.Z;
@@ -699,5 +699,14 @@ namespace CryEngine
 			);
 		}
 		#endregion
+
+		public static explicit operator Matrix33(Matrix34 m)
+		{
+			var m33 = new Matrix33();
+			m33.M00 = m.M00; m33.M01 = m.M01; m33.M02 = m.M02;
+			m33.M10 = m.M10; m33.M11 = m.M11; m33.M12 = m.M12;
+			m33.M20 = m.M20; m33.M21 = m.M21; m33.M22 = m.M22;
+			return m33;
+		}
 	}
 }

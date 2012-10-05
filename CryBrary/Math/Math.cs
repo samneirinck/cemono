@@ -206,6 +206,65 @@ namespace CryEngine
 			return (float)System.Math.Pow(x, y);
 		}
 
+		public static double Log(double d)
+		{
+			return System.Math.Log(d);
+		}
+
+		public static float Log(float d)
+		{
+			return (float)System.Math.Log(d);
+		}
+
+		public static Vec3 Log(Quat q)
+		{
+			var lensqr = q.V.LengthSquared;
+			if (lensqr > 0.0f)
+
+			// Exponent of Quaternion.
+			{
+				var len = Math.Sqrt(lensqr);
+				var angle = Math.Atan2(len, q.W) / len;
+				return q.V * (float)angle;
+			}
+
+			// logarithm of a quaternion, imaginary part (the real part of the logarithm is always 0)
+			return new Vec3(0);
+		}
+
+		public static double Log(double d, double newBase)
+		{
+			return System.Math.Log(d, newBase);
+		}
+
+		public static float Log(float d, float newBase)
+		{
+			return (float)System.Math.Log(d, newBase);
+		}
+
+		public static double Exp(double d)
+		{
+			return System.Math.Exp(d);
+		}
+
+		public static float Exp(float d)
+		{
+			return (float)System.Math.Exp(d);
+		}
+
+		public static Quat Exp(Vec3 v)
+		{
+			var lensqr = v.LengthSquared;
+			if (lensqr > 0.0f)
+			{
+				var len = Math.Sqrt(lensqr);
+				float s, c; Math.SinCos(len, out s, out c);
+				s /= len;
+				return new Quat(c, v.X * s, v.Y * s, v.Z * s);
+			}
+			return Quat.Identity;
+		}
+
 		/// <summary>
 		/// Determines whether a value is inside the specified range.
 		/// </summary>

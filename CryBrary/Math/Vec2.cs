@@ -129,9 +129,9 @@ namespace CryEngine
 		/// <see cref="CryEngine.Vec2.LengthSquared"/> may be preferred when only the relative length is needed
 		/// and speed is of the essence.
 		/// </remarks>
-		public float Length()
+		public float Length
 		{
-			return Math.Sqrt((X * X) + (Y * Y));
+			get { return Math.Sqrt((X * X) + (Y * Y)); }
 		}
 
 		/// <summary>
@@ -142,9 +142,9 @@ namespace CryEngine
 		/// This method may be preferred to <see cref="CryEngine.Vec2.Length"/> when only a relative length is needed
 		/// and speed is of the essence.
 		/// </remarks>
-		public float LengthSquared()
+		public float LengthSquared
 		{
-			return (X * X) + (Y * Y);
+			get { return (X * X) + (Y * Y); }
 		}
 
 		/// <summary>
@@ -152,7 +152,7 @@ namespace CryEngine
 		/// </summary>
 		public void Normalize()
 		{
-			float length = Length();
+			float length = Length;
 			if(length > Math.ZeroTolerance)
 			{
 				float inv = 1.0f / length;

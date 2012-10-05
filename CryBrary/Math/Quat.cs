@@ -1,42 +1,9 @@
-﻿/*
-* Copyright (c) 2007-2010 SlimDX Group
-* 
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so, subject to the following conditions:
-* 
-* The above copyright notice and this permission notice shall be included in
-* all copies or substantial portions of the Software.
-* 
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-* THE SOFTWARE.
-*/
-using System;
-using System.Globalization;
-using System.Runtime.InteropServices;
+﻿using System;
 
 namespace CryEngine
 {
-	/// <summary>
-	/// Represents a four dimensional mathematical quaternion.
-	/// </summary>
-	[Serializable]
-	[StructLayout(LayoutKind.Sequential, Pack = 4)]
-	public struct Quat : IEquatable<Quat>, IFormattable
+	public struct Quat
 	{
-		/// <summary>
-		/// The identity <see cref="CryEngine.Quat"/> (0, 0, 0, 1).
-		/// </summary>
-		public static readonly Quat Identity = new Quat(0.0f, 0.0f, 0.0f, 1.0f);
-
 		/// <summary>
 		/// The X, Y and Z components of the quaternion.
 		/// </summary>
@@ -47,142 +14,253 @@ namespace CryEngine
 		/// </summary>
 		public float W;
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="CryEngine.Quat"/> struct.
-		/// </summary>
-		/// <param name="value">The value that will be assigned to all components.</param>
-		public Quat(float value)
-		{
-			V.X = value;
-			V.Y = value;
-			V.Z = value;
-			W = value;
-		}
+		public Quat(float w, float x, float y, float z)
+			: this(w, new Vec3(x, y, z)) { }
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="CryEngine.Quat"/> struct.
-		/// </summary>
-		/// <param name="value">A vector containing the values with which to initialize the components.</param>
-		public Quat(Vec4 value)
+		public Quat(float angle, Vec3 axis)
 		{
-			V.X = value.X;
-			V.Y = value.Y;
-			V.Z = value.Z;
-			W = value.W;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="CryEngine.Quat"/> struct.
-		/// </summary>
-		/// <param name="value">A vector containing the values with which to initialize the X, Y, and Z components.</param>
-		/// <param name="w">Initial value for the W component of the quaternion.</param>
-		public Quat(Vec3 value, float w)
-		{
-			V.X = value.X;
-			V.Y = value.Y;
-			V.Z = value.Z;
-			W = w;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="CryEngine.Quat"/> struct.
-		/// </summary>
-		/// <param name="value">A vector containing the values with which to initialize the X and Y components.</param>
-		/// <param name="z">Initial value for the Z component of the quaternion.</param>
-		/// <param name="w">Initial value for the W component of the quaternion.</param>
-		public Quat(Vec2 value, float z, float w)
-		{
-			V.X = value.X;
-			V.Y = value.Y;
-			V.Z = z;
-			W = w;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="CryEngine.Quat"/> struct.
-		/// </summary>
-		/// <param name="x">Initial value for the X component of the quaternion.</param>
-		/// <param name="y">Initial value for the Y component of the quaternion.</param>
-		/// <param name="z">Initial value for the Z component of the quaternion.</param>
-		/// <param name="w">Initial value for the W component of the quaternion.</param>
-		public Quat(float x, float y, float z, float w)
-		{
-			V.X = x;
-			V.Y = y;
-			V.Z = z;
-			W = w;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="CryEngine.Quat"/> struct.
-		/// </summary>
-		/// <param name="values">The values to assign to the X, Y, Z, and W components of the quaternion. This must be an array with four elements.</param>
-		/// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
-		public Quat(float[] values)
-		{
-#if !(RELEASE && RELEASE_DISABLE_CHECKS)
-			if(values == null)
-				throw new ArgumentNullException("values");
-			if(values.Length != 4)
-				throw new ArgumentOutOfRangeException("values", "There must be four and only four input values for Quaternion.");
-#endif
-
-			V.X = values[0];
-			V.Y = values[1];
-			V.Z = values[2];
-			W = values[3];
+			W = angle;
+			V = axis;
 		}
 
 		public Quat(Matrix33 matrix)
-			: this(0)
 		{
-			float s, p, tr = matrix.M00 + matrix.M11 + matrix.M22;
+			this = FromMatrix33(matrix);
+		}
 
-			//check the diagonal
-			if (tr > 0)
+		public Quat(Matrix34 matrix)
+			: this((Matrix33)matrix) {}
+
+		public bool IsEquivalent(Quat q, float epsilon = 0.05f)
+		{
+			var p=-q;
+			bool t0= (Math.Abs(V.X-q.V.X)<=epsilon) && (Math.Abs(V.Y-q.V.Y)<=epsilon) && (Math.Abs(V.Z-q.V.Z)<=epsilon) && (Math.Abs(W-q.W)<=epsilon);	
+			bool t1= (Math.Abs(V.X-p.V.X)<=epsilon) && (Math.Abs(V.Y-p.V.Y)<=epsilon) && (Math.Abs(V.Z-p.V.Z)<=epsilon) && (Math.Abs(W-p.W)<=epsilon);	
+			t0 |= t1;
+			return t0;
+		}
+
+		public bool IsIdentity { get { return W == 1 && V.X == 0 && V.Y == 0 && V.Z == 0; } }
+
+		public void SetIdentity()
+		{
+			this = Quat.Identity;
+		}
+
+		public bool IsUnit(float epsilon = 0.05f)
+		{
+			return Math.Abs(1 - ((this | this))) < epsilon;
+		}
+
+		public void SetRotationAA(float rad, Vec3 axis)
+		{
+			float s, c; 
+			Math.SinCos(rad * 0.5f, out s, out c); 
+			SetRotationAA(c, s, axis); 
+		}
+
+		public void SetRotationAA(float cosha, float sinha, Vec3 axis)
+		{
+			W = cosha;
+			V = axis * sinha;
+		}
+
+		public void SetRotationXYZ(Vec3 angle)
+		{
+			float sx;
+			float cx;
+			Math.SinCos((float)(angle.X * (float)0.5), out sx, out cx);
+
+			float sy;
+			float cy; 
+			Math.SinCos((float)(angle.Y * (float)0.5), out sy, out cy);
+
+			float sz;
+			float cz;
+			Math.SinCos((float)(angle.Z * (float)0.5), out sz, out cz);
+
+			W = cx * cy * cz + sx * sy * sz;
+			V.X = cz * cy * sx - sz * sy * cx;
+			V.Y = cz * sy * cx + sz * cy * sx;
+			V.Z = sz * cy * cx - cz * sy * sx;
+		}
+
+		public void SetRotationX(float r)
+		{
+			float s, c;
+			Math.SinCos((float)(r * (float)0.5), out s, out c); W = c; V.X = s; V.Y = 0; V.Z = 0;
+		}
+
+		public void SetRotationY(float r)
+		{
+			float s, c; Math.SinCos((float)(r * (float)0.5), out s, out c); W = c; V.X = 0; V.Y = s; V.Z = 0;	
+		}
+
+		public void SetRotationZ(float r)
+		{
+			float s, c; Math.SinCos((float)(r * (float)0.5), out s, out c); W = c; V.X = 0; V.Y = 0; V.Z = s;
+		}
+
+		/*public void SetRotationV0V1(Vec3 v0, Vec3 v1)
+		{
+			var dot = v0.X * v1.X + v0.Y * v1.Y + v0.Z * v1.Z + 1.0;
+			if (dot > 0.0001)
 			{
-				s = Math.Sqrt(tr + 1.0f); 
-				p = 0.5f / s;
-
-				V.X = s * 0.5f;
-				V.Y = (matrix.M21 - matrix.M12) * p;
-				V.Z = (matrix.M02 - matrix.M20) * p;
-				W = (matrix.M10 - matrix.M01) * p;
+				var vx = v0.Y * v1.Z - v0.Z * v1.Y;
+				var vy = v0.Z * v1.X - v0.X * v1.Z;
+				var vz = v0.X * v1.Y - v0.Y * v1.X;
+				var d = Math.ISqrt(dot * dot + vx * vx + vy * vy + vz * vz);
+				W = (float)(dot * d); V.X = (float)(vx * d); V.Y = (float)(vy * d); V.Z = (float)(vz * d);
+				return;
 			}
-			//diagonal is negative. now we have to find the biggest element on the diagonal
-			//check if "M00" is the biggest element
-			if ((matrix.M00 >= matrix.M11) && (matrix.M00 >= matrix.M22))
-			{
-				s = Math.Sqrt(matrix.M00 - matrix.M11 - matrix.M22 + 1.0f); 
-				p = 0.5f / s;
+			W = 0; V = v0.GetOrthogonal().GetNormalized();
+		}*/
 
-				V.X = (matrix.M21 - matrix.M12) * p;
-				V.Y = s * 0.5f;
-				V.Z = (matrix.M10 + matrix.M01) * p;
-				W = (matrix.M20 + matrix.M02) * p;
+		public void SetRotationVDir(Vec3 vDir)
+		{
+			//set default initialisation for up-vector	
+			W = 0.70710676908493042F; V.X = (vDir.Z + vDir.Z) * 0.35355338454246521f; V.Y = 0.0f; V.Z = 0.0f;
+			var l = Math.Sqrt(vDir.X * vDir.X + vDir.Y * vDir.Y);
+			if (l > 0.00001)
+			{
+				//calculate LookAt quaternion
+				var hvX = vDir.X / l;
+				var hvY = vDir.Y / l + 1.0f;
+				var hvZ = l + 1.0f;
+
+				var r = Math.Sqrt(hvX * hvX + hvY * hvY);
+				var s = Math.Sqrt(hvZ * hvZ + vDir.Z * vDir.Z);
+				//generate the half-angle sine&cosine
+				var hacos0 = 0.0; var hasin0 = -1.0;
+				if (r > 0.00001) { hacos0 = hvY / r; hasin0 = -hvX / r; }	//yaw
+				var hacos1 = hvZ / s; var hasin1 = vDir.Z / s;					//pitch
+				W = (float)(hacos0 * hacos1); V.X = (float)(hacos0 * hasin1); V.Y = (float)(hasin0 * hasin1); V.Z = (float)(hasin0 * hacos1);
 			}
-			//check if "M11" is the biggest element
-			if ((matrix.M11 >= matrix.M00) && (matrix.M11 >= matrix.M22))
-			{
-				s = Math.Sqrt(matrix.M11 - matrix.M22 - matrix.M00 + 1.0f); 
-				p = 0.5f / s;
+		}
 
-				V.X = (matrix.M02 - matrix.M20) * p;
-				V.Y = (matrix.M01 + matrix.M10) * p;
-				V.Z = s * 0.5f;
-				W = (matrix.M21 + matrix.M12) * p;
+		public void SetRotationVDir(Vec3 vDir, float r)
+		{
+			SetRotationVDir(vDir);
+			double sy, cy; Math.SinCos(r * 0.5f, out sy, out cy);
+			var vx = V.X;
+			var vy = V.Y;
+			V.X = (float)(vx * cy - V.Z * sy); V.Y = (float)(W * sy + vy * cy); V.Z = (float)(V.Z * cy + vx * sy); W = (float)(W * cy - vy * sy);
+		}
+
+		public void Invert()
+		{
+			this = !this;
+		}
+
+		public void Normalize()
+		{
+			float d = Math.ISqrt(W * W + V.X * V.X + V.Y * V.Y + V.Z * V.Z);
+			W *= d; V.X *= d; V.Y *= d; V.Z *= d;
+		}
+
+		public void NormalizeSafe()
+		{
+			float d = W * W + V.X * V.X + V.Y * V.Y + V.Z * V.Z;
+			if (d > 1e-8f)
+			{
+				d = Math.ISqrt(d);
+				W *= d; V.X *= d; V.Y *= d; V.Z *= d;
 			}
-			//check if "M22" is the biggest element
-			if ((matrix.M22 >= matrix.M00) && (matrix.M22 >= matrix.M11))
-			{
-				s = Math.Sqrt(matrix.M22 - matrix.M00 - matrix.M11 + 1.0f); 
-				p = 0.5f / s;
+			else
+				SetIdentity();
+		}
 
-				V.X = (matrix.M10 - matrix.M01) * p;
-				V.Y = (matrix.M02 + matrix.M20) * p;
-				V.Z = (matrix.M12 + matrix.M21) * p;
-				W = s * 0.5f;
+		public void Nlerp(Quat start, Quat end, float amount)
+		{
+			var q = end;
+			if ((start | q) < 0) { q = -q; }
+
+			var vDiff = q.V - start.V;
+
+			V = start.V + (vDiff * amount);
+			W = start.W + ((q.W - start.W) * amount);
+
+			Normalize();
+		}
+
+		public void Nlerp2(Quat start, Quat end, float amount)
+		{
+			var q = end;
+			var cosine = (start | q);
+			if (cosine < 0) q = -q;
+			var k = (1 - Math.Abs(cosine)) * 0.4669269f;
+			var s = 2 * k * amount * amount * amount - 3 * k * amount * amount + (1 + k) * amount;
+			V.X = start.V.X * (1.0f - s) + q.V.X * s;
+			V.Y = start.V.Y * (1.0f - s) + q.V.Y * s;
+			V.Z = start.V.Z * (1.0f - s) + q.V.Z * s;
+			W = start.W * (1.0f - s) + q.W * s;
+			Normalize();
+		}
+
+		public void Slerp(Quat start, Quat end, float amount)
+		{
+			var p = start;
+			var q = end;
+			var q2 = new Quat();
+
+			var cosine = (p | q);
+			if (cosine < 0.0f) { cosine = -cosine; q = -q; } //take shortest arc
+			if (cosine > 0.9999f)
+			{
+				Nlerp(p, q, amount);
+				return;
+			}
+			// from now on, a division by 0 is not possible any more
+			q2.W = q.W - p.W * cosine;
+			q2.V.X = q.V.X - p.V.X * cosine;
+			q2.V.Y = q.V.Y - p.V.Y * cosine;
+			q2.V.Z = q.V.Z - p.V.Z * cosine;
+			var sine = Math.Sqrt(q2 | q2);
+			double s, c;
+
+			Math.SinCos(Math.Atan2(sine, cosine) * amount, out s, out c);
+			W = (float)(p.W * c + q2.W * s / sine);
+			V.X = (float)(p.V.X * c + q2.V.X * s / sine);
+			V.Y = (float)(p.V.Y * c + q2.V.Y * s / sine);
+			V.Z = (float)(p.V.Z * c + q2.V.Z * s / sine);
+		}
+
+		public void ExpSlerp(Quat start, Quat end, float amount)
+		{
+			var q = end;
+			if ((start | q) < 0) { q = -q; }
+			this = start * Math.Exp(Math.Log(!start * q) * amount);	
+		}
+
+		public Quat GetScaled(float scale)
+		{
+			return CreateNlerp(Quat.Identity, this, scale);
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="maxAngle">Max angle in radians</param>
+		public void ClampAngle(float maxAngle)
+		{
+			var wMax = Math.Cos(2.0f * maxAngle);
+			if (W < wMax)
+			{
+				W = wMax;
+				Normalize();
+			}
+		}
+
+		public Quat Inverted { get { var q = this; q.Invert(); return q; } }
+
+		public Quat Normalized { get { var q = this; q.Normalize(); return q; } }
+		public Quat NormalizedSafe { get { var q = this; q.NormalizeSafe(); return q; } }
+
+		public float Length
+		{
+			get
+			{
+				return Math.Sqrt(W * W + V.X * V.X + V.Y * V.Y + V.Z * V.Z);
 			}
 		}
 
@@ -194,1053 +272,257 @@ namespace CryEngine
 		public Vec3 Row1 { get { return new Vec3(2 * (V.Y * V.X + V.Z * W), 2 * (V.Y * V.Y + W * W) - 1, 2 * (V.Y * V.Z - V.X * W)); } }
 		public Vec3 Row2 { get { return new Vec3(2 * (V.Z * V.X - V.Y * W), 2 * (V.Z * V.Y + V.X * W), 2 * (V.Z * V.Z + W * W) - 1); } }
 
-		/// <summary>
-		/// Gets a value indicating whether this instance is equivalent to the identity quaternion.
-		/// </summary>
-		/// <value>
-		/// <c>true</c> if this instance is an identity quaternion; otherwise, <c>false</c>.
-		/// </value>
-		public bool IsIdentity
+		#region Operators
+		public static Quat operator *(Quat value, float scale)
 		{
-			get { return Equals(Identity); }
+			return new Quat(value.W * scale, value.V * scale);
 		}
 
-		/// <summary>
-		/// Gets a value indicting whether this instance is normalized.
-		/// </summary>
-		public bool IsNormalized
+		public static bool operator ==(Quat left, Quat right)
 		{
-			get { return Math.Abs((V.X * V.X) + (V.Y * V.Y) + (V.Z * V.Z) + (W * W) - 1f) < Math.ZeroTolerance; }
+			return left.IsEquivalent(right, 0.0000001f); 
 		}
 
-		/// <summary>
-		/// Gets the angle of the quaternion.
-		/// </summary>
-		/// <value>The quaternion's angle.</value>
-		public float Angle
+		public static bool operator !=(Quat left, Quat right)
 		{
-			get
+			return !(left == right);
+		}
+
+		public static Quat operator -(Quat q)
+		{
+			return new Quat(-q.W, -q.V);
+		}
+
+		public static Quat operator !(Quat q)
+		{
+			return new Quat(q.W, -q.V);
+		}
+
+		public static float operator |(Quat left, Quat right)
+		{
+			return (left.V.X * right.V.X + left.V.Y * right.V.Y + left.V.Z * right.V.Z + left.W * right.W);
+		}
+
+		public static Quat operator *(Quat left, Quat right)
+		{
+			return new Quat(
+				left.W * right.W - (left.V.X * right.V.X + left.V.Y * right.V.Y + left.V.Z * right.V.Z),
+				left.V.Y * right.V.Z - left.V.Z * right.V.Y + left.W * right.V.X + left.V.X * right.W,
+				left.V.Z * right.V.X - left.V.X * right.V.Z + left.W * right.V.Y + left.V.Y * right.W,
+				left.V.X * right.V.Y - left.V.Y * right.V.X + left.W * right.V.Z + left.V.Z * right.W);
+		}
+
+		public static Quat operator /(Quat left, Quat right)
+		{
+			return (!right * left);
+		}
+
+		public static Quat operator +(Quat left, Quat right)
+		{
+			return new Quat(left.W + right.W, left.V + right.V);
+		}
+
+		public static Quat operator %(Quat left, Quat right)
+		{
+			var p = right;
+			if ((p | left) < 0) p = -p;
+			return new Quat(left.W + p.W, left.V + p.V);
+		}
+
+		public static Quat operator -(Quat left, Quat right)
+		{
+			return new Quat(left.W - right.W, left.V - right.V);
+		}
+
+		public static Quat operator /(Quat left, float right)
+		{
+			return new Quat(left.W / right, left.V / right);
+		}
+
+		public static Vec3 operator *(Quat left, Vec3 right)
+		{
+			var vOut = new Vec3();
+			var r2 = new Vec3();
+
+			r2.X = (left.V.Y * right.Z - left.V.Z * right.Y) + left.W * right.X;
+			r2.Y = (left.V.Z * right.X - left.V.X * right.Z) + left.W * right.Y;
+			r2.Z = (left.V.X * right.Y - left.V.Y * right.X) + left.W * right.Z;
+			vOut.X = (r2.Z * left.V.Y - r2.Y * left.V.Z); vOut.X += vOut.X + right.X;
+			vOut.Y = (r2.X * left.V.Z - r2.Z * left.V.X); vOut.Y += vOut.Y + right.Y;
+			vOut.Z = (r2.Y * left.V.X - r2.X * left.V.Y); vOut.Z += vOut.Z + right.Z;
+			return vOut;
+		}
+
+		public static Vec3 operator *(Vec3 left, Quat right)
+		{
+			var vOut = new Vec3();
+			var r2 = new Vec3();
+
+			r2.X=(right.V.Z*left.Y-right.V.Y*left.Z)+right.W*left.X;
+			r2.Y=(right.V.X*left.Z-right.V.Z*left.X)+right.W*left.Y;
+			r2.Z=(right.V.Y*left.X-right.V.X*left.Y)+right.W*left.Z;
+			vOut.X=(r2.Y*right.V.Z-r2.Z*right.V.Y); vOut.X+=vOut.X+left.X;
+			vOut.Y=(r2.Z*right.V.X-r2.X*right.V.Z); vOut.Y+=vOut.Y+left.Y;
+			vOut.Z=(r2.X*right.V.Y-r2.Y*right.V.X); vOut.Z+=vOut.Z+left.Z;
+			return vOut;
+		}
+		#endregion
+
+		#region Overrides
+		public override int GetHashCode()
+		{
+			unchecked // Overflow is fine, just wrap
 			{
-				float length = (V.X * V.X) + (V.Y * V.Y) + (V.Z * V.Z);
-				if(length < Math.ZeroTolerance)
-					return 0.0f;
+				int hash = 17;
 
-				return (float)(2.0 * Math.Acos(W));
+				hash = hash * 23 + W.GetHashCode();
+				hash = hash * 23 + V.GetHashCode();
+
+				return hash;
 			}
 		}
 
-		/// <summary>
-		/// Gets the axis components of the quaternion.
-		/// </summary>
-		/// <value>The axis components of the quaternion.</value>
-		public Vec3 Axis
+		public override bool Equals(object obj)
 		{
-			get
-			{
-				float length = (V.X * V.X) + (V.Y * V.Y) + (V.Z * V.Z);
-				if(length < Math.ZeroTolerance)
-					return new Vec3(1, 0, 0);
+			if (obj == null)
+				return false;
 
-				float inv = 1.0f / length;
-				return new Vec3(V.X * inv, V.Y * inv, V.Z * inv);
+			if (obj is Quat)
+				return obj.GetHashCode() == GetHashCode();
+
+			return false;
+		}
+		#endregion
+
+		#region Statics
+		/// <summary>
+		/// The identity <see cref="CryEngine.Quat"/> (0, 0, 0, 1).
+		/// </summary>
+		public static readonly Quat Identity = new Quat(0.0f, 0.0f, 0.0f, 1.0f);
+
+		public static Quat FromMatrix33(Matrix33 m)
+		{
+			float s, p, tr = m.M00 + m.M11 + m.M22;
+
+			//check the diagonal
+			if (tr > (float)0.0)
+			{
+				s = Math.Sqrt(tr + 1.0f); p = 0.5f / s;
+				return new Quat(s * 0.5f, (m.M21 - m.M12) * p, (m.M02 - m.M20) * p, (m.M10 - m.M01) * p);
 			}
+			//diagonal is negative. now we have to find the biggest element on the diagonal
+			//check if "M00" is the biggest element
+			if ((m.M00 >= m.M11) && (m.M00 >= m.M22))
+			{
+				s = Math.Sqrt(m.M00 - m.M11 - m.M22 + 1.0f); p = 0.5f / s;
+				return new Quat((m.M21 - m.M12) * p, s * 0.5f, (m.M10 + m.M01) * p, (m.M20 + m.M02) * p);
+			}
+			//check if "M11" is the biggest element
+			if ((m.M11 >= m.M00) && (m.M11 >= m.M22))
+			{
+				s = Math.Sqrt(m.M11 - m.M22 - m.M00 + 1.0f); p = 0.5f / s;
+				return new Quat((m.M02 - m.M20) * p, (m.M01 + m.M10) * p, s * 0.5f, (m.M21 + m.M12) * p);
+			}
+			//check if "M22" is the biggest element
+			if ((m.M22 >= m.M00) && (m.M22 >= m.M11))
+			{
+				s = Math.Sqrt(m.M22 - m.M00 - m.M11 + 1.0f); p = 0.5f / s;
+				return new Quat((m.M10 - m.M01) * p, (m.M02 + m.M20) * p, (m.M12 + m.M21) * p, s * 0.5f);
+			}
+
+			return Quat.Identity; //if it ends here, then we have no valid rotation matrix
 		}
 
-		/// <summary>
-		/// Gets or sets the component at the specified index.
-		/// </summary>
-		/// <value>The value of the X, Y, Z, or W component, depending on the index.</value>
-		/// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component, 2 for the Z component, and 3 for the W component.</param>
-		/// <returns>The value of the component at the specified index.</returns>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 3].</exception>
-		public float this[int index]
-		{
-			get
-			{
-				switch(index)
-				{
-					case 0: return V.X;
-					case 1: return V.Y;
-					case 2: return V.Z;
-					case 3: return W;
-				}
-
-				throw new ArgumentOutOfRangeException("index", "Indices for Quaternion run from 0 to 3, inclusive.");
-			}
-
-			set
-			{
-				switch(index)
-				{
-					case 0: V.X = value; break;
-					case 1: V.Y = value; break;
-					case 2: V.Z = value; break;
-					case 3: W = value; break;
-					default: throw new ArgumentOutOfRangeException("index", "Indices for Quaternion run from 0 to 3, inclusive.");
-				}
-			}
-		}
-
-		public static Quat CreateRotationXYZ(Vec3 a)
+		public static Quat CreateRotationAA(float rad, Vec3 axis)
 		{
 			var q = new Quat();
-			q.SetRotationXYZ(a);
-
+			q.SetRotationAA(rad, axis);
 			return q;
 		}
 
-		public void SetRotationXYZ(Vec3 a)
+		public static Quat CreateRotationAA(float cosha, float sinha, Vec3 axis)
 		{
-			float sx, cx; Math.SinCos(a.X * 0.5f, out sx, out cx);
-			float sy, cy; Math.SinCos(a.Y * 0.5f, out sy, out cy);
-			float sz, cz; Math.SinCos(a.Z * 0.5f, out sz, out cz);
-			W = cx * cy * cz + sx * sy * sz;
-			V.X = cz * cy * sx - sz * sy * cx;
-			V.Y = cz * sy * cx + sz * cy * sx;
-			V.Z = sz * cy * cx - cz * sy * sx;
+			var q = new Quat();
+			q.SetRotationAA(cosha, sinha, axis);
+			return q;
+		}
+
+		public static Quat CreateRotationXYZ(Vec3 angle)
+		{
+			var q = new Quat();
+			q.SetRotationXYZ(angle);
+			return q;
 		}
 
 		public static Quat CreateRotationX(float r)
 		{
 			var q = new Quat();
 			q.SetRotationX(r);
-
 			return q;
-		}
-
-		public void SetRotationX(float r)
-		{
-			float s, c;
-			Math.SinCos(r * 0.5f, out s, out c);
-
-			W = c; V.X = s; V.Y = 0; V.Z = 0;
 		}
 
 		public static Quat CreateRotationY(float r)
 		{
 			var q = new Quat();
 			q.SetRotationY(r);
-
 			return q;
-		}
-
-		public void SetRotationY(float r)
-		{
-			float s, c;
-			Math.SinCos(r * 0.5f, out s, out c);
-
-			W = c; V.X = 0; V.Y = s; V.Z = 0;
 		}
 
 		public static Quat CreateRotationZ(float r)
 		{
 			var q = new Quat();
 			q.SetRotationZ(r);
-
 			return q;
 		}
 
-		public void SetRotationZ(float r)
-		{
-			float s, c;
-			Math.SinCos(r * 0.5f, out s, out c);
-
-			W = c; V.X = 0; V.Y = 0; V.Z = s;
-		}
-
-		public static Quat CreateRotationDir(Vec3 dir)
+		/*public static Quat CreateRotationV0V1(Vec3 v0, Vec3 v1)
 		{
 			var q = new Quat();
-			q.SetRotationDir(dir);
+			q.SetRotationV0V1(v0, v1);
+			return q;
+		}*/
 
+		public static Quat CreateRotationVDir(Vec3 vDir)
+		{
+			var q = new Quat();
+			q.SetRotationVDir(vDir);
 			return q;
 		}
 
-		public void SetRotationDir(Vec3 dir)
+		public static Quat CreateRotationVDir(Vec3 vDir, float r)
 		{
-			//set default initialisation for up-vector	
-			W = 0.70710676908493042f;
-			V.X = (dir.Z + dir.Z) * 0.35355338454246521f;
-			V.Y = 0; 
-			V.Z = 0;
-
-			var l = Math.Sqrt(dir.X * dir.X + dir.Y * dir.Y);
-			if (l > 0.00001)
-			{
-				//calculate LookAt quaternion
-				Vec3 hv = new Vec3(dir.X / l, dir.Y / l + 1.0f, l + 1.0f);
-				var r = Math.Sqrt(hv.X * hv.X + hv.Y * hv.Y);
-				var s = Math.Sqrt(hv.Z * hv.Z + dir.Z * dir.Z);
-				//generate the half-angle sine&cosine
-
-				var hacos0 = 0.0f; 
-				var hasin0 = -1.0f;
-
-				if (r > 0.00001)
-				{ 
-					hacos0 = hv.Y / r;
-					hasin0 = -hv.X / r; 
-				}	//yaw
-
-				var hacos1 = hv.Z / s; 
-				var hasin1 = dir.Z / s;					//pitch
-
-				W = hacos0 * hacos1;
-				V.X = hacos0 * hasin1;
-				V.Y = hasin0 * hasin1; 
-				V.Z = hasin0 * hacos1;
-			}
+			var q = new Quat();
+			q.SetRotationVDir(vDir, r);
+			return q;
 		}
 
-		/// <summary>
-		/// Conjugates the quaternion.
-		/// </summary>
-		public void Conjugate()
+		public static Quat CreateNlerp(Quat start, Quat end, float amount)
 		{
-			V.X = -V.X;
-			V.Y = -V.Y;
-			V.Z = -V.Z;
+			var q = new Quat();
+			q.Nlerp(start, end, amount);
+			return q;
 		}
 
-		public static Quat operator !(Quat quat)
+		public static Quat CreateNlerp2(Quat start, Quat end, float amount)
 		{
-			return new Quat(quat.Axis, -quat.Angle);
-		}
-		/// <summary>
-		/// Conjugates and renormalizes the quaternion.
-		/// </summary>
-		public void Invert()
-		{
-			this = !this;
+			var q = new Quat();
+			q.Nlerp2(start, end, amount);
+			return q;
 		}
 
-		public Quat Inverted
+		public static Quat CreateSlerp(Quat start, Quat end, float amount)
 		{
-			get
-			{
-				var quat = this;
-				quat.Invert();
-
-				return quat;
-			}
+			var q = new Quat();
+			q.Slerp(start, end, amount);
+			return q;
 		}
 
-		/// <summary>
-		/// Calculates the length of the quaternion.
-		/// </summary>
-		/// <returns>The length of the quaternion.</returns>
-		/// <remarks>
-		/// <see cref="CryEngine.Quat.LengthSquared"/> may be preferred when only the relative length is needed
-		/// and speed is of the essence.
-		/// </remarks>
-		public float Length()
+		public static Quat CreateExpSlerp(Quat start, Quat end, float amount)
 		{
-			return Math.Sqrt((V.X * V.X) + (V.Y * V.Y) + (V.Z * V.Z) + (W * W));
+			var q = new Quat();
+			q.ExpSlerp(start, end, amount);
+			return q;
 		}
-
-		/// <summary>
-		/// Calculates the squared length of the quaternion.
-		/// </summary>
-		/// <returns>The squared length of the quaternion.</returns>
-		/// <remarks>
-		/// This method may be preferred to <see cref="CryEngine.Quat.Length"/> when only a relative length is needed
-		/// and speed is of the essence.
-		/// </remarks>
-		public float LengthSquared()
-		{
-			return (V.X * V.X) + (V.Y * V.Y) + (V.Z * V.Z) + (W * W);
-		}
-
-		/// <summary>
-		/// Converts the quaternion into a unit quaternion.
-		/// </summary>
-		public void Normalize()
-		{
-			float length = Length();
-			if(length > Math.ZeroTolerance)
-			{
-				float inverse = 1.0f / length;
-				V.X *= inverse;
-				V.Y *= inverse;
-				V.Z *= inverse;
-				W *= inverse;
-			}
-		}
-
-		public Quat Normalized
-		{
-			get
-			{
-				var quat = this;
-				quat.Normalize();
-
-				return quat;
-			}
-		}
-
-		/// <summary>
-		/// Creates an array containing the elements of the quaternion.
-		/// </summary>
-		/// <returns>A four-element array containing the components of the quaternion.</returns>
-		public float[] ToArray()
-		{
-			return new [] { V.X, V.Y, V.Z, W };
-		}
-
-		/// <summary>
-		/// Returns a <see cref="CryEngine.Quat"/> containing the 4D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
-		/// </summary>
-		/// <param name="value1">A <see cref="CryEngine.Quat"/> containing the 4D Cartesian coordinates of vertex 1 of the triangle.</param>
-		/// <param name="value2">A <see cref="CryEngine.Quat"/> containing the 4D Cartesian coordinates of vertex 2 of the triangle.</param>
-		/// <param name="value3">A <see cref="CryEngine.Quat"/> containing the 4D Cartesian coordinates of vertex 3 of the triangle.</param>
-		/// <param name="amount1">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="value2"/>).</param>
-		/// <param name="amount2">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="value3"/>).</param>
-		/// <param name="result">When the method completes, contains a new <see cref="CryEngine.Quat"/> containing the 4D Cartesian coordinates of the specified point.</param>
-		public static void Barycentric(ref Quat value1, ref Quat value2, ref Quat value3, float amount1, float amount2, out Quat result)
-		{
-			Quat start, end;
-			Slerp(ref value1, ref value2, amount1 + amount2, out start);
-			Slerp(ref value1, ref value3, amount1 + amount2, out end);
-			Slerp(ref start, ref end, amount2 / (amount1 + amount2), out result);
-		}
-
-		/// <summary>
-		/// Returns a <see cref="CryEngine.Quat"/> containing the 4D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
-		/// </summary>
-		/// <param name="value1">A <see cref="CryEngine.Quat"/> containing the 4D Cartesian coordinates of vertex 1 of the triangle.</param>
-		/// <param name="value2">A <see cref="CryEngine.Quat"/> containing the 4D Cartesian coordinates of vertex 2 of the triangle.</param>
-		/// <param name="value3">A <see cref="CryEngine.Quat"/> containing the 4D Cartesian coordinates of vertex 3 of the triangle.</param>
-		/// <param name="amount1">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="value2"/>).</param>
-		/// <param name="amount2">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="value3"/>).</param>
-		/// <returns>A new <see cref="CryEngine.Quat"/> containing the 4D Cartesian coordinates of the specified point.</returns>
-		public static Quat Barycentric(Quat value1, Quat value2, Quat value3, float amount1, float amount2)
-		{
-			Quat result;
-			Barycentric(ref value1, ref value2, ref value3, amount1, amount2, out result);
-			return result;
-		}
-
-		/// <summary>
-		/// Conjugates a quaternion.
-		/// </summary>
-		/// <param name="value">The quaternion to conjugate.</param>
-		/// <param name="result">When the method completes, contains the conjugated quaternion.</param>
-		public static void Conjugate(ref Quat value, out Quat result)
-		{
-			result.V.X = -value.V.X;
-			result.V.Y = -value.V.Y;
-			result.V.Z = -value.V.Z;
-			result.W = value.W;
-		}
-
-		/// <summary>
-		/// Conjugates a quaternion.
-		/// </summary>
-		/// <param name="value">The quaternion to conjugate.</param>
-		/// <returns>The conjugated quaternion.</returns>
-		public static Quat Conjugate(Quat value)
-		{
-			Quat result;
-			Conjugate(ref value, out result);
-			return result;
-		}
-
-		/// <summary>
-		/// Calculates the dot product of two quaternions.
-		/// </summary>
-		/// <param name="left">First source quaternion.</param>
-		/// <param name="right">Second source quaternion.</param>
-		/// <param name="result">When the method completes, contains the dot product of the two quaternions.</param>
-		public static void Dot(ref Quat left, ref Quat right, out float result)
-		{
-			result = (left.V.X * right.V.X) + (left.V.Y * right.V.Y) + (left.V.Z * right.V.Z) + (left.W * right.W);
-		}
-
-		/// <summary>
-		/// Calculates the dot product of two quaternions.
-		/// </summary>
-		/// <param name="left">First source quaternion.</param>
-		/// <param name="right">Second source quaternion.</param>
-		/// <returns>The dot product of the two quaternions.</returns>
-		public static float Dot(Quat left, Quat right)
-		{
-			return (left.V.X * right.V.X) + (left.V.Y * right.V.Y) + (left.V.Z * right.V.Z) + (left.W * right.W);
-		}
-
-		/// <summary>
-		/// Exponentiates a quaternion.
-		/// </summary>
-		/// <param name="value">The quaternion to exponentiate.</param>
-		/// <param name="result">When the method completes, contains the exponentiated quaternion.</param>
-		public static void Exponential(ref Quat value, out Quat result)
-		{
-			float angle = Math.Sqrt((value.V.X * value.V.X) + (value.V.Y * value.V.Y) + (value.V.Z * value.V.Z));
-			float sin = Math.Sin(angle);
-
-			if(Math.Abs(sin) >= Math.ZeroTolerance)
-			{
-				float coeff = sin / angle;
-				result.V.X = coeff * value.V.X;
-				result.V.Y = coeff * value.V.Y;
-				result.V.Z = coeff * value.V.Z;
-			}
-			else
-			{
-				result = value;
-			}
-
-			result.W = Math.Cos(angle);
-		}
-
-		/// <summary>
-		/// Exponentiates a quaternion.
-		/// </summary>
-		/// <param name="value">The quaternion to exponentiate.</param>
-		/// <returns>The exponentiated quaternion.</returns>
-		public static Quat Exponential(Quat value)
-		{
-			Quat result;
-			Exponential(ref value, out result);
-			return result;
-		}
-
-		/// <summary>
-		/// Conjugates and renormalizes the quaternion.
-		/// </summary>
-		/// <param name="value">The quaternion to conjugate and renormalize.</param>
-		/// <param name="result">When the method completes, contains the conjugated and renormalized quaternion.</param>
-		public static void Invert(ref Quat value, out Quat result)
-		{
-			result = value;
-			result.Invert();
-		}
-
-		/// <summary>
-		/// Conjugates and renormalizes the quaternion.
-		/// </summary>
-		/// <param name="value">The quaternion to conjugate and renormalize.</param>
-		/// <returns>The conjugated and renormalized quaternion.</returns>
-		public static Quat Invert(Quat value)
-		{
-			Quat result;
-			Invert(ref value, out result);
-			return result;
-		}
-
-		/// <summary>
-		/// Performs a linear interpolation between two quaternions.
-		/// </summary>
-		/// <param name="start">Start quaternion.</param>
-		/// <param name="end">End quaternion.</param>
-		/// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-		/// <param name="result">When the method completes, contains the linear interpolation of the two quaternions.</param>
-		/// <remarks>
-		/// This method performs the linear interpolation based on the following formula.
-		/// <code>start + (end - start) * amount</code>
-		/// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
-		/// </remarks>
-		public static void Lerp(ref Quat start, ref Quat end, float amount, out Quat result)
-		{
-			float inverse = 1.0f - amount;
-
-			if(Dot(start, end) >= 0.0f)
-			{
-				result.V.X = (inverse * start.V.X) + (amount * end.V.X);
-				result.V.Y = (inverse * start.V.Y) + (amount * end.V.Y);
-				result.V.Z = (inverse * start.V.Z) + (amount * end.V.Z);
-				result.W = (inverse * start.W) + (amount * end.W);
-			}
-			else
-			{
-				result.V.X = (inverse * start.V.X) - (amount * end.V.X);
-				result.V.Y = (inverse * start.V.Y) - (amount * end.V.Y);
-				result.V.Z = (inverse * start.V.Z) - (amount * end.V.Z);
-				result.W = (inverse * start.W) - (amount * end.W);
-			}
-
-			result.Normalize();
-		}
-
-		/// <summary>
-		/// Performs a linear interpolation between two quaternion.
-		/// </summary>
-		/// <param name="start">Start quaternion.</param>
-		/// <param name="end">End quaternion.</param>
-		/// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-		/// <returns>The linear interpolation of the two quaternions.</returns>
-		/// <remarks>
-		/// This method performs the linear interpolation based on the following formula.
-		/// <code>start + (end - start) * amount</code>
-		/// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
-		/// </remarks>
-		public static Quat Lerp(Quat start, Quat end, float amount)
-		{
-			Quat result;
-			Lerp(ref start, ref end, amount, out result);
-			return result;
-		}
-
-		/// <summary>
-		/// Calculates the natural logarithm of the specified quaternion.
-		/// </summary>
-		/// <param name="value">The quaternion whose logarithm will be calculated.</param>
-		/// <param name="result">When the method completes, contains the natural logarithm of the quaternion.</param>
-		public static void Logarithm(ref Quat value, out Quat result)
-		{
-			if(Math.Abs(value.W) < 1.0)
-			{
-				float angle = Math.Acos(value.W);
-				float sin = Math.Sin(angle);
-
-				if(Math.Abs(sin) >= Math.ZeroTolerance)
-				{
-					float coeff = angle / sin;
-					result.V.X = value.V.X * coeff;
-					result.V.Y = value.V.Y * coeff;
-					result.V.Z = value.V.Z * coeff;
-				}
-				else
-				{
-					result = value;
-				}
-			}
-			else
-			{
-				result = value;
-			}
-
-			result.W = 0.0f;
-		}
-
-		/// <summary>
-		/// Calculates the natural logarithm of the specified quaternion.
-		/// </summary>
-		/// <param name="value">The quaternion whose logarithm will be calculated.</param>
-		/// <returns>The natural logarithm of the quaternion.</returns>
-		public static Quat Logarithm(Quat value)
-		{
-			Quat result;
-			Logarithm(ref value, out result);
-			return result;
-		}
-
-		/// <summary>
-		/// Converts the quaternion into a unit quaternion.
-		/// </summary>
-		/// <param name="value">The quaternion to normalize.</param>
-		/// <param name="result">When the method completes, contains the normalized quaternion.</param>
-		public static void Normalize(ref Quat value, out Quat result)
-		{
-			Quat temp = value;
-			result = temp;
-			result.Normalize();
-		}
-
-		/// <summary>
-		/// Converts the quaternion into a unit quaternion.
-		/// </summary>
-		/// <param name="value">The quaternion to normalize.</param>
-		/// <returns>The normalized quaternion.</returns>
-		public static Quat Normalize(Quat value)
-		{
-			value.Normalize();
-			return value;
-		}
-
-		/// <summary>
-		/// Creates a quaternion given a rotation and an axis.
-		/// </summary>
-		/// <param name="axis">The axis of rotation.</param>
-		/// <param name="angle">The angle of rotation.</param>
-		/// <param name="result">When the method completes, contains the newly created quaternion.</param>
-		public static void RotationAxis(ref Vec3 axis, float angle, out Quat result)
-		{
-			Vec3 normalized;
-			Vec3.Normalize(ref axis, out normalized);
-
-			float half = angle * 0.5f;
-			float sin = Math.Sin(half);
-			float cos = Math.Cos(half);
-
-			result.V.X = normalized.X * sin;
-			result.V.Y = normalized.Y * sin;
-			result.V.Z = normalized.Z * sin;
-			result.W = cos;
-		}
-
-		/// <summary>
-		/// Creates a quaternion given a rotation and an axis.
-		/// </summary>
-		/// <param name="axis">The axis of rotation.</param>
-		/// <param name="angle">The angle of rotation.</param>
-		/// <returns>The newly created quaternion.</returns>
-		public static Quat RotationAxis(Vec3 axis, float angle)
-		{
-			Quat result;
-			RotationAxis(ref axis, angle, out result);
-			return result;
-		}
-
-		/// <summary>
-		/// Creates a quaternion given a yaw, pitch, and roll value.
-		/// </summary>
-		/// <param name="yaw">The yaw of rotation.</param>
-		/// <param name="pitch">The pitch of rotation.</param>
-		/// <param name="roll">The roll of rotation.</param>
-		/// <param name="result">When the method completes, contains the newly created quaternion.</param>
-		public static void RotationYawPitchRoll(float yaw, float pitch, float roll, out Quat result)
-		{
-			float halfRoll = roll * 0.5f;
-			float halfPitch = pitch * 0.5f;
-			float halfYaw = yaw * 0.5f;
-
-			float sinRoll = Math.Sin(halfRoll);
-			float cosRoll = Math.Cos(halfRoll);
-			float sinPitch = Math.Sin(halfPitch);
-			float cosPitch = Math.Cos(halfPitch);
-			float sinYaw = Math.Sin(halfYaw);
-			float cosYaw = Math.Cos(halfYaw);
-
-			result.V.X = (cosYaw * sinPitch * cosRoll) + (sinYaw * cosPitch * sinRoll);
-			result.V.Y = (sinYaw * cosPitch * cosRoll) - (cosYaw * sinPitch * sinRoll);
-			result.V.Z = (cosYaw * cosPitch * sinRoll) - (sinYaw * sinPitch * cosRoll);
-			result.W = (cosYaw * cosPitch * cosRoll) + (sinYaw * sinPitch * sinRoll);
-		}
-
-		/// <summary>
-		/// Creates a quaternion given a yaw, pitch, and roll value.
-		/// </summary>
-		/// <param name="yaw">The yaw of rotation.</param>
-		/// <param name="pitch">The pitch of rotation.</param>
-		/// <param name="roll">The roll of rotation.</param>
-		/// <returns>The newly created quaternion.</returns>
-		public static Quat RotationYawPitchRoll(float yaw, float pitch, float roll)
-		{
-			Quat result;
-			RotationYawPitchRoll(yaw, pitch, roll, out result);
-			return result;
-		}
-
-		/// <summary>
-		/// Interpolates between two quaternions, using spherical linear interpolation.
-		/// </summary>
-		/// <param name="start">Start quaternion.</param>
-		/// <param name="end">End quaternion.</param>
-		/// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-		/// <param name="result">When the method completes, contains the spherical linear interpolation of the two quaternions.</param>
-		public static void Slerp(ref Quat start, ref Quat end, float amount, out Quat result)
-		{
-			float opposite;
-			float inverse;
-			float dot = Dot(start, end);
-
-			if(Math.Abs(dot) > 1.0f - Math.ZeroTolerance)
-			{
-				inverse = 1.0f - amount;
-				opposite = amount * System.Math.Sign(dot);
-			}
-			else
-			{
-				float acos = Math.Acos(Math.Abs(dot));
-				float invSin = (float)(1.0 / Math.Sin(acos));
-
-				inverse = Math.Sin((1.0f - amount) * acos) * invSin;
-				opposite = Math.Sin(amount * acos) * invSin * System.Math.Sign(dot);
-			}
-
-			result.V.X = (inverse * start.V.X) + (opposite * end.V.X);
-			result.V.Y = (inverse * start.V.Y) + (opposite * end.V.Y);
-			result.V.Z = (inverse * start.V.Z) + (opposite * end.V.Z);
-			result.W = (inverse * start.W) + (opposite * end.W);
-		}
-
-		/// <summary>
-		/// Interpolates between two quaternions, using spherical linear interpolation.
-		/// </summary>
-		/// <param name="start">Start quaternion.</param>
-		/// <param name="end">End quaternion.</param>
-		/// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-		/// <returns>The spherical linear interpolation of the two quaternions.</returns>
-		public static Quat Slerp(Quat start, Quat end, float amount)
-		{
-			Quat result;
-			Slerp(ref start, ref end, amount, out result);
-			return result;
-		}
-
-		/// <summary>
-		/// Interpolates between quaternions, using spherical quadrangle interpolation.
-		/// </summary>
-		/// <param name="value1">First source quaternion.</param>
-		/// <param name="value2">Second source quaternion.</param>
-		/// <param name="value3">Thrid source quaternion.</param>
-		/// <param name="value4">Fourth source quaternion.</param>
-		/// <param name="amount">Value between 0 and 1 indicating the weight of interpolation.</param>
-		/// <param name="result">When the method completes, contains the spherical quadrangle interpolation of the quaternions.</param>
-		public static void Squad(ref Quat value1, ref Quat value2, ref Quat value3, ref Quat value4, float amount, out Quat result)
-		{
-			Quat start, end;
-			Slerp(ref value1, ref value4, amount, out start);
-			Slerp(ref value2, ref value3, amount, out end);
-			Slerp(ref start, ref end, 2.0f * amount * (1.0f - amount), out result);
-		}
-
-		/// <summary>
-		/// Interpolates between quaternions, using spherical quadrangle interpolation.
-		/// </summary>
-		/// <param name="value1">First source quaternion.</param>
-		/// <param name="value2">Second source quaternion.</param>
-		/// <param name="value3">Thrid source quaternion.</param>
-		/// <param name="value4">Fourth source quaternion.</param>
-		/// <param name="amount">Value between 0 and 1 indicating the weight of interpolation.</param>
-		/// <returns>The spherical quadrangle interpolation of the quaternions.</returns>
-		public static Quat Squad(Quat value1, Quat value2, Quat value3, Quat value4, float amount)
-		{
-			Quat result;
-			Squad(ref value1, ref value2, ref value3, ref value4, amount, out result);
-			return result;
-		}
-
-		/// <summary>
-		/// Sets up control points for spherical quadrangle interpolation.
-		/// </summary>
-		/// <param name="value1">First source quaternion.</param>
-		/// <param name="value2">Second source quaternion.</param>
-		/// <param name="value3">Third source quaternion.</param>
-		/// <param name="value4">Fourth source quaternion.</param>
-		/// <returns>An array of three quaternions that represent control points for spherical quadrangle interpolation.</returns>
-		public static Quat[] SquadSetup(Quat value1, Quat value2, Quat value3, Quat value4)
-		{
-			Quat q0 = (value1 + value2).LengthSquared() < (value1 - value2).LengthSquared() ? -value1 : value1;
-			Quat q2 = (value2 + value3).LengthSquared() < (value2 - value3).LengthSquared() ? -value3 : value3;
-			Quat q3 = (value3 + value4).LengthSquared() < (value3 - value4).LengthSquared() ? -value4 : value4;
-			Quat q1 = value2;
-
-			Quat q1Exp, q2Exp;
-			Exponential(ref q1, out q1Exp);
-			Exponential(ref q2, out q2Exp);
-
-			var results = new Quat[3];
-			results[0] = q1 * Exponential(-0.25f * (Logarithm(q1Exp * q2) + Logarithm(q1Exp * q0)));
-			results[1] = q2 * Exponential(-0.25f * (Logarithm(q2Exp * q3) + Logarithm(q2Exp * q1)));
-			results[2] = q2;
-
-			return results;
-		}
-
-		/// <summary>
-		/// Adds two quaternions.
-		/// </summary>
-		/// <param name="left">The first quaternion to add.</param>
-		/// <param name="right">The second quaternion to add.</param>
-		/// <returns>The sum of the two quaternions.</returns>
-		public static Quat operator +(Quat left, Quat right)
-		{
-			var result = new Quat();
-			result.V.X = left.V.X + right.V.X;
-			result.V.Y = left.V.Y + right.V.Y;
-			result.V.Z = left.V.Z + right.V.Z;
-			result.W = left.W + right.W;
-			return result;
-		}
-
-		/// <summary>
-		/// Subtracts two quaternions.
-		/// </summary>
-		/// <param name="left">The first quaternion to subtract.</param>
-		/// <param name="right">The second quaternion to subtract.</param>
-		/// <returns>The difference of the two quaternions.</returns>
-		public static Quat operator -(Quat left, Quat right)
-		{
-			var result = new Quat();
-
-			result.V.X = left.V.X - right.V.X;
-			result.V.Y = left.V.Y - right.V.Y;
-			result.V.Z = left.V.Z - right.V.Z;
-			result.W = left.W - right.W;
-
-			return result;
-		}
-
-		/// <summary>
-		/// Reverses the direction of a given quaternion.
-		/// </summary>
-		/// <param name="value">The quaternion to negate.</param>
-		/// <returns>A quaternion facing in the opposite direction.</returns>
-		public static Quat operator -(Quat value)
-		{
-			var result = new Quat();
-			result.V.X = -value.V.X;
-			result.V.Y = -value.V.Y;
-			result.V.Z = -value.V.Z;
-			result.W = -value.W;
-			return result;
-		}
-
-		/// <summary>
-		/// Scales a quaternion by the given value.
-		/// </summary>
-		/// <param name="value">The quaternion to scale.</param>
-		/// <param name="scale">The amount by which to scale the quaternion.</param>
-		/// <returns>The scaled quaternion.</returns>
-		public static Quat operator *(float scale, Quat value)
-		{
-			return value * scale;
-		}
-
-		/// <summary>
-		/// Scales a quaternion by the given value.
-		/// </summary>
-		/// <param name="value">The quaternion to scale.</param>
-		/// <param name="scale">The amount by which to scale the quaternion.</param>
-		/// <returns>The scaled quaternion.</returns>
-		public static Quat operator *(Quat value, float scale)
-		{
-			var result = new Quat();
-			result.V.X = value.V.X * scale;
-			result.V.Y = value.V.Y * scale;
-			result.V.Z = value.V.Z * scale;
-			result.W = value.W * scale;
-			return result;
-		}
-
-		/// <summary>
-		/// Multiplies a quaternion by another.
-		/// </summary>
-		/// <param name="left">The first quaternion to multiply.</param>
-		/// <param name="right">The second quaternion to multiply.</param>
-		/// <returns>The multiplied quaternion.</returns>
-		public static Quat operator *(Quat left, Quat right)
-		{
-			var result = new Quat();
-			float lx = left.V.X;
-			float ly = left.V.Y;
-			float lz = left.V.Z;
-			float lw = left.W;
-			float rx = right.V.X;
-			float ry = right.V.Y;
-			float rz = right.V.Z;
-			float rw = right.W;
-
-			result.V.X = (rx * lw + lx * rw + ry * lz) - (rz * ly);
-			result.V.Y = (ry * lw + ly * rw + rz * lx) - (rx * lz);
-			result.V.Z = (rz * lw + lz * rw + rx * ly) - (ry * lx);
-			result.W = (rw * lw) - (rx * lx + ry * ly + rz * lz);
-			return result;
-		}
-
-		public static Vec3 operator *(Quat left, Vec3 right)
-		{
-			Vec3 result,r2 = new Vec3();
-			r2.X=(left.V.Y*right.Z-left.V.Z*right.Y)+left.W*right.X;
-			r2.Y=(left.V.Z*right.X-left.V.X*right.Z)+left.W*right.Y;
-			r2.Z=(left.V.X*right.Y-left.V.Y*right.X)+left.W*right.Z;
-			result.X=(r2.Z*left.V.Y-r2.Y*left.V.Z); result.X+=result.X+right.X;
-			result.Y=(r2.X*left.V.Z-r2.Z*left.V.X); result.Y+=result.Y+right.Y;
-			result.Z=(r2.Y*left.V.X-r2.X*left.V.Y); result.Z+=result.Z+right.Z;
-
-			return result;
-		}
-
-		/// <summary>
-		/// Tests for equality between two objects.
-		/// </summary>
-		/// <param name="left">The first value to compare.</param>
-		/// <param name="right">The second value to compare.</param>
-		/// <returns><c>true</c> if <paramref name="left"/> has the same value as <paramref name="right"/>; otherwise, <c>false</c>.</returns>
-		public static bool operator ==(Quat left, Quat right)
-		{
-			return left.Equals(right);
-		}
-
-		/// <summary>
-		/// Tests for inequality between two objects.
-		/// </summary>
-		/// <param name="left">The first value to compare.</param>
-		/// <param name="right">The second value to compare.</param>
-		/// <returns><c>true</c> if <paramref name="left"/> has a different value than <paramref name="right"/>; otherwise, <c>false</c>.</returns>
-		public static bool operator !=(Quat left, Quat right)
-		{
-			return !left.Equals(right);
-		}
-
-		/// <summary>
-		/// Returns a <see cref="System.String"/> that represents this instance.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="System.String"/> that represents this instance.
-		/// </returns>
-		public override string ToString()
-		{
-			return string.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1} Z:{2} W:{3}", V.X, V.Y, V.Z, W);
-		}
-
-		/// <summary>
-		/// Returns a <see cref="System.String"/> that represents this instance.
-		/// </summary>
-		/// <param name="format">The format.</param>
-		/// <returns>
-		/// A <see cref="System.String"/> that represents this instance.
-		/// </returns>
-		public string ToString(string format)
-		{
-			if(format == null)
-				return ToString();
-
-			return string.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1} Z:{2} W:{3}", V.X.ToString(format, CultureInfo.CurrentCulture),
-				V.Y.ToString(format, CultureInfo.CurrentCulture), V.Z.ToString(format, CultureInfo.CurrentCulture), W.ToString(format, CultureInfo.CurrentCulture));
-		}
-
-		/// <summary>
-		/// Returns a <see cref="System.String"/> that represents this instance.
-		/// </summary>
-		/// <param name="formatProvider">The format provider.</param>
-		/// <returns>
-		/// A <see cref="System.String"/> that represents this instance.
-		/// </returns>
-		public string ToString(IFormatProvider formatProvider)
-		{
-			return string.Format(formatProvider, "X:{0} Y:{1} Z:{2} W:{3}", V.X, V.Y, V.Z, W);
-		}
-
-		/// <summary>
-		/// Returns a <see cref="System.String"/> that represents this instance.
-		/// </summary>
-		/// <param name="format">The format.</param>
-		/// <param name="formatProvider">The format provider.</param>
-		/// <returns>
-		/// A <see cref="System.String"/> that represents this instance.
-		/// </returns>
-		public string ToString(string format, IFormatProvider formatProvider)
-		{
-			if(format == null)
-				return ToString(formatProvider);
-
-			return string.Format(formatProvider, "X:{0} Y:{1} Z:{2} W:{3}", V.X.ToString(format, formatProvider),
-				V.Y.ToString(format, formatProvider), V.Z.ToString(format, formatProvider), W.ToString(format, formatProvider));
-		}
-
-		/// <summary>
-		/// Returns a hash code for this instance.
-		/// </summary>
-		/// <returns>
-		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
-		/// </returns>
-		public override int GetHashCode()
-		{
-			return V.X.GetHashCode() + V.Y.GetHashCode() + V.Z.GetHashCode() + W.GetHashCode();
-		}
-
-		/// <summary>
-		/// Determines whether the specified <see cref="CryEngine.Quat"/> is equal to this instance.
-		/// </summary>
-		/// <param name="other">The <see cref="CryEngine.Quat"/> to compare with this instance.</param>
-		/// <returns>
-		/// <c>true</c> if the specified <see cref="CryEngine.Quat"/> is equal to this instance; otherwise, <c>false</c>.
-		/// </returns>
-		public bool Equals(Quat other)
-		{
-			return (V.X == other.V.X) && (V.Y == other.V.Y) && (V.Z == other.V.Z) && (W == other.W);
-		}
-
-		/// <summary>
-		/// Determines whether the specified <see cref="CryEngine.Quat"/> is equal to this instance.
-		/// </summary>
-		/// <param name="other">The <see cref="CryEngine.Quat"/> to compare with this instance.</param>
-		/// <param name="epsilon">The amount of error allowed.</param>
-		/// <returns>
-		/// <c>true</c> if the specified <see cref="CryEngine.Quat"/> is equal to this instance; otherwise, <c>false</c>.
-		/// </returns>
-		public bool Equals(Quat other, float epsilon)
-		{
-			return (Math.Abs(other.V.X - V.X) < epsilon &&
-				Math.Abs(other.V.Y - V.Y) < epsilon &&
-				Math.Abs(other.V.Z - V.Z) < epsilon &&
-				Math.Abs(other.W - W) < epsilon);
-		}
-
-		/// <summary>
-		/// Determines whether the specified <see cref="System.Object"/> is equal to this instance.
-		/// </summary>
-		/// <param name="value">The <see cref="System.Object"/> to compare with this instance.</param>
-		/// <returns>
-		/// <c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.
-		/// </returns>
-		public override bool Equals(object value)
-		{
-			if(value == null)
-				return false;
-
-			if(value.GetType() != GetType())
-				return false;
-
-			return Equals((Quat)value);
-		}
-
-#if SlimDX1xInterop
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="CryEngine.Quat"/> to <see cref="SlimDX.Quaternion"/>.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static implicit operator SlimDX.Quaternion(Quaternion value)
-        {
-            return new SlimDX.Quaternion(value.X, value.Y, value.Z, value.W);
-        }
-
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="SlimDX.Quaternion"/> to <see cref="CryEngine.Quat"/>.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static implicit operator Quaternion(SlimDX.Quaternion value)
-        {
-            return new Quaternion(value.X, value.Y, value.Z, value.W);
-        }
-#endif
-
-#if WPFInterop
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="CryEngine.Quat"/> to <see cref="System.Windows.Media.Media3D.Quaternion"/>.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static implicit operator System.Windows.Media.Media3D.Quaternion(Quaternion value)
-        {
-            return new System.Windows.Media.Media3D.Quaternion(value.X, value.Y, value.Z, value.W);
-        }
-
-        /// <summary>
-        /// Performs an explicit conversion from <see cref="System.Windows.Media.Media3D.Quaternion"/> to <see cref="CryEngine.Quat"/>.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static explicit operator Quaternion(System.Windows.Media.Media3D.Quaternion value)
-        {
-            return new Quaternion((float)value.X, (float)value.Y, (float)value.Z, (float)value.W);
-        }
-#endif
-
-#if XnaInterop
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="CryEngine.Quat"/> to <see cref="Microsoft.Xna.Framework.Quaternion"/>.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static implicit operator Microsoft.Xna.Framework.Quaternion(Quaternion value)
-        {
-            return new Microsoft.Xna.Framework.Quaternion(value.X, value.Y, value.Z, value.W);
-        }
-
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="Microsoft.Xna.Framework.Quaternion"/> to <see cref="CryEngine.Quat"/>.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static implicit operator Quaternion(Microsoft.Xna.Framework.Quaternion value)
-        {
-            return new Quaternion(value.X, value.Y, value.Z, value.W);
-        }
-#endif
+		#endregion
 	}
 }
