@@ -53,9 +53,14 @@ namespace CryEngine
 		{
 			int numRemoved = ScriptManager.Instance.RemoveInstances(ScriptType.Entity, instance =>
 				{
-					var entity = instance as Entity;
-					if (entity != null && entity.Id == id && entity.OnRemove())
-						return true;
+					var entity = instance as EntityBase;
+					if (entity != null && entity.Id == id)
+					{
+						if (entity is Entity)
+							return (entity as Entity).OnRemove();
+						else
+							return true;
+					}
 
 					return false;
 				});
