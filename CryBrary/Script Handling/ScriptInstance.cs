@@ -1,10 +1,24 @@
-﻿namespace CryEngine
+﻿using System;
+
+namespace CryEngine
 {
 	/// <summary>
 	/// This interface permits derived classes to be used for script compilation recognition.
 	/// </summary>
 	public abstract class CryScriptInstance
 	{
+		public delegate void OnDestroyedDelegate(OnDestroyedEventArgs args);
+
+		public class OnDestroyedEventArgs : EventArgs
+		{
+			public OnDestroyedEventArgs(int scriptId)
+			{
+				ScriptId = scriptId;
+			}
+
+			public int ScriptId { get; private set; }
+		}
+
 		public override int GetHashCode()
 		{
 			unchecked // Overflow is fine, just wrap
@@ -37,6 +51,8 @@
 			IsDestroyed = true;
 
 			OnDestroyed();
+
+			Destroyed(new OnDestroyedEventArgs(ScriptId));
 		}
 
 		public virtual void OnDestroyed() { }
@@ -57,5 +73,7 @@
 		/// Set to true when the script instance is removed via ScriptManager.RemoveInstances.
 		/// </summary>
 		public bool IsDestroyed { get; private set; }
+
+		public event OnDestroyedDelegate Destroyed;
 	}
 }
