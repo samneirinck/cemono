@@ -28,15 +28,15 @@ namespace CryEngine
 
 		static void OnMouseEvent(int x, int y, MouseEvent mouseEvent, int wheelDelta)
 		{
-			mousePosition.X = x;
-			mousePosition.Y = y;
+			MouseX = x;
+			MouseY = y;
 
 			if(MouseEvents != null)
 				MouseEvents(new MouseEventArgs(x, y, wheelDelta, mouseEvent));
 		}
 
-		static Vec2 mousePosition;
-		public static Vec2 MousePosition { get { return mousePosition; } set { mousePosition = value; } }
+		public static int MouseX { get; set; }
+		public static int MouseY { get; set; }
 		#endregion
 
 		public static event KeyEventDelegate KeyEvents;
