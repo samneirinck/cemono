@@ -125,6 +125,18 @@ namespace CryEngine.Native
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static void _SetAttachmentMaterial(IntPtr attachmentPtr, IntPtr materialPtr);
 
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static QuatT _GetJointAbsolute(IntPtr entPtr, string jointName, int characterSlot);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static QuatT _GetJointAbsoluteDefault(IntPtr entPtr, string jointName, int characterSlot);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static QuatT _GetJointRelative(IntPtr entPtr, string jointName, int characterSlot);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static QuatT _GetJointRelativeDefault(IntPtr entPtr, string jointName, int characterSlot);
+
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static void _SetJointAbsolute(IntPtr entPtr, string jointName, int characterSlot, QuatT absolute);
+
 		public void PlayAnimation(IntPtr ptr, string animationName, int slot, int layer, float blend, float speed, AnimationFlags flags)
 		{
 			_PlayAnimation(ptr, animationName, slot, layer, blend, speed, flags);
@@ -368,6 +380,31 @@ namespace CryEngine.Native
 		public void SetAttachmentMaterial(IntPtr attachmentPtr, IntPtr materialPtr)
 		{
 			_SetAttachmentMaterial(attachmentPtr, materialPtr);
+		}
+
+		public QuatT GetJointAbsolute(IntPtr entPtr, string jointName, int characterSlot)
+		{
+			return _GetJointAbsolute(entPtr, jointName, characterSlot);
+		}
+
+		public QuatT GetJointAbsoluteDefault(IntPtr entPtr, string jointName, int characterSlot)
+		{
+			return _GetJointAbsoluteDefault(entPtr, jointName, characterSlot);
+		}
+
+		public QuatT GetJointRelative(IntPtr entPtr, string jointName, int characterSlot)
+		{
+			return _GetJointRelative(entPtr, jointName, characterSlot);
+		}
+
+		public QuatT GetJointRelativeDefault(IntPtr entPtr, string jointName, int characterSlot)
+		{
+			return _GetJointRelativeDefault(entPtr, jointName, characterSlot);
+		}
+
+		public void SetJointAbsolute(IntPtr entPtr, string jointName, int characterSlot, QuatT absolute)
+		{
+			_SetJointAbsolute(entPtr, jointName, characterSlot, absolute);
 		}
     }
 }

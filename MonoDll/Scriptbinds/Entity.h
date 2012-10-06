@@ -249,6 +249,13 @@ protected:
 
 	static IMaterial *GetAttachmentMaterial(IAttachment *pAttachment);
 	static void SetAttachmentMaterial(IAttachment *pAttachment, IMaterial *pMaterial);
+
+	static QuatT GetJointAbsolute(IEntity *pEntity, mono::string jointName, int characterSlot);
+	static QuatT GetJointAbsoluteDefault(IEntity *pEntity, mono::string jointName, int characterSlot);
+	static QuatT GetJointRelative(IEntity *pEntity, mono::string jointName, int characterSlot);
+	static QuatT GetJointRelativeDefault(IEntity *pEntity, mono::string jointName, int characterSlot);
+
+	static void SetJointAbsolute(IEntity *pEntity, mono::string jointName, int characterSlot, QuatT absolute);
 	// ~Scriptbinds
 
 	static std::vector<const char *> m_monoEntityClasses;

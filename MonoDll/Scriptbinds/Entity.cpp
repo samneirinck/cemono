@@ -96,23 +96,14 @@ CScriptbind_Entity::CScriptbind_Entity()
 	REGISTER_METHOD(GetAttachmentMaterial);
 	REGISTER_METHOD(SetAttachmentMaterial);
 
+	REGISTER_METHOD(GetJointAbsolute);
+	REGISTER_METHOD(GetJointAbsoluteDefault);
+	REGISTER_METHOD(GetJointRelative);
+	REGISTER_METHOD(GetJointRelativeDefault);
+
+	REGISTER_METHOD(SetJointAbsolute);
+
 	gEnv->pEntitySystem->AddSink(this, IEntitySystem::OnSpawn | IEntitySystem::OnRemove, 0);
-}
-
-void GetJointPosition(IEntity *pEntity, mono::string jointName, int characterSlot)
-{
-	ICharacterInstance *pCharacter = pEntity->GetCharacter(characterSlot);
-	if(!pCharacter)
-		return;
-
-	ISkeletonPose *pSkeletonPose = pCharacter->GetISkeletonPose();
-	if(!pSkeletonPose)
-		return;
-
-	int16 id = pSkeletonPose->GetJointIDByName(ToCryString(jointName));
-	if(id > -1)
-	{
-	}
 }
 
 void CScriptbind_Entity::PlayAnimation(IEntity *pEntity, mono::string animationName, int slot, int layer, float blend, float speed, EAnimationFlags flags)
@@ -728,4 +719,77 @@ void CScriptbind_Entity::SetAttachmentMaterial(IAttachment *pAttachment, IMateri
 {
 	if(IAttachmentObject *pObject = pAttachment->GetIAttachmentObject())
 		pObject->SetMaterial(pMaterial);
+}
+
+QuatT CScriptbind_Entity::GetJointAbsolute(IEntity *pEntity, mono::string jointName, int characterSlot)
+{
+	if(ICharacterInstance *pCharacter = pEntity->GetCharacter(characterSlot))
+	{
+		if(ISkeletonPose *pSkeletonPose = pCharacter->GetISkeletonPose())
+		{
+			int16 id = pSkeletonPose->GetJointIDByName(ToCryString(jointName));
+			if(id > -1)
+				return pSkeletonPose->GetAbsJointByID(id);
+		}
+	}
+
+	return QuatT();
+}
+
+QuatT CScriptbind_Entity::GetJointAbsoluteDefault(IEntity *pEntity, mono::string jointName, int characterSlot)
+{
+	if(ICharacterInstance *pCharacter = pEntity->GetCharacter(characterSlot))
+	{
+		if(ISkeletonPose *pSkeletonPose = pCharacter->GetISkeletonPose())
+		{
+			int16 id = pSkeletonPose->GetJointIDByName(ToCryString(jointName));
+			if(id > -1)
+				return pSkeletonPose->GetDefaultAbsJointByID(id);
+		}
+	}
+
+	return QuatT();
+}
+
+QuatT CScriptbind_Entity::GetJointRelative(IEntity *pEntity, mono::string jointName, int characterSlot)
+{
+	if(ICharacterInstance *pCharacter = pEntity->GetCharacter(characterSlot))
+	{
+		if(ISkeletonPose *pSkeletonPose = pCharacter->GetISkeletonPose())
+		{
+			int16 id = pSkeletonPose->GetJointIDByName(ToCryString(jointName));
+			if(id > -1)
+				return pSkeletonPose->GetRelJointByID(id);
+		}
+	}
+
+	return QuatT();
+}
+
+QuatT CScriptbind_Entity::GetJointRelativeDefault(IEntity *pEntity, mono::string jointName, int characterSlot)
+{
+	if(ICharacterInstance *pCharacter = pEntity->GetCharacter(characterSlot))
+	{
+		if(ISkeletonPose *pSkeletonPose = pCharacter->GetISkeletonPose())
+		{
+			int16 id = pSkeletonPose->GetJointIDByName(ToCryString(jointName));
+			if(id > -1)
+				return pSkeletonPose->GetDefaultRelJointByID(id);
+		}
+	}
+
+	return QuatT();
+}
+
+void CScriptbind_Entity::SetJointAbsolute(IEntity *pEntity, mono::string jointName, int characterSlot, QuatT absolute)
+{
+	if(ICharacterInstance *pCharacter = pEntity->GetCharacter(characterSlot))
+	{
+		if(ISkeletonPose *pSkeletonPose = pCharacter->GetISkeletonPose())
+		{
+			int16 id = pSkeletonPose->GetJointIDByName(ToCryString(jointName));
+			if(id > -1)
+				pSkeletonPose->SetAbsJointByID(id, absolute);
+		}
+	}
 }

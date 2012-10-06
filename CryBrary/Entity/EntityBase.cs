@@ -148,6 +148,31 @@ namespace CryEngine
 			NativeMethods.Entity.AddMovement(this.GetAnimatedCharacterHandle().Handle, ref request);
 		}
 
+		public QuatT GetJointAbsolute(string jointName, int characterSlot = 0)
+		{
+			return NativeMethods.Entity.GetJointAbsolute(this.GetEntityHandle().Handle, jointName, characterSlot);
+		}
+
+		public QuatT GetJointAbsoluteDefault(string jointName, int characterSlot = 0)
+		{
+			return NativeMethods.Entity.GetJointAbsoluteDefault(this.GetEntityHandle().Handle, jointName, characterSlot);
+		}
+
+		public void SetJointAbsolute(string jointName, QuatT absolute, int characterSlot = 0)
+		{
+			NativeMethods.Entity.SetJointAbsolute(this.GetEntityHandle().Handle, jointName, characterSlot, absolute);
+		}
+
+		public QuatT GetJointRelative(string jointName, int characterSlot = 0)
+		{
+			return NativeMethods.Entity.GetJointRelative(this.GetEntityHandle().Handle, jointName, characterSlot);
+		}
+
+		public QuatT GetJointRelativeDefault(string jointName, int characterSlot = 0)
+		{
+			return NativeMethods.Entity.GetJointRelativeDefault(this.GetEntityHandle().Handle, jointName, characterSlot);
+		}	
+
 		public Lua.ScriptTable ScriptTable { get { return Lua.ScriptTable.Get(this.GetEntityHandle().Handle); } }
 
 		/// <summary>

@@ -75,5 +75,12 @@ namespace CryEngine.Native
 
 		IntPtr GetAttachmentMaterial(IntPtr attachmentPtr);
 		void SetAttachmentMaterial(IntPtr attachmentPtr, IntPtr materialPtr);
+
+		QuatT GetJointAbsolute(IntPtr entPtr, string jointName, int characterSlot);
+		QuatT GetJointAbsoluteDefault(IntPtr entPtr, string jointName, int characterSlot);
+		QuatT GetJointRelative(IntPtr entPtr, string jointName, int characterSlot);
+		QuatT GetJointRelativeDefault(IntPtr entPtr, string jointName, int characterSlot);
+
+		void SetJointAbsolute(IntPtr entPtr, string jointName, int characterSlot, QuatT absolute);
     }
 }
