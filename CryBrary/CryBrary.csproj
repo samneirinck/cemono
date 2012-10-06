@@ -257,6 +257,7 @@
     <Compile Include="Utils\PathUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Script Handling\ScriptManager.cs" />
+    <Compile Include="Utils\UnusedMarker.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
