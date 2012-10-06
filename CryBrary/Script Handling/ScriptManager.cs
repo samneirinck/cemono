@@ -442,7 +442,7 @@ namespace CryEngine.Initialization
 		}
 
 		/// <summary>
-		/// Locates and destructs the script with the assigned scriptId.
+		/// Locates and removes the script with the assigned scriptId.
 		/// </summary>
 		public int RemoveInstances<T>(ScriptType scriptType, Predicate<T> match) where T : CryScriptInstance
 		{
@@ -459,7 +459,16 @@ namespace CryEngine.Initialization
 				if (script.ScriptType.ContainsFlag(scriptType))
 				{
 					if (script.ScriptInstances != null)
-						numRemoved += script.ScriptInstances.RemoveAll(x => match(x as T));
+					{
+						foreach (var scriptInstance in script.ScriptInstances)
+						{
+							if(match(scriptInstance as T))
+							{
+								scriptInstance.IsDestroyed = true;
+								numRemoved++;
+							}
+						}
+					}
 				}
 
 				Scripts[i] = script;

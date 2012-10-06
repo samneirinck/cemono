@@ -43,5 +43,10 @@
 		/// Controls whether the entity receives an update per frame.
 		/// </summary>
 		public bool ReceiveUpdates { get; set; }
+
+		/// <summary>
+		/// Set to true when the script instance is removed via ScriptManager.RemoveInstances.
+		/// </summary>
+		public bool IsDestroyed { get; internal set; }
 	}
 }

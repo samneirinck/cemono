@@ -55,11 +55,7 @@ namespace CryEngine
 				{
 					var entity = instance as Entity;
 					if (entity != null && entity.Id == id && entity.OnRemove())
-					{
-						entity.IsDestroyed = true;
-
 						return true;
-					}
 
 					return false;
 				});
