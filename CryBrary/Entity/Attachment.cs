@@ -11,7 +11,7 @@ namespace CryEngine
 	public sealed class Attachment : Entity
 	{
 		#region Statics
-		internal static Attachment TryAdd(IntPtr ptr)
+		internal static Attachment TryAdd(IntPtr ptr, EntityBase owner)
 		{
 			if (ptr == IntPtr.Zero)
 				return null;
@@ -20,14 +20,15 @@ namespace CryEngine
 			if (attachment != null)
 				return attachment;
 
-			attachment = new Attachment(ptr);
+			attachment = new Attachment(ptr, owner);
 
 			return attachment;
 		}
 		#endregion
 
-		internal Attachment(IntPtr ptr)
+		internal Attachment(IntPtr ptr, EntityBase owner)
 		{
+			Owner = owner;
 			this.SetAttachmentHandle(new HandleRef(this, ptr));
 
 			string attachmentObject = NativeMethods.Entity.GetAttachmentObject(this.GetAttachmentHandle().Handle);
@@ -51,6 +52,8 @@ namespace CryEngine
 		public QuatT Relative { get { return NativeMethods.Entity.GetAttachmentRelative(this.GetAttachmentHandle().Handle); } }
 		public QuatT DefaultAbsolute { get { return NativeMethods.Entity.GetAttachmentDefaultAbsolute(this.GetAttachmentHandle().Handle); } }
 		public QuatT DefaultRelative { get { return NativeMethods.Entity.GetAttachmentDefaultRelative(this.GetAttachmentHandle().Handle); } }
+
+		public EntityBase Owner { get; private set; }
 
 		internal HandleRef AttachmentHandleRef { get; set; }
 	}
