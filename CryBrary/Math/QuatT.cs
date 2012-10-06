@@ -10,11 +10,11 @@ namespace CryEngine
 		/// <summary>
 		/// The quaternion
 		/// </summary>
-		Quat Q;
+		public Quat Q;
 		/// <summary>
 		/// The translation vector and a scalar (for uniform scaling?)
 		/// </summary>
-		Vec3 T;
+		public Vec3 T;
 
 		public QuatT(Vec3 t, Quat q)
 		{
