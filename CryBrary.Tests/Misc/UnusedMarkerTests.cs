@@ -1,6 +1,7 @@
 ﻿using System;
 using NUnit.Framework;
 
+using CryEngine;
 using CryEngine.Utils;
 
 namespace CryBrary.Tests.Misc
@@ -36,6 +37,16 @@ namespace CryBrary.Tests.Misc
 
 			myUint = 51;
 			Assert.IsFalse(UnusedMarker.IsUnused(myUint));
+		}
+
+		[Test]
+		public void Vec3()
+		{
+			Vec3 vec3 = UnusedMarker.Vec3;
+			Assert.IsTrue(UnusedMarker.IsUnused(vec3));
+
+			vec3 = new Vec3(0, 250, 3);
+			Assert.IsFalse(UnusedMarker.IsUnused(vec3));
 		}
 	}
 }

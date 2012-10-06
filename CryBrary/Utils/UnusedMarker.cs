@@ -74,5 +74,18 @@ namespace CryEngine.Utils
 		{
 			return var == 1u << 31;
 		}
+
+		public static Vec3 Vec3
+		{
+			get
+			{
+				return new Vec3(Float);
+			}
+		}
+
+		public static bool IsUnused(Vec3 var)
+		{
+			return IsUnused(var.X);
+		}
 	}
 }
