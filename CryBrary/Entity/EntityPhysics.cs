@@ -73,14 +73,22 @@ namespace CryEngine
 			};
 		}
 
-		public void AddImpulse(Vec3 impulse, Vec3 angImpulse = default(Vec3), Vec3? point = null)
+		public void AddImpulse(Vec3 impulse, Vec3? angImpulse = null, Vec3? point = null)
 		{
-			var actionImpulse = new ActionImpulse { impulse = impulse, angImpulse = angImpulse, point = point ?? Entity.Get(entity.Id).Position };
+			var actionImpulse = new ActionImpulse 
+			{ 
+				impulse = impulse, 
+				angImpulse = angImpulse ?? Utils.UnusedMarker.Vec3,
+				point = point ?? Utils.UnusedMarker.Vec3,
+				partid = Utils.UnusedMarker.Integer,
+				ipart = Utils.UnusedMarker.Integer,
+				iApplyTime = PhysicsApplyTime.PostStep,
+				iSource = 0
+			};
 
 			NativeMethods.Physics.AddImpulse(entity.GetEntityHandle().Handle, actionImpulse);
 		}
 
-		internal bool resting;
 		/// <summary>
 		/// Determines if this physical entity is in a sleeping state or not. (Will not be affected by gravity)
 		/// Autoamtically wakes upon collision.
@@ -88,7 +96,7 @@ namespace CryEngine
 		public bool Resting
 		{
 			get { throw new NotImplementedException(); }
-			set { resting = value; NativeMethods.Physics.Sleep(entity.GetEntityHandle().Handle, value); }
+			set { NativeMethods.Physics.Sleep(entity.GetEntityHandle().Handle, value); }
 		}
 
 		/// <summary>
