@@ -119,7 +119,7 @@ namespace CryEngine
 		public void SetRotationVDir(Vec3 vDir)
 		{
 			//set default initialisation for up-vector	
-			W = 0.70710676908493042F; V.X = (vDir.Z + vDir.Z) * 0.35355338454246521f; V.Y = 0.0f; V.Z = 0.0f;
+			W = 0.70710676908493042f; V.X = (vDir.Z + vDir.Z) * 0.35355338454246521f; V.Y = 0.0f; V.Z = 0.0f;
 			var l = Math.Sqrt(vDir.X * vDir.X + vDir.Y * vDir.Y);
 			if (l > 0.00001)
 			{

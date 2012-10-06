@@ -200,6 +200,18 @@ namespace CryEngine
 			}
 		}
 
+		public Vec3 NormalizedSafe
+		{
+			get
+			{
+				var fLen2 = X*X+Y*Y+Z*Z;	
+				if(fLen2 > 1.192092896e-07F)
+					return this * Math.ISqrt(fLen2);
+				else
+					return new Vec3(1, 0, 0);
+			}
+		}
+
 		/// <summary>
 		/// Creates an array containing the elements of the vector.
 		/// </summary>
@@ -588,17 +600,6 @@ namespace CryEngine
 		{
 			result = value;
 			result.Normalize();
-		}
-
-		/// <summary>
-		/// Converts the vector into a unit vector.
-		/// </summary>
-		/// <param name="value">The vector to normalize.</param>
-		/// <returns>The normalized vector.</returns>
-		public static Vec3 Normalize(Vec3 value)
-		{
-			value.Normalize();
-			return value;
 		}
 
 		/// <summary>
