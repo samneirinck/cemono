@@ -284,7 +284,7 @@ mono::object CScriptbind_Entity::SpawnEntity(EntitySpawnParams monoParams, bool 
 
 		spawnParams.nFlags = monoParams.flags | ENTITY_FLAG_NO_SAVE;
 		spawnParams.vPosition = monoParams.pos;
-		spawnParams.qRotation = Quat(Ang3(monoParams.rot));
+		spawnParams.qRotation = monoParams.rot;
 		spawnParams.vScale = monoParams.scale;
 
 		if(IEntity *pEntity = gEnv->pEntitySystem->SpawnEntity(spawnParams, bAutoInit))

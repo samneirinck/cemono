@@ -20,11 +20,11 @@ namespace CryEngine
         /// <param name="autoInit"></param>
         /// <param name="flags"></param>
         /// <returns></returns>
-		public static T Spawn<T>(string name, Vec3? pos = null, Vec3? rot = null, Vec3? scale = null, bool autoInit = true, EntityFlags flags = EntityFlags.CastShadow) where T : Entity, new()
+		public static T Spawn<T>(string name, Vec3? pos = null, Quat? rot = null, Vec3? scale = null, bool autoInit = true, EntityFlags flags = EntityFlags.CastShadow) where T : Entity, new()
 		{
 			EntityInfo info;
 
-			var ent = NativeMethods.Entity.SpawnEntity(new EntitySpawnParams { Name = name, Class = typeof(T).Name, Pos = pos ?? new Vec3(1, 1, 1), Rot = rot ?? Vec3.Zero, Scale = scale ?? new Vec3(1, 1, 1), Flags = flags }, autoInit, out info) as T;
+			var ent = NativeMethods.Entity.SpawnEntity(new EntitySpawnParams { Name = name, Class = typeof(T).Name, Pos = pos ?? new Vec3(1, 1, 1), Rot = rot ?? Quat.Identity, Scale = scale ?? new Vec3(1, 1, 1), Flags = flags }, autoInit, out info) as T;
 			if (ent != null)
 				return ent;
 			else if (info.Id != 0)
@@ -232,7 +232,7 @@ namespace CryEngine
 		public string Class;
 
 		public Vec3 Pos;
-		public Vec3 Rot;
+		public Quat Rot;
 		public Vec3 Scale;
 
 		public EntityFlags Flags;

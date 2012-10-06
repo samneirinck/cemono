@@ -41,7 +41,7 @@ struct EntitySpawnParams
 	mono::string sClass;
 
 	Vec3 pos;
-	Vec3 rot;
+	Quat rot;
 	Vec3 scale;
 
 	EEntityFlags flags;
