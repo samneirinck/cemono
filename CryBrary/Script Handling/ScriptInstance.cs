@@ -50,12 +50,8 @@ namespace CryEngine
 		{
 			IsDestroyed = true;
 
-			OnDestroyed();
-
 			Destroyed(new OnDestroyedEventArgs(ScriptId));
 		}
-
-		public virtual void OnDestroyed() { }
 
 		/// <summary>
 		/// Called each frame if script has been set to be regularly updated (See Updated property)
