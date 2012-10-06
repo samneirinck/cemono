@@ -17,7 +17,7 @@ namespace CryEngine
 		#region Events
 		static void OnActionTriggered(string action, KeyEvent keyEvent, float value)
 		{
-			actionmapDelegates[action](new ActionMapEventArgs(keyEvent, action, value));
+			ActionmapEvents.Invoke(new ActionMapEventArgs(keyEvent, action, value));
 		}
 
 		static void OnKeyEvent(string keyName, float value)
@@ -39,54 +39,87 @@ namespace CryEngine
 		public static Vec2 MousePosition { get { return mousePosition; } set { mousePosition = value; } }
 		#endregion
 
-		/// <summary>
-		/// Registers an event declared in the players actionmap. Without invoking this, Your KeyEventDelegate will never be invoked with the new action.
-		/// </summary>
-		/// <param name="actionName"></param>
-		/// <param name="eventDelegate"></param>
-		public static void RegisterAction(string actionName, ActionMapEventDelegate eventDelegate)
-		{
-			if(!actionmapDelegates.ContainsKey(actionName))
-			{
-                NativeMethods.Input.RegisterAction(actionName);
-
-				actionmapDelegates.Add(actionName, eventDelegate);
-			}
-		}
-
-		/// <summary>
-		/// Removes the delegate from
-		/// </summary>
-		/// <param name="eventDelegate"></param>
-		/// <returns>The number of removed actions</returns>
-		public static bool UnregisterAction(ActionMapEventDelegate eventDelegate)
-		{
-			var matches = actionmapDelegates.Where(x => x.Value == eventDelegate).ToList();
-			foreach (var match in matches)
-				actionmapDelegates.Remove(match.Key);
-
-			return matches.Count() > 0;
-		}
-
-		/// <summary>
-		/// Removes all actions linked to the specified object.
-		/// </summary>
-		/// <param name="owner"></param>
-		/// <returns>The number of removed actions</returns>
-		public static int UnregisterActions(object owner)
-		{
-			var matches = actionmapDelegates.Where(x => x.Value.Target == owner).ToList();
-			foreach (var match in matches)
-				actionmapDelegates.Remove(match.Key);
-
-			return matches.Count();
-		}
-
-		static Dictionary<string, ActionMapEventDelegate> actionmapDelegates = new Dictionary<string, ActionMapEventDelegate>();
-
 		public static event KeyEventDelegate KeyEvents;
-
 		public static event MouseEventDelegate MouseEvents;
+
+		public static ActionmapHandler ActionmapEvents = new ActionmapHandler();
+
+		static void OnScriptInstanceDestroyed(CryScriptInstance instance)
+		{
+			foreach (KeyEventDelegate d in KeyEvents.GetInvocationList())
+			{
+				if (d.Target == instance)
+					KeyEvents -= d;
+			}
+
+			foreach (MouseEventDelegate d in MouseEvents.GetInvocationList())
+			{
+				if (d.Target == instance)
+					MouseEvents -= d;
+			}
+
+			ActionmapEvents.RemoveAll(instance);
+		}
+	}
+
+	public class ActionmapHandler
+	{
+		public ActionmapHandler()
+		{
+			actionmapDelegates = new Dictionary<string, List<ActionMapEventDelegate>>();
+		}
+
+		public void Add(string actionMap, ActionMapEventDelegate eventDelegate)
+		{
+			List<ActionMapEventDelegate> eventDelegates;
+			if (!actionmapDelegates.TryGetValue(actionMap, out eventDelegates))
+			{
+				NativeMethods.Input.RegisterAction(actionMap);
+
+				eventDelegates = new List<ActionMapEventDelegate>();
+				actionmapDelegates.Add(actionMap, eventDelegates);
+			}
+
+			eventDelegates.Add(eventDelegate);
+		}
+
+		public bool Remove(string actionMap, ActionMapEventDelegate eventDelegate)
+		{
+			List<ActionMapEventDelegate> eventDelegates;
+			if (actionmapDelegates.TryGetValue(actionMap, out eventDelegates))
+				return eventDelegates.Remove(eventDelegate);
+
+			return false;
+		}
+
+		public int RemoveAll(object target)
+		{
+			int numRemoved = 0;
+
+			foreach (var actionMap in actionmapDelegates)
+				numRemoved += actionMap.Value.RemoveAll(x => x.Target == target);
+
+			return numRemoved;
+		}
+
+		internal void Invoke(ActionMapEventArgs args)
+		{
+			List<ActionMapEventDelegate> eventDelegates;
+			if (actionmapDelegates.TryGetValue(args.ActionName, out eventDelegates))
+				eventDelegates.ForEach(x => x(args));
+		}
+
+		Dictionary<string, List<ActionMapEventDelegate>> actionmapDelegates;
+
+		/*
+		public static void operator +(ActionmapHandler handler, ActionMapEventDelegate eventDelegate)
+		{
+		}
+		
+		public static void operator -(ActionmapHandler handler, ActionMapEventDelegate eventDelegate)
+		{
+		}
+		*/
 	}
 
 	public class ActionMapEventArgs : EventArgs
