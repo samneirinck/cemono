@@ -94,9 +94,6 @@ namespace CryEngine
 			if (isNative)
 				className = actorType.Name;
 
-			// just in case
-			Remove(channelId);
-
 			var actor = new T();
 
 			var info = NativeMethods.Actor.CreateActor(actor, channelId, name, className, pos ?? new Vec3(0, 0, 0), angles ?? new Vec3(0, 0, 0), scale ?? new Vec3(1, 1, 1));
