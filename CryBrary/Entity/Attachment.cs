@@ -47,10 +47,10 @@ namespace CryEngine
 				LoadObject(attachmentObject);
 		}
 
-		public Vec3 DefaultPosition { get { return NativeMethods.Entity.GetAttachmentDefaultWorldPosition(this.GetAttachmentHandle().Handle); } }
-		public Vec3 DefaultLocalPosition { get { return NativeMethods.Entity.GetAttachmentDefaultLocalPosition(this.GetAttachmentHandle().Handle); } }
-		public Quat DefaultRotation { get { return NativeMethods.Entity.GetAttachmentDefaultWorldRotation(this.GetAttachmentHandle().Handle); } }
-		public Quat DefaultLocalRotation { get { return NativeMethods.Entity.GetAttachmentDefaultLocalRotation(this.GetAttachmentHandle().Handle); } }
+		public QuatT Absolute { get { return NativeMethods.Entity.GetAttachmentAbsolute(this.GetAttachmentHandle().Handle); } }
+		public QuatT Relative { get { return NativeMethods.Entity.GetAttachmentRelative(this.GetAttachmentHandle().Handle); } }
+		public QuatT DefaultAbsolute { get { return NativeMethods.Entity.GetAttachmentDefaultAbsolute(this.GetAttachmentHandle().Handle); } }
+		public QuatT DefaultRelative { get { return NativeMethods.Entity.GetAttachmentDefaultRelative(this.GetAttachmentHandle().Handle); } }
 
 		internal HandleRef AttachmentHandleRef { get; set; }
 	}

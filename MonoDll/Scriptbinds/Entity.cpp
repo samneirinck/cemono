@@ -88,20 +88,31 @@ CScriptbind_Entity::CScriptbind_Entity()
 	REGISTER_METHOD(LinkEntityToAttachment);
 	REGISTER_METHOD(GetAttachmentObject);
 
-	REGISTER_METHOD(GetAttachmentWorldRotation);
-	REGISTER_METHOD(GetAttachmentLocalRotation);
-	REGISTER_METHOD(GetAttachmentWorldPosition);
-	REGISTER_METHOD(GetAttachmentLocalPosition);
-
-	REGISTER_METHOD(GetAttachmentDefaultWorldRotation);
-	REGISTER_METHOD(GetAttachmentDefaultLocalRotation);
-	REGISTER_METHOD(GetAttachmentDefaultWorldPosition);
-	REGISTER_METHOD(GetAttachmentDefaultLocalPosition);
+	REGISTER_METHOD(GetAttachmentAbsolute);
+	REGISTER_METHOD(GetAttachmentRelative);
+	REGISTER_METHOD(GetAttachmentDefaultAbsolute);
+	REGISTER_METHOD(GetAttachmentDefaultRelative);
 
 	REGISTER_METHOD(GetAttachmentMaterial);
 	REGISTER_METHOD(SetAttachmentMaterial);
 
 	gEnv->pEntitySystem->AddSink(this, IEntitySystem::OnSpawn | IEntitySystem::OnRemove, 0);
+}
+
+void GetJointPosition(IEntity *pEntity, mono::string jointName, int characterSlot)
+{
+	ICharacterInstance *pCharacter = pEntity->GetCharacter(characterSlot);
+	if(!pCharacter)
+		return;
+
+	ISkeletonPose *pSkeletonPose = pCharacter->GetISkeletonPose();
+	if(!pSkeletonPose)
+		return;
+
+	int16 id = pSkeletonPose->GetJointIDByName(ToCryString(jointName));
+	if(id > -1)
+	{
+	}
 }
 
 void CScriptbind_Entity::PlayAnimation(IEntity *pEntity, mono::string animationName, int slot, int layer, float blend, float speed, EAnimationFlags flags)
@@ -685,44 +696,24 @@ mono::string CScriptbind_Entity::GetAttachmentObject(IAttachment *pAttachment)
 	return nullptr;
 }
 
-Quat CScriptbind_Entity::GetAttachmentWorldRotation(IAttachment *pAttachment)
+QuatT CScriptbind_Entity::GetAttachmentAbsolute(IAttachment *pAttachment)
 {
-	return pAttachment->GetAttWorldAbsolute().q;
+	return pAttachment->GetAttWorldAbsolute();
 }
 
-Quat CScriptbind_Entity::GetAttachmentLocalRotation(IAttachment *pAttachment)
+QuatT CScriptbind_Entity::GetAttachmentRelative(IAttachment *pAttachment)
 {
-	return pAttachment->GetAttModelRelative().q;
-}
-
-Vec3 CScriptbind_Entity::GetAttachmentWorldPosition(IAttachment *pAttachment)
-{
-	return pAttachment->GetAttWorldAbsolute().t;
-}
-
-Vec3 CScriptbind_Entity::GetAttachmentLocalPosition(IAttachment *pAttachment)
-{
-	return pAttachment->GetAttModelRelative().t;
-}
-
-Quat CScriptbind_Entity::GetAttachmentDefaultWorldRotation(IAttachment *pAttachment)
-{
-	return pAttachment->GetAttAbsoluteDefault().q;
+	return pAttachment->GetAttModelRelative();
 }
 	
-Quat CScriptbind_Entity::GetAttachmentDefaultLocalRotation(IAttachment *pAttachment)
+QuatT CScriptbind_Entity::GetAttachmentDefaultAbsolute(IAttachment *pAttachment)
 {
-	return pAttachment->GetAttRelativeDefault().q;
-}
-	 
-Vec3 CScriptbind_Entity::GetAttachmentDefaultWorldPosition(IAttachment *pAttachment)
-{
-	return pAttachment->GetAttAbsoluteDefault().t;
+	return pAttachment->GetAttAbsoluteDefault();
 }
 
-Vec3 CScriptbind_Entity::GetAttachmentDefaultLocalPosition(IAttachment *pAttachment)
+QuatT CScriptbind_Entity::GetAttachmentDefaultRelative(IAttachment *pAttachment)
 {
-	return pAttachment->GetAttRelativeDefault().t;
+	return pAttachment->GetAttRelativeDefault();
 }
 
 IMaterial *CScriptbind_Entity::GetAttachmentMaterial(IAttachment *pAttachment)

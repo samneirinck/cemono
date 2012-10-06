@@ -241,15 +241,11 @@ protected:
 	static void LinkEntityToAttachment(IAttachment *pAttachment, EntityId id);
 	static mono::string GetAttachmentObject(IAttachment *pAttachment);
 
-	static Quat GetAttachmentWorldRotation(IAttachment *pAttachment);
-	static Quat GetAttachmentLocalRotation(IAttachment *pAttachment);
-	static Vec3 GetAttachmentWorldPosition(IAttachment *pAttachment);
-	static Vec3 GetAttachmentLocalPosition(IAttachment *pAttachment);
+	static QuatT GetAttachmentAbsolute(IAttachment *pAttachment);
+	static QuatT GetAttachmentRelative(IAttachment *pAttachment);
 
-	static Quat GetAttachmentDefaultWorldRotation(IAttachment *pAttachment);
-	static Quat GetAttachmentDefaultLocalRotation(IAttachment *pAttachment);
-	static Vec3 GetAttachmentDefaultWorldPosition(IAttachment *pAttachment);
-	static Vec3 GetAttachmentDefaultLocalPosition(IAttachment *pAttachment);
+	static QuatT GetAttachmentDefaultAbsolute(IAttachment *pAttachment);
+	static QuatT GetAttachmentDefaultRelative(IAttachment *pAttachment);
 
 	static IMaterial *GetAttachmentMaterial(IAttachment *pAttachment);
 	static void SetAttachmentMaterial(IAttachment *pAttachment, IMaterial *pMaterial);

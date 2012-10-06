@@ -111,22 +111,14 @@ namespace CryEngine.Native
 		extern internal static string _GetAttachmentObject(IntPtr attachmentPtr);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static Quat _GetAttachmentWorldRotation(IntPtr attachmentPtr);
+		extern internal static QuatT _GetAttachmentAbsolute(IntPtr attachmentPtr);
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static Quat _GetAttachmentLocalRotation(IntPtr attachmentPtr);
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static Vec3 _GetAttachmentWorldPosition(IntPtr attachmentPtr);
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static Vec3 _GetAttachmentLocalPosition(IntPtr attachmentPtr);
+		extern internal static QuatT _GetAttachmentRelative(IntPtr attachmentPtr);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static Quat _GetAttachmentDefaultWorldRotation(IntPtr attachmentPtr);
+		extern internal static QuatT _GetAttachmentDefaultAbsolute(IntPtr attachmentPtr);
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static Quat _GetAttachmentDefaultLocalRotation(IntPtr attachmentPtr);
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static Vec3 _GetAttachmentDefaultWorldPosition(IntPtr attachmentPtr);
-		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static Vec3 _GetAttachmentDefaultLocalPosition(IntPtr attachmentPtr);
+		extern internal static QuatT _GetAttachmentDefaultRelative(IntPtr attachmentPtr);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static IntPtr _GetAttachmentMaterial(IntPtr attachmentPtr);
@@ -348,44 +340,24 @@ namespace CryEngine.Native
 			return _GetAttachmentObject(attachmentPtr);
 		}
 
-		public Quat GetAttachmentWorldRotation(IntPtr attachmentPtr)
+		public QuatT GetAttachmentAbsolute(IntPtr attachmentPtr)
 		{
-			return _GetAttachmentWorldRotation(attachmentPtr);
+			return _GetAttachmentAbsolute(attachmentPtr);
 		}
 
-		public Quat GetAttachmentLocalRotation(IntPtr attachmentPtr)
+		public QuatT GetAttachmentRelative(IntPtr attachmentPtr)
 		{
-			return _GetAttachmentLocalRotation(attachmentPtr);
+			return _GetAttachmentRelative(attachmentPtr);
 		}
 
-		public Vec3 GetAttachmentWorldPosition(IntPtr attachmentPtr)
+		public QuatT GetAttachmentDefaultAbsolute(IntPtr attachmentPtr)
 		{
-			return _GetAttachmentWorldPosition(attachmentPtr);
+			return _GetAttachmentDefaultAbsolute(attachmentPtr);
 		}
 
-		public Vec3 GetAttachmentLocalPosition(IntPtr attachmentPtr)
+		public QuatT GetAttachmentDefaultRelative(IntPtr attachmentPtr)
 		{
-			return GetAttachmentLocalPosition(attachmentPtr);
-		}
-
-		public Quat GetAttachmentDefaultWorldRotation(IntPtr attachmentPtr)
-		{
-			return _GetAttachmentDefaultWorldRotation(attachmentPtr);
-		}
-
-		public Quat GetAttachmentDefaultLocalRotation(IntPtr attachmentPtr)
-		{
-			return _GetAttachmentDefaultLocalRotation(attachmentPtr);
-		}
-
-		public Vec3 GetAttachmentDefaultWorldPosition(IntPtr attachmentPtr)
-		{
-			return _GetAttachmentDefaultWorldPosition(attachmentPtr);
-		}
-
-		public Vec3 GetAttachmentDefaultLocalPosition(IntPtr attachmentPtr)
-		{
-			return _GetAttachmentDefaultLocalPosition(attachmentPtr);
+			return _GetAttachmentDefaultRelative(attachmentPtr);
 		}
 
 		public IntPtr GetAttachmentMaterial(IntPtr attachmentPtr)
