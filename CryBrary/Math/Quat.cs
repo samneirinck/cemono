@@ -29,7 +29,7 @@ namespace CryEngine
 		}
 
 		public Quat(Matrix34 matrix)
-			: this((Matrix33)matrix) {}
+			: this(new Matrix33(matrix)) {}
 
 		public bool IsEquivalent(Quat q, float epsilon = 0.05f)
 		{
