@@ -29,8 +29,24 @@ struct SMonoRayHit
 	int iPrim; // hit triangle index
 };
 
-struct SMonoPlayerPhysicalizeParams
+struct SMonoPhysicalizeParams
 {
+	int type;
+	int slot;
+
+	float density;
+	float mass;
+
+	int lod;
+
+	EntityId attachToEntity;
+
+	int attachToPart;
+
+	float stiffnessScale;
+
+	bool copyJointVelocities;
+
 	float heightCollider;
 	Vec3 sizeCollider;
 	float heightPivot;
@@ -42,25 +58,6 @@ struct SMonoPlayerPhysicalizeParams
 	float maxClimbAngle;
 	float minFallAngle;
 	float maxVelGround;
-};
-
-struct SMonoPhysicalizeParams
-{
-	int type;
-	int slot;
-
-	float density;
-	float mass;
-
-	int lod;
-
-	mono::entityId attachToEntity;
-
-	int attachToPart;
-
-	float stiffnessScale;
-
-	bool copyJointVelocities;
 };
 
 struct SMonoActionImpulse
@@ -86,7 +83,7 @@ public:
 
 	static IPhysicalEntity *GetPhysicalEntity(IEntity *pEntity);
 
-	static void Physicalize(IEntity *pEntity, SMonoPhysicalizeParams params, SMonoPlayerPhysicalizeParams playerParams);
+	static void Physicalize(IEntity *pEntity, SMonoPhysicalizeParams params);
 
 	static void Sleep(IEntity *pEntity, bool sleep);
 

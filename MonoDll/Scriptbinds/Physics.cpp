@@ -26,7 +26,7 @@ IPhysicalEntity *CScriptbind_Physics::GetPhysicalEntity(IEntity *pEntity)
 	return pEntity->GetPhysics();
 }
 
-void CScriptbind_Physics::Physicalize(IEntity *pEntity, SMonoPhysicalizeParams params, SMonoPlayerPhysicalizeParams playerParams)
+void CScriptbind_Physics::Physicalize(IEntity *pEntity, SMonoPhysicalizeParams params)
 {
 	// Unphysicalize
 	{
@@ -51,9 +51,9 @@ void CScriptbind_Physics::Physicalize(IEntity *pEntity, SMonoPhysicalizeParams p
 	pp.nSlot = params.slot;
 	pp.type = params.type;
 
-	if(params.attachToEntity.id != 0)
+	if(params.attachToEntity != 0)
 	{
-		if(IPhysicalEntity *pPhysEnt = gEnv->pPhysicalWorld->GetPhysicalEntityById(params.attachToEntity.id))
+		if(IPhysicalEntity *pPhysEnt = gEnv->pPhysicalWorld->GetPhysicalEntityById(params.attachToEntity))
 			pp.pAttachToEntity = pPhysEnt;
 	}
 
@@ -67,17 +67,17 @@ void CScriptbind_Physics::Physicalize(IEntity *pEntity, SMonoPhysicalizeParams p
 
 		playerDyn.mass = params.mass;
 
-		playerDim.heightCollider = playerParams.heightCollider;
-		playerDim.sizeCollider = playerParams.sizeCollider;
-		playerDim.heightPivot = playerParams.heightPivot;
-		playerDim.bUseCapsule = playerParams.useCapsule;
+		playerDim.heightCollider = params.heightCollider;
+		playerDim.sizeCollider = params.sizeCollider;
+		playerDim.heightPivot = params.heightPivot;
+		playerDim.bUseCapsule = params.useCapsule;
 
-		playerDyn.gravity = playerParams.gravity;
-		playerDyn.kAirControl = playerParams.airControl;
-		playerDyn.minSlideAngle = playerParams.minSlideAngle;
-		playerDyn.maxClimbAngle = playerParams.maxClimbAngle;
-		playerDyn.minFallAngle = playerParams.minFallAngle;
-		playerDyn.maxVelGround = playerParams.maxVelGround;
+		playerDyn.gravity = params.gravity;
+		playerDyn.kAirControl = params.airControl;
+		playerDyn.minSlideAngle = params.minSlideAngle;
+		playerDyn.maxClimbAngle = params.maxClimbAngle;
+		playerDyn.minFallAngle = params.minFallAngle;
+		playerDyn.maxVelGround = params.maxVelGround;
 	}
 
 	pEntity->Physicalize(pp);

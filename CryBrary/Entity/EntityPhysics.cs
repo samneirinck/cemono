@@ -1,6 +1,8 @@
 ﻿using System;
 using CryEngine.Native;
 
+using System.Runtime.InteropServices;
+
 namespace CryEngine
 {
 	/// <summary>
@@ -8,15 +10,14 @@ namespace CryEngine
 	/// </summary>
 	public class EntityPhysics
 	{
-		internal EntityPhysics() { }
+		internal EntityPhysics() { Clear(); }
 
 		internal EntityPhysics(EntityBase _entity)
 		{
 			entity = _entity;
 
-			_params = new PhysicalizationParams { mass = -1, slot = 0 };
-			_playerParams = new PlayerPhysicalizationParams();
-			NativeMethods.Physics.Physicalize(_entity.GetEntityHandle().Handle, _params, _playerParams);
+			Clear();
+			Save();
 
 			PhysicsPointer = NativeMethods.Physics.GetPhysicalEntity(entity.GetEntityHandle().Handle);
 
@@ -44,10 +45,7 @@ namespace CryEngine
 		/// </summary>
 		public void Save()
 		{
-			if (_params.type == PhysicalizationType.None)
-				_params.type = PhysicalizationType.Rigid;
-
-			NativeMethods.Physics.Physicalize(entity.GetEntityHandle().Handle, _params, _playerParams);
+			NativeMethods.Physics.Physicalize(entity.GetEntityHandle().Handle, _params);
 		}
 
 		/// <summary>
@@ -55,8 +53,24 @@ namespace CryEngine
 		/// </summary>
 		public void Clear()
 		{
-			_params = new PhysicalizationParams();
-			_playerParams = new PlayerPhysicalizationParams();
+			_params = new PhysicalizationParams 
+			{
+				density = -1,
+				mass = -1,
+				slot = -1,
+				attachToPart = -1,
+
+				heightCollider = Utils.UnusedMarker.Float,
+				sizeCollider = Utils.UnusedMarker.Vec3,
+				heightPivot = Utils.UnusedMarker.Float,
+
+				gravity = Utils.UnusedMarker.Vec3,
+				airControl = Utils.UnusedMarker.Float,
+				minSlideAngle = Utils.UnusedMarker.Float,
+				maxClimbAngle = Utils.UnusedMarker.Float,
+				minFallAngle = Utils.UnusedMarker.Float,
+				maxVelGround = Utils.UnusedMarker.Float,
+			};
 		}
 
 		public void AddImpulse(Vec3 impulse, Vec3 angImpulse = default(Vec3), Vec3? point = null)
@@ -120,61 +134,61 @@ namespace CryEngine
 		public float HeightCollider
 		{
 			get { throw new NotImplementedException(); }
-			set { _playerParams.heightCollider = value; if (AutoUpdate) Save(); }
+			set { _params.heightCollider = value; if (AutoUpdate) Save(); }
 		}
 
 		public Vec3 SizeCollider
 		{
 			get { throw new NotImplementedException(); }
-			set { _playerParams.sizeCollider = value; if (AutoUpdate) Save(); }
+			set { _params.sizeCollider = value; if (AutoUpdate) Save(); }
 		}
 
 		public float HeightPivot
 		{
 			get { throw new NotImplementedException(); }
-			set { _playerParams.heightPivot = value; if (AutoUpdate) Save(); }
+			set { _params.heightPivot = value; if (AutoUpdate) Save(); }
 		}
 
 		public bool UseCapsule
 		{
 			get { throw new NotImplementedException(); }
-			set { _playerParams.useCapsule = value; if (AutoUpdate) Save(); }
+			set { _params.useCapsule = value; if (AutoUpdate) Save(); }
 		}
 
 		public Vec3 Gravity
 		{
 			get { throw new NotImplementedException(); }
-			set { _playerParams.gravity = value; if (AutoUpdate) Save(); }
+			set { _params.gravity = value; if (AutoUpdate) Save(); }
 		}
 
 		public float AirControl
 		{
 			get { throw new NotImplementedException(); }
-			set { _playerParams.airControl = value; if (AutoUpdate) Save(); }
+			set { _params.airControl = value; if (AutoUpdate) Save(); }
 		}
 
 		public float MinSlideAngle
 		{
 			get { throw new NotImplementedException(); }
-			set { _playerParams.minSlideAngle = value; if (AutoUpdate) Save(); }
+			set { _params.minSlideAngle = value; if (AutoUpdate) Save(); }
 		}
 
 		public float MaxClimbAngle
 		{
 			get { throw new NotImplementedException(); }
-			set { _playerParams.maxClimbAngle = value; if (AutoUpdate) Save(); }
+			set { _params.maxClimbAngle = value; if (AutoUpdate) Save(); }
 		}
 
 		public float MinFallAngle
 		{
 			get { throw new NotImplementedException(); }
-			set { _playerParams.minFallAngle = value; if (AutoUpdate) Save(); }
+			set { _params.minFallAngle = value; if (AutoUpdate) Save(); }
 		}
 
 		public float MaxVelGround
 		{
 			get { throw new NotImplementedException(); }
-			set { _playerParams.maxVelGround = value; if (AutoUpdate) Save(); }
+			set { _params.maxVelGround = value; if (AutoUpdate) Save(); }
 		}
 		#endregion
 		#endregion
@@ -184,7 +198,6 @@ namespace CryEngine
 
 		// Sent directly to the engine
 		internal PhysicalizationParams _params;
-		internal PlayerPhysicalizationParams _playerParams;
 	}
 
 	internal struct ActionImpulse
@@ -226,21 +239,6 @@ namespace CryEngine
 		public Vec3 vHitPoint;
 	}
 
-	internal struct PlayerPhysicalizationParams
-	{
-		public float heightCollider;
-		public Vec3 sizeCollider;
-		public float heightPivot;
-		public bool useCapsule;
-
-		public Vec3 gravity;
-		public float airControl;
-		public float minSlideAngle;
-		public float maxClimbAngle;
-		public float minFallAngle;
-		public float maxVelGround;
-	}
-
 	internal struct PhysicalizationParams
 	{
 		public PhysicalizationType type;
@@ -265,7 +263,7 @@ namespace CryEngine
 		/// <summary>
 		/// Physical entity to attach this physics object (Only for Soft physical entity).
 		/// </summary>
-		EntityId attachToEntity;
+		uint attachToEntity;
 
 		/// <summary>
 		/// Part ID in entity to attach to (Only for Soft physical entity).
@@ -281,6 +279,20 @@ namespace CryEngine
 		/// Copy joints velocities when converting a character to ragdoll.
 		/// </summary>
 		public bool copyJointVelocities;
+
+		// pe_player_dimensions
+		public float heightCollider;
+		public Vec3 sizeCollider;
+		public float heightPivot;
+		public bool useCapsule;
+
+		// pe_player_dynamics
+		public Vec3 gravity;
+		public float airControl;
+		public float minSlideAngle;
+		public float maxClimbAngle;
+		public float minFallAngle;
+		public float maxVelGround;
 	}
 
 	public enum PhysicalizationType
