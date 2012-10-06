@@ -18,13 +18,14 @@
 class PathUtils
 {
 public:
-	static string GetBinaryPath()
+	static string GetBinaryPath(bool force32 = false)
 	{
 #ifdef WIN64
-		return "Bin64\\Plugins\\";
+		if(!force32)
+			return "Bin64\\Plugins\\CryMono\\";
 #endif
 
-		return "Bin32\\Plugins\\";
+		return "Bin32\\Plugins\\CryMono\\";
 	}
 
 	static string GetEnginePath()
@@ -34,7 +35,7 @@ public:
 
 	static string GetMonoPath()
 	{
-		return GetEnginePath().append("Mono").append("\\");
+		return GetBinaryPath(true).append("Mono").append("\\");
 	}
 
 	static string GetConfigPath()

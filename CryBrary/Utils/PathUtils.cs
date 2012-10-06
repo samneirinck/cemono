@@ -56,6 +56,18 @@ namespace CryEngine
 		public static string BinaryFolder { get { return Path.Combine(RootFolder, "Bin" + (IntPtr.Size * 8).ToString()); } }
 
 		/// <summary>
+		/// PluginSDK main directory
+		/// </summary>
+		public static string NativePluginsFolder { get { return Path.Combine(RootFolder, "Plugins"); } }
+
+		/// <summary>
+		/// Directory from which CryMono will load managed plugins.
+		/// </summary>
+		public static string PluginsFolder { get { return Path.Combine(RootFolder, "Bin32", "Plugins", "CryMono", "Plugins"); } }
+
+		public static string MonoFolder { get { return Path.Combine(RootFolder, "Bin32", "Plugins", "CryMono", "Mono"); } }
+
+		/// <summary>
 		/// Gets the engine folder.
 		/// CryENGINE uses this store engine content which is not specific to the game being developed, i.e. shaders and configuration files.
 		/// </summary>

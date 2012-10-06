@@ -114,16 +114,15 @@ namespace CryEngine.Initialization
 		void PopulateAssemblyLookup()
 		{
 #if !RELEASE
-			var monoDir = Path.Combine(PathUtils.EngineFolder, "Mono");
 			// Doesn't exist when unit testing
-			if(Directory.Exists(monoDir))
+			if(Directory.Exists(PathUtils.MonoFolder))
 			{
-				using(XmlWriter writer = XmlWriter.Create(Path.Combine(monoDir, "assemblylookup.xml")))
+				using (XmlWriter writer = XmlWriter.Create(Path.Combine(PathUtils.MonoFolder, "assemblylookup.xml")))
 				{
 					writer.WriteStartDocument();
 					writer.WriteStartElement("AssemblyLookupTable");
 
-					var gacFolder = Path.Combine(monoDir, "lib", "mono", "gac");
+					var gacFolder = Path.Combine(PathUtils.MonoFolder, "lib", "mono", "gac");
 					foreach(var assemblyLocation in Directory.GetFiles(gacFolder, "*.dll", SearchOption.AllDirectories))
 					{
 						var separator = new [] { "__" };
@@ -171,7 +170,7 @@ namespace CryEngine.Initialization
 
 		void LoadPlugins()
 		{
-            var pluginsDirectory = Path.Combine(PathUtils.ScriptsFolder, "Plugins");
+			var pluginsDirectory = PathUtils.PluginsFolder;
 			if (!Directory.Exists(pluginsDirectory))
 				return;
 
@@ -320,7 +319,7 @@ namespace CryEngine.Initialization
 
 			if(File.Exists(Path.ChangeExtension(assemblyPath, "pdb")))
 			{
-				var assembly = Assembly.LoadFrom(Path.Combine(PathUtils.EngineFolder, "Mono", "bin", "pdb2mdb.dll"));
+				var assembly = Assembly.LoadFrom(Path.Combine(PathUtils.MonoFolder, "bin", "pdb2mdb.dll"));
 				var driver = assembly.GetType("Driver");
 				var convertMethod = driver.GetMethod("Convert", BindingFlags.Static | BindingFlags.Public);
 
