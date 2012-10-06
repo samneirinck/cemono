@@ -544,7 +544,7 @@ namespace CryEngine.Initialization
 			{
 				if (script.ScriptInstances != null && script.Type.ImplementsOrEquals<T>())
 				{
-					var instance = script.ScriptInstances.Find(x => predicate(x as T)) as T;
+					var instance = script.ScriptInstances.Find(x => !x.IsDestroyed && predicate(x as T)) as T;
 					if (instance != null)
 					{
 						scriptInstance = instance;
