@@ -464,7 +464,7 @@ namespace CryEngine.Initialization
 						{
 							if(match(scriptInstance as T))
 							{
-								scriptInstance.IsDestroyed = true;
+								scriptInstance.OnDestroyedInternal();
 								numRemoved++;
 							}
 						}

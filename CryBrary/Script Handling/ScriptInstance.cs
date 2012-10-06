@@ -32,6 +32,15 @@
         internal virtual void OnScriptReloadInternal() { OnScriptReload(); }
 		public virtual void OnScriptReload() { }
 
+		internal virtual void OnDestroyedInternal()
+		{
+			IsDestroyed = true;
+
+			OnDestroyed();
+		}
+
+		public virtual void OnDestroyed() { }
+
 		/// <summary>
 		/// Called each frame if script has been set to be regularly updated (See Updated property)
 		/// </summary>
@@ -47,6 +56,6 @@
 		/// <summary>
 		/// Set to true when the script instance is removed via ScriptManager.RemoveInstances.
 		/// </summary>
-		public bool IsDestroyed { get; internal set; }
+		public bool IsDestroyed { get; private set; }
 	}
 }
