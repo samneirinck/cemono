@@ -148,6 +148,16 @@ namespace CryEngine
 			}
 		}
 
+		public void ClampLength(float maxLength)
+		{
+			var sqrLength = LengthSquared;
+			if (sqrLength > (maxLength * maxLength))
+			{
+				var scale = maxLength * Math.ISqrt(sqrLength);
+				X *= scale; Y *= scale; Z *= scale;
+			}
+		}
+
 		/// <summary>
 		/// Calculates the length of the vector.
 		/// </summary>
@@ -173,6 +183,8 @@ namespace CryEngine
 		{
 			get { return (X * X) + (Y * Y) + (Z * Z); }
 		}
+
+		public bool IsZero { get { return X == 0 && Y == 0 && Z == 0; } }
 
 		/// <summary>
 		/// Converts the vector into a unit vector.
