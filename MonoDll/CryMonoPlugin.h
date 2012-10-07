@@ -82,8 +82,10 @@ public:
 
 	virtual const char *ListNodes() const { return NULL; }
 	virtual const char *ListCVars() const { return NULL; }
-    virtual const char *ListGameObjects() const  { return NULL; }
-
+        virtual const char *ListGameObjects() const  { return NULL; }
+        
+        virtual const char *Dump() const  { return NULL; }
+        
 	virtual const char *GetStatus() const { return "Undefined"; }
 
 	virtual const char *GetCurrentConcreteInterfaceVersion() const { return CRYMONO_VERSION; }
