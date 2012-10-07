@@ -59,39 +59,34 @@ void CScriptbind_Physics::Physicalize(IEntity *pEntity, SMonoPhysicalizeParams p
 
 	if(pp.type == PE_LIVING)
 	{
-		pe_player_dimensions playerDim;
-		pp.pPlayerDimensions = &playerDim;
+		pp.pPlayerDimensions = new pe_player_dimensions();
 
-		pe_player_dynamics playerDyn;
-		pp.pPlayerDynamics = &playerDyn;
+		pp.pPlayerDimensions->heightCollider = params.heightCollider;
+		pp.pPlayerDimensions->sizeCollider = params.sizeCollider;
+		pp.pPlayerDimensions->heightPivot = params.heightPivot;
+		pp.pPlayerDimensions->maxUnproj = max(0.0f, pp.pPlayerDimensions->heightPivot);
+		pp.pPlayerDimensions->bUseCapsule = params.useCapsule;
 
-		playerDyn.mass = params.mass;
+		pp.pPlayerDynamics = new pe_player_dynamics();
 
-		playerDim.heightCollider = params.heightCollider;
-		playerDim.sizeCollider = params.sizeCollider;
-		playerDim.heightPivot = params.heightPivot;
-		playerDim.bUseCapsule = params.useCapsule;
+		pp.pPlayerDynamics->gravity = params.gravity;
+		pp.pPlayerDynamics->mass = params.mass;
+		pp.pPlayerDynamics->kAirResistance = 0.5f;
+		pp.pPlayerDynamics->maxVelGround = params.maxVelGround;
 
-		playerDyn.gravity = params.gravity;
-		playerDyn.kAirControl = params.airControl;
-		playerDyn.minSlideAngle = params.minSlideAngle;
-		playerDyn.maxClimbAngle = params.maxClimbAngle;
-		playerDyn.minFallAngle = params.minFallAngle;
-		playerDyn.maxVelGround = params.maxVelGround;
+		pp.pPlayerDynamics->minSlideAngle = params.minSlideAngle;
+		pp.pPlayerDynamics->maxClimbAngle = params.maxClimbAngle;
+		pp.pPlayerDynamics->minFallAngle = params.minFallAngle;
+
+		pp.pPlayerDynamics->kAirControl = params.airControl;
+		pp.pPlayerDynamics->timeImpulseRecover = 0;
 	}
 
+	if(pp.type == PE_LIVING)
+		CryLogAlways("sizeCollider %f %f %f", pp.pPlayerDimensions->sizeCollider.x, pp.pPlayerDimensions->sizeCollider.y, pp.pPlayerDimensions->sizeCollider.z);
 	pEntity->Physicalize(pp);
-
-	if(IPhysicalEntity *pPhysicalEntity = pEntity->GetPhysics())
-	{
-		pe_action_awake awake;
-		awake.bAwake = false;
-		pPhysicalEntity->Action(&awake);
-
-		pe_action_move actionMove;
-		actionMove.dir = Vec3(0,0,0);
-		pPhysicalEntity->Action(&actionMove);
-	}
+	if(pp.type == PE_LIVING)
+		CryLogAlways("~sizeCollider %f %f %f", pp.pPlayerDimensions->sizeCollider.x, pp.pPlayerDimensions->sizeCollider.y, pp.pPlayerDimensions->sizeCollider.z);
 }
 
 void CScriptbind_Physics::Sleep(IEntity *pEntity, bool sleep)

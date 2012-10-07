@@ -57,7 +57,7 @@ namespace CryEngine
 			{
 				density = -1,
 				mass = -1,
-				slot = -1,
+				slot = 0,
 				attachToPart = -1,
 
 				heightCollider = Utils.UnusedMarker.Float,
