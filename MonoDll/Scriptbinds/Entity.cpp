@@ -103,6 +103,10 @@ CScriptbind_Entity::CScriptbind_Entity()
 
 	REGISTER_METHOD(SetJointAbsolute);
 
+	REGISTER_METHOD(SetTriggerBBox);
+	REGISTER_METHOD(GetTriggerBBox);
+	REGISTER_METHOD(InvalidateTrigger);
+
 	gEnv->pEntitySystem->AddSink(this, IEntitySystem::OnSpawn | IEntitySystem::OnRemove, 0);
 }
 
@@ -792,4 +796,32 @@ void CScriptbind_Entity::SetJointAbsolute(IEntity *pEntity, mono::string jointNa
 				pSkeletonPose->SetAbsJointByID(id, absolute);
 		}
 	}
+}
+
+void CScriptbind_Entity::SetTriggerBBox(IEntity *pEntity, AABB bounds)
+{
+	IEntityTriggerProxy *pTriggerProxy = static_cast<IEntityTriggerProxy *>(pEntity->GetProxy(ENTITY_PROXY_TRIGGER));
+	if(!pTriggerProxy)
+	{
+		pEntity->CreateProxy(ENTITY_PROXY_TRIGGER);
+		pTriggerProxy = static_cast<IEntityTriggerProxy *>(pEntity->GetProxy(ENTITY_PROXY_TRIGGER));
+	}
+
+	if (pTriggerProxy)
+		pTriggerProxy->SetTriggerBounds(bounds);
+}
+
+AABB CScriptbind_Entity::GetTriggerBBox(IEntity *pEntity)
+{
+	AABB bbox;
+	if(IEntityTriggerProxy *pTriggerProxy = static_cast<IEntityTriggerProxy *>(pEntity->GetProxy(ENTITY_PROXY_TRIGGER)))
+		pTriggerProxy->GetTriggerBounds(bbox);
+
+	return bbox;
+}
+
+void CScriptbind_Entity::InvalidateTrigger(IEntity *pEntity)
+{
+	if(IEntityTriggerProxy *pTriggerProxy = static_cast<IEntityTriggerProxy *>(pEntity->GetProxy(ENTITY_PROXY_TRIGGER)))
+		pTriggerProxy->InvalidateTrigger();
 }

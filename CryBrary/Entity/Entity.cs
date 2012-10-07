@@ -32,14 +32,14 @@ namespace CryEngine
 			foreach(var property in GetType().GetProperties())
 			{
 				EditorPropertyAttribute attr;
-				if(property.TryGetAttribute(out attr) && attr.DefaultValue != null && !HasEditorPropertyBeenSet(property.GetValue(this, null), property.PropertyType))// && !storedPropertyNames.Contains(property.Name))
+				if(property.TryGetAttribute(out attr) && attr.DefaultValue != null && !HasEditorPropertyBeenSet(property.GetValue(this, null), property.PropertyType))
 					property.SetValue(this, attr.DefaultValue, null);
 			}
 
 			foreach(var field in GetType().GetFields())
 			{
 				EditorPropertyAttribute attr;
-				if(field.TryGetAttribute(out attr) && attr.DefaultValue != null && !HasEditorPropertyBeenSet(field.GetValue(this), field.FieldType))// && !storedPropertyNames.Contains(field.Name))
+				if(field.TryGetAttribute(out attr) && attr.DefaultValue != null && !HasEditorPropertyBeenSet(field.GetValue(this), field.FieldType))
 					field.SetValue(this, attr.DefaultValue);
 			}
 
@@ -242,6 +242,23 @@ namespace CryEngine
 			
 			throw new EntityException("Invalid property type specified.");
 		}
+
+		/// <summary>
+		/// Set to detect movement within an area. 
+		/// See OnEnterArea, OnMoveInsideArea, OnLeaveArea, OnEnterNearArea, OnLeaveNearArea & OnMoveNearArea
+		/// </summary>
+		BoundingBox TriggerBounds
+		{
+			get { return NativeMethods.Entity.GetTriggerBBox(this.GetEntityHandle().Handle); }
+			set
+			{
+				if (value.Minimum == Vec3.Zero && value.Maximum == Vec3.Zero)
+					NativeMethods.Entity.InvalidateTrigger(this.GetEntityHandle().Handle);
+
+				NativeMethods.Entity.SetTriggerBBox(this.GetEntityHandle().Handle, value);
+			}
+		}
+
 		/*
 		internal override NodeConfig GetNodeConfig()
 		{

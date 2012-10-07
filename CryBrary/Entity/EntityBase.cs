@@ -171,7 +171,7 @@ namespace CryEngine
 		public QuatT GetJointRelativeDefault(string jointName, int characterSlot = 0)
 		{
 			return NativeMethods.Entity.GetJointRelativeDefault(this.GetEntityHandle().Handle, jointName, characterSlot);
-		}	
+		}
 
 		public Lua.ScriptTable ScriptTable { get { return Lua.ScriptTable.Get(this.GetEntityHandle().Handle); } }
 

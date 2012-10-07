@@ -256,6 +256,10 @@ protected:
 	static QuatT GetJointRelativeDefault(IEntity *pEntity, mono::string jointName, int characterSlot);
 
 	static void SetJointAbsolute(IEntity *pEntity, mono::string jointName, int characterSlot, QuatT absolute);
+
+	static void SetTriggerBBox(IEntity *pEntity, AABB bounds);
+	static AABB GetTriggerBBox(IEntity *pEntity);
+	static void InvalidateTrigger(IEntity *pEntity);
 	// ~Scriptbinds
 
 	static std::vector<const char *> m_monoEntityClasses;

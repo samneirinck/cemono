@@ -82,5 +82,9 @@ namespace CryEngine.Native
 		QuatT GetJointRelativeDefault(IntPtr entPtr, string jointName, int characterSlot);
 
 		void SetJointAbsolute(IntPtr entPtr, string jointName, int characterSlot, QuatT absolute);
+
+		void SetTriggerBBox(IntPtr entPtr, BoundingBox bounds);
+		BoundingBox GetTriggerBBox(IntPtr entPtr);
+		void InvalidateTrigger(IntPtr entPtr);
     }
 }

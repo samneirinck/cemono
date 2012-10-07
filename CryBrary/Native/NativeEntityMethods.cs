@@ -137,6 +137,13 @@ namespace CryEngine.Native
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static void _SetJointAbsolute(IntPtr entPtr, string jointName, int characterSlot, QuatT absolute);
 
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static void _SetTriggerBBox(IntPtr entPtr, BoundingBox bounds);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static BoundingBox _GetTriggerBBox(IntPtr entPtr);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static void _InvalidateTrigger(IntPtr entPtr);
+
 		public void PlayAnimation(IntPtr ptr, string animationName, int slot, int layer, float blend, float speed, AnimationFlags flags)
 		{
 			_PlayAnimation(ptr, animationName, slot, layer, blend, speed, flags);
@@ -405,6 +412,21 @@ namespace CryEngine.Native
 		public void SetJointAbsolute(IntPtr entPtr, string jointName, int characterSlot, QuatT absolute)
 		{
 			_SetJointAbsolute(entPtr, jointName, characterSlot, absolute);
+		}
+
+		public void SetTriggerBBox(IntPtr entPtr, BoundingBox bounds)
+		{
+			_SetTriggerBBox(entPtr, bounds);
+		}
+
+		public BoundingBox GetTriggerBBox(IntPtr entPtr)
+		{
+			return _GetTriggerBBox(entPtr);
+		}
+
+		public void InvalidateTrigger(IntPtr entPtr)
+		{
+			_InvalidateTrigger(entPtr);
 		}
     }
 }
