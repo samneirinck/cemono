@@ -54,7 +54,7 @@ public:
 		return !strcmp(sAPIVersion, "3.4.0");
 	}
 
-    virtual bool Init(SSystemGlobalEnvironment &env, SSystemInitParams &startupParams, IPluginBase *pPluginManager)
+    virtual bool Init(SSystemGlobalEnvironment &env, SSystemInitParams &startupParams, IPluginBase *pPluginManager, const char* sPluginDirectory)
 	{
 		ModuleInitISystem(env.pSystem, GetName());
 		m_bInitialized = true;
