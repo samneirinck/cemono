@@ -82,11 +82,7 @@ void CScriptbind_Physics::Physicalize(IEntity *pEntity, SMonoPhysicalizeParams p
 		pp.pPlayerDynamics->timeImpulseRecover = 0;
 	}
 
-	if(pp.type == PE_LIVING)
-		CryLogAlways("sizeCollider %f %f %f", pp.pPlayerDimensions->sizeCollider.x, pp.pPlayerDimensions->sizeCollider.y, pp.pPlayerDimensions->sizeCollider.z);
 	pEntity->Physicalize(pp);
-	if(pp.type == PE_LIVING)
-		CryLogAlways("~sizeCollider %f %f %f", pp.pPlayerDimensions->sizeCollider.x, pp.pPlayerDimensions->sizeCollider.y, pp.pPlayerDimensions->sizeCollider.z);
 }
 
 void CScriptbind_Physics::Sleep(IEntity *pEntity, bool sleep)
