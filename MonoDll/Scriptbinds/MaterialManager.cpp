@@ -37,7 +37,10 @@ CScriptbind_MaterialManager::CScriptbind_MaterialManager()
 
 IMaterial *CScriptbind_MaterialManager::FindMaterial(mono::string name)
 {
-	return m_pMaterialManager->FindMaterial(ToCryString(name));
+	if(IMaterial *pMaterial = m_pMaterialManager->FindMaterial(ToCryString(name)))
+		return pMaterial;
+
+	return m_pMaterialManager->LoadMaterial(ToCryString(name), false);
 }
 
 IMaterial *CScriptbind_MaterialManager::CreateMaterial(mono::string name)
