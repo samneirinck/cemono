@@ -83,7 +83,7 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="entityId"></param>
 		/// <param name="areaEntityId"></param>
-		protected virtual void OnEnterArea(EntityId entityId, int areaEntityId) { }
+		protected virtual void OnEnterArea(EntityId entityId, int areaEntityId, float fade) { }
 
 		/// <summary>
 		/// Sent when entity moves inside the area proximity.
@@ -98,7 +98,7 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="entityId"></param>
 		/// <param name="areaEntityId"></param>
-		protected virtual void OnLeaveArea(EntityId entityId, int areaEntityId) { }
+		protected virtual void OnLeaveArea(EntityId entityId, int areaEntityId, float fade) { }
 
 		protected virtual void OnEnterNearArea(EntityId entityId, int areaId, float fade) { }
 		protected virtual void OnLeaveNearArea(EntityId entityId, int areaId, float fade) { }
