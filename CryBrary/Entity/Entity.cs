@@ -247,7 +247,7 @@ namespace CryEngine
 		/// Set to detect movement within an area. 
 		/// See OnEnterArea, OnMoveInsideArea, OnLeaveArea, OnEnterNearArea, OnLeaveNearArea & OnMoveNearArea
 		/// </summary>
-		BoundingBox TriggerBounds
+		public BoundingBox TriggerBounds
 		{
 			get { return NativeMethods.Entity.GetTriggerBBox(this.GetEntityHandle().Handle); }
 			set
