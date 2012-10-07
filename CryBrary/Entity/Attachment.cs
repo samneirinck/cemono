@@ -42,7 +42,7 @@ namespace CryEngine
 			ScriptManager.Instance.RemoveInstance(tempEntity.ScriptId, ScriptType.Entity);
 			ScriptManager.Instance.AddScriptInstance(this, ScriptType.Entity);
 
-			NativeMethods.Entity.LinkEntityToAttachment(this.GetAttachmentHandle().Handle, Id);
+			this.SetEntityAttachmentHandle(new HandleRef(this, NativeMethods.Entity.LinkEntityToAttachment(this.GetAttachmentHandle().Handle, Id)));
 
 			if(!String.IsNullOrEmpty(attachmentObject)) // Just in case it had a model loaded by default
 				LoadObject(attachmentObject);
@@ -55,6 +55,33 @@ namespace CryEngine
 
 		public EntityBase Owner { get; private set; }
 
+		bool useEntityPos;
+		public bool UseEntityPosition 
+		{ 
+			get { return useEntityPos; }
+			set
+			{
+				useEntityPos = value;
+
+				NativeMethods.Entity.AttachmentUseEntityPosition(this.GetEntityAttachmentHandle().Handle, value);
+			}
+		}
+		bool useEntityRot;
+		public bool UseEntityRotation
+		{
+			get { return useEntityPos; }
+			set
+			{
+				useEntityRot = value;
+
+				NativeMethods.Entity.AttachmentUseEntityRotation(this.GetEntityAttachmentHandle().Handle, value);
+			}
+		}
+
+		/// <summary>
+		/// CMonoEntityAttachment *
+		/// </summary>
+		internal HandleRef EntityAttachmentHandleRef { get; set; }
 		internal HandleRef AttachmentHandleRef { get; set; }
 	}
 }

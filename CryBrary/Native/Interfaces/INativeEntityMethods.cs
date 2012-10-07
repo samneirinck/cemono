@@ -65,7 +65,10 @@ namespace CryEngine.Native
 		IntPtr GetAttachmentByIndex(IntPtr entPtr, int index, int slot);
 		IntPtr GetAttachmentByName(IntPtr entPtr, string name, int slot);
 
-		void LinkEntityToAttachment(IntPtr attachmentPtr, uint entityId);
+		void AttachmentUseEntityPosition(IntPtr entityAttachmentPtr, bool use);
+		void AttachmentUseEntityRotation(IntPtr entityAttachmentPtr, bool use);
+
+		IntPtr LinkEntityToAttachment(IntPtr attachmentPtr, uint entityId);
 		string GetAttachmentObject(IntPtr attachmentPtr);
 
 		QuatT GetAttachmentAbsolute(IntPtr attachmentPtr);

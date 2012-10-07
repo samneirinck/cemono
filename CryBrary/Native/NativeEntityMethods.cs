@@ -106,7 +106,12 @@ namespace CryEngine.Native
 		extern internal static IntPtr _GetAttachmentByName(IntPtr entPtr, string name, int slot);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _LinkEntityToAttachment(IntPtr attachmentPtr, uint entityId);
+		extern internal static void _AttachmentUseEntityPosition(IntPtr entityAttachmentPtr, bool use);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static void _AttachmentUseEntityRotation(IntPtr entityAttachmentPtr, bool use);
+
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static IntPtr _LinkEntityToAttachment(IntPtr attachmentPtr, uint entityId);
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static string _GetAttachmentObject(IntPtr attachmentPtr);
 
@@ -349,9 +354,19 @@ namespace CryEngine.Native
 			return _GetAttachmentByName(entPtr, name, slot);
 		}
 
-		public void LinkEntityToAttachment(IntPtr attachmentPtr, uint entityId)
+		public void AttachmentUseEntityPosition(IntPtr entityAttachmentPtr, bool use)
 		{
-			_LinkEntityToAttachment(attachmentPtr, entityId);
+			AttachmentUseEntityPosition(entityAttachmentPtr, use);
+		}
+
+		public void AttachmentUseEntityRotation(IntPtr entityAttachmentPtr, bool use)
+		{
+			_AttachmentUseEntityRotation(entityAttachmentPtr, use);
+		}
+
+		public IntPtr LinkEntityToAttachment(IntPtr attachmentPtr, uint entityId)
+		{
+			return _LinkEntityToAttachment(attachmentPtr, entityId);
 		}
 
 		public string GetAttachmentObject(IntPtr attachmentPtr)

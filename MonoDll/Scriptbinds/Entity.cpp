@@ -85,6 +85,9 @@ CScriptbind_Entity::CScriptbind_Entity()
 	REGISTER_METHOD(GetAttachmentByIndex);
 	REGISTER_METHOD(GetAttachmentByName);
 
+	REGISTER_METHOD(AttachmentUseEntityPosition);
+	REGISTER_METHOD(AttachmentUseEntityRotation);
+
 	REGISTER_METHOD(LinkEntityToAttachment);
 	REGISTER_METHOD(GetAttachmentObject);
 
@@ -95,6 +98,7 @@ CScriptbind_Entity::CScriptbind_Entity()
 
 	REGISTER_METHOD(GetAttachmentMaterial);
 	REGISTER_METHOD(SetAttachmentMaterial);
+	// ~Attachment
 
 	REGISTER_METHOD(GetJointAbsolute);
 	REGISTER_METHOD(GetJointAbsoluteDefault);
@@ -658,17 +662,41 @@ IAttachment *CScriptbind_Entity::GetAttachmentByName(IEntity *pEnt, mono::string
 
 class CMonoEntityAttachment : public CEntityAttachment
 {
+public:
+	CMonoEntityAttachment()
+		: m_bUseEntityPosition(false)
+		, m_bUseEntityRotation(false)
+	{
+	}
+
+	void UseEntityPosition(bool use) { m_bUseEntityPosition = use; }
+	void UseEntityRotation(bool use) { m_bUseEntityRotation = use; }
+
 	virtual void UpdateAttachment(IAttachment *pIAttachment,const QuatT &m, float fZoomAdjustedDistanceFromCamera, uint32 OnRender ) override
 	{
 		const QuatT& quatT = pIAttachment->GetAttWorldAbsolute();
 
 		IEntity *pEntity = gEnv->pEntitySystem->GetEntity(GetEntityId());
 		if(pEntity)
-			pEntity->SetPosRotScale(quatT.t, pEntity->GetRotation(), pEntity->GetScale(), ENTITY_XFORM_NO_PROPOGATE);
+			pEntity->SetPosRotScale((m_bUseEntityPosition ? pEntity->GetPos() : quatT.t), (m_bUseEntityRotation ? pEntity->GetRotation() : quatT.q), pEntity->GetScale(), ENTITY_XFORM_NO_PROPOGATE);
 	}
+
+private:
+	bool m_bUseEntityPosition;
+	bool m_bUseEntityRotation;
 };
 
-void CScriptbind_Entity::LinkEntityToAttachment(IAttachment *pAttachment, EntityId id)
+void CScriptbind_Entity::AttachmentUseEntityPosition(CMonoEntityAttachment *pEntityAttachment, bool use)
+{
+	pEntityAttachment->UseEntityPosition(use);
+}
+
+void CScriptbind_Entity::AttachmentUseEntityRotation(CMonoEntityAttachment *pEntityAttachment, bool use)
+{
+	pEntityAttachment->UseEntityRotation(use);
+}
+
+CMonoEntityAttachment *CScriptbind_Entity::LinkEntityToAttachment(IAttachment *pAttachment, EntityId id)
 {
 	pAttachment->ClearBinding();
 
@@ -676,6 +704,8 @@ void CScriptbind_Entity::LinkEntityToAttachment(IAttachment *pAttachment, Entity
 	pEntityAttachment->SetEntityId(id);
 
 	pAttachment->AddBinding(pEntityAttachment);
+
+	return pEntityAttachment;
 }
 
 mono::string CScriptbind_Entity::GetAttachmentObject(IAttachment *pAttachment)

@@ -13,5 +13,15 @@ namespace CryEngine.Native
 		{
 			attachment.AttachmentHandleRef = newHandle;
 		}
+
+		public static HandleRef GetEntityAttachmentHandle(this Attachment attachment)
+		{
+			return attachment.EntityAttachmentHandleRef;
+		}
+
+		public static void SetEntityAttachmentHandle(this Attachment attachment, HandleRef newHandle)
+		{
+			attachment.EntityAttachmentHandleRef = newHandle;
+		}
 	}
 }

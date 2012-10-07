@@ -151,6 +151,8 @@ struct SMonoLightParams
 	 uint32 flags;
 };
 
+class CMonoEntityAttachment;
+
 class CScriptbind_Entity 
 	: public IMonoScriptBind
 	, public IEntitySystemSink
@@ -238,7 +240,10 @@ protected:
 	static IAttachment *GetAttachmentByIndex(IEntity *pEnt, int index, int slot);
 	static IAttachment *GetAttachmentByName(IEntity *pEnt, mono::string name, int slot);
 
-	static void LinkEntityToAttachment(IAttachment *pAttachment, EntityId id);
+	static void AttachmentUseEntityPosition(CMonoEntityAttachment *pEntityAttachment, bool use);
+	static void AttachmentUseEntityRotation(CMonoEntityAttachment *pEntityAttachment, bool use);
+
+	static CMonoEntityAttachment *LinkEntityToAttachment(IAttachment *pAttachment, EntityId id);
 	static mono::string GetAttachmentObject(IAttachment *pAttachment);
 
 	static QuatT GetAttachmentAbsolute(IAttachment *pAttachment);
