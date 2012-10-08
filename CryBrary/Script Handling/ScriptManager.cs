@@ -459,14 +459,16 @@ namespace CryEngine.Initialization
 				{
 					if (script.ScriptInstances != null)
 					{
-						foreach (var scriptInstance in script.ScriptInstances)
-						{
-							if(match(scriptInstance as T))
+						numRemoved += script.ScriptInstances.RemoveAll(x =>
 							{
-								scriptInstance.OnDestroyedInternal();
-								numRemoved++;
-							}
-						}
+								if (match(x as T))
+								{
+									x.OnDestroyedInternal();
+									return true;
+								}
+
+								return false;
+							});
 					}
 				}
 
