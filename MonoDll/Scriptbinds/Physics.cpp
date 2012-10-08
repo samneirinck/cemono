@@ -20,6 +20,8 @@ CScriptbind_Physics::CScriptbind_Physics()
 
 	REGISTER_METHOD(RayWorldIntersection);
 
+	REGISTER_METHOD(GetLivingEntityStatus);
+
 	REGISTER_METHOD(GetImpulseStruct);
 	REGISTER_METHOD(GetPlayerDimensionsStruct);
 	REGISTER_METHOD(GetPlayerDynamicsStruct);
@@ -175,4 +177,13 @@ int CScriptbind_Physics::RayWorldIntersection(Vec3 origin, Vec3 dir, int objFlag
 	monoHit.surface_idx = hit.surface_idx;
 
 	return numHits;
+}
+
+pe_status_living CScriptbind_Physics::GetLivingEntityStatus(IEntity *pEntity)
+{
+	pe_status_living status;
+	if(IPhysicalEntity *pPhysEnt = pEntity->GetPhysics())
+		pEntity->GetPhysics()->GetStatus(&status);
+
+	return status;
 }

@@ -78,6 +78,8 @@ public:
 
 	static int RayWorldIntersection(Vec3, Vec3, int, unsigned int, SMonoRayHit &, int, mono::object);
 
+	static pe_status_living GetLivingEntityStatus(IEntity *pEntity);
+
 	static pe_action_impulse GetImpulseStruct()
 	{
 		pe_action_impulse impulse;
