@@ -44,11 +44,6 @@ namespace CryEngine
             NativeMethods.Entity.RemoveEntity(id);
 		}
 
-		public void Remove()
-		{
-			Remove(Id);
-		}
-
 		internal static bool InternalRemove(EntityId id)
 		{
 			int numRemoved = ScriptManager.Instance.RemoveInstances(ScriptType.Entity, instance =>
