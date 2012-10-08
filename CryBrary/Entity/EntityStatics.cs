@@ -45,7 +45,7 @@ namespace CryEngine
 		{
 			EntityInfo info;
 
-			var ent = NativeMethods.Entity.SpawnEntity(new EntitySpawnParams { Name = entityName, Class = className, Pos = pos ?? new Vec3(1, 1, 1), Rot = rot ?? Quat.Identity, Scale = scale ?? new Vec3(1, 1, 1), Flags = flags }, autoInit, out info)T;
+			var ent = NativeMethods.Entity.SpawnEntity(new EntitySpawnParams { Name = entityName, Class = className, Pos = pos ?? new Vec3(1, 1, 1), Rot = rot ?? Quat.Identity, Scale = scale ?? new Vec3(1, 1, 1), Flags = flags }, autoInit, out info) as Entity;
 			if (ent != null)
 				return ent;
 			else if (info.Id != 0)
