@@ -32,6 +32,10 @@ struct SMonoRayHit
 struct SMonoPhysicalizeParams
 {
 	int type;
+
+	int flagsOR;
+	int flagsAND;
+
 	int slot;
 
 	float density;
@@ -47,28 +51,8 @@ struct SMonoPhysicalizeParams
 
 	bool copyJointVelocities;
 
-	float heightCollider;
-	Vec3 sizeCollider;
-	float heightPivot;
-	bool useCapsule;
-
-	Vec3 gravity;
-	float airControl;
-	float minSlideAngle;
-	float maxClimbAngle;
-	float minFallAngle;
-	float maxVelGround;
-};
-
-struct SMonoActionImpulse
-{
-	Vec3 impulse;
-	Vec3 angImpulse;	// optional
-	Vec3 point; // point of application, in world CS, optional 
-	int partid;	// receiver part identifier
-	int ipart; // alternatively, part index can be used
-	int iApplyTime; // 0-apply immediately, 1-apply before the next time step, 2-apply after the next time step
-	int iSource; // reserved for internal use
+	pe_player_dimensions playerDim;
+	pe_player_dynamics playerDyn;
 };
 
 class CScriptbind_Physics : public IMonoScriptBind
@@ -87,12 +71,30 @@ public:
 
 	static void Sleep(IEntity *pEntity, bool sleep);
 
-	static void AddImpulse(IEntity *pEntity, SMonoActionImpulse impulse);
+	static void AddImpulse(IEntity *pEntity, pe_action_impulse impulse);
 
 	static Vec3 GetVelocity(IEntity *pEntity);
 	static void SetVelocity(IEntity *pEntity, Vec3 vel);
 
 	static int RayWorldIntersection(Vec3, Vec3, int, unsigned int, SMonoRayHit &, int, mono::object);
+
+	static pe_action_impulse GetImpulseStruct()
+	{
+		pe_action_impulse impulse;
+		return impulse;
+	}
+
+	static pe_player_dimensions GetPlayerDimensionsStruct()
+	{
+		pe_player_dimensions pd;
+		return pd;
+	}
+
+	static pe_player_dynamics GetPlayerDynamicsStruct()
+	{
+		pe_player_dynamics pd;
+		return pd;
+	}
 };
 
 #endif //__SCRIPTBIND_PHYSICALWORLD__

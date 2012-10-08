@@ -19,6 +19,10 @@ CScriptbind_Physics::CScriptbind_Physics()
 	REGISTER_METHOD(SetVelocity);
 
 	REGISTER_METHOD(RayWorldIntersection);
+
+	REGISTER_METHOD(GetImpulseStruct);
+	REGISTER_METHOD(GetPlayerDimensionsStruct);
+	REGISTER_METHOD(GetPlayerDynamicsStruct);
 }
 
 IPhysicalEntity *CScriptbind_Physics::GetPhysicalEntity(IEntity *pEntity)
@@ -51,6 +55,9 @@ void CScriptbind_Physics::Physicalize(IEntity *pEntity, SMonoPhysicalizeParams p
 	pp.nSlot = params.slot;
 	pp.type = params.type;
 
+	pp.nFlagsOR = params.flagsOR;
+	pp.nFlagsAND = params.flagsAND;
+
 	if(params.attachToEntity != 0)
 	{
 		if(IPhysicalEntity *pPhysEnt = gEnv->pPhysicalWorld->GetPhysicalEntityById(params.attachToEntity))
@@ -59,27 +66,8 @@ void CScriptbind_Physics::Physicalize(IEntity *pEntity, SMonoPhysicalizeParams p
 
 	if(pp.type == PE_LIVING)
 	{
-		pp.pPlayerDimensions = new pe_player_dimensions();
-
-		pp.pPlayerDimensions->heightCollider = params.heightCollider;
-		pp.pPlayerDimensions->sizeCollider = params.sizeCollider;
-		pp.pPlayerDimensions->heightPivot = params.heightPivot;
-		pp.pPlayerDimensions->maxUnproj = max(0.0f, pp.pPlayerDimensions->heightPivot);
-		pp.pPlayerDimensions->bUseCapsule = params.useCapsule;
-
-		pp.pPlayerDynamics = new pe_player_dynamics();
-
-		pp.pPlayerDynamics->gravity = params.gravity;
-		pp.pPlayerDynamics->mass = params.mass;
-		pp.pPlayerDynamics->kAirResistance = 0.5f;
-		pp.pPlayerDynamics->maxVelGround = params.maxVelGround;
-
-		pp.pPlayerDynamics->minSlideAngle = params.minSlideAngle;
-		pp.pPlayerDynamics->maxClimbAngle = params.maxClimbAngle;
-		pp.pPlayerDynamics->minFallAngle = params.minFallAngle;
-
-		pp.pPlayerDynamics->kAirControl = params.airControl;
-		pp.pPlayerDynamics->timeImpulseRecover = 0;
+		pp.pPlayerDimensions = &params.playerDim;
+		pp.pPlayerDynamics = &params.playerDyn;
 	}
 
 	pEntity->Physicalize(pp);
@@ -97,7 +85,7 @@ void CScriptbind_Physics::Sleep(IEntity *pEntity, bool sleep)
 	pPhysicalEntity->Action(&awake);
 }
 
-void CScriptbind_Physics::AddImpulse(IEntity *pEntity, SMonoActionImpulse actionImpulse)
+void CScriptbind_Physics::AddImpulse(IEntity *pEntity, pe_action_impulse actionImpulse)
 {
 	pe_action_impulse impulse;
 

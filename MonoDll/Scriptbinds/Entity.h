@@ -179,6 +179,8 @@ protected:
 
 	bool IsMonoEntity(const char *className);
 
+	void RegisterNativeEntityClass();
+
 	// Scriptbinds
 	static mono::object SpawnEntity(EntitySpawnParams, bool, SMonoEntityInfo &entityInfo);
 	static void RemoveEntity(EntityId);
@@ -265,6 +267,8 @@ protected:
 	static void SetTriggerBBox(IEntity *pEntity, AABB bounds);
 	static AABB GetTriggerBBox(IEntity *pEntity);
 	static void InvalidateTrigger(IEntity *pEntity);
+
+	static IAnimatedCharacter *AcquireAnimatedCharacter(EntityId id);
 	// ~Scriptbinds
 
 	static std::vector<const char *> m_monoEntityClasses;

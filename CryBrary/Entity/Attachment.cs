@@ -37,7 +37,6 @@ namespace CryEngine
 
 			Id = tempEntity.Id;
 			this.SetEntityHandle(tempEntity.GetEntityHandle());
-			this.SetAnimatedCharacterHandle(tempEntity.GetAnimatedCharacterHandle());
 
 			ScriptManager.Instance.RemoveInstance(tempEntity.ScriptId, ScriptType.Entity);
 			ScriptManager.Instance.AddScriptInstance(this, ScriptType.Entity);

@@ -89,5 +89,7 @@ namespace CryEngine.Native
 		void SetTriggerBBox(IntPtr entPtr, BoundingBox bounds);
 		BoundingBox GetTriggerBBox(IntPtr entPtr);
 		void InvalidateTrigger(IntPtr entPtr);
+
+		IntPtr AcquireAnimatedCharacter(uint entId);
     }
 }

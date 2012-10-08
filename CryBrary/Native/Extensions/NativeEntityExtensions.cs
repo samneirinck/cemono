@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 using CryEngine;
 
 namespace CryEngine.Native
@@ -20,8 +21,17 @@ namespace CryEngine.Native
 
 		public static HandleRef GetAnimatedCharacterHandle(this EntityBase entity)
 		{
+			Debug.LogAlways("GetAnimatedCharacterHandle pre {0} on entity {1}", entity.AnimatedCharacterHandleRef.Handle, entity.Id);
+
 			if (entity.IsDestroyed)
 				throw new EntityDestroyedException("Attempted to access native animated character handle on a destroyed entity");
+			if (entity.AnimatedCharacterHandleRef.Handle == IntPtr.Zero)
+			{
+				Debug.LogStackTrace();
+				entity.SetAnimatedCharacterHandle(new HandleRef(entity, NativeMethods.Entity.AcquireAnimatedCharacter(entity.Id)));
+			}
+
+			Debug.LogAlways("GetAnimatedCharacterHandle post {0}", entity.AnimatedCharacterHandleRef.Handle);
 
 			return entity.AnimatedCharacterHandleRef;
 		}

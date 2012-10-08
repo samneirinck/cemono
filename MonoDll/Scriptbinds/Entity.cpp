@@ -1,7 +1,8 @@
 #include "StdAfx.h"
 #include "Scriptbinds\Entity.h"
 
-#include <MonoEntity.h>
+#include "MonoEntity.h"
+#include "NativeEntity.h"
 #include "MonoEntityClass.h"
 
 #include "MonoScriptSystem.h"
@@ -111,6 +112,10 @@ CScriptbind_Entity::CScriptbind_Entity()
 	REGISTER_METHOD(GetTriggerBBox);
 	REGISTER_METHOD(InvalidateTrigger);
 
+	REGISTER_METHOD(AcquireAnimatedCharacter);
+
+	//RegisterNativeEntityClass();
+
 	gEnv->pEntitySystem->AddSink(this, IEntitySystem::OnSpawn | IEntitySystem::OnRemove, 0);
 }
 
@@ -167,7 +172,7 @@ bool CScriptbind_Entity::IsMonoEntity(const char *className)
 void CScriptbind_Entity::OnSpawn(IEntity *pEntity,SEntitySpawnParams &params)
 {
 	const char *className = params.pClass->GetName();
-	if(!IsMonoEntity(className))
+	if(!IsMonoEntity(className))// && strcmp(className, "[NativeEntity]"))
 		return;
 
 	auto gameObject = gEnv->pGameFramework->GetIGameObjectSystem()->CreateGameObjectForEntity(pEntity->GetId());
@@ -280,6 +285,30 @@ bool CScriptbind_Entity::RegisterEntityClass(SEntityRegistrationParams params)
 	gEnv->pGameFramework->GetIGameObjectSystem()->RegisterExtension(className, &creator, nullptr);
 
 	return result;
+}
+
+struct SMonoNativeEntityCreator
+	: public IGameObjectExtensionCreatorBase
+{
+	virtual IGameObjectExtension *Create() { return new CNativeEntity(); }
+	virtual void GetGameObjectExtensionRMIData(void **ppRMI, size_t *nCount) { return CNativeEntity::GetGameObjectExtensionRMIData(ppRMI, nCount); }
+};
+
+void CScriptbind_Entity::RegisterNativeEntityClass()
+{
+	const char *className = "[NativeEntity]";
+
+	IEntityClassRegistry::SEntityClassDesc entityClassDesc;
+	entityClassDesc.flags = 0;
+	entityClassDesc.sName = className;
+	entityClassDesc.editorClassInfo.sCategory = "Default";
+
+	std::vector<IEntityPropertyHandler::SPropertyInfo> properties;
+
+	bool result = gEnv->pEntitySystem->GetClassRegistry()->RegisterClass(new CEntityClass(entityClassDesc, properties));
+
+	static SMonoNativeEntityCreator creator;
+	gEnv->pGameFramework->GetIGameObjectSystem()->RegisterExtension(className, &creator, nullptr);
 }
 
 mono::object CScriptbind_Entity::SpawnEntity(EntitySpawnParams monoParams, bool bAutoInit, SMonoEntityInfo &entityInfo)
@@ -467,7 +496,7 @@ Quat CScriptbind_Entity::GetWorldRotation(IEntity *pEntity)
 
 void CScriptbind_Entity::LoadObject(IEntity *pEntity, mono::string fileName, int slot)
 {
-	pEntity->SetStatObj(gEnv->p3DEngine->LoadStatObj(ToCryString(fileName)), slot, true);
+	pEntity->LoadGeometry(slot, ToCryString(fileName));
 }
 
 void CScriptbind_Entity::LoadCharacter(IEntity *pEntity, mono::string fileName, int slot)
@@ -494,6 +523,8 @@ mono::string CScriptbind_Entity::GetStaticObjectFilePath(IEntity *pEntity, int s
 {
 	if(IStatObj *pStatObj = pEntity->GetStatObj(slot))
 		return ToMonoString(pStatObj->GetFilePath());
+	else if(ICharacterInstance *pCharacter = pEntity->GetCharacter(0))
+		return ToMonoString(pCharacter->GetFilePath());
 
 	return ToMonoString("");
 }
@@ -623,6 +654,7 @@ void CScriptbind_Entity::AddMovement(IAnimatedCharacter *pAnimatedCharacter, SCh
 {
 	if(pAnimatedCharacter)
 		pAnimatedCharacter->AddMovement(moveRequest);
+
 }
 
 ////////////////////////////////////////////////////
@@ -854,4 +886,12 @@ void CScriptbind_Entity::InvalidateTrigger(IEntity *pEntity)
 {
 	if(IEntityTriggerProxy *pTriggerProxy = static_cast<IEntityTriggerProxy *>(pEntity->GetProxy(ENTITY_PROXY_TRIGGER)))
 		pTriggerProxy->InvalidateTrigger();
+}
+
+IAnimatedCharacter *CScriptbind_Entity::AcquireAnimatedCharacter(EntityId id)
+{
+	if(IGameObject *pGameObject = gEnv->pGameFramework->GetGameObject(id))
+		return static_cast<IAnimatedCharacter *>(pGameObject->AcquireExtension("AnimatedCharacter"));
+
+	return nullptr;
 }

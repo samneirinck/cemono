@@ -149,6 +149,9 @@ namespace CryEngine.Native
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static void _InvalidateTrigger(IntPtr entPtr);
 
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static IntPtr _AcquireAnimatedCharacter(uint entId);
+
 		public void PlayAnimation(IntPtr ptr, string animationName, int slot, int layer, float blend, float speed, AnimationFlags flags)
 		{
 			_PlayAnimation(ptr, animationName, slot, layer, blend, speed, flags);
@@ -442,6 +445,11 @@ namespace CryEngine.Native
 		public void InvalidateTrigger(IntPtr entPtr)
 		{
 			_InvalidateTrigger(entPtr);
+		}
+
+		public IntPtr AcquireAnimatedCharacter(uint entId)
+		{
+			return _AcquireAnimatedCharacter(entId);
 		}
     }
 }

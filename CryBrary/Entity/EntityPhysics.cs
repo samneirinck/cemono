@@ -17,7 +17,6 @@ namespace CryEngine
 			entity = _entity;
 
 			Clear();
-			Save();
 
 			PhysicsPointer = NativeMethods.Physics.GetPhysicalEntity(entity.GetEntityHandle().Handle);
 
@@ -55,38 +54,35 @@ namespace CryEngine
 		{
 			_params = new PhysicalizationParams 
 			{
+				copyJointVelocities = false,
 				density = -1,
+				stiffnessScale = 0,
 				mass = -1,
-				slot = 0,
 				attachToPart = -1,
+				lod = 0,
+				slot = -1,
+				type = 0,
+				attachToEntity = 0,
+				flagsOR = 0,
+				flagsAND = int.MaxValue,
 
-				heightCollider = Utils.UnusedMarker.Float,
-				sizeCollider = Utils.UnusedMarker.Vec3,
-				heightPivot = Utils.UnusedMarker.Float,
-
-				gravity = Utils.UnusedMarker.Vec3,
-				airControl = Utils.UnusedMarker.Float,
-				minSlideAngle = Utils.UnusedMarker.Float,
-				maxClimbAngle = Utils.UnusedMarker.Float,
-				minFallAngle = Utils.UnusedMarker.Float,
-				maxVelGround = Utils.UnusedMarker.Float,
+				playerDim = pe_player_dimensions.Create(),
+				playerDyn = pe_player_dynamics.Create()
 			};
 		}
 
-		public void AddImpulse(Vec3 impulse, Vec3? angImpulse = null, Vec3? point = null)
+		public void AddImpulse(Vec3 vImpulse, Vec3? angImpulse = null, Vec3? point = null)
 		{
-			var actionImpulse = new ActionImpulse 
-			{ 
-				impulse = impulse, 
-				angImpulse = angImpulse ?? Utils.UnusedMarker.Vec3,
-				point = point ?? Utils.UnusedMarker.Vec3,
-				partid = Utils.UnusedMarker.Integer,
-				ipart = Utils.UnusedMarker.Integer,
-				iApplyTime = PhysicsApplyTime.PostStep,
-				iSource = 0
-			};
+			var impulse = pe_action_impulse.Create();
 
-			NativeMethods.Physics.AddImpulse(entity.GetEntityHandle().Handle, actionImpulse);
+			impulse.impulse = vImpulse;
+
+			if (angImpulse != null)
+				impulse.angImpulse = angImpulse.Value;
+			if (point != null)
+				impulse.point = point.Value;
+
+			NativeMethods.Physics.AddImpulse(entity.GetEntityHandle().Handle, impulse);
 		}
 
 		/// <summary>
@@ -129,6 +125,18 @@ namespace CryEngine
 			set { _params.type = value; if(AutoUpdate) Save(); }
 		}
 
+		public PhysicalizationFlags FlagsOR
+		{
+			get { return (PhysicalizationFlags)_params.flagsOR; }
+			set { _params.flagsOR = (int)value; if (AutoUpdate) Save(); }
+		}
+
+		public PhysicalizationFlags FlagsAND
+		{
+			get { return (PhysicalizationFlags)_params.flagsAND; }
+			set { _params.flagsAND = (int)value; if (AutoUpdate) Save(); }
+		}
+
 		/// <summary>
 		/// For characters: the scale of force in joint springs.
 		/// </summary>
@@ -142,61 +150,61 @@ namespace CryEngine
 		public float HeightCollider
 		{
 			get { throw new NotImplementedException(); }
-			set { _params.heightCollider = value; if (AutoUpdate) Save(); }
+			set { Debug.LogAlways("1"); _params.playerDim.heightCollider = value; if (AutoUpdate) Save(); }
 		}
 
 		public Vec3 SizeCollider
 		{
 			get { throw new NotImplementedException(); }
-			set { _params.sizeCollider = value; if (AutoUpdate) Save(); }
+			set { Debug.LogAlways("1"); _params.playerDim.sizeCollider = value; if (AutoUpdate) Save(); }
 		}
 
 		public float HeightPivot
 		{
 			get { throw new NotImplementedException(); }
-			set { _params.heightPivot = value; if (AutoUpdate) Save(); }
+			set { Debug.LogAlways("1"); _params.playerDim.heightPivot = value; if (AutoUpdate) Save(); }
 		}
 
 		public bool UseCapsule
 		{
 			get { throw new NotImplementedException(); }
-			set { _params.useCapsule = value; if (AutoUpdate) Save(); }
+			set { Debug.LogAlways("1"); _params.playerDim.bUseCapsule = (value == true ? 1 : 0); if (AutoUpdate) Save(); }
 		}
 
 		public Vec3 Gravity
 		{
 			get { throw new NotImplementedException(); }
-			set { _params.gravity = value; if (AutoUpdate) Save(); }
+			set { Debug.LogAlways("1"); _params.playerDyn.gravity = value; if (AutoUpdate) Save(); }
 		}
 
 		public float AirControl
 		{
 			get { throw new NotImplementedException(); }
-			set { _params.airControl = value; if (AutoUpdate) Save(); }
+			set { Debug.LogAlways("1"); _params.playerDyn.kAirControl = value; if (AutoUpdate) Save(); }
 		}
 
 		public float MinSlideAngle
 		{
 			get { throw new NotImplementedException(); }
-			set { _params.minSlideAngle = value; if (AutoUpdate) Save(); }
+			set { Debug.LogAlways("1"); _params.playerDyn.minSlideAngle = value; if (AutoUpdate) Save(); }
 		}
 
 		public float MaxClimbAngle
 		{
 			get { throw new NotImplementedException(); }
-			set { _params.maxClimbAngle = value; if (AutoUpdate) Save(); }
+			set { Debug.LogAlways("1"); _params.playerDyn.maxClimbAngle = value; if (AutoUpdate) Save(); }
 		}
 
 		public float MinFallAngle
 		{
 			get { throw new NotImplementedException(); }
-			set { _params.minFallAngle = value; if (AutoUpdate) Save(); }
+			set { Debug.LogAlways("1"); _params.playerDyn.minFallAngle = value; if (AutoUpdate) Save(); }
 		}
 
 		public float MaxVelGround
 		{
 			get { throw new NotImplementedException(); }
-			set { _params.maxVelGround = value; if (AutoUpdate) Save(); }
+			set { Debug.LogAlways("1"); _params.playerDyn.maxVelGround = value; if (AutoUpdate) Save(); }
 		}
 		#endregion
 		#endregion
@@ -208,22 +216,72 @@ namespace CryEngine
 		internal PhysicalizationParams _params;
 	}
 
-	internal struct ActionImpulse
+	internal struct pe_player_dynamics
 	{
-		public Vec3 impulse;
-		public Vec3 angImpulse;	// optional
-		public Vec3 point; // point of application, in world CS, optional 
-		public int partid;	// receiver part identifier
-		public int ipart; // alternatively, part index can be used
-		public PhysicsApplyTime iApplyTime; // 0-apply immediately, 1-apply before the next time step, 2-apply after the next time step
-		internal int iSource; // reserved for internal use
+		public static pe_player_dynamics Create()
+		{
+			return NativeMethods.Physics.GetPlayerDynamicsStruct();
+		}
+
+		public int type;
+
+		public float kInertia;	// inertia koefficient, the more it is, the less inertia is; 0 means no inertia
+		public float kInertiaAccel; // inertia on acceleration
+		public float kAirControl; // air control koefficient 0..1, 1 - special value (total control of movement)
+		public float kAirResistance;	// standard air resistance 
+		public Vec3 gravity; // gravity vector
+		public float nodSpeed;	// vertical camera shake speed after landings
+		public int bSwimming; // whether entity is swimming (is not bound to ground plane)
+		public float mass;	// mass (in kg)
+		public int surface_idx; // surface identifier for collisions
+		public float minSlideAngle; // if surface slope is more than this angle, player starts sliding (angle is in radians)
+		public float maxClimbAngle; // player cannot climb surface which slope is steeper than this angle
+		public float maxJumpAngle; // player is not allowed to jump towards ground if this angle is exceeded
+		public float minFallAngle;	// player starts falling when slope is steeper than this
+		public float maxVelGround; // player cannot stand of surfaces that are moving faster than this
+		public float timeImpulseRecover; // forcefully turns on inertia for that duration after receiving an impulse
+		public int collTypes; // entity types to check collisions against
+		IntPtr livingEntToIgnore;
+		int bNetwork; // uses extended history information (obsolete)
+		int bActive; // 0 disables all simulation for the character, apart from moving along the requested velocity
+		int iRequestedTime; // requests that the player rolls back to that time and re-exucutes pending actions during the next step
 	}
 
-	public enum PhysicsApplyTime
+	internal struct pe_player_dimensions
 	{
-		Immediate = 0,
-		PreStep = 1,
-		PostStep = 2
+		public static pe_player_dimensions Create()
+		{
+			return NativeMethods.Physics.GetPlayerDimensionsStruct();
+		}
+
+		public int type;
+
+		public float heightPivot; // offset from central ground position that is considered entity center
+		public float heightEye; // vertical offset of camera
+		public Vec3 sizeCollider; // collision cylinder dimensions
+		public float heightCollider;	// vertical offset of collision geometry center
+		public float headRadius;	// radius of the 'head' geometry (used for camera offset)
+		public float heightHead;	// center.z of the head geometry
+		public Vec3 dirUnproj;	// unprojection direction to test in case the new position overlaps with the environment (can be 0 for 'auto')
+		public float maxUnproj; // maximum allowed unprojection
+		public int bUseCapsule; // switches between capsule and cylinder collider geometry
+	}
+
+	internal struct pe_action_impulse
+	{
+		public static pe_action_impulse Create()
+		{
+			return NativeMethods.Physics.GetImpulseStruct();
+		}
+
+		public int type;
+		public Vec3 impulse;
+		public Vec3 angImpulse;	// optional
+		public Vec3 point; // point of application, in world CS, optional
+		public int partid;	// receiver part identifier
+		public int ipart; // alternatively, part index can be used
+		public int iApplyTime; // 0-apply immediately, 1-apply before the next time step, 2-apply after the next time step
+		public int iSource; // reserved for internal use
 	}
 
 	public enum BreakageType
@@ -251,6 +309,9 @@ namespace CryEngine
 	{
 		public PhysicalizationType type;
 
+		public int flagsOR;
+		public int flagsAND;
+
 		/// <summary>
 		/// Index of object slot, -1 if all slots should be used.
 		/// </summary>
@@ -271,7 +332,7 @@ namespace CryEngine
 		/// <summary>
 		/// Physical entity to attach this physics object (Only for Soft physical entity).
 		/// </summary>
-		uint attachToEntity;
+		public uint attachToEntity;
 
 		/// <summary>
 		/// Part ID in entity to attach to (Only for Soft physical entity).
@@ -288,19 +349,18 @@ namespace CryEngine
 		/// </summary>
 		public bool copyJointVelocities;
 
-		// pe_player_dimensions
-		public float heightCollider;
-		public Vec3 sizeCollider;
-		public float heightPivot;
-		public bool useCapsule;
+		public pe_player_dimensions playerDim;
+		public pe_player_dynamics playerDyn;
+	}
 
-		// pe_player_dynamics
-		public Vec3 gravity;
-		public float airControl;
-		public float minSlideAngle;
-		public float maxClimbAngle;
-		public float minFallAngle;
-		public float maxVelGround;
+	[Flags]
+	public enum PhysicalizationFlags
+	{
+		PushableByPlayers = 0x200,
+		FixedDamping = 0x40000,
+		NeverBreak = 0x40,
+		MonitorPostStep = 0x80000,
+		PlayersCanBreak = 0x400000,
 	}
 
 	public enum PhysicalizationType
