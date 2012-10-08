@@ -16,7 +16,6 @@
 CNativeEntity::CNativeEntity()
 	: m_bInitialized(false)
 {
-	CryLogAlways("spawned native entity");
 }
 
 bool CNativeEntity::Init(IGameObject *pGameObject)
@@ -94,7 +93,6 @@ void CNativeEntity::ProcessEvent(SEntityEvent &event)
 
 void CNativeEntity::Physicalize()
 {
-	CryLogAlways("physicalizing crate");
 	IEntity *pEntity = GetEntity();
 
 	pEntity->LoadGeometry(0, "objects/tank_env_assets/scifi/yellowcrate.cgf");
