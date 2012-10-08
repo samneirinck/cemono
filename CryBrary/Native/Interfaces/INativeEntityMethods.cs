@@ -8,7 +8,7 @@ namespace CryEngine.Native
 		void PlayAnimation(IntPtr ptr, string animationName, int slot, int layer, float blend, float speed, AnimationFlags flags);
 
 		EntityBase SpawnEntity(EntitySpawnParams spawnParams, bool autoInit, out EntityInfo entityInfo);
-		void RemoveEntity(EntityId entityId);
+		void RemoveEntity(EntityId entityId, bool forceRemoveNow = false);
 
 		IntPtr GetEntity(EntityId entityId);
         uint FindEntity(string name);

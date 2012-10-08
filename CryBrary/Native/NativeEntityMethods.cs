@@ -12,7 +12,7 @@ namespace CryEngine.Native
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static EntityBase _SpawnEntity(EntitySpawnParams spawnParams, bool autoInit, out EntityInfo entityInfo);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern internal static void _RemoveEntity(uint entityId);
+		extern internal static void _RemoveEntity(uint entityId, bool forceRemoveNow = false);
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static IntPtr _GetEntity(uint entityId);
@@ -162,9 +162,9 @@ namespace CryEngine.Native
             return _SpawnEntity(spawnParams, autoInit, out entityInfo);
         }
 
-        public void RemoveEntity(EntityId entityId)
+		public void RemoveEntity(EntityId entityId, bool forceRemoveNow = false)
         {
-            _RemoveEntity(entityId);
+			_RemoveEntity(entityId, forceRemoveNow);
         }
 
 		public IntPtr GetEntity(EntityId entityId)
