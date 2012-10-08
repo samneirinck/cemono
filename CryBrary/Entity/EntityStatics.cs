@@ -10,6 +10,27 @@ namespace CryEngine
 	public partial class Entity
 	{
 		/// <summary>
+		/// Spawns a new entity
+		/// </summary>
+		/// <param name="entityName"></param>
+		/// <param name="type"></param>
+		/// <param name="pos"></param>
+		/// <param name="rot"></param>
+		/// <param name="scale"></param>
+		/// <param name="autoInit"></param>
+		/// <param name="flags"></param>
+		/// <returns></returns>
+		public static Entity Spawn(string entityName, Type type, Vec3? pos = null, Quat? rot = null, Vec3? scale = null, bool autoInit = true, EntityFlags flags = EntityFlags.CastShadow)
+		{
+			return Spawn(entityName, type.Name, pos, rot, scale, autoInit, flags);
+		}
+
+		public static T Spawn<T>(string entityName, Vec3? pos = null, Quat? rot = null, Vec3? scale = null, bool autoInit = true, EntityFlags flags = EntityFlags.CastShadow) where T : Entity, new()
+		{
+			return Spawn(entityName, typeof(T).Name, pos, rot, scale, autoInit, flags) as T;
+		}
+
+		/// <summary>
 		/// Spawn a new instance of entity type T.
 		/// </summary>
 		/// <typeparam name="T">The entity type</typeparam>
@@ -17,20 +38,20 @@ namespace CryEngine
 		/// <param name="pos"></param>
 		/// <param name="rot"></param>
 		/// <param name="scale"></param>
-        /// <param name="autoInit"></param>
-        /// <param name="flags"></param>
-        /// <returns></returns>
-		public static T Spawn<T>(string name, Vec3? pos = null, Quat? rot = null, Vec3? scale = null, bool autoInit = true, EntityFlags flags = EntityFlags.CastShadow) where T : Entity, new()
+		/// <param name="autoInit"></param>
+		/// <param name="flags"></param>
+		/// <returns></returns>
+		public static Entity Spawn(string entityName, string className, Vec3? pos = null, Quat? rot = null, Vec3? scale = null, bool autoInit = true, EntityFlags flags = EntityFlags.CastShadow)
 		{
 			EntityInfo info;
 
-			var ent = NativeMethods.Entity.SpawnEntity(new EntitySpawnParams { Name = name, Class = typeof(T).Name, Pos = pos ?? new Vec3(1, 1, 1), Rot = rot ?? Quat.Identity, Scale = scale ?? new Vec3(1, 1, 1), Flags = flags }, autoInit, out info) as T;
+			var ent = NativeMethods.Entity.SpawnEntity(new EntitySpawnParams { Name = entityName, Class = className, Pos = pos ?? new Vec3(1, 1, 1), Rot = rot ?? Quat.Identity, Scale = scale ?? new Vec3(1, 1, 1), Flags = flags }, autoInit, out info)T;
 			if (ent != null)
 				return ent;
 			else if (info.Id != 0)
-				return CreateNativeEntity(info.Id, info.IEntityPtr) as T;
+				return CreateNativeEntity(info.Id, info.IEntityPtr) as Entity;
 
-			Debug.LogAlways("[Entity.Spawn] Failed to spawn entity of class {0} with name {1}", typeof(T).Name, name);
+			Debug.LogAlways("[Entity.Spawn] Failed to spawn entity of class {0} with name {1}", className, entityName);
 			return null;
 		}
 
