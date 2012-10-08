@@ -102,9 +102,9 @@
     <Compile Include="Math\Angle.cs" />
     <Compile Include="Math\QuatT.cs" />
     <Compile Include="Misc\MissingAttributeException.cs" />
-    <Compile Include="Native\Extensions\NativeActorExtensions.cs" />
-    <Compile Include="Native\Extensions\NativeAttachmentExtensions.cs" />
-    <Compile Include="Native\Extensions\NativeEntityExtensions.cs" />
+    <Compile Include="Extensions\NativeActorExtensions.cs" />
+    <Compile Include="Extensions\NativeAttachmentExtensions.cs" />
+    <Compile Include="Extensions\NativeEntityExtensions.cs" />
     <Compile Include="Native\Interfaces\INativeNetworkMethods.cs" />
     <Compile Include="Native\NativeNetworkMethods.cs" />
     <Compile Include="Network\RemoteInvocationException.cs" />
