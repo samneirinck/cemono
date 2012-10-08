@@ -134,8 +134,11 @@ namespace CryEngine
 			ScriptManager.Instance.RemoveInstances<Actor>(ScriptType.Actor, actor => actor.ChannelId == channelId);
 		}
 
-		public override void Remove()
+		public override void Remove(bool forceRemoveNow = false)
 		{
+			if (forceRemoveNow)
+				throw new NotSupportedException("forceRemoveNow");
+
 			Actor.Remove(Id);
 		}
 		#endregion
