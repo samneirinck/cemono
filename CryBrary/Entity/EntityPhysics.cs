@@ -288,27 +288,51 @@ namespace CryEngine
 
 	public struct pe_status_living
 	{
-		public int type;
+		internal int type;
 
-		public int bFlying; // whether entity has no contact with ground
-		public float timeFlying; // for how long the entity was flying
-		public Vec3 camOffset; // camera offset
-		public Vec3 vel; // actual velocity (as rate of position change)
-		public Vec3 velUnconstrained; // 'physical' movement velocity
-		public Vec3 velRequested;	// velocity requested in the last action
-		public Vec3 velGround; // velocity of the object entity is standing on
-		public float groundHeight; // position where the last contact with the ground occured
-		public Vec3 groundSlope;
-		public int groundSurfaceIdx;
-		public int groundSurfaceIdxAux; // contact with the ground that also has default collision flags
-		public IntPtr pGroundCollider;	// only returns an actual entity if the ground collider is not static
-		public int iGroundColliderPart;
-		public float timeSinceStanceChange;
+		/// <summary>
+		/// whether entity has no contact with ground
+		/// </summary>
+		internal int bFlying;
+		public bool IsFlying { get { return bFlying == 1; } }
+
+		internal float timeFlying;
+		/// <summary>
+		///  for how long the entity was flying
+		/// </summary>
+		public float FlyTime { get { return timeFlying; } }
+
+		internal Vec3 camOffset; // camera offset
+		internal Vec3 vel; // actual velocity (as rate of position change)
+		internal Vec3 velUnconstrained; // 'physical' movement velocity
+		internal Vec3 velRequested;	// velocity requested in the last action
+		internal Vec3 velGround;
+		/// <summary>
+		/// velocity of the object entity is standing on
+		/// </summary>
+		public Vec3 GroundVelocity { get { return velGround; } }
+
+		internal float groundHeight;
+		/// <summary>
+		/// position where the last contact with the ground occured
+		/// </summary>
+		public float GroundHeight { get { return groundHeight; } }
+
+		internal Vec3 groundSlope;
+		public Vec3 GroundNormal { get { return groundSlope; } }
+
+		internal int groundSurfaceIdx;
+		public int GroundSurfaceIde { get { return groundSurfaceIdx; } }
+
+		internal int groundSurfaceIdxAux; // contact with the ground that also has default collision flags
+		internal IntPtr pGroundCollider;	// only returns an actual entity if the ground collider is not static
+		internal int iGroundColliderPart;
+		internal float timeSinceStanceChange;
 		//int bOnStairs; // tries to detect repeated abrupt ground height changes
-		public int bStuck;	// tries to detect cases when the entity cannot move as before because of collisions
+		internal int bStuck;	// tries to detect cases when the entity cannot move as before because of collisions
 		IntPtr pLockStep; // internal timestepping lock
-		public int iCurTime; // quantised time
-		public int bSquashed; // entity is being pushed by heavy objects from opposite directions
+		internal int iCurTime; // quantised time
+		internal int bSquashed; // entity is being pushed by heavy objects from opposite directions
 	}
 
 	public enum BreakageType
