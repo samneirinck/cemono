@@ -54,7 +54,7 @@ public:
 		return !strcmp(sAPIVersion, "3.4.0");
 	}
 
-    virtual bool Init(SSystemGlobalEnvironment &env, SSystemInitParams &startupParams, IPluginBase *pPluginManager)
+    virtual bool Init(SSystemGlobalEnvironment &env, SSystemInitParams &startupParams, IPluginBase *pPluginManager, const char* sPluginDirectory)
 	{
 		ModuleInitISystem(env.pSystem, GetName());
 		m_bInitialized = true;
@@ -82,8 +82,10 @@ public:
 
 	virtual const char *ListNodes() const { return NULL; }
 	virtual const char *ListCVars() const { return NULL; }
-    virtual const char *ListGameObjects() const  { return NULL; }
-
+        virtual const char *ListGameObjects() const  { return NULL; }
+        
+        virtual const char *Dump() const  { return NULL; }
+        
 	virtual const char *GetStatus() const { return "Undefined"; }
 
 	virtual const char *GetCurrentConcreteInterfaceVersion() const { return CRYMONO_VERSION; }
