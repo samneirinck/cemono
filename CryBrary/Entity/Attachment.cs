@@ -29,6 +29,8 @@ namespace CryEngine
 		internal Attachment(IntPtr ptr, EntityBase owner)
 		{
 			Owner = owner;
+			Owner.OnDestroyed += (instance) => { Remove(); };
+
 			this.SetAttachmentHandle(new HandleRef(this, ptr));
 
 			string attachmentObject = NativeMethods.Entity.GetAttachmentObject(this.GetAttachmentHandle().Handle);
