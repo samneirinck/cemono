@@ -19,7 +19,7 @@ namespace CryEngine
 		public virtual void OnSpawn() { }
 		#endregion
 
-		public void Remove()
+		public virtual void Remove()
 		{
 			Entity.Remove(Id);
 		}
