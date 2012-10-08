@@ -111,7 +111,7 @@ void CEntity::ProcessEvent(SEntityEvent &event)
 
 			EntityId targetId = 0;
 
-			IEntity *pTarget = pCollision->iForeignData[0]==PHYS_FOREIGN_ID_ENTITY ? (IEntity*)pCollision->pForeignData[0]:0;
+			IEntity *pTarget = pCollision->iForeignData[1]==PHYS_FOREIGN_ID_ENTITY ? (IEntity*)pCollision->pForeignData[1]:0;
 			if(pTarget)
 				targetId = pTarget->GetId();
 
