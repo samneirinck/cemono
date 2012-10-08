@@ -112,7 +112,7 @@ namespace CryEngine
 		/// <param name="dir"></param>
 		/// <param name="materialId"></param>
 		/// <param name="contactNormal"></param>
-		protected virtual void OnCollision(EntityId targetEntityId, Vec3 hitPos, Vec3 dir, short materialId, Vec3 contactNormal) { }
+		protected virtual void OnCollision(EntityId colliderId, Vec3 hitPos, Vec3 dir, short materialId, Vec3 contactNormal) { }
 
 		/// <summary>
 		/// Called after level has been loaded, is not called on serialization.
