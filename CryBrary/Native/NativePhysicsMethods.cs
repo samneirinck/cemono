@@ -25,8 +25,10 @@ namespace CryEngine.Native
         extern internal static void _SetVelocity(IntPtr entPtr, Vec3 velocity);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static pe_action_impulse _GetImpulseStruct();
+		extern internal static pe_status_living _GetLivingEntityStatus(IntPtr entPtr);
 
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static pe_action_impulse _GetImpulseStruct();
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static pe_player_dimensions _GetPlayerDimensionsStruct();
 		[MethodImpl(MethodImplOptions.InternalCall)]
@@ -66,6 +68,11 @@ namespace CryEngine.Native
         {
             _SetVelocity(entPtr, velocity);
         }
+
+		public pe_status_living GetLivingEntityStatus(IntPtr entPtr)
+		{
+			return _GetLivingEntityStatus(entPtr);
+		}
 
 		public pe_action_impulse GetImpulseStruct()
 		{

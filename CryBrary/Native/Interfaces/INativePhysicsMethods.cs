@@ -12,6 +12,8 @@ namespace CryEngine.Native
         Vec3 GetVelocity(IntPtr entPtr);
         void SetVelocity(IntPtr entPtr, Vec3 velocity);
 
+		pe_status_living GetLivingEntityStatus(IntPtr entPtr);
+
 		pe_action_impulse GetImpulseStruct();
 		pe_player_dimensions GetPlayerDimensionsStruct();
 		pe_player_dynamics GetPlayerDynamicsStruct();
