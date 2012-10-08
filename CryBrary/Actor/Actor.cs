@@ -125,11 +125,6 @@ namespace CryEngine
 			ScriptManager.Instance.RemoveInstances<Actor>(ScriptType.Actor, actor => actor.Id == id);
 		}
 
-		public static void Remove(Actor actor)
-		{
-			Remove(actor.Id);
-		}
-
 		public static void Remove(int channelId)
 		{
             var actorInfo = NativeMethods.Actor.GetActorInfoByChannelId((ushort)channelId);
