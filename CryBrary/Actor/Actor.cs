@@ -73,7 +73,7 @@ namespace CryEngine
 			return nativeActor;
 		}
 
-		public static Actor Client 
+		public static Actor LocalClient 
 		{
 			get
 			{
@@ -133,14 +133,6 @@ namespace CryEngine
 
 			ScriptManager.Instance.RemoveInstances<Actor>(ScriptType.Actor, actor => actor.ChannelId == channelId);
 		}
-
-		public override void Remove(bool forceRemoveNow = false)
-		{
-			if (forceRemoveNow)
-				throw new NotSupportedException("forceRemoveNow");
-
-			Actor.Remove(Id);
-		}
 		#endregion
 
 		/// <summary>
@@ -165,6 +157,14 @@ namespace CryEngine
 		#endregion
 
 		#region Overrides
+		public override void Remove(bool forceRemoveNow = false)
+		{
+			if (forceRemoveNow)
+				throw new NotSupportedException("forceRemoveNow");
+
+			Actor.Remove(Id);
+		}
+
 		public override int GetHashCode()
         {
             unchecked // Overflow is fine, just wrap
@@ -196,6 +196,8 @@ namespace CryEngine
 		public float MaxHealth { get { return NativeMethods.Actor.GetPlayerMaxHealth(this.GetActorHandle().Handle); } set { NativeMethods.Actor.SetPlayerMaxHealth(this.GetActorHandle().Handle, value); } }
 
 		public bool IsDead() { return Health <= 0; }
+
+		public bool IsLocalClient { get { return Actor.LocalClient == this; } }
 	}
 
 	internal struct ActorInfo
