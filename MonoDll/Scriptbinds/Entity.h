@@ -183,7 +183,7 @@ protected:
 
 	// Scriptbinds
 	static mono::object SpawnEntity(EntitySpawnParams, bool, SMonoEntityInfo &entityInfo);
-	static void RemoveEntity(EntityId);
+	static void RemoveEntity(EntityId, bool removeNow);
 
 	static IEntity *GetEntity(EntityId id);
 

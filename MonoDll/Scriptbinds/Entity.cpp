@@ -342,9 +342,9 @@ mono::object CScriptbind_Entity::SpawnEntity(EntitySpawnParams monoParams, bool 
 	return nullptr;
 }
 
-void CScriptbind_Entity::RemoveEntity(EntityId id)
+void CScriptbind_Entity::RemoveEntity(EntityId id, bool removeNow)
 {
-	gEnv->pEntitySystem->RemoveEntity(id);
+	gEnv->pEntitySystem->RemoveEntity(id, removeNow);
 }
 
 IEntity *CScriptbind_Entity::GetEntity(EntityId id)

@@ -19,9 +19,9 @@ namespace CryEngine
 		public virtual void OnSpawn() { }
 		#endregion
 
-		public virtual void Remove()
+		public virtual void Remove(bool forceRemoveNow = false)
 		{
-			Entity.Remove(Id);
+			Entity.Remove(Id, forceRemoveNow);
 		}
 
 		public EntitySlotFlags GetSlotFlags(int slot = 0)

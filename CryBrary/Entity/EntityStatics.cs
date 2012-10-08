@@ -34,14 +34,14 @@ namespace CryEngine
 			return null;
 		}
 
-		public static void Remove(EntityId id)
+		public static void Remove(EntityId id, bool forceRemoveNow = false)
 		{
 #if !(RELEASE && RELEASE_DISABLE_CHECKS)
 			if(id == 0)
 				throw new ArgumentException("entityId cannot be 0!");
 #endif
 
-            NativeMethods.Entity.RemoveEntity(id);
+			NativeMethods.Entity.RemoveEntity(id, forceRemoveNow);
 		}
 
 		internal static bool InternalRemove(EntityId id)
