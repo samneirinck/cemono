@@ -20,6 +20,8 @@ CScriptbind_Physics::CScriptbind_Physics()
 
 	REGISTER_METHOD(RayWorldIntersection);
 
+	REGISTER_METHOD(SimulateExplosion);
+
 	REGISTER_METHOD(GetLivingEntityStatus);
 
 	REGISTER_METHOD(GetImpulseStruct);
@@ -177,6 +179,11 @@ int CScriptbind_Physics::RayWorldIntersection(Vec3 origin, Vec3 dir, int objFlag
 	monoHit.surface_idx = hit.surface_idx;
 
 	return numHits;
+}
+
+void CScriptbind_Physics::SimulateExplosion(pe_explosion explosion)
+{
+	gEnv->pPhysicalWorld->SimulateExplosion(&explosion);
 }
 
 pe_status_living CScriptbind_Physics::GetLivingEntityStatus(IEntity *pEntity)
