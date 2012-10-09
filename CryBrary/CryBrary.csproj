@@ -101,6 +101,7 @@
     <Compile Include="Entity\EntityDestroyedException.cs" />
     <Compile Include="Math\Angle.cs" />
     <Compile Include="Math\QuatT.cs" />
+    <Compile Include="Misc\BoredAtWorkException.cs" />
     <Compile Include="Misc\MissingAttributeException.cs" />
     <Compile Include="Extensions\NativeActorExtensions.cs" />
     <Compile Include="Extensions\NativeAttachmentExtensions.cs" />
