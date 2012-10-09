@@ -4,24 +4,6 @@ using CryEngine.Native;
 
 namespace CryEngine
 {
-	public static class GlobalPhysics
-	{
-      
-        const string gravityCVar = "p_gravity_z";
-		public static float GravityZ
-		{
-			get { return CVar.Get(gravityCVar).FVal; }
-			set { CVar.Get(gravityCVar).FVal = value; }
-		}
-
-        // This seems out of place?
-        public static int RayWorldIntersection(Vec3 position, Vec3 direction, EntityQueryFlags objectTypes, RayWorldIntersectionFlags flags, ref RayHit internalRayHit, int maxHits, object[] skippedEntities)
-        {
-            return NativeMethods.Physics.RayWorldIntersection(position, direction, objectTypes, flags, ref internalRayHit,
-                                                             maxHits, skippedEntities);
-        }
-    }
-
 	public struct RayHit
 	{
 		internal float dist;
