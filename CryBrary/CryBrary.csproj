@@ -97,6 +97,7 @@
   <ItemGroup>
     <Compile Include="Actor\Actor.cs" />
     <Compile Include="Actor\ViewParams.cs" />
+    <Compile Include="Engine\Explosion.cs" />
     <Compile Include="Entity\Attachment.cs" />
     <Compile Include="Entity\EntityDestroyedException.cs" />
     <Compile Include="Math\Angle.cs" />
