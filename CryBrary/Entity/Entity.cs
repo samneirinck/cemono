@@ -245,7 +245,7 @@ namespace CryEngine
 
 		/// <summary>
 		/// Set to detect movement within an area. 
-		/// See OnEnterArea, OnMoveInsideArea, OnLeaveArea, OnEnterNearArea, OnLeaveNearArea & OnMoveNearArea
+		/// See OnEnterArea, OnMoveInsideArea, OnLeaveArea, OnEnterNearArea, OnLeaveNearArea and OnMoveNearArea
 		/// </summary>
 		public BoundingBox TriggerBounds
 		{
