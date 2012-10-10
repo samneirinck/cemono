@@ -5,15 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using CryEngine.Async;
 using CryEngine.Async.Jobs;
-using NUnit.Framework;
+using Xunit;
 
 namespace CryBrary.Tests.Async
 {
-    [TestFixture]
     public class FrameDelayJobTests : CryBraryTests
     {
-
-        [Test]
+        [Fact]
         public void FrameDelayJob_NegativeNumberOfFrames_InstantExecution()
         {
             // Arrange
@@ -22,34 +20,34 @@ namespace CryBrary.Tests.Async
             // Act
 
             // Assert
-            Assert.IsTrue(job.IsFinished);
-            Assert.IsTrue(job.Task.IsCompleted);
-            Assert.IsFalse(job.Task.IsCanceled);
-            Assert.IsFalse(job.Task.IsFaulted);
-            Assert.IsTrue(job.Task.Status == TaskStatus.RanToCompletion);
+            Assert.True(job.IsFinished);
+            Assert.True(job.Task.IsCompleted);
+            Assert.False(job.Task.IsCanceled);
+            Assert.False(job.Task.IsFaulted);
+            Assert.True(job.Task.Status == TaskStatus.RanToCompletion);
         }
 
-        [Test]
+        [Fact]
         public void FrameDelayJob_5Frames_DelayedExecution()
         {
             // Arrange
             var job = new FrameDelayJob(5);
 
-            Assert.IsFalse(job.IsFinished);
-            Assert.IsFalse(job.Task.IsCompleted);
+            Assert.False(job.IsFinished);
+            Assert.False(job.Task.IsCompleted);
 
             // Act
-            Assert.IsFalse(job.Update(1));
-            Assert.IsFalse(job.Update(1));
-            Assert.IsFalse(job.Update(1));
-            Assert.IsFalse(job.Update(1));
+            Assert.False(job.Update(1));
+            Assert.False(job.Update(1));
+            Assert.False(job.Update(1));
+            Assert.False(job.Update(1));
 
             // 5th frame should be the final one
-            Assert.IsTrue(job.Update(1));
+            Assert.True(job.Update(1));
 
             // Assert
-            Assert.IsTrue(job.IsFinished);
-            Assert.IsTrue(job.Task.IsCompleted);
+            Assert.True(job.IsFinished);
+            Assert.True(job.Task.IsCompleted);
 
         }
     }

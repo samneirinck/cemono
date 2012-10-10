@@ -1,14 +1,13 @@
 ﻿using CryEngine;
 using CryEngine.Native;
 using Moq;
-using NUnit.Framework;
+using Xunit;
 
 namespace CryBrary.Tests.Console
 {
-    [TestFixture]
     public class CVarTests : CryBraryTests
     {
-        [Test]
+        [Fact]
         public void CreateCvar_Integer_RegisteredSuccessfully()
         {
             // Arrange
@@ -23,7 +22,7 @@ namespace CryBrary.Tests.Console
             cvarMock.Verify(m => m.RegisterCVarInt("my_cvar", ref value, It.IsAny<int>(), It.IsAny<CVarFlags>(), It.IsAny<string>()));
         }
 
-        [Test]
+        [Fact]
         public void CreateCvar_Float_RegisteredSuccessfully()
         {
             // Arrange
