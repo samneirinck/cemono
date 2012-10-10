@@ -2,8 +2,8 @@ language: c
 
 install:
 - sudo apt-get install cmake mono-devel mono-gmcs unzip
-- wget http://launchpad.net/nunitv2/2.6.1/2.6.1/+download/NUnit-2.6.1.zip
-- unzip NUnit-2.6.1.zip
+- wget https://github.com/downloads/inkdev/CryMono/xunit-1.9.1.zip
+- unzip xunit-1.9.1.zip
 
 
 script:
@@ -12,7 +12,7 @@ script:
 - echo "-- START TEST BUILD --"
 - xbuild CryBrary.Tests/CryBrary.Tests.csproj
 - echo "-- START TEST RUN --"
-- mono NUnit-2.6.1/bin/nunit-console.exe --xmlConsole CryBrary.Tests/bin/Debug/CryBrary.Tests.dll
+- mono xunit-console.clr4.exe CryBrary.Tests/bin/Debug/CryBrary.Tests.dll
 - echo "-- Done --"
 
 notifications:
