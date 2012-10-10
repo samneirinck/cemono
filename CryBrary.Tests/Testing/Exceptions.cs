@@ -1,16 +1,11 @@
 ﻿using System;
 using CryEngine.Testing;
 
-using TestAttribute = NUnit.Framework.TestAttribute;
-using ExpectedException = NUnit.Framework.ExpectedExceptionAttribute;
-using TestFixture = NUnit.Framework.TestFixtureAttribute;
-
 namespace CryBrary.Tests.UnitTester
 {
-	[TestFixture]
 	public class Exceptions
 	{
-		[TestAttribute]
+		[Xunit.Fact]
 		public void Throw_Valid()
 		{
 			var obj = new object();
@@ -21,16 +16,18 @@ namespace CryBrary.Tests.UnitTester
 			});
 		}
 
-		[TestAttribute]
-		[ExpectedException(typeof(AssertionFailedException))]
+		[Xunit.Fact]
 		public void Throw_Invalid()
 		{
 			object obj = 1;
 
-			Assert.Throws<InvalidCastException>(() =>
-			{
-				var myInt = (int)obj;
-			});
+            Xunit.Assert.Throws<AssertionFailedException>(() =>
+            {
+                Assert.Throws<InvalidCastException>(() =>
+                {
+                    var myInt = (int)obj;
+                });
+            });
 		}
 	}
 }

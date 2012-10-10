@@ -4,7 +4,6 @@ using CryEngine;
 using CryEngine.Initialization;
 using CryEngine.Native;
 using Moq;
-using NUnit.Framework;
 using System.Linq;
 
 namespace CryBrary.Tests
@@ -12,18 +11,16 @@ namespace CryBrary.Tests
 	public abstract class CryBraryTests
 	{
 	    protected List<Mock> _mocks;
-
         protected Mock<T> GetMock<T>() where T : class
         {
             return _mocks.First(m => m.Object is T) as Mock<T>;
         }
-        
 
-		[SetUp]
-		public void Init()
-		{
-		    InitializeMocks();
-		}
+
+        public CryBraryTests()
+        {
+            InitializeMocks();
+        }
 
         private void InitializeMocks()
         {

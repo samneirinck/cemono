@@ -1,15 +1,10 @@
 ﻿using CryEngine.Testing;
 
-using TestAttribute = NUnit.Framework.TestAttribute;
-using ExpectedException = NUnit.Framework.ExpectedExceptionAttribute;
-using TestFixture = NUnit.Framework.TestFixtureAttribute;
-
 namespace CryBrary.Tests.UnitTester
 {
-	[TestFixture]
 	public class Assertion
 	{
-		[TestAttribute]
+		[Xunit.Fact]
 		public void ReferenceEquals_Valid()
 		{
 			var lhs = new object();
@@ -18,14 +13,16 @@ namespace CryBrary.Tests.UnitTester
 			Assert.IsTrue(lhs == rhs);
 		}
 
-		[TestAttribute]
-		[ExpectedException(typeof(AssertionFailedException))]
+		[Xunit.Fact]
 		public void ReferenceEquals_Invalid()
 		{
 			var lhs = new object();
 			var rhs = new object();
 
-			Assert.IsTrue(lhs == rhs);
+            Xunit.Assert.Throws<AssertionFailedException>(() =>
+            {
+                Assert.IsTrue(lhs == rhs);
+            });
 		}
 	}
 }
