@@ -269,6 +269,9 @@ protected:
 	static void InvalidateTrigger(IEntity *pEntity);
 
 	static IAnimatedCharacter *AcquireAnimatedCharacter(EntityId id);
+
+	static void Hide(IEntity *pEntity, bool hide);
+	static bool IsHidden(IEntity *pEntity);
 	// ~Scriptbinds
 
 	static std::vector<const char *> m_monoEntityClasses;
