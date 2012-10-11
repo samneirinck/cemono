@@ -76,5 +76,5 @@ CScriptDomain::~CScriptDomain()
 
 bool CScriptDomain::SetActive(bool force)
 {
-	return mono_domain_set(m_pDomain, force);
+	return mono_domain_set(m_pDomain, force) == 1;
 }
