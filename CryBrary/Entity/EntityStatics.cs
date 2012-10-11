@@ -61,6 +61,9 @@ namespace CryEngine
 			if(id == 0)
 				throw new ArgumentException("entityId cannot be 0!");
 #endif
+			var entity = Entity.Get(id);
+			if (entity != null && !NativeMethods.Entity.GetFlags(NativeMethods.Entity.GetEntity(id)).HasFlag(EntityFlags.NoSave))
+				throw new EntityRemovalException("Attempted to remove an entity placed via Editor");
 
 			NativeMethods.Entity.RemoveEntity(id, forceRemoveNow);
 		}
@@ -235,6 +238,11 @@ namespace CryEngine
 		/// Entity will trigger areas when it enters them.
 		/// </summary>
 		TriggerAreas = (1 << 14),
+
+		/// <summary>
+		/// This entity will not be saved.
+		/// </summary>
+		NoSave = (1 << 15),
 
 		/// <summary>
 		/// Entity was spawned dynamically without a class.

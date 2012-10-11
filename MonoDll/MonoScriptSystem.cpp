@@ -78,7 +78,6 @@ CScriptSystem::CScriptSystem()
 	}
 #endif
 
-
 	if(auto *pArg = gEnv->pSystem->GetICmdLine()->FindArg(eCLAT_Pre, "monoArgs"))
 		monoCmdOptions.append(pArg->GetValue());
 

@@ -98,8 +98,9 @@
     <Compile Include="Actor\Actor.cs" />
     <Compile Include="Actor\ViewParams.cs" />
     <Compile Include="Engine\Explosion.cs" />
-    <Compile Include="Entity\Attachment.cs" />
-    <Compile Include="Entity\EntityDestroyedException.cs" />
+    <Compile Include="Entity\Extensions\Attachment.cs" />
+    <Compile Include="Entity\Exceptions\EntityRemovalException.cs" />
+    <Compile Include="Entity\Exceptions\EntityDestroyedException.cs" />
     <Compile Include="Math\Angle.cs" />
     <Compile Include="Math\QuatT.cs" />
     <Compile Include="Misc\BoredAtWorkException.cs" />
@@ -112,8 +113,8 @@
     <Compile Include="Network\RemoteInvocationException.cs" />
     <Compile Include="Utils\ProjectSettings.cs" />
     <Compile Include="Engine\Texture.cs" />
-    <Compile Include="Entity\AnimationFlags.cs" />
-    <Compile Include="Entity\EntityLight.cs" />
+    <Compile Include="Entity\Extensions\AnimationFlags.cs" />
+    <Compile Include="Entity\Extensions\EntityLight.cs" />
     <Compile Include="Native\Interfaces\INative3DEngineMethods.cs" />
     <Compile Include="Native\Interfaces\INativeActorMethods.cs" />
     <Compile Include="Actor\NativeActor.cs" />
@@ -194,7 +195,7 @@
     <Compile Include="Engine\View.cs" />
     <Compile Include="Entity\EntityId.cs" />
     <Compile Include="Entity\NativeEntity.cs" />
-    <Compile Include="Entity\EntityPhysics.cs" />
+    <Compile Include="Entity\Extensions\EntityPhysics.cs" />
     <Compile Include="Lua\ScriptTable.cs" />
     <Compile Include="Math\Collision.cs" />
     <Compile Include="Script Handling\ScriptReloadMessage.cs">
@@ -233,7 +234,7 @@
     <Compile Include="Engine\3DEngine.cs" />
     <Compile Include="Engine\Physics.cs" />
     <Compile Include="Engine\Renderer.cs" />
-    <Compile Include="Entity\EntityMovement.cs" />
+    <Compile Include="Entity\Extensions\EntityMovement.cs" />
     <Compile Include="Network\Network.cs" />
     <Compile Include="Input\InputSystem.cs" />
     <Compile Include="Math\Quat.cs" />
