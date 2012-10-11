@@ -42,7 +42,7 @@ namespace CryBrary.Tests.Misc
 		public void Vec3()
 		{
 			Vec3 vec3 = UnusedMarker.Vec3;
-			Assert.False(UnusedMarker.IsUnused(vec3));
+			Assert.True(UnusedMarker.IsUnused(vec3));
 
 			vec3 = new Vec3(0, 250, 3);
 			Assert.False(UnusedMarker.IsUnused(vec3));
