@@ -97,10 +97,13 @@ void CEntity::ProcessEvent(SEntityEvent &event)
 		{
 			bool enterGamemode = event.nParam[0]==1;
 
-			m_pScript->CallMethod("OnReset", enterGamemode);
-
 			if(!enterGamemode && GetEntity()->GetFlags() & ENTITY_FLAG_NO_SAVE)
+			{
 				gEnv->pEntitySystem->RemoveEntity(GetEntityId());
+				return;
+			}
+
+			m_pScript->CallMethod("OnReset", enterGamemode);
 
 			Reset(enterGamemode);
 		}
