@@ -180,6 +180,8 @@ namespace CryEngine
 
 		public Lua.ScriptTable ScriptTable { get { return Lua.ScriptTable.Get(this.GetEntityHandle().Handle); } }
 
+		public bool Hidden { get { return NativeMethods.Entity.IsHidden(this.GetEntityHandle().Handle); } set { NativeMethods.Entity.Hide(this.GetEntityHandle().Handle, value); } }
+
 		/// <summary>
 		/// Sets / gets the world space entity position.
 		/// </summary>

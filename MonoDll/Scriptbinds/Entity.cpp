@@ -895,3 +895,13 @@ IAnimatedCharacter *CScriptbind_Entity::AcquireAnimatedCharacter(EntityId id)
 
 	return nullptr;
 }
+
+void CScriptbind_Entity::Hide(IEntity *pEntity, bool hide)
+{
+	pEntity->Hide(hide);
+}
+
+bool CScriptbind_Entity::IsHidden(IEntity *pEntity)
+{
+	return pEntity->IsHidden();
+}

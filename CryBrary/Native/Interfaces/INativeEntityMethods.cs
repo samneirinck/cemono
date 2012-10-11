@@ -91,5 +91,8 @@ namespace CryEngine.Native
 		void InvalidateTrigger(IntPtr entPtr);
 
 		IntPtr AcquireAnimatedCharacter(uint entId);
+
+		void Hide(IntPtr entityId, bool hide);
+		bool IsHidden(IntPtr entityId);
     }
 }

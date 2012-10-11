@@ -152,6 +152,11 @@ namespace CryEngine.Native
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static IntPtr _AcquireAnimatedCharacter(uint entId);
 
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static void _Hide(IntPtr entityId, bool hide);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static bool _IsHidden(IntPtr entityId);
+
 		public void PlayAnimation(IntPtr ptr, string animationName, int slot, int layer, float blend, float speed, AnimationFlags flags)
 		{
 			_PlayAnimation(ptr, animationName, slot, layer, blend, speed, flags);
@@ -450,6 +455,16 @@ namespace CryEngine.Native
 		public IntPtr AcquireAnimatedCharacter(uint entId)
 		{
 			return _AcquireAnimatedCharacter(entId);
+		}
+
+		public void Hide(IntPtr entityId, bool hide)
+		{
+			_Hide(entityId, hide);
+		}
+
+		public bool IsHidden(IntPtr entityId)
+		{
+			return _IsHidden(entityId);
 		}
     }
 }
