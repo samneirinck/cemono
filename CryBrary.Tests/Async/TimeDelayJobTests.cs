@@ -5,14 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using CryEngine.Async;
 using CryEngine.Async.Jobs;
-using NUnit.Framework;
+using Xunit;
 
 namespace CryBrary.Tests.Async
 {
-    [TestFixture]
     public class TimeDelayJobTests : CryBraryTests
     {
-        [Test]
+        [Fact]
         public void TimeDelayJobTests_NegativeTime_InstantExecution()
         {
             // Arrange
@@ -21,14 +20,14 @@ namespace CryBrary.Tests.Async
             // Act
 
             // Assert
-            Assert.IsTrue(job.IsFinished);
-            Assert.IsTrue(job.Task.IsCompleted);
-            Assert.IsFalse(job.Task.IsCanceled);
-            Assert.IsFalse(job.Task.IsFaulted);
-            Assert.IsTrue(job.Task.Status == TaskStatus.RanToCompletion);
+            Assert.True(job.IsFinished);
+            Assert.True(job.Task.IsCompleted);
+            Assert.False(job.Task.IsCanceled);
+            Assert.False(job.Task.IsFaulted);
+            Assert.True(job.Task.Status == TaskStatus.RanToCompletion);
         }
 
-        [Test]
+        [Fact]
         public void TimeDelayJobTests_2000ms_UpdatedAtTheCorrectTime()
         {
             // Arrange
@@ -37,12 +36,12 @@ namespace CryBrary.Tests.Async
             // Act & assert
             job.Update(500);
 
-            Assert.IsFalse(job.IsFinished);
+            Assert.False(job.IsFinished);
 
             job.Update(1499);
-            Assert.IsFalse(job.IsFinished);
+            Assert.False(job.IsFinished);
             job.Update(1);
-            Assert.IsTrue(job.IsFinished);
+            Assert.True(job.IsFinished);
         }
 
     }

@@ -1,52 +1,51 @@
 ﻿using System;
-using NUnit.Framework;
 
 using CryEngine;
 using CryEngine.Utils;
+using Xunit;
 
 namespace CryBrary.Tests.Misc
 {
-	[TestFixture]
 	public class UnusedMarkerTests
 	{
-		[Test]
+		[Fact]
 		public void Float()
 		{
 			float myFloat = UnusedMarker.Float;
-			Assert.IsTrue(UnusedMarker.IsUnused(myFloat));
+            Assert.True(UnusedMarker.IsUnused(myFloat));
 
 			myFloat = 998.4f;
-			Assert.IsFalse(UnusedMarker.IsUnused(myFloat));
+			Assert.False(UnusedMarker.IsUnused(myFloat));
 		}
 
-		[Test]
+		[Fact]
 		public void Integer()
 		{
 			int myInt = UnusedMarker.Integer;
-			Assert.IsTrue(UnusedMarker.IsUnused(myInt));
+			Assert.True(UnusedMarker.IsUnused(myInt));
 
 			myInt = 5;
-			Assert.IsFalse(UnusedMarker.IsUnused(myInt));
+			Assert.False(UnusedMarker.IsUnused(myInt));
 		}
 
-		[Test]
+		[Fact]
 		public void UnsignedInteger()
 		{
 			uint myUint = UnusedMarker.UnsignedInteger;
-			Assert.IsTrue(UnusedMarker.IsUnused(myUint));
+			Assert.True(UnusedMarker.IsUnused(myUint));
 
 			myUint = 51;
-			Assert.IsFalse(UnusedMarker.IsUnused(myUint));
+			Assert.False(UnusedMarker.IsUnused(myUint));
 		}
 
-		[Test]
+		[Fact]
 		public void Vec3()
 		{
 			Vec3 vec3 = UnusedMarker.Vec3;
-			Assert.IsTrue(UnusedMarker.IsUnused(vec3));
+			Assert.True(UnusedMarker.IsUnused(vec3));
 
 			vec3 = new Vec3(0, 250, 3);
-			Assert.IsFalse(UnusedMarker.IsUnused(vec3));
+			Assert.False(UnusedMarker.IsUnused(vec3));
 		}
 	}
 }
