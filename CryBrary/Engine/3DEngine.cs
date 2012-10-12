@@ -8,11 +8,6 @@ namespace CryEngine
 	/// </summary>
 	public static class Engine
 	{
-        public static float GetTimeOfDay()
-        {
-            return NativeMethods.Engine3D.GetTimeOfDay();
-        }
-
         public static int GetTerrainSize()
         {
             return NativeMethods.Engine3D.GetTerrainSize();

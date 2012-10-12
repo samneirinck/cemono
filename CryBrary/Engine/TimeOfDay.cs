@@ -1,4 +1,6 @@
-﻿namespace CryEngine
+﻿using CryEngine.Native;
+
+namespace CryEngine
 {
 	public static class TimeOfDay
 	{
@@ -15,7 +17,7 @@
 		{
 			get
 			{
-				return (int)Engine.GetTimeOfDay();
+				return (int)NativeMethods.Engine3D.GetTimeOfDay();
 			}
 			set
 			{
@@ -40,7 +42,7 @@
 		{
 			get
 			{
-				return GetMinutes(Engine.GetTimeOfDay());
+				return GetMinutes(NativeMethods.Engine3D.GetTimeOfDay());
 			}
 			set
 			{
@@ -103,7 +105,7 @@
 		{
 			get
 			{
-				return Engine.GetTimeOfDay();
+				return NativeMethods.Engine3D.GetTimeOfDay();
 			}
 			set
 			{
