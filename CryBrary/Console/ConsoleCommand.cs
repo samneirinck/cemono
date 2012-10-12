@@ -30,7 +30,7 @@ namespace CryEngine
 		{
 			if (!commands.ContainsKey(name))
 			{
-				CVar.RegisterCommand(name, comment, flags);
+				NativeMethods.CVar.RegisterCommand(name, comment, flags);
 
 				commands.Add(name, func);
 			}
