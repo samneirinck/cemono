@@ -170,11 +170,6 @@ namespace CryEngine
 		}
 
 		#endregion
-
-        public static void RegisterCommand(string name, string comment, CVarFlags flags)
-        {
-            NativeMethods.CVar.RegisterCommand(name, comment, flags);
-        }
     }
 
     /// <summary>
