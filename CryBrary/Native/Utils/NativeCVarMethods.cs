@@ -6,10 +6,13 @@ namespace CryEngine.Native
 {
     internal class NativeCVarMethods : INativeCVarMethods
     {
-        // CVars
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		internal static extern void _Execute(string command, bool silent);
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void _RegisterCommand(string name, string description, CVarFlags flags);
 
+		// CVars
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void _RegisterCVarFloat(string name, ref float val, float defaultVal, CVarFlags flags,
                                                        string description);
@@ -46,6 +49,10 @@ namespace CryEngine.Native
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void _HandleException(Exception ex);
 
+		public void Execute(string command, bool silent)
+		{
+			_Execute(command, silent);
+		}
 
         public void RegisterCommand(string name, string description, CVarFlags flags)
         {

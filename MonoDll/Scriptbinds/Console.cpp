@@ -34,6 +34,8 @@ CScriptbind_Console::CScriptbind_Console()
 	REGISTER_METHOD(SetCVarFloat);
 	REGISTER_METHOD(SetCVarInt);
 	REGISTER_METHOD(SetCVarString);
+
+	REGISTER_METHOD(Execute);
 }
 
 extern "C"
@@ -57,6 +59,11 @@ extern "C"
 void CScriptbind_Console::HandleException(mono::object exception)
 {
 	CScriptObject::HandleException((MonoObject *)exception);
+}
+
+void CScriptbind_Console::Execute(mono::string string, bool silent)
+{
+	gEnv->pConsole->ExecuteString(ToCryString(string), silent); 
 }
 
 void CScriptbind_Console::OnMonoCmd(IConsoleCmdArgs *cmdArgs)
