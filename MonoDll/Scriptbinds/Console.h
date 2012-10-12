@@ -30,6 +30,8 @@ protected:
 
 	static void HandleException(mono::object exception);
 
+	static void Execute(mono::string string, bool silent);
+
 	// Console commands
 	static void OnMonoCmd(IConsoleCmdArgs *);
 	static void RegisterCommand(mono::string, mono::string, EVarFlags);
