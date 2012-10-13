@@ -71,6 +71,8 @@ CScriptbind_Entity::CScriptbind_Entity()
 	REGISTER_METHOD(SetHUDSilhouettesParams);
 
 	REGISTER_METHOD(PlayAnimation);
+	REGISTER_METHOD(StopAnimationInLayer);
+	REGISTER_METHOD(StopAnimationsInAllLayers);
 
 	REGISTER_METHOD(AddEntityLink);
 	REGISTER_METHOD(RemoveEntityLink);
