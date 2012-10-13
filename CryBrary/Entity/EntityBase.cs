@@ -183,6 +183,20 @@ namespace CryEngine
 		}
 
 		/// <summary>
+		/// Stops the currently playing animation.
+		/// </summary>
+		/// <param name="slot">The character slot.</param>
+		/// <param name="layer">The animation layer which we want to stop. If -1, stops all layers.</param>
+		/// <param name="blendOutTime"></param>
+		public void StopAnimation(int slot = 0, int layer = 0, float blendOutTime = 0)
+		{
+			if (layer == -1)
+				NativeMethods.Entity.StopAnimationsInAllLayers(this.GetEntityHandle().Handle, slot);
+			else
+				NativeMethods.Entity.StopAnimationInLayer(this.GetEntityHandle().Handle, slot, layer, blendOutTime);
+		}
+
+		/// <summary>
 		/// Frees the specified slot of all objects.
 		/// </summary>
 		/// <param name="slot"></param>

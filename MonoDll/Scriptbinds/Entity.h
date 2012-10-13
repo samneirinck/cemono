@@ -176,6 +176,8 @@ protected:
 	// ~IMonoScriptBind
 
 	static void PlayAnimation(IEntity *pEnt, mono::string animationName, int slot, int layer, float blend, float speed, EAnimationFlags flags);
+	static void StopAnimationInLayer(IEntity *pEnt, int slot, int layer, float blendOutTime);
+	static void StopAnimationsInAllLayers(IEntity *pEnt, int slot);
 
 	bool IsMonoEntity(const char *className);
 

@@ -8,6 +8,10 @@ namespace CryEngine.Native
     {
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static void _PlayAnimation(IntPtr ptr, string animationName, int slot, int layer, float blend, float speed, AnimationFlags flags);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static void _StopAnimationInLayer(IntPtr ptr, int slot, int layer, float blendOutTime);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static void _StopAnimationsInAllLayers(IntPtr ptr, int slot);
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static EntityBase _SpawnEntity(EntitySpawnParams spawnParams, bool autoInit, out EntityInfo entityInfo);
@@ -160,6 +164,16 @@ namespace CryEngine.Native
 		public void PlayAnimation(IntPtr ptr, string animationName, int slot, int layer, float blend, float speed, AnimationFlags flags)
 		{
 			_PlayAnimation(ptr, animationName, slot, layer, blend, speed, flags);
+		}
+
+		public void StopAnimationInLayer(IntPtr ptr, int slot, int layer, float blendOutTime)
+		{
+			_StopAnimationInLayer(ptr, slot, layer, blendOutTime);
+		}
+
+		public void StopAnimationsInAllLayers(IntPtr ptr, int slot)
+		{
+			_StopAnimationsInAllLayers(ptr, slot);
 		}
 
 		public EntityBase SpawnEntity(EntitySpawnParams spawnParams, bool autoInit, out EntityInfo entityInfo)

@@ -161,6 +161,32 @@ void CScriptbind_Entity::PlayAnimation(IEntity *pEntity, mono::string animationN
 	pSkeletonAnim->StartAnimation(ToCryString(animationName),  params);
 }
 
+void CScriptbind_Entity::StopAnimationInLayer(IEntity *pEntity, int slot, int layer, float blendOutTime)
+{
+	ICharacterInstance *pCharacter = pEntity->GetCharacter(slot);
+	if(!pCharacter)
+		return;
+
+	ISkeletonAnim *pSkeletonAnim = pCharacter->GetISkeletonAnim();
+	if(!pSkeletonAnim)
+		return;
+
+	pSkeletonAnim->StopAnimationInLayer(layer, blendOutTime);
+}
+
+void CScriptbind_Entity::StopAnimationsInAllLayers(IEntity *pEntity, int slot)
+{
+	ICharacterInstance *pCharacter = pEntity->GetCharacter(slot);
+	if(!pCharacter)
+		return;
+
+	ISkeletonAnim *pSkeletonAnim = pCharacter->GetISkeletonAnim();
+	if(!pSkeletonAnim)
+		return;
+
+	pSkeletonAnim->StopAnimationsAllLayers();
+}
+
 bool CScriptbind_Entity::IsMonoEntity(const char *className)
 {
 	for each(auto entityClass in m_monoEntityClasses)
