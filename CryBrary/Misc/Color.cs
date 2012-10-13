@@ -3,12 +3,12 @@
 namespace CryEngine
 {
 	/// <summary>
-	/// Defines a colour in terms of its red, green, blue and alpha values.
+	/// Defines a color in terms of its red, green, blue and alpha values.
 	/// </summary>
 	public struct Color
 	{
 		/// <summary>
-		/// Constructs a new colour object specifying the red, green, blue and alpha values.
+		/// Constructs a new color object specifying the red, green, blue and alpha values.
 		/// </summary>
 		/// <param name="red"></param>
 		/// <param name="green"></param>
@@ -29,7 +29,7 @@ namespace CryEngine
 		}
 
 		/// <summary>
-		/// Constructs a new colour object specifying the red, green, and blue values.
+		/// Constructs a new color object specifying the red, green, and blue values.
 		/// </summary>
 		/// <param name="red"></param>
 		/// <param name="green"></param>
@@ -37,7 +37,7 @@ namespace CryEngine
 		public Color(float red, float green, float blue) : this(red, green, blue, 1) { }
 
 		/// <summary>
-		/// Constructs a new greyscale colour object.
+		/// Constructs a new greyscale color object.
 		/// </summary>
 		/// <param name="brightness">The brightness of the object, where 0 is black, and 1 is white.</param>
 		public Color(float brightness) : this(brightness, brightness, brightness) { }
@@ -75,22 +75,22 @@ namespace CryEngine
 		#endregion
 
 		/// <summary>
-		/// The red value of the colour.
+		/// The red value of the color.
 		/// </summary>
 		public float R { get; set; }
 
 		/// <summary>
-		/// The green value of the colour.
+		/// The green value of the color.
 		/// </summary>
 		public float G { get; set; }
 
 		/// <summary>
-		/// The blue value of the colour.
+		/// The blue value of the color.
 		/// </summary>
 		public float B { get; set; }
 
 		/// <summary>
-		/// The alpha value of the colour.
+		/// The alpha value of the color.
 		/// </summary>
 		public float A { get; set; }
 
