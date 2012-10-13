@@ -8,7 +8,7 @@ namespace CryEngine.Native
 		public static HandleRef GetActorHandle(this Actor actor)
 		{
 			if (actor.IsDestroyed)
-				throw new ScriptInstanceDestroyedException("Attempted to access native actor handle on a destroyed actor");
+				throw new ScriptInstanceDestroyedException("Attempted to access native actor handle on a destroyed script");
 
 			return actor.ActorHandleRef;
 		}
