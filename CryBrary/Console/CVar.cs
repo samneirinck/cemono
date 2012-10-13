@@ -24,51 +24,59 @@ namespace CryEngine
 		private static readonly List<CVar> CVars = new List<CVar>();
 
 		/// <summary>
-		/// Registers a CVar.
+		/// Registers a new console variable with the specified default value.
 		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="value"></param>
-		/// <param name="help"></param>
+		/// <param name="name">console variable name</param>
+		/// <param name="value">default value of the console variable</param>
+		/// <param name="help">help text that is shown when you use <name> ? in the console</param>
 		/// <param name="flags"></param>
-		/// <returns></returns>
+		/// <returns>Newly null if failed, new CVar instance if successful</returns>
 		public static CVar Register(string name, int value, string help = "", CVarFlags flags = CVarFlags.None)
 		{
 			return RegisterInternal(name, value, help, flags);
 		}
 
 		/// <summary>
-		/// Registers a CVar.
+		/// Registers a new console variable with the specified default value.
 		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="value"></param>
-		/// <param name="help"></param>
+		/// <param name="name">console variable name</param>
+		/// <param name="value">default value of the console variable</param>
+		/// <param name="help">help text that is shown when you use <name> ? in the console</param>
 		/// <param name="flags"></param>
-		/// <returns></returns>
+		/// <returns>Newly null if failed, new CVar instance if successful</returns>
 		public static CVar Register(string name, float value, string help = "", CVarFlags flags = CVarFlags.None)
 		{
 			return RegisterInternal(name, value, help, flags);
 		}
 
 		/// <summary>
-		/// Registers a CVar.
+		/// Registers a new console variable with the specified default value.
 		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="value"></param>
-		/// <param name="help"></param>
+		/// <param name="name">console variable name</param>
+		/// <param name="value">default value of the console variable</param>
+		/// <param name="help">help text that is shown when you use <name> ? in the console</param>
 		/// <param name="flags"></param>
-		/// <returns></returns>
+		/// <returns>Newly null if failed, new CVar instance if successful</returns>
 		public static CVar Register(string name, string value, string help = "", CVarFlags flags = CVarFlags.None)
 		{
 			return RegisterInternal(name, value, help, flags);
 		}
 
-		private static CVar RegisterInternal(string name, object value, string help, CVarFlags flags)
+		internal static CVar RegisterInternal(string name, object value, string help, CVarFlags flags)
 		{
 			CVars.Add(new DynamicCVar(name, value, flags, help));
 
 			return CVars.Last();
 		}
 
+		/// <summary>
+		/// Registers a new console variable that will update the user defined integer.
+		/// </summary>
+		/// <param name="name">console variable name</param>
+		/// <param name="value">reference to the memory that will be updated</param>
+		/// <param name="help">help text that is shown when you use <name> ? in the console</param>
+		/// <param name="flags"></param>
+		/// <returns>Newly null if failed, new CVar instance if successful</returns>
 		public static CVar RegisterInt(string name, ref int value, string help = "", CVarFlags flags = CVarFlags.None)
 		{
 			NativeMethods.CVar.RegisterCVarInt(name, ref value, value, flags, help);
@@ -78,6 +86,14 @@ namespace CryEngine
 			return CVars.Last();
 		}
 
+		/// <summary>
+		/// Registers a new console variable that will update the user defined float.
+		/// </summary>
+		/// <param name="name">console variable name</param>
+		/// <param name="value">reference to the memory that will be updated</param>
+		/// <param name="help">help text that is shown when you use <name> ? in the console</param>
+		/// <param name="flags"></param>
+		/// <returns>Newly null if failed, new CVar instance if successful</returns>
 		public static CVar RegisterFloat(string name, ref float value, string help = "", CVarFlags flags = CVarFlags.None)
 		{
             NativeMethods.CVar.RegisterCVarFloat(name, ref value, value, flags, help);
@@ -135,10 +151,10 @@ namespace CryEngine
 		}
 
 		/// <summary>
-		/// Gets a CVar by name
+		/// Retrieve a console variable by name - not case sensitive
 		/// </summary>
 		/// <param name="name">The name of the CVar to retrieve</param>
-		/// <returns></returns>
+		/// <returns>null if not found, CVar instance if successful</returns>
 		public static CVar Get(string name)
 		{
 			CVar cvar = CVars.FirstOrDefault(var => var.Name.Equals(name));

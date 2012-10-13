@@ -8,6 +8,7 @@ namespace CryEngine.Native
 		{
 			if (attachment.IsDestroyed)
 				throw new ScriptInstanceDestroyedException("Attempted to access native attachment handle on a destroyed script");
+
 			return attachment.AttachmentHandleRef;
 		}
 

@@ -8,37 +8,49 @@ using CryEngine.Native;
 namespace CryEngine
 {
 	/// <summary>
-	/// Contains common entity functionality.
+	/// Represents an CryENGINE entity
 	/// </summary>
 	public abstract class EntityBase : CryScriptInstance
 	{
 		/// <summary>
-		/// Removes the entity
+		/// Removes the entity from the CryEngine world.
 		/// </summary>
-		/// <param name="forceRemoveNow"></param>
+		/// <param name="forceRemoveNow">If true, the entity will be removed immediately.</param>
 		public virtual void Remove(bool forceRemoveNow = false)
 		{
 			Entity.Remove(Id, forceRemoveNow);
 		}
 
+		/// <summary>
+		/// Retrieves the flags of the specified slot.
+		/// </summary>
+		/// <param name="slot">Index of the slot</param>
+		/// <returns>The slot flags, or 0 if specified slot is not valid.</returns>
 		public EntitySlotFlags GetSlotFlags(int slot = 0)
 		{
 			return NativeMethods.Entity.GetSlotFlags(this.GetEntityHandle().Handle, slot);
 		}
 
+		/// <summary>
+		/// Sets the flags of the specified slot.
+		/// </summary>
+		/// <param name="flags">Flags to set.</param>
+		/// <param name="slot">Index of the slot, if -1 apply to all existing slots.</param>
 		public void SetSlotFlags(EntitySlotFlags flags, int slot = 0)
 		{
 			NativeMethods.Entity.SetSlotFlags(this.GetEntityHandle().Handle, slot, flags);
 		}
 
+		/// <summary>
+		/// Entity velocity as set by the physics system.
+		/// </summary>
 		public Vec3 Velocity
 		{
 			get { return NativeMethods.Physics.GetVelocity(this.GetEntityHandle().Handle); }
-
 			set { NativeMethods.Physics.SetVelocity(this.GetEntityHandle().Handle, value); }
 		}
 
-		EntityPhysics _physics;
+		internal EntityPhysics _physics;
 		public EntityPhysics Physics
 		{
 			get { return _physics ?? (_physics = new EntityPhysics(this)); }
@@ -52,8 +64,13 @@ namespace CryEngine
             base.OnScriptReloadInternal();
 		}
 
-		// TODO: Expose the attachment system properly
 #region Attachments
+		/// <summary>
+		/// Gets the attachment at the specified slot and index.
+		/// </summary>
+		/// <param name="index">Attachment index</param>
+		/// <param name="characterSlot">Index of the character slot we wish to get an attachment from</param>
+		/// <returns>null if failed, otherwise the attachment.</returns>
 		public Attachment GetAttachment(int index, int characterSlot = 0)
 		{
 			var ptr = NativeMethods.Entity.GetAttachmentByIndex(this.GetEntityHandle().Handle, index, characterSlot);
@@ -63,6 +80,12 @@ namespace CryEngine
 			return Attachment.TryAdd(ptr, this);
 		}
 
+		/// <summary>
+		/// Gets the attachment by name at the specified slot.
+		/// </summary>
+		/// <param name="name">Attachment name</param>
+		/// <param name="characterSlot">Index of the character slot we wish to get an attachment from</param>
+		/// <returns>null if failed, otherwise the attachment.</returns>
 		public Attachment GetAttachment(string name, int characterSlot = 0)
 		{
 			var ptr = NativeMethods.Entity.GetAttachmentByName(this.GetEntityHandle().Handle, name, characterSlot);
@@ -70,6 +93,11 @@ namespace CryEngine
 			return Attachment.TryAdd(ptr, this);
 		}
 
+		/// <summary>
+		/// Gets the number of attachments at the specified character slot.
+		/// </summary>
+		/// <param name="characterSlot">Index of the slot we wish to get the attachment count of</param>
+		/// <returns>Number of attachments at the specified slot</returns>
         public int GetAttachmentCount(int characterSlot = 0)
 		{
 			return NativeMethods.Entity.GetAttachmentCount(this.GetEntityHandle().Handle, characterSlot); 
@@ -79,8 +107,8 @@ namespace CryEngine
 		/// <summary>
 		/// Links to another entity, becoming the parent. Any change to the parent object is propagated to all child (linked) objects.
 		/// </summary>
-		/// <param name="linkName"></param>
-		/// <param name="otherEntityId"></param>
+		/// <param name="linkName">Name of the link</param>
+		/// <param name="otherEntityId">Id of the entity we wish to be linked to</param>
 		/// <param name="relativeRot"></param>
 		/// <param name="relativePos"></param>
 		/// <returns></returns>
@@ -90,9 +118,9 @@ namespace CryEngine
 		}
 
 		/// <summary>
-		/// Removes an entity link, see Link.
+		/// Removes an entity link, see <see cref="Link"/>.
 		/// </summary>
-		/// <param name="otherEntityId"></param>
+		/// <param name="otherEntityId">Id of the entity we are currently linked to</param>
 		public void Unlink(EntityId otherEntityId)
 		{
 			NativeMethods.Entity.RemoveEntityLink(this.GetEntityHandle().Handle, otherEntityId);
@@ -101,8 +129,8 @@ namespace CryEngine
 		/// <summary>
 		/// Loads a light source to the specified slot, or to the next available slot.
 		/// </summary>
-		/// <param name="parameters"></param>
-		/// <param name="slot"></param>
+		/// <param name="parameters">New params of the light source we wish to load</param>
+		/// <param name="slot">Slot we want to load the light into, if -1 chooses the next available slot.</param>
 		/// <returns>The slot where the light source was loaded, or -1 if loading failed.</returns>
 		public int LoadLight(LightParams parameters, int slot = 1)
 		{
@@ -112,69 +140,124 @@ namespace CryEngine
 		/// <summary>
 		/// Loads a mesh for this entity. Can optionally load multiple meshes using entity slots.
 		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="slotNumber"></param>
+		/// <param name="name">Path to the object (Relative to the game directory)</param>
+		/// <param name="slot"></param>
 		/// <returns></returns>
-		public bool LoadObject(string name, int slotNumber = 0)
+		public bool LoadObject(string name, int slot = 0)
 		{
 			if (name == null)
 				throw new ArgumentNullException("name");
 
 			if (name.EndsWith("cgf"))
-				NativeMethods.Entity.LoadObject(this.GetEntityHandle().Handle, name, slotNumber);
+				NativeMethods.Entity.LoadObject(this.GetEntityHandle().Handle, name, slot);
 			else if (name.EndsWith("cdf") || name.EndsWith("cga") || name.EndsWith("chr"))
-				NativeMethods.Entity.LoadCharacter(this.GetEntityHandle().Handle, name, slotNumber);
+				NativeMethods.Entity.LoadCharacter(this.GetEntityHandle().Handle, name, slot);
 			else
 				return false;
 
 			return true;
 		}
 
+		/// <summary>
+		/// Gets the path to the currently loaded object.
+		/// </summary>
+		/// <param name="slot">Slot containing the object we want to know the path of.</param>
+		/// <returns>Path to the currently loaded object at the specified slot.</returns>
 		protected string GetObjectFilePath(int slot = 0)
 		{
 			return NativeMethods.Entity.GetStaticObjectFilePath(this.GetEntityHandle().Handle, slot);
 		}
 
+		/// <summary>
+		/// Plays a raw animation.
+		/// </summary>
+		/// <param name="animationName">Name of the animation we wish to play</param>
+		/// <param name="flags"></param>
+		/// <param name="slot">Slot on which to play the animation</param>
+		/// <param name="layer">Animation layer to play the animation in.</param>
+		/// <param name="blend">Transition time between two animations.</param>
+		/// <param name="speed">Animation playback speed</param>
 		public void PlayAnimation(string animationName, AnimationFlags flags = 0, int slot = 0, int layer = 0, float blend = 0.175f, float speed = 1.0f)
 		{
 			NativeMethods.Entity.PlayAnimation(this.GetEntityHandle().Handle, animationName, slot, layer, blend, speed, flags);
 		}
 
+		/// <summary>
+		/// Frees the specified slot of all objects.
+		/// </summary>
+		/// <param name="slot"></param>
 		public void FreeSlot(int slot)
 		{
 			NativeMethods.Entity.FreeSlot(this.GetEntityHandle().Handle, slot);
 		}
 
+		/// <summary>
+		/// Requests movement at the specified slot, providing an animated character is currently loaded.
+		/// </summary>
+		/// <param name="request"></param>
 		public void AddMovement(ref EntityMovementRequest request)
 		{
 			NativeMethods.Entity.AddMovement(this.GetAnimatedCharacterHandle().Handle, ref request);
 		}
 
+		/// <summary>
+		/// Gets the absolute of the specified joint
+		/// </summary>
+		/// <param name="jointName">Name of the joint</param>
+		/// <param name="characterSlot">Slot containing the character</param>
+		/// <returns>Absolute of the specified joint</returns>
 		public QuatT GetJointAbsolute(string jointName, int characterSlot = 0)
 		{
 			return NativeMethods.Entity.GetJointAbsolute(this.GetEntityHandle().Handle, jointName, characterSlot);
 		}
 
+		/// <summary>
+		/// Gets the default absolute of the specified joint
+		/// </summary>
+		/// <param name="jointName">Name of the joint</param>
+		/// <param name="characterSlot">Slot containing the character</param>
+		/// <returns>Default absolute of the specified joint</returns>
 		public QuatT GetJointAbsoluteDefault(string jointName, int characterSlot = 0)
 		{
 			return NativeMethods.Entity.GetJointAbsoluteDefault(this.GetEntityHandle().Handle, jointName, characterSlot);
 		}
 
+		/// <summary>
+		/// Sets the absolute of the specified joint
+		/// </summary>
+		/// <param name="jointName">Name of the joint</param>
+		/// <param name="absolute">New absolute</param>
+		/// <param name="characterSlot">Slot containing the character</param>
 		public void SetJointAbsolute(string jointName, QuatT absolute, int characterSlot = 0)
 		{
 			NativeMethods.Entity.SetJointAbsolute(this.GetEntityHandle().Handle, jointName, characterSlot, absolute);
 		}
 
+		/// <summary>
+		/// Gets the relative of the specified joint
+		/// </summary>
+		/// <param name="jointName">Name of the joint</param>
+		/// <param name="characterSlot">Slot containing the character</param>
+		/// <returns>Relative of the specified joint</returns>
 		public QuatT GetJointRelative(string jointName, int characterSlot = 0)
 		{
 			return NativeMethods.Entity.GetJointRelative(this.GetEntityHandle().Handle, jointName, characterSlot);
 		}
 
+		/// <summary>
+		/// Gets the default relative of the specified joint
+		/// </summary>
+		/// <param name="jointName">Name of the joint</param>
+		/// <param name="characterSlot">Slot containing the character</param>
+		/// <returns>Default relative of the specified joint</returns>
 		public QuatT GetJointRelativeDefault(string jointName, int characterSlot = 0)
 		{
 			return NativeMethods.Entity.GetJointRelativeDefault(this.GetEntityHandle().Handle, jointName, characterSlot);
 		}
 
+		/// <summary>
+		/// Gets this entity's Lua script table, providing it exists.
+		/// </summary>
 		public Lua.ScriptTable ScriptTable { get { return Lua.ScriptTable.Get(this.GetEntityHandle().Handle); } }
 
 		public bool Hidden { get { return NativeMethods.Entity.IsHidden(this.GetEntityHandle().Handle); } set { NativeMethods.Entity.Hide(this.GetEntityHandle().Handle, value); } }
@@ -224,9 +307,17 @@ namespace CryEngine
 		/// </summary>
 		public EntityFlags Flags { get { return NativeMethods.Entity.GetFlags(this.GetEntityHandle().Handle); } set { NativeMethods.Entity.SetFlags(this.GetEntityHandle().Handle, value); } }
 
+		/// <summary>
+		/// Gets / sets the material currently assigned to this entity.
+		/// </summary>
 		public Material Material { get { return Material.Get(this); } set { Material.Set(this, value); } }
 
-		public EntityId Id { get; set; }
+		/// <summary>
+		/// Retrieves the runtime unique identifier of this entity assigned to it by the Entity System.
+		/// EntityId may not be the same when saving/loading entity.
+		/// EntityId is mostly used in runtime for fast and unique identification of entities..
+		/// </summary>
+		public EntityId Id { get; internal set; }
 
 		#region Native handles
 		/// <summary>

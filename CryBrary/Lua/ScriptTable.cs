@@ -43,6 +43,12 @@ namespace CryEngine.Lua
 			HandleRef = new HandleRef(this, scriptPtr);
 		}
 
+		/// <summary>
+		/// Invokes a method on the script table
+		/// </summary>
+		/// <param name="methodName">Name of the method</param>
+		/// <param name="args">Invocation arguments</param>
+		/// <returns>Result or null</returns>
 		public object CallMethod(string methodName, params object[] args)
 		{
 			return NativeMethods.ScriptTable.CallMethod(HandleRef.Handle, methodName, args);
@@ -51,8 +57,8 @@ namespace CryEngine.Lua
 		/// <summary>
 		/// Gets a value within the table.
 		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
+		/// <param name="name">Name of the value</param>
+		/// <returns>The value or null</returns>
 		public object GetValue(string name)
 		{
 			return NativeMethods.ScriptTable.GetValue(HandleRef.Handle, name);
@@ -61,7 +67,7 @@ namespace CryEngine.Lua
 		/// <summary>
 		/// Gets a table within this table.
 		/// </summary>
-		/// <param name="name"></param>
+		/// <param name="name">Name of the table</param>
 		/// <returns></returns>
 		public ScriptTable GetTable(string name)
 		{
@@ -83,7 +89,7 @@ namespace CryEngine.Lua
 		/// <summary>
 		/// Handle to the native IScriptTable object
 		/// </summary>
-		public HandleRef HandleRef { get; set; }
+		internal HandleRef HandleRef { get; set; }
 	}
 
 	enum LuaVariableType

@@ -100,6 +100,7 @@
     <Compile Include="Engine\Explosion.cs" />
     <Compile Include="Entity\Extensions\Attachment.cs" />
     <Compile Include="Entity\Exceptions\EntityRemovalException.cs" />
+    <Compile Include="Extensions\NativeScriptTableExtensions.cs" />
     <Compile Include="Script Handling\ScriptInstanceDestroyedException.cs" />
     <Compile Include="Math\Angle.cs" />
     <Compile Include="Math\QuatT.cs" />
@@ -112,7 +113,6 @@
     <Compile Include="Native\NativeNetworkMethods.cs" />
     <Compile Include="Network\RemoteInvocationException.cs" />
     <Compile Include="Utils\ProjectSettings.cs" />
-    <Compile Include="Engine\Texture.cs" />
     <Compile Include="Entity\Extensions\AnimationFlags.cs" />
     <Compile Include="Entity\Extensions\EntityLight.cs" />
     <Compile Include="Native\Interfaces\INative3DEngineMethods.cs" />
