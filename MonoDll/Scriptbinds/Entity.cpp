@@ -156,9 +156,9 @@ void CScriptbind_Entity::PlayAnimation(IEntity *pEntity, mono::string animationN
 	CryCharAnimationParams params;
 	params.m_fTransTime = blend;
 	params.m_nLayerID = layer;
+	params.m_fPlaybackSpeed = speed;
 	params.m_nFlags = (flags & EAnimFlag_Loop ? CA_LOOP_ANIMATION : 0) | (flags & EAnimFlag_RestartAnimation ? CA_ALLOW_ANIM_RESTART : 0) | (flags & EAnimFlag_RepeatLastFrame ? CA_REPEAT_LAST_KEY : 0);
 	pSkeletonAnim->StartAnimation(ToCryString(animationName),  params);
-	pSkeletonAnim->SetLayerUpdateMultiplier(layer, speed);
 }
 
 bool CScriptbind_Entity::IsMonoEntity(const char *className)
