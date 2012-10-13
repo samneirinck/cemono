@@ -153,6 +153,8 @@ namespace CryEngine
 		}
 
 		#region Callbacks
+		public virtual void OnSpawn() { }
+
 		public virtual void UpdateView(ref ViewParams viewParams) { }
 		#endregion
 
@@ -197,6 +199,9 @@ namespace CryEngine
 
 		public bool IsDead() { return Health <= 0; }
 
+		/// <summary>
+		/// Checks if this actor is controlled by the local client. See <see cref="Actor.LocalClient"/>.
+		/// </summary>
 		public bool IsLocalClient { get { return Actor.LocalClient == this; } }
 	}
 
