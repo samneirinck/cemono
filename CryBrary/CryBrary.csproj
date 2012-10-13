@@ -100,7 +100,7 @@
     <Compile Include="Engine\Explosion.cs" />
     <Compile Include="Entity\Extensions\Attachment.cs" />
     <Compile Include="Entity\Exceptions\EntityRemovalException.cs" />
-    <Compile Include="Entity\Exceptions\EntityDestroyedException.cs" />
+    <Compile Include="Script Handling\ScriptInstanceDestroyedException.cs" />
     <Compile Include="Math\Angle.cs" />
     <Compile Include="Math\QuatT.cs" />
     <Compile Include="Misc\BoredAtWorkException.cs" />
