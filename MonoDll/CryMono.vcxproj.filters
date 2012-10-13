@@ -93,9 +93,6 @@
     <ClInclude Include="Scriptbinds\GameRules.h">
       <Filter>ScriptBinds\Game Logic</Filter>
     </ClInclude>
-    <ClInclude Include="Scriptbinds\ItemSystem.h">
-      <Filter>ScriptBinds\Game Logic</Filter>
-    </ClInclude>
     <ClInclude Include="Scriptbinds\ActorSystem.h">
       <Filter>ScriptBinds\Game Logic</Filter>
     </ClInclude>
@@ -205,9 +202,6 @@
       <Filter>ScriptBinds\Viewport</Filter>
     </ClCompile>
     <ClCompile Include="Scriptbinds\GameRules.cpp">
-      <Filter>ScriptBinds\Game Logic</Filter>
-    </ClCompile>
-    <ClCompile Include="Scriptbinds\ItemSystem.cpp">
       <Filter>ScriptBinds\Game Logic</Filter>
     </ClCompile>
     <ClCompile Include="Scriptbinds\ActorSystem.cpp">

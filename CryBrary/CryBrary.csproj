@@ -258,7 +258,6 @@
     <Compile Include="Entity\EntityStatics.cs" />
     <Compile Include="Entity\Entity.cs" />
     <Compile Include="FlowSystem\FlowNode.cs" />
-    <Compile Include="Actor\ItemSystem.cs" />
     <Compile Include="Utils\Debug\Logging.cs" />
     <Compile Include="GameRules\GameRules.cs" />
     <Compile Include="Utils\PointerWrapper.cs" />
