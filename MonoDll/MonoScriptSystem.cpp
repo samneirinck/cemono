@@ -25,7 +25,6 @@
 #include "MonoConverter.h"
 
 // Bindings
-#include "Scriptbinds\ItemSystem.h"
 #include "Scriptbinds\Console.h"
 #include "Scriptbinds\GameRules.h"
 #include "Scriptbinds\ActorSystem.h"
@@ -214,7 +213,6 @@ void CScriptSystem::RegisterDefaultBindings()
 	RegisterBinding(CScriptbind_Physics);
 	RegisterBinding(CScriptbind_Renderer);
 	RegisterBinding(CScriptbind_Console);
-	RegisterBinding(CScriptbind_ItemSystem);
 	RegisterBinding(CGameRules);
 	RegisterBinding(CScriptbind_Debug);
 	RegisterBinding(CTime);

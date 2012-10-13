@@ -380,7 +380,6 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="Scriptbinds\ActorSystem.h" />
     <ClInclude Include="Scriptbinds\Entity.h" />
-    <ClInclude Include="Scriptbinds\ItemSystem.h" />
     <ClInclude Include="Scriptbinds\Console.h" />
     <ClInclude Include="Scriptbinds\3DEngine.h" />
     <ClInclude Include="Scriptbinds\Debug.h" />
@@ -417,7 +416,6 @@
     <ClCompile Include="NativeEntity.cpp" />
     <ClCompile Include="Scriptbinds\ActorSystem.cpp" />
     <ClCompile Include="Scriptbinds\Entity.cpp" />
-    <ClCompile Include="Scriptbinds\ItemSystem.cpp" />
     <ClCompile Include="Scriptbinds\Console.cpp" />
     <ClCompile Include="Scriptbinds\3DEngine.cpp" />
     <ClCompile Include="Scriptbinds\Debug.cpp" />
