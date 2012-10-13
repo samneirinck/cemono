@@ -13,7 +13,7 @@ using CryEngine.Native;
 namespace CryEngine
 {
 	/// <summary>
-	/// The base class for all entities in the game world.
+	/// Represents an entity created via CryMono.
 	/// </summary>
 	public abstract partial class Entity : EntityBase
 	{

@@ -7,6 +7,9 @@ using CryEngine.Native;
 
 namespace CryEngine
 {
+	/// <summary>
+	/// Used to simulate explosions on physical entities.
+	/// </summary>
 	public class Explosion
 	{
 		public Explosion()

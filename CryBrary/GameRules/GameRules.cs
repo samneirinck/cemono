@@ -11,7 +11,6 @@ namespace CryEngine
 	/// <summary>
 	/// This is the base GameRules interface. All game rules must implement this.
 	/// </summary>
-	/// <remarks>For most use cases, deriving from CryGameCode's BaseGameRules is a more efficient solution.</remarks>
 	public abstract class GameRules : EntityBase
 	{
 		internal void InternalInitialize()
