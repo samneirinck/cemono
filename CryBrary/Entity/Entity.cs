@@ -57,6 +57,11 @@ namespace CryEngine
 
 		#region Callbacks
 		/// <summary>
+		/// This callback is called when this entity has finished spawning. The entity has been created and added to the list of entities.
+		/// </summary>
+		public virtual void OnSpawn() { }
+
+		/// <summary>
 		/// Called when the entity is being removed.
 		/// </summary>
 		/// <returns>True to allow removal, false to deny.</returns>

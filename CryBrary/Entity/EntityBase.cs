@@ -12,13 +12,10 @@ namespace CryEngine
 	/// </summary>
 	public abstract class EntityBase : CryScriptInstance
 	{
-		#region Callbacks
 		/// <summary>
-		/// This callback is called when this entity has finished spawning. The entity has been created and added to the list of entities.
+		/// Removes the entity
 		/// </summary>
-		public virtual void OnSpawn() { }
-		#endregion
-
+		/// <param name="forceRemoveNow"></param>
 		public virtual void Remove(bool forceRemoveNow = false)
 		{
 			Entity.Remove(Id, forceRemoveNow);
