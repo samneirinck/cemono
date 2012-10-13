@@ -71,7 +71,7 @@ namespace CryEngine
 		/// Called when resetting the state of the entity in Editor.
 		/// </summary>
 		/// <param name="enteringGame">true if currently entering gamemode, false if exiting.</param>
-		protected virtual void OnReset(bool enteringGame) { }
+		protected virtual void OnEditorReset(bool enteringGame) { }
 
 		/// <summary>
 		/// Called when game is started (games may start multiple times)

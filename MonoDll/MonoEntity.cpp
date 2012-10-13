@@ -103,7 +103,7 @@ void CEntity::ProcessEvent(SEntityEvent &event)
 				return;
 			}
 
-			m_pScript->CallMethod("OnReset", enterGamemode);
+			m_pScript->CallMethod("OnEditorReset", enterGamemode);
 
 			Reset(enterGamemode);
 		}
