@@ -28,7 +28,7 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="name">console variable name</param>
 		/// <param name="value">default value of the console variable</param>
-		/// <param name="help">help text that is shown when you use <name> ? in the console</param>
+		/// <param name="help">help text that is shown when you use <paramref name="name"/> ? in the console</param>
 		/// <param name="flags"></param>
 		/// <returns>Newly null if failed, new CVar instance if successful</returns>
 		public static CVar Register(string name, int value, string help = "", CVarFlags flags = CVarFlags.None)
@@ -41,7 +41,7 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="name">console variable name</param>
 		/// <param name="value">default value of the console variable</param>
-		/// <param name="help">help text that is shown when you use <name> ? in the console</param>
+		/// <param name="help">help text that is shown when you use <paramref name="name"/> ? in the console</param>
 		/// <param name="flags"></param>
 		/// <returns>Newly null if failed, new CVar instance if successful</returns>
 		public static CVar Register(string name, float value, string help = "", CVarFlags flags = CVarFlags.None)
@@ -54,7 +54,7 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="name">console variable name</param>
 		/// <param name="value">default value of the console variable</param>
-		/// <param name="help">help text that is shown when you use <name> ? in the console</param>
+		/// <param name="help">help text that is shown when you use <paramref name="name"/> ? in the console</param>
 		/// <param name="flags"></param>
 		/// <returns>Newly null if failed, new CVar instance if successful</returns>
 		public static CVar Register(string name, string value, string help = "", CVarFlags flags = CVarFlags.None)
@@ -74,7 +74,7 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="name">console variable name</param>
 		/// <param name="value">reference to the memory that will be updated</param>
-		/// <param name="help">help text that is shown when you use <name> ? in the console</param>
+		/// <param name="help">help text that is shown when you use <paramref name="name"/> ? in the console</param>
 		/// <param name="flags"></param>
 		/// <returns>Newly null if failed, new CVar instance if successful</returns>
 		public static CVar RegisterInt(string name, ref int value, string help = "", CVarFlags flags = CVarFlags.None)
@@ -91,7 +91,7 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="name">console variable name</param>
 		/// <param name="value">reference to the memory that will be updated</param>
-		/// <param name="help">help text that is shown when you use <name> ? in the console</param>
+		/// <param name="help">help text that is shown when you use <paramref name="name"/> ? in the console</param>
 		/// <param name="flags"></param>
 		/// <returns>Newly null if failed, new CVar instance if successful</returns>
 		public static CVar RegisterFloat(string name, ref float value, string help = "", CVarFlags flags = CVarFlags.None)
