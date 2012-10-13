@@ -37,6 +37,16 @@ namespace CryEngine
             NativeMethods.Particle.Spawn(Pointer, independent, pos, dir ?? Vec3.Up, scale);
 		}
 
+		public void Remove()
+		{
+			NativeMethods.Particle.Remove(Pointer);
+		}
+
+		public void LoadResources()
+		{
+			NativeMethods.Particle.LoadResoruces(Pointer);
+		}
+
 		internal IntPtr Pointer { get; set; }
 	}
 }

@@ -31,6 +31,8 @@ protected:
 	static IParticleEffect *FindEffect(mono::string effectName, bool bLoadResources = true);
 
 	static void Spawn(IParticleEffect *pEffect, bool independent, Vec3 pos, Vec3 dir, float scale);
+	static void Remove(IParticleEffect *pEffect);
+	static void LoadResources(IParticleEffect *pEffect);
 	// ~Externals
 
 	static IParticleManager *m_pParticleManager;
