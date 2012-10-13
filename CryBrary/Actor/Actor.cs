@@ -11,12 +11,12 @@ namespace CryEngine
     /// <summary>
 	/// WIP Player class. TODO: Redo, currently very limited in terms of callbacks + interoperability with C++ backend
 	/// </summary>
-	public abstract class Actor : EntityBase
+	public abstract class Actor : ActorBase
 	{
 		#region Statics
-		public static Actor Get(int channelId)
+		public static ActorBase Get(int channelId)
 		{
-			var actor = Get<Actor>(channelId);
+			var actor = Get<ActorBase>(channelId);
 			if(actor != null)
 				return actor;
 
@@ -27,14 +27,14 @@ namespace CryEngine
 			return null;
 		}
 
-		public static T Get<T>(int channelId) where T : Actor
+		public static T Get<T>(int channelId) where T : ActorBase
 		{
 			return ScriptManager.Instance.Find<T>(ScriptType.Actor, x => x.ChannelId == channelId);
 		}
 
-		public static Actor Get(EntityId actorId)
+		public static ActorBase Get(EntityId actorId)
 		{
-			var actor = Get<Actor>(actorId);
+			var actor = Get<ActorBase>(actorId);
 			if(actor != null)
 				return actor;
 
@@ -46,7 +46,7 @@ namespace CryEngine
 			return null;
 		}
 
-		public static T Get<T>(EntityId actorId) where T : Actor
+		public static T Get<T>(EntityId actorId) where T : ActorBase
 		{
 #if !(RELEASE && RELEASE_DISABLE_CHECKS)
 			if(actorId == 0)
@@ -56,7 +56,7 @@ namespace CryEngine
 			return ScriptManager.Instance.Find<T>(ScriptType.Actor, x => x.Id == actorId);
 		}
 
-		internal static Actor CreateNativeActor(ActorInfo actorInfo)
+		internal static ActorBase CreateNativeActor(ActorInfo actorInfo)
 		{
 #if !(RELEASE && RELEASE_DISABLE_CHECKS)
 			if(actorInfo.Id == 0)
@@ -73,7 +73,7 @@ namespace CryEngine
 			return nativeActor;
 		}
 
-		public static Actor LocalClient 
+		public static ActorBase LocalClient 
 		{
 			get
 			{
@@ -85,14 +85,17 @@ namespace CryEngine
 			} 
 		}
 
-		public static T Create<T>(int channelId, string name = "Dude", Vec3? pos = null, Vec3? angles = null, Vec3? scale = null) where T : Actor, new()
+		public static T Create<T>(int channelId, string name = "Dude", Vec3? pos = null, Vec3? angles = null, Vec3? scale = null) where T : ActorBase, new()
 		{
-			string className = "MonoActor";
 			var actorType = typeof(T);
 
 			bool isNative = actorType.Implements(typeof(NativeActor));
+
+			string className;
 			if (isNative)
 				className = actorType.Name;
+			else
+				className = "MonoActor";
 
 			var actor = Get<T>(channelId);
 			if (actor != null)
@@ -100,7 +103,7 @@ namespace CryEngine
 
 			actor = new T();
 
-			var info = NativeMethods.Actor.CreateActor(actor, channelId, name, className, pos ?? new Vec3(0, 0, 0), angles ?? new Vec3(0, 0, 0), scale ?? new Vec3(1, 1, 1));
+			var info = NativeMethods.Actor.CreateActor(actor as Actor, channelId, name, className, pos ?? new Vec3(0, 0, 0), angles ?? new Vec3(0, 0, 0), scale ?? new Vec3(1, 1, 1));
 			if(info.Id == 0)
 			{
 				if (isNative)
@@ -122,7 +125,7 @@ namespace CryEngine
 		{
             NativeMethods.Actor.RemoveActor(id);
 
-			ScriptManager.Instance.RemoveInstances<Actor>(ScriptType.Actor, actor => actor.Id == id);
+			ScriptManager.Instance.RemoveInstances<ActorBase>(ScriptType.Actor, actor => actor.Id == id);
 		}
 
 		public static void Remove(int channelId)
@@ -131,78 +134,22 @@ namespace CryEngine
 			if(actorInfo.Id != 0)
                 NativeMethods.Actor.RemoveActor(actorInfo.Id);
 
-			ScriptManager.Instance.RemoveInstances<Actor>(ScriptType.Actor, actor => actor.ChannelId == channelId);
+			ScriptManager.Instance.RemoveInstances<ActorBase>(ScriptType.Actor, actor => actor.ChannelId == channelId);
 		}
 		#endregion
 
-		/// <summary>
-		/// Initializes the player.
-		/// </summary>
-		/// <param name="actorInfo"></param>
-		/// <param name="channelId"></param>
-		internal void InternalSpawn(ActorInfo actorInfo, int channelId)
-		{
-            System.Diagnostics.Contracts.Contract.Requires(channelId > 0);
-			Id = new EntityId(actorInfo.Id);
-			this.SetActorHandle(new HandleRef(this, actorInfo.ActorPtr));
-			this.SetEntityHandle(new HandleRef(this, actorInfo.EntityPtr));
-
-			ChannelId = channelId;
-
-			OnSpawn();
-		}
-
 		#region Callbacks
-		public virtual void OnSpawn() { }
+		/// <summary>
+		/// Called when resetting the state of the entity in Editor.
+		/// </summary>
+		/// <param name="enteringGame">true if currently entering gamemode, false if exiting.</param>
+		public virtual void OnEditorReset(bool enteringGame) { }
 
 		public virtual void UpdateView(ref ViewParams viewParams) { }
 		#endregion
 
-		#region Overrides
-		public override void Remove(bool forceRemoveNow = false)
-		{
-			if (forceRemoveNow)
-				throw new NotSupportedException("forceRemoveNow");
-
-			Actor.Remove(Id);
-		}
-
-		public override int GetHashCode()
-        {
-            unchecked // Overflow is fine, just wrap
-            {
-                int hash = 17;
-
-                hash = hash * 29 + ScriptId.GetHashCode();
-                hash = hash * 29 + Id.GetHashCode();
-                hash = hash * 29 + ChannelId.GetHashCode();
-				hash = hash * 29 + this.GetActorHandle().Handle.GetHashCode();
-                hash = hash * 29 + this.GetEntityHandle().Handle.GetHashCode();
-
-                return hash;
-            }
-        }
-
-        internal override void OnScriptReloadInternal()
-		{
-            this.SetActorHandle(new HandleRef(this, NativeMethods.Actor.GetActorInfoById(Id).ActorPtr));
-
-            base.OnScriptReloadInternal();
-		}
-        #endregion
-
-		internal HandleRef ActorHandleRef { get; set; }
-		public int ChannelId { get; set; }
-
-		public float Health { get { return NativeMethods.Actor.GetPlayerHealth(this.GetActorHandle().Handle); } set { NativeMethods.Actor.SetPlayerHealth(this.GetActorHandle().Handle, value); } }
-		public float MaxHealth { get { return NativeMethods.Actor.GetPlayerMaxHealth(this.GetActorHandle().Handle); } set { NativeMethods.Actor.SetPlayerMaxHealth(this.GetActorHandle().Handle, value); } }
-
-		public bool IsDead() { return Health <= 0; }
-
-		/// <summary>
-		/// Checks if this actor is controlled by the local client. See <see cref="Actor.LocalClient"/>.
-		/// </summary>
-		public bool IsLocalClient { get { return Actor.LocalClient == this; } }
+		public override float Health { get; set; }
+		public override float MaxHealth { get; set; }
 	}
 
 	internal struct ActorInfo

@@ -8,7 +8,7 @@ namespace CryEngine
 	/// Represents an actor with a custom IActor implementation outside of CryMono.dll.
 	/// </summary>
 	[ExcludeFromCompilation]
-	public class NativeActor : Actor
+	public class NativeActor : ActorBase
 	{
 		public NativeActor() { }
 
@@ -22,11 +22,6 @@ namespace CryEngine
 		internal NativeActor(EntityId id)
 		{
 			Id = id;
-		}
-
-		public override void UpdateView(ref ViewParams viewParams)
-		{
-			throw new System.NotImplementedException();
 		}
 	}
 }

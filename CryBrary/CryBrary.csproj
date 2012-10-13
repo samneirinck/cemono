@@ -103,6 +103,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Actor\Actor.cs" />
+    <Compile Include="Actor\ActorBase.cs" />
     <Compile Include="Actor\ViewParams.cs" />
     <Compile Include="Engine\Explosion.cs" />
     <Compile Include="Entity\Extensions\Attachment.cs" />

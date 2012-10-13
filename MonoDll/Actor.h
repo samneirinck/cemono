@@ -17,17 +17,18 @@ struct IMonoObject;
 class CActor 
 	: public CGameObjectExtensionHelper<CActor, IActor>
 	, public IGameObjectView
+	, public IGameObjectProfileManager
 {
 public:
 	CActor();
 	~CActor();
 
 	// IActor
-	virtual void	SetHealth( float health ) override {}
-	virtual float	GetHealth() const override { return 1.0f; }
-	virtual int		GetHealthAsRoundedPercentage() const override { return 1; }
-	virtual void	SetMaxHealth( float maxHealth ) override {}
-	virtual float	GetMaxHealth() const override { return 1.0f; }
+	virtual void	SetHealth( float health ) override;
+	virtual float	GetHealth() const override;
+	virtual int		GetHealthAsRoundedPercentage() const override { return int_round(GetHealth() * 100.0f / GetMaxHealth()); }
+	virtual void	SetMaxHealth( float maxHealth ) override;
+	virtual float	GetMaxHealth() const override;
 	virtual int		GetArmor() const override { return 0; }
 	virtual int		GetMaxArmor() const override { return 0; }
 
@@ -96,10 +97,10 @@ public:
 
 	virtual bool IsPlayer() const override { return GetChannelId() != 0; }
 	virtual bool IsClient() const override { return m_bClient; }
-	virtual bool IsMigrating() const override { return false; }
-	virtual void SetMigrating(bool isMigrating) override {}
+	virtual bool IsMigrating() const override { return m_bMigrating; }
+	virtual void SetMigrating(bool isMigrating) override { m_bMigrating = isMigrating; }
 
-	virtual void InitLocalPlayer() override {}
+	virtual void InitLocalPlayer() override;
 
 	virtual const char *GetActorClassName() const override { return "CActor"; }
 	virtual ActorClass GetActorClass() const override { return (ActorClass)0; }
@@ -108,7 +109,7 @@ public:
 
 	virtual void	SerializeXML( XmlNodeRef& node, bool bLoading ) override {}
 	virtual void  SerializeLevelToLevel( TSerialize &ser ) override {}
-	virtual void	ProcessEvent( SEntityEvent& event ) override {}
+	virtual void	ProcessEvent( SEntityEvent& event ) override;
 
 	virtual IAnimatedCharacter * GetAnimatedCharacter() override { return nullptr; }
 	virtual const IAnimatedCharacter * GetAnimatedCharacter() const override { return nullptr; }
@@ -139,8 +140,8 @@ public:
 	virtual void PostInit(IGameObject *pGameObject) override;
 	virtual void InitClient(int channelId) override {}
 	virtual void PostInitClient(int channelId) override {}
-	virtual bool ReloadExtension( IGameObject * pGameObject, const SEntitySpawnParams &params ) override { return true; }
-	virtual void PostReloadExtension( IGameObject * pGameObject, const SEntitySpawnParams &params ) override {}
+	virtual bool ReloadExtension( IGameObject * pGameObject, const SEntitySpawnParams &params ) override;
+	virtual void PostReloadExtension( IGameObject * pGameObject, const SEntitySpawnParams &params ) override;
 	virtual bool GetEntityPoolSignature( TSerialize signature ) override { signature.BeginGroup("Actor"); signature.EndGroup(); return true;}
 	virtual void FullSerialize( TSerialize ser ) override {}
 	virtual bool NetSerialize( TSerialize ser, EEntityAspects aspect, uint8 profile, int pflags ) override { return true; }
@@ -161,11 +162,22 @@ public:
 	virtual void PostUpdateView(SViewParams& params) {}
 	// ~IGameObjectView
 
+	// IGameObjectProfileManager
+	virtual bool SetAspectProfile(EEntityAspects aspect, uint8 profile);
+	virtual uint8 GetDefaultProfile(EEntityAspects aspect) { return aspect == eEA_Physics ? eAP_NotPhysicalized : 0; }
+	// ~IGameObjectProfileManager
+
 	void SetScript(IMonoObject *pObject) { m_pScript = pObject; }
 
 protected:
 	IMonoObject *m_pScript;
 
+	uint8 m_currentPhysProfile;
+
+	float m_health;
+	float m_maxHealth;
+
+	bool m_bMigrating;
 	bool m_bClient;
 };
 
