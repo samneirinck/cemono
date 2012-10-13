@@ -9,7 +9,7 @@ namespace CryEngine.Native
 		public static HandleRef GetEntityHandle(this EntityBase entity)
 		{
 			if (entity.IsDestroyed)
-				throw new EntityDestroyedException("Attempted to access native entity handle on a destroyed entity");
+				throw new ScriptInstanceDestroyedException("Attempted to access native entity handle on a destroyed entity");
 
 			return entity.EntityHandleRef;
 		}
@@ -22,7 +22,7 @@ namespace CryEngine.Native
 		public static HandleRef GetAnimatedCharacterHandle(this EntityBase entity)
 		{
 			if (entity.IsDestroyed)
-				throw new EntityDestroyedException("Attempted to access native animated character handle on a destroyed entity");
+				throw new ScriptInstanceDestroyedException("Attempted to access native animated character handle on a destroyed entity");
 			if (entity.AnimatedCharacterHandleRef.Handle == IntPtr.Zero)
 				entity.SetAnimatedCharacterHandle(new HandleRef(entity, NativeMethods.Entity.AcquireAnimatedCharacter(entity.Id)));
 
