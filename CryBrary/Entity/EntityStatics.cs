@@ -31,10 +31,10 @@ namespace CryEngine
 		}
 
 		/// <summary>
-		/// Spawn a new instance of entity type T.
+		/// Spawns a new entity
 		/// </summary>
-		/// <typeparam name="T">The entity type</typeparam>
-		/// <param name="name"></param>
+		/// <param name="entityName"></param>
+		/// <param name="className"></param>
 		/// <param name="pos"></param>
 		/// <param name="rot"></param>
 		/// <param name="scale"></param>

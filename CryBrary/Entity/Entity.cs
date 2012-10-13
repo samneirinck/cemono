@@ -112,7 +112,7 @@ namespace CryEngine
 		/// <summary>
 		/// Sent on entity collision.
 		/// </summary>
-		/// <param name="targetEntityId"></param>
+		/// <param name="colliderId"></param>
 		/// <param name="hitPos"></param>
 		/// <param name="dir"></param>
 		/// <param name="materialId"></param>
