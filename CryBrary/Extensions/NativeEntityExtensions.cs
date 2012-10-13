@@ -9,7 +9,7 @@ namespace CryEngine.Native
 		public static HandleRef GetEntityHandle(this EntityBase entity)
 		{
 			if (entity.IsDestroyed)
-				throw new ScriptInstanceDestroyedException("Attempted to access native entity handle on a destroyed entity");
+				throw new ScriptInstanceDestroyedException("Attempted to access native entity handle on a destroyed script");
 
 			return entity.EntityHandleRef;
 		}
