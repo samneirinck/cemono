@@ -5,7 +5,7 @@ namespace CryEngine.Native
 {
 	public static class NativeActorExtensions
 	{
-		public static HandleRef GetActorHandle(this Actor actor)
+		public static HandleRef GetActorHandle(this ActorBase actor)
 		{
 			if (actor.IsDestroyed)
 				throw new ScriptInstanceDestroyedException("Attempted to access native actor handle on a destroyed script");
@@ -13,7 +13,7 @@ namespace CryEngine.Native
 			return actor.ActorHandleRef;
 		}
 
-		public static void SetActorHandle(this Actor actor, HandleRef handleRef)
+		public static void SetActorHandle(this ActorBase actor, HandleRef handleRef)
 		{
 			actor.ActorHandleRef = handleRef;
 		}
