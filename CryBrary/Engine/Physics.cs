@@ -175,8 +175,8 @@ namespace CryEngine
 		public int iholeType; // breakability index for the explosion (<0 disables)
 		public bool forceDeformEntities; // force deformation even if breakImpulseScale is zero
 		// filled as results
-		IntPtr pAffectedEnts;
-		IntPtr pAffectedEntsExposure;	// 0..1 exposure, computed from the occlusion map
+		IntPtr pAffectedEnts { get; set; }
+		IntPtr pAffectedEntsExposure { get; set; }	// 0..1 exposure, computed from the occlusion map
 		public int nAffectedEnts;
 	}
 }
