@@ -90,7 +90,7 @@ namespace CryEngine
 			return Create(typeof(T), channelId, name, pos, rot, scale) as T;
 		}
 		
-		public static ActorBase Create(Type actorType, int channelId, string name = " Dude", Vec3? pos = null, Quat? rot = null, Vec3? scale = null)
+		public static ActorBase Create(Type actorType, int channelId, string name = "Dude", Vec3? pos = null, Quat? rot = null, Vec3? scale = null)
 		{
 			bool isNative = actorType.Implements(typeof(NativeActor));
 
@@ -114,6 +114,27 @@ namespace CryEngine
 				else
 					throw new Exception("Actor creation failed");
 			}
+
+			ScriptManager.Instance.AddScriptInstance(actor, ScriptType.Actor);
+			actor.InternalSpawn(info, channelId);
+
+			// actor must have physics
+			actor.Physics.Type = PhysicalizationType.Rigid;
+
+			return actor;
+		}
+
+		public static ActorBase Create(string className, int channelId, string name = "Dude", Vec3? pos = null, Quat? rot = null, Vec3? scale = null)
+		{
+			var actor = Get(channelId);
+			if (actor != null)
+				return actor;
+
+			actor = new NativeActor();
+
+			var info = NativeMethods.Actor.CreateActor(actor as Actor, channelId, name, className, pos ?? new Vec3(0, 0, 0), rot ?? Quat.Identity, scale ?? new Vec3(1, 1, 1));
+			if (info.Id == 0)
+				throw new Exception("Actor creation failed, make sure your IActor implementation is registered with the same name as your managed actor class.");
 
 			ScriptManager.Instance.AddScriptInstance(actor, ScriptType.Actor);
 			actor.InternalSpawn(info, channelId);
