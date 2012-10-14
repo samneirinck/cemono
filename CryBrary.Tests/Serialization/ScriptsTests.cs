@@ -33,11 +33,9 @@ namespace CryBrary.Tests.Serialization
 				var entityScript = scriptManager.FindScript(ScriptType.Entity, x => x.Type == typeof(NativeEntity));
 				Assert.NotSame(default(CryScript), entityScript);
 				Assert.NotNull(entityScript.ScriptInstances);
-				Assert.Equal<int>(1, (entityScript.ScriptInstances[0] as EntityBase).Id);
-				Assert.Equal<int>(2, (entityScript.ScriptInstances[1] as EntityBase).Id);
-
-				var actor = scriptManager.Find<NativeActor>(ScriptType.Actor, x => x.Id == 3);
-				Assert.NotNull(actor);
+				Assert.Equal<int>(1, (entityScript.ScriptInstances[0] as NativeEntity).Id);
+				Assert.Equal<int>(2, (entityScript.ScriptInstances[1] as NativeEntity).Id);
+				Assert.Equal<int>(3, (entityScript.ScriptInstances[2] as NativeActor).Id);
 			}
 		}
         
