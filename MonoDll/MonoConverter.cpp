@@ -20,11 +20,11 @@ IMonoArray *CConverter::ToArray(mono::object arr)
 	return new CScriptArray(arr);
 }
 
-IMonoObject *CConverter::ToObject(mono::object obj)
+IMonoObject *CConverter::ToObject(mono::object obj, bool allowGC)
 {
 	CRY_ASSERT(obj);
 
-	return new CScriptObject((MonoObject *)obj);
+	return new CScriptObject((MonoObject *)obj, allowGC);
 }
 
 mono::object CConverter::BoxAnyValue(MonoAnyValue &any)

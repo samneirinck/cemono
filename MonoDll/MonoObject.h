@@ -25,7 +25,7 @@ protected:
 	CScriptObject() {}
 
 public:
-	CScriptObject(MonoObject *object);
+	CScriptObject(MonoObject *object, bool allowGC = true);
 	CScriptObject(MonoObject *object, IMonoArray *pConstructorParams);
 	virtual ~CScriptObject();
 

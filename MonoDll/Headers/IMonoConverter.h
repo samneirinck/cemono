@@ -59,7 +59,7 @@ struct IMonoConverter
 	/// <summary>
 	/// Converts an mono object to a IMonoObject.
 	/// </summary>
-	virtual IMonoObject *ToObject(mono::object obj) = 0;
+	virtual IMonoObject *ToObject(mono::object obj, bool allowGC = true) = 0;
 };
 
 #endif //__I_MONO_CONVERTER_H__
