@@ -205,11 +205,11 @@ bool CActor::SetAspectProfile( EEntityAspects aspect, uint8 profile )
 							}
 						}
 
-						/*if(m_pAnimatedCharacter)
+						if(m_pAnimatedCharacter)
 						{
 							m_pAnimatedCharacter->ForceTeleportAnimationToEntity();
 							m_pAnimatedCharacter->ForceRefreshPhysicalColliderMode();
-						}*/
+						}
 					}
 				}
 				else
@@ -221,18 +221,18 @@ bool CActor::SetAspectProfile( EEntityAspects aspect, uint8 profile )
 						if (ICharacterInstance *pCharacter=GetEntity()->GetCharacter(0))
 							pCharacter->GetISkeletonPose()->DestroyCharacterPhysics(1);
 
-						/*if(m_pAnimatedCharacter)
+						if(m_pAnimatedCharacter)
 						{
 							m_pAnimatedCharacter->ForceRefreshPhysicalColliderMode();
 							m_pAnimatedCharacter->RequestPhysicalColliderMode( eColliderMode_Spectator, eColliderModeLayer_Game, "Actor::SetAspectProfile");
-						}*/
+						}
 					}
 					else if (profile==eAP_Alive)
 					{
 						if (m_currentPhysProfile==eAP_Spectator)
 						{
-							//if(m_pAnimatedCharacter)
-								//m_pAnimatedCharacter->RequestPhysicalColliderMode( eColliderMode_Undefined, eColliderModeLayer_Game, "Actor::SetAspectProfile");
+							if(m_pAnimatedCharacter)
+								m_pAnimatedCharacter->RequestPhysicalColliderMode( eColliderMode_Undefined, eColliderModeLayer_Game, "Actor::SetAspectProfile");
 							
 							if (IPhysicalEntity *pPhysics=GetEntity()->GetPhysics())
 							{
