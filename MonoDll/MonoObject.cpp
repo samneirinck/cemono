@@ -9,7 +9,7 @@
 
 #include <mono/metadata/debug-helpers.h>
 
-CScriptObject::CScriptObject(MonoObject *pObject)
+CScriptObject::CScriptObject(MonoObject *pObject, bool allowGC)
 	: m_pClass(NULL)
 {
 	CRY_ASSERT(pObject);
@@ -17,7 +17,10 @@ CScriptObject::CScriptObject(MonoObject *pObject)
 	m_pObject = pObject;
 
 	// We need this to allow the GC to collect the class object later on.
-	m_objectHandle = mono_gchandle_new(m_pObject, false);
+	if(allowGC)
+		m_objectHandle = mono_gchandle_new(m_pObject, false);
+	else
+		m_objectHandle = -1;
 
 	if(IMonoObject *pScriptId = GetPropertyValue("ScriptId"))
 		m_scriptId = pScriptId->Unbox<int>();

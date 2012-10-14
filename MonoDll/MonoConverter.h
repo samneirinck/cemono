@@ -29,7 +29,7 @@ public:
 
 	virtual mono::object BoxAnyValue(MonoAnyValue &value) override;
 
-	virtual IMonoObject *ToObject(mono::object obj) override;
+	virtual IMonoObject *ToObject(mono::object obj, bool allowGC = true) override;
 	// ~IMonoConverter
 };
 
