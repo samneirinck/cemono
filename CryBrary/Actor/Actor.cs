@@ -85,12 +85,12 @@ namespace CryEngine
 			} 
 		}
 
-		public static T Create<T>(int channelId, string name = "Dude", Vec3? pos = null, Vec3? angles = null, Vec3? scale = null) where T : ActorBase, new()
+		public static T Create<T>(int channelId, string name = "Dude", Vec3? pos = null, Quat? rot = null, Vec3? scale = null) where T : ActorBase, new()
 		{
-			return Create(typeof(T), channelId, name, pos, angles, scale) as T;
+			return Create(typeof(T), channelId, name, pos, rot, scale) as T;
 		}
 		
-		public static ActorBase Create(Type actorType, int channelId, string name = " Dude", Vec3? pos = null, Vec3? angles = null, Vec3? scale = null)
+		public static ActorBase Create(Type actorType, int channelId, string name = " Dude", Vec3? pos = null, Quat? rot = null, Vec3? scale = null)
 		{
 			bool isNative = actorType.Implements(typeof(NativeActor));
 
@@ -106,7 +106,7 @@ namespace CryEngine
 
 			actor = Activator.CreateInstance(actorType) as ActorBase;
 
-			var info = NativeMethods.Actor.CreateActor(actor as Actor, channelId, name, className, pos ?? new Vec3(0, 0, 0), angles ?? new Vec3(0, 0, 0), scale ?? new Vec3(1, 1, 1));
+			var info = NativeMethods.Actor.CreateActor(actor as Actor, channelId, name, className, pos ?? new Vec3(0, 0, 0), rot ?? Quat.Identity, scale ?? new Vec3(1, 1, 1));
 			if(info.Id == 0)
 			{
 				if (isNative)

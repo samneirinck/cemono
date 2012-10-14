@@ -39,11 +39,11 @@ SMonoActorInfo CActorSystem::GetActorInfoById(EntityId id)
 	return SMonoActorInfo();
 }
 
-SMonoActorInfo CActorSystem::CreateActor(mono::object actor, int channelId, mono::string name, mono::string className, Vec3 pos, Vec3 angles, Vec3 scale)
+SMonoActorInfo CActorSystem::CreateActor(mono::object actor, int channelId, mono::string name, mono::string className, Vec3 pos, Quat rot, Vec3 scale)
 {
 	const char *sClassName = ToCryString(className);
 
-	if(IActor *pActor = gEnv->pGameFramework->GetIActorSystem()->CreateActor(channelId, ToCryString(name), sClassName, pos, Quat(Ang3(angles)), scale))
+	if(IActor *pActor = gEnv->pGameFramework->GetIActorSystem()->CreateActor(channelId, ToCryString(name), sClassName, pos, rot, scale))
 	{
 		if(!strcmp(sClassName, "MonoActor"))
 			static_cast<CActor *>(pActor)->SetScript(*actor);

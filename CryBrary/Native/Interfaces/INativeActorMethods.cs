@@ -10,7 +10,7 @@ namespace CryEngine.Native
         void SetPlayerMaxHealth(IntPtr actorPtr, float newMaxHealth);
         ActorInfo GetActorInfoByChannelId(ushort channelId);
         ActorInfo GetActorInfoById(uint entId);
-        ActorInfo CreateActor(Actor actor, int channelId, string name, string className, Vec3 pos, Vec3 angles, Vec3 scale);
+        ActorInfo CreateActor(Actor actor, int channelId, string name, string className, Vec3 pos, Quat rot, Vec3 scale);
         void RemoveActor(uint id);
         uint GetClientActorId();
     }
