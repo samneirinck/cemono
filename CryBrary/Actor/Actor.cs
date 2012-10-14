@@ -87,8 +87,11 @@ namespace CryEngine
 
 		public static T Create<T>(int channelId, string name = "Dude", Vec3? pos = null, Vec3? angles = null, Vec3? scale = null) where T : ActorBase, new()
 		{
-			var actorType = typeof(T);
-
+			return Create(typeof(T), channelId, name, pos, angles, scale) as T;
+		}
+		
+		public static ActorBase Create(Type actorType, int channelId, string name = " Dude", Vec3? pos = null, Vec3? angles = null, Vec3? scale = null)
+		{
 			bool isNative = actorType.Implements(typeof(NativeActor));
 
 			string className;
@@ -97,11 +100,11 @@ namespace CryEngine
 			else
 				className = "MonoActor";
 
-			var actor = Get<T>(channelId);
+			var actor = Get(channelId);
 			if (actor != null)
 				return actor;
 
-			actor = new T();
+			actor = Activator.CreateInstance(actorType) as ActorBase;
 
 			var info = NativeMethods.Actor.CreateActor(actor as Actor, channelId, name, className, pos ?? new Vec3(0, 0, 0), angles ?? new Vec3(0, 0, 0), scale ?? new Vec3(1, 1, 1));
 			if(info.Id == 0)
@@ -143,9 +146,11 @@ namespace CryEngine
 		/// Called when resetting the state of the entity in Editor.
 		/// </summary>
 		/// <param name="enteringGame">true if currently entering gamemode, false if exiting.</param>
-		public virtual void OnEditorReset(bool enteringGame) { }
+		protected virtual void OnEditorReset(bool enteringGame) { }
 
-		public virtual void UpdateView(ref ViewParams viewParams) { }
+		protected virtual void UpdateView(ref ViewParams viewParams) { }
+
+		protected virtual void OnPrePhysicsUpdate() { }
 		#endregion
 
 		public override float Health { get; set; }
