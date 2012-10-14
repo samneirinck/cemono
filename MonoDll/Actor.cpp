@@ -9,7 +9,8 @@
 #include <IMonoClass.h>
 
 CActor::CActor()
-	: m_bClient(false)
+	: m_pAnimatedCharacter(NULL)
+	, m_bClient(false)
 	, m_bMigrating(false)
 	, m_pScript(nullptr)
 {
@@ -19,6 +20,14 @@ CActor::CActor()
 
 CActor::~CActor()
 {
+	GetGameObject()->EnablePhysicsEvent( false, eEPE_OnPostStepImmediate );
+
+	if (m_pAnimatedCharacter)
+	{
+		GetGameObject()->ReleaseExtension("AnimatedCharacter");
+		GetGameObject()->DeactivateExtension("AnimatedCharacter");
+	}
+
 	GetGameObject()->ReleaseView(this);
 	GetGameObject()->ReleaseProfileManager(this);
 
@@ -36,7 +45,16 @@ bool CActor::Init(IGameObject *pGameObject)
 		return false;
 
 	gEnv->pGameFramework->GetIActorSystem()->AddActor(GetEntityId(), this);
-	GetGameObject()->BindToNetwork();
+
+	m_pAnimatedCharacter = static_cast<IAnimatedCharacter*>(GetGameObject()->AcquireExtension("AnimatedCharacter"));
+	if (m_pAnimatedCharacter)
+		GetGameObject()->EnablePhysicsEvent( true, eEPE_OnPostStepImmediate );
+
+	GetGameObject()->EnablePrePhysicsUpdate(  ePPU_Always );
+
+	if(!GetGameObject()->BindToNetwork())
+		return false;
+
 	GetEntity()->SetFlags(GetEntity()->GetFlags()|(ENTITY_FLAG_ON_RADAR|ENTITY_FLAG_CUSTOM_VIEWDIST_RATIO));
 
 	return true; 
@@ -103,6 +121,14 @@ void CActor::HandleEvent(const SGameObjectEvent &event)
 		if (ICharacterInstance * pCharacter = GetEntity()->GetCharacter(0))
 			pCharacter->SetFlags(pCharacter->GetFlags() | CS_FLAG_UPDATE_ALWAYS);
 	}
+	else if (event.event == 277) //eCGE_EnablePhysicalCollider
+	{
+		m_pAnimatedCharacter->RequestPhysicalColliderMode(eColliderMode_Undefined, eColliderModeLayer_Game, "Actor::HandleEvent");
+	}
+	else if (event.event == 278) //eCGE_DisablePhysicalCollider
+	{
+		m_pAnimatedCharacter->RequestPhysicalColliderMode(eColliderMode_Disabled, eColliderModeLayer_Game, "Actor::HandleEvent");
+	}
 }
 
 void CActor::ProcessEvent(SEntityEvent& event)
@@ -119,7 +145,10 @@ void CActor::ProcessEvent(SEntityEvent& event)
 	case ENTITY_EVENT_RESET:
 		m_pScript->CallMethod("OnEditorReset", event.nParam[0]==1);
 		GetGameObject()->RequestRemoteUpdate(eEA_Physics | eEA_GameClientDynamic | eEA_GameServerDynamic | eEA_GameClientStatic | eEA_GameServerStatic);
-    break;
+		break;
+	case ENTITY_EVENT_PREPHYSICSUPDATE:
+		m_pScript->CallMethod("OnPrePhysicsUpdate");
+		break;
   }  
 }
 

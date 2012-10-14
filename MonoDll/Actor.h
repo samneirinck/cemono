@@ -12,6 +12,8 @@
 
 #include <IActorSystem.h>
 
+#include <IAnimatedCharacter.h>
+
 struct IMonoObject;
 
 class CActor 
@@ -111,8 +113,8 @@ public:
 	virtual void  SerializeLevelToLevel( TSerialize &ser ) override {}
 	virtual void	ProcessEvent( SEntityEvent& event ) override;
 
-	virtual IAnimatedCharacter * GetAnimatedCharacter() override { return nullptr; }
-	virtual const IAnimatedCharacter * GetAnimatedCharacter() const override { return nullptr; }
+	virtual IAnimatedCharacter * GetAnimatedCharacter() override { return m_pAnimatedCharacter; }
+	virtual const IAnimatedCharacter * GetAnimatedCharacter() const override { return m_pAnimatedCharacter; }
 	virtual void PlayExactPositioningAnimation( const char* sAnimationName, bool bSignal, const Vec3& vPosition, const Vec3& vDirection, float startWidth, float startArcAngle, float directionTolerance ) override {}
 	virtual void CancelExactPositioningAnimation() override {}
 	virtual void PlayAnimation( const char* sAnimationName, bool bSignal ) override {}
@@ -171,6 +173,7 @@ public:
 
 protected:
 	IMonoObject *m_pScript;
+	IAnimatedCharacter *m_pAnimatedCharacter;
 
 	uint8 m_currentPhysProfile;
 
