@@ -153,7 +153,7 @@ public:
 	virtual void Update( SEntityUpdateContext& ctx, int updateSlot ) override {}
 	virtual void HandleEvent( const SGameObjectEvent& event ) override;
 	virtual void SetChannelId(uint16 id) override {}
-	virtual void SetAuthority( bool auth ) override {}
+	virtual void SetAuthority( bool auth ) override;
 	virtual const void *GetRMIBase() const override { return nullptr; }
 	virtual void PostUpdate( float frameTime ) override {}
 	virtual void PostRemoteSpawn() override {}

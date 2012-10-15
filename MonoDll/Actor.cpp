@@ -99,6 +99,15 @@ void CActor::PostReloadExtension( IGameObject * pGameObject, const SEntitySpawnP
 		(ENTITY_FLAG_ON_RADAR | ENTITY_FLAG_CUSTOM_VIEWDIST_RATIO | ENTITY_FLAG_TRIGGER_AREAS));
 }
 
+void CActor::SetAuthority( bool auth )
+{
+	// we've been given authority of this entity, mark the physics as changed
+	// so that we send a current position, failure to do this can result in server/client
+	// disagreeing on where the entity is. most likely to happen on restart
+	if(auth)
+		CHANGED_NETWORK_STATE(this, eEA_Physics);
+}
+
 void CActor::HandleEvent(const SGameObjectEvent &event)
 {
 	if (event.event == 276 /* Ragdoll, defined in GameDll ._. */)
