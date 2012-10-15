@@ -79,7 +79,7 @@ namespace CryEngine
 		public virtual float Health { get { return NativeMethods.Actor.GetPlayerHealth(this.GetActorHandle().Handle); } set { NativeMethods.Actor.SetPlayerHealth(this.GetActorHandle().Handle, value); } }
 		public virtual float MaxHealth { get { return NativeMethods.Actor.GetPlayerMaxHealth(this.GetActorHandle().Handle); } set { NativeMethods.Actor.SetPlayerMaxHealth(this.GetActorHandle().Handle, value); } }
 
-		public bool IsDead() { return Health <= 0; }
+		public bool IsDead { get { return Health <= 0; } }
 
 		internal HandleRef ActorHandleRef { get; set; }
 		public int ChannelId { get; set; }
