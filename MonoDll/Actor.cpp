@@ -366,3 +366,76 @@ void CActor::SetMaxHealth(float health)
 {
 	m_pScript->SetPropertyValue("MaxHealth", *gEnv->pMonoScriptSystem->GetConverter()->BoxAnyValue(MonoAnyValue(health)));
 }
+
+bool CActor::NetSerialize( TSerialize ser, EEntityAspects aspect, uint8 profile, int pflags )
+{
+	if (aspect == eEA_Physics)
+	{
+		pe_type type = PE_NONE;
+		switch (profile)
+		{
+		case eAP_NotPhysicalized:
+			type = PE_NONE;
+			break;
+		case eAP_Spectator:
+			type = PE_LIVING;
+			break;
+		case eAP_Alive:
+			type = PE_LIVING;
+			break;
+		case eAP_Sleep:
+			type = PE_ARTICULATED;
+			break;
+		case eAP_Frozen:
+			type = PE_RIGID;
+			break;
+		case eAP_Ragdoll:
+			type = PE_ARTICULATED;
+			break;
+		case eAP_Linked: 	//if actor is attached to a vehicle - don't serialize actor physics additionally
+			return true;
+			break;
+		default:
+			return false;
+		}
+
+		// TODO: remove this when craig fixes it in the network system
+		if (profile==eAP_Spectator)
+		{
+			int x=0;	
+			ser.Value("unused", x, 'skip');
+		}
+		else if (profile==eAP_Sleep)
+		{
+			int x=0;	
+			ser.Value("unused1", x, 'skip');
+			ser.Value("unused2", x, 'skip');
+		}
+
+		if (type == PE_NONE)
+			return true;
+
+		IEntityPhysicalProxy * pEPP = (IEntityPhysicalProxy *) GetEntity()->GetProxy(ENTITY_PROXY_PHYSICS);
+		if (ser.IsWriting())
+		{
+			if (!pEPP || !pEPP->GetPhysicalEntity() || pEPP->GetPhysicalEntity()->GetType() != type)
+			{
+				gEnv->pPhysicalWorld->SerializeGarbageTypedSnapshot( ser, type, 0 );
+				return true;
+			}
+		}
+		else if (!pEPP)
+		{
+			return false;
+		}
+
+		// PLAYERPREDICTION
+    	if(type!=PE_LIVING)
+    	{
+      		pEPP->SerializeTyped( ser, type, pflags );
+    	}
+		// ~PLAYERPREDICTION
+	}
+
+	return true;
+}
