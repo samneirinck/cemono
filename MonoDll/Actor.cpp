@@ -36,7 +36,7 @@ CActor::~CActor()
 }
 
 bool CActor::Init(IGameObject *pGameObject)
-{ 
+{
 	SetGameObject(pGameObject);
 
 	if(!GetGameObject()->CaptureView(this))
@@ -143,8 +143,13 @@ void CActor::ProcessEvent(SEntityEvent& event)
 		GetGameObject()->RequestRemoteUpdate(eEA_Physics | eEA_GameClientDynamic | eEA_GameServerDynamic | eEA_GameClientStatic | eEA_GameServerStatic);
 		break;
 	case ENTITY_EVENT_RESET:
-		m_pScript->CallMethod("OnEditorReset", event.nParam[0]==1);
-		GetGameObject()->RequestRemoteUpdate(eEA_Physics | eEA_GameClientDynamic | eEA_GameServerDynamic | eEA_GameClientStatic | eEA_GameServerStatic);
+		{
+			if (m_pAnimatedCharacter)
+				m_pAnimatedCharacter->ResetState();
+
+			m_pScript->CallMethod("OnEditorReset", event.nParam[0]==1);
+			GetGameObject()->RequestRemoteUpdate(eEA_Physics | eEA_GameClientDynamic | eEA_GameServerDynamic | eEA_GameClientStatic | eEA_GameServerStatic);
+		}
 		break;
 	case ENTITY_EVENT_PREPHYSICSUPDATE:
 		m_pScript->CallMethod("OnPrePhysicsUpdate");
