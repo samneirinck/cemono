@@ -93,8 +93,6 @@ void CActor::PostReloadExtension( IGameObject * pGameObject, const SEntitySpawnP
 {
 	CRY_ASSERT(GetGameObject() == pGameObject);
 
-	pGameObject->AcquireExtension("Inventory");
-
 	GetGameObject()->EnablePrePhysicsUpdate( gEnv->bMultiplayer ? ePPU_Always : ePPU_WhenAIActivated );
 
 	GetEntity()->SetFlags(GetEntity()->GetFlags() |
