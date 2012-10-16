@@ -32,7 +32,7 @@ namespace CryEngine
 		/// </summary>
 		public float FieldOfView;
 
-		private ushort _viewID;
+		private ushort _viewID { get; set; }
 
 		//view shake status
 		public bool GroundOnly;
