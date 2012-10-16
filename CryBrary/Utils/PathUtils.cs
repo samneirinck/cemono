@@ -65,6 +65,9 @@ namespace CryEngine
 		/// </summary>
 		public static string PluginsFolder { get { return Path.Combine(RootFolder, "Bin32", "Plugins", "CryMono", "Plugins"); } }
 
+		/// <summary>
+		/// Gets the Mono folder containing essential Mono libraries and configuration files.
+		/// </summary>
 		public static string MonoFolder { get { return Path.Combine(RootFolder, "Bin32", "Plugins", "CryMono", "Mono"); } }
 
 		/// <summary>
@@ -101,6 +104,9 @@ namespace CryEngine
 		/// <example>"C:\CryENGINE3\Game\Scripts"</example></returns>
 		public static string ScriptsFolder { get { return Path.Combine(GameFolder, "Scripts"); } }
 
+		/// <summary>
+		/// Gets the directory CryMono uses to store temporary files.
+		/// </summary>
 		public static string TempFolder { get { return Path.Combine(Path.GetTempPath(), "CryMono"); } }
 	}
 }

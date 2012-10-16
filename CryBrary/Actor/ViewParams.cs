@@ -5,33 +5,34 @@ using System.Text;
 
 namespace CryEngine
 {
+	/// <summary>
+	/// View parameters, commonly used by <see cref="CryEngine.Actor"/> to update the active view.
+	/// </summary>
 	public struct ViewParams
 	{
-		public Vec3 Position;//view position
-		public Quat Rotation;//view orientation
+		/// <summary>
+		/// View position
+		/// </summary>
+		public Vec3 Position;
+		/// <summary>
+		/// View orientation
+		/// </summary>
+		public Quat Rotation;
+		/// <summary>
+		/// Previous local view orientation
+		/// </summary>
 		public Quat LocalRotationLast;
 
-		public float NearPlane;//custom near clipping plane, 0 means use engine defaults
+		/// <summary>
+		/// custom near clipping plane, 0 means use engine defaults
+		/// </summary>
+		public float NearPlane;
+		/// <summary>
+		/// View field of view
+		/// </summary>
 		public float FieldOfView;
 
 		private ushort _viewID;
-        public int ViewId
-        {
-            get
-            {
-                return _viewID;
-            }
-            set
-            {
-                if (_viewID < ushort.MinValue)
-                    throw new InvalidOperationException("ViewId cannot be less than " + ushort.MinValue);
-
-                if (_viewID > ushort.MaxValue)
-                    throw new ArgumentOutOfRangeException("ViewId is too large for the containing ushort type");
-
-                _viewID = (ushort)value;
-            }
-        }
 
 		//view shake status
 		public bool GroundOnly;

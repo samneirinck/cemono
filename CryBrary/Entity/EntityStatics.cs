@@ -25,6 +25,17 @@ namespace CryEngine
 			return Spawn(entityName, type.Name, pos, rot, scale, autoInit, flags);
 		}
 
+		/// <summary>
+		/// Spawns a new entity
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="entityName"></param>
+		/// <param name="pos"></param>
+		/// <param name="rot"></param>
+		/// <param name="scale"></param>
+		/// <param name="autoInit"></param>
+		/// <param name="flags"></param>
+		/// <returns></returns>
 		public static T Spawn<T>(string entityName, Vec3? pos = null, Quat? rot = null, Vec3? scale = null, bool autoInit = true, EntityFlags flags = EntityFlags.CastShadow) where T : Entity, new()
 		{
 			return Spawn(entityName, typeof(T).Name, pos, rot, scale, autoInit, flags) as T;
@@ -55,6 +66,11 @@ namespace CryEngine
 			return null;
 		}
 
+		/// <summary>
+		/// Removes the entity with the specified id.
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="forceRemoveNow"></param>
 		public static void Remove(EntityId id, bool forceRemoveNow = false)
 		{
 #if !(RELEASE && RELEASE_DISABLE_CHECKS)
@@ -163,7 +179,7 @@ namespace CryEngine
 		/// </summary>
 		/// <param name="className">The entity class to search for.</param>
 		/// <returns>An array of entities.</returns>
-		public static IEnumerable<Entity> GetByClass(string className)
+		public static IEnumerable<EntityBase> GetByClass(string className)
 		{
 #if !(RELEASE && RELEASE_DISABLE_CHECKS)
 			if(String.IsNullOrEmpty(className))
@@ -178,22 +194,34 @@ namespace CryEngine
 		/// </summary>
 		/// <typeparam name="T">The entity class to search for.</typeparam>
 		/// <returns>An array of entities of type T.</returns>
-		public static IEnumerable<T> GetByClass<T>() where T : Entity
+		public static IEnumerable<T> GetByClass<T>() where T : EntityBase
 		{
             return GetEntitiesCommon<T>(NativeMethods.Entity.GetEntitiesByClass(typeof(T).Name));
 		}
 
-		public static IEnumerable<Entity> GetInBox(BoundingBox bbox, EntityQueryFlags flags = EntityQueryFlags.All)
+		/// <summary>
+		/// Gets a list of entities within the specified area.
+		/// </summary>
+		/// <param name="bbox"></param>
+		/// <param name="flags"></param>
+		/// <returns></returns>
+		public static IEnumerable<EntityBase> GetInBox(BoundingBox bbox, EntityQueryFlags flags = EntityQueryFlags.All)
 		{
-            return GetEntitiesCommon<Entity>(NativeMethods.Entity.GetEntitiesInBox(bbox, flags));
+			return GetEntitiesCommon<EntityBase>(NativeMethods.Entity.GetEntitiesInBox(bbox, flags));
 		}
 
-		public static IEnumerable<T> GetInBox<T>(BoundingBox bbox, EntityQueryFlags flags = EntityQueryFlags.All) where T : Entity
+		/// <summary>
+		/// Gets a list of entities within the specified area.
+		/// </summary>
+		/// <param name="bbox"></param>
+		/// <param name="flags"></param>
+		/// <returns></returns>
+		public static IEnumerable<T> GetInBox<T>(BoundingBox bbox, EntityQueryFlags flags = EntityQueryFlags.All) where T : EntityBase
 		{
             return GetEntitiesCommon<T>(NativeMethods.Entity.GetEntitiesInBox(bbox, flags));
 		}
 
-		internal static IEnumerable<T> GetEntitiesCommon<T>(object[] ents) where T : Entity
+		internal static IEnumerable<T> GetEntitiesCommon<T>(object[] ents) where T : EntityBase
 		{
 			if(ents == null || ents.Length <= 0)
 				yield break;

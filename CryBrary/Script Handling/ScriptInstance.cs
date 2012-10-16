@@ -48,7 +48,10 @@ namespace CryEngine
 		/// Called each frame if script has been set to be regularly updated (See Updated property)
 		/// </summary>
 		public virtual void OnUpdate() { }
-
+		
+		/// <summary>
+		/// This script instance's id, used to keep track of instances in <see cref="CryEngine.Initialization.ScriptManager"/>.
+		/// </summary>
 		public int ScriptId { internal set; get; }
 
 		/// <summary>
@@ -61,6 +64,9 @@ namespace CryEngine
 		/// </summary>
 		public bool IsDestroyed { get; private set; }
 
+		/// <summary>
+		/// Event that is invoked when this script is destroyed from <see cref="CryEngine.Initialization.ScriptManager"/>.
+		/// </summary>
 		public event OnCryScriptInstanceDestroyedDelegate OnDestroyed;
 	}
 }

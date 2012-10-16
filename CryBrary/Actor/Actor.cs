@@ -14,6 +14,11 @@ namespace CryEngine
 	public abstract class Actor : ActorBase
 	{
 		#region Statics
+		/// <summary>
+		/// Gets the actor with the specified channel id if it exists.
+		/// </summary>
+		/// <param name="channelId"></param>
+		/// <returns></returns>
 		public static ActorBase Get(int channelId)
 		{
 			var actor = Get<ActorBase>(channelId);
@@ -27,11 +32,23 @@ namespace CryEngine
 			return null;
 		}
 
+		/// <summary>
+		/// Gets the actor with the specified channel id if it exists.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="channelId"></param>
+		/// <returns></returns>
 		public static T Get<T>(int channelId) where T : ActorBase
 		{
 			return ScriptManager.Instance.Find<T>(ScriptType.Actor, x => x.ChannelId == channelId);
 		}
 
+
+		/// <summary>
+		/// Gets the actor with the specified entity id if it exists.
+		/// </summary>
+		/// <param name="actorId"></param>
+		/// <returns></returns>
 		public static ActorBase Get(EntityId actorId)
 		{
 			var actor = Get<ActorBase>(actorId);
@@ -46,6 +63,11 @@ namespace CryEngine
 			return null;
 		}
 
+		/// <summary>
+		/// Gets the actor with the specified entity id if it exists.
+		/// </summary>
+		/// <param name="actorId"></param>
+		/// <returns></returns>
 		public static T Get<T>(EntityId actorId) where T : ActorBase
 		{
 #if !(RELEASE && RELEASE_DISABLE_CHECKS)
@@ -73,6 +95,9 @@ namespace CryEngine
 			return nativeActor;
 		}
 
+		/// <summary>
+		/// Gets the player actor in use on this PC.
+		/// </summary>
 		public static ActorBase LocalClient 
 		{
 			get
@@ -85,11 +110,31 @@ namespace CryEngine
 			} 
 		}
 
+		/// <summary>
+		/// Spawns a new actor
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="channelId"></param>
+		/// <param name="name"></param>
+		/// <param name="pos"></param>
+		/// <param name="rot"></param>
+		/// <param name="scale"></param>
+		/// <returns></returns>
 		public static T Create<T>(int channelId, string name = "Dude", Vec3? pos = null, Quat? rot = null, Vec3? scale = null) where T : ActorBase, new()
 		{
 			return Create(typeof(T), channelId, name, pos, rot, scale) as T;
 		}
 		
+		/// <summary>
+		/// Spawns a new actor
+		/// </summary>
+		/// <param name="actorType"></param>
+		/// <param name="channelId"></param>
+		/// <param name="name"></param>
+		/// <param name="pos"></param>
+		/// <param name="rot"></param>
+		/// <param name="scale"></param>
+		/// <returns></returns>
 		public static ActorBase Create(Type actorType, int channelId, string name = "Dude", Vec3? pos = null, Quat? rot = null, Vec3? scale = null)
 		{
 			bool isNative = actorType.Implements(typeof(NativeActor));
@@ -124,6 +169,16 @@ namespace CryEngine
 			return actor;
 		}
 
+		/// <summary>
+		/// Spawns a new actor
+		/// </summary>
+		/// <param name="className"></param>
+		/// <param name="channelId"></param>
+		/// <param name="name"></param>
+		/// <param name="pos"></param>
+		/// <param name="rot"></param>
+		/// <param name="scale"></param>
+		/// <returns></returns>
 		public static ActorBase Create(string className, int channelId, string name = "Dude", Vec3? pos = null, Quat? rot = null, Vec3? scale = null)
 		{
 			var actor = Get(channelId);
@@ -142,6 +197,10 @@ namespace CryEngine
 			return actor;
 		}
 
+		/// <summary>
+		/// Removes an actor by entity id.
+		/// </summary>
+		/// <param name="id"></param>
 		public static void Remove(EntityId id)
 		{
             NativeMethods.Actor.RemoveActor(id);
@@ -149,6 +208,10 @@ namespace CryEngine
 			ScriptManager.Instance.RemoveInstances<ActorBase>(ScriptType.Actor, actor => actor.Id == id);
 		}
 
+		/// <summary>
+		/// Removes an actor by channelId
+		/// </summary>
+		/// <param name="channelId"></param>
 		public static void Remove(int channelId)
 		{
             var actorInfo = NativeMethods.Actor.GetActorInfoByChannelId((ushort)channelId);
@@ -166,12 +229,25 @@ namespace CryEngine
 		/// <param name="enteringGame">true if currently entering gamemode, false if exiting.</param>
 		protected virtual void OnEditorReset(bool enteringGame) { }
 
+		/// <summary>
+		/// Called to update the view associated to this actor.
+		/// </summary>
+		/// <param name="viewParams"></param>
 		protected virtual void UpdateView(ref ViewParams viewParams) { }
 
+		/// <summary>
+		/// Called prior to updating physics, useful for requesting movement.
+		/// </summary>
 		protected virtual void OnPrePhysicsUpdate() { }
 		#endregion
 
+		/// <summary>
+		/// Sets / gets the current health of this actor.
+		/// </summary>
 		public override float Health { get; set; }
+		/// <summary>
+		/// Sets / gets the max health value for this actor.
+		/// </summary>
 		public override float MaxHealth { get; set; }
 	}
 

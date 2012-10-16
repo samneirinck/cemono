@@ -5,6 +5,9 @@ using System.Text;
 
 namespace CryEngine
 {
+	/// <summary>
+	/// Thrown when an entity is attempted to be removed improperly.
+	/// </summary>
 	public class EntityRemovalException : Exception
 	{
 		public EntityRemovalException()

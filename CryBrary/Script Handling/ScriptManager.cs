@@ -575,6 +575,9 @@ namespace CryEngine.Initialization
 		public static ScriptManager Instance;
 	}
 
+	/// <summary>
+	/// Thrown by <see cref="CryEngine.Initialization.ScriptManager"/> if a CryScript could not be located.
+	/// </summary>
 	[Serializable]
 	public class ScriptNotFoundException : Exception
 	{

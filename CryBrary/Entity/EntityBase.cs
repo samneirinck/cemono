@@ -51,6 +51,9 @@ namespace CryEngine
 		}
 
 		internal EntityPhysics _physics;
+		/// <summary>
+		/// Contains essential functions for modifying the entitys existing physical state.
+		/// </summary>
 		public EntityPhysics Physics
 		{
 			get { return _physics ?? (_physics = new EntityPhysics(this)); }
@@ -274,6 +277,9 @@ namespace CryEngine
 		/// </summary>
 		public Lua.ScriptTable ScriptTable { get { return Lua.ScriptTable.Get(this.GetEntityHandle().Handle); } }
 
+		/// <summary>
+		/// Whether the player is hidden or not.
+		/// </summary>
 		public bool Hidden { get { return NativeMethods.Entity.IsHidden(this.GetEntityHandle().Handle); } set { NativeMethods.Entity.Hide(this.GetEntityHandle().Handle, value); } }
 
 		/// <summary>

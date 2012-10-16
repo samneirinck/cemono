@@ -8,6 +8,9 @@ using CryEngine.Initialization;
 
 namespace CryEngine
 {
+	/// <summary>
+	/// Represents a character attachment, obtained via <see cref="CryEngine.EntityBase.GetAttachment(int, int)"/> and <see cref="CryEngine.EntityBase.GetAttachment(string, int)"/>.
+	/// </summary>
 	public sealed class Attachment : Entity
 	{
 		#region Statics
@@ -54,9 +57,15 @@ namespace CryEngine
 		public QuatT DefaultAbsolute { get { return NativeMethods.Entity.GetAttachmentDefaultAbsolute(this.GetAttachmentHandle().Handle); } }
 		public QuatT DefaultRelative { get { return NativeMethods.Entity.GetAttachmentDefaultRelative(this.GetAttachmentHandle().Handle); } }
 
+		/// <summary>
+		/// The entity this attachment is attached to.
+		/// </summary>
 		public EntityBase Owner { get; private set; }
 
 		bool useEntityPos;
+		/// <summary>
+		/// If true, will automatically position the attachment object.
+		/// </summary>
 		public bool UseEntityPosition 
 		{ 
 			get { return useEntityPos; }
@@ -67,7 +76,11 @@ namespace CryEngine
 				NativeMethods.Entity.AttachmentUseEntityPosition(this.GetEntityAttachmentHandle().Handle, value);
 			}
 		}
+
 		bool useEntityRot;
+		/// <summary>
+		/// If true, will automatically rotate the attachment object.
+		/// </summary>
 		public bool UseEntityRotation
 		{
 			get { return useEntityPos; }

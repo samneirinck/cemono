@@ -9,6 +9,9 @@ using CryEngine.Native;
 
 namespace CryEngine
 {
+	/// <summary>
+	/// Represents a CryENGINE material applicable to any ingame object or entity.
+	/// </summary>
 	public class Material
 	{
 		#region Statics
@@ -79,6 +82,11 @@ namespace CryEngine
 			HandleRef = new HandleRef(this, ptr);
 		}
 
+		/// <summary>
+		/// Gets a submaterial by slot.
+		/// </summary>
+		/// <param name="slot"></param>
+		/// <returns></returns>
 		public Material GetSubmaterial(int slot)
 		{
 			var ptr = NativeMethods.Material.GetSubMaterial(HandleRef.Handle, slot);
@@ -98,11 +106,22 @@ namespace CryEngine
 			return TryAdd(ptr);
 		}
 
+		/// <summary>
+		/// Sets a material parameter value by name.
+		/// </summary>
+		/// <param name="paramName"></param>
+		/// <param name="value"></param>
+		/// <returns></returns>
 		public bool SetParam(string paramName, float value)
 		{
 			return NativeMethods.Material.SetGetMaterialParamFloat(HandleRef.Handle, paramName, ref value, false);
 		}
 
+		/// <summary>
+		/// Gets a material's parameter value by name.
+		/// </summary>
+		/// <param name="paramName"></param>
+		/// <returns></returns>
 		public float GetParam(string paramName)
 		{
 			float value;
@@ -111,6 +130,12 @@ namespace CryEngine
 			return value;
 		}
 
+		/// <summary>
+		/// Attempts to get parameter value by name.
+		/// </summary>
+		/// <param name="paramName"></param>
+		/// <param name="value"></param>
+		/// <returns>true if successful, otherwise false.</returns>
 		public bool TryGetParam(string paramName, out float value)
 		{
 			value = 0;
@@ -118,6 +143,12 @@ namespace CryEngine
 			return NativeMethods.Material.SetGetMaterialParamFloat(HandleRef.Handle, paramName, ref value, true);
 		}
 
+		// <summary>
+		/// Sets a material parameter value by name.
+		/// </summary>
+		/// <param name="paramName"></param>
+		/// <param name="value"></param>
+		/// <returns></returns>
 		public bool SetParam(string paramName, Color value)
 		{
 			Vec3 vecValue = new Vec3(value.R, value.G, value.B);
@@ -128,6 +159,11 @@ namespace CryEngine
 			return result;
 		}
 
+		/// <summary>
+		/// Gets a material's parameter value by name.
+		/// </summary>
+		/// <param name="paramName"></param>
+		/// <returns></returns>
 		public Color GetParamColor(string paramName)
 		{
 			Color value;
@@ -136,6 +172,12 @@ namespace CryEngine
 			return value;
 		}
 
+		/// <summary>
+		/// Attempts to get parameter value by name.
+		/// </summary>
+		/// <param name="paramName"></param>
+		/// <param name="value"></param>
+		/// <returns>true if successful, otherwise false.</returns>
 		public bool TryGetParam(string paramName, out Color value)
 		{
 			Vec3 vecVal = Vec3.Zero;
@@ -150,50 +192,112 @@ namespace CryEngine
 			return result;
 		}
 
+		/// <summary>
+		/// Sets a shader parameter value by name.
+		/// </summary>
+		/// <param name="paramName"></param>
+		/// <param name="newVal"></param>
 		public void SetShaderParam(string paramName, float newVal)
 		{
 			NativeMethods.Material.SetShaderParam(HandleRef.Handle, paramName, newVal);
 		}
 
+		/// <summary>
+		/// Sets a shader parameter value by name.
+		/// </summary>
+		/// <param name="param"></param>
+		/// <param name="value"></param>
 		public void SetShaderParam(ShaderFloatParameter param, float value)
 		{
 			SetShaderParam(param.GetEngineName(), value);
 		}
 
+		/// <summary>
+		/// Sets a shader parameter value by name.
+		/// </summary>
+		/// <param name="paramName"></param>
+		/// <param name="newVal"></param>
 		public void SetShaderParam(string paramName, Color newVal)
 		{
 			NativeMethods.Material.SetShaderParam(HandleRef.Handle, paramName, newVal);
 		}
 
+		/// <summary>
+		/// Sets a shader parameter value by name.
+		/// </summary>
+		/// <param name="param"></param>
+		/// <param name="value"></param>
 		public void SetShaderParam(ShaderColorParameter param, Color value)
 		{
 			SetShaderParam(param.GetEngineName(), value);
 		}
 
+		/// <summary>
+		/// Sets a shader parameter value by name.
+		/// </summary>
+		/// <param name="param"></param>
+		/// <param name="value"></param>
 		public void SetShaderParam(ShaderColorParameter param, Vec3 value)
 		{
 			SetShaderParam(param.GetEngineName(), new Color(value.X, value.Y, value.Z));
 		}
 
+		/// <summary>
+		/// Gets a shader parameter name by index.
+		/// See <see cref="ShaderParamCount"/>
+		/// </summary>
+		/// <param name="index"></param>
+		/// <returns></returns>
 		public string GetShaderParamName(int index)
 		{
 			return NativeMethods.Material.GetShaderParamName(HandleRef.Handle, index);
 		}
 
 		#region Fields & Properties
+		/// <summary>
+		/// Sets / gets the alphatest.
+		/// </summary>
 		public float AlphaTest { get { return GetParam("alpha"); } set { SetParam("alpha", value); } }
+		/// <summary>
+		/// Sets / gets the opacity.
+		/// </summary>
 		public float Opacity { get { return GetParam("opacity"); } set { SetParam("opacity", value); } }
+		/// <summary>
+		/// Sets / gets the glow.
+		/// </summary>
 		public float Glow { get { return GetParam("glow"); } set { SetParam("glow", value); } }
+		/// <summary>
+		/// Sets / gets the shininess.
+		/// </summary>
 		public float Shininess { get { return GetParam("shininess"); } set { SetParam("shininess", value); } }
 
+		/// <summary>
+		/// Sets / gets the diffuse color.
+		/// </summary>
 		public Color DiffuseColor { get { return GetParamColor("diffuse"); } set { SetParam("diffuse", value); } }
+		/// <summary>
+		/// Sets / gets the emissive color.
+		/// </summary>
 		public Color EmissiveColor { get { return GetParamColor("emissive"); } set { SetParam("emissive", value); } }
+		/// <summary>
+		/// Sets / gets the specular color.
+		/// </summary>
 		public Color SpecularColor { get { return GetParamColor("specular"); } set { SetParam("specular", value); } }
 
+		/// <summary>
+		/// The surface type assigned to this material.
+		/// </summary>
 		public string SurfaceType { get { return NativeMethods.Material.GetSurfaceTypeName(HandleRef.Handle); } }
 
+		/// <summary>
+		/// The amount of shader parameters in this material.
+		/// See <see cref="GetShaderParamName(int)"/>
+		/// </summary>
         public int ShaderParamCount { get { return NativeMethods.Material.GetShaderParamCount(HandleRef.Handle); } }
 
+		/// <summary>
+		/// The native IMaterial pointer.
+		/// </summary>
 		public HandleRef HandleRef { get; set; }
 		#endregion
 	}

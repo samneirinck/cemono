@@ -4,6 +4,9 @@ using CryEngine.Native;
 
 namespace CryEngine
 {
+	/// <summary>
+	/// Contains methods useful for tracking down bugs.
+	/// </summary>
 	public static partial class Debug
 	{
         public static void DrawSphere(Vec3 pos, float radius, Color color, float timeout)
