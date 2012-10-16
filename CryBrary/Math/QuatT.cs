@@ -5,6 +5,9 @@ using System.Text;
 
 namespace CryEngine
 {
+	/// <summary>
+	/// Quaternion with a translation vector
+	/// </summary>
 	public struct QuatT
 	{
 		/// <summary>

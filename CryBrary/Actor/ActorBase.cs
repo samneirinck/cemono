@@ -9,6 +9,9 @@ using CryEngine.Native;
 
 namespace CryEngine
 {
+	/// <summary>
+	/// Base class which all actors must derive from. Includes basic callbacks.
+	/// </summary>
 	public abstract class ActorBase : EntityBase
 	{
 		/// <summary>
@@ -39,6 +42,10 @@ namespace CryEngine
 		#endregion
 
 		#region Overrides
+		/// <summary>
+		/// Removes this actor from the world.
+		/// </summary>
+		/// <param name="forceRemoveNow"></param>
 		public override void Remove(bool forceRemoveNow = false)
 		{
 			if (forceRemoveNow)
@@ -76,12 +83,24 @@ namespace CryEngine
 		/// </summary>
 		public bool IsLocalClient { get { return Actor.LocalClient == this; } }
 
+		/// <summary>
+		/// Sets / gets the current health of this actor.
+		/// </summary>
 		public virtual float Health { get { return NativeMethods.Actor.GetPlayerHealth(this.GetActorHandle().Handle); } set { NativeMethods.Actor.SetPlayerHealth(this.GetActorHandle().Handle, value); } }
+		/// <summary>
+		/// Sets / gets the max health value for this actor.
+		/// </summary>
 		public virtual float MaxHealth { get { return NativeMethods.Actor.GetPlayerMaxHealth(this.GetActorHandle().Handle); } set { NativeMethods.Actor.SetPlayerMaxHealth(this.GetActorHandle().Handle, value); } }
 
+		/// <summary>
+		/// Determines if this actor had died. Returns true if <see cref="Health"/> is equal to or below 0.
+		/// </summary>
 		public bool IsDead { get { return Health <= 0; } }
 
 		internal HandleRef ActorHandleRef { get; set; }
+		/// <summary>
+		/// The channel id, index to the net channel in use by this actor.
+		/// </summary>
 		public int ChannelId { get; set; }
 	}
 }

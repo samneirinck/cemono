@@ -8,6 +8,9 @@ using CryEngine.Native;
 
 namespace CryEngine
 {
+	/// <summary>
+	/// Represents a CryENGINE level.
+	/// </summary>
 	public class Level
 	{
         #region Statics
@@ -104,7 +107,6 @@ namespace CryEngine
 		/// Gets the full path to the directory this level resides in.
 		/// </summary>
         public string Path { get { return NativeMethods.Level.GetName(LevelPointer); } }
-        public string Paks { get { return NativeMethods.Level.GetName(LevelPointer); } }
 
 		/// <summary>
 		/// Gets the heightmap size for this level.

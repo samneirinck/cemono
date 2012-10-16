@@ -21,9 +21,15 @@ namespace CryEngine
 			this.SetEntityHandle(new HandleRef(this, NativeMethods.Entity.GetEntity(Id)));
 		}
 
+		/// <summary>
+		/// Gets the currently active game rules instance.
+		/// </summary>
 		public static GameRules Current { get; internal set; }
 	}
 
+	/// <summary>
+	/// Attribute used for specifying extra functionality for custom game rules classes.
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Class)]
 	public sealed class GameRulesAttribute : Attribute
 	{
@@ -38,6 +44,9 @@ namespace CryEngine
 		public bool Default { get; set; }
 	}
 
+	/// <summary>
+	/// Used to determine the cause of a client disconnection.
+	/// </summary>
 	public enum DisconnectionCause
 	{
 		/// <summary>
