@@ -143,7 +143,7 @@ namespace CryEngine
 			return NativeMethods.Material.SetGetMaterialParamFloat(HandleRef.Handle, paramName, ref value, true);
 		}
 
-		// <summary>
+		/// <summary>
 		/// Sets a material parameter value by name.
 		/// </summary>
 		/// <param name="paramName"></param>
