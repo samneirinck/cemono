@@ -23,6 +23,7 @@ namespace CryBrary.Tests.Serialization
 				scriptManager.AddScriptInstance(new NativeEntity(1, IntPtr.Zero), ScriptType.Entity);
 				scriptManager.AddScriptInstance(new NativeEntity(2, IntPtr.Zero), ScriptType.Entity);
 				scriptManager.AddScriptInstance(new NativeActor(3), ScriptType.Actor);
+				Debug.LogAlways("count {0}", scriptManager.Scripts.Count);
 
 				serializer.Serialize(stream, scriptManager.Scripts);
 
@@ -36,7 +37,12 @@ namespace CryBrary.Tests.Serialization
 
 				Assert.Equal<int>(1, (entityScript.ScriptInstances[0] as NativeEntity).Id);
 				Assert.Equal<int>(2, (entityScript.ScriptInstances[1] as NativeEntity).Id);
-				Assert.Equal<int>(3, (entityScript.ScriptInstances[2] as NativeActor).Id);
+
+				var actorScript = scriptManager.FindScript(ScriptType.Entity, x => x.Type == typeof(NativeActor));
+				Assert.NotSame(default(CryScript), actorScript);
+				Assert.NotNull(actorScript.ScriptInstances);
+
+				Assert.Equal<int>(3, (actorScript.ScriptInstances[0] as NativeActor).Id);
 			}
 		}
         
