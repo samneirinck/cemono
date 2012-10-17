@@ -250,7 +250,6 @@
     <Compile Include="Entity\EntityConfig.cs" />
     <Compile Include="Console\CVar.cs" />
     <Compile Include="Misc\Time.cs" />
-    <Compile Include="ThirdParty\Arduino.cs" />
     <Compile Include="Utils\Debug\Debug.cs" />
     <Compile Include="Extensions\Reflection.cs" />
     <Compile Include="Entity\EntityStatics.cs" />
