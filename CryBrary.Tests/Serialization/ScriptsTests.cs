@@ -23,13 +23,12 @@ namespace CryBrary.Tests.Serialization
 				scriptManager.AddScriptInstance(new NativeEntity(1, IntPtr.Zero), ScriptType.Entity);
 				scriptManager.AddScriptInstance(new NativeEntity(2, IntPtr.Zero), ScriptType.Entity);
 				scriptManager.AddScriptInstance(new NativeActor(3), ScriptType.Actor);
-				Debug.LogAlways("count {0}", scriptManager.Scripts.Count);
 
 				serializer.Serialize(stream, scriptManager.Scripts);
 
 				scriptManager.Scripts = serializer.Deserialize(stream) as List<CryScript>;
 				Assert.NotNull(scriptManager.Scripts);
-				Assert.Equal(3, scriptManager.Scripts.Count);
+				Assert.Equal(2, scriptManager.Scripts.Count);
 
 				var entityScript = scriptManager.FindScript(ScriptType.Entity, x => x.Type == typeof(NativeEntity));
 				Assert.NotSame(default(CryScript), entityScript);
