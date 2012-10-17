@@ -28,7 +28,7 @@ namespace CryBrary.Tests.Serialization
 
 				scriptManager.Scripts = serializer.Deserialize(stream) as List<CryScript>;
 				Assert.NotNull(scriptManager.Scripts);
-				Assert.Equal(3, scriptManager.Scripts.Count);
+				Assert.Equal(2, scriptManager.Scripts.Count);
 
 				var entityScript = scriptManager.FindScript(ScriptType.Entity, x => x.Type == typeof(NativeEntity));
 				Assert.NotSame(default(CryScript), entityScript);
