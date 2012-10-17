@@ -23,7 +23,6 @@ namespace CryBrary.Tests.Serialization
 				scriptManager.AddScriptInstance(new NativeEntity(1, IntPtr.Zero), ScriptType.Entity);
 				scriptManager.AddScriptInstance(new NativeEntity(2, IntPtr.Zero), ScriptType.Entity);
 				scriptManager.AddScriptInstance(new NativeActor(3), ScriptType.Actor);
-				Debug.LogAlways("count {0}", scriptManager.Scripts.Count);
 
 				serializer.Serialize(stream, scriptManager.Scripts);
 
