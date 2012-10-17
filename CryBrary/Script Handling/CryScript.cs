@@ -36,7 +36,7 @@ namespace CryEngine.Initialization
 				{
 					scriptType |= ScriptType.Entity;
 
-					if (type.Implements<Actor>())
+					if (type.Implements<ActorBase>())
 						scriptType |= ScriptType.Actor;
 					else if (type.Implements<GameRules>())
 						scriptType |= ScriptType.GameRules;
