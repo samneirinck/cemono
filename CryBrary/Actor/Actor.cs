@@ -204,8 +204,6 @@ namespace CryEngine
 		public static void Remove(EntityId id)
 		{
             NativeMethods.Actor.RemoveActor(id);
-
-			ScriptManager.Instance.RemoveInstances<ActorBase>(ScriptType.Actor, actor => actor.Id == id);
 		}
 
 		/// <summary>
@@ -217,8 +215,6 @@ namespace CryEngine
             var actorInfo = NativeMethods.Actor.GetActorInfoByChannelId((ushort)channelId);
 			if(actorInfo.Id != 0)
                 NativeMethods.Actor.RemoveActor(actorInfo.Id);
-
-			ScriptManager.Instance.RemoveInstances<ActorBase>(ScriptType.Actor, actor => actor.ChannelId == channelId);
 		}
 		#endregion
 
