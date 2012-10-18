@@ -103,7 +103,7 @@ namespace CryEngine
 			if (Entity.Find(networkManagerName) == null)
 			{
 				Debug.LogAlways("null");
-				NetworkManager = Entity.Spawn<NativeEntity>(networkManagerName);
+				NetworkManager = Entity.Spawn(networkManagerName, typeof(NativeEntity).Name);
 			}
 
 			NativeMethods.Network.RemoteInvocation(NetworkManager.Id, target.ScriptId, method.Name, args, netTarget);
