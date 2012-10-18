@@ -102,10 +102,10 @@
     <Compile Include="Actor\Actor.cs" />
     <Compile Include="Actor\ActorBase.cs" />
     <Compile Include="Actor\ViewParams.cs" />
-    <Compile Include="Engine\Explosion.cs" />
     <Compile Include="Entity\Extensions\Attachment.cs" />
     <Compile Include="Entity\Exceptions\EntityRemovalException.cs" />
     <Compile Include="Extensions\NativeScriptTableExtensions.cs" />
+    <Compile Include="Physics\Explosion.cs" />
     <Compile Include="Script Handling\ScriptInstanceDestroyedException.cs" />
     <Compile Include="Math\Angle.cs" />
     <Compile Include="Math\QuatT.cs" />
@@ -237,7 +237,7 @@
     <Compile Include="Misc\Convert.cs" />
     <Compile Include="Math\Math.cs" />
     <Compile Include="Engine\3DEngine.cs" />
-    <Compile Include="Physics\Physics.cs" />
+    <Compile Include="Physics\RaycastHit.cs" />
     <Compile Include="Engine\Renderer.cs" />
     <Compile Include="Entity\Extensions\EntityMovement.cs" />
     <Compile Include="Network\Network.cs" />
