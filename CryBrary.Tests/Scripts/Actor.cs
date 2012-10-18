@@ -11,7 +11,7 @@ namespace CryBrary.Tests.Scripts
 		public class MyActor : Actor { }
 
 		[Fact]
-		public void Get_Mono_Actor_By_Id_EntityGeneric()
+		public void Get_Mono_Actor_By_EntityId_Generic()
 		{
 			var scriptManager = new ScriptManager();
 			ScriptManager.Instance = scriptManager;
@@ -73,7 +73,7 @@ namespace CryBrary.Tests.Scripts
 		public class MyNativeActor : NativeActor { }
 
 		[Fact]
-		public void Get_Native_Actor_By_Id_EntityGeneric()
+		public void Get_Native_Actor_By_EntityId_Generic()
 		{
 			var scriptManager = new ScriptManager();
 			ScriptManager.Instance = scriptManager;
