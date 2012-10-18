@@ -36,19 +36,35 @@ struct SMonoActorInfo
 	int channelId;
 };
 
+enum EMonoActorType
+{
+	EMonoActorType_Managed,
+	EMonoActorType_Native,
+	EMonoActorType_Any
+};
+
 class CActorSystem 
 	: public IMonoScriptBind
+	, public IEntitySystemSink
 {
 public:
 	CActorSystem();
 	~CActorSystem() {}
+
+	// IEntitySystemSink
+	virtual bool OnBeforeSpawn(SEntitySpawnParams &params) { return true; }
+	virtual void OnSpawn(IEntity *pEntity,SEntitySpawnParams &params) {}
+	virtual bool OnRemove(IEntity *pEntity) { return true; }
+	virtual void OnReused( IEntity *pEntity, SEntitySpawnParams &params) {}
+	virtual void OnEvent(IEntity *pEntity, SEntityEvent &event) {}
+	// ~IEntitySystemSink
 
 protected:
 	// IMonoScriptBind
 	virtual const char *GetClassName() { return "NativeActorMethods"; }
 	// ~IMonoScriptBind
 
-	static bool IsMonoActor(const char *actorClassName);
+	static bool IsMonoActor(const char *actorClassName, EMonoActorType type = EMonoActorType_Any);
 
 	// externals
 	static float GetPlayerHealth(IActor *pActor);
@@ -65,7 +81,8 @@ protected:
 
 	static EntityId GetClientActorId();
 
-	static std::vector<const char *> m_monoActorClasses;
+	typedef std::map<const char *, bool> TActorClasses;
+	static TActorClasses m_monoActorClasses;
 };
 
 #endif //__SCRIPTBIND_ACTORSYSTEM_H__
