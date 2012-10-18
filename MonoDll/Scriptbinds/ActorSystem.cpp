@@ -5,6 +5,8 @@
 
 #include <IGameFramework.h>
 
+std::vector<const char *> CActorSystem::m_monoActorClasses = std::vector<const char *>();
+
 CActorSystem::CActorSystem()
 {
 	REGISTER_METHOD(GetPlayerHealth);
@@ -15,12 +17,22 @@ CActorSystem::CActorSystem()
 	REGISTER_METHOD(GetActorInfoByChannelId);
 	REGISTER_METHOD(GetActorInfoById);
 
+	REGISTER_METHOD(RegisterActorClass);
 	REGISTER_METHOD(CreateActor);
 	REGISTER_METHOD(RemoveActor);
 
 	REGISTER_METHOD(GetClientActorId);
+}
 
-	gEnv->pGameFramework->RegisterFactory("MonoActor", (CActor *)0, false, (CActor *)0);
+bool CActorSystem::IsMonoActor(const char *actorClassName)
+{
+	for each(auto className in m_monoActorClasses)
+	{
+		if(!strcmp(className, actorClassName))
+			return true;
+	}
+
+	return false;
 }
 
 SMonoActorInfo CActorSystem::GetActorInfoByChannelId(uint16 channelId)
@@ -39,13 +51,25 @@ SMonoActorInfo CActorSystem::GetActorInfoById(EntityId id)
 	return SMonoActorInfo();
 }
 
+void CActorSystem::RegisterActorClass(mono::string name, bool isNative)
+{
+	const char *className = ToCryString(name);
+
+	if(!isNative)
+	{
+		gEnv->pGameFramework->RegisterFactory(className, (CActor *)0, false, (CActor *)0);
+
+		m_monoActorClasses.push_back(className);
+	}
+}
+
 SMonoActorInfo CActorSystem::CreateActor(mono::object actor, int channelId, mono::string name, mono::string className, Vec3 pos, Quat rot, Vec3 scale)
 {
 	const char *sClassName = ToCryString(className);
 
 	if(IActor *pActor = gEnv->pGameFramework->GetIActorSystem()->CreateActor(channelId, ToCryString(name), sClassName, pos, rot, scale))
 	{
-		if(!strcmp(sClassName, "MonoActor"))
+		if(IsMonoActor(sClassName))
 			static_cast<CActor *>(pActor)->SetScript(*actor);
 
 		return SMonoActorInfo(pActor);
