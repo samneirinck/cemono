@@ -9,7 +9,7 @@ namespace CryEngine
 	/// Represents an entity registered outside of CryMono, e.g. in CryGame.dll.
 	/// </summary>
 	[ExcludeFromCompilation]
-	internal class NativeEntity : Entity
+	internal class NativeEntity : EntityBase
 	{
 		public NativeEntity() { }
 		public NativeEntity(EntityId id, IntPtr ptr)
