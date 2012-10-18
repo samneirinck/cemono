@@ -24,6 +24,7 @@ struct SMonoActorInfo
 	{
 		pEntity = pIActor->GetEntity();
 		id = pEntity->GetId();
+		channelId = pActor->GetChannelId();
 	}
 
 	SMonoActorInfo(EntityId entId, int chId)
@@ -40,7 +41,7 @@ enum EMonoActorType
 {
 	EMonoActorType_Managed,
 	EMonoActorType_Native,
-	EMonoActorType_Any
+	EMonoActorType_None,
 };
 
 class CActorSystem 
@@ -53,7 +54,7 @@ public:
 
 	// IEntitySystemSink
 	virtual bool OnBeforeSpawn(SEntitySpawnParams &params) { return true; }
-	virtual void OnSpawn(IEntity *pEntity,SEntitySpawnParams &params) {}
+	virtual void OnSpawn(IEntity *pEntity,SEntitySpawnParams &params);
 	virtual bool OnRemove(IEntity *pEntity) { return true; }
 	virtual void OnReused( IEntity *pEntity, SEntitySpawnParams &params) {}
 	virtual void OnEvent(IEntity *pEntity, SEntityEvent &event) {}
@@ -64,7 +65,7 @@ protected:
 	virtual const char *GetClassName() { return "NativeActorMethods"; }
 	// ~IMonoScriptBind
 
-	static bool IsMonoActor(const char *actorClassName, EMonoActorType type = EMonoActorType_Any);
+	static EMonoActorType GetMonoActorType(const char *actorClassName);
 
 	// externals
 	static float GetPlayerHealth(IActor *pActor);
@@ -76,12 +77,12 @@ protected:
 	static SMonoActorInfo GetActorInfoById(EntityId id);
 
 	static void RegisterActorClass(mono::string name, bool isNative);
-	static SMonoActorInfo CreateActor(mono::object actor, int channelId, mono::string name, mono::string className, Vec3 pos, Quat rot, Vec3 scale);
+	static SMonoActorInfo CreateActor(int channelId, mono::string name, mono::string className, Vec3 pos, Quat rot, Vec3 scale);
 	static void RemoveActor(EntityId id);
 
 	static EntityId GetClientActorId();
 
-	typedef std::map<const char *, bool> TActorClasses;
+	typedef std::map<const char *, EMonoActorType> TActorClasses;
 	static TActorClasses m_monoActorClasses;
 };
 
