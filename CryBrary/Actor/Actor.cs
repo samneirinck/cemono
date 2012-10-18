@@ -161,7 +161,7 @@ namespace CryEngine
 			}
 
 			ScriptManager.Instance.AddScriptInstance(actor, ScriptType.Actor);
-			actor.InternalSpawn(info, channelId);
+			actor.InternalSpawn(info);
 
 			// actor must have physics
 			actor.Physics.Type = PhysicalizationType.Rigid;
@@ -192,7 +192,7 @@ namespace CryEngine
 				throw new Exception("Actor creation failed, make sure your IActor implementation is registered with the same name as your managed actor class.");
 
 			ScriptManager.Instance.AddScriptInstance(actor, ScriptType.Actor);
-			actor.InternalSpawn(info, channelId);
+			actor.InternalSpawn(info);
 
 			return actor;
 		}
@@ -256,5 +256,6 @@ namespace CryEngine
 		public IntPtr EntityPtr;
 		public IntPtr ActorPtr;
 		public uint Id;
+		public int ChannelId;
 	}
 }

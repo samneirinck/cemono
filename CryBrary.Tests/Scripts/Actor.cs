@@ -17,7 +17,7 @@ namespace CryBrary.Tests.Scripts
 			ScriptManager.Instance = scriptManager;
 
 			var actor = new MyActor();
-			actor.InternalSpawn(new ActorInfo { Id = 13 }, 3);
+			actor.InternalSpawn(new ActorInfo { Id = 13, ChannelId = 3 } );
 			scriptManager.AddScriptInstance(actor, ScriptType.Actor);
 
 			var retrievedActor = Actor.Get<MyActor>((EntityId)13);
@@ -32,7 +32,7 @@ namespace CryBrary.Tests.Scripts
 			ScriptManager.Instance = scriptManager;
 
 			var actor = new MyActor();
-			actor.InternalSpawn(new ActorInfo { Id = 21 }, 4);
+			actor.InternalSpawn(new ActorInfo { Id = 21, ChannelId = 4 });
 			scriptManager.AddScriptInstance(actor, ScriptType.Actor);
 
 			var retrievedActor = Actor.Get((EntityId)21);
@@ -47,7 +47,7 @@ namespace CryBrary.Tests.Scripts
 			ScriptManager.Instance = scriptManager;
 
 			var actor = new MyActor();
-			actor.InternalSpawn(new ActorInfo { Id = 47 }, 2);
+			actor.InternalSpawn(new ActorInfo { Id = 47, ChannelId = 2 } );
 			scriptManager.AddScriptInstance(actor, ScriptType.Actor);
 
 			var retrievedActor = Actor.Get<MyActor>(2);
@@ -62,7 +62,7 @@ namespace CryBrary.Tests.Scripts
 			ScriptManager.Instance = scriptManager;
 
 			var actor = new MyActor();
-			actor.InternalSpawn(new ActorInfo { Id = 99 }, 37);
+			actor.InternalSpawn(new ActorInfo { Id = 99, ChannelId = 37 } );
 			scriptManager.AddScriptInstance(actor, ScriptType.Actor);
 
 			var retrievedActor = Actor.Get<Actor>(37);
@@ -77,7 +77,7 @@ namespace CryBrary.Tests.Scripts
 			ScriptManager.Instance = scriptManager;
 
 			var actor = new MyActor();
-			actor.InternalSpawn(new ActorInfo { Id = 99 }, 64);
+			actor.InternalSpawn(new ActorInfo { Id = 99, ChannelId = 64 } );
 			scriptManager.AddScriptInstance(actor, ScriptType.Actor);
 
 			var retrievedActor = Actor.Get<ActorBase>(64);
@@ -92,7 +92,7 @@ namespace CryBrary.Tests.Scripts
 			ScriptManager.Instance = scriptManager;
 
 			var actor = new MyActor();
-			actor.InternalSpawn(new ActorInfo { Id = 69 }, 37);
+			actor.InternalSpawn(new ActorInfo { Id = 69, ChannelId = 37 } );
 			scriptManager.AddScriptInstance(actor, ScriptType.Actor);
 
 			var retrievedActor = Actor.Get<Actor>((EntityId)69);
@@ -107,7 +107,7 @@ namespace CryBrary.Tests.Scripts
 			ScriptManager.Instance = scriptManager;
 
 			var actor = new MyActor();
-			actor.InternalSpawn(new ActorInfo { Id = 62 }, 64);
+			actor.InternalSpawn(new ActorInfo { Id = 62, ChannelId = 64 } );
 			scriptManager.AddScriptInstance(actor, ScriptType.Actor);
 
 			var retrievedActor = Actor.Get<ActorBase>((EntityId)62);
@@ -122,7 +122,7 @@ namespace CryBrary.Tests.Scripts
 			ScriptManager.Instance = scriptManager;
 
 			var actor = new MyActor();
-			actor.InternalSpawn(new ActorInfo { Id = 67 }, 23);
+			actor.InternalSpawn(new ActorInfo { Id = 67, ChannelId = 23 } );
 			scriptManager.AddScriptInstance(actor, ScriptType.Actor);
 
 			var retrievedActor = Actor.Get(23);
@@ -137,7 +137,7 @@ namespace CryBrary.Tests.Scripts
 			ScriptManager.Instance = scriptManager;
 
 			var actor = new MyActor();
-			actor.InternalSpawn(new ActorInfo { Id = 128 }, 23);
+			actor.InternalSpawn(new ActorInfo { Id = 128, ChannelId = 23 } );
 			scriptManager.AddScriptInstance(actor, ScriptType.Actor);
 
 			var retrievedActor = Entity.Get(128);
@@ -152,7 +152,7 @@ namespace CryBrary.Tests.Scripts
 			ScriptManager.Instance = scriptManager;
 
 			var actor = new MyActor();
-			actor.InternalSpawn(new ActorInfo { Id = 128 }, 23);
+			actor.InternalSpawn(new ActorInfo { Id = 128, ChannelId = 23 } );
 			scriptManager.AddScriptInstance(actor, ScriptType.Actor);
 
 			var retrievedActor = Entity.Get<MyActor>(128);
@@ -169,7 +169,7 @@ namespace CryBrary.Tests.Scripts
 			ScriptManager.Instance = scriptManager;
 
 			var actor = new MyNativeActor();
-			actor.InternalSpawn(new ActorInfo { Id = 13 }, 3);
+			actor.InternalSpawn(new ActorInfo { Id = 13, ChannelId = 3 } );
 			scriptManager.AddScriptInstance(actor, ScriptType.Actor);
 
 			var retrievedActor = Actor.Get<MyNativeActor>((EntityId)13);
@@ -184,7 +184,7 @@ namespace CryBrary.Tests.Scripts
 			ScriptManager.Instance = scriptManager;
 
 			var actor = new MyNativeActor();
-			actor.InternalSpawn(new ActorInfo { Id = 21 }, 4);
+			actor.InternalSpawn(new ActorInfo { Id = 21, ChannelId = 4 } );
 			scriptManager.AddScriptInstance(actor, ScriptType.Actor);
 
 			var retrievedActor = Actor.Get((EntityId)21);
@@ -199,7 +199,7 @@ namespace CryBrary.Tests.Scripts
 			ScriptManager.Instance = scriptManager;
 
 			var actor = new MyNativeActor();
-			actor.InternalSpawn(new ActorInfo { Id = 47 }, 2);
+			actor.InternalSpawn(new ActorInfo { Id = 47, ChannelId = 2 } );
 			scriptManager.AddScriptInstance(actor, ScriptType.Actor);
 
 			var retrievedActor = Actor.Get<MyNativeActor>(2);
@@ -214,7 +214,7 @@ namespace CryBrary.Tests.Scripts
 			ScriptManager.Instance = scriptManager;
 
 			var actor = new MyNativeActor();
-			actor.InternalSpawn(new ActorInfo { Id = 67 }, 23);
+			actor.InternalSpawn(new ActorInfo { Id = 67, ChannelId = 23 });
 			scriptManager.AddScriptInstance(actor, ScriptType.Actor);
 
 			var retrievedActor = Actor.Get(23);

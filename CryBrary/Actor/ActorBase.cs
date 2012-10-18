@@ -18,15 +18,14 @@ namespace CryEngine
 		/// Initializes the player.
 		/// </summary>
 		/// <param name="actorInfo"></param>
-		/// <param name="channelId"></param>
-		internal virtual void InternalSpawn(ActorInfo actorInfo, int channelId)
+		internal virtual void InternalSpawn(ActorInfo actorInfo)
 		{
-			System.Diagnostics.Contracts.Contract.Requires(channelId > 0);
+			System.Diagnostics.Contracts.Contract.Requires(actorInfo.ChannelId > 0);
 			Id = new EntityId(actorInfo.Id);
 			this.SetActorHandle(new HandleRef(this, actorInfo.ActorPtr));
 			this.SetEntityHandle(new HandleRef(this, actorInfo.EntityPtr));
 
-			ChannelId = channelId;
+			ChannelId = actorInfo.ChannelId;
 
 			// actor must have physics
 			Physics.Type = PhysicalizationType.Rigid;
