@@ -20,6 +20,7 @@ namespace CryEngine
 		/// <param name="actorInfo"></param>
 		internal virtual void InternalSpawn(ActorInfo actorInfo)
 		{
+			Debug.LogAlways("InternalSpawn");
 			System.Diagnostics.Contracts.Contract.Requires(actorInfo.ChannelId > 0);
 			Id = new EntityId(actorInfo.Id);
 			this.SetActorHandle(new HandleRef(this, actorInfo.ActorPtr));

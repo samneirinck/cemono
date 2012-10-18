@@ -11,7 +11,7 @@ namespace CryEngine.Native
         ActorInfo GetActorInfoByChannelId(ushort channelId);
         ActorInfo GetActorInfoById(uint entId);
 		void RegisterClass(string name, bool isNative);
-        ActorInfo CreateActor(Actor actor, int channelId, string name, string className, Vec3 pos, Quat rot, Vec3 scale);
+        ActorInfo CreateActor(int channelId, string name, string className, Vec3 pos, Quat rot, Vec3 scale);
         void RemoveActor(uint id);
         uint GetClientActorId();
     }
