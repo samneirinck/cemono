@@ -357,7 +357,7 @@ namespace CryEngine.Initialization
         /// <param name="scriptType"></param>
         /// <param name="constructorParams"></param>
 		/// <returns>New instance scriptId or -1 if instantiation failed.</returns>
-		public CryScriptInstance CreateScriptInstance(string scriptName, ScriptType scriptType, object[] constructorParams = null)
+		public CryScriptInstance CreateScriptInstance(string scriptName, ScriptType scriptType, object[] constructorParams = null, bool throwOnFail = true)
 		{
 #if !(RELEASE && RELEASE_DISABLE_CHECKS)
 			if (scriptName == null)
@@ -369,20 +369,31 @@ namespace CryEngine.Initialization
 #endif
 
 			var script = Scripts.FirstOrDefault(x => x.ScriptType.ContainsFlag(scriptType) && x.ScriptName.Equals(scriptName));
+			if (script == default(CryScript))
+			{
+				if (throwOnFail)
+					throw new ScriptNotFoundException(string.Format("Script {0} of ScriptType {1} could not be found.", scriptName, scriptType));
+				else
+					return null;
+			}
 
+			return CreateScriptInstance(script, constructorParams);
+		}
+
+		public CryScriptInstance CreateScriptInstance(CryScript script, object[] constructorParams = null)
+		{
 #if !(RELEASE && RELEASE_DISABLE_CHECKS)
 			if (script == default(CryScript))
-				throw new ScriptNotFoundException(string.Format("Script {0} of ScriptType {1} could not be found.", scriptName, scriptType));
+				throw new ArgumentNullException("script");
 #endif
 
 			var scriptInstance = Activator.CreateInstance(script.Type, constructorParams) as CryScriptInstance;
 #if !(RELEASE && RELEASE_DISABLE_CHECKS)
-
 			if (scriptInstance == null)
 				throw new ArgumentException("Failed to create instance, make sure type derives from CryScriptInstance", "scriptName");
 #endif
 
-			if (scriptType == ScriptType.GameRules)
+			if (script.ScriptType == ScriptType.GameRules)
 				(scriptInstance as GameRules).InternalInitialize();
 
 			AddScriptInstance(script, scriptInstance);
