@@ -14,7 +14,7 @@ namespace CryEngine.Native
 
 		pe_status_living GetLivingEntityStatus(IntPtr entPtr);
 
-		void SimulateExplosion(Explosion explosion);
+		void SimulateExplosion(ref Explosion explosion);
 
 		pe_action_impulse GetImpulseStruct();
 		pe_player_dimensions GetPlayerDimensionsStruct();

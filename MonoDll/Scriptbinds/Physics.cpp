@@ -164,7 +164,7 @@ int CScriptbind_Physics::RayWorldIntersection(Vec3 origin, Vec3 dir, int objFlag
 	return numHits;
 }
 
-void CScriptbind_Physics::SimulateExplosion(pe_explosion explosion)
+void CScriptbind_Physics::SimulateExplosion(pe_explosion &explosion)
 {
 	gEnv->pPhysicalWorld->SimulateExplosion(&explosion);
 }

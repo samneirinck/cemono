@@ -25,7 +25,7 @@ namespace CryEngine.Native
         extern internal static void _SetVelocity(IntPtr entPtr, Vec3 velocity);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void _SimulateExplosion(Explosion explosion);
+		extern internal static void _SimulateExplosion(ref Explosion explosion);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static pe_status_living _GetLivingEntityStatus(IntPtr entPtr);
@@ -72,9 +72,9 @@ namespace CryEngine.Native
             _SetVelocity(entPtr, velocity);
         }
 
-		public void SimulateExplosion(Explosion explosion)
+		public void SimulateExplosion(ref Explosion explosion)
 		{
-			_SimulateExplosion(explosion);
+			_SimulateExplosion(ref explosion);
 		}
 
 		public pe_status_living GetLivingEntityStatus(IntPtr entPtr)

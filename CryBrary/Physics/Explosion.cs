@@ -16,7 +16,7 @@ namespace CryEngine
 
 			nOccRes = MaxRadius > 50 ? 0 : 16;
 
-			NativeMethods.Physics.SimulateExplosion(this);
+			NativeMethods.Physics.SimulateExplosion(ref this);
 		}
 
 		/// <summary>
@@ -67,6 +67,7 @@ namespace CryEngine
 
 		IntPtr pAffectedEntsExposure { get; set; }	// 0..1 exposure, computed from the occlusion map
 
-		internal int nAffectedEnts { get; set; }
+		int nAffectedEnts;
+		public int AffectedEntityCount { get { return nAffectedEnts; } }
 	}
 }
