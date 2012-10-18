@@ -66,17 +66,13 @@ namespace CryEngine
 		/// <returns>The total amount of hits detected (solid and pierceable)</returns>
 		public int Cast(out RaycastHit hits, EntityQueryFlags objectTypes = EntityQueryFlags.All, RayWorldIntersectionFlags flags = RayWorldIntersectionFlags.AnyHit, int maxHits = 1, EntityId[] skipEntities = null)
 		{
-			var internalRayHit = new RayHit();
+			hits = new RaycastHit();
 
 			object[] skippedEntities = null;
 			if(skipEntities != null && skipEntities.Length > 0)
 				skippedEntities = skipEntities.Cast<object>().ToArray();
 
-			int rayResult = Native.NativeMethods.Physics.RayWorldIntersection(Position, Direction, objectTypes, flags, ref internalRayHit, maxHits, skippedEntities);
-
-			hits = new RaycastHit(internalRayHit);
-
-			return rayResult;
+			return Native.NativeMethods.Physics.RayWorldIntersection(Position, Direction, objectTypes, flags, ref hits, maxHits, skippedEntities);
 		}
 
 		public static int Cast(Vec3 pos, Vec3 dir, out RaycastHit hits, EntityQueryFlags objectTypes = EntityQueryFlags.All, RayWorldIntersectionFlags flags = RayWorldIntersectionFlags.AnyHit, int maxHits = 1, EntityId[] skipEntities = null)
