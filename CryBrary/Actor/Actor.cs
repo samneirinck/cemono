@@ -122,7 +122,15 @@ namespace CryEngine
 		/// <returns></returns>
 		public static T Create<T>(int channelId, string name = "Dude", Vec3? pos = null, Quat? rot = null, Vec3? scale = null) where T : ActorBase, new()
 		{
-			return Create(typeof(T), channelId, name, pos, rot, scale) as T;
+			var actor = Get<T>(channelId);
+			if (actor != null)
+				return actor;
+
+			actor = new T();
+
+			CreateCommon(actor, typeof(T).Name, channelId, name, pos, rot, scale);
+
+			return actor;
 		}
 		
 		/// <summary>
@@ -137,34 +145,13 @@ namespace CryEngine
 		/// <returns></returns>
 		public static ActorBase Create(Type actorType, int channelId, string name = "Dude", Vec3? pos = null, Quat? rot = null, Vec3? scale = null)
 		{
-			bool isNative = actorType.Implements(typeof(NativeActor));
-
-			string className;
-			if (isNative)
-				className = actorType.Name;
-			else
-				className = "MonoActor";
-
 			var actor = Get(channelId);
 			if (actor != null)
 				return actor;
 
 			actor = Activator.CreateInstance(actorType) as ActorBase;
 
-			var info = NativeMethods.Actor.CreateActor(actor as Actor, channelId, name, className, pos ?? new Vec3(0, 0, 0), rot ?? Quat.Identity, scale ?? new Vec3(1, 1, 1));
-			if(info.Id == 0)
-			{
-				if (isNative)
-					throw new Exception("Actor creation failed, make sure your IActor implementation is registered with the same name as your managed actor class.");
-				else
-					throw new Exception("Actor creation failed");
-			}
-
-			ScriptManager.Instance.AddScriptInstance(actor, ScriptType.Actor);
-			actor.InternalSpawn(info);
-
-			// actor must have physics
-			actor.Physics.Type = PhysicalizationType.Rigid;
+			CreateCommon(actor, actorType.Name, channelId, name, pos, rot, scale);
 
 			return actor;
 		}
@@ -187,14 +174,24 @@ namespace CryEngine
 
 			actor = new NativeActor();
 
+			CreateCommon(actor, className, channelId, name, pos, rot, scale);
+
+			return actor;
+		}
+
+		internal static void CreateCommon(ActorBase actor, string className, int channelId, string name = "Dude", Vec3? pos = null, Quat? rot = null, Vec3? scale = null)
+		{
 			var info = NativeMethods.Actor.CreateActor(actor as Actor, channelId, name, className, pos ?? new Vec3(0, 0, 0), rot ?? Quat.Identity, scale ?? new Vec3(1, 1, 1));
 			if (info.Id == 0)
-				throw new Exception("Actor creation failed, make sure your IActor implementation is registered with the same name as your managed actor class.");
+			{
+				if (actor == null) // native actor
+					throw new Exception("Actor creation failed, make sure your IActor implementation is registered with the same name as your managed actor class.");
+				else
+					throw new Exception("Actor creation failed");
+			}
 
 			ScriptManager.Instance.AddScriptInstance(actor, ScriptType.Actor);
 			actor.InternalSpawn(info);
-
-			return actor;
 		}
 
 		/// <summary>

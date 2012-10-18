@@ -29,7 +29,7 @@ bool CActorSystem::IsMonoActor(const char *actorClassName, EMonoActorType type)
 	for each(auto classPair in m_monoActorClasses)
 	{
 		if(!strcmp(classPair.first, actorClassName))
-			return (type == EMonoActorType_Any || classPair.second ? type == EMonoActorType_Native : EMonoActorType_Managed);
+			return (type == EMonoActorType_Any || classPair.second ? type == EMonoActorType_Native : type == EMonoActorType_Managed);
 	}
 
 	return false;
