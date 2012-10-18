@@ -5,7 +5,7 @@
 
 #include <IGameFramework.h>
 
-std::vector<const char *> CActorSystem::m_monoActorClasses = std::vector<const char *>();
+CActorSystem::TActorClasses CActorSystem::m_monoActorClasses = TActorClasses();
 
 CActorSystem::CActorSystem()
 {
@@ -24,12 +24,12 @@ CActorSystem::CActorSystem()
 	REGISTER_METHOD(GetClientActorId);
 }
 
-bool CActorSystem::IsMonoActor(const char *actorClassName)
+bool CActorSystem::IsMonoActor(const char *actorClassName, EMonoActorType type)
 {
-	for each(auto className in m_monoActorClasses)
+	for each(auto classPair in m_monoActorClasses)
 	{
-		if(!strcmp(className, actorClassName))
-			return true;
+		if(!strcmp(classPair.first, actorClassName))
+			return (type == EMonoActorType_Any || classPair.second ? type == EMonoActorType_Native : EMonoActorType_Managed);
 	}
 
 	return false;
@@ -56,11 +56,9 @@ void CActorSystem::RegisterActorClass(mono::string name, bool isNative)
 	const char *className = ToCryString(name);
 
 	if(!isNative)
-	{
 		gEnv->pGameFramework->RegisterFactory(className, (CActor *)0, false, (CActor *)0);
 
-		m_monoActorClasses.push_back(className);
-	}
+	m_monoActorClasses.insert(TActorClasses::value_type(className, isNative));
 }
 
 SMonoActorInfo CActorSystem::CreateActor(mono::object actor, int channelId, mono::string name, mono::string className, Vec3 pos, Quat rot, Vec3 scale)
@@ -69,7 +67,7 @@ SMonoActorInfo CActorSystem::CreateActor(mono::object actor, int channelId, mono
 
 	if(IActor *pActor = gEnv->pGameFramework->GetIActorSystem()->CreateActor(channelId, ToCryString(name), sClassName, pos, rot, scale))
 	{
-		if(IsMonoActor(sClassName))
+		if(IsMonoActor(sClassName, EMonoActorType_Managed))
 			static_cast<CActor *>(pActor)->SetScript(*actor);
 
 		return SMonoActorInfo(pActor);
