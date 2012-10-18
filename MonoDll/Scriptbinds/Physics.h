@@ -13,22 +13,6 @@
 #include <MonoCommon.h>
 #include <IMonoScriptBind.h>
 
-struct SMonoRayHit
-{
-	float dist;
-	int colliderId;
-	int ipart;
-	int partid;
-	short surface_idx;
-	short idmatOrg;	// original material index, not mapped with material mapping
-	int foreignIdx;
-	int iNode; // BV tree node that had the intersection; can be used for "warm start" next time
-	Vec3 pt;
-	Vec3 n;	// surface normal
-	int bTerrain;	// global terrain hit
-	int iPrim; // hit triangle index
-};
-
 struct SMonoPhysicalizeParams
 {
 	int type;
@@ -76,7 +60,7 @@ public:
 	static Vec3 GetVelocity(IEntity *pEntity);
 	static void SetVelocity(IEntity *pEntity, Vec3 vel);
 
-	static int RayWorldIntersection(Vec3, Vec3, int, unsigned int, SMonoRayHit &, int, mono::object);
+	static int RayWorldIntersection(Vec3, Vec3, int, unsigned int, ray_hit &hit, int, mono::object);
 
 	static void SimulateExplosion(pe_explosion explosion);
 

@@ -22,6 +22,7 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace CryEngine
@@ -58,28 +59,25 @@ namespace CryEngine
 		/// Steps through the entity grid and raytraces entities
 		/// traces a finite ray from org along dir
 		/// </summary>
-		/// <param name="hits"></param>
 		/// <param name="objectTypes"></param>
 		/// <param name="flags"></param>
 		/// <param name="maxHits"></param>
 		/// <param name="skipEntities"></param>
 		/// <returns>The total amount of hits detected (solid and pierceable)</returns>
-		public int Cast(out RaycastHit hits, EntityQueryFlags objectTypes = EntityQueryFlags.All, RayWorldIntersectionFlags flags = RayWorldIntersectionFlags.AnyHit, int maxHits = 1, EntityId[] skipEntities = null)
+		public int Cast(out RaycastHit hit, EntityQueryFlags objectTypes = EntityQueryFlags.All, RayWorldIntersectionFlags flags = RayWorldIntersectionFlags.AnyHit, int maxHits = 1, EntityId[] skipEntities = null)
 		{
-			hits = new RaycastHit();
-
 			object[] skippedEntities = null;
 			if(skipEntities != null && skipEntities.Length > 0)
 				skippedEntities = skipEntities.Cast<object>().ToArray();
 
-			return Native.NativeMethods.Physics.RayWorldIntersection(Position, Direction, objectTypes, flags, ref hits, maxHits, skippedEntities);
+			return Native.NativeMethods.Physics.RayWorldIntersection(Position, Direction, objectTypes, flags, out hit, maxHits, skippedEntities);
 		}
 
-		public static int Cast(Vec3 pos, Vec3 dir, out RaycastHit hits, EntityQueryFlags objectTypes = EntityQueryFlags.All, RayWorldIntersectionFlags flags = RayWorldIntersectionFlags.AnyHit, int maxHits = 1, EntityId[] skipEntities = null)
+		public static int Cast(out RaycastHit hit, Vec3 pos, Vec3 dir, EntityQueryFlags objectTypes = EntityQueryFlags.All, RayWorldIntersectionFlags flags = RayWorldIntersectionFlags.AnyHit, int maxHits = 1, EntityId[] skipEntities = null)
 		{
 			var ray = new Ray(pos, dir);
 
-			return ray.Cast(out hits, objectTypes, flags, maxHits, skipEntities);
+			return ray.Cast(out hit, objectTypes, flags, maxHits, skipEntities);
 		}
 
 		/// <summary>

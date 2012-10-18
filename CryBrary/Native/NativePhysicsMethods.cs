@@ -9,7 +9,7 @@ namespace CryEngine.Native
         extern internal static IntPtr _GetPhysicalEntity(IntPtr entityPointer);
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static int _RayWorldIntersection(Vec3 origin, Vec3 dir, EntityQueryFlags objFlags, RayWorldIntersectionFlags flags, ref RaycastHit rayHit, int maxHits, object[] skipEnts);
+		extern internal static int _RayWorldIntersection(Vec3 origin, Vec3 dir, EntityQueryFlags objFlags, RayWorldIntersectionFlags flags, out RaycastHit rayHit, int maxHits, object[] skipEnts);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static void _Physicalize(IntPtr entPtr, PhysicalizationParams physicalizationParams);
@@ -42,9 +42,9 @@ namespace CryEngine.Native
             return _GetPhysicalEntity(entityPointer);
         }
 
-		public int RayWorldIntersection(Vec3 origin, Vec3 dir, EntityQueryFlags objFlags, RayWorldIntersectionFlags flags, ref RaycastHit rayHit, int maxHits, object[] skipEnts)
+		public int RayWorldIntersection(Vec3 origin, Vec3 dir, EntityQueryFlags objFlags, RayWorldIntersectionFlags flags, out RaycastHit rayHit, int maxHits, object[] skipEnts)
         {
-            return _RayWorldIntersection(origin, dir, objFlags, flags, ref rayHit, maxHits, skipEnts);
+            return _RayWorldIntersection(origin, dir, objFlags, flags, out rayHit, maxHits, skipEnts);
         }
 
 		public void Physicalize(IntPtr entPtr, PhysicalizationParams physicalizationParams)
