@@ -38,7 +38,7 @@ namespace CryEngine
 
 			string attachmentObject = NativeMethods.Entity.GetAttachmentObject(this.GetAttachmentHandle().Handle);
 
-			var tempEntity = Entity.Spawn<NativeEntity>("AttachmentEntity");
+			var tempEntity = Entity.Spawn("AttachmentEntity", typeof(NativeEntity).Name);
 
 			Id = tempEntity.Id;
 			this.SetEntityHandle(tempEntity.GetEntityHandle());
