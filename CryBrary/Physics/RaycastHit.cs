@@ -29,7 +29,7 @@ namespace CryEngine
 			int hash = 17;
 
 			hash = hash * 29 + Distance.GetHashCode();
-			hash = hash * 29 + ColliderId.GetHashCode();
+			hash = hash * 29 + physicalCollider.GetHashCode();
 			hash = hash * 29 + Point.GetHashCode();
 			hash = hash * 29 + Normal.GetHashCode();
 
@@ -39,8 +39,7 @@ namespace CryEngine
 		internal float dist;
 		public float Distance { get { return dist; } }
 
-		internal int colliderId;
-		public int ColliderId { get { return colliderId; } }
+		internal IntPtr physicalCollider;
 
 		internal int ipart;
 		public int iPart { get { return ipart; } }
@@ -71,6 +70,8 @@ namespace CryEngine
 
 		internal int iprim; // hit triangle index
 		//public int iPrim { get { return iprim; } }
+
+		IntPtr nextHit;
 	}
 
 	[Flags]
