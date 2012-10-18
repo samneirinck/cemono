@@ -4,48 +4,25 @@ using CryEngine.Native;
 
 namespace CryEngine
 {
-	public struct RayHit
-	{
-		internal float dist;
-		internal int colliderId;
-		internal int ipart;
-		internal int partid;
-		internal short surface_idx;
-		internal short idmatOrg;	// original material index, not mapped with material mapping
-		internal int foreignIdx;
-		internal int iNode; // BV tree node that had the intersection; can be used for "warm start" next time
-		internal Vec3 pt;
-		internal Vec3 n;	// surface normal
-		internal int bTerrain;	// global terrain hit
-		internal int iPrim; // hit triangle index
-	}
-
 	public struct RaycastHit
 	{
-		RayHit _info;
-
-		internal RaycastHit(RayHit hit)
-		{
-			_info = hit;
-		}
-
 		public override bool Equals(object obj)
 		{
-			if(obj is RaycastHit)
+			if (obj is RaycastHit)
 				return obj.GetHashCode() == GetHashCode();
 
 			return false;
 		}
 
-        public static bool operator ==(RaycastHit a, RaycastHit b)
-        {
-            return a.Equals(b);
-        }
+		public static bool operator ==(RaycastHit a, RaycastHit b)
+		{
+			return a.Equals(b);
+		}
 
-        public static bool operator !=(RaycastHit a, RaycastHit b)
-        {
-            return !(a == b);
-        }
+		public static bool operator !=(RaycastHit a, RaycastHit b)
+		{
+			return !(a == b);
+		}
 
 		public override int GetHashCode()
 		{
@@ -59,13 +36,41 @@ namespace CryEngine
 			return hash;
 		}
 
-		public float Distance { get { return _info.dist; } }
-		/// <summary>
-		/// PhysicalEntityId, not yet implemented.
-		/// </summary>
-		public int ColliderId { get { return _info.colliderId; } }
-		public Vec3 Point { get { return _info.pt; } }
-		public Vec3 Normal { get { return _info.n; } }
+		internal float dist;
+		public float Distance { get { return dist; } }
+
+		internal int colliderId;
+		public int ColliderId { get { return colliderId; } }
+
+		internal int ipart;
+		public int iPart { get { return ipart; } }
+
+		internal int partid;
+		public int PartId { get { return partid; } }
+
+		internal short surface_idx;
+		public short SurfaceId { get { return surface_idx; } }
+
+		internal short idmatOrg;	// original material index, not mapped with material mapping
+		//public short OriginalMaterialIndex { get { return idmatOrg; } }
+
+		internal int foreignIdx;
+		//public int ForeignIDx { get { return foreignIdx; } }
+
+		internal int inode; // BV tree node that had the intersection; can be used for "warm start" next time
+		//public int iNode { get { return inode; } }
+
+		internal Vec3 pt;
+		public Vec3 Point { get { return pt; } }
+
+		internal Vec3 n;	// surface normal
+		public Vec3 Normal { get { return n; } }
+
+		internal int bTerrain;	// global terrain hit
+		public bool HitTerrain { get { return bTerrain == 1; } }
+
+		internal int iprim; // hit triangle index
+		//public int iPrim { get { return iprim; } }
 	}
 
 	[Flags]

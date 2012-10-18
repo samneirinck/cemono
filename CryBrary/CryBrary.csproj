@@ -237,7 +237,7 @@
     <Compile Include="Misc\Convert.cs" />
     <Compile Include="Math\Math.cs" />
     <Compile Include="Engine\3DEngine.cs" />
-    <Compile Include="Engine\Physics.cs" />
+    <Compile Include="Physics\Physics.cs" />
     <Compile Include="Engine\Renderer.cs" />
     <Compile Include="Entity\Extensions\EntityMovement.cs" />
     <Compile Include="Network\Network.cs" />
