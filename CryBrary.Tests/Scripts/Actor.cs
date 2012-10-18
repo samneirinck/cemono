@@ -56,6 +56,66 @@ namespace CryBrary.Tests.Scripts
 		}
 
 		[Fact]
+		public void Get_Mono_Actor_By_ChannelId_As_BaseType()
+		{
+			var scriptManager = new ScriptManager();
+			ScriptManager.Instance = scriptManager;
+
+			var actor = new MyActor();
+			actor.InternalSpawn(new ActorInfo { Id = 99 }, 37);
+			scriptManager.AddScriptInstance(actor, ScriptType.Actor);
+
+			var retrievedActor = Actor.Get<Actor>(37);
+			Assert.NotNull(retrievedActor);
+			Assert.Same(retrievedActor, actor);
+		}
+
+		[Fact]
+		public void Get_Mono_Actor_By_ChannelId_As_BaseType_2()
+		{
+			var scriptManager = new ScriptManager();
+			ScriptManager.Instance = scriptManager;
+
+			var actor = new MyActor();
+			actor.InternalSpawn(new ActorInfo { Id = 99 }, 64);
+			scriptManager.AddScriptInstance(actor, ScriptType.Actor);
+
+			var retrievedActor = Actor.Get<ActorBase>(64);
+			Assert.NotNull(retrievedActor);
+			Assert.Same(retrievedActor, actor);
+		}
+
+		[Fact]
+		public void Get_Mono_Actor_By_EntityId_As_BaseType()
+		{
+			var scriptManager = new ScriptManager();
+			ScriptManager.Instance = scriptManager;
+
+			var actor = new MyActor();
+			actor.InternalSpawn(new ActorInfo { Id = 69 }, 37);
+			scriptManager.AddScriptInstance(actor, ScriptType.Actor);
+
+			var retrievedActor = Actor.Get<Actor>((EntityId)69);
+			Assert.NotNull(retrievedActor);
+			Assert.Same(retrievedActor, actor);
+		}
+
+		[Fact]
+		public void Get_Mono_Actor_By_EntityId_As_BaseType_2()
+		{
+			var scriptManager = new ScriptManager();
+			ScriptManager.Instance = scriptManager;
+
+			var actor = new MyActor();
+			actor.InternalSpawn(new ActorInfo { Id = 62 }, 64);
+			scriptManager.AddScriptInstance(actor, ScriptType.Actor);
+
+			var retrievedActor = Actor.Get<ActorBase>((EntityId)62);
+			Assert.NotNull(retrievedActor);
+			Assert.Same(retrievedActor, actor);
+		}
+
+		[Fact]
 		public void Get_Mono_Actor_By_ChannelId()
 		{
 			var scriptManager = new ScriptManager();
@@ -66,6 +126,36 @@ namespace CryBrary.Tests.Scripts
 			scriptManager.AddScriptInstance(actor, ScriptType.Actor);
 
 			var retrievedActor = Actor.Get(23);
+			Assert.NotNull(retrievedActor);
+			Assert.Same(retrievedActor, actor);
+		}
+
+		[Fact]
+		public void Get_Mono_Actor_By_EntityId_Via_Entity_Get()
+		{
+			var scriptManager = new ScriptManager();
+			ScriptManager.Instance = scriptManager;
+
+			var actor = new MyActor();
+			actor.InternalSpawn(new ActorInfo { Id = 128 }, 23);
+			scriptManager.AddScriptInstance(actor, ScriptType.Actor);
+
+			var retrievedActor = Entity.Get(128);
+			Assert.NotNull(retrievedActor);
+			Assert.Same(retrievedActor, actor);
+		}
+
+		[Fact]
+		public void Get_Mono_Actor_By_EntityId_Via_Entity_Get_Generic()
+		{
+			var scriptManager = new ScriptManager();
+			ScriptManager.Instance = scriptManager;
+
+			var actor = new MyActor();
+			actor.InternalSpawn(new ActorInfo { Id = 128 }, 23);
+			scriptManager.AddScriptInstance(actor, ScriptType.Actor);
+
+			var retrievedActor = Entity.Get<MyActor>(128);
 			Assert.NotNull(retrievedActor);
 			Assert.Same(retrievedActor, actor);
 		}
