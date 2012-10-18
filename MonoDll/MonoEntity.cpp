@@ -38,11 +38,11 @@ bool CEntity::Init(IGameObject *pGameObject)
 	pGameObject->EnablePrePhysicsUpdate( ePPU_Always );
 	pGameObject->EnablePhysicsEvent( true, eEPE_OnPostStepImmediate );
 
+	if (!GetGameObject()->BindToNetwork())
+		return false;
+
 	IEntity *pEntity = GetEntity();
 	IEntityClass *pEntityClass = pEntity->GetClass();
-
-	//if(!strcmp(pEntityClass->GetName(), "HeavyTank"))
-		//m_pAnimatedCharacter = static_cast<IAnimatedCharacter *>(pGameObject->AcquireExtension( "AnimatedCharacter" ));
 
 	m_pScript = gEnv->pMonoScriptSystem->InstantiateScript(pEntityClass->GetName(), eScriptFlag_Entity);
 
@@ -66,9 +66,6 @@ bool CEntity::Init(IGameObject *pGameObject)
 	}
 
 	m_bInitialized = true;
-
-	if (!GetGameObject()->BindToNetwork())
-		return false;
 
 	return true;
 }
