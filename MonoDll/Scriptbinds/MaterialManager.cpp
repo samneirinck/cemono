@@ -14,6 +14,7 @@ CScriptbind_MaterialManager::CScriptbind_MaterialManager()
 	REGISTER_METHOD(LoadMaterial);
 
 	REGISTER_METHOD(GetSubMaterial);
+	REGISTER_METHOD(GetSubmaterialCount);
 
 	REGISTER_METHOD(GetMaterial);
 	REGISTER_METHOD(SetMaterial);
@@ -56,6 +57,11 @@ IMaterial *CScriptbind_MaterialManager::LoadMaterial(mono::string name, bool mak
 IMaterial *CScriptbind_MaterialManager::GetSubMaterial(IMaterial *pMaterial, int slot)
 {
 	return pMaterial->GetSubMtl(slot);
+}
+
+int CScriptbind_MaterialManager::GetSubmaterialCount(IMaterial *pMaterial)
+{
+	return pMaterial->GetSubMtlCount();
 }
 
 IMaterial *CScriptbind_MaterialManager::GetMaterial(IEntity *pEntity, int slot)
