@@ -296,6 +296,11 @@ namespace CryEngine
         public int ShaderParamCount { get { return NativeMethods.Material.GetShaderParamCount(HandleRef.Handle); } }
 
 		/// <summary>
+		/// Gets the amount of submaterials tied to this material.
+		/// </summary>
+		public int SubmaterialCount { get { return NativeMethods.Material.GetSubmaterialCount(HandleRef.Handle); } }
+
+		/// <summary>
 		/// The native IMaterial pointer.
 		/// </summary>
 		public HandleRef HandleRef { get; set; }

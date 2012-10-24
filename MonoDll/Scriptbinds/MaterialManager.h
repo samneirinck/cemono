@@ -29,6 +29,7 @@ protected:
 	static IMaterial *LoadMaterial(mono::string name, bool makeIfNotFound, bool nonRemovable);
 
 	static IMaterial *GetSubMaterial(IMaterial *pMaterial, int slot);
+	static int GetSubmaterialCount(IMaterial *pMaterial);
 
 	static IMaterial *GetMaterial(IEntity *pEnt, int slot);
 	static void SetMaterial(IEntity *pEnt, IMaterial *pMaterial, int slot);
