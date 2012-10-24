@@ -16,6 +16,9 @@ namespace CryEngine.Native
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static object _GetValue(IntPtr scriptTablePtr, string keyName);
 
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static bool _ExecuteBuffer(string buffer);
+
 		public IntPtr GetScriptTable(IntPtr entityPtr)
 		{
 			return _GetScriptTable(entityPtr);
@@ -34,6 +37,11 @@ namespace CryEngine.Native
 		public object GetValue(IntPtr scriptTablePtr, string keyName)
 		{
 			return _GetValue(scriptTablePtr, keyName);
+		}
+
+		public bool ExecuteBuffer(string buffer)
+		{
+			return _ExecuteBuffer(buffer);
 		}
     }
 }

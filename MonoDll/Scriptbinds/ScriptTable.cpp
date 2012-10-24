@@ -12,6 +12,8 @@ CScriptbind_ScriptTable::CScriptbind_ScriptTable()
 
 	REGISTER_METHOD(CallMethod);
 	REGISTER_METHOD(GetValue);
+
+	REGISTER_METHOD(ExecuteBuffer);
 }
 
 IScriptTable *CScriptbind_ScriptTable::GetScriptTable(IEntity *pEntity)
@@ -109,4 +111,15 @@ IScriptTable *CScriptbind_ScriptTable::GetSubScriptTable(IScriptTable *pScriptTa
 		return anyValue.table;
 
 	return nullptr;
+}
+
+bool CScriptbind_ScriptTable::ExecuteBuffer(mono::string mBuffer)
+{
+	if(IScriptSystem *pScriptSystem = gEnv->pSystem->GetIScriptSystem())
+	{
+		const char *buffer = ToCryString(mBuffer);
+		return pScriptSystem->ExecuteBuffer(buffer + 1, strlen(buffer) - 1);
+	}
+
+	return false;
 }

@@ -35,6 +35,21 @@ namespace CryEngine.Lua
 			return null;
 		}
 
+		public static ScriptTable Get(EntityBase entity)
+		{
+			return Get(entity.GetEntityHandle().Handle);
+		}
+
+		/// <summary>
+		/// Global lua script execution
+		/// </summary>
+		/// <param name="buffer"></param>
+		/// <returns>False if execution fails, otherwise true.</returns>
+		public static bool Execute(string buffer)
+		{
+			return NativeMethods.ScriptTable.ExecuteBuffer(buffer);
+		}
+
 		static List<ScriptTable> ScriptTables { get; set; }
 		#endregion
 

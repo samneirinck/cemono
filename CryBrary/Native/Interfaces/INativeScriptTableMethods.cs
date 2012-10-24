@@ -10,5 +10,7 @@ namespace CryEngine.Native
 
 		object CallMethod(IntPtr scriptTablePtr, string methodName, object[] parameters);
 		object GetValue(IntPtr scriptTablePtr, string keyName);
+
+		bool ExecuteBuffer(string buffer);
     }
 }
