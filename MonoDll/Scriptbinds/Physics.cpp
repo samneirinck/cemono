@@ -164,9 +164,21 @@ int CScriptbind_Physics::RayWorldIntersection(Vec3 origin, Vec3 dir, int objFlag
 	return numHits;
 }
 
-void CScriptbind_Physics::SimulateExplosion(pe_explosion &explosion)
+mono::object CScriptbind_Physics::SimulateExplosion(pe_explosion explosion)
 {
 	gEnv->pPhysicalWorld->SimulateExplosion(&explosion);
+
+	if(explosion.nAffectedEnts > 0)
+	{
+		IMonoArray *pAffectedEnts = CreateMonoArray(explosion.nAffectedEnts);
+
+		for(int i = 0; i < explosion.nAffectedEnts; i++)
+			pAffectedEnts->InsertNativePointer(explosion.pAffectedEnts[i]);
+
+		return pAffectedEnts->GetManagedObject();
+	}
+
+	return NULL;
 }
 
 pe_status_living CScriptbind_Physics::GetLivingEntityStatus(IEntity *pEntity)
