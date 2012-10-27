@@ -152,61 +152,61 @@ namespace CryEngine
         public float HeightCollider
         {
             get { throw new NotImplementedException(); }
-            set { Debug.LogAlways("1"); _params.playerDim.heightCollider = value; if (AutoUpdate) Save(); }
+            set { _params.playerDim.heightCollider = value; if (AutoUpdate) Save(); }
         }
 
         public Vec3 SizeCollider
         {
             get { throw new NotImplementedException(); }
-            set { Debug.LogAlways("1"); _params.playerDim.sizeCollider = value; if (AutoUpdate) Save(); }
+            set { _params.playerDim.sizeCollider = value; if (AutoUpdate) Save(); }
         }
 
         public float HeightPivot
         {
             get { throw new NotImplementedException(); }
-            set { Debug.LogAlways("1"); _params.playerDim.heightPivot = value; if (AutoUpdate) Save(); }
+            set { _params.playerDim.heightPivot = value; if (AutoUpdate) Save(); }
         }
 
         public bool UseCapsule
         {
             get { throw new NotImplementedException(); }
-            set { Debug.LogAlways("1"); _params.playerDim.bUseCapsule = (value == true ? 1 : 0); if (AutoUpdate) Save(); }
+            set { _params.playerDim.bUseCapsule = (value == true ? 1 : 0); if (AutoUpdate) Save(); }
         }
 
         public Vec3 Gravity
         {
             get { throw new NotImplementedException(); }
-            set { Debug.LogAlways("1"); _params.playerDyn.gravity = value; if (AutoUpdate) Save(); }
+            set { _params.playerDyn.gravity = value; if (AutoUpdate) Save(); }
         }
 
         public float AirControl
         {
             get { throw new NotImplementedException(); }
-            set { Debug.LogAlways("1"); _params.playerDyn.kAirControl = value; if (AutoUpdate) Save(); }
+            set { _params.playerDyn.kAirControl = value; if (AutoUpdate) Save(); }
         }
 
         public float MinSlideAngle
         {
             get { throw new NotImplementedException(); }
-            set { Debug.LogAlways("1"); _params.playerDyn.minSlideAngle = value; if (AutoUpdate) Save(); }
+            set { _params.playerDyn.minSlideAngle = value; if (AutoUpdate) Save(); }
         }
 
         public float MaxClimbAngle
         {
             get { throw new NotImplementedException(); }
-            set { Debug.LogAlways("1"); _params.playerDyn.maxClimbAngle = value; if (AutoUpdate) Save(); }
+            set { _params.playerDyn.maxClimbAngle = value; if (AutoUpdate) Save(); }
         }
 
         public float MinFallAngle
         {
             get { throw new NotImplementedException(); }
-            set { Debug.LogAlways("1"); _params.playerDyn.minFallAngle = value; if (AutoUpdate) Save(); }
+            set { _params.playerDyn.minFallAngle = value; if (AutoUpdate) Save(); }
         }
 
         public float MaxVelGround
         {
             get { throw new NotImplementedException(); }
-            set { Debug.LogAlways("1"); _params.playerDyn.maxVelGround = value; if (AutoUpdate) Save(); }
+            set { _params.playerDyn.maxVelGround = value; if (AutoUpdate) Save(); }
         }
         #endregion
         #endregion
