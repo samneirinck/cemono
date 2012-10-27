@@ -132,34 +132,26 @@ void CScriptbind_Physics::SetVelocity(IEntity *pEntity, Vec3 vel)
 
 int CScriptbind_Physics::RayWorldIntersection(Vec3 origin, Vec3 dir, int objFlags, unsigned int flags, ray_hit &hit, int maxHits, mono::object skipEntities)
 {
-	std::vector<IPhysicalEntity *> physEnts;
+	IPhysicalEntity **pSkipEnts = NULL;
+	int numSkipEnts = 0;
 
 	if(skipEntities)
 	{
 		IMonoArray *pSkipEntities = *skipEntities;
+		numSkipEnts = pSkipEntities->GetSize();
 
-		for(int i = 0; i < pSkipEntities->GetSize(); i++)
-		{
-			if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(pSkipEntities->GetItem(i)->Unbox<EntityId>()))
-			{
-				if(IPhysicalEntity *pPhysEnt = pEntity->GetPhysics())
-					physEnts.push_back(pPhysEnt);
-			}
-		}
+		pSkipEnts = new IPhysicalEntity*[numSkipEnts];
+
+		for(int i = 0; i < numSkipEnts; i++)
+			pSkipEnts[i] = (IPhysicalEntity *)pSkipEntities->GetItem(i)->GetManagedObject();
 
 		delete pSkipEntities;
 	}
 
-	IPhysicalEntity **pSkipEnts = new IPhysicalEntity*[physEnts.size()];
-
-	for(int i = 0; i < physEnts.size(); i++)
-		pSkipEnts[i] = physEnts[i];
-
 	hit = ray_hit();
-	int numHits = gEnv->pPhysicalWorld->RayWorldIntersection(origin, dir, objFlags, flags, &hit, maxHits, pSkipEnts, physEnts.size());
+	int numHits = gEnv->pPhysicalWorld->RayWorldIntersection(origin, dir, objFlags, flags, &hit, maxHits, pSkipEnts, numSkipEnts);
 
 	SAFE_DELETE_ARRAY(pSkipEnts);
-	physEnts.clear();
 
 	return numHits;
 }

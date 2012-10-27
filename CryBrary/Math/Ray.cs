@@ -64,7 +64,7 @@ namespace CryEngine
 		/// <param name="maxHits"></param>
 		/// <param name="skipEntities"></param>
 		/// <returns>The total amount of hits detected (solid and pierceable)</returns>
-		public int Cast(out RaycastHit hit, EntityQueryFlags objectTypes = EntityQueryFlags.All, RayWorldIntersectionFlags flags = RayWorldIntersectionFlags.AnyHit, int maxHits = 1, EntityId[] skipEntities = null)
+		public int Cast(out RaycastHit hit, EntityQueryFlags objectTypes = EntityQueryFlags.All, RayWorldIntersectionFlags flags = RayWorldIntersectionFlags.AnyHit, int maxHits = 1, PhysicalEntity[] skipEntities = null)
 		{
 			object[] skippedEntities = null;
 			if(skipEntities != null && skipEntities.Length > 0)
@@ -73,7 +73,7 @@ namespace CryEngine
 			return Native.NativeMethods.Physics.RayWorldIntersection(Position, Direction, objectTypes, flags, out hit, maxHits, skippedEntities);
 		}
 
-		public static int Cast(out RaycastHit hit, Vec3 pos, Vec3 dir, EntityQueryFlags objectTypes = EntityQueryFlags.All, RayWorldIntersectionFlags flags = RayWorldIntersectionFlags.AnyHit, int maxHits = 1, EntityId[] skipEntities = null)
+		public static int Cast(out RaycastHit hit, Vec3 pos, Vec3 dir, EntityQueryFlags objectTypes = EntityQueryFlags.All, RayWorldIntersectionFlags flags = RayWorldIntersectionFlags.AnyHit, int maxHits = 1, PhysicalEntity[] skipEntities = null)
 		{
 			var ray = new Ray(pos, dir);
 
