@@ -40,6 +40,7 @@ namespace CryEngine
 		public float Distance { get { return dist; } }
 
 		internal IntPtr physicalCollider;
+		public PhysicalEntity PhysicalCollider { get { return (physicalCollider != null ? new PhysicalEntity(physicalCollider) : null); } }
 
 		internal int ipart;
 		public int iPart { get { return ipart; } }
