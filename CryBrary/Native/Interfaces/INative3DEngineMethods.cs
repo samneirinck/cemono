@@ -16,6 +16,6 @@ namespace CryEngine.Native
         void SetTimeOfDayVariableValue(int id, float value);
         void SetTimeOfDayVariableValueColor(int id, Vec3 value);
 
-		void ActivatePortal(Vec3 pos, bool activate, string entityName);
+        void ActivatePortal(Vec3 pos, bool activate, string entityName);
     }
 }

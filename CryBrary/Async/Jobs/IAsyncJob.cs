@@ -8,7 +8,12 @@ namespace CryEngine.Async.Jobs
     public interface IAsyncJob
     {
         /// <summary>
-        /// Indicates if the job has finished processing
+        /// Gets the internal Task object associated with the job
+        /// </summary>
+        Task Task { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether the job has finished processing
         /// </summary>
         bool IsFinished { get; }
 
@@ -16,12 +21,6 @@ namespace CryEngine.Async.Jobs
         /// Updates the job
         /// </summary>
         /// <param name="frameTime"></param>
-        /// <returns></returns>
         bool Update(float frameTime);
-
-        /// <summary>
-        /// Gets the internal Task object associated with the job
-        /// </summary>
-        Task Task { get; }
     }
 }

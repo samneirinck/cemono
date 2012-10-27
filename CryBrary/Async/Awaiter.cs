@@ -8,24 +8,25 @@ namespace CryEngine.Async
     /// </summary>
     public class Awaiter
     {
-        /// <summary>
-        /// Singleton instance of the awaiter
-        /// </summary>
-        public static Awaiter Instance { get; set; }
-
-        private Awaiter()
-        {
-
-        }
+        private readonly List<IAsyncJob> _jobs;
 
         static Awaiter()
         {
             Instance = new Awaiter();
         }
 
-        private readonly List<IAsyncJob> _jobs = new List<IAsyncJob>();
+        private Awaiter()
+        {
+            _jobs = new List<IAsyncJob>();
+        }
+
         /// <summary>
-        /// A list of all jobs scheduled to be executed on the next OnUpdate call
+        /// Gets or sets the singleton instance of the awaiter
+        /// </summary>
+        public static Awaiter Instance { get; set; }
+
+        /// <summary>
+        /// Gets a list of all jobs scheduled to be executed on the next OnUpdate call
         /// </summary>
         public List<IAsyncJob> Jobs
         {
@@ -44,6 +45,7 @@ namespace CryEngine.Async
             for (int i = 0; i < Jobs.Count; i++)
             {
                 var job = Jobs[i];
+
                 // Update the job
                 // If the job returns true, it means it has finished, and we can remove it from the updatelist
                 if (job.Update(frameTime))

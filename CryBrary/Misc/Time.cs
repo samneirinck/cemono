@@ -3,11 +3,11 @@ using CryEngine.Native;
 
 namespace CryEngine
 {
-	/// <summary>
-	/// Contains useful functions related to game timing.
-	/// </summary>
-	public static class Time
-	{
+    /// <summary>
+    /// Contains useful functions related to game timing.
+    /// </summary>
+    public static class Time
+    {
         internal static void Set(float frameTime, float frameStartTime, float asyncTime, float frameRate, float timeScale)
         {
             DeltaTime = frameTime;
@@ -18,9 +18,9 @@ namespace CryEngine
             _timeScale = timeScale;
         }
 
-		/// <summary>
-		/// Returns the absolute time of the last frame start in milliseconds.
-		/// </summary>
+        /// <summary>
+        /// Returns the absolute time of the last frame start in milliseconds.
+        /// </summary>
         public static float FrameStartTime { get; private set; }
 
         /// <summary>
@@ -29,11 +29,11 @@ namespace CryEngine
         /// </summary>
         public static float AsyncTime { get; private set; }
 
-		/// <summary>
-		/// The time used to render the current frame. Useful for creating framerate independent operations.
-		/// </summary>
-		/// <example>public override void OnUpdate() { this.Position.X += 10 * Time.DeltaTime; }</example>
-		public static float DeltaTime { get; private set; }
+        /// <summary>
+        /// The time used to render the current frame. Useful for creating framerate independent operations.
+        /// </summary>
+        /// <example>public override void OnUpdate() { this.Position.X += 10 * Time.DeltaTime; }</example>
+        public static float DeltaTime { get; private set; }
 
         private static float _timeScale;
         /// <summary>
@@ -45,5 +45,5 @@ namespace CryEngine
         /// Returns the current framerate in frames/second.
         /// </summary>
         public static float Framerate { get; private set; }
-	}
+    }
 }

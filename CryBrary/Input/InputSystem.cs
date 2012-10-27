@@ -7,204 +7,219 @@ using CryEngine.Native;
 
 namespace CryEngine
 {
-	public delegate void ActionMapEventDelegate(ActionMapEventArgs e);
+    public delegate void ActionMapEventDelegate(ActionMapEventArgs e);
 
-	public delegate void KeyEventDelegate(KeyEventArgs e);
-	public delegate void MouseEventDelegate(MouseEventArgs e);
+    public delegate void KeyEventDelegate(KeyEventArgs e);
 
-	public static class Input
-	{
-		#region Events
-		static void OnActionTriggered(string action, KeyEvent keyEvent, float value)
-		{
-			ActionmapEvents.Invoke(new ActionMapEventArgs(keyEvent, action, value));
-		}
+    public delegate void MouseEventDelegate(MouseEventArgs e);
 
-		static void OnKeyEvent(string keyName, float value)
-		{
-			if(KeyEvents != null)
-				KeyEvents(new KeyEventArgs(keyName, value));
-		}
+    public static class Input
+    {
+        #region Events
+        static void OnActionTriggered(string action, KeyEvent keyEvent, float value)
+        {
+            ActionmapEvents.Invoke(new ActionMapEventArgs(keyEvent, action, value));
+        }
 
-		static void OnMouseEvent(int x, int y, MouseEvent mouseEvent, int wheelDelta)
-		{
-			MouseX = x;
-			MouseY = y;
+        static void OnKeyEvent(string keyName, float value)
+        {
+            if (KeyEvents != null)
+                KeyEvents(new KeyEventArgs(keyName, value));
+        }
 
-			if(MouseEvents != null)
-				MouseEvents(new MouseEventArgs(x, y, wheelDelta, mouseEvent));
-		}
+        static void OnMouseEvent(int x, int y, MouseEvent mouseEvent, int wheelDelta)
+        {
+            MouseX = x;
+            MouseY = y;
 
-		public static int MouseX { get; set; }
-		public static int MouseY { get; set; }
-		#endregion
+            if (MouseEvents != null)
+                MouseEvents(new MouseEventArgs(x, y, wheelDelta, mouseEvent));
+        }
 
-		public static event KeyEventDelegate KeyEvents;
-		public static event MouseEventDelegate MouseEvents;
+        public static int MouseX { get; set; }
 
-		public static ActionmapHandler ActionmapEvents = new ActionmapHandler();
+        public static int MouseY { get; set; }
+        #endregion
 
-		static void OnScriptInstanceDestroyed(CryScriptInstance instance)
-		{
-			foreach (KeyEventDelegate d in KeyEvents.GetInvocationList())
-			{
-				if (d.Target == instance)
-					KeyEvents -= d;
-			}
+        public static event KeyEventDelegate KeyEvents;
 
-			foreach (MouseEventDelegate d in MouseEvents.GetInvocationList())
-			{
-				if (d.Target == instance)
-					MouseEvents -= d;
-			}
+        public static event MouseEventDelegate MouseEvents;
 
-			ActionmapEvents.RemoveAll(instance);
-		}
-	}
+        public static ActionmapHandler ActionmapEvents = new ActionmapHandler();
 
-	public class ActionmapHandler
-	{
-		public ActionmapHandler()
-		{
-			actionmapDelegates = new Dictionary<string, List<ActionMapEventDelegate>>();
-		}
+        static void OnScriptInstanceDestroyed(CryScriptInstance instance)
+        {
+            foreach (KeyEventDelegate d in KeyEvents.GetInvocationList())
+            {
+                if (d.Target == instance)
+                    KeyEvents -= d;
+            }
 
-		public void Add(string actionMap, ActionMapEventDelegate eventDelegate)
-		{
-			List<ActionMapEventDelegate> eventDelegates;
-			if (!actionmapDelegates.TryGetValue(actionMap, out eventDelegates))
-			{
-				NativeMethods.Input.RegisterAction(actionMap);
+            foreach (MouseEventDelegate d in MouseEvents.GetInvocationList())
+            {
+                if (d.Target == instance)
+                    MouseEvents -= d;
+            }
 
-				eventDelegates = new List<ActionMapEventDelegate>();
-				actionmapDelegates.Add(actionMap, eventDelegates);
-			}
+            ActionmapEvents.RemoveAll(instance);
+        }
+    }
 
-			eventDelegates.Add(eventDelegate);
-		}
+    public class ActionmapHandler
+    {
+        public ActionmapHandler()
+        {
+            actionmapDelegates = new Dictionary<string, List<ActionMapEventDelegate>>();
+        }
 
-		public bool Remove(string actionMap, ActionMapEventDelegate eventDelegate)
-		{
-			List<ActionMapEventDelegate> eventDelegates;
-			if (actionmapDelegates.TryGetValue(actionMap, out eventDelegates))
-				return eventDelegates.Remove(eventDelegate);
+        public void Add(string actionMap, ActionMapEventDelegate eventDelegate)
+        {
+            List<ActionMapEventDelegate> eventDelegates;
+            if (!actionmapDelegates.TryGetValue(actionMap, out eventDelegates))
+            {
+                NativeMethods.Input.RegisterAction(actionMap);
 
-			return false;
-		}
+                eventDelegates = new List<ActionMapEventDelegate>();
+                actionmapDelegates.Add(actionMap, eventDelegates);
+            }
 
-		public int RemoveAll(object target)
-		{
-			int numRemoved = 0;
+            eventDelegates.Add(eventDelegate);
+        }
 
-			foreach (var actionMap in actionmapDelegates)
-				numRemoved += actionMap.Value.RemoveAll(x => x.Target == target);
+        public bool Remove(string actionMap, ActionMapEventDelegate eventDelegate)
+        {
+            List<ActionMapEventDelegate> eventDelegates;
+            if (actionmapDelegates.TryGetValue(actionMap, out eventDelegates))
+                return eventDelegates.Remove(eventDelegate);
 
-			return numRemoved;
-		}
+            return false;
+        }
 
-		internal void Invoke(ActionMapEventArgs args)
-		{
-			List<ActionMapEventDelegate> eventDelegates;
-			if (actionmapDelegates.TryGetValue(args.ActionName, out eventDelegates))
-				eventDelegates.ForEach(x => x(args));
-		}
+        public int RemoveAll(object target)
+        {
+            int numRemoved = 0;
 
-		Dictionary<string, List<ActionMapEventDelegate>> actionmapDelegates;
+            foreach (var actionMap in actionmapDelegates)
+                numRemoved += actionMap.Value.RemoveAll(x => x.Target == target);
 
-		/*
-		public static void operator +(ActionmapHandler handler, ActionMapEventDelegate eventDelegate)
-		{
-		}
-		
-		public static void operator -(ActionmapHandler handler, ActionMapEventDelegate eventDelegate)
-		{
-		}
-		*/
-	}
+            return numRemoved;
+        }
 
-	public class ActionMapEventArgs : EventArgs
-	{
-		public ActionMapEventArgs(KeyEvent keyEvent, string actionName, float value)
-		{
-			KeyEvent = keyEvent;
-			ActionName = actionName;
-			Value = value;
-		}
+        internal void Invoke(ActionMapEventArgs args)
+        {
+            List<ActionMapEventDelegate> eventDelegates;
+            if (actionmapDelegates.TryGetValue(args.ActionName, out eventDelegates))
+                eventDelegates.ForEach(x => x(args));
+        }
+
+        Dictionary<string, List<ActionMapEventDelegate>> actionmapDelegates;
+
+        /*
+        public static void operator +(ActionmapHandler handler, ActionMapEventDelegate eventDelegate)
+        {
+        }
+        
+        public static void operator -(ActionmapHandler handler, ActionMapEventDelegate eventDelegate)
+        {
+        }
+        */
+    }
+
+    public class ActionMapEventArgs : EventArgs
+    {
+        public ActionMapEventArgs(KeyEvent keyEvent, string actionName, float value)
+        {
+            KeyEvent = keyEvent;
+            ActionName = actionName;
+            Value = value;
+        }
 
         public string ActionName { get; private set; }
+
         public KeyEvent KeyEvent { get; private set; }
-        public float Value { get; private set; }
-	}
 
-	public class KeyEventArgs : EventArgs
-	{
-		public KeyEventArgs(string actionName, float value)
-		{
-			ActionName = actionName;
-			Value = value;
-		}
+        public float Value { get; private set; }
+    }
+
+    public class KeyEventArgs : EventArgs
+    {
+        public KeyEventArgs(string actionName, float value)
+        {
+            ActionName = actionName;
+            Value = value;
+        }
 
         public string ActionName { get; private set; }
+
         public float Value { get; private set; }
-	}
+    }
 
-	public class MouseEventArgs : EventArgs
-	{
-		public MouseEventArgs(int x, int y, int wheelDelta, MouseEvent mouseEvent)
-		{
-			X = x;
-			Y = y;
-			WheelDelta = wheelDelta;
-			MouseEvent = mouseEvent;
-		}
+    public class MouseEventArgs : EventArgs
+    {
+        public MouseEventArgs(int x, int y, int wheelDelta, MouseEvent mouseEvent)
+        {
+            X = x;
+            Y = y;
+            WheelDelta = wheelDelta;
+            MouseEvent = mouseEvent;
+        }
 
-		public int X { get; private set; }
-		public int Y { get; private set; }
-		public int WheelDelta { get; private set; }
+        public int X { get; private set; }
 
-		public MouseEvent MouseEvent { get; private set; }
-	}
+        public int Y { get; private set; }
 
-	public enum MouseEvent
-	{
-		Move,
+        public int WheelDelta { get; private set; }
 
-		LeftButtonDown,
-		LeftButtonUp,
-		LeftButtonDoubleClick,
-		RightButtonDown,
-		RightButtonUp,
-		RightButtonDoubleClick,
-		MiddleButtonDown,
-		MiddleButtonUp,
-		MiddleButtonDoubleClick,
+        public MouseEvent MouseEvent { get; private set; }
+    }
 
-		Wheel,
-	}
+    public enum MouseEvent
+    {
+        Move,
 
-	public enum KeyEvent
-	{
-		Invalid = 0,
-		/// <summary>
-		/// Used when the action key is pressed
-		/// </summary>
-		OnPress,
-		/// <summary>
-		/// Used when the action key is released
-		/// </summary>
-		OnRelease,
-		/// <summary>
-		/// Used when the action key is held
-		/// </summary>
-		OnHold,
-		Always,
+        LeftButtonDown,
+        LeftButtonUp,
+        LeftButtonDoubleClick,
+        RightButtonDown,
+        RightButtonUp,
+        RightButtonDoubleClick,
+        MiddleButtonDown,
+        MiddleButtonUp,
+        MiddleButtonDoubleClick,
 
-		Retriggerable,
-		NoModifiers,
-		ConsoleCmd,
-		/// <summary>
-		/// Used when analog compare op succeeds
-		/// </summary>
-		AnalogCmd
-	}
+        Wheel,
+    }
+
+    public enum KeyEvent
+    {
+        Invalid = 0,
+
+        /// <summary>
+        /// Used when the action key is pressed
+        /// </summary>
+        OnPress,
+
+        /// <summary>
+        /// Used when the action key is released
+        /// </summary>
+        OnRelease,
+
+        /// <summary>
+        /// Used when the action key is held
+        /// </summary>
+        OnHold,
+
+        Always,
+
+        Retriggerable,
+
+        NoModifiers,
+
+        ConsoleCmd,
+
+        /// <summary>
+        /// Used when analog compare op succeeds
+        /// </summary>
+        AnalogCmd
+    }
 }

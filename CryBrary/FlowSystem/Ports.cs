@@ -3,130 +3,137 @@ using CryEngine.Native;
 
 namespace CryEngine
 {
-	public sealed class OutputPort
-	{
-		public OutputPort() { }
+    public sealed class OutputPort
+    {
+        public OutputPort() { }
 
-		public OutputPort(IntPtr nodePtr, int portId)
-		{
-			ParentNodePointer = nodePtr;
-			PortId = portId;
-		}
+        public OutputPort(IntPtr nodePtr, int portId)
+        {
+            ParentNodePointer = nodePtr;
+            PortId = portId;
+        }
 
-		public void Activate()
-		{
+        public void Activate()
+        {
             NativeMethods.FlowNode.ActivateOutput(ParentNodePointer, PortId);
-		}
+        }
 
-		IntPtr ParentNodePointer { get; set; }
-		int PortId { get; set; }
-	}
+        IntPtr ParentNodePointer { get; set; }
 
-	public sealed class OutputPort<T>
-	{
-		public OutputPort() { }
+        int PortId { get; set; }
+    }
 
-		public OutputPort(IntPtr nodePtr, int portId)
-		{
-			ParentNodePointer = nodePtr;
-			PortId = portId;
-		}
+    public sealed class OutputPort<T>
+    {
+        public OutputPort() { }
 
-		public void Activate(T value)
-		{
-			if(value is int)
+        public OutputPort(IntPtr nodePtr, int portId)
+        {
+            ParentNodePointer = nodePtr;
+            PortId = portId;
+        }
+
+        public void Activate(T value)
+        {
+            if (value is int)
                 NativeMethods.FlowNode.ActivateOutputInt(ParentNodePointer, PortId, System.Convert.ToInt32(value));
-			else if(value is float || value is double)
+            else if (value is float || value is double)
                 NativeMethods.FlowNode.ActivateOutputFloat(ParentNodePointer, PortId, System.Convert.ToSingle(value));
-			else if(value is EntityId)
+            else if (value is EntityId)
                 NativeMethods.FlowNode.ActivateOutputEntityId(ParentNodePointer, PortId, (uint)((EntityId)(object)value)._value);
-			else if(value is string)
+            else if (value is string)
                 NativeMethods.FlowNode.ActivateOutputString(ParentNodePointer, PortId, System.Convert.ToString(value));
-			else if(value is bool)
+            else if (value is bool)
                 NativeMethods.FlowNode.ActivateOutputBool(ParentNodePointer, PortId, System.Convert.ToBoolean(value));
-			else if(value is Vec3)
+            else if (value is Vec3)
                 NativeMethods.FlowNode.ActivateOutputVec3(ParentNodePointer, PortId, (Vec3)(object)value);
-			else
-				throw new ArgumentException("Attempted to activate output with invalid value!");
-		}
+            else
+                throw new ArgumentException("Attempted to activate output with invalid value!");
+        }
 
-		IntPtr ParentNodePointer { get; set; }
-		int PortId { get; set; }
-	}
+        IntPtr ParentNodePointer { get; set; }
 
-	public enum NodePortType
-	{
-		Any = -1,
-		Void,
-		Int,
-		Float,
-		EntityId,
-		Vec3,
-		String,
-		Bool
-	};
+        int PortId { get; set; }
+    }
 
-	public struct InputPortConfig
-	{
-		public InputPortConfig(string _name, NodePortType _type, string desc = "", string _humanName = "", string UIConfig = "")
-			: this()
-		{
-			name = _name;
-			humanName = _humanName;
+    public enum NodePortType
+    {
+        Any = -1,
+        Void,
+        Int,
+        Float,
+        EntityId,
+        Vec3,
+        String,
+        Bool
+    }
 
-			description = desc;
-			uiConfig = UIConfig;
+    public struct InputPortConfig
+    {
+        public InputPortConfig(string _name, NodePortType _type, string desc = "", string _humanName = "", string UIConfig = "")
+            : this()
+        {
+            name = _name;
+            humanName = _humanName;
 
-			type = _type;
+            description = desc;
+            uiConfig = UIConfig;
 
-			defaultValue = null;
-		}
+            type = _type;
 
-		public InputPortConfig(string _name, NodePortType _type, object defaultVal = null, string desc = "", string _humanName = "", string UIConfig = "")
-			: this(_name, _type, desc, _humanName, UIConfig)
-		{
-			defaultValue = defaultVal;
-		}
+            defaultValue = null;
+        }
 
-		public string name;
-		public string humanName;
-		public string description;
+        public InputPortConfig(string _name, NodePortType _type, object defaultVal = null, string desc = "", string _humanName = "", string UIConfig = "")
+            : this(_name, _type, desc, _humanName, UIConfig)
+        {
+            defaultValue = defaultVal;
+        }
 
-		public NodePortType type;
+        public string name;
 
-		public string uiConfig;
+        public string humanName;
 
-		public object defaultValue;
-	}
+        public string description;
 
-	public struct OutputPortConfig
-	{
-		public OutputPortConfig(string _name, string _humanName, string desc, NodePortType _type)
-			: this()
-		{
-			name = _name;
-			humanName = _humanName;
-			description = desc;
-			type = _type;
-		}
+        public NodePortType type;
 
-		public string name;
-		public string humanName;
-		public string description;
+        public string uiConfig;
 
-		public NodePortType type;
-	}
+        public object defaultValue;
+    }
 
-	public struct NodePortConfig
-	{
-		public NodePortConfig(object[] inputPorts, object[] outputPorts)
-			: this()
-		{
-			inputs = inputPorts;
-			outputs = outputPorts;
-		}
+    public struct OutputPortConfig
+    {
+        public OutputPortConfig(string _name, string _humanName, string desc, NodePortType _type)
+            : this()
+        {
+            name = _name;
+            humanName = _humanName;
+            description = desc;
+            type = _type;
+        }
 
-		public object[] inputs;
-		public object[] outputs;
-	}
+        public string name;
+
+        public string humanName;
+
+        public string description;
+
+        public NodePortType type;
+    }
+
+    public struct NodePortConfig
+    {
+        public NodePortConfig(object[] inputPorts, object[] outputPorts)
+            : this()
+        {
+            inputs = inputPorts;
+            outputs = outputPorts;
+        }
+
+        public object[] inputs;
+
+        public object[] outputs;
+    }
 }

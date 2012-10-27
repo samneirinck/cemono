@@ -101,10 +101,35 @@
   <ItemGroup>
     <Compile Include="Actor\Actor.cs" />
     <Compile Include="Actor\ActorBase.cs" />
+    <Compile Include="Actor\ActorInfo.cs" />
+    <Compile Include="Actor\ActorStatics.cs" />
     <Compile Include="Actor\ViewParams.cs" />
+    <Compile Include="Console\ConsoleCommand\ConsoleCommandArgs.cs" />
+    <Compile Include="Console\ConsoleCommand\ConsoleCommandAttribute.cs" />
+    <Compile Include="Console\CVar\CVarAttribute.cs" />
+    <Compile Include="Console\CVar\CVarException.cs" />
+    <Compile Include="Console\CVar\CVarFlags.cs" />
+    <Compile Include="Console\CVar\CVarType.cs" />
+    <Compile Include="Console\CVar\DynamicCVar.cs" />
+    <Compile Include="Console\CVar\ExternalCVar.cs" />
+    <Compile Include="Console\CVar\StaticCVarField.cs" />
+    <Compile Include="Console\CVar\StaticCVarProperty.cs" />
+    <Compile Include="Engine\Material\MaterialFlags.cs" />
+    <Compile Include="Engine\Material\ShaderColorParameter.cs" />
+    <Compile Include="Engine\Material\ShaderFloatParameter.cs" />
+    <Compile Include="Engine\TimeOfDay\CloudShadingParams.cs" />
+    <Compile Include="Engine\TimeOfDay\ColorGradingParams.cs" />
+    <Compile Include="Engine\TimeOfDay\FogParams.cs" />
+    <Compile Include="Engine\TimeOfDay\HDRParams.cs" />
+    <Compile Include="Engine\TimeOfDay\NightSkyParams.cs" />
+    <Compile Include="Engine\TimeOfDay\ShadowParams.cs" />
+    <Compile Include="Engine\TimeOfDay\SkyLightParams.cs" />
+    <Compile Include="Engine\TimeOfDay\SkyParams.cs" />
+    <Compile Include="Engine\TimeOfDay\SunRaysEffectParams.cs" />
     <Compile Include="Entity\Extensions\Attachment.cs" />
     <Compile Include="Entity\Exceptions\EntityRemovalException.cs" />
     <Compile Include="Extensions\NativeScriptTableExtensions.cs" />
+    <Compile Include="Math\PlaneIntersectionType.cs" />
     <Compile Include="Physics\Explosion.cs" />
     <Compile Include="Script Handling\ScriptInstanceDestroyedException.cs" />
     <Compile Include="Math\Angle.cs" />
@@ -151,7 +176,7 @@
     <Compile Include="Async\Jobs\TimeDelayJob.cs" />
     <Compile Include="Engine\Level.cs" />
     <Compile Include="Entity\EntityBase.cs" />
-    <Compile Include="Engine\TimeOfDay.cs" />
+    <Compile Include="Engine\TimeOfDay\TimeOfDay.cs" />
     <Compile Include="Extensions\IDictionary.cs" />
     <Compile Include="Extensions\IEnumerable.cs" />
     <Compile Include="FlowSystem\Attributes.cs" />
@@ -194,7 +219,7 @@
     </Compile>
     <Compile Include="Script Handling\ScriptRegistrationParams.cs" />
     <Compile Include="Script Handling\ScriptCompiler.cs" />
-    <Compile Include="Engine\Material.cs" />
+    <Compile Include="Engine\Material\Material.cs" />
     <Compile Include="Engine\ParticleEffect.cs" />
     <Compile Include="Engine\Terrain.cs" />
     <Compile Include="Engine\View.cs" />
@@ -246,9 +271,9 @@
     <Compile Include="Entity\Interface.cs" />
     <Compile Include="Script Handling\ScriptInstance.cs" />
     <Compile Include="Misc\CompilationAttributes.cs" />
-    <Compile Include="Console\ConsoleCommand.cs" />
+    <Compile Include="Console\ConsoleCommand\ConsoleCommand.cs" />
     <Compile Include="Entity\EntityConfig.cs" />
-    <Compile Include="Console\CVar.cs" />
+    <Compile Include="Console\CVar\CVar.cs" />
     <Compile Include="Misc\Time.cs" />
     <Compile Include="Utils\Debug\Debug.cs" />
     <Compile Include="Extensions\Reflection.cs" />
