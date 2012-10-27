@@ -50,20 +50,19 @@ namespace CryEngine
 			set { NativeMethods.Physics.SetVelocity(this.GetEntityHandle().Handle, value); }
 		}
 
-		internal EntityPhysics _physics;
+		internal PhysicalEntity _physics;
 		/// <summary>
 		/// Contains essential functions for modifying the entitys existing physical state.
 		/// </summary>
-		public EntityPhysics Physics
+		public PhysicalEntity Physics
 		{
-			get { return _physics ?? (_physics = new EntityPhysics(this)); }
+			get { return _physics ?? (_physics = new PhysicalEntity(this)); }
 		}
 
         internal override void OnScriptReloadInternal()
 		{
             this.SetEntityHandle(new HandleRef(this, NativeMethods.Entity.GetEntity(Id)));
 
-			Physics.OnScriptReload();
             base.OnScriptReloadInternal();
 		}
 

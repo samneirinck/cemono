@@ -29,6 +29,7 @@ CScriptbind_Entity::CScriptbind_Entity()
 	REGISTER_METHOD(RegisterEntityClass);
 
 	REGISTER_METHOD(GetEntity);
+	REGISTER_METHOD(GetEntityId);
 	REGISTER_METHOD(FindEntity);
 	REGISTER_METHOD(GetEntitiesByClass);
 	REGISTER_METHOD(GetEntitiesInBox);
@@ -118,6 +119,8 @@ CScriptbind_Entity::CScriptbind_Entity()
 
 	REGISTER_METHOD(Hide);
 	REGISTER_METHOD(IsHidden);
+
+	REGISTER_METHOD(GetEntityFromPhysics);
 
 	//RegisterNativeEntityClass();
 
@@ -381,6 +384,11 @@ void CScriptbind_Entity::RemoveEntity(EntityId id, bool removeNow)
 IEntity *CScriptbind_Entity::GetEntity(EntityId id)
 {
 	return gEnv->pEntitySystem->GetEntity(id);
+}
+
+EntityId CScriptbind_Entity::GetEntityId(IEntity *pEntity)
+{
+	return pEntity->GetId();
 }
 
 EntityId CScriptbind_Entity::FindEntity(mono::string name)
@@ -935,4 +943,9 @@ void CScriptbind_Entity::Hide(IEntity *pEntity, bool hide)
 bool CScriptbind_Entity::IsHidden(IEntity *pEntity)
 {
 	return pEntity->IsHidden();
+}
+
+IEntity *CScriptbind_Entity::GetEntityFromPhysics(IPhysicalEntity *pPhysEnt)
+{
+	return gEnv->pEntitySystem->GetEntityFromPhysics(pPhysEnt);
 }

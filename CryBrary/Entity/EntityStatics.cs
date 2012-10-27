@@ -145,6 +145,15 @@ namespace CryEngine
 			return null;
 		}
 
+		internal static EntityBase Get(IntPtr entityPointer)
+		{
+			var entity = ScriptManager.Instance.Find<EntityBase>(ScriptType.Entity, x => x.EntityHandleRef.Handle == entityPointer);
+			if (entity != null)
+				return entity;
+
+			return CreateNativeEntity(NativeMethods.Entity.GetEntityId(entityPointer), entityPointer);
+		}
+
 		internal static EntityBase CreateNativeEntity(EntityId id, IntPtr entityPointer)
 		{
 			// check if actor

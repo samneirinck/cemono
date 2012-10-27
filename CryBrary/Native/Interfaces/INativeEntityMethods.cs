@@ -13,6 +13,7 @@ namespace CryEngine.Native
 		void RemoveEntity(EntityId entityId, bool forceRemoveNow = false);
 
 		IntPtr GetEntity(EntityId entityId);
+		EntityId GetEntityId(IntPtr entPtr);
         uint FindEntity(string name);
         object[] GetEntitiesByClass(string className);
         object[] GetEntitiesInBox(BoundingBox bbox, EntityQueryFlags flags);
@@ -96,5 +97,7 @@ namespace CryEngine.Native
 
 		void Hide(IntPtr entityId, bool hide);
 		bool IsHidden(IntPtr entityId);
+
+		IntPtr GetEntityFromPhysics(IntPtr physEntPtr);
     }
 }

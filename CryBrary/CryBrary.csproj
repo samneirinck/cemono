@@ -200,7 +200,7 @@
     <Compile Include="Engine\View.cs" />
     <Compile Include="Entity\EntityId.cs" />
     <Compile Include="Entity\NativeEntity.cs" />
-    <Compile Include="Entity\Extensions\EntityPhysics.cs" />
+    <Compile Include="Physics\PhysicalEntity.cs" />
     <Compile Include="Lua\ScriptTable.cs" />
     <Compile Include="Math\Collision.cs" />
     <Compile Include="Script Handling\ScriptReloadMessage.cs">
