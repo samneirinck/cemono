@@ -32,7 +32,7 @@ namespace CryEngine
 		internal Attachment(IntPtr ptr, EntityBase owner)
 		{
 			Owner = owner;
-			Owner.OnDestroyed += (instance) => { Remove(); };
+			Owner.OnDestroyed += (instance) => { NativeMethods.Entity.RemoveEntity(Id, false); };
 
 			this.SetAttachmentHandle(new HandleRef(this, ptr));
 
