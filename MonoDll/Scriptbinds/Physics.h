@@ -62,7 +62,7 @@ public:
 
 	static int RayWorldIntersection(Vec3, Vec3, int, unsigned int, ray_hit &hit, int, mono::object);
 
-	static void SimulateExplosion(pe_explosion &explosion);
+	static mono::object SimulateExplosion(pe_explosion explosion);
 
 	static pe_status_living GetLivingEntityStatus(IEntity *pEntity);
 

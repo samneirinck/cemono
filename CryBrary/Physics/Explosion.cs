@@ -1,73 +1,78 @@
 ﻿using System;
+using System.Collections.Generic;
+
 using CryEngine.Native;
 
 namespace CryEngine
 {
-	public struct Explosion
+	public class Explosion
 	{
-		public void Explode()
+		public Explosion()
 		{
-			rminOcc = 0.07f;
-			if(Direction.IsZero)
-				Direction = new Vec3(0, 0, 1);
-
-			if (MaxRadius == 0)
-				MaxRadius = 0.0001f;
-
-			nOccRes = MaxRadius > 50 ? 0 : 16;
-
-			NativeMethods.Physics.SimulateExplosion(ref this);
+			explosion = new pe_explosion
+			{
+				rminOcc = 0.07f,
+				explDir = new Vec3(0, 0, 1)
+			};
 		}
 
-		/// <summary>
-		/// epicenter for the occlusion computation
-		/// </summary>
-		public Vec3 Epicenter { get; set; }
+		public void Explode()
+		{
+			if (explosion.rmax == 0)
+				explosion.rmax = 0.0001f;
+			explosion.nOccRes = explosion.rmax > 50 ? 0 : 16;
 
-		/// <summary>
-		/// epicenter for impulse computation
-		/// </summary>
-		public Vec3 EpicenterImpulse { get; set; }
+			affectedEnts = NativeMethods.Physics.SimulateExplosion(explosion);
+		}
 
-		public float MinRadius { get; set; }
-		public float MaxRadius { get; set; }
-		public float Radius { get; set; }
+		public Vec3 Epicenter { get { return explosion.epicenter; } set { explosion.epicenter = value; } }
+		public Vec3 EpicenterImpulse { get { return explosion.epicenterImp; } set { explosion.epicenterImp = value; } }
 
-		/// <summary>
-		/// Pressure at r
-		/// </summary>
-		public float ImpulsePressure { get; set; }
+		public Vec3 Direction { get { return explosion.explDir; } set { explosion.explDir = value; } }
 
-		int nOccRes { get; set; } // resolution of the occlusion map (0 disables)
-		int nGrow { get; set; } // grow occlusion projections by this amount of cells to allow explosion to reach around corners a bit
-		float rminOcc { get; set; } // ignores geometry closer than this for occlusion computations
+		public float Radius { get { return explosion.r; } set { explosion.r = value; } }
+		public float MinRadius { get { return explosion.rmin; } set { explosion.rmin = value; } }
+		public float MaxRadius { get { return explosion.rmax; } set { explosion.rmax = value; } }
 
-		/// <summary>
-		/// explosion shape for iholeType will be scaled by this holeSize / shape's declared size
-		/// </summary>
-		public float HoleSize { get; set; }
+		public float ImpulsePressure { get { return explosion.impulsivePressureAtR; } set { explosion.impulsivePressureAtR = value; } }
 
-		/// <summary>
-		/// hit direction, for aligning the explosion boolean shape
-		/// </summary>
-		public Vec3 Direction { get; set; }
-		/// <summary>
-		/// breakability index for the explosion (less than 0 disables)
-		/// </summary>
-		/// 
-		public int iHoleType { get; set; }
+		public float HoleSize { get { return explosion.holeSize; } set { explosion.holeSize = value; } }
+		public int HoleType { get { return explosion.iholeType; } set { explosion.iholeType = value; } }
 
-		/// <summary>
-		/// force deformation even if breakImpulseScale is zero
-		/// </summary>
-		public bool ForceEntityDeformation { get; set; }
+		public bool ForceEntityDeformation { get { return explosion.forceDeformEntities; } set { explosion.forceDeformEntities = value; } }
 
 		// filled as results
+		object[] affectedEnts { get; set; }
+		public IEnumerable<PhysicalEntity> AffectedEntities
+		{
+			get
+			{
+				foreach (IntPtr ptr in affectedEnts)
+					yield return new PhysicalEntity(ptr);
+			}
+		}
+
+		internal pe_explosion explosion;
+	}
+
+	internal struct pe_explosion
+	{
+		public Vec3 epicenter;	// epicenter for the occlusion computation
+		public Vec3 epicenterImp; // epicenter for impulse computation
+		// the impulse a surface fragment with area dS and normal n gets is: dS*k*n*max(0,n*dir_to_epicenter)/max(rmin, dist_to_epicenter)^2
+		// k is selected in such way that at impulsivePressureAtR = k/r^2
+		public float rmin, rmax, r;
+		public float impulsivePressureAtR;
+		public int nOccRes; // resolution of the occlusion map (0 disables)
+		public int nGrow; // grow occlusion projections by this amount of cells to allow explosion to reach around corners a bit
+		public float rminOcc; // ignores geometry closer than this for occlusion computations
+		public float holeSize;	// explosion shape for iholeType will be scaled by this holeSize / shape's declared size
+		public Vec3 explDir;	// hit direction, for aligning the explosion boolean shape
+		public int iholeType; // breakability index for the explosion (<0 disables)
+		public bool forceDeformEntities; // force deformation even if breakImpulseScale is zero
+		// filled as results
 		IntPtr pAffectedEnts { get; set; }
-
 		IntPtr pAffectedEntsExposure { get; set; }	// 0..1 exposure, computed from the occlusion map
-
-		int nAffectedEnts;
-		public int AffectedEntityCount { get { return nAffectedEnts; } }
+		public int nAffectedEnts;
 	}
 }
