@@ -21,14 +21,12 @@ namespace CryEngine
 			: this()
 		{
 			PhysicsPointer = physEntPtr;
-			Owner = Entity.Get(NativeMethods.Entity.GetEntityFromPhysics(PhysicsPointer));
-			
 		}
 
 		internal PhysicalEntity(EntityBase _entity)
 			: this()
 		{
-			Owner = _entity;
+			owner = _entity;
 			PhysicsPointer = NativeMethods.Physics.GetPhysicalEntity(Owner.GetEntityHandle().Handle);
 		}
 
@@ -216,7 +214,17 @@ namespace CryEngine
 		public pe_status_living LivingStatus { get { return NativeMethods.Physics.GetLivingEntityStatus(Owner.GetEntityHandle().Handle); } }
 
 		internal IntPtr PhysicsPointer { get; set; }
-		public EntityBase Owner { get; private set; }
+		private EntityBase owner;
+		public EntityBase Owner
+		{
+			get
+			{
+				if (owner == null)
+					owner = Entity.Get(NativeMethods.Entity.GetEntityFromPhysics(PhysicsPointer));
+
+				return owner;
+			}
+		}
 
 		// Sent directly to the engine8
 		internal PhysicalizationParams _params;
