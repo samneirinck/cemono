@@ -20,10 +20,10 @@ namespace CryEngine.Native
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static ActorInfo _GetActorInfoById(uint entId);
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static void _RegisterActorClass(string name, bool isNative);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern private static ActorInfo _CreateActor(int channelId, string name, string className, Vec3 pos, Quat rot, Vec3 scale);
+        extern internal static void _RegisterActorClass(string name, bool isNative);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        extern private static ActorInfo _CreateActor(int channelId, string name, string className, Vec3 pos, Quat rot, Vec3 scale);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static void _RemoveActor(uint id);
 
@@ -34,7 +34,7 @@ namespace CryEngine.Native
 
         public void RegisterClass(string className, bool isNative)
         {
-			_RegisterActorClass(className, isNative);
+            _RegisterActorClass(className, isNative);
         }
 
         public float GetPlayerHealth(IntPtr actorPtr)
@@ -67,7 +67,7 @@ namespace CryEngine.Native
             return _GetActorInfoById(entId);
         }
 
-		public ActorInfo CreateActor(int channelId, string name, string className, Vec3 pos, Quat rot, Vec3 scale)
+        public ActorInfo CreateActor(int channelId, string name, string className, Vec3 pos, Quat rot, Vec3 scale)
         {
             return _CreateActor(channelId, name, className, pos, rot, scale);
         }

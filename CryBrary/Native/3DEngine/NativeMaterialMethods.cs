@@ -14,8 +14,8 @@ namespace CryEngine.Native
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static IntPtr _GetSubMaterial(IntPtr materialPtr, int slot);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern internal static int _GetSubmaterialCount(IntPtr materialPtr);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        extern internal static int _GetSubmaterialCount(IntPtr materialPtr);
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static IntPtr _GetMaterial(IntPtr entityPtr, int slot);
@@ -68,10 +68,10 @@ namespace CryEngine.Native
             return _GetSubMaterial(materialPtr, slot);
         }
 
-		public int GetSubmaterialCount(IntPtr materialPtr)
-		{
-			return _GetSubmaterialCount(materialPtr);
-		}
+        public int GetSubmaterialCount(IntPtr materialPtr)
+        {
+            return _GetSubmaterialCount(materialPtr);
+        }
 
         public IntPtr GetMaterial(IntPtr entityPtr, int slot)
         {

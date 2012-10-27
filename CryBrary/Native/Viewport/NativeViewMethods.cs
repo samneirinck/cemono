@@ -14,21 +14,21 @@ namespace CryEngine.Native
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static void _SetActiveView(uint viewId);
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static Vec3 _GetViewPosition(uint viewId);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static Quat _GetViewRotation(uint viewId);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static float _GetViewNearPlane(uint viewId);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static float _GetViewFieldOfView(uint viewId);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static void _SetViewPosition(uint viewId, Vec3 pos);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static void _SetViewRotation(uint viewId, Quat rot);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static void _SetViewNearPlane(uint viewId, float nearPlane);
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static void _SetViewFieldOfView(uint viewId, float fov);
 
         public uint GetView(uint linkedEntityId, bool forceCreate = false)
@@ -51,44 +51,44 @@ namespace CryEngine.Native
             _SetActiveView(viewId);
         }
 
-		public Vec3 GetViewPosition(uint viewId)
-		{
-			return _GetViewPosition(viewId);
-		}
+        public Vec3 GetViewPosition(uint viewId)
+        {
+            return _GetViewPosition(viewId);
+        }
 
-		public Quat GetViewRotation(uint viewId)
-		{
-			return _GetViewRotation(viewId);
-		}
+        public Quat GetViewRotation(uint viewId)
+        {
+            return _GetViewRotation(viewId);
+        }
 
-		public float GetViewNearPlane(uint viewId)
-		{
-			return _GetViewNearPlane(viewId);
-		}
+        public float GetViewNearPlane(uint viewId)
+        {
+            return _GetViewNearPlane(viewId);
+        }
 
-		public float GetViewFieldOfView(uint viewId)
-		{
-			return _GetViewFieldOfView(viewId);
-		}
+        public float GetViewFieldOfView(uint viewId)
+        {
+            return _GetViewFieldOfView(viewId);
+        }
 
-		public void SetViewPosition(uint viewId, Vec3 pos)
-		{
-			_SetViewPosition(viewId, pos);
-		}
+        public void SetViewPosition(uint viewId, Vec3 pos)
+        {
+            _SetViewPosition(viewId, pos);
+        }
 
-		public void SetViewRotation(uint viewId, Quat rot)
-		{
-			_SetViewRotation(viewId, rot);
-		}
+        public void SetViewRotation(uint viewId, Quat rot)
+        {
+            _SetViewRotation(viewId, rot);
+        }
 
-		public void SetViewNearPlane(uint viewId, float nearPlane)
-		{
-			_SetViewNearPlane(viewId, nearPlane);
-		}
+        public void SetViewNearPlane(uint viewId, float nearPlane)
+        {
+            _SetViewNearPlane(viewId, nearPlane);
+        }
 
-		public void SetViewFieldOfView(uint viewId, float fov)
-		{
-			_SetViewFieldOfView(viewId, fov);
-		}
+        public void SetViewFieldOfView(uint viewId, float fov)
+        {
+            _SetViewFieldOfView(viewId, fov);
+        }
     }
 }

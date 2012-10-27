@@ -12,20 +12,20 @@ using System.CodeDom.Compiler;
 
 namespace CryEngine.Initialization
 {
-	public partial class ScriptReloadMessage : Form
-	{
-		public ScriptReloadMessage(Exception exception, bool canRevert)
-		{
-			InitializeComponent();
+    public partial class ScriptReloadMessage : Form
+    {
+        public ScriptReloadMessage(Exception exception, bool canRevert)
+        {
+            InitializeComponent();
 
-			tryAgainButton.Click += (s, a) => ScriptManager.Instance.OnReload();
-			revertButton.Click += (s, a) => ScriptManager.Instance.OnRevert();
-			exitButton.Click += (s, a) => Process.GetCurrentProcess().Kill();
+            tryAgainButton.Click += (s, a) => ScriptManager.Instance.OnReload();
+            revertButton.Click += (s, a) => ScriptManager.Instance.OnRevert();
+            exitButton.Click += (s, a) => Process.GetCurrentProcess().Kill();
 
-			if (!canRevert)
-				revertButton.Enabled = false;
+            if (!canRevert)
+                revertButton.Enabled = false;
 
-			errorBox.Text = exception.ToString();
-		}
-	}
+            errorBox.Text = exception.ToString();
+        }
+    }
 }

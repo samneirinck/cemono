@@ -12,7 +12,7 @@ namespace CryEngine
 
             Reset();
 
-			ScriptManager.Instance.AddScriptInstance(this, ScriptType.CryScriptInstance);
+            ScriptManager.Instance.AddScriptInstance(this, ScriptType.CryScriptInstance);
         }
 
         public void Reset()

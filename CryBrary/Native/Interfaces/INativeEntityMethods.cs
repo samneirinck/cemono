@@ -5,15 +5,15 @@ namespace CryEngine.Native
 {
     internal interface INativeEntityMethods
     {
-		void PlayAnimation(IntPtr ptr, string animationName, int slot, int layer, float blend, float speed, AnimationFlags flags);
-		void StopAnimationInLayer(IntPtr ptr, int slot, int layer, float blendOutTime);
-		void StopAnimationsInAllLayers(IntPtr ptr, int slot);
+        void PlayAnimation(IntPtr ptr, string animationName, int slot, int layer, float blend, float speed, AnimationFlags flags);
+        void StopAnimationInLayer(IntPtr ptr, int slot, int layer, float blendOutTime);
+        void StopAnimationsInAllLayers(IntPtr ptr, int slot);
 
-		EntityBase SpawnEntity(EntitySpawnParams spawnParams, bool autoInit, out EntityInfo entityInfo);
-		void RemoveEntity(EntityId entityId, bool forceRemoveNow = false);
+        EntityBase SpawnEntity(EntitySpawnParams spawnParams, bool autoInit, out EntityInfo entityInfo);
+        void RemoveEntity(EntityId entityId, bool forceRemoveNow = false);
 
-		IntPtr GetEntity(EntityId entityId);
-		EntityId GetEntityId(IntPtr entPtr);
+        IntPtr GetEntity(EntityId entityId);
+        EntityId GetEntityId(IntPtr entPtr);
         uint FindEntity(string name);
         object[] GetEntitiesByClass(string className);
         object[] GetEntitiesInBox(BoundingBox bbox, EntityQueryFlags flags);
@@ -58,46 +58,46 @@ namespace CryEngine.Native
 
         void RegisterClass(EntityRegistrationParams registrationParams);
 
-		bool AddEntityLink(IntPtr entPtr, string linkName, EntityId otherId, Quat relativeRot, Vec3 relativePos);
-		void RemoveEntityLink(IntPtr entPtr, EntityId otherId);
+        bool AddEntityLink(IntPtr entPtr, string linkName, EntityId otherId, Quat relativeRot, Vec3 relativePos);
+        void RemoveEntityLink(IntPtr entPtr, EntityId otherId);
 
-		int LoadLight(IntPtr entPtr, int slot, LightParams lightParams);
-		void FreeSlot(IntPtr entPtr, int slot);
+        int LoadLight(IntPtr entPtr, int slot, LightParams lightParams);
+        void FreeSlot(IntPtr entPtr, int slot);
 
-		int GetAttachmentCount(IntPtr entPtr, int slot);
-		IntPtr GetAttachmentByIndex(IntPtr entPtr, int index, int slot);
-		IntPtr GetAttachmentByName(IntPtr entPtr, string name, int slot);
+        int GetAttachmentCount(IntPtr entPtr, int slot);
+        IntPtr GetAttachmentByIndex(IntPtr entPtr, int index, int slot);
+        IntPtr GetAttachmentByName(IntPtr entPtr, string name, int slot);
 
-		void AttachmentUseEntityPosition(IntPtr entityAttachmentPtr, bool use);
-		void AttachmentUseEntityRotation(IntPtr entityAttachmentPtr, bool use);
+        void AttachmentUseEntityPosition(IntPtr entityAttachmentPtr, bool use);
+        void AttachmentUseEntityRotation(IntPtr entityAttachmentPtr, bool use);
 
-		IntPtr LinkEntityToAttachment(IntPtr attachmentPtr, uint entityId);
-		string GetAttachmentObject(IntPtr attachmentPtr);
+        IntPtr LinkEntityToAttachment(IntPtr attachmentPtr, uint entityId);
+        string GetAttachmentObject(IntPtr attachmentPtr);
 
-		QuatT GetAttachmentAbsolute(IntPtr attachmentPtr);
-		QuatT GetAttachmentRelative(IntPtr attachmentPtr);
-		QuatT GetAttachmentDefaultAbsolute(IntPtr attachmentPtr);
-		QuatT GetAttachmentDefaultRelative(IntPtr attachmentPtr);
+        QuatT GetAttachmentAbsolute(IntPtr attachmentPtr);
+        QuatT GetAttachmentRelative(IntPtr attachmentPtr);
+        QuatT GetAttachmentDefaultAbsolute(IntPtr attachmentPtr);
+        QuatT GetAttachmentDefaultRelative(IntPtr attachmentPtr);
 
-		IntPtr GetAttachmentMaterial(IntPtr attachmentPtr);
-		void SetAttachmentMaterial(IntPtr attachmentPtr, IntPtr materialPtr);
+        IntPtr GetAttachmentMaterial(IntPtr attachmentPtr);
+        void SetAttachmentMaterial(IntPtr attachmentPtr, IntPtr materialPtr);
 
-		QuatT GetJointAbsolute(IntPtr entPtr, string jointName, int characterSlot);
-		QuatT GetJointAbsoluteDefault(IntPtr entPtr, string jointName, int characterSlot);
-		QuatT GetJointRelative(IntPtr entPtr, string jointName, int characterSlot);
-		QuatT GetJointRelativeDefault(IntPtr entPtr, string jointName, int characterSlot);
+        QuatT GetJointAbsolute(IntPtr entPtr, string jointName, int characterSlot);
+        QuatT GetJointAbsoluteDefault(IntPtr entPtr, string jointName, int characterSlot);
+        QuatT GetJointRelative(IntPtr entPtr, string jointName, int characterSlot);
+        QuatT GetJointRelativeDefault(IntPtr entPtr, string jointName, int characterSlot);
 
-		void SetJointAbsolute(IntPtr entPtr, string jointName, int characterSlot, QuatT absolute);
+        void SetJointAbsolute(IntPtr entPtr, string jointName, int characterSlot, QuatT absolute);
 
-		void SetTriggerBBox(IntPtr entPtr, BoundingBox bounds);
-		BoundingBox GetTriggerBBox(IntPtr entPtr);
-		void InvalidateTrigger(IntPtr entPtr);
+        void SetTriggerBBox(IntPtr entPtr, BoundingBox bounds);
+        BoundingBox GetTriggerBBox(IntPtr entPtr);
+        void InvalidateTrigger(IntPtr entPtr);
 
-		IntPtr AcquireAnimatedCharacter(uint entId);
+        IntPtr AcquireAnimatedCharacter(uint entId);
 
-		void Hide(IntPtr entityId, bool hide);
-		bool IsHidden(IntPtr entityId);
+        void Hide(IntPtr entityId, bool hide);
+        bool IsHidden(IntPtr entityId);
 
-		IntPtr GetEntityFromPhysics(IntPtr physEntPtr);
+        IntPtr GetEntityFromPhysics(IntPtr physEntPtr);
     }
 }

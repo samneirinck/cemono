@@ -3,18 +3,18 @@
 
 namespace CryEngine.Utils
 {
-	internal static class ProjectSettings
-	{
-		/// <summary>
-		/// Designates what link will be opened when the user presses 'Report Bug' in the exception form.
-		/// </summary>
-		public static readonly string BugReportLink = "http://www.crydev.net/posting.php?mode=post&f=375"; /* CryMono sub-forum @ CryDev.net */
+    internal static class ProjectSettings
+    {
+        /// <summary>
+        /// Designates what link will be opened when the user presses 'Report Bug' in the exception form.
+        /// </summary>
+        public static readonly string BugReportLink = "http://www.crydev.net/posting.php?mode=post&f=375"; /* CryMono sub-forum @ CryDev.net */
 
-		/// <summary>
-		/// Message displayed in the exception form when an exception has been thrown.
-		/// </summary>
-		public static readonly string ExceptionMessage = @"An unhandled exception occurred!
+        /// <summary>
+        /// Message displayed in the exception form when an exception has been thrown.
+        /// </summary>
+        public static readonly string ExceptionMessage = @"An unhandled exception occurred!
 
-		If you believe this is a CryMono bug, please report it on CryDev, including the stacktrace below.";
-	}
+        If you believe this is a CryMono bug, please report it on CryDev, including the stacktrace below.";
+    }
 }

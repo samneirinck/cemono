@@ -9,14 +9,9 @@ namespace CryEngine.Async.Jobs
     {
         private float _timeElapsed;
 
-        /// <summary>
-        /// Delay in milliseconds
-        /// </summary>
-        public float DelayInMilliseconds { get; protected set; }
-
 
         /// <summary>
-        /// Creates an instance of the TimeDelayJob
+        /// Initializes a new instance of the <see cref="TimeDelayJob"/> class.
         /// </summary>
         /// <param name="milliseconds"></param>
         public TimeDelayJob(float milliseconds)
@@ -32,13 +27,18 @@ namespace CryEngine.Async.Jobs
         }
 
         /// <summary>
-        /// Creates an instance of the TimeDelayJob
+        /// Initializes a new instance of the <see cref="TimeDelayJob"/> class.
         /// </summary>
         /// <param name="delay"></param>
         public TimeDelayJob(TimeSpan delay)
             : this(System.Convert.ToSingle(delay.TotalMilliseconds))
         {
         }
+
+        /// <summary>
+        /// Gets or sets the delay in milliseconds
+        /// </summary>
+        public float DelayInMilliseconds { get; protected set; }
 
         public override bool Update(float frameTime)
         {
@@ -48,6 +48,7 @@ namespace CryEngine.Async.Jobs
                 source.TrySetResult(true);
                 IsFinished = true;
             }
+
             return IsFinished;
         }
     }

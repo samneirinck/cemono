@@ -11,7 +11,7 @@ namespace CryEngine.Native
        IntPtr CreateMaterial(string name);
        IntPtr LoadMaterial(string name, bool makeIfNotFound = true, bool nonRemovable = false);
        IntPtr GetSubMaterial(IntPtr materialPtr, int slot);
-	   int GetSubmaterialCount(IntPtr materialPtr);
+       int GetSubmaterialCount(IntPtr materialPtr);
        IntPtr GetMaterial(IntPtr entityPtr, int slot);
        void SetMaterial(IntPtr entityPtr, IntPtr materialPtr, int slot);
        IntPtr CloneMaterial(IntPtr materialPtr, int subMtl);

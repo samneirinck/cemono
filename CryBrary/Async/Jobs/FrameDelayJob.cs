@@ -8,12 +8,7 @@
         private int _framesWaited;
 
         /// <summary>
-        /// Number of frames to wait
-        /// </summary>
-        public int FramesToWait { get; protected set; }
-
-        /// <summary>
-        /// Creates an instance of the job
+        /// Initializes a new instance of the <see cref="FrameDelayJob"/> class.
         /// </summary>
         /// <param name="numberOfFramesToWait"></param>
         public FrameDelayJob(int numberOfFramesToWait)
@@ -28,6 +23,10 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets the number of frames to wait
+        /// </summary>
+        public int FramesToWait { get; protected set; }
 
         public override bool Update(float frameTime)
         {
@@ -40,6 +39,7 @@
                     IsFinished = true;
                 }
             }
+
             return IsFinished;
         }
     }

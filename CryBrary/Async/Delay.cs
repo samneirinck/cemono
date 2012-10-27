@@ -16,10 +16,9 @@ namespace CryEngine
         /// Creates a Task object from an IAsyncJob instance
         /// </summary>
         /// <param name="job"></param>
-        /// <returns></returns>
         public static Task CreateTaskFromJob(IAsyncJob job)
         {
-//            job.Task.ConfigureAwait(false).GetAwaiter();
+            // job.Task.ConfigureAwait(false).GetAwaiter();
             Awaiter.Instance.Jobs.Add(job);
             return job.Task;
         }
@@ -28,7 +27,6 @@ namespace CryEngine
         /// Delays execution for a number of frames
         /// </summary>
         /// <param name="numFrames"></param>
-        /// <returns></returns>
         public static Task FrameDelay(int numFrames)
         {
             var frameDelayJob = new FrameDelayJob(numFrames);
@@ -40,7 +38,6 @@ namespace CryEngine
         /// Delays execution for a supplied time amount
         /// </summary>
         /// <param name="delay"></param>
-        /// <returns></returns>
         public static Task TimeDelay(TimeSpan delay)
         {
             var timeDelayJob = new TimeDelayJob(delay);
@@ -52,7 +49,6 @@ namespace CryEngine
         /// Delays execution for a supplied time amount (in milliseconds)
         /// </summary>
         /// <param name="delayInMilliseconds"></param>
-        /// <returns></returns>
         public static Task TimeDelay(float delayInMilliseconds)
         {
             var timeDelayJob = new TimeDelayJob(delayInMilliseconds);

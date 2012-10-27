@@ -2,7 +2,7 @@ namespace CryEngine.Native
 {
     internal interface INativeCVarMethods
     {
-		void Execute(string command, bool silent);
+        void Execute(string command, bool silent);
 
         void RegisterCommand(string name, string description, CVarFlags flags);
 

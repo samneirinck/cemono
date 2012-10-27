@@ -1,8 +1,7 @@
-﻿
-namespace CryEngine.Sandbox
+﻿namespace CryEngine.Sandbox
 {
-	public static class UIConstants
-	{
-		public const int MAX_SLIDER_VALUE = 100;
-	}
+    public static class UIConstants
+    {
+        public const int MAX_SLIDER_VALUE = 100;
+    }
 }
