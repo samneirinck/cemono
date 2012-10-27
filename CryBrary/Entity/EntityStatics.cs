@@ -108,7 +108,7 @@ namespace CryEngine
 		/// <param name="entityId">The ID as an unsigned integer.</param>
 		/// <returns>A reference to the entity.</returns>
 		/// <remarks>If the entity does not exist in the managed space, this function will attempt to find
-		/// a C++ entity with the specified ID></remarks>
+		/// a C++ entity with the specified ID</remarks>
 		public static T Get<T>(EntityId entityId) where T : EntityBase
 		{
 #if !(RELEASE && RELEASE_DISABLE_CHECKS)
