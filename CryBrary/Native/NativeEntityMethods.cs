@@ -20,6 +20,8 @@ namespace CryEngine.Native
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern internal static IntPtr _GetEntity(uint entityId);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern internal static EntityId _GetEntityId(IntPtr entPtr);
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern internal static uint _FindEntity(string name);
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -161,6 +163,9 @@ namespace CryEngine.Native
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static bool _IsHidden(IntPtr entityId);
 
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static IntPtr _GetEntityFromPhysics(IntPtr physEntPtr);
+
 		public void PlayAnimation(IntPtr ptr, string animationName, int slot, int layer, float blend, float speed, AnimationFlags flags)
 		{
 			_PlayAnimation(ptr, animationName, slot, layer, blend, speed, flags);
@@ -190,6 +195,11 @@ namespace CryEngine.Native
         {
             return _GetEntity(entityId);
         }
+
+		public EntityId GetEntityId(IntPtr entPtr)
+		{
+			return _GetEntityId(entPtr);
+		}
 
         public uint FindEntity(string name)
         {
@@ -479,6 +489,11 @@ namespace CryEngine.Native
 		public bool IsHidden(IntPtr entityId)
 		{
 			return _IsHidden(entityId);
+		}
+
+		public IntPtr GetEntityFromPhysics(IntPtr physEntPtr)
+		{
+			return _GetEntityFromPhysics(physEntPtr);
 		}
     }
 }

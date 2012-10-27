@@ -6,31 +6,35 @@ using System.Runtime.InteropServices;
 namespace CryEngine
 {
 	/// <summary>
-	/// Wrapper class to make physics parameters more intuitive.
+	/// Physical entity present in the physics system.
 	/// </summary>
-	public class EntityPhysics
+	public class PhysicalEntity
 	{
-		internal EntityPhysics() { Clear(); }
-
-		internal EntityPhysics(EntityBase _entity)
+		internal PhysicalEntity() 
 		{
-			entity = _entity;
-
 			Clear();
-
-			PhysicsPointer = NativeMethods.Physics.GetPhysicalEntity(entity.GetEntityHandle().Handle);
 
 			AutoUpdate = true;
 		}
 
-		internal void OnScriptReload()
+		internal PhysicalEntity(IntPtr physEntPtr)
+			: this()
 		{
-			PhysicsPointer = NativeMethods.Physics.GetPhysicalEntity(entity.GetEntityHandle().Handle);
+			PhysicsPointer = physEntPtr;
+			Owner = Entity.Get(NativeMethods.Entity.GetEntityFromPhysics(PhysicsPointer));
+			
+		}
+
+		internal PhysicalEntity(EntityBase _entity)
+			: this()
+		{
+			Owner = _entity;
+			PhysicsPointer = NativeMethods.Physics.GetPhysicalEntity(Owner.GetEntityHandle().Handle);
 		}
 
 		public void Break(BreakageParameters breakageParams)
 		{
-			NativeMethods.Entity.BreakIntoPieces(entity.GetEntityHandle().Handle, 0, 0, breakageParams);
+			NativeMethods.Entity.BreakIntoPieces(Owner.GetEntityHandle().Handle, 0, 0, breakageParams);
 		}
 
 		#region Basics
@@ -44,7 +48,7 @@ namespace CryEngine
 		/// </summary>
 		public void Save()
 		{
-			NativeMethods.Physics.Physicalize(entity.GetEntityHandle().Handle, _params);
+			NativeMethods.Physics.Physicalize(Owner.GetEntityHandle().Handle, _params);
 		}
 
 		/// <summary>
@@ -82,7 +86,7 @@ namespace CryEngine
 			if (point != null)
 				impulse.point = point.Value;
 
-			NativeMethods.Physics.AddImpulse(entity.GetEntityHandle().Handle, impulse);
+			NativeMethods.Physics.AddImpulse(Owner.GetEntityHandle().Handle, impulse);
 		}
 
 		/// <summary>
@@ -92,7 +96,7 @@ namespace CryEngine
 		public bool Resting
 		{
 			get { throw new NotImplementedException(); }
-			set { NativeMethods.Physics.Sleep(entity.GetEntityHandle().Handle, value); }
+			set { NativeMethods.Physics.Sleep(Owner.GetEntityHandle().Handle, value); }
 		}
 
 		/// <summary>
@@ -209,12 +213,12 @@ namespace CryEngine
 		#endregion
 		#endregion
 
-		public pe_status_living LivingStatus { get { return NativeMethods.Physics.GetLivingEntityStatus(entity.GetEntityHandle().Handle); } }
+		public pe_status_living LivingStatus { get { return NativeMethods.Physics.GetLivingEntityStatus(Owner.GetEntityHandle().Handle); } }
 
 		internal IntPtr PhysicsPointer { get; set; }
-		public EntityBase entity;
+		public EntityBase Owner { get; private set; }
 
-		// Sent directly to the engine
+		// Sent directly to the engine8
 		internal PhysicalizationParams _params;
 	}
 

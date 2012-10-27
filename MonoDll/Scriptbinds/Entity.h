@@ -188,6 +188,7 @@ protected:
 	static void RemoveEntity(EntityId, bool removeNow);
 
 	static IEntity *GetEntity(EntityId id);
+	static EntityId GetEntityId(IEntity *pEntity);
 
 	static bool RegisterEntityClass(SEntityRegistrationParams);
 
@@ -274,6 +275,8 @@ protected:
 
 	static void Hide(IEntity *pEntity, bool hide);
 	static bool IsHidden(IEntity *pEntity);
+
+	static IEntity *GetEntityFromPhysics(IPhysicalEntity *pPhysEnt);
 	// ~Scriptbinds
 
 	static std::vector<const char *> m_monoEntityClasses;
