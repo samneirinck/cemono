@@ -87,7 +87,7 @@ namespace CryEngine
 		/// </summary>
 		public bool IsNormalized
 		{
-			get { return Math.Abs((X * X) + (Y * Y) - 1f) < Math.ZeroTolerance; }
+			get { return MathHelpers.Abs((X * X) + (Y * Y) - 1f) < MathHelpers.ZeroTolerance; }
 		}
 
 		/// <summary>
@@ -131,7 +131,7 @@ namespace CryEngine
 		/// </remarks>
 		public float Length
 		{
-			get { return Math.Sqrt((X * X) + (Y * Y)); }
+			get { return MathHelpers.Sqrt((X * X) + (Y * Y)); }
 		}
 
 		/// <summary>
@@ -153,7 +153,7 @@ namespace CryEngine
 		public void Normalize()
 		{
 			float length = Length;
-			if(length > Math.ZeroTolerance)
+			if(length > MathHelpers.ZeroTolerance)
 			{
 				float inv = 1.0f / length;
 				X *= inv;
@@ -380,7 +380,7 @@ namespace CryEngine
 			float x = value1.X - value2.X;
 			float y = value1.Y - value2.Y;
 
-			result = Math.Sqrt((x * x) + (y * y));
+			result = MathHelpers.Sqrt((x * x) + (y * y));
 		}
 
 		/// <summary>
@@ -398,7 +398,7 @@ namespace CryEngine
 			float x = value1.X - value2.X;
 			float y = value1.Y - value2.Y;
 
-			return Math.Sqrt((x * x) + (y * y));
+			return MathHelpers.Sqrt((x * x) + (y * y));
 		}
 
 		/// <summary>
@@ -1152,8 +1152,8 @@ namespace CryEngine
 		/// </returns>
 		public bool Equals(Vec2 other, float epsilon)
 		{
-			return (Math.Abs(other.X - X) < epsilon &&
-				Math.Abs(other.Y - Y) < epsilon);
+			return (MathHelpers.Abs(other.X - X) < epsilon &&
+				MathHelpers.Abs(other.Y - Y) < epsilon);
 		}
 
 		/// <summary>

@@ -50,7 +50,7 @@ namespace CryEngine
 
 		public void SetRotationAA(float angle, Vec3 axis)
 		{
-			double s, c; Math.SinCos(angle, out s, out c); float mc = 1.0f - (float)c;
+			double s, c; MathHelpers.SinCos(angle, out s, out c); float mc = 1.0f - (float)c;
 			float mcx = mc * axis.X; float mcy = mc * axis.Y; float mcz = mc * axis.Z;
 			float tcx = axis.X * (float)s; float tcy = axis.Y * (float)s; float tcz = axis.Z * (float)s;
 			M00 = mcx * axis.X + (float)c; M01 = mcx * axis.Y - tcz; M02 = mcx * axis.Z + tcy;
@@ -101,7 +101,7 @@ namespace CryEngine
 
 		public void SetRotationX(float rad)
 		{
-			double s, c; Math.SinCos(rad, out s, out c);
+			double s, c; MathHelpers.SinCos(rad, out s, out c);
 			M00 = 1.0f; M01 = 0.0f; M02 = 0.0f;
 			M10 = 0.0f; M11 = (float)c; M12 = (float)-s;
 			M20 = 0.0f; M21 = (float)s; M22 = (float)c;
@@ -117,7 +117,7 @@ namespace CryEngine
 
 		public void SetRotationY(float rad)
 		{
-			double s, c; Math.SinCos(rad, out s, out c);
+			double s, c; MathHelpers.SinCos(rad, out s, out c);
 			M00 = (float)c; M01 = 0; M02 = (float)s;
 			M10 = 0; M11 = 1; M12 = 0;
 			M20 = (float)-s; M21 = 0; M22 = (float)c;
@@ -133,7 +133,7 @@ namespace CryEngine
 
 		public void SetRotationZ(float rad)
 		{
-			double s, c; Math.SinCos(rad, out s, out c);
+			double s, c; MathHelpers.SinCos(rad, out s, out c);
 			M00 = (float)c; M01 = (float)-s; M02 = 0.0f;
 			M10 = (float)s; M11 = (float)c; M12 = 0.0f;
 			M20 = 0.0f; M21 = 0.0f; M22 = 1.0f;
@@ -149,9 +149,9 @@ namespace CryEngine
 
 		public void SetRotationXYZ(Vec3 rad)
 		{
-			double sx, cx; Math.SinCos(rad.X, out sx, out cx);
-			double sy, cy; Math.SinCos(rad.Y, out sy, out cy);
-			double sz, cz; Math.SinCos(rad.Z, out sz, out cz);
+			double sx, cx; MathHelpers.SinCos(rad.X, out sx, out cx);
+			double sy, cy; MathHelpers.SinCos(rad.Y, out sy, out cy);
+			double sz, cz; MathHelpers.SinCos(rad.Z, out sz, out cz);
 			double sycz = (sy * cz), sysz = (sy * sz);
 			M00 = (float)(cy * cz); M01 = (float)(sycz * sx - cx * sz); M02 = (float)(sycz * cx + sx * sz);
 			M10 = (float)(cy * sz); M11 = (float)(sysz * sx + cx * cz); M12 = (float)(sysz * cx - sx * cz);
@@ -660,10 +660,10 @@ namespace CryEngine
 			d.M20 = d.M01 * d.M12 - d.M02 * d.M11; d.M21 = d.M02 * d.M10 - d.M00 * d.M12; d.M22 = d.M00 * d.M11 - d.M01 * d.M10;
 
 			//extract angle and axis
-			double cosine = Math.Clamp((d.M00 + d.M11 + d.M22 - 1.0) * 0.5, -1.0, +1.0);
-			double angle = Math.Atan2(Math.Sqrt(1.0 - cosine * cosine), cosine);
+			double cosine = MathHelpers.Clamp((d.M00 + d.M11 + d.M22 - 1.0) * 0.5, -1.0, +1.0);
+			double angle = MathHelpers.Atan2(MathHelpers.Sqrt(1.0 - cosine * cosine), cosine);
 			var axis = new Vec3(d.M21 - d.M12, d.M02 - d.M20, d.M10 - d.M01);
-			double l = Math.Sqrt(axis | axis); if(l > 0.00001) axis /= (float)l; else axis = new Vec3(1, 0, 0);
+			double l = MathHelpers.Sqrt(axis | axis); if(l > 0.00001) axis /= (float)l; else axis = new Vec3(1, 0, 0);
 			i.SetRotationAA((float)angle * t, axis); //angle interpolation and calculation of new delta-matrix (=26 flops) 
 
 			//final concatenation (=39 flops)
@@ -727,12 +727,12 @@ namespace CryEngine
 		/// <returns></returns>
 		int IsOrthonormal(float threshold = 0.001f)
 		{
-			var d0 = Math.Abs(GetColumn0() | GetColumn1()); if(d0 > threshold) return 0;
-			var d1 = Math.Abs(GetColumn0() | GetColumn2()); if(d1 > threshold) return 0;
-			var d2 = Math.Abs(GetColumn1() | GetColumn2()); if(d2 > threshold) return 0;
-			var a = (int)System.Convert.ChangeType((Math.Abs(1 - (GetColumn0() | GetColumn0()))) < threshold, typeof(int));
-			var b = (int)System.Convert.ChangeType((Math.Abs(1 - (GetColumn1() | GetColumn1()))) < threshold, typeof(int));
-			var c = (int)System.Convert.ChangeType((Math.Abs(1 - (GetColumn2() | GetColumn2()))) < threshold, typeof(int));
+			var d0 = MathHelpers.Abs(GetColumn0() | GetColumn1()); if(d0 > threshold) return 0;
+			var d1 = MathHelpers.Abs(GetColumn0() | GetColumn2()); if(d1 > threshold) return 0;
+			var d2 = MathHelpers.Abs(GetColumn1() | GetColumn2()); if(d2 > threshold) return 0;
+			var a = (int)System.Convert.ChangeType((MathHelpers.Abs(1 - (GetColumn0() | GetColumn0()))) < threshold, typeof(int));
+			var b = (int)System.Convert.ChangeType((MathHelpers.Abs(1 - (GetColumn1() | GetColumn1()))) < threshold, typeof(int));
+			var c = (int)System.Convert.ChangeType((MathHelpers.Abs(1 - (GetColumn2() | GetColumn2()))) < threshold, typeof(int));
 			return a & b & c;
 		}
 
@@ -747,9 +747,9 @@ namespace CryEngine
 		public bool IsEquivalent(Matrix34 m, float e = 0.05f)
 		{
 			return (
-			(Math.Abs(M00 - m.M00) <= e) && (Math.Abs(M01 - m.M01) <= e) && (Math.Abs(M02 - m.M02) <= e) && (Math.Abs(M03 - m.M03) <= e) &&
-			(Math.Abs(M10 - m.M10) <= e) && (Math.Abs(M11 - m.M11) <= e) && (Math.Abs(M12 - m.M12) <= e) && (Math.Abs(M13 - m.M13) <= e) &&
-			(Math.Abs(M20 - m.M20) <= e) && (Math.Abs(M21 - m.M21) <= e) && (Math.Abs(M22 - m.M22) <= e) && (Math.Abs(M23 - m.M23) <= e)
+			(MathHelpers.Abs(M00 - m.M00) <= e) && (MathHelpers.Abs(M01 - m.M01) <= e) && (MathHelpers.Abs(M02 - m.M02) <= e) && (MathHelpers.Abs(M03 - m.M03) <= e) &&
+			(MathHelpers.Abs(M10 - m.M10) <= e) && (MathHelpers.Abs(M11 - m.M11) <= e) && (MathHelpers.Abs(M12 - m.M12) <= e) && (MathHelpers.Abs(M13 - m.M13) <= e) &&
+			(MathHelpers.Abs(M20 - m.M20) <= e) && (MathHelpers.Abs(M21 - m.M21) <= e) && (MathHelpers.Abs(M22 - m.M22) <= e) && (MathHelpers.Abs(M23 - m.M23) <= e)
 			);
 		}
 		#endregion

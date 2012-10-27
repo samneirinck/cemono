@@ -250,7 +250,7 @@ namespace CryEngine
 			if(point.Z > box.Maximum.Z)
 				distance += (point.Z - box.Maximum.Z) * (point.Z - box.Maximum.Z);
 
-			return Math.Sqrt(distance);
+			return MathHelpers.Sqrt(distance);
 		}
 
 		/// <summary>
@@ -299,7 +299,7 @@ namespace CryEngine
 				distance += delta * delta;
 			}
 
-			return Math.Sqrt(distance);
+			return MathHelpers.Sqrt(distance);
 		}
 
 		/// <summary>
@@ -317,7 +317,7 @@ namespace CryEngine
 			Vec3.Distance(ref sphere.Center, ref point, out distance);
 			distance -= sphere.Radius;
 
-			return Math.Max(distance, 0f);
+			return MathHelpers.Max(distance, 0f);
 		}
 
 		/// <summary>
@@ -335,7 +335,7 @@ namespace CryEngine
 			Vec3.Distance(ref sphere1.Center, ref sphere2.Center, out distance);
 			distance -= sphere1.Radius + sphere2.Radius;
 
-			return Math.Max(distance, 0f);
+			return MathHelpers.Max(distance, 0f);
 		}
 
 		/// <summary>
@@ -355,7 +355,7 @@ namespace CryEngine
 			//Same thing as RayIntersectsSphere except that the radius of the sphere (point)
 			//is the epsilon for zero.
 			float b = Vec3.Dot(m, ray.Direction);
-			float c = Vec3.Dot(m, m) - Math.ZeroTolerance;
+			float c = Vec3.Dot(m, m) - MathHelpers.ZeroTolerance;
 
 			if(c > 0f && b > 0f)
 				return false;
@@ -397,12 +397,12 @@ namespace CryEngine
 			float denominator = cross.Length;
 
 			//Lines are parallel.
-			if(Math.Abs(denominator) < Math.ZeroTolerance)
+			if(MathHelpers.Abs(denominator) < MathHelpers.ZeroTolerance)
 			{
 				//Lines are parallel and on top of each other.
-				if(Math.Abs(ray2.Position.X - ray1.Position.X) < Math.ZeroTolerance &&
-					Math.Abs(ray2.Position.Y - ray1.Position.Y) < Math.ZeroTolerance &&
-					Math.Abs(ray2.Position.Z - ray1.Position.Z) < Math.ZeroTolerance)
+				if(MathHelpers.Abs(ray2.Position.X - ray1.Position.X) < MathHelpers.ZeroTolerance &&
+					MathHelpers.Abs(ray2.Position.Y - ray1.Position.Y) < MathHelpers.ZeroTolerance &&
+					MathHelpers.Abs(ray2.Position.Z - ray1.Position.Z) < MathHelpers.ZeroTolerance)
 				{
 					point = Vec3.Zero;
 					return true;
@@ -454,9 +454,9 @@ namespace CryEngine
 			Vec3 point2 = ray2.Position + (t * ray2.Direction);
 
 			//If the points are not equal, no intersection has occured.
-			if(Math.Abs(point2.X - point1.X) > Math.ZeroTolerance ||
-				Math.Abs(point2.Y - point1.Y) > Math.ZeroTolerance ||
-				Math.Abs(point2.Z - point1.Z) > Math.ZeroTolerance)
+			if(MathHelpers.Abs(point2.X - point1.X) > MathHelpers.ZeroTolerance ||
+				MathHelpers.Abs(point2.Y - point1.Y) > MathHelpers.ZeroTolerance ||
+				MathHelpers.Abs(point2.Z - point1.Z) > MathHelpers.ZeroTolerance)
 			{
 				point = Vec3.Zero;
 				return false;
@@ -482,7 +482,7 @@ namespace CryEngine
 			float direction;
 			Vec3.Dot(ref plane.Normal, ref ray.Direction, out direction);
 
-			if(Math.Abs(direction) < Math.ZeroTolerance)
+			if(MathHelpers.Abs(direction) < MathHelpers.ZeroTolerance)
 			{
 				distance = 0f;
 				return false;
@@ -494,7 +494,7 @@ namespace CryEngine
 
 			if(distance < 0f)
 			{
-				if(distance < -Math.ZeroTolerance)
+				if(distance < -MathHelpers.ZeroTolerance)
 				{
 					distance = 0;
 					return false;
@@ -578,7 +578,7 @@ namespace CryEngine
 			//If the ray is parallel to the triangle plane, there is no collision.
 			//This also means that we are not culling, the ray may hit both the
 			//back and the front of the triangle.
-			if(determinant > -Math.ZeroTolerance && determinant < Math.ZeroTolerance)
+			if(determinant > -MathHelpers.ZeroTolerance && determinant < MathHelpers.ZeroTolerance)
 			{
 				distance = 0f;
 				return false;
@@ -672,7 +672,7 @@ namespace CryEngine
 			distance = 0f;
 			float tmax = float.MaxValue;
 
-			if(Math.Abs(ray.Direction.X) < Math.ZeroTolerance)
+			if(MathHelpers.Abs(ray.Direction.X) < MathHelpers.ZeroTolerance)
 			{
 				if(ray.Position.X < box.Minimum.X || ray.Position.X > box.Maximum.X)
 				{
@@ -693,8 +693,8 @@ namespace CryEngine
 					t2 = temp;
 				}
 
-				distance = Math.Max(t1, distance);
-				tmax = Math.Min(t2, tmax);
+				distance = MathHelpers.Max(t1, distance);
+				tmax = MathHelpers.Min(t2, tmax);
 
 				if(distance > tmax)
 				{
@@ -703,7 +703,7 @@ namespace CryEngine
 				}
 			}
 
-			if(Math.Abs(ray.Direction.Y) < Math.ZeroTolerance)
+			if(MathHelpers.Abs(ray.Direction.Y) < MathHelpers.ZeroTolerance)
 			{
 				if(ray.Position.Y < box.Minimum.Y || ray.Position.Y > box.Maximum.Y)
 				{
@@ -724,8 +724,8 @@ namespace CryEngine
 					t2 = temp;
 				}
 
-				distance = Math.Max(t1, distance);
-				tmax = Math.Min(t2, tmax);
+				distance = MathHelpers.Max(t1, distance);
+				tmax = MathHelpers.Min(t2, tmax);
 
 				if(distance > tmax)
 				{
@@ -734,7 +734,7 @@ namespace CryEngine
 				}
 			}
 
-			if(Math.Abs(ray.Direction.Z) < Math.ZeroTolerance)
+			if(MathHelpers.Abs(ray.Direction.Z) < MathHelpers.ZeroTolerance)
 			{
 				if(ray.Position.Z < box.Minimum.Z || ray.Position.Z > box.Maximum.Z)
 				{
@@ -755,8 +755,8 @@ namespace CryEngine
 					t2 = temp;
 				}
 
-				distance = Math.Max(t1, distance);
-				tmax = Math.Min(t2, tmax);
+				distance = MathHelpers.Max(t1, distance);
+				tmax = MathHelpers.Min(t2, tmax);
 
 				if(distance > tmax)
 				{
@@ -822,7 +822,7 @@ namespace CryEngine
 				return false;
 			}
 
-			distance = -b - Math.Sqrt(discriminant);
+			distance = -b - MathHelpers.Sqrt(discriminant);
 
 			if(distance < 0f)
 				distance = 0f;
@@ -888,7 +888,7 @@ namespace CryEngine
 			float denominator;
 			Vec3.Dot(ref direction, ref direction, out denominator);
 
-			if(Math.Abs(denominator) < Math.ZeroTolerance)
+			if(MathHelpers.Abs(denominator) < MathHelpers.ZeroTolerance)
 				return false;
 
 			return true;
@@ -923,7 +923,7 @@ namespace CryEngine
 			//We assume the planes are normalized, therefore the denominator
 			//only serves as a parallel and coincident check. Otherwise we need
 			//to deivide the point by the denominator.
-			if(Math.Abs(denominator) < Math.ZeroTolerance)
+			if(MathHelpers.Abs(denominator) < MathHelpers.ZeroTolerance)
 			{
 				line = new Ray();
 				return false;

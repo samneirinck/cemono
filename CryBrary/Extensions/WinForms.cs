@@ -35,7 +35,7 @@ namespace CryEngine.Extensions
 		/// <param name="position"></param>
 		public static void ScrollTo(this TextBoxBase textBox, int position)
 		{
-			textBox.SelectionStart = Math.Clamp(position, 0, textBox.TextLength);
+			textBox.SelectionStart = MathHelpers.Clamp(position, 0, textBox.TextLength);
 			textBox.ScrollToCaret();
 		}
 	}

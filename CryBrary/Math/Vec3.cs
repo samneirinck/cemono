@@ -112,7 +112,7 @@ namespace CryEngine
 		/// </summary>
 		public bool IsNormalized
 		{
-			get { return Math.Abs((X * X) + (Y * Y) + (Z * Z) - 1f) < Math.ZeroTolerance; }
+			get { return MathHelpers.Abs((X * X) + (Y * Y) + (Z * Z) - 1f) < MathHelpers.ZeroTolerance; }
 		}
 
 		/// <summary>
@@ -153,7 +153,7 @@ namespace CryEngine
 			var sqrLength = LengthSquared;
 			if (sqrLength > (maxLength * maxLength))
 			{
-				var scale = maxLength * Math.ISqrt(sqrLength);
+				var scale = maxLength * MathHelpers.ISqrt(sqrLength);
 				X *= scale; Y *= scale; Z *= scale;
 			}
 		}
@@ -168,7 +168,7 @@ namespace CryEngine
 		/// </remarks>
 		public float Length
 		{
-			get { return Math.Sqrt((X * X) + (Y * Y) + (Z * Z)); }
+			get { return MathHelpers.Sqrt((X * X) + (Y * Y) + (Z * Z)); }
 		}
 
 		/// <summary>
@@ -192,7 +192,7 @@ namespace CryEngine
 		public void Normalize()
 		{
 			float length = Length;
-			if(length > Math.ZeroTolerance)
+			if(length > MathHelpers.ZeroTolerance)
 			{
 				float inv = 1.0f / length;
 				X *= inv;
@@ -218,7 +218,7 @@ namespace CryEngine
 			{
 				var fLen2 = X*X+Y*Y+Z*Z;	
 				if(fLen2 > 1.192092896e-07F)
-					return this * Math.ISqrt(fLen2);
+					return this * MathHelpers.ISqrt(fLen2);
 				else
 					return new Vec3(1, 0, 0);
 			}
@@ -442,7 +442,7 @@ namespace CryEngine
 		/// <returns>The clamped value.</returns>
 		public static Vec3 ClampXYZ(Vec3 value, float min, float max)
 		{
-			return new Vec3(Math.Clamp(value.X, min, max), Math.Clamp(value.Y, min, max), Math.Clamp(value.Z, min, max));
+			return new Vec3(MathHelpers.Clamp(value.X, min, max), MathHelpers.Clamp(value.Y, min, max), MathHelpers.Clamp(value.Z, min, max));
 		}
 
 		/// <summary>
@@ -453,7 +453,7 @@ namespace CryEngine
 		/// <returns>Restricted vector</returns>
 		public static Vec3 MinXYZ(Vec3 value, float min)
 		{
-			return new Vec3(Math.Min(value.X, min), Math.Min(value.Y, min), Math.Min(value.Z, min));
+			return new Vec3(MathHelpers.Min(value.X, min), MathHelpers.Min(value.Y, min), MathHelpers.Min(value.Z, min));
 		}
 
 		/// <summary>
@@ -464,7 +464,7 @@ namespace CryEngine
 		/// <returns>Restricted vector</returns>
 		public static Vec3 MaxXYZ(Vec3 value, float max)
 		{
-			return new Vec3(Math.Max(value.X, max), Math.Max(value.Y, max), Math.Max(value.Z, max));
+			return new Vec3(MathHelpers.Max(value.X, max), MathHelpers.Max(value.Y, max), MathHelpers.Max(value.Z, max));
 		}
 
 		/// <summary>
@@ -510,7 +510,7 @@ namespace CryEngine
 			float y = value1.Y - value2.Y;
 			float z = value1.Z - value2.Z;
 
-			result = Math.Sqrt((x * x) + (y * y) + (z * z));
+			result = MathHelpers.Sqrt((x * x) + (y * y) + (z * z));
 		}
 
 		/// <summary>
@@ -529,7 +529,7 @@ namespace CryEngine
 			float y = value1.Y - value2.Y;
 			float z = value1.Z - value2.Z;
 
-			return Math.Sqrt((x * x) + (y * y) + (z * z));
+			return MathHelpers.Sqrt((x * x) + (y * y) + (z * z));
 		}
 
 		/// <summary>
@@ -600,7 +600,7 @@ namespace CryEngine
 
 		public bool IsEquivalent(Vec3 v1, float epsilon = 0.05f)
 		{
-			return ((Math.Abs(X - v1.X) <= epsilon) && (Math.Abs(Y - v1.Y) <= epsilon) && (Math.Abs(Z - v1.Z) <= epsilon));
+			return ((MathHelpers.Abs(X - v1.X) <= epsilon) && (MathHelpers.Abs(Y - v1.Y) <= epsilon) && (MathHelpers.Abs(Z - v1.Z) <= epsilon));
 		}
 
 		/// <summary>
@@ -867,7 +867,7 @@ namespace CryEngine
 				result = Zero;
 			else
 			{
-				float cos2 = Math.Sqrt(radicand);
+				float cos2 = MathHelpers.Sqrt(radicand);
 				result = (index * vector) + ((cos2 - index * cos1) * normal);
 			}
 		}
@@ -1310,9 +1310,9 @@ namespace CryEngine
 		/// </returns>
 		public bool Equals(Vec3 other, float epsilon)
 		{
-			return (Math.Abs(other.X - X) < epsilon &&
-				Math.Abs(other.Y - Y) < epsilon &&
-				Math.Abs(other.Z - Z) < epsilon);
+			return (MathHelpers.Abs(other.X - X) < epsilon &&
+				MathHelpers.Abs(other.Y - Y) < epsilon &&
+				MathHelpers.Abs(other.Z - Z) < epsilon);
 		}
 
 		/// <summary>

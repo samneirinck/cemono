@@ -2,7 +2,7 @@
 
 namespace CryEngine
 {
-	public static class Math
+	public static class MathHelpers
 	{
 		public static void Interpolate(ref Vec3 actual, Vec3 goal, float speed, float limit = 0)
 		{
@@ -223,8 +223,8 @@ namespace CryEngine
 
 			// Exponent of Quaternion.
 			{
-				var len = Math.Sqrt(lensqr);
-				var angle = Math.Atan2(len, q.W) / len;
+				var len = MathHelpers.Sqrt(lensqr);
+				var angle = MathHelpers.Atan2(len, q.W) / len;
 				return q.V * (float)angle;
 			}
 
@@ -257,8 +257,8 @@ namespace CryEngine
 			var lensqr = v.LengthSquared;
 			if (lensqr > 0.0f)
 			{
-				var len = Math.Sqrt(lensqr);
-				float s, c; Math.SinCos(len, out s, out c);
+				var len = MathHelpers.Sqrt(lensqr);
+				float s, c; MathHelpers.SinCos(len, out s, out c);
 				s /= len;
 				return new Quat(c, v.X * s, v.Y * s, v.Z * s);
 			}
