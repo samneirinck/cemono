@@ -34,8 +34,8 @@ namespace CryEngine
 		public bool IsEquivalent(Quat q, float epsilon = 0.05f)
 		{
 			var p=-q;
-			bool t0= (Math.Abs(V.X-q.V.X)<=epsilon) && (Math.Abs(V.Y-q.V.Y)<=epsilon) && (Math.Abs(V.Z-q.V.Z)<=epsilon) && (Math.Abs(W-q.W)<=epsilon);	
-			bool t1= (Math.Abs(V.X-p.V.X)<=epsilon) && (Math.Abs(V.Y-p.V.Y)<=epsilon) && (Math.Abs(V.Z-p.V.Z)<=epsilon) && (Math.Abs(W-p.W)<=epsilon);	
+			bool t0= (MathHelpers.Abs(V.X-q.V.X)<=epsilon) && (MathHelpers.Abs(V.Y-q.V.Y)<=epsilon) && (MathHelpers.Abs(V.Z-q.V.Z)<=epsilon) && (MathHelpers.Abs(W-q.W)<=epsilon);	
+			bool t1= (MathHelpers.Abs(V.X-p.V.X)<=epsilon) && (MathHelpers.Abs(V.Y-p.V.Y)<=epsilon) && (MathHelpers.Abs(V.Z-p.V.Z)<=epsilon) && (MathHelpers.Abs(W-p.W)<=epsilon);	
 			t0 |= t1;
 			return t0;
 		}
@@ -49,13 +49,13 @@ namespace CryEngine
 
 		public bool IsUnit(float epsilon = 0.05f)
 		{
-			return Math.Abs(1 - ((this | this))) < epsilon;
+			return MathHelpers.Abs(1 - ((this | this))) < epsilon;
 		}
 
 		public void SetRotationAA(float rad, Vec3 axis)
 		{
 			float s, c; 
-			Math.SinCos(rad * 0.5f, out s, out c); 
+			MathHelpers.SinCos(rad * 0.5f, out s, out c); 
 			SetRotationAA(c, s, axis); 
 		}
 
@@ -69,15 +69,15 @@ namespace CryEngine
 		{
 			float sx;
 			float cx;
-			Math.SinCos((float)(angle.X * (float)0.5), out sx, out cx);
+			MathHelpers.SinCos((float)(angle.X * (float)0.5), out sx, out cx);
 
 			float sy;
 			float cy; 
-			Math.SinCos((float)(angle.Y * (float)0.5), out sy, out cy);
+			MathHelpers.SinCos((float)(angle.Y * (float)0.5), out sy, out cy);
 
 			float sz;
 			float cz;
-			Math.SinCos((float)(angle.Z * (float)0.5), out sz, out cz);
+			MathHelpers.SinCos((float)(angle.Z * (float)0.5), out sz, out cz);
 
 			W = cx * cy * cz + sx * sy * sz;
 			V.X = cz * cy * sx - sz * sy * cx;
@@ -88,17 +88,17 @@ namespace CryEngine
 		public void SetRotationX(float r)
 		{
 			float s, c;
-			Math.SinCos((float)(r * (float)0.5), out s, out c); W = c; V.X = s; V.Y = 0; V.Z = 0;
+			MathHelpers.SinCos((float)(r * (float)0.5), out s, out c); W = c; V.X = s; V.Y = 0; V.Z = 0;
 		}
 
 		public void SetRotationY(float r)
 		{
-			float s, c; Math.SinCos((float)(r * (float)0.5), out s, out c); W = c; V.X = 0; V.Y = s; V.Z = 0;	
+			float s, c; MathHelpers.SinCos((float)(r * (float)0.5), out s, out c); W = c; V.X = 0; V.Y = s; V.Z = 0;	
 		}
 
 		public void SetRotationZ(float r)
 		{
-			float s, c; Math.SinCos((float)(r * (float)0.5), out s, out c); W = c; V.X = 0; V.Y = 0; V.Z = s;
+			float s, c; MathHelpers.SinCos((float)(r * (float)0.5), out s, out c); W = c; V.X = 0; V.Y = 0; V.Z = s;
 		}
 
 		/*public void SetRotationV0V1(Vec3 v0, Vec3 v1)
@@ -120,7 +120,7 @@ namespace CryEngine
 		{
 			//set default initialisation for up-vector	
 			W = 0.70710676908493042f; V.X = (vDir.Z + vDir.Z) * 0.35355338454246521f; V.Y = 0.0f; V.Z = 0.0f;
-			var l = Math.Sqrt(vDir.X * vDir.X + vDir.Y * vDir.Y);
+			var l = MathHelpers.Sqrt(vDir.X * vDir.X + vDir.Y * vDir.Y);
 			if (l > 0.00001)
 			{
 				//calculate LookAt quaternion
@@ -128,8 +128,8 @@ namespace CryEngine
 				var hvY = vDir.Y / l + 1.0f;
 				var hvZ = l + 1.0f;
 
-				var r = Math.Sqrt(hvX * hvX + hvY * hvY);
-				var s = Math.Sqrt(hvZ * hvZ + vDir.Z * vDir.Z);
+				var r = MathHelpers.Sqrt(hvX * hvX + hvY * hvY);
+				var s = MathHelpers.Sqrt(hvZ * hvZ + vDir.Z * vDir.Z);
 				//generate the half-angle sine&cosine
 				var hacos0 = 0.0; var hasin0 = -1.0;
 				if (r > 0.00001) { hacos0 = hvY / r; hasin0 = -hvX / r; }	//yaw
@@ -141,7 +141,7 @@ namespace CryEngine
 		public void SetRotationVDir(Vec3 vDir, float r)
 		{
 			SetRotationVDir(vDir);
-			double sy, cy; Math.SinCos(r * 0.5f, out sy, out cy);
+			double sy, cy; MathHelpers.SinCos(r * 0.5f, out sy, out cy);
 			var vx = V.X;
 			var vy = V.Y;
 			V.X = (float)(vx * cy - V.Z * sy); V.Y = (float)(W * sy + vy * cy); V.Z = (float)(V.Z * cy + vx * sy); W = (float)(W * cy - vy * sy);
@@ -154,7 +154,7 @@ namespace CryEngine
 
 		public void Normalize()
 		{
-			float d = Math.ISqrt(W * W + V.X * V.X + V.Y * V.Y + V.Z * V.Z);
+			float d = MathHelpers.ISqrt(W * W + V.X * V.X + V.Y * V.Y + V.Z * V.Z);
 			W *= d; V.X *= d; V.Y *= d; V.Z *= d;
 		}
 
@@ -163,7 +163,7 @@ namespace CryEngine
 			float d = W * W + V.X * V.X + V.Y * V.Y + V.Z * V.Z;
 			if (d > 1e-8f)
 			{
-				d = Math.ISqrt(d);
+				d = MathHelpers.ISqrt(d);
 				W *= d; V.X *= d; V.Y *= d; V.Z *= d;
 			}
 			else
@@ -188,7 +188,7 @@ namespace CryEngine
 			var q = end;
 			var cosine = (start | q);
 			if (cosine < 0) q = -q;
-			var k = (1 - Math.Abs(cosine)) * 0.4669269f;
+			var k = (1 - MathHelpers.Abs(cosine)) * 0.4669269f;
 			var s = 2 * k * amount * amount * amount - 3 * k * amount * amount + (1 + k) * amount;
 			V.X = start.V.X * (1.0f - s) + q.V.X * s;
 			V.Y = start.V.Y * (1.0f - s) + q.V.Y * s;
@@ -215,10 +215,10 @@ namespace CryEngine
 			q2.V.X = q.V.X - p.V.X * cosine;
 			q2.V.Y = q.V.Y - p.V.Y * cosine;
 			q2.V.Z = q.V.Z - p.V.Z * cosine;
-			var sine = Math.Sqrt(q2 | q2);
+			var sine = MathHelpers.Sqrt(q2 | q2);
 			double s, c;
 
-			Math.SinCos(Math.Atan2(sine, cosine) * amount, out s, out c);
+			MathHelpers.SinCos(MathHelpers.Atan2(sine, cosine) * amount, out s, out c);
 			W = (float)(p.W * c + q2.W * s / sine);
 			V.X = (float)(p.V.X * c + q2.V.X * s / sine);
 			V.Y = (float)(p.V.Y * c + q2.V.Y * s / sine);
@@ -229,7 +229,7 @@ namespace CryEngine
 		{
 			var q = end;
 			if ((start | q) < 0) { q = -q; }
-			this = start * Math.Exp(Math.Log(!start * q) * amount);	
+			this = start * MathHelpers.Exp(MathHelpers.Log(!start * q) * amount);	
 		}
 
 		public Quat GetScaled(float scale)
@@ -243,7 +243,7 @@ namespace CryEngine
 		/// <param name="maxAngle">Max angle in radians</param>
 		public void ClampAngle(float maxAngle)
 		{
-			var wMax = Math.Cos(2.0f * maxAngle);
+			var wMax = MathHelpers.Cos(2.0f * maxAngle);
 			if (W < wMax)
 			{
 				W = wMax;
@@ -260,7 +260,7 @@ namespace CryEngine
 		{
 			get
 			{
-				return Math.Sqrt(W * W + V.X * V.X + V.Y * V.Y + V.Z * V.Z);
+				return MathHelpers.Sqrt(W * W + V.X * V.X + V.Y * V.Y + V.Z * V.Z);
 			}
 		}
 
@@ -407,26 +407,26 @@ namespace CryEngine
 			//check the diagonal
 			if (tr > (float)0.0)
 			{
-				s = Math.Sqrt(tr + 1.0f); p = 0.5f / s;
+				s = MathHelpers.Sqrt(tr + 1.0f); p = 0.5f / s;
 				return new Quat(s * 0.5f, (m.M21 - m.M12) * p, (m.M02 - m.M20) * p, (m.M10 - m.M01) * p);
 			}
 			//diagonal is negative. now we have to find the biggest element on the diagonal
 			//check if "M00" is the biggest element
 			if ((m.M00 >= m.M11) && (m.M00 >= m.M22))
 			{
-				s = Math.Sqrt(m.M00 - m.M11 - m.M22 + 1.0f); p = 0.5f / s;
+				s = MathHelpers.Sqrt(m.M00 - m.M11 - m.M22 + 1.0f); p = 0.5f / s;
 				return new Quat((m.M21 - m.M12) * p, s * 0.5f, (m.M10 + m.M01) * p, (m.M20 + m.M02) * p);
 			}
 			//check if "M11" is the biggest element
 			if ((m.M11 >= m.M00) && (m.M11 >= m.M22))
 			{
-				s = Math.Sqrt(m.M11 - m.M22 - m.M00 + 1.0f); p = 0.5f / s;
+				s = MathHelpers.Sqrt(m.M11 - m.M22 - m.M00 + 1.0f); p = 0.5f / s;
 				return new Quat((m.M02 - m.M20) * p, (m.M01 + m.M10) * p, s * 0.5f, (m.M21 + m.M12) * p);
 			}
 			//check if "M22" is the biggest element
 			if ((m.M22 >= m.M00) && (m.M22 >= m.M11))
 			{
-				s = Math.Sqrt(m.M22 - m.M00 - m.M11 + 1.0f); p = 0.5f / s;
+				s = MathHelpers.Sqrt(m.M22 - m.M00 - m.M11 + 1.0f); p = 0.5f / s;
 				return new Quat((m.M10 - m.M01) * p, (m.M02 + m.M20) * p, (m.M12 + m.M21) * p, s * 0.5f);
 			}
 

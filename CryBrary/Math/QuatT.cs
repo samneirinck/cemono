@@ -64,9 +64,9 @@ namespace CryEngine
 		{
 			var q0 = p.Q;
 			var q1 = -p.Q;
-			bool t0 = (Math.Abs(Q.V.X - q0.V.X) <= epsilon) && (Math.Abs(Q.V.Y - q0.V.Y) <= epsilon) && (Math.Abs(Q.V.Z - q0.V.Z) <= epsilon) && (Math.Abs(Q.W - q0.W) <= epsilon);
-			bool t1 = (Math.Abs(Q.V.X - q1.V.X) <= epsilon) && (Math.Abs(Q.V.Y - q1.V.Y) <= epsilon) && (Math.Abs(Q.V.Z - q1.V.Z) <= epsilon) && (Math.Abs(Q.W - q1.W) <= epsilon);
-			return ((t0 | t1) && (Math.Abs(T.X - p.T.X) <= epsilon) && (Math.Abs(T.Y - p.T.Y) <= epsilon) && (Math.Abs(T.Z - p.T.Z) <= epsilon));	
+			bool t0 = (MathHelpers.Abs(Q.V.X - q0.V.X) <= epsilon) && (MathHelpers.Abs(Q.V.Y - q0.V.Y) <= epsilon) && (MathHelpers.Abs(Q.V.Z - q0.V.Z) <= epsilon) && (MathHelpers.Abs(Q.W - q0.W) <= epsilon);
+			bool t1 = (MathHelpers.Abs(Q.V.X - q1.V.X) <= epsilon) && (MathHelpers.Abs(Q.V.Y - q1.V.Y) <= epsilon) && (MathHelpers.Abs(Q.V.Z - q1.V.Z) <= epsilon) && (MathHelpers.Abs(Q.W - q1.W) <= epsilon);
+			return ((t0 | t1) && (MathHelpers.Abs(T.X - p.T.X) <= epsilon) && (MathHelpers.Abs(T.Y - p.T.Y) <= epsilon) && (MathHelpers.Abs(T.Z - p.T.Z) <= epsilon));	
 		}
 
 		/*public bool IsValid()
