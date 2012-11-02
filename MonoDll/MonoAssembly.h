@@ -18,6 +18,7 @@ struct IMonoScript;
 struct IMonoArray;
 
 class CScriptClass;
+class CScriptDomain;
 
 class CScriptAssembly 
 	: public CScriptObject
@@ -25,12 +26,11 @@ class CScriptAssembly
 {
 	typedef std::map<CScriptClass *, MonoClass *> TClassMap;
 public:
-	CScriptAssembly(MonoImage *pImage, const char *path, bool nativeAssembly = true);
+	CScriptAssembly(CScriptDomain *pDomain, MonoImage *pImage, const char *path, bool nativeAssembly = true);
 	virtual ~CScriptAssembly();
 
 	CScriptClass *TryGetClass(MonoClass *pClass);
 
-	static CScriptAssembly *TryGetAssembly(MonoImage *pImage);
 	static CScriptClass *TryGetClassFromRegistry(MonoClass *pClass);
 
 	// IMonoAssembly
@@ -40,6 +40,8 @@ public:
 	virtual const char *GetPath() override { return m_path.c_str(); }
 
 	virtual bool IsNative() override { return m_bNative; }
+
+	virtual IMonoDomain *GetDomain() override { return (IMonoDomain *)m_pDomain; }
 	// ~IMonoAssembly
 
 	// IMonoObject
@@ -67,10 +69,10 @@ public:
 
 private:
 	string m_path;
-
 	bool m_bNative;
 
 	TClassMap m_classRegistry;
+	CScriptDomain *m_pDomain;
 };
 
 #endif //__MONO_ASSEMBLY_H__

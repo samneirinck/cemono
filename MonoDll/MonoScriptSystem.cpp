@@ -110,9 +110,6 @@ CScriptSystem::CScriptSystem()
 
 CScriptSystem::~CScriptSystem()
 {
-	for(auto it = m_assemblies.begin(); it != m_assemblies.end(); ++it)
-		SAFE_RELEASE(*it);
-
 	for(auto it = m_localScriptBinds.begin(); it != m_localScriptBinds.end(); ++it)
 		(*it).reset();
 
@@ -137,6 +134,11 @@ CScriptSystem::~CScriptSystem()
 
 	SAFE_DELETE(m_pCVars);
 
+	for(auto it = ++m_domains.begin(); it != m_domains.end(); ++it)
+		SAFE_RELEASE(*it);
+
+	m_domains.clear();
+
 	SAFE_RELEASE(m_pRootDomain);
 }
 
@@ -146,14 +148,15 @@ bool CScriptSystem::CompleteInit()
 	
 	// Create root domain and determine the runtime version we'll be using.
 	m_pRootDomain = new CScriptDomain(eRV_4_30319);
+	m_domains.push_back(m_pRootDomain);
 
 	CScriptArray::m_pDefaultElementClass = mono_get_object_class();
 
 #ifndef _RELEASE
-	m_pPdb2MdbAssembly = GetAssembly(PathUtils::GetMonoPath() + "bin\\pdb2mdb.dll");
+	m_pPdb2MdbAssembly = m_pRootDomain->LoadAssembly(PathUtils::GetMonoPath() + "bin\\pdb2mdb.dll");
 #endif
 
-	m_pCryBraryAssembly = GetAssembly(PathUtils::GetBinaryPath() + "CryBrary.dll");
+	m_pCryBraryAssembly = m_pRootDomain->LoadAssembly(PathUtils::GetBinaryPath() + "CryBrary.dll");
 
 	CryLogAlways("		Registering default scriptbinds...");
 	RegisterDefaultBindings();
@@ -289,64 +292,27 @@ void CScriptSystem::RemoveScriptInstance(int id, EMonoScriptFlags scriptType)
 
 IMonoAssembly *CScriptSystem::GetCorlibAssembly()
 {
-	return CScriptAssembly::TryGetAssembly(mono_get_corlib());
+	return m_pRootDomain->TryGetAssembly(mono_get_corlib());
 }
 
-IMonoAssembly *CScriptSystem::GetCryBraryAssembly()
+IMonoDomain *CScriptSystem::CreateDomain(const char *name, bool setActive)
 {
-	return m_pCryBraryAssembly;
+	CScriptDomain *pDomain = new CScriptDomain(name, setActive);
+	m_domains.push_back(pDomain);
+
+	return pDomain;
 }
 
-const char *CScriptSystem::GetAssemblyPath(const char *currentPath, bool shadowCopy)
+CScriptDomain *CScriptSystem::TryGetDomain(MonoDomain *pMonoDomain)
 {
-	if(shadowCopy)
-		return PathUtils::GetTempPath().append(PathUtil::GetFile(currentPath));
-
-	return currentPath;
-}
-
-MonoImage *CScriptSystem::GetAssemblyImage(const char *file)
-{
-	MonoAssembly *pMonoAssembly = mono_domain_assembly_open(mono_domain_get(), file);
-	CRY_ASSERT(pMonoAssembly);
-
-	return mono_assembly_get_image(pMonoAssembly);
-}
-
-IMonoAssembly *CScriptSystem::GetAssembly(const char *file, bool shadowCopy)
-{
-	const char *newPath = GetAssemblyPath(file, shadowCopy);
-
-	for each(auto assembly in m_assemblies)
+	for each(auto domain in m_domains)
 	{
-		if(!strcmp(newPath, assembly->GetPath()))
-			return assembly;
+		if(domain->GetMonoDomain() == pMonoDomain)
+			return domain;
 	}
 
-	if(shadowCopy)
-	{
-		CopyFile(file, newPath, false);
-		file = newPath;
-	}
+	CScriptDomain *pDomain = new CScriptDomain(pMonoDomain);
+	m_domains.push_back(pDomain);
 
-	string sAssemblyPath(file);
-#ifndef _RELEASE
-	if(sAssemblyPath.find("pdb2mdb")==-1)
-	{
-		if(IMonoAssembly *pDebugDatabaseCreator = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetDebugDatabaseCreator())
-		{
-			if(IMonoClass *pDriverClass = pDebugDatabaseCreator->GetClass("Driver", ""))
-			{
-				IMonoArray *pArgs = CreateMonoArray(1);
-				pArgs->Insert(file);
-				pDriverClass->InvokeArray(NULL, "Convert", pArgs);
-				SAFE_RELEASE(pArgs);
-			}
-		}
-	}
-#endif
-
-	CScriptAssembly *pAssembly = new CScriptAssembly(GetAssemblyImage(file), file);
-	m_assemblies.push_back(pAssembly);
-	return pAssembly;
+	return pDomain;
 }

@@ -1,19 +1,21 @@
 #include "StdAfx.h"
 #include "MonoAssembly.h"
 
+#include "MonoScriptSystem.h"
+#include "MonoDomain.h"
+#include "PathUtils.h"
+
+#include <MonoClass.h>
+
 #include <mono/mini/jit.h>
 #include <mono/metadata/debug-helpers.h>
 #include <mono/metadata/assembly.h>
 
 #include <Windows.h>
 
-#include "PathUtils.h"
-#include "MonoScriptSystem.h"
-
-#include <MonoClass.h>
-
-CScriptAssembly::CScriptAssembly(MonoImage *pImage, const char *path, bool nativeAssembly)
-	: m_bNative(nativeAssembly) // true if this assembly was loaded via C++.
+CScriptAssembly::CScriptAssembly(CScriptDomain *pDomain, MonoImage *pImage, const char *path, bool nativeAssembly)
+	: m_pDomain(pDomain)
+	, m_bNative(nativeAssembly) // true if this assembly was loaded via C++.
 {
 	CRY_ASSERT(pImage);
 	m_pObject = (MonoObject *)pImage;
@@ -26,8 +28,7 @@ CScriptAssembly::~CScriptAssembly()
 	for each(auto classPair in m_classRegistry)
 		classPair.first->Release();
 
-	CScriptSystem *pScriptSystem = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem);
-	stl::find_and_erase(pScriptSystem->m_assemblies, this);
+	m_pDomain->OnAssemblyReleased(this);
 
 	m_pObject = 0;
 }
@@ -77,34 +78,19 @@ CScriptClass *CScriptAssembly::TryGetClass(MonoClass *pClass)
 ///////////////////////////////////////////////////////////////////
 // Statics
 ///////////////////////////////////////////////////////////////////
- 
-CScriptAssembly *CScriptAssembly::TryGetAssembly(MonoImage *pImage)
-{
-	CRY_ASSERT(pImage);
-
-	CScriptSystem *pScriptSystem = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem);
-
-	for each(auto assembly in pScriptSystem->m_assemblies)
-	{
-		if(assembly->GetImage() == pImage)
-			return assembly;
-	}
-
-	// This assembly was loaded from managed code.
-	CScriptAssembly *pAssembly = new CScriptAssembly(pImage, mono_image_get_filename(pImage), false);
-	pScriptSystem->m_assemblies.push_back(pAssembly);
-
-	return pAssembly;
-}
-
 CScriptClass *CScriptAssembly::TryGetClassFromRegistry(MonoClass *pClass)
 {
 	CRY_ASSERT(pClass);
 
 	MonoImage *pImage = mono_class_get_image(pClass);
 
-	if(auto pAssembly = TryGetAssembly(pImage))
-		return pAssembly->TryGetClass(pClass);
+	MonoDomain *pMonoDomain = mono_object_get_domain((MonoObject *)pClass);
+	
+	if(CScriptDomain *pDomain = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->TryGetDomain(pMonoDomain))
+	{
+		if(auto pAssembly = pDomain->TryGetAssembly(pImage))
+			return pAssembly->TryGetClass(pClass);
+	}
 
 	return NULL;
 }
