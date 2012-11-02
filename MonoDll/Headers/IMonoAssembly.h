@@ -49,6 +49,11 @@ public:
 	/// Determines if this assembly was loaded from C++.
 	/// </summary>
 	virtual bool IsNative() = 0;
+
+	/// <summary>
+	/// Gets the domain this assembly is loaded in.
+	/// </summary>
+	virtual IMonoDomain *GetDomain() = 0;
 };
 
 #endif //__I_MONO_ASSEMBLY__`	

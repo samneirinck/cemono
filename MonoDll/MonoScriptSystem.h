@@ -24,10 +24,9 @@ struct IMonoEntityManager;
 
 struct SCVars;
 
-class CScriptAssembly;
-
 class CFlowManager;
 class CInput;
+class CScriptDomain;
 
 class CScriptSystem
 	: public IMonoScriptSystem
@@ -43,6 +42,8 @@ public:
 	~CScriptSystem();
 
 	// IMonoScriptSystem
+	virtual bool IsInitialized() override { return m_pRootDomain != nullptr; }
+
 	virtual void Release() override { delete this; }
 
 	virtual void RegisterMethodBinding(const void *method, const char *fullMethodName) override;
@@ -52,11 +53,11 @@ public:
 	
 	virtual IMonoObject *GetScriptManager() { return m_pScriptManager; }
 
-	virtual IMonoAssembly *GetCryBraryAssembly() override;
+	virtual IMonoAssembly *GetCryBraryAssembly() override { return m_pCryBraryAssembly; }
 	virtual IMonoAssembly *GetCorlibAssembly() override;
-	virtual IMonoAssembly *GetAssembly(const char *file, bool shadowCopy = false);
 
-	virtual IMonoDomain *GetRootDomain() override { return m_pRootDomain; }
+	virtual IMonoDomain *GetRootDomain() override { return (IMonoDomain *)m_pRootDomain; }
+	virtual IMonoDomain *CreateDomain(const char *name, bool setActive = false);
 
 	virtual IMonoConverter *GetConverter() override { return m_pConverter; }
 
@@ -79,16 +80,11 @@ public:
 	virtual void OnSystemEvent(ESystemEvent event,UINT_PTR wparam,UINT_PTR lparam);
 	// ~ISystemEventListener
 
+	CScriptDomain *TryGetDomain(MonoDomain *pAssembly);
+
 	IMonoAssembly *GetDebugDatabaseCreator() { return m_pPdb2MdbAssembly; }
 
 	CFlowManager *GetFlowManager() const { return m_pFlowManager; }
-
-	bool IsInitialized() { return m_pRootDomain != nullptr; }
-
-	MonoImage *GetAssemblyImage(const char *file);
-	const char *GetAssemblyPath(const char *currentPath, bool shadowCopy);
-
-	std::vector<CScriptAssembly *> m_assemblies;
 
 	void RegisterScriptInstance(IMonoObject *pObject, int scriptId) { m_scriptInstances.insert(TScripts::value_type(pObject, scriptId)); }
 
@@ -98,7 +94,8 @@ protected:
 	void RegisterDefaultBindings();
 
 	// The primary app domain, not really used for anything besides holding the script domain. Do *not* unload this at runtime, we cannot execute another root domain again without restarting.
-	IMonoDomain *m_pRootDomain;
+	CScriptDomain *m_pRootDomain;
+	std::vector<CScriptDomain *> m_domains;
 
 	IMonoObject *m_pScriptManager;
 

@@ -11,12 +11,15 @@
 
 #include <IMonoDomain.h>
 
+class CScriptAssembly;
+
 class CScriptDomain : public IMonoDomain
 {
 public:
 	// Create root domain
 	CScriptDomain(ERuntimeVersion runtimeVersion = eRV_2_50727);
 	CScriptDomain(const char *name, bool setActive = false);
+	CScriptDomain(MonoDomain *pMonoDomain) : m_pDomain(pMonoDomain), m_bRootDomain(false) {}
 	~CScriptDomain();
 
 	// IMonoDomain
@@ -26,11 +29,19 @@ public:
 	virtual bool IsActive() override { return m_pDomain == mono_domain_get(); }
 
 	virtual bool IsRoot() override { return m_bRootDomain; }
+
+	virtual IMonoAssembly *LoadAssembly(const char *file, bool shadowCopy = false) override;
 	// ~IMonoDomain
 
-private:
+	MonoDomain *GetMonoDomain() { return m_pDomain; }
 
+	CScriptAssembly *TryGetAssembly(MonoImage *pImage);
+	void OnAssemblyReleased(CScriptAssembly *pAssembly);
+
+private:
 	MonoDomain *m_pDomain;
+
+	std::vector<CScriptAssembly *> m_assemblies;
 
 	bool m_bRootDomain;
 };

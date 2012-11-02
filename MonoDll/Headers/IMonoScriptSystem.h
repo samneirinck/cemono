@@ -63,6 +63,11 @@ enum EMonoScriptFlags
 struct IMonoScriptSystem
 {
 	/// <summary>
+	/// Returns true when the root domain has been initialized.
+	/// </summary>
+	virtual bool IsInitialized() = 0;
+
+	/// <summary>
 	/// Deletes script system instance; cleans up mono objects etc.
 	/// Called from the dll which implements CryMono on engine shutdown (CGameStartup destructor within the sample project)
 	/// </summary>
@@ -97,14 +102,14 @@ struct IMonoScriptSystem
 	virtual IMonoAssembly *GetCorlibAssembly() = 0;
 
 	/// <summary>
-	/// Loads an .NET assembly at a specific location and returns it in the form of an IMonoAssembly object.
-	/// </summary>
-	virtual IMonoAssembly *GetAssembly(const char *file, bool shadowCopy = false) = 0;
-
-	/// <summary>
 	/// Gets the root domain created on script system initialization.
 	/// </summary>
 	virtual IMonoDomain *GetRootDomain() = 0;
+
+	/// <summary>
+	/// Creates a new app domain.
+	/// </summary>
+	virtual IMonoDomain *CreateDomain(const char *name, bool setActive = false) = 0;
 
 	/// <summary>
 	/// Retrieves an instance of the IMonoConverter; a class used to easily convert C# types to C++ and the other way around.

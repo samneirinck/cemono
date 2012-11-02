@@ -1,9 +1,14 @@
 #include "StdAfx.h"
 #include "MonoDomain.h"
 
+#include "MonoScriptSystem.h"
+#include "MonoAssembly.h"
+#include "PathUtils.h"
+
 #include <MonoCommon.h>
 
 #include <mono/metadata/debug-helpers.h>
+#include <mono/metadata/assembly.h>
 
 CScriptDomain::CScriptDomain(ERuntimeVersion runtimeVersion)
 	: m_bRootDomain(true)
@@ -45,6 +50,9 @@ CScriptDomain::CScriptDomain(const char *name, bool setActive)
 
 CScriptDomain::~CScriptDomain()
 {
+	for(auto it = m_assemblies.begin(); it != m_assemblies.end(); ++it)
+		SAFE_RELEASE(*it);
+
 	if(m_bRootDomain)
 		mono_jit_cleanup(m_pDomain);
 	else
@@ -77,4 +85,70 @@ CScriptDomain::~CScriptDomain()
 bool CScriptDomain::SetActive(bool force)
 {
 	return mono_domain_set(m_pDomain, force) == 1;
+}
+
+IMonoAssembly *CScriptDomain::LoadAssembly(const char *file, bool shadowCopy)
+{
+	CRY_ASSERT_MESSAGE(IsActive(), "Attempted to load assembly into domain while it wasn't the active one");
+
+	const char *path;
+	if(shadowCopy)
+		path = PathUtils::GetTempPath().append(PathUtil::GetFile(file));
+	else
+		path = file;
+
+	for each(auto assembly in m_assemblies)
+	{
+		if(!strcmp(path, assembly->GetPath()))
+			return assembly;
+	}
+
+	if(shadowCopy)
+		CopyFile(file, path, false);
+
+	string sAssemblyPath(path);
+#ifndef _RELEASE
+	if(sAssemblyPath.find("pdb2mdb")==-1)
+	{
+		if(IMonoAssembly *pDebugDatabaseCreator = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetDebugDatabaseCreator())
+		{
+			if(IMonoClass *pDriverClass = pDebugDatabaseCreator->GetClass("Driver", ""))
+			{
+				IMonoArray *pArgs = CreateMonoArray(1);
+				pArgs->Insert(path);
+				pDriverClass->InvokeArray(NULL, "Convert", pArgs);
+				SAFE_RELEASE(pArgs);
+			}
+		}
+	}
+#endif
+
+	MonoAssembly *pMonoAssembly = mono_domain_assembly_open(mono_domain_get(), path);
+	CRY_ASSERT(pMonoAssembly);
+
+	CScriptAssembly *pAssembly = new CScriptAssembly(this, mono_assembly_get_image(pMonoAssembly), path);
+	m_assemblies.push_back(pAssembly);
+	return pAssembly;
+}
+
+void CScriptDomain::OnAssemblyReleased(CScriptAssembly *pAssembly)
+{
+	stl::find_and_erase(m_assemblies, pAssembly);
+}
+
+CScriptAssembly *CScriptDomain::TryGetAssembly(MonoImage *pImage)
+{
+	CRY_ASSERT(pImage);
+
+	for each(auto assembly in m_assemblies)
+	{
+		if(assembly->GetImage() == pImage)
+			return assembly;
+	}
+
+	// This assembly was loaded from managed code.
+	CScriptAssembly *pAssembly = new CScriptAssembly(this, pImage, mono_image_get_filename(pImage), false);
+	m_assemblies.push_back(pAssembly);
+
+	return pAssembly;
 }
