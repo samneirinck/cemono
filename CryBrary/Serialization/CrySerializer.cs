@@ -50,78 +50,117 @@ namespace CryEngine.Serialization
             Writer.WriteLine(value);
         }
 
+        /// <summary>
+        /// Checks if this object has already been serialized.
+        /// </summary>
+        /// <param name="objectReference"></param>
+        /// <returns>true if object had already been serialized.</returns>
+        bool TryWriteReference(ObjectReference objectReference)
+        {
+            var serializationType = objectReference.SerializationType;
+            if (serializationType != SerializationType.Enumerable &&
+                serializationType != SerializationType.GenericEnumerable &&
+                serializationType != SerializationType.Object &&
+                serializationType != SerializationType.MemberInfo &&
+                serializationType != SerializationType.Delegate &&
+                serializationType != SerializationType.Type)
+                return false;
+
+            foreach (var pair in ObjectReferences)
+            {
+                if (pair.Value.Value.Equals(objectReference.Value))
+                {
+                    WriteReference(objectReference, pair.Key);
+                    return true;
+                }
+            }
+
+            ObjectReferences.Add(CurrentLine, objectReference);
+            return false;
+        }
+
         void StartWrite(ObjectReference objectReference)
         {
+            Debug.LogAlways("Writing {0}", objectReference.Name);
             Type valueType = objectReference.Value != null ? objectReference.Value.GetType() : null;
 
-            if (valueType == null || valueType.IsPointer)
-                WriteNull(objectReference);
-            else if (valueType == typeof(IntPtr))
-                WriteIntPtr(objectReference);
-            else if (valueType.IsPrimitive)
-                WriteAny(objectReference);
-            else if (valueType == typeof(string))
-                WriteString(objectReference);
-            else if (valueType.Implements<IEnumerable>())
+            if (TryWriteReference(objectReference))
+                return;
+
+            WriteLine(objectReference.Value);
+
+            switch(objectReference.SerializationType)
             {
-                if (valueType.IsGenericType)
-                    WriteGenericEnumerable(objectReference);
-                else
+                case SerializationType.Null:
+                    WriteNull(objectReference);
+                    break;
+                case SerializationType.IntPtr:
+                    WriteIntPtr(objectReference);
+                    break;
+                case SerializationType.Any:
+                    WriteAny(objectReference);
+                    break;
+                case SerializationType.String:
+                    WriteString(objectReference);
+                    break;
+                case SerializationType.Enumerable:
                     WriteEnumerable(objectReference);
-            }
-            else if (valueType.IsEnum)
-                WriteEnum(objectReference);
-            else
-            {
-                if (objectReference.Value is Type)
+                    break;
+                case SerializationType.GenericEnumerable:
+                    WriteGenericEnumerable(objectReference);
+                    break;
+                case SerializationType.Enum:
+                    WriteEnum(objectReference);
+                    break;
+                case SerializationType.Type:
                     WriteType(objectReference);
-                else if (valueType.Implements<Delegate>())
+                    break;
+                case SerializationType.Delegate:
                     WriteDelegate(objectReference);
-                else if (valueType.Implements<MemberInfo>())
+                    break;
+                case SerializationType.MemberInfo:
                     WriteMemberInfo(objectReference);
-                else
+                    break;
+                case SerializationType.Object:
                     WriteObject(objectReference);
+                    break;
             }
+            
+            Debug.LogAlways("~Writing {0}", objectReference.Name);
         }
 
         void WriteNull(ObjectReference objectReference)
         {
-            WriteLine("null");
             WriteLine(objectReference.Name);
         }
 
         void WriteIntPtr(ObjectReference objectReference)
         {
-            WriteLine("intptr");
             WriteLine(objectReference.Name);
             WriteLine(((IntPtr)objectReference.Value).ToInt64());
         }
 
         void WriteReference(ObjectReference objReference, int line)
         {
-            WriteLine("reference");
             WriteLine(objReference.Name);
             WriteLine(line);
         }
 
         void WriteAny(ObjectReference objectReference)
         {
-            WriteLine("any");
             WriteLine(objectReference.Name);
             WriteType(objectReference.Value.GetType());
-            WriteLine(Converter.ToString(objectReference.Value));
+            WriteLine(objectReference.Value);
         }
 
         void WriteString(ObjectReference objectReference)
         {
-            WriteLine("string");
             WriteLine(objectReference.Name);
             WriteLine(objectReference.Value);
         }
 
         void WriteEnum(ObjectReference objectReference)
         {
-            WriteLine("enum");
             WriteLine(objectReference.Name);
             WriteType(objectReference.Value.GetType());
             WriteLine(objectReference.Value);
@@ -129,10 +168,6 @@ namespace CryEngine.Serialization
 
         void WriteEnumerable(ObjectReference objectReference)
         {
-            if (TryWriteReference(objectReference))
-                return;
-
-            WriteLine("enumerable");
             var array = (objectReference.Value as IEnumerable).Cast<object>();
             var numElements = array.Count();
             WriteLine(numElements);
@@ -146,11 +181,6 @@ namespace CryEngine.Serialization
 
         void WriteGenericEnumerable(ObjectReference objectReference)
         {
-            if (TryWriteReference(objectReference))
-                return;
-
-            WriteLine("generic_enumerable");
-
             var enumerable = (objectReference.Value as IEnumerable).Cast<object>();
 
             WriteLine(enumerable.Count());
@@ -178,10 +208,6 @@ namespace CryEngine.Serialization
 
         void WriteObject(ObjectReference objectReference)
         {
-            if (TryWriteReference(objectReference))
-                return;
-
-            WriteLine("object");
             WriteLine(objectReference.Name);
 
             var type = objectReference.Value.GetType();
@@ -200,10 +226,6 @@ namespace CryEngine.Serialization
 
         void WriteMemberInfo(ObjectReference objectReference)
         {
-            if (TryWriteReference(objectReference))
-                return;
-
-            WriteLine("memberinfo");
             WriteLine(objectReference.Name);
 
             var memberInfo = objectReference.Value as MemberInfo;
@@ -219,10 +241,6 @@ namespace CryEngine.Serialization
 
         void WriteDelegate(ObjectReference objectReference)
         {
-            if (TryWriteReference(objectReference))
-                return;
-
-            WriteLine("delegate");
             WriteLine(objectReference.Name);
 
             var _delegate = objectReference.Value as Delegate;
@@ -239,10 +257,6 @@ namespace CryEngine.Serialization
 
         void WriteType(ObjectReference objectReference)
         {
-            if (TryWriteReference(objectReference))
-                return;
-
-            WriteLine("type");
             WriteLine(objectReference.Name);
 
             WriteType(objectReference.Value as Type);
@@ -263,26 +277,6 @@ namespace CryEngine.Serialization
             }
             else
                 WriteLine(type.FullName);
-        }
-
-        /// <summary>
-        /// Checks if this object has already been serialized.
-        /// </summary>
-        /// <param name="objectReference"></param>
-        /// <returns>true if object had already been serialized.</returns>
-        bool TryWriteReference(ObjectReference objectReference)
-        {
-            foreach (var pair in ObjectReferences)
-            {
-                if (pair.Value.Value.Equals(objectReference.Value))
-                {
-                    WriteReference(objectReference, pair.Key);
-                    return true;
-                }
-            }
-
-            ObjectReferences.Add(CurrentLine, objectReference);
-            return false;
         }
 
         public object Deserialize(Stream stream)
@@ -311,29 +305,28 @@ namespace CryEngine.Serialization
         {
             var objReference = new ObjectReference();
 
-            string type = ReadLine();
+            objReference.SerializationType = (SerializationType)Enum.Parse(typeof(SerializationType), ReadLine());
             int line = CurrentLine;
 
-            switch (type)
+            switch (objReference.SerializationType)
             {
-                case "null": ReadNull(objReference); break;
-                case "reference": ReadReference(objReference); break;
-                case "object": ReadObject(objReference); break;
-                case "generic_enumerable": ReadGenericEnumerable(objReference); break;
-                case "enumerable": ReadEnumerable(objReference); break;
-                case "enum": ReadEnum(objReference); break;
-                case "any": ReadAny(objReference); break;
-                case "string": ReadString(objReference); break;
-                case "memberinfo": ReadMemberInfo(objReference); break;
-                case "type": ReadType(objReference); break;
-                case "delegate": ReadDelegate(objReference); break;
-                case "intptr": ReadIntPtr(objReference); break;
-                default: throw new SerializationException(string.Format("Invalid object type {0} was serialized", type));
+                case SerializationType.Null: ReadNull(objReference); break;
+                case SerializationType.Reference: ReadReference(objReference); break;
+                case SerializationType.Object: ReadObject(objReference); break;
+                case SerializationType.GenericEnumerable: ReadGenericEnumerable(objReference); break;
+                case SerializationType.Enumerable: ReadEnumerable(objReference); break;
+                case SerializationType.Enum: ReadEnum(objReference); break;
+                case SerializationType.Any: ReadAny(objReference); break;
+                case SerializationType.String: ReadString(objReference); break;
+                case SerializationType.MemberInfo: ReadMemberInfo(objReference); break;
+                case SerializationType.Type: ReadType(objReference); break;
+                case SerializationType.Delegate: ReadDelegate(objReference); break;
+                case SerializationType.IntPtr: ReadIntPtr(objReference); break;
             }
 
 #if !(RELEASE && RELEASE_DISABLE_CHECKS)
-            if (!objReference.AllowNull && objReference.Value == null && type != "null")
-                throw new SerializationException(string.Format("Failed to deserialize {0} {1} at line {2}!", type, objReference.Name, line));
+            if (!objReference.AllowNull && objReference.Value == null && objReference.SerializationType != SerializationType.Null)
+                throw new SerializationException(string.Format("Failed to deserialize object of type {0} {1} at line {2}!", objReference.SerializationType, objReference.Name, line));
 #endif
 
             return objReference;
