@@ -12,20 +12,7 @@
 CScriptObject::CScriptObject(MonoObject *pObject, bool allowGC)
 	: m_pClass(NULL)
 {
-	CRY_ASSERT(pObject);
-
-	m_pObject = pObject;
-
-	// We need this to allow the GC to collect the class object later on.
-	if(allowGC)
-		m_objectHandle = mono_gchandle_new(m_pObject, false);
-	else
-		m_objectHandle = -1;
-
-	if(IMonoObject *pScriptId = GetPropertyValue("ScriptId"))
-		m_scriptId = pScriptId->Unbox<int>();
-	else
-		m_scriptId = -1;
+	SetManagedObject((mono::object)pObject, allowGC);
 }
 
 CScriptObject::CScriptObject(MonoObject *object, IMonoArray *pConstructorParams)
@@ -143,4 +130,22 @@ void CScriptObject::HandleException(MonoObject *pException)
 		auto stacktrace = (MonoString*)mono_runtime_invoke(method, pException, nullptr, nullptr);
 		MonoWarning(ToCryString((mono::string)stacktrace));
 	}
+}
+
+void CScriptObject::SetManagedObject(mono::object newObject, bool allowGC)
+{
+	CRY_ASSERT(newObject);
+
+	m_pObject = (MonoObject *)newObject;
+
+	// We need this to allow the GC to collect the class object later on.
+	if(allowGC)
+		m_objectHandle = mono_gchandle_new(m_pObject, false);
+	else
+		m_objectHandle = -1;
+
+	if(IMonoObject *pScriptId = GetPropertyValue("ScriptId"))
+		m_scriptId = pScriptId->Unbox<int>();
+	else
+		m_scriptId = -1;
 }

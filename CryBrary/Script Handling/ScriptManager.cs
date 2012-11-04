@@ -5,6 +5,9 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Xml;
+using System.Runtime.Serialization;
+using System.Runtime.InteropServices;
+
 using CryEngine.Async;
 using CryEngine.Extensions;
 using CryEngine.Native;
@@ -13,7 +16,6 @@ using CryEngine.Testing;
 using CryEngine.Testing.Internals;
 
 using CryEngine.Serialization;
-using System.Runtime.Serialization;
 
 namespace CryEngine.Initialization
 {
@@ -81,11 +83,10 @@ namespace CryEngine.Initialization
                     {
                         if (scriptInstance.ScriptId > LastScriptId)
                             LastScriptId = scriptInstance.ScriptId + 1;
+
+                        if (scriptInstance.IMonoObjectHandleRef.Handle != IntPtr.Zero)
+                            NativeMethods.ScriptSystem.UpdateScriptInstance(scriptInstance.IMonoObjectHandleRef.Handle, scriptInstance); // pass IMonoObject and scriptInstance to C++, which in turn updates the IMonoObject with the new scriptInstance.
                     });
-                    
-                    // Can in theory remove this after we've sorted out updating C++
-                    // references to C# scripts. (We serialize intptr's now)
-                    ForEach(ScriptType.CryScriptInstance, x => x.OnScriptReloadInternal());
                 }
             }
         }

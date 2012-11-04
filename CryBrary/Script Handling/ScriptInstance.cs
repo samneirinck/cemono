@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 namespace CryEngine
 {
@@ -33,9 +34,6 @@ namespace CryEngine
             return false;
         }
 
-        internal virtual void OnScriptReloadInternal() { OnScriptReload(); }
-        public virtual void OnScriptReload() { }
-
         internal virtual void OnDestroyedInternal()
         {
             IsDestroyed = true;
@@ -53,6 +51,11 @@ namespace CryEngine
         /// This script instance's id, used to keep track of instances in <see cref="CryEngine.Initialization.ScriptManager"/>.
         /// </summary>
         public int ScriptId { internal set; get; }
+
+        /// <summary>
+        /// Handle to the native IMonoObject instance representing this script instance.
+        /// </summary>
+        internal HandleRef IMonoObjectHandleRef { get; set; }
 
         /// <summary>
         /// Controls whether the entity receives an update per frame.

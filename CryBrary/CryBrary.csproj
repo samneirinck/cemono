@@ -130,11 +130,12 @@
     <Compile Include="Entity\Exceptions\EntityRemovalException.cs" />
     <Compile Include="Extensions\NativeScriptTableExtensions.cs" />
     <Compile Include="Math\PlaneIntersectionType.cs" />
+    <Compile Include="Native\Interfaces\INativeScriptSystemMethods.cs" />
+    <Compile Include="Native\NativeScriptSystemMethods.cs" />
     <Compile Include="Physics\Explosion.cs" />
     <Compile Include="Script Handling\ScriptInstanceDestroyedException.cs" />
     <Compile Include="Math\Angle.cs" />
     <Compile Include="Math\QuatT.cs" />
-    <Compile Include="Misc\BoredAtWorkException.cs" />
     <Compile Include="Misc\MissingAttributeException.cs" />
     <Compile Include="Extensions\NativeActorExtensions.cs" />
     <Compile Include="Extensions\NativeAttachmentExtensions.cs" />

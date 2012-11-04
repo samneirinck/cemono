@@ -11,13 +11,12 @@
 
 #include <IMonoScriptSystem.h>
 #include <IMonoDomain.h>
+#include <IMonoScriptbind.h>
 
 #include <MonoCommon.h>
 
 #include <IFileChangeMonitor.h>
 #include <IGameFramework.h>
-
-struct IMonoScriptBind;
 
 struct IMonoScriptManager;
 struct IMonoEntityManager;
@@ -26,13 +25,16 @@ struct SCVars;
 
 class CFlowManager;
 class CInput;
+
 class CScriptDomain;
+class CScriptObject;
 
 class CScriptSystem
 	: public IMonoScriptSystem
 	, public IFileChangeListener
 	, public IGameFrameworkListener
 	, public ISystemEventListener
+	, public IMonoScriptBind
 {
 	typedef std::map<const void *, const char *> TMethodBindings;
 	typedef std::map<IMonoObject *, int> TScripts;
@@ -86,9 +88,15 @@ public:
 
 	CFlowManager *GetFlowManager() const { return m_pFlowManager; }
 
-	void RegisterScriptInstance(IMonoObject *pObject, int scriptId) { m_scriptInstances.insert(TScripts::value_type(pObject, scriptId)); }
-
 protected:
+	// IMonoScriptBind
+	virtual const char *GetClassName() { return "NativeScriptSystemMethods"; }
+	// ~IMonoScriptBind
+
+	// Externals
+	static void UpdateScriptInstance(CScriptObject *pObject, mono::object newInstance);
+	// ~Externals
+
 	bool CompleteInit();
 
 	void RegisterDefaultBindings();
@@ -98,9 +106,6 @@ protected:
 	std::vector<CScriptDomain *> m_domains;
 
 	IMonoObject *m_pScriptManager;
-
-	// Map containing all scripts and their id's for quick access.
-	TScripts m_scriptInstances;
 
 	CFlowManager *m_pFlowManager;
 	CInput *m_pInput;
