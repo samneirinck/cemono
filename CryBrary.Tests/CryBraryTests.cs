@@ -103,6 +103,10 @@ namespace CryBrary.Tests
 			_mocks.Add(networkMock);
 			NativeMethods.Network = networkMock.Object;
 
+            var scriptSystemMock = new Mock<INativeScriptSystemMethods>();
+            _mocks.Add(scriptSystemMock);
+            NativeMethods.ScriptSystem = scriptSystemMock.Object;
+
             var logMock = new Mock<INativeLoggingMethods>();
             Action<string> loggingMethod = msg => System.Console.WriteLine(msg);
 

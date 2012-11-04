@@ -124,8 +124,6 @@ CScriptSystem::~CScriptSystem()
 
 	m_methodBindings.clear();
 
-	m_scriptInstances.clear();
-
 	SAFE_DELETE(m_pConverter);
 
 	SAFE_RELEASE(m_pScriptManager);
@@ -234,6 +232,8 @@ void CScriptSystem::RegisterDefaultBindings()
 
 #undef RegisterBindingAndSet
 #undef RegisterBinding
+
+	REGISTER_METHOD(UpdateScriptInstance);
 }
 
 void CScriptSystem::OnPostUpdate(float fDeltaTime)
@@ -267,7 +267,7 @@ IMonoObject *CScriptSystem::InstantiateScript(const char *scriptName, EMonoScrip
 	if(!pResult)
 		MonoWarning("Failed to instantiate script %s", scriptName);
 	else
-		RegisterScriptInstance(pResult, pResult->GetPropertyValue("ScriptId")->Unbox<int>());
+		pResult->SetPropertyValue("IMonoObjectHandle", pResult);
 
 	return pResult;
 }
@@ -276,16 +276,6 @@ void CScriptSystem::RemoveScriptInstance(int id, EMonoScriptFlags scriptType)
 {
 	if(id==-1)
 		return;
-
-	for(TScripts::iterator it=m_scriptInstances.begin(); it != m_scriptInstances.end(); ++it)
-	{
-		if((*it).second==id)
-		{
-			m_scriptInstances.erase(it);
-
-			break;
-		}
-	}
 
 	m_pScriptManager->CallMethod("RemoveInstance", id, scriptType);
 }
@@ -315,4 +305,9 @@ CScriptDomain *CScriptSystem::TryGetDomain(MonoDomain *pMonoDomain)
 	m_domains.push_back(pDomain);
 
 	return pDomain;
+}
+
+void CScriptSystem::UpdateScriptInstance(CScriptObject *pObject, mono::object newInstance)
+{
+	pObject->SetManagedObject(newInstance);
 }

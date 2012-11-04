@@ -72,13 +72,6 @@ namespace CryEngine
                 return hash;
             }
         }
-
-        internal override void OnScriptReloadInternal()
-        {
-            this.SetActorHandle(new HandleRef(this, NativeMethods.Actor.GetActorInfoById(Id).ActorPtr));
-
-            base.OnScriptReloadInternal();
-        }
         #endregion
 
         /// <summary>

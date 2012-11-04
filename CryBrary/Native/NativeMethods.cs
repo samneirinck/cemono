@@ -22,6 +22,7 @@
         private static INativeUIMethods _UI;
         private static INativeViewMethods _view;
         private static INativeNetworkMethods _network;
+        private static INativeScriptSystemMethods _scriptSystem;
 
         public static INative3DEngineMethods Engine3D { get { return _engine3D ?? (_engine3D = new Native3DEngineMethods()); } set { _engine3D = value; } }
         public static INativeActorMethods Actor { get { return _actor ?? (_actor = new NativeActorMethods()); } set { _actor = value; } }
@@ -43,7 +44,7 @@
         public static INativeUIMethods UI { get { return _UI ?? (_UI = new NativeUIMethods()); } set { _UI = value; } }
         public static INativeViewMethods View { get { return _view ?? (_view = new NativeViewMethods()); } set { _view = value; } }
         public static INativeNetworkMethods Network { get { return _network ?? (_network = new NativeNetworkMethods()); } set { _network = value; } }
-
+        public static INativeScriptSystemMethods ScriptSystem { get { return _scriptSystem ?? (_scriptSystem = new NativeScriptSystemMethods()); } set { _scriptSystem = value; } }
 
         static NativeMethods()
         {

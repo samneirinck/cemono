@@ -520,13 +520,6 @@ namespace CryEngine
                 return hash;
             }
         }
-
-        internal override void OnScriptReloadInternal()
-        {
-            HandleRef = new HandleRef(this, NativeMethods.FlowNode.GetNode(GraphId, NodeId));
-
-            base.OnScriptReloadInternal();
-        }
         #endregion
 
         public HandleRef HandleRef { get; set; }

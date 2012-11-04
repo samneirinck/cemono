@@ -348,12 +348,5 @@ namespace CryEngine
         {
             return NativeMethods.Entity.GetJointRelativeDefault(this.GetEntityHandle().Handle, jointName, characterSlot);
         }
-
-        internal override void OnScriptReloadInternal()
-        {
-            this.SetEntityHandle(new HandleRef(this, NativeMethods.Entity.GetEntity(Id)));
-
-            base.OnScriptReloadInternal();
-        }
     }
 }
