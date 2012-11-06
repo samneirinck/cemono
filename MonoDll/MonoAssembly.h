@@ -45,7 +45,7 @@ public:
 	// ~IMonoAssembly
 
 	// IMonoObject
-	virtual void Release() override;
+	virtual void Release(bool triggerGC = true) override;
 
 	virtual EMonoAnyType GetType() override { return eMonoAnyType_Assembly; }
 	virtual MonoAnyValue GetAnyValue() override { return MonoAnyValue(); }

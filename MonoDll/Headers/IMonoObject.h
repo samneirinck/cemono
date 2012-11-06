@@ -50,7 +50,7 @@ public:
 	/// <summary>
 	/// Releases the object. Warning: also destructed in managed code!
 	/// </summary>
-	virtual void Release() = 0;
+	virtual void Release(bool triggerGC = true) = 0;
 
 	/// <summary>
 	/// Gets the unboxed object and casts it to the requested type. (class T)
