@@ -26,7 +26,7 @@ CScriptAssembly::CScriptAssembly(CScriptDomain *pDomain, MonoImage *pImage, cons
 CScriptAssembly::~CScriptAssembly()
 {
 	for each(auto classPair in m_classRegistry)
-		classPair.first->Release();
+		delete classPair.first;
 
 	m_pDomain->OnAssemblyReleased(this);
 
