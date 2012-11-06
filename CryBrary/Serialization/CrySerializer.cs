@@ -356,11 +356,11 @@ namespace CryEngine.Serialization
 
                     var fieldInfo = type.GetField(fieldReference.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
+                    if (objReference.Value == null)
+                        continue;
+
                     if (fieldInfo != null)
-                    {
-                        if (objReference.Value != null)
-                            fieldInfo.SetValue(objReference.Value, fieldReference.Value);
-                    }
+                        fieldInfo.SetValue(objReference.Value, fieldReference.Value);
                     else
                         throw new MissingFieldException(string.Format("Failed to find field {0} in type {1}", fieldReference.Name, type.Name));
                 }
