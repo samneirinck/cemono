@@ -82,7 +82,9 @@ public:
 	virtual void OnSystemEvent(ESystemEvent event,UINT_PTR wparam,UINT_PTR lparam);
 	// ~ISystemEventListener
 
+
 	CScriptDomain *TryGetDomain(MonoDomain *pAssembly);
+	void OnDomainReleased(CScriptDomain *pDomain);
 
 	IMonoAssembly *GetDebugDatabaseCreator() { return m_pPdb2MdbAssembly; }
 

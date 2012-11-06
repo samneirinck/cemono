@@ -50,8 +50,8 @@ CScriptDomain::CScriptDomain(const char *name, bool setActive)
 
 CScriptDomain::~CScriptDomain()
 {
-	for(auto it = m_assemblies.begin(); it != m_assemblies.end(); ++it)
-		SAFE_RELEASE(*it);
+	for each(auto assembly in m_assemblies)
+		assembly->Release();
 
 	if(m_bRootDomain)
 		mono_jit_cleanup(m_pDomain);
@@ -80,6 +80,8 @@ CScriptDomain::~CScriptDomain()
 			CryLogAlways(ToCryString((mono::string)exceptionString));
 		}
 	}
+
+	static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->OnDomainReleased(this);
 }
 
 bool CScriptDomain::SetActive(bool force)
