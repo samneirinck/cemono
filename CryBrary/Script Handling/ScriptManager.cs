@@ -37,7 +37,10 @@ namespace CryEngine.Initialization
                 try
                 {
                     foreach (var file in Directory.GetFiles(PathUtils.TempFolder))
-                        File.Delete(file);
+                    {
+                        if (!Path.HasExtension(".scriptdump"))
+                            File.Delete(file);
+                    }
                 }
                 catch(UnauthorizedAccessException) { }
             }
