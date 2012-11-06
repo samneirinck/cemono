@@ -50,6 +50,17 @@ namespace CryEngine.Serialization
             Writer.WriteLine(value);
         }
 
+        bool IsReferenceType(SerializationType type)
+        {
+            return type == SerializationType.Enumerable ||
+                type == SerializationType.GenericEnumerable ||
+                type == SerializationType.Object ||
+                type == SerializationType.MemberInfo ||
+                type == SerializationType.MemberInfo ||
+                type == SerializationType.Delegate ||
+                type == SerializationType.Type;
+        }
+
         /// <summary>
         /// Checks if this object has already been serialized.
         /// </summary>
@@ -57,14 +68,7 @@ namespace CryEngine.Serialization
         /// <returns>true if object had already been serialized.</returns>
         bool TryWriteReference(ObjectReference objectReference)
         {
-            var type = objectReference.SerializationType;
-            if (type == SerializationType.Enumerable ||
-                type == SerializationType.GenericEnumerable ||
-                type == SerializationType.Object ||
-                type == SerializationType.MemberInfo ||
-                type == SerializationType.MemberInfo ||
-                type == SerializationType.Delegate ||
-                type == SerializationType.Type)
+            if (IsReferenceType(objectReference.SerializationType))
             {
                 foreach (var pair in ObjectReferences)
                 {
@@ -286,9 +290,11 @@ namespace CryEngine.Serialization
             var objReference = new ObjectReference();
 
             objReference.Name = ReadLine();
+            int line = CurrentLine;
 
             objReference.SerializationType = (SerializationType)Enum.Parse(typeof(SerializationType), ReadLine());
-            int line = CurrentLine;
+            if (IsReferenceType(objReference.SerializationType))
+                ObjectReferences.Add(line, objReference);
 
             switch (objReference.SerializationType)
             {
@@ -332,8 +338,6 @@ namespace CryEngine.Serialization
 
         void ReadObject(ObjectReference objReference)
         {
-            AddReferenceToObject(objReference);
-
             var type = ReadType();
 
             try
@@ -367,8 +371,6 @@ namespace CryEngine.Serialization
 
         void ReadEnumerable(ObjectReference objReference)
         {
-            AddReferenceToObject(objReference);
-
             var numElements = int.Parse(ReadLine());
             var type = ReadType();
 
@@ -381,8 +383,6 @@ namespace CryEngine.Serialization
 
         void ReadGenericEnumerable(ObjectReference objReference)
         {
-            AddReferenceToObject(objReference);
-
             int elements = int.Parse(ReadLine());
 
             var type = ReadType();
@@ -433,8 +433,6 @@ namespace CryEngine.Serialization
 
         void ReadMemberInfo(ObjectReference objReference)
         {
-            AddReferenceToObject(objReference);
-
             objReference.Value = ReadMemberInfo();
         }
 
@@ -461,8 +459,6 @@ namespace CryEngine.Serialization
 
         void ReadDelegate(ObjectReference objReference)
         {
-            AddReferenceToObject(objReference);
-
             var delegateType = ReadType();
             var methodInfo = ReadMemberInfo() as MethodInfo;
 
@@ -474,8 +470,6 @@ namespace CryEngine.Serialization
 
         void ReadType(ObjectReference objReference)
         {
-            AddReferenceToObject(objReference);
-
             objReference.Value = ReadType();
         }
 
@@ -547,11 +541,6 @@ namespace CryEngine.Serialization
             }
 
             return type;
-        }
-
-        void AddReferenceToObject(ObjectReference objReference)
-        {
-            ObjectReferences.Add(CurrentLine - 1, objReference);
         }
 
         int CurrentLine { get; set; }
