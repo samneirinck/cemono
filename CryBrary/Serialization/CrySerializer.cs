@@ -74,11 +74,13 @@ namespace CryEngine.Serialization
                 {
                     if (pair.Value.Value.Equals(objectReference.Value))
                     {
+                        Debug.LogAlways("Writing reference {0} at line {1} ({2}vs{3})", objectReference.Name, pair.Key, pair.Value.Value.GetHashCode(), objectReference.Value.GetHashCode());
                         WriteReference(objectReference, pair.Key);
                         return true;
                     }
                 }
 
+                Debug.LogAlways("Adding reference {0} at line {1}", objectReference.Name, CurrentLine);
                 ObjectReferences.Add(CurrentLine, objectReference);
             }
 
@@ -343,6 +345,9 @@ namespace CryEngine.Serialization
             try
             {
                 objReference.Value = Activator.CreateInstance(type);
+
+                if (objReference.Value == null)
+                    throw new SerializationException(string.Format("Failed to create instance of type {0}", type.Name));
             }
             catch (MissingMethodException) { objReference.AllowNull = true; } // types lacking default constructors can't be serialized.
 
