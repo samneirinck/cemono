@@ -307,6 +307,11 @@ CScriptDomain *CScriptSystem::TryGetDomain(MonoDomain *pMonoDomain)
 	return pDomain;
 }
 
+void CScriptSystem::OnDomainReleased(CScriptDomain *pDomain)
+{
+	m_domains.erase(std::remove(m_domains.begin(), m_domains.end(), pDomain), m_domains.end());
+}
+
 void CScriptSystem::UpdateScriptInstance(CScriptObject *pObject, mono::object newInstance)
 {
 	pObject->SetManagedObject(newInstance);
