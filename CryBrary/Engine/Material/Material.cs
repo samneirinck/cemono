@@ -14,6 +14,8 @@ namespace CryEngine
     {
         static List<Material> materials = new List<Material>();
 
+        private Material() { }
+
         internal Material(IntPtr ptr)
         {
             Handle = ptr;
