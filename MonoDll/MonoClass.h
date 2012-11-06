@@ -49,7 +49,16 @@ public:
 	// ~IMonoClass
 
 	// IMonoObject
-	virtual void Release() override { if(0 >= --m_refs) delete this; }
+	virtual void Release(bool triggerGC = true) override 
+	{
+		if(0 >= --m_refs)
+		{
+			if(!triggerGC)
+				m_objectHandle = -1;
+
+			delete this;
+		}
+	}
 
 	virtual EMonoAnyType GetType() override { return eMonoAnyType_Class; }
 	virtual MonoAnyValue GetAnyValue() override { return MonoAnyValue(); }

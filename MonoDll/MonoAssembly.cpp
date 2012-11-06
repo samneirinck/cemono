@@ -33,7 +33,7 @@ CScriptAssembly::~CScriptAssembly()
 	m_pObject = 0;
 }
 
-void CScriptAssembly::Release()
+void CScriptAssembly::Release(bool triggerGC)
 {
 	if(m_classRegistry.empty())
 		delete this;
@@ -42,8 +42,6 @@ void CScriptAssembly::Release()
 void CScriptAssembly::OnClassReleased(CScriptClass *pClass)
 {
 	m_classRegistry.erase(pClass);
-
-	//Release();
 }
 
 IMonoClass *CScriptAssembly::GetClass(const char *className, const char *nameSpace)

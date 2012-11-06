@@ -32,7 +32,13 @@ public:
 	MonoClass *GetMonoClass();
 
 	// IMonoObject
-	virtual void Release() override { delete this; }
+	virtual void Release(bool triggerGC = true) override 
+	{
+		if(!triggerGC)
+			m_objectHandle = -1;
+
+		delete this; 
+	}
 
 	virtual EMonoAnyType GetType() override;
 	virtual MonoAnyValue GetAnyValue() override;
@@ -42,8 +48,9 @@ public:
 	virtual IMonoClass *GetClass() override;
 	// ~IMonoObject
 
-	void SetManagedObject(mono::object newObject, bool allowGC = true);
+	int GetScriptId() { return m_scriptId; }
 
+	void SetManagedObject(mono::object newObject, bool allowGC = true);
 	static void HandleException(MonoObject *pException);
 
 protected:

@@ -57,7 +57,6 @@ IMonoClass *CScriptObject::GetClass()
 		m_pClass = CScriptAssembly::TryGetClassFromRegistry(GetMonoClass());
 
 	CRY_ASSERT(m_pClass);
-
 	return m_pClass;
 }
 

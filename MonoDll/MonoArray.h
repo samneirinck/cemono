@@ -47,7 +47,13 @@ public:
 	// ~IMonoArray
 
 	// IMonoObject
-	virtual void Release() override { delete this; };
+	virtual void Release(bool triggerGC = true) override 
+	{
+		if(!triggerGC)
+			m_objectHandle = -1;
+
+		delete this;
+	}
 	
 	virtual EMonoAnyType GetType() override { return eMonoAnyType_Array; }
 	virtual MonoAnyValue GetAnyValue() override { return MonoAnyValue(); }
