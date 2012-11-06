@@ -171,6 +171,13 @@ void CActor::ProcessEvent(SEntityEvent& event)
   }  
 }
 
+void CActor::SetScript(IMonoObject *pObject)
+{
+	m_pScript = pObject;
+
+	m_pScript->SetPropertyValue("IMonoObjectHandle", m_pScript);
+}
+
 void CActor::UpdateView(SViewParams &viewParams)
 {
 	void *args[1];
