@@ -16,7 +16,6 @@ CScriptArray::CScriptArray(mono::object managedArray)
 
 	m_objectHandle = mono_gchandle_new(m_pObject, false);
 	m_pClass = NULL;
-	m_scriptId = -1;
 }
 
 CScriptArray::CScriptArray(int size, IMonoClass *pContainingType)
@@ -31,7 +30,6 @@ CScriptArray::CScriptArray(int size, IMonoClass *pContainingType)
 
 	m_objectHandle = mono_gchandle_new(m_pObject, false);
 	m_pClass = NULL;
-	m_scriptId = -1;
 }
 
 CScriptArray::~CScriptArray()
