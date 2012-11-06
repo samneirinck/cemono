@@ -46,7 +46,7 @@ namespace CryEngine
         public override bool Equals(object obj)
         {
             if (obj is Color)
-                return (Color)obj == this;
+                return this == (Color)obj;
 
             return false;
         }
@@ -58,7 +58,18 @@ namespace CryEngine
 
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            // Overflow is fine, just wrap
+            unchecked
+            {
+                int hash = 17;
+
+                hash = hash * 29 + R.GetHashCode();
+                hash = hash * 29 + G.GetHashCode();
+                hash = hash * 29 + B.GetHashCode();
+                hash = hash * 29 + A.GetHashCode();
+
+                return hash;
+            }
         }
         #endregion
 

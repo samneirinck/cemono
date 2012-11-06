@@ -380,7 +380,16 @@ namespace CryEngine
         /// </returns>
         public override int GetHashCode()
         {
-            return Minimum.GetHashCode() + Maximum.GetHashCode();
+            // Overflow is fine, just wrap
+            unchecked
+            {
+                int hash = 17;
+
+                hash = hash * 29 + Minimum.GetHashCode();
+                hash = hash * 29 + Maximum.GetHashCode();
+
+                return hash;
+            }
         }
 
         /// <summary>

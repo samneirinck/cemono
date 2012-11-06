@@ -16,7 +16,7 @@ namespace CryEngine
         public NativeEntity(EntityId id, IntPtr ptr)
         { 
             Id = id;
-            this.SetEntityHandle(new HandleRef(this, ptr));
+            this.SetEntityHandle(ptr);
         }
     }
 }

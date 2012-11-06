@@ -652,7 +652,16 @@ namespace CryEngine
         /// </returns>
         public override int GetHashCode()
         {
-            return Normal.GetHashCode() + D.GetHashCode();
+            // Overflow is fine, just wrap
+            unchecked
+            {
+                int hash = 17;
+
+                hash = hash * 29 + Normal.GetHashCode();
+                hash = hash * 29 + D.GetHashCode();
+
+                return hash;
+            }
         }
 
         /// <summary>

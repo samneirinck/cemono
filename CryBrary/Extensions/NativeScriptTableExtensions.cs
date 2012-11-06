@@ -1,18 +1,18 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
 using CryEngine.Lua;
 
 namespace CryEngine.Native
 {
     public static class NativeScriptTableExtensions
     {
-        public static HandleRef GetHandle(this ScriptTable scriptTable)
+        public static IntPtr GetHandle(this ScriptTable scriptTable)
         {
-            return scriptTable.HandleRef;
+            return scriptTable.Handle;
         }
 
-        public static void SetActorHandle(this ScriptTable scriptTable, HandleRef handleRef)
+        public static void SetActorHandle(this ScriptTable scriptTable, IntPtr handle)
         {
-            scriptTable.HandleRef = handleRef;
+            scriptTable.Handle = handle;
         }
     }
 }

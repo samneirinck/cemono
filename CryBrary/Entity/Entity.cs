@@ -25,8 +25,8 @@ namespace CryEngine
         [EditorBrowsable(EditorBrowsableState.Never)]
         internal virtual void InternalSpawn(EntityInfo entInfo)
         {
-            this.SetEntityHandle(new HandleRef(this, entInfo.IEntityPtr));
-            this.SetAnimatedCharacterHandle(new HandleRef(this, entInfo.IAnimatedCharacterPtr));
+            this.SetEntityHandle(entInfo.IEntityPtr);
+            this.SetAnimatedCharacterHandle(entInfo.IAnimatedCharacterPtr);
             Id = entInfo.Id;
 
             foreach (var property in GetType().GetProperties())
@@ -256,13 +256,13 @@ namespace CryEngine
         /// </summary>
         public BoundingBox TriggerBounds
         {
-            get { return NativeMethods.Entity.GetTriggerBBox(this.GetEntityHandle().Handle); }
+            get { return NativeMethods.Entity.GetTriggerBBox(this.GetEntityHandle()); }
             set
             {
                 if (value.Minimum == Vec3.Zero && value.Maximum == Vec3.Zero)
-                    NativeMethods.Entity.InvalidateTrigger(this.GetEntityHandle().Handle);
+                    NativeMethods.Entity.InvalidateTrigger(this.GetEntityHandle());
 
-                NativeMethods.Entity.SetTriggerBBox(this.GetEntityHandle().Handle, value);
+                NativeMethods.Entity.SetTriggerBBox(this.GetEntityHandle(), value);
             }
         }
 
@@ -282,6 +282,7 @@ namespace CryEngine
 
                 hash = hash * 29 + ScriptId.GetHashCode();
                 hash = hash * 29 + Id.GetHashCode();
+                hash = hash * 29 + EntityHandle.GetHashCode();
 
                 return hash;
             }

@@ -9,7 +9,7 @@ namespace CryEngine
         public override bool Equals(object obj)
         {
             if (obj is RaycastHit)
-                return obj.GetHashCode() == GetHashCode();
+                return this == (RaycastHit)obj;
 
             return false;
         }

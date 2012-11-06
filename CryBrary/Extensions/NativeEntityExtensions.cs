@@ -1,37 +1,36 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using CryEngine;
 
 namespace CryEngine.Native
 {
     public static class NativeEntityExtensions
     {
-        public static HandleRef GetEntityHandle(this EntityBase entity)
+        public static IntPtr GetEntityHandle(this EntityBase entity)
         {
             if (entity.IsDestroyed)
                 throw new ScriptInstanceDestroyedException("Attempted to access native entity handle on a destroyed script");
 
-            return entity.EntityHandleRef;
+            return entity.EntityHandle;
         }
 
-        public static void SetEntityHandle(this EntityBase entity, HandleRef handleRef)
+        public static void SetEntityHandle(this EntityBase entity, IntPtr handle)
         {
-            entity.EntityHandleRef = handleRef;
+            entity.EntityHandle = handle;
         }
 
-        public static HandleRef GetAnimatedCharacterHandle(this EntityBase entity)
+        public static IntPtr GetAnimatedCharacterHandle(this EntityBase entity)
         {
             if (entity.IsDestroyed)
                 throw new ScriptInstanceDestroyedException("Attempted to access native animated character handle on a destroyed entity");
-            if (entity.AnimatedCharacterHandleRef.Handle == IntPtr.Zero)
-                entity.SetAnimatedCharacterHandle(new HandleRef(entity, NativeMethods.Entity.AcquireAnimatedCharacter(entity.Id)));
+            if (entity.AnimatedCharacterHandle == IntPtr.Zero)
+                entity.SetAnimatedCharacterHandle(NativeMethods.Entity.AcquireAnimatedCharacter(entity.Id));
 
-            return entity.AnimatedCharacterHandleRef;
+            return entity.AnimatedCharacterHandle;
         }
 
-        public static void SetAnimatedCharacterHandle(this EntityBase entity, HandleRef handleRef)
+        public static void SetAnimatedCharacterHandle(this EntityBase entity, IntPtr handle)
         {
-            entity.AnimatedCharacterHandleRef = handleRef;
+            entity.AnimatedCharacterHandle = handle;
         }
     }
 }

@@ -91,7 +91,7 @@ namespace CryEngine.Initialization
                 return false;
 
             if (obj is CryScript)
-                return obj.GetHashCode() == GetHashCode();
+                return this == (CryScript)obj;
 
             return false;
         }

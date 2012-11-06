@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using CryEngine.Native;
 
 namespace CryEngine
@@ -17,12 +16,12 @@ namespace CryEngine
         /// <summary>
         /// Gets or sets the current health of this actor.
         /// </summary>
-        public virtual float Health { get { return NativeMethods.Actor.GetPlayerHealth(this.GetActorHandle().Handle); } set { NativeMethods.Actor.SetPlayerHealth(this.GetActorHandle().Handle, value); } }
+        public virtual float Health { get { return NativeMethods.Actor.GetPlayerHealth(this.GetActorHandle()); } set { NativeMethods.Actor.SetPlayerHealth(this.GetActorHandle(), value); } }
 
         /// <summary>
         /// Gets or sets the max health value for this actor.
         /// </summary>
-        public virtual float MaxHealth { get { return NativeMethods.Actor.GetPlayerMaxHealth(this.GetActorHandle().Handle); } set { NativeMethods.Actor.SetPlayerMaxHealth(this.GetActorHandle().Handle, value); } }
+        public virtual float MaxHealth { get { return NativeMethods.Actor.GetPlayerMaxHealth(this.GetActorHandle()); } set { NativeMethods.Actor.SetPlayerMaxHealth(this.GetActorHandle(), value); } }
 
         /// <summary>
         /// Gets a value indicating whether this actor has died. Returns true if <see cref="Health"/> is equal to or below 0.
@@ -34,7 +33,7 @@ namespace CryEngine
         /// </summary>
         public int ChannelId { get; set; }
 
-        internal HandleRef ActorHandleRef { get; set; }
+        internal IntPtr ActorHandle { get; set; }
 
         #region Callbacks
         /// <summary>
@@ -66,6 +65,8 @@ namespace CryEngine
                 hash = hash * 29 + ScriptId.GetHashCode();
                 hash = hash * 29 + Id.GetHashCode();
                 hash = hash * 29 + ChannelId.GetHashCode();
+                hash = hash * 29 + ActorHandle.GetHashCode();
+                hash = hash * 29 + EntityHandle.GetHashCode();
 
                 return hash;
             }
@@ -80,8 +81,8 @@ namespace CryEngine
         {
             System.Diagnostics.Contracts.Contract.Requires(actorInfo.ChannelId > 0);
             Id = new EntityId(actorInfo.Id);
-            this.SetActorHandle(new HandleRef(this, actorInfo.ActorPtr));
-            this.SetEntityHandle(new HandleRef(this, actorInfo.EntityPtr));
+            this.SetActorHandle(actorInfo.ActorPtr);
+            this.SetEntityHandle(actorInfo.EntityPtr);
 
             ChannelId = actorInfo.ChannelId;
 
