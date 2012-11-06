@@ -168,7 +168,7 @@ public:
 	virtual uint8 GetDefaultProfile(EEntityAspects aspect) { return aspect == eEA_Physics ? eAP_NotPhysicalized : 0; }
 	// ~IGameObjectProfileManager
 
-	void SetScript(IMonoObject *pObject) { m_pScript = pObject; }
+	void SetScript(IMonoObject *pObject);
 
 protected:
 	IMonoObject *m_pScript;
