@@ -328,12 +328,12 @@ namespace CryEngine.Serialization
         void ReadReference(ObjectReference objReference)
         {
             int referenceLine = int.Parse(ReadLine());
-            objReference.Value = ObjectReferences[referenceLine].Value;
 
-#if !(RELEASE && RELEASE_DISABLE_CHECKS)
-            if (objReference.Value == null)
+            ObjectReference originalReference;
+            if (!ObjectReferences.TryGetValue(referenceLine, out originalReference))
                 throw new SerializationException(string.Format("Failed to obtain reference {0} at line {1}! Last line was {2})", objReference.Name, referenceLine, CurrentLine));
-#endif
+
+            objReference.Value = originalReference.Value;
         }
 
         void ReadObject(ObjectReference objReference)
