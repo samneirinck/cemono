@@ -57,7 +57,7 @@ CScriptDomain::~CScriptDomain()
 		mono_jit_cleanup(m_pDomain);
 	else
 	{
-		if(m_pDomain == mono_domain_get())
+		if(IsActive())
 			mono_domain_set(mono_get_root_domain(), false);
 
 		mono_domain_finalize(m_pDomain, 2);
@@ -91,8 +91,6 @@ bool CScriptDomain::SetActive(bool force)
 
 IMonoAssembly *CScriptDomain::LoadAssembly(const char *file, bool shadowCopy)
 {
-	CRY_ASSERT_MESSAGE(IsActive(), "Attempted to load assembly into domain while it wasn't the active one");
-
 	const char *path;
 	if(shadowCopy)
 		path = PathUtils::GetTempPath().append(PathUtil::GetFile(file));
@@ -125,7 +123,7 @@ IMonoAssembly *CScriptDomain::LoadAssembly(const char *file, bool shadowCopy)
 	}
 #endif
 
-	MonoAssembly *pMonoAssembly = mono_domain_assembly_open(mono_domain_get(), path);
+	MonoAssembly *pMonoAssembly = mono_domain_assembly_open(m_pDomain, path);
 	CRY_ASSERT(pMonoAssembly);
 
 	CScriptAssembly *pAssembly = new CScriptAssembly(this, mono_assembly_get_image(pMonoAssembly), path);
