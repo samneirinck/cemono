@@ -16,7 +16,7 @@
   <UseBuildConfiguration>RELEASE</UseBuildConfiguration>
   <UseBuildPlatform>x86</UseBuildPlatform>
   <ProxyProcessPath></ProxyProcessPath>
-  <UseCPUArchitecture>x86</UseCPUArchitecture>
+  <UseCPUArchitecture>AutoDetect</UseCPUArchitecture>
   <IgnoredTests>
     <RegexTestSelector>
       <RegularExpression>.*</RegularExpression>
