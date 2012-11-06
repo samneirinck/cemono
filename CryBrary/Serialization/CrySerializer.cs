@@ -353,7 +353,7 @@ namespace CryEngine.Serialization
 
             try
             {
-                objReference.Value = Activator.CreateInstance(type);
+                objReference.Value = Activator.CreateInstance(type, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, null, null);
 
                 if (objReference.Value == null)
                     throw new SerializationException(string.Format("Failed to create instance of type {0}", type.Name));
