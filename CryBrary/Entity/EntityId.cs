@@ -28,7 +28,7 @@
 
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            return _value.GetHashCode();
         }
 
         public override string ToString()
