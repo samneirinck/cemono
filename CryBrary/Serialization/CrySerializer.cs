@@ -84,13 +84,11 @@ namespace CryEngine.Serialization
                 {
                     if (pair.Value.Value.Equals(objectReference.Value))
                     {
-                        Debug.LogAlways("Writing reference {0} at line {1} ({2}vs{3})", objectReference.Name, pair.Key, pair.Value.Value.GetHashCode(), objectReference.Value.GetHashCode());
                         WriteReference(objectReference, pair.Key);
                         return true;
                     }
                 }
 
-                Debug.LogAlways("Adding reference {0} at line {1}", objectReference.Name, CurrentLine);
                 ObjectReferences.Add(CurrentLine, objectReference);
             }
 
