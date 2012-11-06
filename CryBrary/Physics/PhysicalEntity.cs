@@ -10,7 +10,7 @@ namespace CryEngine
     /// </summary>
     public class PhysicalEntity
     {
-        internal PhysicalEntity() 
+        private PhysicalEntity() 
         {
             Clear();
 

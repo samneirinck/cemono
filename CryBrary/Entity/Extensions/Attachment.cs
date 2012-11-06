@@ -29,6 +29,8 @@ namespace CryEngine
         }
         #endregion
 
+        private Attachment() { }
+
         internal Attachment(IntPtr ptr, EntityBase owner)
         {
             Owner = owner;
