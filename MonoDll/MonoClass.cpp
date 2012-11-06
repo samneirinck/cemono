@@ -18,7 +18,6 @@ CScriptClass::CScriptClass(MonoClass *pClass, CScriptAssembly *pDeclaringAssembl
 	m_pObject = (MonoObject *)pClass; 
 	m_objectHandle = -1;
 	m_pClass = NULL;
-	m_scriptId = -1;
 
 	m_name = string(mono_class_get_name(pClass));
 	m_namespace = string(mono_class_get_namespace(pClass));

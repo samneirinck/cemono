@@ -13,16 +13,10 @@ CScriptObject::CScriptObject(MonoObject *pObject, bool allowGC)
 	: m_pClass(NULL)
 {
 	SetManagedObject((mono::object)pObject, allowGC);
-
-	if(IMonoObject *pScriptId = GetPropertyValue("ScriptId"))
-		m_scriptId = pScriptId->Unbox<int>();
-	else
-		m_scriptId = -1;
 }
 
 CScriptObject::CScriptObject(MonoObject *object, IMonoArray *pConstructorParams)
 	: m_pClass(NULL)
-	, m_scriptId(-1)
 {
 	SetManagedObject((mono::object)object, true);
 

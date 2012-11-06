@@ -48,8 +48,6 @@ public:
 	virtual IMonoClass *GetClass() override;
 	// ~IMonoObject
 
-	int GetScriptId() { return m_scriptId; }
-
 	void SetManagedObject(mono::object newObject, bool allowGC = true);
 	static void HandleException(MonoObject *pException);
 
@@ -61,8 +59,6 @@ protected:
 	IMonoClass *m_pClass;
 
 	int m_objectHandle;
-	// CryScriptInstance.ScriptId
-	int m_scriptId;
 };
 
 #endif //__MONO_OBJECT_H__
