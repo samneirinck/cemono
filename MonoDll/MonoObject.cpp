@@ -10,13 +10,11 @@
 #include <mono/metadata/debug-helpers.h>
 
 CScriptObject::CScriptObject(MonoObject *pObject, bool allowGC)
-	: m_pClass(NULL)
 {
 	SetManagedObject((mono::object)pObject, allowGC);
 }
 
 CScriptObject::CScriptObject(MonoObject *object, IMonoArray *pConstructorParams)
-	: m_pClass(NULL)
 {
 	SetManagedObject((mono::object)object, true);
 
