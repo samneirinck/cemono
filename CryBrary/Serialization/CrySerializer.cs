@@ -336,6 +336,7 @@ namespace CryEngine.Serialization
                 throw new SerializationException(string.Format("Failed to obtain reference {0} at line {1}! Last line was {2})", objReference.Name, referenceLine, CurrentLine));
 
             objReference.Value = originalReference.Value;
+            objReference.AllowNull = originalReference.AllowNull;
         }
 
         void ReadObject(ObjectReference objReference)
