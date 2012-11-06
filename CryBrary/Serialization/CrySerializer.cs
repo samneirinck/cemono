@@ -57,37 +57,38 @@ namespace CryEngine.Serialization
         /// <returns>true if object had already been serialized.</returns>
         bool TryWriteReference(ObjectReference objectReference)
         {
-            var serializationType = objectReference.SerializationType;
-            if (serializationType != SerializationType.Enumerable &&
-                serializationType != SerializationType.GenericEnumerable &&
-                serializationType != SerializationType.Object &&
-                serializationType != SerializationType.MemberInfo &&
-                serializationType != SerializationType.Delegate &&
-                serializationType != SerializationType.Type)
-                return false;
-
-            foreach (var pair in ObjectReferences)
+            var type = objectReference.SerializationType;
+            if (type == SerializationType.Enumerable ||
+                type == SerializationType.GenericEnumerable ||
+                type == SerializationType.Object ||
+                type == SerializationType.MemberInfo ||
+                type == SerializationType.MemberInfo ||
+                type == SerializationType.Delegate ||
+                type == SerializationType.Type)
             {
-                if (pair.Value.Value.Equals(objectReference.Value))
+                foreach (var pair in ObjectReferences)
                 {
-                    WriteReference(objectReference, pair.Key);
-                    return true;
+                    if (pair.Value.Value.Equals(objectReference.Value))
+                    {
+                        WriteReference(objectReference, pair.Key);
+                        return true;
+                    }
                 }
+
+                ObjectReferences.Add(CurrentLine, objectReference);
             }
 
-            ObjectReferences.Add(CurrentLine, objectReference);
             return false;
         }
 
         void StartWrite(ObjectReference objectReference)
         {
-            Debug.LogAlways("Writing {0}", objectReference.Name);
             Type valueType = objectReference.Value != null ? objectReference.Value.GetType() : null;
 
             if (TryWriteReference(objectReference))
                 return;
 
-            WriteLine(objectReference.Value);
+            WriteLine(objectReference.SerializationType);
 
             switch(objectReference.SerializationType)
             {
@@ -125,8 +126,6 @@ namespace CryEngine.Serialization
                     WriteObject(objectReference);
                     break;
             }
-            
-            Debug.LogAlways("~Writing {0}", objectReference.Name);
         }
 
         void WriteNull(ObjectReference objectReference)
@@ -142,6 +141,7 @@ namespace CryEngine.Serialization
 
         void WriteReference(ObjectReference objReference, int line)
         {
+            WriteLine(SerializationType.Reference);
             WriteLine(objReference.Name);
             WriteLine(line);
         }
@@ -150,7 +150,7 @@ namespace CryEngine.Serialization
         {
             WriteLine(objectReference.Name);
             WriteType(objectReference.Value.GetType());
-            WriteLine(objectReference.Value);
+            WriteLine(Converter.ToString(objectReference.Value));
         }
 
         void WriteString(ObjectReference objectReference)
