@@ -143,7 +143,7 @@ namespace CryEngine.Serialization
         void WriteAny(ObjectReference objectReference)
         {
             WriteType(objectReference.Value.GetType());
-            WriteLine(Converter.ToString(objectReference.Value));
+            WriteLine(objectReference.Value);
         }
 
         void WriteString(ObjectReference objectReference)
@@ -153,8 +153,7 @@ namespace CryEngine.Serialization
 
         void WriteEnum(ObjectReference objectReference)
         {
-            WriteType(objectReference.Value.GetType());
-            WriteLine(objectReference.Value);
+            WriteAny(objectReference);
         }
 
         void WriteEnumerable(ObjectReference objectReference)
