@@ -51,7 +51,7 @@ CScriptDomain::CScriptDomain(const char *name, bool setActive)
 CScriptDomain::~CScriptDomain()
 {
 	for each(auto assembly in m_assemblies)
-		assembly->Release();
+		delete assembly;
 
 	if(m_bRootDomain)
 		mono_jit_cleanup(m_pDomain);
