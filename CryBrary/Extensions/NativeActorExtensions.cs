@@ -1,21 +1,21 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
 using CryEngine;
 
 namespace CryEngine.Native
 {
     public static class NativeActorExtensions
     {
-        public static HandleRef GetActorHandle(this ActorBase actor)
+        public static IntPtr GetActorHandle(this ActorBase actor)
         {
             if (actor.IsDestroyed)
                 throw new ScriptInstanceDestroyedException("Attempted to access native actor handle on a destroyed script");
 
-            return actor.ActorHandleRef;
+            return actor.ActorHandle;
         }
 
-        public static void SetActorHandle(this ActorBase actor, HandleRef handleRef)
+        public static void SetActorHandle(this ActorBase actor, IntPtr handle)
         {
-            actor.ActorHandleRef = handleRef;
+            actor.ActorHandle = handle;
         }
     }
 }

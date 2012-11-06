@@ -20,7 +20,7 @@ namespace CryEngine
 
         internal void InternalInitialize(NodeInfo nodeInfo)
         {
-            HandleRef = new HandleRef(this, nodeInfo.nodePtr);
+            Handle = nodeInfo.nodePtr;
             NodeId = nodeInfo.nodeId;
             GraphId = nodeInfo.graphId;
 
@@ -300,7 +300,7 @@ namespace CryEngine
 
                 var portType = GetPortType(genericType);
 
-                object[] outputPortConstructorArgs = { HandleRef.Handle, outputs.Count };
+                object[] outputPortConstructorArgs = { Handle, outputs.Count };
                 Type genericOutputPort = typeof(OutputPort<>);
                 object outputPort = Activator.CreateInstance(isGenericType ? genericOutputPort.MakeGenericType(genericType) : type, outputPortConstructorArgs);
 
@@ -379,7 +379,7 @@ namespace CryEngine
         /// <returns></returns>
         protected int GetPortInt(Action<int> port)
         {
-            return NativeMethods.FlowNode.GetPortValueInt(HandleRef.Handle, GetInputPortId(port.Method));
+            return NativeMethods.FlowNode.GetPortValueInt(Handle, GetInputPortId(port.Method));
         }
 
         protected bool IsIntPortActive(Action<int> port)
@@ -394,7 +394,7 @@ namespace CryEngine
                 throw new ArgumentException("T must be an enumerated type");
 #endif
 
-            return (T)Enum.ToObject(typeof(T), NativeMethods.FlowNode.GetPortValueInt(HandleRef.Handle, GetInputPortId(port.Method)));
+            return (T)Enum.ToObject(typeof(T), NativeMethods.FlowNode.GetPortValueInt(Handle, GetInputPortId(port.Method)));
         }
 
         protected bool IsEnumPortActive(Action<Enum> port)
@@ -409,7 +409,7 @@ namespace CryEngine
         /// <returns></returns>
         protected float GetPortFloat(Action<float> port)
         {
-            return NativeMethods.FlowNode.GetPortValueFloat(HandleRef.Handle, GetInputPortId(port.Method));
+            return NativeMethods.FlowNode.GetPortValueFloat(Handle, GetInputPortId(port.Method));
         }
 
         protected bool IsFloatPortActive(Action<float> port)
@@ -424,7 +424,7 @@ namespace CryEngine
         /// <returns></returns>
         protected Vec3 GetPortVec3(Action<Vec3> port)
         {
-            return NativeMethods.FlowNode.GetPortValueVec3(HandleRef.Handle, GetInputPortId(port.Method));
+            return NativeMethods.FlowNode.GetPortValueVec3(Handle, GetInputPortId(port.Method));
         }
 
         protected bool IsVec3PortActive(Action<Vec3> port)
@@ -439,7 +439,7 @@ namespace CryEngine
         /// <returns></returns>
         protected string GetPortString(Action<string> port)
         {
-            return NativeMethods.FlowNode.GetPortValueString(HandleRef.Handle, GetInputPortId(port.Method));
+            return NativeMethods.FlowNode.GetPortValueString(Handle, GetInputPortId(port.Method));
         }
 
         protected bool IsStringPortActive(Action<string> port)
@@ -454,7 +454,7 @@ namespace CryEngine
         /// <returns></returns>
         protected bool GetPortBool(Action<bool> port)
         {
-            return NativeMethods.FlowNode.GetPortValueBool(HandleRef.Handle, GetInputPortId(port.Method));
+            return NativeMethods.FlowNode.GetPortValueBool(Handle, GetInputPortId(port.Method));
         }
 
         protected bool IsBoolPortActive(Action<bool> port)
@@ -464,7 +464,7 @@ namespace CryEngine
 
         protected EntityId GetPortEntityId(Action<EntityId> port)
         {
-            return new EntityId(NativeMethods.FlowNode.GetPortValueEntityId(HandleRef.Handle, GetInputPortId(port.Method)));
+            return new EntityId(NativeMethods.FlowNode.GetPortValueEntityId(Handle, GetInputPortId(port.Method)));
         }
 
         protected bool IsEntityIdPortActive(Action<EntityId> port)
@@ -488,7 +488,7 @@ namespace CryEngine
         /// </summary>
         /// <param name="port"></param>
         /// <returns></returns>
-        private bool IsPortActive(int port) { return NativeMethods.FlowNode.IsPortActive(HandleRef.Handle, port); }
+        private bool IsPortActive(int port) { return NativeMethods.FlowNode.IsPortActive(Handle, port); }
         #endregion
 
         public EntityBase TargetEntity
@@ -496,7 +496,7 @@ namespace CryEngine
             get
             {
                 uint entId;
-                var entPtr = NativeMethods.FlowNode.GetTargetEntity(HandleRef.Handle, out entId);
+                var entPtr = NativeMethods.FlowNode.GetTargetEntity(Handle, out entId);
 
                 if (entPtr != IntPtr.Zero)
                     return Entity.CreateNativeEntity(new EntityId(entId), entPtr);
@@ -513,7 +513,7 @@ namespace CryEngine
                 int hash = 17;
 
                 hash = hash * 29 + ScriptId.GetHashCode();
-                hash = hash * 29 + HandleRef.GetHashCode();
+                hash = hash * 29 + Handle.GetHashCode();
                 hash = hash * 29 + NodeId.GetHashCode();
                 hash = hash * 29 + GraphId.GetHashCode();
 
@@ -522,7 +522,7 @@ namespace CryEngine
         }
         #endregion
 
-        public HandleRef HandleRef { get; set; }
+        public IntPtr Handle { get; set; }
 
         internal UInt16 NodeId { get; set; }
 

@@ -29,7 +29,7 @@ namespace CryEngine
                 return false;
 
             if (obj is CryScriptInstance)
-                return obj.GetHashCode() == GetHashCode();
+                return this == obj;
 
             return false;
         }
@@ -55,7 +55,7 @@ namespace CryEngine
         /// <summary>
         /// Handle to the native IMonoObject instance representing this script instance.
         /// </summary>
-        internal HandleRef IMonoObjectHandleRef { get; set; }
+        internal IntPtr IMonoObjectHandle { get; set; }
 
         /// <summary>
         /// Controls whether the entity receives an update per frame.

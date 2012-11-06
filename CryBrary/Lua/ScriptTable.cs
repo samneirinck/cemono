@@ -23,7 +23,7 @@ namespace CryEngine.Lua
             var scriptPtr = NativeMethods.ScriptTable.GetScriptTable(entityPtr);
             if (scriptPtr != IntPtr.Zero)
             {
-                var scriptTable = ScriptTables.FirstOrDefault(x => x.HandleRef.Handle == scriptPtr);
+                var scriptTable = ScriptTables.FirstOrDefault(x => x.Handle == scriptPtr);
                 if (scriptTable != default(ScriptTable))
                     return scriptTable;
 
@@ -37,7 +37,7 @@ namespace CryEngine.Lua
 
         public static ScriptTable Get(EntityBase entity)
         {
-            return Get(entity.GetEntityHandle().Handle);
+            return Get(entity.GetEntityHandle());
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace CryEngine.Lua
 
         internal ScriptTable(IntPtr scriptPtr)
         {
-            HandleRef = new HandleRef(this, scriptPtr);
+            Handle = scriptPtr;
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace CryEngine.Lua
         /// <returns>Result or null</returns>
         public object CallMethod(string methodName, params object[] args)
         {
-            return NativeMethods.ScriptTable.CallMethod(HandleRef.Handle, methodName, args);
+            return NativeMethods.ScriptTable.CallMethod(Handle, methodName, args);
         }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace CryEngine.Lua
         /// <returns>The value or null</returns>
         public object GetValue(string name)
         {
-            return NativeMethods.ScriptTable.GetValue(HandleRef.Handle, name);
+            return NativeMethods.ScriptTable.GetValue(Handle, name);
         }
 
         /// <summary>
@@ -86,10 +86,10 @@ namespace CryEngine.Lua
         /// <returns></returns>
         public ScriptTable GetTable(string name)
         {
-            var scriptPtr = NativeMethods.ScriptTable.GetSubScriptTable(HandleRef.Handle, name);
+            var scriptPtr = NativeMethods.ScriptTable.GetSubScriptTable(Handle, name);
             if (scriptPtr != IntPtr.Zero)
             {
-                var scriptTable = ScriptTables.FirstOrDefault(x => x.HandleRef.Handle == scriptPtr);
+                var scriptTable = ScriptTables.FirstOrDefault(x => x.Handle == scriptPtr);
                 if (scriptTable != default(ScriptTable))
                     return scriptTable;
 
@@ -104,7 +104,7 @@ namespace CryEngine.Lua
         /// <summary>
         /// Handle to the native IScriptTable object
         /// </summary>
-        internal HandleRef HandleRef { get; set; }
+        internal IntPtr Handle { get; set; }
     }
 
     enum LuaVariableType

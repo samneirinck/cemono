@@ -16,7 +16,7 @@ namespace CryEngine
 
         internal Material(IntPtr ptr)
         {
-            HandleRef = new HandleRef(this, ptr);
+            Handle = ptr;
         }
 
         #region Properties
@@ -58,23 +58,23 @@ namespace CryEngine
         /// <summary>
         /// Gets the surface type assigned to this material.
         /// </summary>
-        public string SurfaceType { get { return NativeMethods.Material.GetSurfaceTypeName(HandleRef.Handle); } }
+        public string SurfaceType { get { return NativeMethods.Material.GetSurfaceTypeName(Handle); } }
 
         /// <summary>
         /// Gets the amount of shader parameters in this material.
         /// See <see cref="GetShaderParamName(int)"/>
         /// </summary>
-        public int ShaderParamCount { get { return NativeMethods.Material.GetShaderParamCount(HandleRef.Handle); } }
+        public int ShaderParamCount { get { return NativeMethods.Material.GetShaderParamCount(Handle); } }
 
         /// <summary>
         /// Gets the amount of submaterials tied to this material.
         /// </summary>
-        public int SubmaterialCount { get { return NativeMethods.Material.GetSubmaterialCount(HandleRef.Handle); } }
+        public int SubmaterialCount { get { return NativeMethods.Material.GetSubmaterialCount(Handle); } }
 
         /// <summary>
         /// Gets or sets the native IMaterial pointer.
         /// </summary>
-        public HandleRef HandleRef { get; set; }
+        public IntPtr Handle { get; set; }
         #endregion
 
         #region Statics
@@ -106,7 +106,7 @@ namespace CryEngine
                 throw new ArgumentNullException("entity");
 #endif
 
-            var ptr = NativeMethods.Material.GetMaterial(entity.GetEntityHandle().Handle, slot);
+            var ptr = NativeMethods.Material.GetMaterial(entity.GetEntityHandle(), slot);
             return TryAdd(ptr);
         }
 
@@ -119,7 +119,7 @@ namespace CryEngine
                 throw new ArgumentNullException("mat");
 #endif
 
-            NativeMethods.Material.SetMaterial(entity.GetEntityHandle().Handle, mat.HandleRef.Handle, slot);
+            NativeMethods.Material.SetMaterial(entity.GetEntityHandle(), mat.Handle, slot);
         }
         #endregion
 
@@ -130,7 +130,7 @@ namespace CryEngine
         /// <returns>The submaterial, or null if failed.</returns>
         public Material GetSubmaterial(int slot)
         {
-            var ptr = NativeMethods.Material.GetSubMaterial(HandleRef.Handle, slot);
+            var ptr = NativeMethods.Material.GetSubMaterial(Handle, slot);
 
             return TryAdd(ptr);
         }
@@ -142,7 +142,7 @@ namespace CryEngine
         /// <returns>The new clone.</returns>
         public Material Clone(int subMaterial = -1)
         {
-            var ptr = NativeMethods.Material.CloneMaterial(HandleRef.Handle, subMaterial);
+            var ptr = NativeMethods.Material.CloneMaterial(Handle, subMaterial);
 
             return TryAdd(ptr);
         }
@@ -155,7 +155,7 @@ namespace CryEngine
         /// <returns>true if successful, otherwise false.</returns>
         public bool SetParam(string paramName, float value)
         {
-            return NativeMethods.Material.SetGetMaterialParamFloat(HandleRef.Handle, paramName, ref value, false);
+            return NativeMethods.Material.SetGetMaterialParamFloat(Handle, paramName, ref value, false);
         }
 
         /// <summary>
@@ -181,7 +181,7 @@ namespace CryEngine
         {
             value = 0;
 
-            return NativeMethods.Material.SetGetMaterialParamFloat(HandleRef.Handle, paramName, ref value, true);
+            return NativeMethods.Material.SetGetMaterialParamFloat(Handle, paramName, ref value, true);
         }
 
         /// <summary>
@@ -193,7 +193,7 @@ namespace CryEngine
         public bool SetParam(string paramName, Color value)
         {
             Vec3 vecValue = new Vec3(value.R, value.G, value.B);
-            var result = NativeMethods.Material.SetGetMaterialParamVec3(HandleRef.Handle, paramName, ref vecValue, false);
+            var result = NativeMethods.Material.SetGetMaterialParamVec3(Handle, paramName, ref vecValue, false);
 
             Opacity = value.A;
 
@@ -222,7 +222,7 @@ namespace CryEngine
         public bool TryGetParam(string paramName, out Color value)
         {
             Vec3 vecVal = Vec3.Zero;
-            bool result = NativeMethods.Material.SetGetMaterialParamVec3(HandleRef.Handle, paramName, ref vecVal, true);
+            bool result = NativeMethods.Material.SetGetMaterialParamVec3(Handle, paramName, ref vecVal, true);
 
             value = new Color();
             value.R = vecVal.X;
@@ -240,7 +240,7 @@ namespace CryEngine
         /// <param name="newVal"></param>
         public void SetShaderParam(string paramName, float newVal)
         {
-            NativeMethods.Material.SetShaderParam(HandleRef.Handle, paramName, newVal);
+            NativeMethods.Material.SetShaderParam(Handle, paramName, newVal);
         }
 
         /// <summary>
@@ -260,7 +260,7 @@ namespace CryEngine
         /// <param name="newVal"></param>
         public void SetShaderParam(string paramName, Color newVal)
         {
-            NativeMethods.Material.SetShaderParam(HandleRef.Handle, paramName, newVal);
+            NativeMethods.Material.SetShaderParam(Handle, paramName, newVal);
         }
 
         /// <summary>
@@ -291,15 +291,37 @@ namespace CryEngine
         /// <returns>The shader parameter name.</returns>
         public string GetShaderParamName(int index)
         {
-            return NativeMethods.Material.GetShaderParamName(HandleRef.Handle, index);
+            return NativeMethods.Material.GetShaderParamName(Handle, index);
         }
+
+        #region Overrides
+        public override bool Equals(object obj)
+        {
+            if (obj != null && obj is Material)
+                return this == obj;
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked // Overflow is fine, just wrap
+            {
+                int hash = 17;
+
+                hash = hash * 29 + Handle.GetHashCode();
+
+                return hash;
+            }
+        }
+        #endregion
 
         private static Material TryAdd(IntPtr ptr)
         {
             if (ptr == IntPtr.Zero)
                 return null;
 
-            var mat = materials.FirstOrDefault(x => x.HandleRef.Handle == ptr);
+            var mat = materials.FirstOrDefault(x => x.Handle == ptr);
             if (mat != default(Material))
                 return mat;
 

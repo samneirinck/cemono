@@ -147,7 +147,7 @@ namespace CryEngine
 
         internal static EntityBase Get(IntPtr entityPointer)
         {
-            var entity = ScriptManager.Instance.Find<EntityBase>(ScriptType.Entity, x => x.EntityHandleRef.Handle == entityPointer);
+            var entity = ScriptManager.Instance.Find<EntityBase>(ScriptType.Entity, x => x.EntityHandle == entityPointer);
             if (entity != null)
                 return entity;
 

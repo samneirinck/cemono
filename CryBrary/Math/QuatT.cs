@@ -133,6 +133,20 @@ namespace CryEngine
         public Vec3 Row1 { get { return Q.Row1; } }
         public Vec3 Row2 { get { return Q.Row2; } }
 
+        public override int GetHashCode()
+        {
+            // Overflow is fine, just wrap
+            unchecked
+            {
+                int hash = 17;
+
+                hash = hash * 29 + T.GetHashCode();
+                hash = hash * 29 + Q.GetHashCode();
+
+                return hash;
+            }
+        }
+
         #region Statics
         public static readonly QuatT Identity = new QuatT(Vec3.Zero, Quat.Identity);
         #endregion

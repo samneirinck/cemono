@@ -395,7 +395,7 @@ namespace CryEngine
                 return false;
 
             if (obj is Quat)
-                return obj.GetHashCode() == GetHashCode();
+                return this == (Quat)obj;
 
             return false;
         }

@@ -27,12 +27,12 @@ namespace CryEngine
             : this()
         {
             owner = _entity;
-            PhysicsPointer = NativeMethods.Physics.GetPhysicalEntity(Owner.GetEntityHandle().Handle);
+            PhysicsPointer = NativeMethods.Physics.GetPhysicalEntity(Owner.GetEntityHandle());
         }
 
         public void Break(BreakageParameters breakageParams)
         {
-            NativeMethods.Entity.BreakIntoPieces(Owner.GetEntityHandle().Handle, 0, 0, breakageParams);
+            NativeMethods.Entity.BreakIntoPieces(Owner.GetEntityHandle(), 0, 0, breakageParams);
         }
 
         #region Basics
@@ -46,7 +46,7 @@ namespace CryEngine
         /// </summary>
         public void Save()
         {
-            NativeMethods.Physics.Physicalize(Owner.GetEntityHandle().Handle, _params);
+            NativeMethods.Physics.Physicalize(Owner.GetEntityHandle(), _params);
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace CryEngine
             if (point != null)
                 impulse.point = point.Value;
 
-            NativeMethods.Physics.AddImpulse(Owner.GetEntityHandle().Handle, impulse);
+            NativeMethods.Physics.AddImpulse(Owner.GetEntityHandle(), impulse);
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace CryEngine
         public bool Resting
         {
             get { throw new NotImplementedException(); }
-            set { NativeMethods.Physics.Sleep(Owner.GetEntityHandle().Handle, value); }
+            set { NativeMethods.Physics.Sleep(Owner.GetEntityHandle(), value); }
         }
 
         /// <summary>
@@ -211,7 +211,7 @@ namespace CryEngine
         #endregion
         #endregion
 
-        public pe_status_living LivingStatus { get { return NativeMethods.Physics.GetLivingEntityStatus(Owner.GetEntityHandle().Handle); } }
+        public pe_status_living LivingStatus { get { return NativeMethods.Physics.GetLivingEntityStatus(Owner.GetEntityHandle()); } }
 
         internal IntPtr PhysicsPointer { get; set; }
         private EntityBase owner;

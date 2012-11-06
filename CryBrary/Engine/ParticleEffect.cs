@@ -8,10 +8,10 @@ namespace CryEngine
     {
         internal ParticleEffect(IntPtr ptr)
         {
-            Pointer = ptr;
+            Handle = ptr;
         }
 
-        internal IntPtr Pointer { get; set; }
+        internal IntPtr Handle { get; set; }
 
         #region Statics
         /// <summary>
@@ -38,17 +38,39 @@ namespace CryEngine
         /// <param name="scale">Scale of the emitter.</param>
         public void Spawn(Vec3 pos, Vec3? dir = null, float scale = 1f, bool independent = true)
         {
-            NativeMethods.Particle.Spawn(Pointer, independent, pos, dir ?? Vec3.Up, scale);
+            NativeMethods.Particle.Spawn(Handle, independent, pos, dir ?? Vec3.Up, scale);
         }
 
         public void Remove()
         {
-            NativeMethods.Particle.Remove(Pointer);
+            NativeMethods.Particle.Remove(Handle);
         }
 
         public void LoadResources()
         {
-            NativeMethods.Particle.LoadResoruces(Pointer);
+            NativeMethods.Particle.LoadResoruces(Handle);
         }
+
+        #region Overrides
+        public override bool Equals(object obj)
+        {
+            if (obj != null && obj is ParticleEffect)
+                return this == obj;
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked // Overflow is fine, just wrap
+            {
+                int hash = 17;
+
+                hash = hash * 29 + Handle.GetHashCode();
+
+                return hash;
+            }
+        }
+        #endregion
     }
 }

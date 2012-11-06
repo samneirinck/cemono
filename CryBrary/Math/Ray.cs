@@ -339,7 +339,16 @@ namespace CryEngine
         /// </returns>
         public override int GetHashCode()
         {
-            return Position.GetHashCode() + Direction.GetHashCode();
+            // Overflow is fine, just wrap
+            unchecked
+            {
+                int hash = 17;
+
+                hash = hash * 29 + Position.GetHashCode();
+                hash = hash * 29 + Direction.GetHashCode();
+
+                return hash;
+            }
         }
 
         /// <summary>

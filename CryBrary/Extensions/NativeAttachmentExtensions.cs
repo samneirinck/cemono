@@ -1,30 +1,30 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
 
 namespace CryEngine.Native
 {
     public static class NativeAttachmentExtensions
     {
-        public static HandleRef GetAttachmentHandle(this Attachment attachment)
+        public static IntPtr GetAttachmentHandle(this Attachment attachment)
         {
             if (attachment.IsDestroyed)
                 throw new ScriptInstanceDestroyedException("Attempted to access native attachment handle on a destroyed script");
 
-            return attachment.AttachmentHandleRef;
+            return attachment.AttachmentHandle;
         }
 
-        public static void SetAttachmentHandle(this Attachment attachment, HandleRef newHandle)
+        public static void SetAttachmentHandle(this Attachment attachment, IntPtr newHandle)
         {
-            attachment.AttachmentHandleRef = newHandle;
+            attachment.AttachmentHandle = newHandle;
         }
 
-        public static HandleRef GetEntityAttachmentHandle(this Attachment attachment)
+        public static IntPtr GetEntityAttachmentHandle(this Attachment attachment)
         {
-            return attachment.EntityAttachmentHandleRef;
+            return attachment.EntityAttachmentHandle;
         }
 
-        public static void SetEntityAttachmentHandle(this Attachment attachment, HandleRef newHandle)
+        public static void SetEntityAttachmentHandle(this Attachment attachment, IntPtr newHandle)
         {
-            attachment.EntityAttachmentHandleRef = newHandle;
+            attachment.EntityAttachmentHandle = newHandle;
         }
     }
 }

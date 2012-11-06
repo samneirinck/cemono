@@ -245,6 +245,29 @@
             return matrix;
         }
 
+        public override int GetHashCode()
+        {
+            // Overflow is fine, just wrap
+            unchecked
+            {
+                int hash = 17;
+
+                hash = hash * 29 + M00.GetHashCode();
+                hash = hash * 29 + M01.GetHashCode();
+                hash = hash * 29 + M02.GetHashCode();
+
+                hash = hash * 29 + M10.GetHashCode();
+                hash = hash * 29 + M11.GetHashCode();
+                hash = hash * 29 + M12.GetHashCode();
+
+                hash = hash * 29 + M20.GetHashCode();
+                hash = hash * 29 + M21.GetHashCode();
+                hash = hash * 29 + M22.GetHashCode();
+
+                return hash;
+            }
+        }
+
         #region Operators
         public static Matrix33 operator *(Matrix33 left, float op)
         {
@@ -821,6 +844,32 @@
             (MathHelpers.Abs(M20 - m.M20) <= e) && (MathHelpers.Abs(M21 - m.M21) <= e) && (MathHelpers.Abs(M22 - m.M22) <= e) && (MathHelpers.Abs(M23 - m.M23) <= e));
         }
         #endregion
+
+        public override int GetHashCode()
+        {
+            // Overflow is fine, just wrap
+            unchecked
+            {
+                int hash = 17;
+
+                hash = hash * 29 + M00.GetHashCode();
+                hash = hash * 29 + M01.GetHashCode();
+                hash = hash * 29 + M02.GetHashCode();
+                hash = hash * 29 + M03.GetHashCode();
+
+                hash = hash * 29 + M10.GetHashCode();
+                hash = hash * 29 + M11.GetHashCode();
+                hash = hash * 29 + M12.GetHashCode();
+                hash = hash * 29 + M13.GetHashCode();
+
+                hash = hash * 29 + M20.GetHashCode();
+                hash = hash * 29 + M21.GetHashCode();
+                hash = hash * 29 + M22.GetHashCode();
+                hash = hash * 29 + M23.GetHashCode();
+
+                return hash;
+            }
+        }
 
         #region Operators
         public static explicit operator Matrix33(Matrix34 m)

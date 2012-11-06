@@ -32,6 +32,34 @@ namespace CryEngine
             }
         }
 
+        #region Overrides
+        public override bool Equals(object obj)
+        {
+            if (obj != null && obj is DelayedFuncBase)
+                return this == obj;
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            // Overflow is fine, just wrap
+            unchecked
+            {
+                int hash = 17;
+
+                if(Params != null)
+                    hash = hash * 29 + Params.GetHashCode();
+
+                hash = hash * 29 + Delay.GetHashCode();
+                hash = hash * 29 + FrameStartTime.GetHashCode();
+                hash = hash * 29 + Delegate.GetHashCode();
+
+                return hash;
+            }
+        }
+        #endregion
+
         public abstract object[] Params { get; }
 
         public float Delay { get; set; }
