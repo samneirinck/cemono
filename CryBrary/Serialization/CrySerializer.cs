@@ -85,6 +85,8 @@ namespace CryEngine.Serialization
         {
             Type valueType = objectReference.Value != null ? objectReference.Value.GetType() : null;
 
+            WriteLine(objectReference.Name);
+
             if (TryWriteReference(objectReference))
                 return;
 
@@ -93,7 +95,6 @@ namespace CryEngine.Serialization
             switch(objectReference.SerializationType)
             {
                 case SerializationType.Null:
-                    WriteNull(objectReference);
                     break;
                 case SerializationType.IntPtr:
                     WriteIntPtr(objectReference);
@@ -128,40 +129,30 @@ namespace CryEngine.Serialization
             }
         }
 
-        void WriteNull(ObjectReference objectReference)
-        {
-            WriteLine(objectReference.Name);
-        }
-
         void WriteIntPtr(ObjectReference objectReference)
         {
-            WriteLine(objectReference.Name);
             WriteLine(((IntPtr)objectReference.Value).ToInt64());
         }
 
         void WriteReference(ObjectReference objReference, int line)
         {
             WriteLine(SerializationType.Reference);
-            WriteLine(objReference.Name);
             WriteLine(line);
         }
 
         void WriteAny(ObjectReference objectReference)
         {
-            WriteLine(objectReference.Name);
             WriteType(objectReference.Value.GetType());
             WriteLine(Converter.ToString(objectReference.Value));
         }
 
         void WriteString(ObjectReference objectReference)
         {
-            WriteLine(objectReference.Name);
             WriteLine(objectReference.Value);
         }
 
         void WriteEnum(ObjectReference objectReference)
         {
-            WriteLine(objectReference.Name);
             WriteType(objectReference.Value.GetType());
             WriteLine(objectReference.Value);
         }
@@ -171,7 +162,6 @@ namespace CryEngine.Serialization
             var array = (objectReference.Value as IEnumerable).Cast<object>();
             var numElements = array.Count();
             WriteLine(numElements);
-            WriteLine(objectReference.Name);
 
             WriteType(GetIEnumerableElementType(array.GetType()));
 
@@ -184,7 +174,6 @@ namespace CryEngine.Serialization
             var enumerable = (objectReference.Value as IEnumerable).Cast<object>();
 
             WriteLine(enumerable.Count());
-            WriteLine(objectReference.Name);
 
             var type = objectReference.Value.GetType();
             WriteType(type);
@@ -208,8 +197,6 @@ namespace CryEngine.Serialization
 
         void WriteObject(ObjectReference objectReference)
         {
-            WriteLine(objectReference.Name);
-
             var type = objectReference.Value.GetType();
             WriteType(type);
 
@@ -226,8 +213,6 @@ namespace CryEngine.Serialization
 
         void WriteMemberInfo(ObjectReference objectReference)
         {
-            WriteLine(objectReference.Name);
-
             var memberInfo = objectReference.Value as MemberInfo;
             WriteMemberInfo(memberInfo);
         }
@@ -241,8 +226,6 @@ namespace CryEngine.Serialization
 
         void WriteDelegate(ObjectReference objectReference)
         {
-            WriteLine(objectReference.Name);
-
             var _delegate = objectReference.Value as Delegate;
             WriteType(_delegate.GetType());
             WriteMemberInfo(_delegate.Method);
@@ -257,8 +240,6 @@ namespace CryEngine.Serialization
 
         void WriteType(ObjectReference objectReference)
         {
-            WriteLine(objectReference.Name);
-
             WriteType(objectReference.Value as Type);
         }
 
@@ -305,12 +286,14 @@ namespace CryEngine.Serialization
         {
             var objReference = new ObjectReference();
 
+            objReference.Name = ReadLine();
+
             objReference.SerializationType = (SerializationType)Enum.Parse(typeof(SerializationType), ReadLine());
             int line = CurrentLine;
 
             switch (objReference.SerializationType)
             {
-                case SerializationType.Null: ReadNull(objReference); break;
+                case SerializationType.Null: break;
                 case SerializationType.Reference: ReadReference(objReference); break;
                 case SerializationType.Object: ReadObject(objReference); break;
                 case SerializationType.GenericEnumerable: ReadGenericEnumerable(objReference); break;
@@ -332,20 +315,13 @@ namespace CryEngine.Serialization
             return objReference;
         }
 
-        void ReadNull(ObjectReference objReference)
-        {
-            objReference.Name = ReadLine();
-        }
-
         void ReadIntPtr(ObjectReference objReference)
         {
-            objReference.Name = ReadLine();
             objReference.Value = new IntPtr(Int64.Parse(ReadLine()));
         }
 
         void ReadReference(ObjectReference objReference)
         {
-            objReference.Name = ReadLine();
             int referenceLine = int.Parse(ReadLine());
             objReference.Value = ObjectReferences[referenceLine].Value;
 
@@ -358,8 +334,6 @@ namespace CryEngine.Serialization
         void ReadObject(ObjectReference objReference)
         {
             AddReferenceToObject(objReference);
-
-            objReference.Name = ReadLine();
 
             var type = ReadType();
 
@@ -397,7 +371,6 @@ namespace CryEngine.Serialization
             AddReferenceToObject(objReference);
 
             var numElements = int.Parse(ReadLine());
-            objReference.Name = ReadLine();
             var type = ReadType();
 
             objReference.Value = Array.CreateInstance(type, numElements);
@@ -412,7 +385,6 @@ namespace CryEngine.Serialization
             AddReferenceToObject(objReference);
 
             int elements = int.Parse(ReadLine());
-            objReference.Name = ReadLine();
 
             var type = ReadType();
 
@@ -441,7 +413,6 @@ namespace CryEngine.Serialization
 
         void ReadAny(ObjectReference objReference)
         {
-            objReference.Name = ReadLine();
             var type = ReadType();
             string valueString = ReadLine();
 
@@ -450,13 +421,11 @@ namespace CryEngine.Serialization
 
         void ReadString(ObjectReference objReference)
         {
-            objReference.Name = ReadLine();
             objReference.Value = ReadLine();
         }
 
         void ReadEnum(ObjectReference objReference)
         {
-            objReference.Name = ReadLine();
             var type = ReadType();
             string valueString = ReadLine();
 
@@ -467,7 +436,6 @@ namespace CryEngine.Serialization
         {
             AddReferenceToObject(objReference);
 
-            objReference.Name = ReadLine();
             objReference.Value = ReadMemberInfo();
         }
 
@@ -496,8 +464,6 @@ namespace CryEngine.Serialization
         {
             AddReferenceToObject(objReference);
 
-            objReference.Name = ReadLine();
-
             var delegateType = ReadType();
             var methodInfo = ReadMemberInfo() as MethodInfo;
 
@@ -511,7 +477,6 @@ namespace CryEngine.Serialization
         {
             AddReferenceToObject(objReference);
 
-            objReference.Name = ReadLine();
             objReference.Value = ReadType();
         }
 
