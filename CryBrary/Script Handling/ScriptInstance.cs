@@ -18,9 +18,15 @@ namespace CryEngine
 
                 hash = hash * 29 + ScriptId.GetHashCode();
                 hash = hash * 29 + ReceiveUpdates.GetHashCode();
+                hash = hash * 29 + IMonoObjectHandle.GetHashCode();
 
                 return hash;
             }
+        }
+
+        void Test()
+        {
+            Debug.LogAlways("Success");
         }
 
         public override bool Equals(object obj)
