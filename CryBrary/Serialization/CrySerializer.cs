@@ -20,10 +20,20 @@ namespace CryEngine.Serialization
         /// </summary>
         Dictionary<int, ObjectReference> ObjectReferences { get; set; }
 
+        /// <summary>
+        /// Toggle debug mode, logs information on possible serialization issues.
+        /// Automatically turned on if mono_realtimeScriptingDebug is set to 1.
+        /// </summary>
+        public bool IsDebugModeEnabled { get; set; }
+
         public CrySerializer()
         {
             Converter = new FormatterConverter();
             ObjectReferences = new Dictionary<int, ObjectReference>();
+
+            var debugCVar = CVar.Get("mono_realtimeScriptingDebug");
+            if (debugCVar != null)
+                IsDebugModeEnabled = (debugCVar.IVal != 0);
         }
 
         public void Serialize(Stream stream, object graph)
@@ -350,7 +360,13 @@ namespace CryEngine.Serialization
                 if (objReference.Value == null)
                     throw new SerializationException(string.Format("Failed to create instance of type {0}", type.Name));
             }
-            catch (MissingMethodException) { objReference.AllowNull = true; } // types lacking default constructors can't be serialized.
+            catch (MissingMethodException) // types lacking default constructors can't be serialized.
+            { 
+                objReference.AllowNull = true;
+
+                if (IsDebugModeEnabled)
+                    Debug.LogAlways("Could not create instance of type {0}, parameterless / default constructor could not be located.", type.Name);
+            }
 
             while (type != null)
             {

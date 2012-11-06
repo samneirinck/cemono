@@ -7,7 +7,9 @@ struct SCVars
 	int mono_exceptionsTriggerFatalErrors;
 
 	int mono_boxUnsignedIntegersAsEntityIds;
+
 	int mono_realtimeScripting;
+	int mono_realtimeScriptingDebug;
 
 	int mono_softBreakpoints;
 
