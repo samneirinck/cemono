@@ -24,7 +24,6 @@ class CScriptAssembly
 	: public CScriptObject
 	, public IMonoAssembly
 {
-	typedef std::map<CScriptClass *, MonoClass *> TClassMap;
 public:
 	CScriptAssembly(CScriptDomain *pDomain, MonoImage *pImage, const char *path, bool nativeAssembly = true);
 	virtual ~CScriptAssembly();
@@ -71,7 +70,7 @@ private:
 	string m_path;
 	bool m_bNative;
 
-	TClassMap m_classRegistry;
+	std::vector<CScriptClass *> m_classes;
 	CScriptDomain *m_pDomain;
 };
 

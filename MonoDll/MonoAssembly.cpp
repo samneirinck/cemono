@@ -25,8 +25,8 @@ CScriptAssembly::CScriptAssembly(CScriptDomain *pDomain, MonoImage *pImage, cons
 
 CScriptAssembly::~CScriptAssembly()
 {
-	for each(auto classPair in m_classRegistry)
-		delete classPair.first;
+	for each(auto pClass in m_classes)
+		delete pClass;
 
 	m_pDomain->OnAssemblyReleased(this);
 
@@ -35,13 +35,13 @@ CScriptAssembly::~CScriptAssembly()
 
 void CScriptAssembly::Release(bool triggerGC)
 {
-	if(m_classRegistry.empty())
+	if(m_classes.empty())
 		delete this;
 }
 
 void CScriptAssembly::OnClassReleased(CScriptClass *pClass)
 {
-	m_classRegistry.erase(pClass);
+	stl::find_and_erase(m_classes, pClass);
 }
 
 IMonoClass *CScriptAssembly::GetClass(const char *className, const char *nameSpace)
@@ -53,21 +53,21 @@ IMonoClass *CScriptAssembly::GetClass(const char *className, const char *nameSpa
 	return nullptr;
 }
 
-CScriptClass *CScriptAssembly::TryGetClass(MonoClass *pClass)
+CScriptClass *CScriptAssembly::TryGetClass(MonoClass *pMonoClass)
 {
-	CRY_ASSERT(pClass);
+	CRY_ASSERT(pMonoClass);
 
-	for each(auto pair in m_classRegistry)
+	for each(auto pClass in m_classes)
 	{
-		if(pair.second == pClass)
+		if(pClass->GetMonoClass() == pMonoClass)
 		{
-			pair.first->AddRef();
-			return pair.first;
+			pClass->AddRef();
+			return pClass;
 		}
 	}
 
-	CScriptClass *pScriptClass = new CScriptClass(pClass, this);
-	m_classRegistry.insert(TClassMap::value_type(pScriptClass, pClass));
+	CScriptClass *pScriptClass = new CScriptClass(pMonoClass, this);
+	m_classes.push_back(pScriptClass);
 	pScriptClass->AddRef();
 
 	return pScriptClass;
