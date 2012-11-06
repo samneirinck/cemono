@@ -138,6 +138,7 @@ void CScriptObject::SetManagedObject(mono::object newObject, bool allowGC)
 	CRY_ASSERT(newObject);
 
 	m_pObject = (MonoObject *)newObject;
+	m_pClass = NULL; // Class pointer is most definitely invalid now, force recollection on next GetClass call.
 
 	// We need this to allow the GC to collect the class object later on.
 	if(allowGC)
