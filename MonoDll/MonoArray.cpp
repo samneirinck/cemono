@@ -64,62 +64,29 @@ IMonoObject *CScriptArray::GetItem(int index)
 	return nullptr;
 }
 
-void CScriptArray::InsertMonoObject(mono::object object, int index)
+void CScriptArray::Insert(mono::object object, int index)
 {
 	CRY_ASSERT((index == -1 ? m_curIndex : index) < GetSize());
 
-	mono_array_set((MonoArray *)m_pObject, void *, m_curIndex, object);
-
-	m_curIndex++;
-}
-
-void CScriptArray::InsertMonoString(mono::string string, int index)
-{
-	CRY_ASSERT((index == -1 ? m_curIndex : index) < GetSize());
-
-	mono_array_set((MonoArray *)m_pObject, void *, index != -1 ? index : m_curIndex, string);
-
-	m_curIndex++;
-}
-
-void CScriptArray::InsertMonoArray(mono::object arr, int index)
-{
-	CRY_ASSERT((index == -1 ? m_curIndex : index) < GetSize());
-
-	mono_array_set((MonoArray *)m_pObject, void *, index != -1 ? index : m_curIndex, arr);
+	mono_array_set((MonoArray *)m_pObject, void *, index != -1 ? index : m_curIndex, object);
 
 	m_curIndex++;
 }
 
 void CScriptArray::InsertNativePointer(void *ptr, int index)
-{ 
-	CRY_ASSERT((index == -1 ? m_curIndex : index) < GetSize());
-
-	mono_array_set((MonoArray *)m_pObject, void *, index != -1 ? index : m_curIndex, mono_value_box(mono_domain_get(), mono_get_intptr_class(), ptr));
-
-	m_curIndex++;
+{
+	Insert((mono::object)mono_value_box(mono_domain_get(), mono_get_intptr_class(), ptr), index);
 }
 
 void CScriptArray::InsertObject(IMonoObject *pObject, int index)
 {
-	if(!pObject)
-	{
-		InsertMonoObject(nullptr, index);
-		return;
-	}
-
-	if(pObject->GetType() == eMonoAnyType_Array)
-		InsertMonoArray(pObject->GetManagedObject(), index);
-	else
-		InsertMonoObject(pObject->GetManagedObject(), index); 
+	Insert(pObject != nullptr ? pObject->GetManagedObject() : nullptr, index);
 }
 
 void CScriptArray::InsertAny(MonoAnyValue value, int index)
 { 
 	if(value.type==eMonoAnyType_String)
-		InsertMonoString(ToMonoString(value.str), index);
+		Insert((mono::object)ToMonoString(value.str), index);
 	else
-	{
-		InsertMonoObject(gEnv->pMonoScriptSystem->GetConverter()->BoxAnyValue(value), index);
-	}
+		Insert(gEnv->pMonoScriptSystem->GetConverter()->BoxAnyValue(value), index);
 }
