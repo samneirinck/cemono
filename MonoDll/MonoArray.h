@@ -43,7 +43,7 @@ public:
 	virtual void InsertNativePointer(void *ptr, int index = -1) override;
 	virtual void InsertObject(IMonoObject *pObject, int index = -1) override;
 	virtual void InsertAny(MonoAnyValue value, int index = -1) override;
-	virtual void InsertMonoString(mono::string string, int index = -1);
+	virtual void InsertMonoString(mono::string string, int index = -1) { Insert((mono::object)string, index); }
 	// ~IMonoArray
 
 	// IMonoObject
@@ -65,8 +65,7 @@ public:
 	virtual void *UnboxObject() override { return CScriptObject::UnboxObject(); }
 	// ~IMonoObject
 
-	virtual void InsertMonoArray(mono::object arr, int index = -1);
-	virtual void InsertMonoObject(mono::object object, int index = -1);
+	inline void Insert(mono::object object, int index = -1);
 
 	static MonoClass *m_pDefaultElementClass;
 private:
