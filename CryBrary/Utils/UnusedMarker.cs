@@ -5,7 +5,7 @@ using System.Text;
 
 using System.Runtime.InteropServices;
 
-namespace CryEngine.Utils
+namespace CryEngine.Utilities
 {
     public static class UnusedMarker
     {

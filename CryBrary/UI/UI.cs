@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using CryEngine.Native;
+using CryEngine.Utilities;
 
 namespace CryEngine
 {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CryEngine
+namespace CryEngine.Utilities
 {
     internal struct PointerWrapper
     {

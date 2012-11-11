@@ -3,7 +3,7 @@ using System.IO;
 
 using CryEngine.Initialization;
 
-namespace CryEngine
+namespace CryEngine.Utilities
 {
     /// <summary>
     /// Provides a clean method of retrieving commonly used engine filepaths.
