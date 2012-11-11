@@ -18,6 +18,7 @@ namespace CryEngine.Serialization
         MemberInfo,
         Type,
         Delegate,
-        IntPtr
+        IntPtr,
+        UnusedMarker
     }
 }

@@ -105,6 +105,18 @@ namespace CryEngine.Serialization
             if (TryWriteReference(objectReference))
                 return;
 
+            if (objectReference.SerializationType == SerializationType.Any)
+            {
+                if (objectReference.Value is int && UnusedMarker.IsUnused((int)objectReference.Value))
+                    objectReference.SerializationType = SerializationType.UnusedMarker;
+                else if (objectReference.Value is uint && UnusedMarker.IsUnused((uint)objectReference.Value))
+                    objectReference.SerializationType = SerializationType.UnusedMarker;
+                else if (objectReference.Value is float && UnusedMarker.IsUnused((float)objectReference.Value))
+                    objectReference.SerializationType = SerializationType.UnusedMarker;
+            }
+            else if (objectReference.SerializationType == SerializationType.Object && objectReference.Value is Vec3 && UnusedMarker.IsUnused((Vec3)objectReference.Value))
+                objectReference.SerializationType = SerializationType.UnusedMarker;
+
             WriteLine(objectReference.SerializationType);
 
             switch(objectReference.SerializationType)
@@ -140,6 +152,9 @@ namespace CryEngine.Serialization
                     break;
                 case SerializationType.Object:
                     WriteObject(objectReference);
+                    break;
+                case SerializationType.UnusedMarker:
+                    WriteUnusedMarker(objectReference);
                     break;
             }
         }
@@ -252,6 +267,11 @@ namespace CryEngine.Serialization
                 WriteLine("null_target");
         }
 
+        void WriteUnusedMarker(ObjectReference objectReference)
+        {
+            WriteType(objectReference.Value.GetType());
+        }
+
         void WriteType(ObjectReference objectReference)
         {
             WriteType(objectReference.Value as Type);
@@ -321,6 +341,7 @@ namespace CryEngine.Serialization
                 case SerializationType.Type: ReadType(objReference); break;
                 case SerializationType.Delegate: ReadDelegate(objReference); break;
                 case SerializationType.IntPtr: ReadIntPtr(objReference); break;
+                case SerializationType.UnusedMarker: ReadUnusedMarker(objReference); break;
             }
 
 #if !(RELEASE && RELEASE_DISABLE_CHECKS)
@@ -487,6 +508,19 @@ namespace CryEngine.Serialization
                 objReference.Value = Delegate.CreateDelegate(delegateType, StartRead().Value, methodInfo);
             else
                 objReference.Value = Delegate.CreateDelegate(delegateType, methodInfo);
+        }
+
+        void ReadUnusedMarker(ObjectReference objReference)
+        {
+            var type = ReadType();
+            if (type == typeof(int))
+                objReference.Value = UnusedMarker.Integer;
+            if (type == typeof(uint))
+                objReference.Value = UnusedMarker.UnsignedInteger;
+            else if (type == typeof(float))
+                objReference.Value = UnusedMarker.Float;
+            else if (type == typeof(Vec3))
+                objReference.Value = UnusedMarker.Vec3;
         }
 
         void ReadType(ObjectReference objReference)
