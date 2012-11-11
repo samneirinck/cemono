@@ -75,6 +75,7 @@
     <Compile Include="Scripts\Entity.cs" />
     <Compile Include="Serialization\CrySerializerTests.cs" />
     <Compile Include="Serialization\ScriptsTests.cs" />
+    <Compile Include="Serialization\UnusedMarkerSerializationTests.cs" />
     <Compile Include="Testing\Assertion.cs" />
     <Compile Include="Testing\Exceptions.cs" />
   </ItemGroup>

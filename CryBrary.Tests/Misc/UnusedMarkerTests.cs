@@ -1,7 +1,7 @@
 ﻿using System;
 
 using CryEngine;
-using CryEngine.Utils;
+using CryEngine.Utilities;
 using Xunit;
 
 namespace CryBrary.Tests.Misc
