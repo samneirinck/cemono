@@ -40,7 +40,7 @@ mono::object CConverter::BoxAnyValue(MonoAnyValue &any)
 			if(g_pMonoCVars->mono_boxUnsignedIntegersAsEntityIds)
 			{
 				IMonoClass *pEntityIdClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("EntityId");
-				return (mono::object)mono_value_box(mono_domain_get(), (MonoClass *) pEntityIdClass->GetManagedObject(), &mono::entityId(any.u));
+				return pEntityIdClass->BoxObject(&mono::entityId(any.u))->GetManagedObject();
 			}
 			else
 				return (mono::object)mono_value_box(mono_domain_get(), mono_get_uint32_class(), &any.u);
@@ -57,7 +57,7 @@ mono::object CConverter::BoxAnyValue(MonoAnyValue &any)
 	case eMonoAnyType_Vec3:
 		{
 			IMonoClass *pVec3Class = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("Vec3");
-			return (mono::object)mono_value_box(mono_domain_get(), (MonoClass *)pVec3Class->GetManagedObject(), &any.vec3);
+			return pVec3Class->BoxObject(&any.vec3)->GetManagedObject();
 		}
 		break;
 	}
