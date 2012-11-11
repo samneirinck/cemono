@@ -30,10 +30,10 @@ CScriptObject::~CScriptObject()
 	// Decrement ref counter in the class, released if no longer used.
 	SAFE_RELEASE(m_pClass);
 
-	 if(m_objectHandle != -1)
-		 mono_gchandle_free(m_objectHandle);
+	if(m_objectHandle != -1)
+		mono_gchandle_free(m_objectHandle);
 	 
-	 m_pObject = 0;
+	m_pObject = 0;
 }
 
 MonoClass *CScriptObject::GetMonoClass() 

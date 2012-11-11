@@ -19,16 +19,18 @@ CScriptAssembly::CScriptAssembly(CScriptDomain *pDomain, MonoImage *pImage, cons
 {
 	CRY_ASSERT(pImage);
 	m_pObject = (MonoObject *)pImage;
+	m_pClass = NULL;
 
 	m_path = string(path);
 }
 
 CScriptAssembly::~CScriptAssembly()
 {
-	for each(auto pClass in m_classes)
-		delete pClass;
+	for(auto it = m_classes.begin(); it != m_classes.end(); ++it)
+		delete *it;
 
-	m_pDomain->OnAssemblyReleased(this);
+
+	m_classes.clear();
 
 	m_pObject = 0;
 }
@@ -36,7 +38,11 @@ CScriptAssembly::~CScriptAssembly()
 void CScriptAssembly::Release(bool triggerGC)
 {
 	if(m_classes.empty())
+	{
+		m_pDomain->OnAssemblyReleased(this);
+		// delete assembly should only be directly done by this method and the CScriptDomain dtor, otherwise Release.
 		delete this;
+	}
 }
 
 void CScriptAssembly::OnClassReleased(CScriptClass *pClass)
