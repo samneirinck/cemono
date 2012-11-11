@@ -129,6 +129,13 @@
     <Compile Include="Entity\Extensions\Attachment.cs" />
     <Compile Include="Entity\Exceptions\EntityRemovalException.cs" />
     <Compile Include="Extensions\NativeScriptTableExtensions.cs" />
+    <Compile Include="Input\ActionmapEventArgs.cs" />
+    <Compile Include="Input\ActionmapHandler.cs" />
+    <Compile Include="Input\KeyEvent.cs" />
+    <Compile Include="Input\KeyEventArgs.cs" />
+    <Compile Include="Input\MouseEvent.cs" />
+    <Compile Include="Input\MouseEventArgs.cs" />
+    <Compile Include="Input\SerializableInput.cs" />
     <Compile Include="Math\PlaneIntersectionType.cs" />
     <Compile Include="Native\Interfaces\INativeScriptSystemMethods.cs" />
     <Compile Include="Native\NativeScriptSystemMethods.cs" />
@@ -268,7 +275,7 @@
     <Compile Include="Engine\Renderer.cs" />
     <Compile Include="Entity\Extensions\EntityMovement.cs" />
     <Compile Include="Network\Network.cs" />
-    <Compile Include="Input\InputSystem.cs" />
+    <Compile Include="Input\Input.cs" />
     <Compile Include="Math\Quat.cs" />
     <Compile Include="Entity\Interface.cs" />
     <Compile Include="Script Handling\ScriptInstance.cs" />
