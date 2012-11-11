@@ -35,6 +35,7 @@
 #include <glib.h>
 #include "metadata/sgen-gc.h"
 #include "metadata/sgen-archdep.h"
+#include "metadata/sgen-protocol.h"
 #include "metadata/object-internals.h"
 #include "metadata/gc-internal.h"
 
@@ -46,7 +47,7 @@
 gboolean
 sgen_resume_thread (SgenThreadInfo *info)
 {
-	return thread_resume (info->mach_port) == KERN_SUCCESS;
+	return thread_resume (info->info.native_handle) == KERN_SUCCESS;
 }
 
 gboolean
@@ -63,11 +64,11 @@ sgen_suspend_thread (SgenThreadInfo *info)
 	state = (thread_state_t) alloca (mono_mach_arch_get_thread_state_size ());
 	mctx = (mcontext_t) alloca (mono_mach_arch_get_mcontext_size ());
 
-	ret = thread_suspend (info->mach_port);
+	ret = thread_suspend (info->info.native_handle);
 	if (ret != KERN_SUCCESS)
 		return FALSE;
 
-	ret = mono_mach_arch_get_thread_state (info->mach_port, state, &num_state);
+	ret = mono_mach_arch_get_thread_state (info->info.native_handle, state, &num_state);
 	if (ret != KERN_SUCCESS)
 		return FALSE;
 
@@ -77,6 +78,7 @@ sgen_suspend_thread (SgenThreadInfo *info)
 	info->stopped_domain = mono_mach_arch_get_tls_value_from_thread (
 		mono_thread_info_get_tid (info), mono_domain_get_tls_offset ());
 	info->stopped_ip = (gpointer) mono_mach_arch_get_ip (state);
+	info->stack_start = NULL;
 	stack_start = (char*) mono_mach_arch_get_sp (state) - REDZONE_SIZE;
 	/* If stack_start is not within the limits, then don't set it in info and we will be restarted. */
 	if (stack_start >= info->stack_start_limit && info->stack_start <= info->stack_end) {
@@ -84,10 +86,8 @@ sgen_suspend_thread (SgenThreadInfo *info)
 
 #ifdef USE_MONO_CTX
 		mono_sigctx_to_monoctx (&ctx, &info->ctx);
-		info->monoctx = &info->ctx;
 #else
 		ARCH_COPY_SIGCTX_REGS (&info->regs, &ctx);
-		info->stopped_regs = &info->regs;
 #endif
 	} else {
 		g_assert (!info->stack_start);
@@ -95,7 +95,11 @@ sgen_suspend_thread (SgenThreadInfo *info)
 
 	/* Notify the JIT */
 	if (mono_gc_get_gc_callbacks ()->thread_suspend_func)
-		mono_gc_get_gc_callbacks ()->thread_suspend_func (info->runtime_data, &ctx);
+		mono_gc_get_gc_callbacks ()->thread_suspend_func (info->runtime_data, &ctx, NULL);
+
+	DEBUG (1, fprintf (gc_debug_file, "thread %p stopped at %p stack_start=%p\n", (void*)info->info.native_handle, info->stopped_ip, info->stack_start));
+
+	binary_protocol_thread_suspend ((gpointer)mono_thread_info_get_tid (info), info->stopped_ip);
 
 	return TRUE;
 }
@@ -136,7 +140,7 @@ sgen_thread_handshake (BOOL suspend)
 			g_assert (info->doing_handshake);
 			info->doing_handshake = FALSE;
 
-			ret = thread_resume (info->mach_port);
+			ret = thread_resume (info->info.native_handle);
 			if (ret != KERN_SUCCESS)
 				continue;
 		}

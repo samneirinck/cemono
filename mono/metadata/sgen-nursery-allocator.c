@@ -712,6 +712,7 @@ add_nursery_frag (SgenFragmentAllocator *allocator, size_t frag_size, char* frag
 {
 	DEBUG (4, fprintf (gc_debug_file, "Found empty fragment: %p-%p, size: %zd\n", frag_start, frag_end, frag_size));
 	binary_protocol_empty (frag_start, frag_size);
+	MONO_GC_NURSERY_SWEPT ((mword)frag_start, frag_end - frag_start);
 	/* Not worth dealing with smaller fragments: need to tune */
 	if (frag_size >= SGEN_MAX_NURSERY_WASTE) {
 		/* memsetting just the first chunk start is bound to provide better cache locality */
@@ -910,7 +911,7 @@ sgen_init_nursery_allocator (void)
 {
 	sgen_register_fixed_internal_mem_type (INTERNAL_MEM_FRAGMENT, sizeof (SgenFragment));
 #ifdef NALLOC_DEBUG
-	alloc_records = sgen_alloc_os_memory (sizeof (AllocRecord) * ALLOC_RECORD_COUNT, TRUE);
+	alloc_records = sgen_alloc_os_memory (sizeof (AllocRecord) * ALLOC_RECORD_COUNT, SGEN_ALLOC_INTERNAL | SGEN_ALLOC_ACTIVATE, "debugging memory");
 #endif
 }
 

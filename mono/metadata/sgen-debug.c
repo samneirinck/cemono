@@ -364,7 +364,7 @@ sgen_check_whole_heap (void)
 {
 	/*setup valid_nursery_objects*/
 	if (!valid_nursery_objects)
-		valid_nursery_objects = sgen_alloc_os_memory (DEFAULT_NURSERY_SIZE, TRUE);
+		valid_nursery_objects = sgen_alloc_os_memory (DEFAULT_NURSERY_SIZE, SGEN_ALLOC_INTERNAL | SGEN_ALLOC_ACTIVATE, "debugging data");
 	valid_nursery_object_count = 0;
 	sgen_scan_area_with_callback (nursery_section->data, nursery_section->end_data, setup_mono_sgen_scan_area_with_callback, NULL, FALSE);
 
@@ -375,4 +375,85 @@ sgen_check_whole_heap (void)
 
 	g_assert (!broken_heap);
 }
+
+static gboolean
+ptr_in_heap (char *object)
+{
+	if (sgen_ptr_in_nursery (object))
+		return TRUE;
+	
+	if (sgen_los_is_valid_object (object))
+		return TRUE;
+
+	if (major_collector.is_valid_object (object))
+		return TRUE;
+	return FALSE;
+}
+
+/*
+ * sgen_check_objref:
+ *   Do consistency checks on the object reference OBJ. Assert on failure.
+ */
+void
+sgen_check_objref (char *obj)
+{
+	g_assert (ptr_in_heap (obj));
+}
+
+static void
+find_pinning_ref_from_thread (char *obj, size_t size)
+{
+	int j;
+	SgenThreadInfo *info;
+	char *endobj = obj + size;
+
+	FOREACH_THREAD (info) {
+		char **start = (char**)info->stack_start;
+		if (info->skip)
+			continue;
+		while (start < (char**)info->stack_end) {
+			if (*start >= obj && *start < endobj) {
+				DEBUG (0, fprintf (gc_debug_file, "Object %p referenced in thread %p (id %p) at %p, stack: %p-%p\n", obj, info, (gpointer)mono_thread_info_get_tid (info), start, info->stack_start, info->stack_end));
+			}
+			start++;
+		}
+
+		for (j = 0; j < ARCH_NUM_REGS; ++j) {
+#ifdef USE_MONO_CTX
+			mword w = ((mword*)&info->ctx) [j];
+#else
+			mword w = (mword)&info->regs [j];
+#endif
+
+			if (w >= (mword)obj && w < (mword)obj + size)
+				DEBUG (0, fprintf (gc_debug_file, "Object %p referenced in saved reg %d of thread %p (id %p)\n", obj, j, info, (gpointer)mono_thread_info_get_tid (info)));
+		} END_FOREACH_THREAD
+	}
+}
+
+/*
+ * Debugging function: find in the conservative roots where @obj is being pinned.
+ */
+static G_GNUC_UNUSED void
+find_pinning_reference (char *obj, size_t size)
+{
+	char **start;
+	RootRecord *root;
+	char *endobj = obj + size;
+
+	SGEN_HASH_TABLE_FOREACH (&roots_hash [ROOT_TYPE_NORMAL], start, root) {
+		/* if desc is non-null it has precise info */
+		if (!root->root_desc) {
+			while (start < (char**)root->end_root) {
+				if (*start >= obj && *start < endobj) {
+					DEBUG (0, fprintf (gc_debug_file, "Object %p referenced in pinned roots %p-%p\n", obj, start, root->end_root));
+				}
+				start++;
+			}
+		}
+	} SGEN_HASH_TABLE_FOREACH_END;
+
+	find_pinning_ref_from_thread (obj, size);
+}
+
 #endif /*HAVE_SGEN_GC*/

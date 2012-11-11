@@ -38,6 +38,14 @@
 #include "mini-unwind.h"
 #include "jit.h"
 
+/*
+ * The mini code should not have any compile time dependencies on the GC being used, so the same object file from mini/
+ * can be linked into both mono and mono-sgen.
+ */
+#if defined(HAVE_BOEHM_GC) || defined(HAVE_SGEN_GC)
+#error "The code in mini/ should not depend on these defines."
+#endif
+
 #ifndef G_LIKELY
 #define G_LIKELY(a) (a)
 #define G_UNLIKELY(a) (a)
@@ -781,6 +789,7 @@ struct MonoCallInst {
 	MonoInst *vret_var;
 	gconstpointer fptr;
 	guint stack_usage;
+	guint stack_align_amount;
 	guint virtual : 1;
 	guint tail_call : 1;
 	/* If this is TRUE, 'fptr' points to a MonoJumpInfo instead of an address. */
@@ -794,6 +803,8 @@ struct MonoCallInst {
 	guint dynamic_imt_arg : 1;
 	/* Whenever there is an RGCTX argument */
 	guint32 rgctx_reg : 1;
+	/* Whenever the call will need an unbox trampoline */
+	guint need_unbox_trampoline : 1;
 	regmask_t used_iregs;
 	regmask_t used_fregs;
 	GSList *out_ireg_args;
@@ -2232,6 +2243,14 @@ MonoBoolean ves_icall_get_frame_info            (gint32 skip, MonoBoolean need_f
 						 MonoString **file, gint32 *line, gint32 *column) MONO_INTERNAL;
 MonoString *ves_icall_System_Exception_get_trace (MonoException *exc) MONO_INTERNAL;
 void mono_set_cast_details                      (MonoClass *from, MonoClass *to) MONO_INTERNAL;
+
+/* Installs a function which is called when the runtime encounters an unhandled exception.
+ * This hook isn't expected to return.
+ * If no hook has been installed, the runtime will print a message before aborting.
+ */
+typedef void  (*MonoUnhandledExceptionFunc)         (MonoObject *exc, gpointer user_data);
+void          mono_install_unhandled_exception_hook (MonoUnhandledExceptionFunc func, gpointer user_data);
+void          mono_invoke_unhandled_exception_hook  (MonoObject *exc);
 
 /* Dominator/SSA methods */
 void        mono_compile_dominator_info         (MonoCompile *cfg, int dom_flags) MONO_INTERNAL;

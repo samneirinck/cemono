@@ -262,6 +262,14 @@ static JITGCStats stats;
 
 static FILE *logfile;
 
+static gboolean enable_gc_maps_for_aot;
+
+void
+mini_gc_enable_gc_maps_for_aot (void)
+{
+	enable_gc_maps_for_aot = TRUE;
+}
+
 // FIXME: Move these to a shared place
 
 static inline void
@@ -576,7 +584,7 @@ thread_detach_func (gpointer user_data)
 }
 
 static void
-thread_suspend_func (gpointer user_data, void *sigctx)
+thread_suspend_func (gpointer user_data, void *sigctx, MonoContext *ctx)
 {
 	TlsData *tls = user_data;
 
@@ -596,6 +604,9 @@ thread_suspend_func (gpointer user_data, void *sigctx)
 		tls->unwind_state.unwind_data [MONO_UNWIND_DATA_LMF] = mono_get_lmf ();
 		if (sigctx) {
 			mono_arch_sigctx_to_monoctx (sigctx, &tls->unwind_state.ctx);
+			tls->unwind_state.valid = TRUE;
+		} else if (ctx) {
+			memcpy (&tls->unwind_state.ctx, ctx, sizeof (MonoContext));
 			tls->unwind_state.valid = TRUE;
 		} else {
 			tls->unwind_state.valid = FALSE;
@@ -798,6 +809,23 @@ conservative_pass (TlsData *tls, guint8 *stack_start, guint8 *stack_end)
 			}
 			DEBUG (fprintf (logfile, "\t <Last frame>\n"));
 			last = FALSE;
+			/*
+			 * new_reg_locations is not precise when a method is interrupted during its epilog, so clear it.
+			 */
+			for (i = 0; i < MONO_MAX_IREGS; ++i) {
+				if (reg_locations [i]) {
+					DEBUG (fprintf (logfile, "\tscan saved reg %s location %p.\n", mono_arch_regname (i), reg_locations [i]));
+					mono_gc_conservatively_scan_area (reg_locations [i], (char*)reg_locations [i] + SIZEOF_SLOT);
+					scanned_registers += SIZEOF_SLOT;
+				}
+				if (new_reg_locations [i]) {
+					DEBUG (fprintf (logfile, "\tscan saved reg %s location %p.\n", mono_arch_regname (i), new_reg_locations [i]));
+					mono_gc_conservatively_scan_area (new_reg_locations [i], (char*)new_reg_locations [i] + SIZEOF_SLOT);
+					scanned_registers += SIZEOF_SLOT;
+				}
+				reg_locations [i] = NULL;
+				new_reg_locations [i] = NULL;
+			}
 			continue;
 		}
 
@@ -1001,7 +1029,7 @@ conservative_pass (TlsData *tls, guint8 *stack_start, guint8 *stack_end)
 		}
 
 		/*
-		 * Clear locations of precisely stacked registers.
+		 * Clear locations of precisely tracked registers.
 		 */
 		if (precise_regmask) {
 			for (i = 0; i < NREGS; ++i) {
@@ -1190,7 +1218,10 @@ mini_gc_init_gc_map (MonoCompile *cfg)
 	if (!mono_gc_is_moving ())
 		return;
 
-	if (!cfg->compile_aot && !mono_gc_precise_stack_mark_enabled ())
+	if (cfg->compile_aot) {
+		if (!enable_gc_maps_for_aot)
+			return;
+	} else if (!mono_gc_precise_stack_mark_enabled ())
 		return;
 
 #if 1

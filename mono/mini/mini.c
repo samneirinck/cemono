@@ -2666,16 +2666,7 @@ mono_thread_abort (MonoObject *obj)
 			(obj->vtable->klass == mono_defaults.threadabortexception_class)) {
 		mono_thread_exit ();
 	} else {
-		MonoObject *other = NULL;
-		MonoString *str = mono_object_to_string (obj, &other);
-		if (str) {
-			char *msg = mono_string_to_utf8 (str);
-			fprintf (stderr, "[ERROR] FATAL UNHANDLED EXCEPTION: %s\n", msg);
-			fflush (stderr);
-			g_free (msg);
-		}
-
-		exit (mono_environment_exitcode_get ());
+		mono_invoke_unhandled_exception_hook (obj);
 	}
 }
 
@@ -4315,7 +4306,7 @@ mini_method_compile (MonoMethod *method, guint32 opts, MonoDomain *domain, gbool
 	InterlockedIncrement (&mono_jit_stats.methods_compiled);
 	if (mono_profiler_get_events () & MONO_PROFILE_JIT_COMPILATION)
 		mono_profiler_method_jit (method);
-	if (MONO_PROBE_METHOD_COMPILE_BEGIN_ENABLED ())
+	if (MONO_METHOD_COMPILE_BEGIN_ENABLED ())
 		MONO_PROBE_METHOD_COMPILE_BEGIN (method);
 
 	if (compile_aot)
@@ -4391,7 +4382,7 @@ mini_method_compile (MonoMethod *method, guint32 opts, MonoDomain *domain, gbool
 		cfg->exception_type = MONO_EXCEPTION_TYPE_LOAD;
 		cfg->exception_message = g_strdup (mono_error_get_message (&err));
 		mono_error_cleanup (&err);
-		if (MONO_PROBE_METHOD_COMPILE_END_ENABLED ())
+		if (MONO_METHOD_COMPILE_END_ENABLED ())
 			MONO_PROBE_METHOD_COMPILE_END (method, FALSE);
 		return cfg;
 	}
@@ -4406,7 +4397,7 @@ mini_method_compile (MonoMethod *method, guint32 opts, MonoDomain *domain, gbool
 			cfg->exception_type = MONO_EXCEPTION_INVALID_PROGRAM;
 			cfg->exception_message = g_strdup_printf ("Missing or incorrect header for method %s", cfg->method->name);
 		}
-		if (MONO_PROBE_METHOD_COMPILE_END_ENABLED ())
+		if (MONO_METHOD_COMPILE_END_ENABLED ())
 			MONO_PROBE_METHOD_COMPILE_END (method, FALSE);
 		return cfg;
 	}
@@ -4610,7 +4601,7 @@ mini_method_compile (MonoMethod *method, guint32 opts, MonoDomain *domain, gbool
 	if (i < 0) {
 		if (try_generic_shared && cfg->exception_type == MONO_EXCEPTION_GENERIC_SHARING_FAILED) {
 			if (compile_aot) {
-				if (MONO_PROBE_METHOD_COMPILE_END_ENABLED ())
+				if (MONO_METHOD_COMPILE_END_ENABLED ())
 					MONO_PROBE_METHOD_COMPILE_END (method, FALSE);
 				return cfg;
 			}
@@ -4620,7 +4611,7 @@ mini_method_compile (MonoMethod *method, guint32 opts, MonoDomain *domain, gbool
 		}
 		g_assert (cfg->exception_type != MONO_EXCEPTION_GENERIC_SHARING_FAILED);
 
-		if (MONO_PROBE_METHOD_COMPILE_END_ENABLED ())
+		if (MONO_METHOD_COMPILE_END_ENABLED ())
 			MONO_PROBE_METHOD_COMPILE_END (method, FALSE);
 		/* cfg contains the details of the failure, so let the caller cleanup */
 		return cfg;
@@ -4743,7 +4734,7 @@ mini_method_compile (MonoMethod *method, guint32 opts, MonoDomain *domain, gbool
 
 	/* after method_to_ir */
 	if (parts == 1) {
-		if (MONO_PROBE_METHOD_COMPILE_END_ENABLED ())
+		if (MONO_METHOD_COMPILE_END_ENABLED ())
 			MONO_PROBE_METHOD_COMPILE_END (method, TRUE);
 		return cfg;
 	}
@@ -4780,7 +4771,7 @@ mini_method_compile (MonoMethod *method, guint32 opts, MonoDomain *domain, gbool
 
 	/* after SSA translation */
 	if (parts == 2) {
-		if (MONO_PROBE_METHOD_COMPILE_END_ENABLED ())
+		if (MONO_METHOD_COMPILE_END_ENABLED ())
 			MONO_PROBE_METHOD_COMPILE_END (method, TRUE);
 		return cfg;
 	}
@@ -4847,7 +4838,7 @@ mini_method_compile (MonoMethod *method, guint32 opts, MonoDomain *domain, gbool
 
 	/* after SSA removal */
 	if (parts == 3) {
-		if (MONO_PROBE_METHOD_COMPILE_END_ENABLED ())
+		if (MONO_METHOD_COMPILE_END_ENABLED ())
 			MONO_PROBE_METHOD_COMPILE_END (method, TRUE);
 		return cfg;
 	}
@@ -5086,7 +5077,7 @@ mini_method_compile (MonoMethod *method, guint32 opts, MonoDomain *domain, gbool
 	}
 	mono_jit_stats.native_code_size += cfg->code_len;
 
-	if (MONO_PROBE_METHOD_COMPILE_END_ENABLED ())
+	if (MONO_METHOD_COMPILE_END_ENABLED ())
 		MONO_PROBE_METHOD_COMPILE_END (method, TRUE);
 
 	return cfg;
@@ -6381,7 +6372,7 @@ mini_init (const char *filename, const char *runtime_version)
 	MonoRuntimeCallbacks callbacks;
 	MonoThreadInfoRuntimeCallbacks ticallbacks;
 
-	MONO_PROBE_VES_INIT_BEGIN ();
+	MONO_VES_INIT_BEGIN ();
 
 #if defined(__linux__) && !defined(__native_client__)
 	if (access ("/proc/self/maps", F_OK) != 0) {
@@ -6793,7 +6784,7 @@ mini_init (const char *filename, const char *runtime_version)
 
 	mono_profiler_runtime_initialized ();
 
-	MONO_PROBE_VES_INIT_END ();
+	MONO_VES_INIT_END ();
 	
 	return domain;
 }
@@ -6846,10 +6837,6 @@ print_jit_stats (void)
 		g_print ("JIT info table lookups: %ld\n", mono_stats.jit_info_table_lookup_count);
 
 		g_print ("Hazardous pointers:     %ld\n", mono_stats.hazardous_pointer_count);
-		g_print ("Minor GC collections:   %ld\n", mono_stats.minor_gc_count);
-		g_print ("Major GC collections:   %ld\n", mono_stats.major_gc_count);
-		g_print ("Minor GC time in msecs: %lf\n", (double)mono_stats.minor_gc_time_usecs / 1000.0);
-		g_print ("Major GC time in msecs: %lf\n", (double)mono_stats.major_gc_time_usecs / 1000.0);
 		if (mono_security_get_mode () == MONO_SECURITY_MODE_CAS) {
 			g_print ("\nDecl security check   : %ld\n", mono_jit_stats.cas_declsec_check);
 			g_print ("LinkDemand (user)     : %ld\n", mono_jit_stats.cas_linkdemand);

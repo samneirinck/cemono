@@ -61,6 +61,7 @@ private:
 public:
 	/* Callbacks installed by mono */
 	AllocCodeMemoryCb *alloc_cb;
+	DlSymCb *dlsym_cb;
 
 	MonoJITMemoryManager ();
 	~MonoJITMemoryManager ();
@@ -104,6 +105,37 @@ public:
 	}
 
 	virtual void deallocateExceptionTable(void*) {
+	}
+
+	virtual uint8_t *allocateCodeSection(uintptr_t Size, unsigned Alignment,
+										 unsigned SectionID) {
+		// FIXME:
+		assert(0);
+		return NULL;
+	}
+
+	virtual uint8_t *allocateDataSection(uintptr_t Size, unsigned Alignment,
+										 unsigned SectionID) {
+		// FIXME:
+		assert(0);
+		return NULL;
+	}
+
+	virtual void* getPointerToNamedFunction(const std::string &Name, bool AbortOnFailure) {
+		if (!strcmp (Name.c_str (), "__bzero")) {
+			return (void*)bzero;
+		} else {
+			void *res;
+			char *err;
+
+			err = dlsym_cb (Name.c_str (), &res);
+			if (err) {
+				outs () << "Unable to resolve: " << Name << ": " << err << "\n";
+				assert(0);
+				return NULL;
+			}
+			return res;
+		}
 	}
 };
 
@@ -472,7 +504,7 @@ force_pass_linking (void)
 }
 
 LLVMExecutionEngineRef
-mono_llvm_create_ee (LLVMModuleProviderRef MP, AllocCodeMemoryCb *alloc_cb, FunctionEmittedCb *emitted_cb, ExceptionTableCb *exception_cb)
+mono_llvm_create_ee (LLVMModuleProviderRef MP, AllocCodeMemoryCb *alloc_cb, FunctionEmittedCb *emitted_cb, ExceptionTableCb *exception_cb, DlSymCb *dlsym_cb)
 {
   std::string Error;
 
@@ -484,6 +516,7 @@ mono_llvm_create_ee (LLVMModuleProviderRef MP, AllocCodeMemoryCb *alloc_cb, Func
 
   mono_mm = new MonoJITMemoryManager ();
   mono_mm->alloc_cb = alloc_cb;
+  mono_mm->dlsym_cb = dlsym_cb;
 
   //JITExceptionHandling = true;
   // PrettyStackTrace installs signal handlers which trip up libgc

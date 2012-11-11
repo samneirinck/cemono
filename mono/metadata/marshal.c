@@ -382,40 +382,37 @@ delegate_hash_table_new (void) {
 static void 
 delegate_hash_table_remove (MonoDelegate *d)
 {
-#ifdef HAVE_MOVING_COLLECTOR
-	guint32 gchandle;
-#endif
+	guint32 gchandle = 0;
+
 	mono_marshal_lock ();
 	if (delegate_hash_table == NULL)
 		delegate_hash_table = delegate_hash_table_new ();
-#ifdef HAVE_MOVING_COLLECTOR
-	gchandle = GPOINTER_TO_UINT (g_hash_table_lookup (delegate_hash_table, d->delegate_trampoline));
-#endif
+	if (mono_gc_is_moving ())
+		gchandle = GPOINTER_TO_UINT (g_hash_table_lookup (delegate_hash_table, d->delegate_trampoline));
 	g_hash_table_remove (delegate_hash_table, d->delegate_trampoline);
 	mono_marshal_unlock ();
-#ifdef HAVE_MOVING_COLLECTOR
-	mono_gchandle_free (gchandle);
-#endif
+	if (mono_gc_is_moving ())
+		mono_gchandle_free (gchandle);
 }
 
 static void
 delegate_hash_table_add (MonoDelegate *d)
 {
-#ifdef HAVE_MOVING_COLLECTOR
-	guint32 gchandle = mono_gchandle_new_weakref ((MonoObject*)d, FALSE);
+	guint32 gchandle;
 	guint32 old_gchandle;
-#endif
+
 	mono_marshal_lock ();
 	if (delegate_hash_table == NULL)
 		delegate_hash_table = delegate_hash_table_new ();
-#ifdef HAVE_MOVING_COLLECTOR
-	old_gchandle = GPOINTER_TO_UINT (g_hash_table_lookup (delegate_hash_table, d->delegate_trampoline));
-	g_hash_table_insert (delegate_hash_table, d->delegate_trampoline, GUINT_TO_POINTER (gchandle));
-	if (old_gchandle)
-		mono_gchandle_free (old_gchandle);
-#else
-	g_hash_table_insert (delegate_hash_table, d->delegate_trampoline, d);
-#endif
+	if (mono_gc_is_moving ()) {
+		gchandle = mono_gchandle_new_weakref ((MonoObject*)d, FALSE);
+		old_gchandle = GPOINTER_TO_UINT (g_hash_table_lookup (delegate_hash_table, d->delegate_trampoline));
+		g_hash_table_insert (delegate_hash_table, d->delegate_trampoline, GUINT_TO_POINTER (gchandle));
+		if (old_gchandle)
+			mono_gchandle_free (old_gchandle);
+	} else {
+		g_hash_table_insert (delegate_hash_table, d->delegate_trampoline, d);
+	}
 	mono_marshal_unlock ();
 }
 
@@ -447,7 +444,7 @@ parse_unmanaged_function_pointer_attr (MonoClass *klass, MonoMethodPInvoke *piin
 		 * construct it.
 		 */
 		cinfo = mono_custom_attrs_from_class (klass);
-		if (cinfo) {
+		if (cinfo && !mono_runtime_get_no_exec ()) {
 			attr = (MonoReflectionUnmanagedFunctionPointerAttribute*)mono_custom_attrs_get_attr (cinfo, UnmanagedFunctionPointerAttribute);
 			if (attr) {
 				piinfo->piflags = (attr->call_conv << 8) | (attr->charset ? (attr->charset - 1) * 2 : 1) | attr->set_last_error;
@@ -461,9 +458,7 @@ parse_unmanaged_function_pointer_attr (MonoClass *klass, MonoMethodPInvoke *piin
 MonoDelegate*
 mono_ftnptr_to_delegate (MonoClass *klass, gpointer ftn)
 {
-#ifdef HAVE_MOVING_COLLECTOR
 	guint32 gchandle;
-#endif
 	MonoDelegate *d;
 
 	if (ftn == NULL)
@@ -473,17 +468,17 @@ mono_ftnptr_to_delegate (MonoClass *klass, gpointer ftn)
 	if (delegate_hash_table == NULL)
 		delegate_hash_table = delegate_hash_table_new ();
 
-#ifdef HAVE_MOVING_COLLECTOR
-	gchandle = GPOINTER_TO_UINT (g_hash_table_lookup (delegate_hash_table, ftn));
-	mono_marshal_unlock ();
-	if (gchandle)
-		d = (MonoDelegate*)mono_gchandle_get_target (gchandle);
-	else
-		d = NULL;
-#else
-	d = g_hash_table_lookup (delegate_hash_table, ftn);
-	mono_marshal_unlock ();
-#endif
+	if (mono_gc_is_moving ()) {
+		gchandle = GPOINTER_TO_UINT (g_hash_table_lookup (delegate_hash_table, ftn));
+		mono_marshal_unlock ();
+		if (gchandle)
+			d = (MonoDelegate*)mono_gchandle_get_target (gchandle);
+		else
+			d = NULL;
+	} else {
+		d = g_hash_table_lookup (delegate_hash_table, ftn);
+		mono_marshal_unlock ();
+	}
 	if (d == NULL) {
 		/* This is a native function, so construct a delegate for it */
 		MonoMethodSignature *sig;
@@ -731,13 +726,12 @@ mono_string_utf8_to_builder (MonoStringBuilder *sb, char *text)
 		items_written = mono_stringbuilder_capacity (sb);
 	
 	if (!error) {
-		if (! sb->str || sb->str == sb->cached_str) {
+		if (! sb->str || sb->str == sb->cached_str)
 			MONO_OBJECT_SETREF (sb, str, mono_string_new_size (mono_domain_get (), items_written));
-			sb->cached_str = NULL;
-		}
 		
 		memcpy (mono_string_chars (sb->str), ut, items_written * 2);
 		sb->length = items_written;
+		sb->cached_str = NULL;
 	} else 
 		g_error_free (error);
 
@@ -6129,15 +6123,12 @@ emit_marshal_string (EmitMarshalContext *m, int argnum, MonoType *t,
 
 		if (conv == -1) {
 			char *msg = g_strdup_printf ("string marshalling conversion %d not implemented", encoding);
-			MonoException *exc = mono_get_exception_not_implemented (msg);
-			g_warning ("%s", msg);
-			g_free (msg);
-			mono_raise_exception (exc);
-		}
-		else
+			mono_mb_emit_exception_marshal_directive (mb, msg);
+		} else {
 			mono_mb_emit_icall (mb, conv_to_icall (conv));
 
-		mono_mb_emit_stloc (mb, conv_arg);
+			mono_mb_emit_stloc (mb, conv_arg);
+		}
 		break;
 
 	case MARSHAL_ACTION_CONV_OUT:
@@ -6154,6 +6145,12 @@ emit_marshal_string (EmitMarshalContext *m, int argnum, MonoType *t,
 			if (!m) {
 				m = mono_class_get_method_from_name_flags (mono_defaults.string_class, "get_Length", -1, 0);
 				g_assert (m);
+			}
+
+			if (!t->byref) {
+				char *msg = g_strdup_printf ("VBByRefStr marshalling requires a ref parameter.", encoding);
+				mono_mb_emit_exception_marshal_directive (mb, msg);
+				break;
 			}
 
 			/* 
@@ -6538,20 +6535,17 @@ emit_marshal_object (EmitMarshalContext *m, int argnum, MonoType *t,
 			if (t->byref && !t->attrs & PARAM_ATTRIBUTE_IN && t->attrs & PARAM_ATTRIBUTE_OUT)
 				break;
 
+			if (conv == -1) {
+				char *msg = g_strdup_printf ("stringbuilder marshalling conversion %d not implemented", encoding);
+				mono_mb_emit_exception_marshal_directive (mb, msg);
+				break;
+			}
+
 			mono_mb_emit_ldarg (mb, argnum);
 			if (t->byref)
 				mono_mb_emit_byte (mb, CEE_LDIND_I);
 
-			if (conv != -1)
-				mono_mb_emit_icall (mb, conv_to_icall (conv));
-			else {
-				char *msg = g_strdup_printf ("stringbuilder marshalling conversion %d not implemented", encoding);
-				MonoException *exc = mono_get_exception_not_implemented (msg);
-				g_warning ("%s", msg);
-				g_free (msg);
-				mono_raise_exception (exc);
-			}
-
+			mono_mb_emit_icall (mb, conv_to_icall (conv));
 			mono_mb_emit_stloc (mb, conv_arg);
 		} else if (klass->blittable) {
 			mono_mb_emit_byte (mb, CEE_LDNULL);
@@ -7150,6 +7144,12 @@ emit_marshal_array (EmitMarshalContext *m, int argnum, MonoType *t,
 			else
 				conv = -1;
 
+			if (is_string && conv == -1) {
+				char *msg = g_strdup_printf ("string/stringbuilder marshalling conversion %d not implemented", encoding);
+				mono_mb_emit_exception_marshal_directive (mb, msg);
+				break;
+			}
+
 			src_var = mono_mb_add_local (mb, &mono_defaults.object_class->byval_arg);
 			mono_mb_emit_ldarg (mb, argnum);
 			if (t->byref)
@@ -7161,16 +7161,6 @@ emit_marshal_array (EmitMarshalContext *m, int argnum, MonoType *t,
 			mono_mb_emit_stloc (mb, conv_arg);
 			mono_mb_emit_ldloc (mb, src_var);
 			label1 = mono_mb_emit_branch (mb, CEE_BRFALSE);
-
-			if (is_string) {
-				if (conv == -1) {
-					char *msg = g_strdup_printf ("string/stringbuilder marshalling conversion %d not implemented", encoding);
-					MonoException *exc = mono_get_exception_not_implemented (msg);
-					g_warning ("%s", msg);
-					g_free (msg);
-					mono_raise_exception (exc);
-				}
-			}
 
 			if (is_string)
 				esize = sizeof (gpointer);
@@ -8070,10 +8060,6 @@ emit_marshal (EmitMarshalContext *m, int argnum, MonoType *t,
 	/* Ensure that we have marshalling info for this param */
 	mono_marshal_load_type_info (mono_class_from_mono_type (t));
 
-#ifdef DISABLE_JIT
-	/* Not JIT support, no need to generate correct IL */
-	return conv_arg;
-#else
 	if (spec && spec->native == MONO_NATIVE_CUSTOM)
 		return emit_marshal_custom (m, argnum, t, spec, conv_arg, conv_arg_type, action);
 
@@ -8138,7 +8124,6 @@ emit_marshal (EmitMarshalContext *m, int argnum, MonoType *t,
 		else
 			return emit_marshal_object (m, argnum, t, spec, conv_arg, conv_arg_type, action);
 	}
-#endif
 
 	return conv_arg;
 }

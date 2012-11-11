@@ -44,7 +44,9 @@
 
 //#define CARDTABLE_STATS
 
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #ifdef HAVE_SYS_MMAN_H
 #include <sys/mman.h>
 #endif
@@ -655,10 +657,10 @@ sgen_card_tables_collect_stats (gboolean begin)
 void
 sgen_card_table_init (SgenRemeberedSet *remset)
 {
-	sgen_cardtable = sgen_alloc_os_memory (CARD_COUNT_IN_BYTES, TRUE);
+	sgen_cardtable = sgen_alloc_os_memory (CARD_COUNT_IN_BYTES, SGEN_ALLOC_INTERNAL | SGEN_ALLOC_ACTIVATE, "card table");
 
 #ifdef SGEN_HAVE_OVERLAPPING_CARDS
-	sgen_shadow_cardtable = sgen_alloc_os_memory (CARD_COUNT_IN_BYTES, TRUE);
+	sgen_shadow_cardtable = sgen_alloc_os_memory (CARD_COUNT_IN_BYTES, SGEN_ALLOC_INTERNAL | SGEN_ALLOC_ACTIVATE, "shadow card table");
 #endif
 
 #ifdef HEAVY_STATISTICS

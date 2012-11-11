@@ -1485,7 +1485,7 @@ mono_arch_emit_call (MonoCompile *cfg, MonoCallInst *call)
 	/* Arguments are pushed in the reverse order */
 	for (i = n - 1; i >= 0; i --) {
 		ArgInfo *ainfo = cinfo->args + i;
-		MonoType *t;
+		MonoType *orig_type, *t;
 		int argsize;
 
 		if (cinfo->vtype_retaddr && cinfo->vret_arg_index == 1 && i == 0) {
@@ -1503,6 +1503,7 @@ mono_arch_emit_call (MonoCompile *cfg, MonoCallInst *call)
 			t = sig->params [i - sig->hasthis];
 		else
 			t = &mono_defaults.int_class->byval_arg;
+		orig_type = t;
 		t = mini_type_get_underlying_type (cfg->generic_sharing_context, t);
 
 		MONO_INST_NEW (cfg, arg, OP_X86_PUSH);
@@ -1536,7 +1537,7 @@ mono_arch_emit_call (MonoCompile *cfg, MonoCallInst *call)
 
 				MONO_ADD_INS (cfg->cbb, arg);
 				sp_offset += size;
-				emit_gc_param_slot_def (cfg, sp_offset, t);
+				emit_gc_param_slot_def (cfg, sp_offset, orig_type);
 			}
 		} else {
 			argsize = 4;
@@ -1575,11 +1576,16 @@ mono_arch_emit_call (MonoCompile *cfg, MonoCallInst *call)
 			if (cfg->compute_gc_maps) {
 				if (argsize == 4) {
 					/* FIXME: The == STACK_OBJ check might be fragile ? */
-					if (sig->hasthis && i == 0 && call->args [i]->type == STACK_OBJ)
+					if (sig->hasthis && i == 0 && call->args [i]->type == STACK_OBJ) {
 						/* this */
-						emit_gc_param_slot_def (cfg, sp_offset, &mono_defaults.object_class->byval_arg);
-					else
-						emit_gc_param_slot_def (cfg, sp_offset, t);
+						if (call->need_unbox_trampoline)
+							/* The unbox trampoline transforms this into a managed pointer */
+							emit_gc_param_slot_def (cfg, sp_offset, &mono_defaults.int_class->this_arg);
+						else
+							emit_gc_param_slot_def (cfg, sp_offset, &mono_defaults.object_class->byval_arg);
+					} else {
+						emit_gc_param_slot_def (cfg, sp_offset, orig_type);
+					}
 				} else {
 					/* i8/r8 */
 					for (j = 0; j < argsize; j += 4)
@@ -1627,6 +1633,7 @@ mono_arch_emit_call (MonoCompile *cfg, MonoCallInst *call)
 	}
 
 	call->stack_usage = cinfo->stack_usage;
+	call->stack_align_amount = cinfo->stack_align_amount;
 	cfg->arch.param_area_size = MAX (cfg->arch.param_area_size, sp_offset);
 }
 
@@ -3179,7 +3186,7 @@ mono_arch_output_basic_block (MonoCompile *cfg, MonoBasicBlock *bb)
 			}
 
 			/* Copy arguments on the stack to our argument area */
-			for (i = 0; i < call->stack_usage; i += 4) {
+			for (i = 0; i < call->stack_usage - call->stack_align_amount; i += 4) {
 				x86_mov_reg_membase (code, X86_EAX, X86_ESP, i, 4);
 				x86_mov_membase_reg (code, X86_EBP, 8 + i, X86_EAX, 4);
 			}
