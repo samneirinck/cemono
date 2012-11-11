@@ -1,8 +1,9 @@
 #include "StdAfx.h"
 #include "MonoObject.h"
 
-#include "MonoClass.h"
+#include "MonoDomain.h"
 #include "MonoAssembly.h"
+#include "MonoClass.h"
 
 #include "MonoCVars.h"
 #include "MonoScriptSystem.h"
@@ -46,7 +47,15 @@ MonoClass *CScriptObject::GetMonoClass()
 IMonoClass *CScriptObject::GetClass()
 {
 	if(!m_pClass)
-		m_pClass = CScriptAssembly::TryGetClassFromRegistry(GetMonoClass());
+	{
+		if(CScriptDomain *pDomain = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->TryGetDomain(mono_object_get_domain(m_pObject)))
+		{
+			MonoClass *pMonoClass = GetMonoClass();
+
+			if(CScriptAssembly *pAssembly = pDomain->TryGetAssembly(mono_class_get_image(pMonoClass)))
+				m_pClass = pAssembly->TryGetClass(pMonoClass);
+		}
+	}
 
 	CRY_ASSERT(m_pClass);
 	return m_pClass;

@@ -72,23 +72,3 @@ CScriptClass *CScriptAssembly::TryGetClass(MonoClass *pMonoClass)
 
 	return pScriptClass;
 }
-
-///////////////////////////////////////////////////////////////////
-// Statics
-///////////////////////////////////////////////////////////////////
-CScriptClass *CScriptAssembly::TryGetClassFromRegistry(MonoClass *pClass)
-{
-	CRY_ASSERT(pClass);
-
-	MonoImage *pImage = mono_class_get_image(pClass);
-
-	MonoDomain *pMonoDomain = mono_object_get_domain((MonoObject *)pClass);
-	
-	if(CScriptDomain *pDomain = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->TryGetDomain(pMonoDomain))
-	{
-		if(auto pAssembly = pDomain->TryGetAssembly(pImage))
-			return pAssembly->TryGetClass(pClass);
-	}
-
-	return NULL;
-}

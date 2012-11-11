@@ -30,8 +30,6 @@ public:
 
 	CScriptClass *TryGetClass(MonoClass *pClass);
 
-	static CScriptClass *TryGetClassFromRegistry(MonoClass *pClass);
-
 	// IMonoAssembly
 	virtual IMonoClass *GetClass(const char *className, const char *nameSpace = "CryEngine") override;
 
