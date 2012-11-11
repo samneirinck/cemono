@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Windows.Forms;
 using CryEngine.Extensions;
+using CryEngine.Utilities;
 
 namespace CryEngine
 {
@@ -11,10 +12,10 @@ namespace CryEngine
         {
             InitializeComponent();
 
-            label1.Text = Utils.ProjectSettings.ExceptionMessage;
+            label1.Text = ProjectSettings.ExceptionMessage;
 
             uxContinueBtn.Click += (s, a) => Close();
-            uxReportBtn.Click += (s, a) => Process.Start(Utils.ProjectSettings.BugReportLink);
+            uxReportBtn.Click += (s, a) => Process.Start(ProjectSettings.BugReportLink);
             uxCancelBtn.Click += (s, a) => Process.GetCurrentProcess().Kill();
 
             if (fatal)
