@@ -1,7 +1,10 @@
 #include "StdAfx.h"
 #include "MonoArray.h"
 
+#include "MonoDomain.h"
 #include "MonoObject.h"
+
+#include "MonoScriptSystem.h"
 
 #include <IMonoClass.h>
 
@@ -89,4 +92,17 @@ void CScriptArray::InsertAny(MonoAnyValue value, int index)
 		Insert((mono::object)ToMonoString(value.str), index);
 	else
 		Insert(gEnv->pMonoScriptSystem->GetConverter()->BoxAnyValue(value), index);
+}
+
+IMonoClass *CScriptArray::GetClass(MonoClass *pClass)
+{
+	if(CScriptDomain *pDomain = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->TryGetDomain(mono_object_get_domain(m_pObject)))
+	{
+		MonoClass *pMonoClass = GetMonoClass();
+
+		if(CScriptAssembly *pAssembly = pDomain->TryGetAssembly(mono_class_get_image(pMonoClass)))
+			return pAssembly->TryGetClass(pMonoClass);
+	}
+
+	return nullptr;
 }
