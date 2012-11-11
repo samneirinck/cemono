@@ -277,12 +277,12 @@
     <Compile Include="Entity\EntityConfig.cs" />
     <Compile Include="Console\CVar\CVar.cs" />
     <Compile Include="Misc\Time.cs" />
-    <Compile Include="Utils\Debug\Debug.cs" />
+    <Compile Include="Debug\Debug.cs" />
     <Compile Include="Extensions\Reflection.cs" />
     <Compile Include="Entity\EntityStatics.cs" />
     <Compile Include="Entity\Entity.cs" />
     <Compile Include="FlowSystem\FlowNode.cs" />
-    <Compile Include="Utils\Debug\Logging.cs" />
+    <Compile Include="Debug\Logging.cs" />
     <Compile Include="GameRules\GameRules.cs" />
     <Compile Include="Utils\PointerWrapper.cs" />
     <Compile Include="Utils\Statistics.cs" />
