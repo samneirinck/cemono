@@ -27,6 +27,21 @@ namespace CryBrary.Tests.Serialization
         }
 
         [Fact]
+        public void Unused_UnsignedInteger()
+        {
+            using (var stream = new MemoryStream())
+            {
+                var serializer = new CrySerializer();
+
+                var unused = UnusedMarker.UnsignedInteger;
+                serializer.Serialize(stream, unused);
+
+                unused = (uint)serializer.Deserialize(stream);
+                Assert.True(UnusedMarker.IsUnused(unused));
+            }
+        }
+
+        [Fact]
         public void Unused_Float()
         {
             using (var stream = new MemoryStream())
