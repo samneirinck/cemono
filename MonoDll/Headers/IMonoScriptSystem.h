@@ -19,8 +19,8 @@ struct IMonoAssembly;
 struct IMonoDomain;
 
 struct IMonoEntityManager;
-
 struct IMonoConverter;
+struct IMonoScriptEventListener;
 
 /// <summary>
 /// Script flags are passed to IMonoScriptSystem::InstantiateScript and RemoveScriptInstance as a way to identify scripts more effectively, and to solve the issue with scripts being of multiple types.
@@ -66,6 +66,14 @@ struct IMonoScriptSystem
 	/// Returns true when the root domain has been initialized.
 	/// </summary>
 	virtual bool IsInitialized() = 0;
+
+	/// <summary>
+	/// Used to start script recompilation / serialization.
+	/// </summary>
+	virtual void Reload() = 0;
+
+	virtual void AddListener(IMonoScriptEventListener *pListener) = 0;
+	virtual void RemoveListener(IMonoScriptEventListener *pListener) = 0;
 
 	/// <summary>
 	/// Deletes script system instance; cleans up mono objects etc.
@@ -120,6 +128,12 @@ struct IMonoScriptSystem
 	/// If called prior to default CryMono flownode registration time (IGameFramework PostInit); flownodes are immediately registered.
 	/// </summary>
 	virtual void RegisterFlownodes() = 0;
+};
+
+struct IMonoScriptEventListener
+{
+	virtual void OnReloadStart() = 0;
+	virtual void OnReloadComplete() = 0;
 };
 
 #endif //__I_MONO_SCRIPT_SYSTEM_H__

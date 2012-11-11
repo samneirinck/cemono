@@ -9,6 +9,8 @@
 #include "MonoObject.h"
 #include "MonoDomain.h"
 
+#include "CryScriptInstance.h"
+
 #include <mono/mini/jit.h>
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/mono-debug.h>
@@ -154,20 +156,9 @@ bool CScriptSystem::CompleteInit()
 	m_pPdb2MdbAssembly = m_pRootDomain->LoadAssembly(PathUtils::GetMonoPath() + "bin\\pdb2mdb.dll");
 #endif
 
-	m_pCryBraryAssembly = m_pRootDomain->LoadAssembly(PathUtils::GetBinaryPath() + "CryBrary.dll");
-
-	CryLogAlways("		Registering default scriptbinds...");
 	RegisterDefaultBindings();
 
-	m_pScriptManager = m_pCryBraryAssembly->GetClass("ScriptManager", "CryEngine.Initialization")->CreateInstance();
-	
-	IMonoClass *pClass = m_pCryBraryAssembly->GetClass("Network");
-
-	IMonoArray *pArgs = CreateMonoArray(2);
-	pArgs->Insert(gEnv->IsEditor());
-	pArgs->Insert(gEnv->IsDedicated());
-	pClass->InvokeArray(NULL, "InitializeNetworkStatics", pArgs);
-	SAFE_RELEASE(pArgs);
+	Reload(true);
 
 	gEnv->pGameFramework->RegisterListener(this, "CryMono", eFLPriority_Game);
 
@@ -180,6 +171,41 @@ bool CScriptSystem::CompleteInit()
 	CryLogAlways("		Initializing CryMono done, MemUsage=%iKb", (memInfo.allocated + pCryStats->GetPropertyValue(NULL, "MemoryUsage")->Unbox<long>()) / 1024);
 
 	return true;
+}
+
+void CScriptSystem::Reload(bool initialLoad)
+{
+	if(!initialLoad)
+	{
+		for each(auto listener in m_listeners)
+			listener->OnReloadStart();
+
+		m_pScriptManager->CallMethod("Serialize");
+		m_pScriptDomain->Release();
+	}
+
+	m_pScriptDomain = CreateDomain("ScriptDomain", true);
+
+	m_pCryBraryAssembly = m_pScriptDomain->LoadAssembly(PathUtils::GetBinaryPath() + "CryBrary.dll");
+
+	IMonoArray *pCtorParams = CreateMonoArray(1);
+	pCtorParams->InsertAny(initialLoad);
+	m_pScriptManager = m_pCryBraryAssembly->GetClass("ScriptManager", "CryEngine.Initialization")->CreateInstance(pCtorParams);
+
+	if(!initialLoad)
+		m_pScriptManager->CallMethod("Deserialize");
+
+	// Set Network.Editor etc.
+	IMonoClass *pClass = m_pCryBraryAssembly->GetClass("Network");
+
+	IMonoArray *pArgs = CreateMonoArray(2);
+	pArgs->Insert(gEnv->IsEditor());
+	pArgs->Insert(gEnv->IsDedicated());
+	pClass->InvokeArray(NULL, "InitializeNetworkStatics", pArgs);
+	SAFE_RELEASE(pArgs);
+
+	for each(auto listener in m_listeners)
+		listener->OnReloadComplete();
 }
 
 void CScriptSystem::OnSystemEvent(ESystemEvent event,UINT_PTR wparam,UINT_PTR lparam)
@@ -249,7 +275,7 @@ void CScriptSystem::OnFileChange(const char *fileName)
 
 	const char *fileExt = PathUtil::GetExt(fileName);
 	if(!strcmp(fileExt, "cs") || !strcmp(fileExt, "dll"))
-		m_pScriptManager->CallMethod("OnReload");
+		Reload(false);
 }
 
 void CScriptSystem::RegisterMethodBinding(const void *method, const char *fullMethodName)
@@ -266,10 +292,11 @@ IMonoObject *CScriptSystem::InstantiateScript(const char *scriptName, EMonoScrip
 
 	if(!pResult)
 		MonoWarning("Failed to instantiate script %s", scriptName);
-	else
-		pResult->SetPropertyValue("IMonoObjectHandle", pResult);
 
-	return pResult;
+	mono::object instance = pResult->GetManagedObject();
+	pResult->Release(false);
+
+	return new CCryScriptInstance(instance);
 }
 
 void CScriptSystem::RemoveScriptInstance(int id, EMonoScriptFlags scriptType)
@@ -279,6 +306,7 @@ void CScriptSystem::RemoveScriptInstance(int id, EMonoScriptFlags scriptType)
 
 	m_pScriptManager->CallMethod("RemoveInstance", id, scriptType);
 }
+
 
 IMonoAssembly *CScriptSystem::GetCorlibAssembly()
 {
@@ -312,7 +340,10 @@ void CScriptSystem::OnDomainReleased(CScriptDomain *pDomain)
 	stl::find_and_erase(m_domains, pDomain);
 }
 
-void CScriptSystem::UpdateScriptInstance(CScriptObject *pObject, mono::object scriptInstance)
+void CScriptSystem::UpdateScriptInstance(CScriptObject *pObject, MonoObject *scriptInstance)
 {
 	pObject->SetManagedObject(scriptInstance);
+	CryLogAlways("getclass");
+	pObject->GetClass();
+	CryLogAlways("done");
 }

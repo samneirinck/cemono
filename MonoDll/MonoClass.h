@@ -43,9 +43,9 @@ public:
 	virtual IMonoObject *Invoke(IMonoObject *pObject, const char *methodName, void **params = nullptr, int numParams = 0) override;
 
 	virtual IMonoObject *GetPropertyValue(IMonoObject *pObject, const char *propertyName) override;
-	virtual void SetPropertyValue(IMonoObject *pObject, const char *propertyName, IMonoObject *pNewValue) override;
+	virtual void SetPropertyValue(IMonoObject *pObject, const char *propertyName, mono::object newValue) override;
 	virtual IMonoObject *GetFieldValue(IMonoObject *pObject, const char *fieldName) override;
-	virtual void SetFieldValue(IMonoObject *pObject, const char *fieldName, IMonoObject *pNewValue) override;
+	virtual void SetFieldValue(IMonoObject *pObject, const char *fieldName, mono::object newValue) override;
 	// ~IMonoClass
 
 	// IMonoObject

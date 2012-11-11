@@ -141,6 +141,9 @@
     <ClInclude Include="NativeEntity.h">
       <Filter>EntitySystem\Native</Filter>
     </ClInclude>
+    <ClInclude Include="CryScriptInstance.h">
+      <Filter>Mono</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -239,6 +242,9 @@
     </ClCompile>
     <ClCompile Include="NativeEntity.cpp">
       <Filter>EntitySystem\Native</Filter>
+    </ClCompile>
+    <ClCompile Include="CryScriptInstance.cpp">
+      <Filter>Mono</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
