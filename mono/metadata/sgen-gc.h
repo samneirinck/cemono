@@ -40,6 +40,7 @@ typedef struct _SgenThreadInfo SgenThreadInfo;
 #include <signal.h>
 #include <mono/utils/mono-compiler.h>
 #include <mono/utils/mono-threads.h>
+#include <mono/utils/dtrace.h>
 #include <mono/io-layer/mono-mutex.h>
 #include <mono/metadata/class-internals.h>
 #include <mono/metadata/object-internals.h>
@@ -47,10 +48,7 @@ typedef struct _SgenThreadInfo SgenThreadInfo;
 #include <mono/metadata/sgen-archdep.h>
 #include <mono/metadata/sgen-descriptor.h>
 #include <mono/metadata/sgen-gray.h>
-
-#if defined(__MACH__)
-	#include <mach/mach_port.h>
-#endif
+#include <mono/metadata/sgen-hash-table.h>
 
 /* The method used to clear the nursery */
 /* Clearing at nursery collections is the safest, but has bad interactions with caches.
@@ -103,14 +101,11 @@ enum {
 };
 
 /* eventually share with MonoThread? */
+/*
+ * This structure extends the MonoThreadInfo structure.
+ */
 struct _SgenThreadInfo {
 	MonoThreadInfo info;
-#if defined(__MACH__)
-	thread_port_t mach_port;
-#else
-	int signal;
-	unsigned int stop_count; /* to catch duplicate signals */
-#endif
 	int skip;
 	volatile int in_critical_region;
 	gboolean joined_stw;
@@ -128,21 +123,19 @@ struct _SgenThreadInfo {
 	long *store_remset_buffer_index_addr;
 	RememberedSet *remset;
 	gpointer runtime_data;
+
+	/* Only used on POSIX platforms */
+	int signal;
+	/* Ditto */
+	unsigned int stop_count; /* to catch duplicate signals */
+
 	gpointer stopped_ip;	/* only valid if the thread is stopped */
 	MonoDomain *stopped_domain; /* ditto */
 
 #ifdef USE_MONO_CTX
-#ifdef __MACH__
 	MonoContext ctx;		/* ditto */
-#endif
-	MonoContext *monoctx;	/* ditto */
-
 #else
-
-#if defined(__MACH__) || defined(HOST_WIN32)
 	gpointer regs[ARCH_NUM_REGS];	    /* ditto */
-#endif
-	gpointer *stopped_regs;	    /* ditto */
 #endif
 
 #ifndef HAVE_KW_THREAD
@@ -202,11 +195,20 @@ typedef struct _SgenPinnedChunk SgenPinnedChunk;
 /* if changing LOCK_INIT to something that isn't idempotent, look at
    its use in mono_gc_base_init in sgen-gc.c */
 #define LOCK_INIT(name)	mono_mutex_init (&(name), NULL)
-#define LOCK_GC mono_mutex_lock (&gc_mutex)
+#define LOCK_GC do {						\
+		mono_mutex_lock (&gc_mutex);			\
+		MONO_GC_LOCKED ();				\
+	} while (0)
 #define TRYLOCK_GC (mono_mutex_trylock (&gc_mutex) == 0)
-#define UNLOCK_GC mono_mutex_unlock (&gc_mutex)
-#define LOCK_INTERRUPTION mono_mutex_lock (&interruption_mutex)
-#define UNLOCK_INTERRUPTION mono_mutex_unlock (&interruption_mutex)
+#define UNLOCK_GC do {						\
+		mono_mutex_unlock (&gc_mutex);			\
+		MONO_GC_UNLOCKED ();				\
+	} while (0)
+
+extern LOCK_DECLARE (sgen_interruption_mutex);
+
+#define LOCK_INTERRUPTION mono_mutex_lock (&sgen_interruption_mutex)
+#define UNLOCK_INTERRUPTION mono_mutex_unlock (&sgen_interruption_mutex)
 
 /* FIXME: Use InterlockedAdd & InterlockedAdd64 to reduce the CAS cost. */
 #define SGEN_CAS_PTR	InterlockedCompareExchangePointer
@@ -249,10 +251,22 @@ extern int current_collection_generation;
 
 extern unsigned int sgen_global_stop_count;
 
+extern gboolean bridge_processing_in_progress;
+
+extern int num_ready_finalizers;
+
 #define SGEN_ALLOC_ALIGN		8
 #define SGEN_ALLOC_ALIGN_BITS	3
 
 #define SGEN_ALIGN_UP(s)		(((s)+(SGEN_ALLOC_ALIGN-1)) & ~(SGEN_ALLOC_ALIGN-1))
+
+/*
+ * The link pointer is hidden by negating each bit.  We use the lowest
+ * bit of the link (before negation) to store whether it needs
+ * resurrection tracking.
+ */
+#define HIDE_POINTER(p,t)	((gpointer)(~((gulong)(p)|((t)?1:0))))
+#define REVEAL_POINTER(p)	((gpointer)((~(gulong)(p))&~3L))
 
 #ifdef SGEN_ALIGN_NURSERY
 #define SGEN_PTR_IN_NURSERY(p,bits,start,end)	(((mword)(p) & ~((1 << (bits)) - 1)) == (mword)(start))
@@ -375,6 +389,25 @@ enum {
 	SGEN_GC_BIT_BRIDGE_OBJECT = 1,
 };
 
+/* the runtime can register areas of memory as roots: we keep two lists of roots,
+ * a pinned root set for conservatively scanned roots and a normal one for
+ * precisely scanned roots (currently implemented as a single list).
+ */
+typedef struct _RootRecord RootRecord;
+struct _RootRecord {
+	char *end_root;
+	mword root_desc;
+};
+
+enum {
+	ROOT_TYPE_NORMAL = 0, /* "normal" roots */
+	ROOT_TYPE_PINNED = 1, /* roots without a GC descriptor */
+	ROOT_TYPE_WBARRIER = 2, /* roots with a write barrier */
+	ROOT_TYPE_NUM
+};
+
+extern SgenHashTable roots_hash [ROOT_TYPE_NUM];
+
 typedef void (*IterateObjectCallbackFunc) (char*, size_t, void*);
 
 int sgen_thread_handshake (BOOL suspend) MONO_INTERNAL;
@@ -393,7 +426,7 @@ void sgen_update_heap_boundaries (mword low, mword high) MONO_INTERNAL;
 void sgen_scan_area_with_callback (char *start, char *end, IterateObjectCallbackFunc callback, void *data, gboolean allow_flags) MONO_INTERNAL;
 void sgen_check_section_scan_starts (GCMemSection *section) MONO_INTERNAL;
 
-/* Keep in sync with sgen_dump_internal_mem_usage() in dump_heap()! */
+/* Keep in sync with description_for_type() in sgen-internal.c! */
 enum {
 	INTERNAL_MEM_PIN_QUEUE,
 	INTERNAL_MEM_FRAGMENT,
@@ -417,6 +450,10 @@ enum {
 	INTERNAL_MEM_EPHEMERON_LINK,
 	INTERNAL_MEM_WORKER_DATA,
 	INTERNAL_MEM_BRIDGE_DATA,
+	INTERNAL_MEM_BRIDGE_HASH_TABLE,
+	INTERNAL_MEM_BRIDGE_HASH_TABLE_ENTRY,
+	INTERNAL_MEM_BRIDGE_ALIVE_HASH_TABLE,
+	INTERNAL_MEM_BRIDGE_ALIVE_HASH_TABLE_ENTRY,
 	INTERNAL_MEM_JOB_QUEUE_ENTRY,
 	INTERNAL_MEM_TOGGLEREF_DATA,
 	INTERNAL_MEM_MAX
@@ -458,7 +495,7 @@ void sgen_register_fixed_internal_mem_type (int type, size_t size) MONO_INTERNAL
 void* sgen_alloc_internal (int type) MONO_INTERNAL;
 void sgen_free_internal (void *addr, int type) MONO_INTERNAL;
 
-void* sgen_alloc_internal_dynamic (size_t size, int type) MONO_INTERNAL;
+void* sgen_alloc_internal_dynamic (size_t size, int type, gboolean assert_on_failure) MONO_INTERNAL;
 void sgen_free_internal_dynamic (void *addr, size_t size, int type) MONO_INTERNAL;
 
 void* sgen_alloc_pinned (SgenPinnedAllocator *allocator, size_t size) MONO_INTERNAL;
@@ -771,7 +808,7 @@ gboolean sgen_object_is_live (void *obj) MONO_INTERNAL;
 gboolean sgen_need_bridge_processing (void) MONO_INTERNAL;
 void sgen_bridge_reset_data (void) MONO_INTERNAL;
 void sgen_bridge_processing_stw_step (void) MONO_INTERNAL;
-void sgen_bridge_processing_finish (void) MONO_INTERNAL;
+void sgen_bridge_processing_finish (int generation) MONO_INTERNAL;
 void sgen_register_test_bridge_callbacks (const char *bridge_class_name) MONO_INTERNAL;
 gboolean sgen_is_bridge_object (MonoObject *obj) MONO_INTERNAL;
 gboolean sgen_is_bridge_class (MonoClass *class) MONO_INTERNAL;
@@ -781,10 +818,26 @@ void sgen_bridge_register_finalized_object (MonoObject *object) MONO_INTERNAL;
 void sgen_scan_togglerefs (CopyOrMarkObjectFunc copy_func, char *start, char *end, SgenGrayQueue *queue) MONO_INTERNAL;
 void sgen_process_togglerefs (void) MONO_INTERNAL;
 
+typedef mono_bool (*WeakLinkAlivePredicateFunc) (MonoObject*, void*);
+
+void sgen_null_links_with_predicate (int generation, WeakLinkAlivePredicateFunc predicate, void *data) MONO_INTERNAL;
 
 gboolean sgen_gc_is_object_ready_for_finalization (void *object) MONO_INTERNAL;
 void sgen_gc_lock (void) MONO_INTERNAL;
 void sgen_gc_unlock (void) MONO_INTERNAL;
+void sgen_gc_event_moves (void) MONO_INTERNAL;
+
+void sgen_queue_finalization_entry (MonoObject *obj) MONO_INTERNAL;
+const char* sgen_generation_name (int generation) MONO_INTERNAL;
+
+void sgen_collect_bridge_objects (CopyOrMarkObjectFunc copy_func, char *start, char *end, int generation, SgenGrayQueue *queue) MONO_INTERNAL;
+void sgen_finalize_in_range (CopyOrMarkObjectFunc copy_func, char *start, char *end, int generation, SgenGrayQueue *queue) MONO_INTERNAL;
+void sgen_null_link_in_range (CopyOrMarkObjectFunc copy_func, char *start, char *end, int generation, gboolean before_finalization, SgenGrayQueue *queue) MONO_INTERNAL;
+void sgen_null_links_for_domain (MonoDomain *domain, int generation) MONO_INTERNAL;
+void sgen_remove_finalizers_for_domain (MonoDomain *domain, int generation) MONO_INTERNAL;
+void sgen_process_fin_stage_entries (void) MONO_INTERNAL;
+void sgen_process_dislink_stage_entries (void) MONO_INTERNAL;
+void sgen_register_disappearing_link (MonoObject *obj, void **link, gboolean track, gboolean in_gc) MONO_INTERNAL;
 
 enum {
 	SPACE_NURSERY,
@@ -798,7 +851,22 @@ void sgen_set_pinned_from_failed_allocation (mword objsize) MONO_INTERNAL;
 
 void sgen_ensure_free_space (size_t size) MONO_INTERNAL;
 void sgen_perform_collection (size_t requested_size, int generation_to_collect, const char *reason) MONO_INTERNAL;
+gboolean sgen_has_critical_method (void) MONO_INTERNAL;
+gboolean sgen_is_critical_method (MonoMethod *method) MONO_INTERNAL;
 
+/* STW */
+
+typedef struct {
+	int generation;
+	const char *reason;
+	gboolean is_overflow;
+	SGEN_TV_DECLARE (total_time);
+	SGEN_TV_DECLARE (stw_time);
+	SGEN_TV_DECLARE (bridge_time);
+} GGTimingInfo;
+
+int sgen_stop_world (int generation) MONO_INTERNAL;
+int sgen_restart_world (int generation, GGTimingInfo *timing) MONO_INTERNAL;
 
 /* LOS */
 
@@ -849,67 +917,6 @@ void sgen_nursery_alloc_prepare_for_major (void) MONO_INTERNAL;
 
 char* sgen_alloc_for_promotion (char *obj, size_t objsize, gboolean has_references) MONO_INTERNAL;
 char* sgen_par_alloc_for_promotion (char *obj, size_t objsize, gboolean has_references) MONO_INTERNAL;
-
-/* hash tables */
-
-typedef struct _SgenHashTableEntry SgenHashTableEntry;
-struct _SgenHashTableEntry {
-	SgenHashTableEntry *next;
-	gpointer key;
-	char data [MONO_ZERO_LEN_ARRAY]; /* data is pointer-aligned */
-};
-
-typedef struct {
-	int table_mem_type;
-	int entry_mem_type;
-	size_t data_size;
-	GHashFunc hash_func;
-	GEqualFunc equal_func;
-	SgenHashTableEntry **table;
-	guint size;
-	guint num_entries;
-} SgenHashTable;
-
-#define SGEN_HASH_TABLE_INIT(table_type,entry_type,data_size,hash_func,equal_func)	{ (table_type), (entry_type), (data_size), (hash_func), (equal_func), NULL, 0, 0 }
-#define SGEN_HASH_TABLE_ENTRY_SIZE(data_size)			((data_size) + sizeof (SgenHashTableEntry*) + sizeof (gpointer))
-
-gpointer sgen_hash_table_lookup (SgenHashTable *table, gpointer key) MONO_INTERNAL;
-gboolean sgen_hash_table_replace (SgenHashTable *table, gpointer key, gpointer new_value, gpointer old_value) MONO_INTERNAL;
-gboolean sgen_hash_table_set_value (SgenHashTable *table, gpointer key, gpointer new_value, gpointer old_value) MONO_INTERNAL;
-gboolean sgen_hash_table_set_key (SgenHashTable *hash_table, gpointer old_key, gpointer new_key) MONO_INTERNAL;
-gboolean sgen_hash_table_remove (SgenHashTable *table, gpointer key, gpointer data_return) MONO_INTERNAL;
-
-void sgen_hash_table_clean (SgenHashTable *table) MONO_INTERNAL;
-
-#define sgen_hash_table_num_entries(h)	((h)->num_entries)
-
-#define SGEN_HASH_TABLE_FOREACH(h,k,v) do {				\
-		SgenHashTable *__hash_table = (h);			\
-		SgenHashTableEntry **__table = __hash_table->table;	\
-		guint __i;						\
-		for (__i = 0; __i < (h)->size; ++__i) {			\
-			SgenHashTableEntry **__iter, **__next;			\
-			for (__iter = &__table [__i]; *__iter; __iter = __next) {	\
-				SgenHashTableEntry *__entry = *__iter;	\
-				__next = &__entry->next;	\
-				(k) = __entry->key;			\
-				(v) = (gpointer)__entry->data;
-
-/* The loop must be continue'd after using this! */
-#define SGEN_HASH_TABLE_FOREACH_REMOVE(free)	do {			\
-		*__iter = *__next;	\
-		__next = __iter;	\
-		--__hash_table->num_entries;				\
-		if ((free))						\
-			sgen_free_internal (__entry, __hash_table->entry_mem_type); \
-	} while (0)
-
-#define SGEN_HASH_TABLE_FOREACH_SET_KEY(k)	((__entry)->key = (k))
-
-#define SGEN_HASH_TABLE_FOREACH_END					\
-			}						\
-		}							\
-	} while (0)
 
 /* TLS Data */
 
@@ -1021,7 +1028,9 @@ typedef enum {
 
 void sgen_init_tlab_info (SgenThreadInfo* info);
 void sgen_clear_tlabs (void);
+void sgen_set_use_managed_allocator (gboolean flag);
 gboolean sgen_is_managed_allocator (MonoMethod *method);
+gboolean sgen_has_managed_allocator (void);
 
 /* Debug support */
 
@@ -1029,6 +1038,7 @@ void sgen_check_consistency (void);
 void sgen_check_major_refs (void);
 void sgen_check_whole_heap (void);
 void sgen_check_whole_heap_stw (void) MONO_INTERNAL;
+void sgen_check_objref (char *obj);
 
 /* Write barrier support */
 
@@ -1048,16 +1058,6 @@ sgen_dummy_use (gpointer v) {
 #error "Implement sgen_dummy_use for your compiler"
 #endif
 }
-
-
-typedef struct {
-	int generation;
-	const char *reason;
-	gboolean is_overflow;
-	SGEN_TV_DECLARE (total_time);
-	SGEN_TV_DECLARE (stw_time);
-	SGEN_TV_DECLARE (bridge_time);
-} GGTimingInfo;
 
 #endif /* HAVE_SGEN_GC */
 

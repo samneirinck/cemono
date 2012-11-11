@@ -22,8 +22,13 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#ifdef HAVE_SGEN_GC
+
 #include "config.h"
+#include "sgen-gc.h"
 #include "sgen-protocol.h"
+#include "sgen-memory-governor.h"
+#include "utils/mono-mmap.h"
 
 #ifdef SGEN_BINARY_PROTOCOL
 
@@ -66,7 +71,7 @@ binary_protocol_flush_buffers_rec (BinaryProtocolBuffer *buffer)
 	g_assert (buffer->index > 0);
 	fwrite (buffer->buffer, 1, buffer->index, binary_protocol_file);
 
-	sgen_free_os_memory (buffer, sizeof (BinaryProtocolBuffer));
+	sgen_free_os_memory (buffer, sizeof (BinaryProtocolBuffer), SGEN_ALLOC_INTERNAL);
 }
 
 void
@@ -94,12 +99,12 @@ binary_protocol_get_buffer (int length)
 	if (buffer && buffer->index + length <= BINARY_PROTOCOL_BUFFER_SIZE)
 		return buffer;
 
-	new_buffer = sgen_alloc_os_memory (sizeof (BinaryProtocolBuffer), TRUE);
+	new_buffer = sgen_alloc_os_memory (sizeof (BinaryProtocolBuffer), SGEN_ALLOC_INTERNAL | SGEN_ALLOC_ACTIVATE, "debugging memory");
 	new_buffer->next = buffer;
 	new_buffer->index = 0;
 
 	if (InterlockedCompareExchangePointer ((void**)&binary_protocol_buffers, new_buffer, buffer) != buffer) {
-		sgen_free_os_memory (new_buffer, sizeof (BinaryProtocolBuffer));
+		sgen_free_os_memory (new_buffer, sizeof (BinaryProtocolBuffer), SGEN_ALLOC_INTERNAL);
 		goto retry;
 	}
 
@@ -148,9 +153,9 @@ protocol_entry (unsigned char type, gpointer data, int size)
 }
 
 void
-binary_protocol_collection (int generation)
+binary_protocol_collection (int index, int generation)
 {
-	SGenProtocolCollection entry = { generation };
+	SGenProtocolCollection entry = { index, generation };
 	binary_protocol_flush_buffers (FALSE);
 	protocol_entry (SGEN_PROTOCOL_COLLECTION, &entry, sizeof (SGenProtocolCollection));
 }
@@ -233,11 +238,17 @@ binary_protocol_empty (gpointer start, int size)
 }
 
 void
+binary_protocol_thread_suspend (gpointer thread, gpointer stopped_ip)
+{
+	SGenProtocolThreadSuspend entry = { thread, stopped_ip };
+	protocol_entry (SGEN_PROTOCOL_THREAD_SUSPEND, &entry, sizeof (SGenProtocolThreadSuspend));
+}
+
+void
 binary_protocol_thread_restart (gpointer thread)
 {
 	SGenProtocolThreadRestart entry = { thread };
 	protocol_entry (SGEN_PROTOCOL_THREAD_RESTART, &entry, sizeof (SGenProtocolThreadRestart));
-
 }
 
 void
@@ -265,3 +276,5 @@ binary_protocol_missing_remset (gpointer obj, gpointer obj_vtable, int offset, g
 }
 
 #endif
+
+#endif /* HAVE_SGEN_GC */

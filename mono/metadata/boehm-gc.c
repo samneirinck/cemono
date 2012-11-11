@@ -206,16 +206,16 @@ mono_gc_base_init (void)
 void
 mono_gc_collect (int generation)
 {
-	MONO_PROBE_GC_BEGIN (generation);
+	MONO_GC_BEGIN (generation);
 
 	mono_perfcounters->gc_induced++;
 	GC_gcollect ();
 	
-	MONO_PROBE_GC_END (generation);
+	MONO_GC_END (generation);
 #if defined(ENABLE_DTRACE) && defined(__sun__)
 	/* This works around a dtrace -G problem on Solaris.
 	   Limit its actual use to when the probe is enabled. */
-	if (MONO_PROBE_GC_END_ENABLED ())
+	if (MONO_GC_END_ENABLED ())
 		sleep(0);
 #endif
 }
@@ -412,7 +412,7 @@ on_gc_notification (GCEventType event)
 	if (e == MONO_GC_EVENT_START) {
 		if (mono_perfcounters)
 			mono_perfcounters->gc_collections0++;
-		mono_stats.major_gc_count ++;
+		gc_stats.major_gc_count ++;
 		gc_start_time = mono_100ns_ticks ();
 	} else if (e == MONO_GC_EVENT_END) {
 		if (mono_perfcounters) {
@@ -423,7 +423,7 @@ on_gc_notification (GCEventType event)
 			mono_perfcounters->gc_reserved_bytes = heap_size;
 			mono_perfcounters->gc_gen0size = heap_size;
 		}
-		mono_stats.major_gc_time_usecs += (mono_100ns_ticks () - gc_start_time) / 10;
+		gc_stats.major_gc_time_usecs += (mono_100ns_ticks () - gc_start_time) / 10;
 		mono_trace_message (MONO_TRACE_GC, "gc took %d usecs", (mono_100ns_ticks () - gc_start_time) / 10);
 	}
 	mono_profiler_gc_event (e, 0);

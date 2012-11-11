@@ -66,7 +66,7 @@ else
 noinst_LTLIBRARIES = $(boehm_libraries) $(sgen_libraries) $(moonlight_libraries)
 endif
 
-INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/mono $(LIBGC_CPPFLAGS) $(GLIB_CFLAGS) -DMONO_BINDIR=\"$(bindir)/\" -DMONO_ASSEMBLIES=\"$(assembliesdir)\" -DMONO_CFG_DIR=\"$(confdir)\"
+AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/mono $(LIBGC_CPPFLAGS) $(GLIB_CFLAGS) -DMONO_BINDIR=\"$(bindir)/\" -DMONO_ASSEMBLIES=\"$(assembliesdir)\" -DMONO_CFG_DIR=\"$(confdir)\"
 
 #
 # Make sure any prefix changes are updated in the binaries too.
@@ -86,16 +86,11 @@ libmonoruntime_static_la_LIBADD = $(bundle_obj) $(libmonoruntime_la_LIBADD)
 null_sources = \
 	console-null.c
 
-sgen_sources = \
-	sgen-fin-weak-hash.c
-
-libmonoruntime_la_SOURCES = \
+common_sources = \
 	$(platform_sources)	\
-	appdomain.c		\
 	assembly.c		\
 	attach.h		\
 	attach.c		\
-	boehm-gc.c		\
 	char-conversions.h	\
 	cil-coff.h		\
 	class.c			\
@@ -112,7 +107,6 @@ libmonoruntime_la_SOURCES = \
 	debug-mono-symfile.c	\
 	decimal.c		\
 	decimal.h		\
-	domain.c		\
 	domain-internals.h	\
 	environment.c		\
 	environment.h		\
@@ -122,7 +116,6 @@ libmonoruntime_la_SOURCES = \
 	file-io.h		\
 	filewatcher.c		\
 	filewatcher.h		\
-	gc.c			\
 	gc-internal.h		\
 	icall.c			\
 	icall-def.h		\
@@ -153,7 +146,6 @@ libmonoruntime_la_SOURCES = \
 	mono-debug-debugger.c	\
 	mono-endian.c		\
 	mono-endian.h		\
-	mono-hash.c		\
 	mono-hash.h		\
 	mono-mlist.c		\
 	mono-mlist.h		\
@@ -163,13 +155,11 @@ libmonoruntime_la_SOURCES = \
 	mono-ptr-array.h	\
 	mono-wsq.c		\
 	mono-wsq.h		\
-	monitor.c		\
 	monitor.h		\
 	nacl-stub.c		\
 	normalization-tables.h	\
 	null-gc.c		\
 	number-formatter.h	\
-	object.c		\
 	object-internals.h	\
 	opcodes.c		\
 	socket-io.c		\
@@ -181,13 +171,40 @@ libmonoruntime_la_SOURCES = \
 	rand.h			\
 	rand.c			\
 	runtime.c		\
-	reflection.c		\
 	security.c		\
 	security.h		\
 	security-core-clr.c	\
 	security-core-clr.h	\
 	security-manager.c	\
 	security-manager.h	\
+	string-icalls.c 	\
+	string-icalls.h 	\
+	sysmath.h		\
+	sysmath.c		\
+	tabledefs.h 		\
+	threads.c		\
+	threads-types.h		\
+	threadpool.c		\
+	threadpool.h		\
+	threadpool-internals.h	\
+	verify.c		\
+	verify-internals.h	\
+	wrapper-types.h
+
+# These source files have compile time dependencies on GC code
+gc_dependent_sources = \
+	appdomain.c	\
+	domain.c	\
+	gc.c		\
+	monitor.c	\
+	mono-hash.c	\
+	object.c	\
+	reflection.c
+
+boehm_sources = \
+	boehm-gc.c
+
+sgen_sources = \
 	sgen-os-posix.c		\
 	sgen-os-mach.c		\
 	sgen-os-win32.c		\
@@ -228,6 +245,7 @@ libmonoruntime_la_SOURCES = \
 	sgen-scan-object.h	\
 	sgen-nursery-allocator.c	\
 	sgen-hash-table.c	\
+	sgen-hash-table.h	\
 	sgen-descriptor.c		\
 	sgen-descriptor.h		\
 	sgen-alloc.c		\
@@ -236,20 +254,10 @@ libmonoruntime_la_SOURCES = \
 	sgen-split-nursery.c	\
 	sgen-memory-governor.c	\
 	sgen-memory-governor.h	\
-	string-icalls.c 	\
-	string-icalls.h 	\
-	sysmath.h		\
-	sysmath.c		\
-	tabledefs.h 		\
-	threads.c		\
-	threads-types.h		\
-	threadpool.c		\
-	threadpool.h		\
-	threadpool-internals.h	\
-	verify.c		\
-	verify-internals.h	\
-	wrapper-types.h
+	sgen-stw.c				\
+	sgen-fin-weak-hash.c
 
+libmonoruntime_la_SOURCES = $(common_sources) $(gc_dependent_sources) $(sgen_sources) $(boehm_sources)
 libmonoruntime_la_CFLAGS = $(BOEHM_DEFINES)
 
 if MOONLIGHT
@@ -326,6 +334,6 @@ endif
 endif
 endif
 
-EXTRA_DIST = make-bundle.pl sample-bundle $(win32_sources) $(unix_sources) $(null_sources) $(sgen_sources) runtime.h \
+EXTRA_DIST = make-bundle.pl sample-bundle $(win32_sources) $(unix_sources) $(null_sources) runtime.h \
 		tpool-poll.c tpool-epoll.c tpool-kqueue.c
 

@@ -69,6 +69,8 @@ enum {
 
 #undef OPDEF
 
+static gboolean use_managed_allocator = TRUE;
+
 #ifdef HEAVY_STATISTICS
 static long long stat_objects_alloced = 0;
 static long long stat_bytes_alloced = 0;
@@ -117,6 +119,8 @@ alloc_degraded (MonoVTable *vtable, size_t size, gboolean for_mature)
 	static int last_major_gc_warned = -1;
 	static int num_degraded = 0;
 
+	void *p;
+
 	if (!for_mature) {
 		if (last_major_gc_warned < stat_major_gcs) {
 			++num_degraded;
@@ -127,11 +131,23 @@ alloc_degraded (MonoVTable *vtable, size_t size, gboolean for_mature)
 			last_major_gc_warned = stat_major_gcs;
 		}
 		InterlockedExchangeAdd (&degraded_mode, size);
+		sgen_ensure_free_space (size);
+	} else {
+		if (sgen_need_major_collection (size))
+			sgen_perform_collection (size, GENERATION_OLD, "mature allocation failure");
 	}
 
-	sgen_ensure_free_space (size);
 
-	return major_collector.alloc_degraded (vtable, size);
+	p = major_collector.alloc_degraded (vtable, size);
+
+	if (for_mature) {
+		MONO_GC_MAJOR_OBJ_ALLOC_MATURE ((mword)p, size, vtable->klass->name_space, vtable->klass->name);
+	} else {
+		binary_protocol_alloc_degraded (p, vtable, size);
+		MONO_GC_MAJOR_OBJ_ALLOC_DEGRADED ((mword)p, size, vtable->klass->name_space, vtable->klass->name);
+	}
+
+	return p;
 }
 
 /*
@@ -209,6 +225,8 @@ mono_gc_alloc_obj_nolock (MonoVTable *vtable, size_t size)
 
 			DEBUG (6, fprintf (gc_debug_file, "Allocated object %p, vtable: %p (%s), size: %zd\n", p, vtable, vtable->klass->name, size));
 			binary_protocol_alloc (p , vtable, size);
+			if (G_UNLIKELY (MONO_GC_NURSERY_OBJ_ALLOC_ENABLED ()))
+				MONO_GC_NURSERY_OBJ_ALLOC ((mword)p, size, vtable->klass->name_space, vtable->klass->name);
 			g_assert (*p == NULL);
 			mono_atomic_store_seq (p, vtable);
 
@@ -239,11 +257,8 @@ mono_gc_alloc_obj_nolock (MonoVTable *vtable, size_t size)
 			/* when running in degraded mode, we continue allocing that way
 			 * for a while, to decrease the number of useless nursery collections.
 			 */
-			if (degraded_mode && degraded_mode < DEFAULT_NURSERY_SIZE) {
-				p = alloc_degraded (vtable, size, FALSE);
-				binary_protocol_alloc_degraded (p, vtable, size);
-				return p;
-			}
+			if (degraded_mode && degraded_mode < DEFAULT_NURSERY_SIZE)
+				return alloc_degraded (vtable, size, FALSE);
 
 			available_in_tlab = TLAB_REAL_END - TLAB_NEXT;
 			if (size > tlab_size || available_in_tlab > SGEN_MAX_NURSERY_WASTE) {
@@ -252,13 +267,10 @@ mono_gc_alloc_obj_nolock (MonoVTable *vtable, size_t size)
 					p = sgen_nursery_alloc (size);
 					if (!p) {
 						sgen_ensure_free_space (size);
-						if (degraded_mode) {
-							p = alloc_degraded (vtable, size, FALSE);
-							binary_protocol_alloc_degraded (p, vtable, size);
-							return p;
-						} else {
+						if (degraded_mode)
+							return alloc_degraded (vtable, size, FALSE);
+						else
 							p = sgen_nursery_alloc (size);
-						}
 					}
 				} while (!p);
 				if (!p) {
@@ -279,13 +291,10 @@ mono_gc_alloc_obj_nolock (MonoVTable *vtable, size_t size)
 					p = sgen_nursery_alloc_range (tlab_size, size, &alloc_size);
 					if (!p) {
 						sgen_ensure_free_space (tlab_size);
-						if (degraded_mode) {
-							p = alloc_degraded (vtable, size, FALSE);
-							binary_protocol_alloc_degraded (p, vtable, size);
-							return p;
-						} else {
+						if (degraded_mode)
+							return alloc_degraded (vtable, size, FALSE);
+						else
 							p = sgen_nursery_alloc_range (tlab_size, size, &alloc_size);
-						}		
 					}
 				} while (!p);
 					
@@ -323,6 +332,12 @@ mono_gc_alloc_obj_nolock (MonoVTable *vtable, size_t size)
 	if (G_LIKELY (p)) {
 		DEBUG (6, fprintf (gc_debug_file, "Allocated object %p, vtable: %p (%s), size: %zd\n", p, vtable, vtable->klass->name, size));
 		binary_protocol_alloc (p, vtable, size);
+		if (G_UNLIKELY (MONO_GC_MAJOR_OBJ_ALLOC_LARGE_ENABLED ()|| MONO_GC_NURSERY_OBJ_ALLOC_ENABLED ())) {
+			if (size > SGEN_MAX_SMALL_OBJ_SIZE)
+				MONO_GC_MAJOR_OBJ_ALLOC_LARGE ((mword)p, size, vtable->klass->name_space, vtable->klass->name);
+			else
+				MONO_GC_NURSERY_OBJ_ALLOC ((mword)p, size, vtable->klass->name_space, vtable->klass->name);
+		}
 		mono_atomic_store_seq (p, vtable);
 	}
 
@@ -399,6 +414,8 @@ mono_gc_try_alloc_obj_nolock (MonoVTable *vtable, size_t size)
 
 			if (nursery_clear_policy == CLEAR_AT_TLAB_CREATION)
 				memset (new_next, 0, alloc_size);
+
+			MONO_GC_NURSERY_TLAB_ALLOC ((mword)new_next, alloc_size);
 		}
 	}
 
@@ -407,6 +424,8 @@ mono_gc_try_alloc_obj_nolock (MonoVTable *vtable, size_t size)
 
 	DEBUG (6, fprintf (gc_debug_file, "Allocated object %p, vtable: %p (%s), size: %zd\n", p, vtable, vtable->klass->name, size));
 	binary_protocol_alloc (p, vtable, size);
+	if (G_UNLIKELY (MONO_GC_NURSERY_OBJ_ALLOC_ENABLED ()))
+		MONO_GC_NURSERY_OBJ_ALLOC ((mword)p, size, vtable->klass->name_space, vtable->klass->name);
 	g_assert (*p == NULL); /* FIXME disable this in non debug builds */
 
 	mono_atomic_store_seq (p, vtable);
@@ -560,6 +579,10 @@ mono_gc_alloc_pinned_obj (MonoVTable *vtable, size_t size)
 	}
 	if (G_LIKELY (p)) {
 		DEBUG (6, fprintf (gc_debug_file, "Allocated pinned object %p, vtable: %p (%s), size: %zd\n", p, vtable, vtable->klass->name, size));
+		if (size > SGEN_MAX_SMALL_OBJ_SIZE)
+			MONO_GC_MAJOR_OBJ_ALLOC_LARGE ((mword)p, size, vtable->klass->name_space, vtable->klass->name);
+		else
+			MONO_GC_MAJOR_OBJ_ALLOC_PINNED ((mword)p, size, vtable->klass->name_space, vtable->klass->name);
 		binary_protocol_alloc_pinned (p, vtable, size);
 		mono_atomic_store_seq (p, vtable);
 	}
@@ -965,11 +988,20 @@ mono_gc_get_managed_array_allocator (MonoVTable *vtable, int rank)
 #endif
 }
 
+void
+sgen_set_use_managed_allocator (gboolean flag)
+{
+	use_managed_allocator = flag;
+}
+
 MonoMethod*
 mono_gc_get_managed_allocator_by_type (int atype)
 {
 #ifdef MANAGED_ALLOCATION
 	MonoMethod *res;
+
+	if (!use_managed_allocator)
+		return NULL;
 
 	if (!mono_runtime_has_tls_get ())
 		return NULL;
@@ -1001,6 +1033,17 @@ sgen_is_managed_allocator (MonoMethod *method)
 			return TRUE;
 	return FALSE;
 }
+
+gboolean
+sgen_has_managed_allocator (void)
+{
+	int i;
+
+	for (i = 0; i < ATYPE_NUM; ++i)
+		if (alloc_method_cache [i])
+			return TRUE;
+	return FALSE;
+}	
 
 #ifdef HEAVY_STATISTICS
 void

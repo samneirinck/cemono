@@ -101,7 +101,7 @@ struct _MSBlockInfo {
 };
 
 #ifdef FIXED_HEAP
-static int ms_heap_num_blocks = MS_DEFAULT_HEAP_NUM_BLOCKS;
+static mword ms_heap_num_blocks = MS_DEFAULT_HEAP_NUM_BLOCKS;
 
 static char *ms_heap_start;
 static char *ms_heap_end;
@@ -304,18 +304,18 @@ major_alloc_heap (mword nursery_size, mword nursery_align, int the_nursery_bits)
 	char *nursery_start;
 	mword major_heap_size = ms_heap_num_blocks * MS_BLOCK_SIZE;
 	mword alloc_size = nursery_size + major_heap_size;
-	int i;
+	mword i;
 
 	g_assert (ms_heap_num_blocks > 0);
 	g_assert (nursery_size % MS_BLOCK_SIZE == 0);
 	if (nursery_align)
 		g_assert (nursery_align % MS_BLOCK_SIZE == 0);
 
-	nursery_start = sgen_alloc_os_memory_aligned (alloc_size, nursery_align ? nursery_align : MS_BLOCK_SIZE, TRUE);
+	nursery_start = sgen_alloc_os_memory_aligned (alloc_size, nursery_align ? nursery_align : MS_BLOCK_SIZE, SGEN_ALLOC_HEAP | SGEN_ALLOC_ACTIVATE, "heap");
 	ms_heap_start = nursery_start + nursery_size;
 	ms_heap_end = ms_heap_start + major_heap_size;
 
-	block_infos = sgen_alloc_internal_dynamic (sizeof (MSBlockInfo) * ms_heap_num_blocks, INTERNAL_MEM_MS_BLOCK_INFO);
+	block_infos = sgen_alloc_internal_dynamic (sizeof (MSBlockInfo) * ms_heap_num_blocks, INTERNAL_MEM_MS_BLOCK_INFO, TRUE);
 
 	for (i = 0; i < ms_heap_num_blocks; ++i) {
 		block_infos [i].block = ms_heap_start + i * MS_BLOCK_SIZE;
@@ -336,9 +336,9 @@ major_alloc_heap (mword nursery_size, mword nursery_align, int the_nursery_bits)
 {
 	char *start;
 	if (nursery_align)
-		start = sgen_alloc_os_memory_aligned (nursery_size, nursery_align, TRUE);
+		start = sgen_alloc_os_memory_aligned (nursery_size, nursery_align, SGEN_ALLOC_HEAP | SGEN_ALLOC_ACTIVATE, "nursery");
 	else
-		start = sgen_alloc_os_memory (nursery_size, TRUE);
+		start = sgen_alloc_os_memory (nursery_size, SGEN_ALLOC_HEAP | SGEN_ALLOC_ACTIVATE, "nursery");
 
 	return start;
 }
@@ -389,7 +389,7 @@ ms_get_empty_block (void)
 
  retry:
 	if (!empty_blocks) {
-		p = sgen_alloc_os_memory_aligned (MS_BLOCK_SIZE * MS_BLOCK_ALLOC_NUM, MS_BLOCK_SIZE, TRUE);
+		p = sgen_alloc_os_memory_aligned (MS_BLOCK_SIZE * MS_BLOCK_ALLOC_NUM, MS_BLOCK_SIZE, SGEN_ALLOC_HEAP | SGEN_ALLOC_ACTIVATE, "major heap section");
 
 		for (i = 0; i < MS_BLOCK_ALLOC_NUM; ++i) {
 			block = p;
@@ -1370,6 +1370,10 @@ major_copy_or_mark_object (void **ptr, SgenGrayQueue *queue)
 			if (SGEN_OBJECT_IS_PINNED (obj))
 				return;
 			binary_protocol_pin (obj, (gpointer)SGEN_LOAD_VTABLE (obj), sgen_safe_object_get_size ((MonoObject*)obj));
+			if (G_UNLIKELY (MONO_GC_OBJ_PINNED_ENABLED ())) {
+				MonoVTable *vt = (MonoVTable*)SGEN_LOAD_VTABLE (obj);
+				MONO_GC_OBJ_PINNED ((mword)obj, sgen_safe_object_get_size (obj), vt->klass->name_space, vt->klass->name, GENERATION_OLD);
+			}
 			SGEN_PIN_OBJECT (obj);
 			/* FIXME: only enqueue if object has references */
 			GRAY_OBJECT_ENQUEUE (queue, obj);
@@ -1456,7 +1460,14 @@ ms_sweep (void)
 			} else {
 				/* an unmarked object */
 				if (MS_OBJ_ALLOCED (obj, block)) {
+					/*
+					 * FIXME: Merge consecutive
+					 * slots for lower reporting
+					 * overhead.  Maybe memset
+					 * will also benefit?
+					 */
 					binary_protocol_empty (obj, block->obj_size);
+					MONO_GC_MAJOR_SWEPT ((mword)obj, block->obj_size);
 					memset (obj, 0, block->obj_size);
 				}
 				*(void**)obj = block->free_list;
@@ -1586,7 +1597,7 @@ count_pinned_callback (char *obj, size_t size, void *data)
 		++count_pinned_nonref;
 }
 
-static void __attribute__ ((unused))
+static G_GNUC_UNUSED void
 count_ref_nonref_objs (void)
 {
 	int total;
@@ -1697,7 +1708,7 @@ major_have_computer_minor_collection_allowance (void)
 
 	while (num_empty_blocks > section_reserve) {
 		void *next = *(void**)empty_blocks;
-		sgen_free_os_memory (empty_blocks, MS_BLOCK_SIZE);
+		sgen_free_os_memory (empty_blocks, MS_BLOCK_SIZE, SGEN_ALLOC_HEAP);
 		empty_blocks = next;
 		/*
 		 * Needs not be atomic because this is running
@@ -1987,7 +1998,7 @@ alloc_free_block_lists (MSBlockInfo ***lists)
 {
 	int i;
 	for (i = 0; i < MS_BLOCK_TYPE_MAX; ++i)
-		lists [i] = sgen_alloc_internal_dynamic (sizeof (MSBlockInfo*) * num_block_obj_sizes, INTERNAL_MEM_MS_TABLES);
+		lists [i] = sgen_alloc_internal_dynamic (sizeof (MSBlockInfo*) * num_block_obj_sizes, INTERNAL_MEM_MS_TABLES, TRUE);
 }
 
 #ifdef SGEN_PARALLEL_MARK
@@ -2069,10 +2080,10 @@ sgen_marksweep_init
 #endif
 
 	num_block_obj_sizes = ms_calculate_block_obj_sizes (MS_BLOCK_OBJ_SIZE_FACTOR, NULL);
-	block_obj_sizes = sgen_alloc_internal_dynamic (sizeof (int) * num_block_obj_sizes, INTERNAL_MEM_MS_TABLES);
+	block_obj_sizes = sgen_alloc_internal_dynamic (sizeof (int) * num_block_obj_sizes, INTERNAL_MEM_MS_TABLES, TRUE);
 	ms_calculate_block_obj_sizes (MS_BLOCK_OBJ_SIZE_FACTOR, block_obj_sizes);
 
-	evacuate_block_obj_sizes = sgen_alloc_internal_dynamic (sizeof (gboolean) * num_block_obj_sizes, INTERNAL_MEM_MS_TABLES);
+	evacuate_block_obj_sizes = sgen_alloc_internal_dynamic (sizeof (gboolean) * num_block_obj_sizes, INTERNAL_MEM_MS_TABLES, TRUE);
 	for (i = 0; i < num_block_obj_sizes; ++i)
 		evacuate_block_obj_sizes [i] = FALSE;
 

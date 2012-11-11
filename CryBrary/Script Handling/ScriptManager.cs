@@ -87,8 +87,8 @@ namespace CryEngine.Initialization
                         if (scriptInstance.ScriptId > LastScriptId)
                             LastScriptId = scriptInstance.ScriptId + 1;
 
-                        if (scriptInstance.IMonoObjectHandleRef.Handle != IntPtr.Zero)
-                            NativeMethods.ScriptSystem.UpdateScriptInstance(scriptInstance.IMonoObjectHandleRef.Handle, scriptInstance); // pass IMonoObject and scriptInstance to C++, which in turn updates the IMonoObject with the new scriptInstance.
+                        //if (scriptInstance.IMonoObjectHandleRef.Handle != IntPtr.Zero)
+                            //NativeMethods.ScriptSystem.UpdateScriptInstance(scriptInstance.IMonoObjectHandleRef.Handle, scriptInstance); // pass IMonoObject and scriptInstance to C++, which in turn updates the IMonoObject with the new scriptInstance.
                     });
                 }
             }

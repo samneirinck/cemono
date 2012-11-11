@@ -40,6 +40,7 @@
 #include "utils/mono-counters.h"
 #include "utils/mono-mmap.h"
 #include "utils/mono-logger-internal.h"
+#include "utils/dtrace.h"
 
 #define MIN_MINOR_COLLECTION_ALLOWANCE	((mword)(DEFAULT_NURSERY_SIZE * default_allowance_nursery_size_ratio))
 
@@ -287,26 +288,51 @@ prot_flags_for_activate (int activate)
 	return prot_flags | MONO_MMAP_PRIVATE | MONO_MMAP_ANON;
 }
 
+void
+sgen_assert_memory_alloc (void *ptr, const char *assert_description)
+{
+	if (ptr || !assert_description)
+		return;
+	fprintf (stderr, "Error: Garbage collector could not allocate memory for %s.\n", assert_description);
+	exit (1);
+}
+
 /*
  * Allocate a big chunk of memory from the OS (usually 64KB to several megabytes).
  * This must not require any lock.
  */
 void*
-sgen_alloc_os_memory (size_t size, int activate)
+sgen_alloc_os_memory (size_t size, SgenAllocFlags flags, const char *assert_description)
 {
-	void *ptr = mono_valloc (0, size, prot_flags_for_activate (activate));
-	if (ptr)
+	void *ptr;
+
+	g_assert (!(flags & ~(SGEN_ALLOC_HEAP | SGEN_ALLOC_ACTIVATE)));
+
+	ptr = mono_valloc (0, size, prot_flags_for_activate (flags & SGEN_ALLOC_ACTIVATE));
+	sgen_assert_memory_alloc (ptr, assert_description);
+	if (ptr) {
 		SGEN_ATOMIC_ADD_P (total_alloc, size);
+		if (flags & SGEN_ALLOC_HEAP)
+			MONO_GC_HEAP_ALLOC ((mword)ptr, size);
+	}
 	return ptr;
 }
 
 /* size must be a power of 2 */
 void*
-sgen_alloc_os_memory_aligned (size_t size, mword alignment, gboolean activate)
+sgen_alloc_os_memory_aligned (size_t size, mword alignment, SgenAllocFlags flags, const char *assert_description)
 {
-	void *ptr = mono_valloc_aligned (size, alignment, prot_flags_for_activate (activate));
-	if (ptr)
+	void *ptr;
+
+	g_assert (!(flags & ~(SGEN_ALLOC_HEAP | SGEN_ALLOC_ACTIVATE)));
+
+	ptr = mono_valloc_aligned (size, alignment, prot_flags_for_activate (flags & SGEN_ALLOC_ACTIVATE));
+	sgen_assert_memory_alloc (ptr, assert_description);
+	if (ptr) {
 		SGEN_ATOMIC_ADD_P (total_alloc, size);
+		if (flags & SGEN_ALLOC_HEAP)
+			MONO_GC_HEAP_ALLOC ((mword)ptr, size);
+	}
 	return ptr;
 }
 
@@ -314,10 +340,14 @@ sgen_alloc_os_memory_aligned (size_t size, mword alignment, gboolean activate)
  * Free the memory returned by sgen_alloc_os_memory (), returning it to the OS.
  */
 void
-sgen_free_os_memory (void *addr, size_t size)
+sgen_free_os_memory (void *addr, size_t size, SgenAllocFlags flags)
 {
+	g_assert (!(flags & ~SGEN_ALLOC_HEAP));
+
 	mono_vfree (addr, size);
 	SGEN_ATOMIC_ADD_P (total_alloc, -size);
+	if (flags & SGEN_ALLOC_HEAP)
+		MONO_GC_HEAP_FREE ((mword)addr, size);
 }
 
 int64_t

@@ -547,7 +547,10 @@ TEST_IL_SRC=			\
 	bug-515884.il	\
 	bug-633291.il	\
 	delegate-with-null-target.il	\
-	bug-318677.il
+	bug-318677.il	\
+	gsharing-valuetype-layout.il	\
+	invalid_generic_instantiation.il
+
 
 # pre-requisite test sources: files that are not test themselves
 # but that need to be compiled
@@ -1035,7 +1038,7 @@ test-oom: $(OOM_TESTS)
 
 noinst_LTLIBRARIES = libtest.la
 
-INCLUDES = $(GLIB_CFLAGS) $(GMODULE_CFLAGS)
+AM_CPPFLAGS = $(GLIB_CFLAGS) $(GMODULE_CFLAGS)
 
 if HOST_WIN32
 # gcc-3.4.4 emits incorrect code when making indirect calls to stdcall functions using a tail call

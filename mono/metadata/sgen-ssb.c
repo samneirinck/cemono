@@ -116,7 +116,7 @@ evacuate_remset_buffer (void)
 static RememberedSet*
 sgen_alloc_remset (int size, gpointer id, gboolean global)
 {
-	RememberedSet* res = sgen_alloc_internal_dynamic (sizeof (RememberedSet) + (size * sizeof (gpointer)), INTERNAL_MEM_REMSET);
+	RememberedSet* res = sgen_alloc_internal_dynamic (sizeof (RememberedSet) + (size * sizeof (gpointer)), INTERNAL_MEM_REMSET, TRUE);
 	res->store_next = res->data;
 	res->end_set = res->data + size;
 	res->next = NULL;
@@ -365,7 +365,7 @@ remset_stats (void)
 	for (remset = global_remset; remset; remset = remset->next)
 		size += remset->store_next - remset->data;
 
-	bumper = addresses = sgen_alloc_internal_dynamic (sizeof (mword) * size, INTERNAL_MEM_STATISTICS);
+	bumper = addresses = sgen_alloc_internal_dynamic (sizeof (mword) * size, INTERNAL_MEM_STATISTICS, TRUE);
 
 	FOREACH_THREAD (info) {
 		for (remset = info->remset; remset; remset = remset->next)
@@ -419,7 +419,7 @@ handle_remset (mword *p, void *start_nursery, void *end_nursery, gboolean global
 			sgen_get_current_object_ops ()->copy_or_mark_object (ptr, queue);
 			DEBUG (9, fprintf (gc_debug_file, "Overwrote remset at %p with %p\n", ptr, *ptr));
 			if (old)
-				binary_protocol_ptr_update (ptr, old, *ptr, (gpointer)LOAD_VTABLE (*ptr), sgen_safe_object_get_size (*ptr));
+				binary_protocol_ptr_update (ptr, old, *ptr, (gpointer)SGEN_LOAD_VTABLE (*ptr), sgen_safe_object_get_size (*ptr));
 			if (!global && *ptr >= start_nursery && *ptr < end_nursery) {
 				/*
 				 * If the object is pinned, each reference to it from nonpinned objects
@@ -752,7 +752,7 @@ sgen_ssb_record_pointer (gpointer ptr)
 		sgen_pin_stats_register_global_remset (obj);
 
 	DEBUG (8, fprintf (gc_debug_file, "Adding global remset for %p\n", ptr));
-	binary_protocol_global_remset (ptr, *(gpointer*)ptr, (gpointer)LOAD_VTABLE (obj));
+	binary_protocol_global_remset (ptr, *(gpointer*)ptr, (gpointer)SGEN_LOAD_VTABLE (obj));
 
 	HEAVY_STAT (++stat_global_remsets_added);
 

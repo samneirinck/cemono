@@ -9,6 +9,7 @@
 #include <mono/metadata/debug-helpers.h>
 #include <mono/metadata/mempool-internals.h>
 #include <mono/utils/mono-tls.h>
+#include <mono/utils/mono-dl.h>
 
 #ifndef __STDC_LIMIT_MACROS
 #define __STDC_LIMIT_MACROS
@@ -640,7 +641,7 @@ static const char*
 simd_op_to_intrins (int opcode)
 {
 	switch (opcode) {
-#if defined(TARGET_X86) || defined(TARGET_AMD64)
+#ifdef MONO_ARCH_SIMD_INTRINSICS
 	case OP_MINPD:
 		return "llvm.x86.sse2.min.pd";
 	case OP_MINPS:
@@ -729,16 +730,6 @@ simd_op_to_intrins (int opcode)
 		return "llvm.x86.sse.rsqrt.ps";
 	case OP_RCPPS:
 		return "llvm.x86.sse.rcp.ps";
-	case OP_PCMPEQB:
-		return "llvm.x86.sse2.pcmpeq.b";
-	case OP_PCMPEQW:
-		return "llvm.x86.sse2.pcmpeq.w";
-	case OP_PCMPEQD:
-		return "llvm.x86.sse2.pcmpeq.d";
-	case OP_PCMPEQQ:
-		return "llvm.x86.sse41.pcmpeqq";
-	case OP_PCMPGTB:
-		return "llvm.x86.sse2.pcmpgt.b";
 	case OP_CVTDQ2PD:
 		return "llvm.x86.sse2.cvtdq2pd";
 	case OP_CVTDQ2PS:
@@ -781,7 +772,7 @@ simd_op_to_intrins (int opcode)
 static LLVMTypeRef
 simd_op_to_llvm_type (int opcode)
 {
-#if defined(TARGET_X86) || defined(TARGET_AMD64)
+#ifdef MONO_ARCH_SIMD_INTRINSICS
 	switch (opcode) {
 	case OP_EXTRACT_R8:
 	case OP_EXPAND_R8:
@@ -2167,6 +2158,10 @@ process_bb (EmitContext *ctx, MonoBasicBlock *bb)
 			 * http://llvm.org/bugs/show_bug.cgi?id=6102
 			 */
 			//LLVM_FAILURE (ctx, "aot+clauses");
+#ifdef TARGET_ARM
+			// test_0_invalid_unbox_arrays () fails
+			LLVM_FAILURE (ctx, "aot+clauses");
+#endif
 		} else {
 			/*
 			 * After the cfg mempool is freed, the type info will point to stale memory,
@@ -3041,7 +3036,7 @@ process_bb (EmitContext *ctx, MonoBasicBlock *bb)
 		}
 
 		case OP_CHECK_THIS:
-			emit_load (ctx, bb, &builder, sizeof (gpointer), convert (ctx, values [ins->sreg1], LLVMPointerType (IntPtrType (), 0)), "", TRUE);
+			emit_load (ctx, bb, &builder, sizeof (gpointer), convert (ctx, lhs, LLVMPointerType (IntPtrType (), 0)), "", TRUE);
 			break;
 		case OP_OUTARG_VTRETADDR:
 			break;
@@ -3278,7 +3273,7 @@ process_bb (EmitContext *ctx, MonoBasicBlock *bb)
 #endif
 		}
 		case OP_TLS_GET: {
-#if defined(TARGET_AMD64) || defined(TARGET_X86)
+#if (defined(TARGET_AMD64) || defined(TARGET_X86)) && defined(__linux__)
 #ifdef TARGET_AMD64
 			// 257 == FS segment register
 			LLVMTypeRef ptrtype = LLVMPointerType (IntPtrType (), 257);
@@ -3433,7 +3428,7 @@ process_bb (EmitContext *ctx, MonoBasicBlock *bb)
 			/* 
 			 * SIMD
 			 */
-#if defined(TARGET_X86) || defined(TARGET_AMD64)
+#ifdef MONO_ARCH_SIMD_INTRINSICS
 		case OP_XZERO: {
 			values [ins->dreg] = LLVMConstNull (type_to_llvm_type (ctx, &ins->klass->byval_arg));
 			break;
@@ -3577,11 +3572,6 @@ process_bb (EmitContext *ctx, MonoBasicBlock *bb)
 		case OP_PSUBW_SAT_UN:
 		case OP_PAVGB_UN:
 		case OP_PAVGW_UN:
-		case OP_PCMPEQB:
-		case OP_PCMPEQW:
-		case OP_PCMPEQD:
-		case OP_PCMPEQQ:
-		case OP_PCMPGTB:
 		case OP_PACKW:
 		case OP_PACKD:
 		case OP_PACKW_UN:
@@ -3594,6 +3584,17 @@ process_bb (EmitContext *ctx, MonoBasicBlock *bb)
 			args [1] = rhs;
 
 			values [ins->dreg] = LLVMBuildCall (builder, LLVMGetNamedFunction (module, simd_op_to_intrins (ins->opcode)), args, 2, dname);
+			break;
+		}
+		case OP_PCMPEQB:
+		case OP_PCMPEQW:
+		case OP_PCMPEQD:
+		case OP_PCMPEQQ: {
+			values [ins->dreg] = LLVMBuildSExt (builder, LLVMBuildICmp (builder, LLVMIntEQ, lhs, rhs, ""), LLVMTypeOf (lhs), "");
+			break;
+		}
+		case OP_PCMPGTB: {
+			values [ins->dreg] = LLVMBuildSExt (builder, LLVMBuildICmp (builder, LLVMIntSGT, lhs, rhs, ""), LLVMTypeOf (lhs), "");
 			break;
 		}
 		case OP_EXTRACT_R8:
@@ -3754,7 +3755,7 @@ process_bb (EmitContext *ctx, MonoBasicBlock *bb)
 		case OP_PSHUFLEW_LOW:
 		case OP_PSHUFLEW_HIGH: {
 			int mask [16];
-			LLVMValueRef v1 = NULL, v2 = NULL, mask_values [4];
+			LLVMValueRef v1 = NULL, v2 = NULL, mask_values [16];
 			int i, mask_size = 0;
 			int imask = ins->inst_c0;
 	
@@ -4461,7 +4462,9 @@ mono_llvm_emit_method (MonoCompile *cfg)
 			if (ctx->unreachable [node->in_bb->block_num])
 				continue;
 
-			g_assert (values [sreg1]);
+			if (!values [sreg1])
+				/* Can happen with values in EH clauses */
+				LLVM_FAILURE (ctx, "incoming phi sreg1");
 
 			if (phi->opcode == OP_VPHI) {
 				g_assert (LLVMTypeOf (ctx->addresses [sreg1]) == LLVMTypeOf (values [phi->dreg]));
@@ -4737,6 +4740,17 @@ exception_cb (void *data)
 	g_free (type_info);
 }
 
+static char*
+dlsym_cb (const char *name, void **symbol)
+{
+	MonoDl *current;
+
+	current = mono_dl_open (NULL, 0, NULL);
+	g_assert (current);
+
+	return mono_dl_symbol (current, name, symbol);
+}
+
 static inline void
 AddFunc (LLVMModuleRef module, const char *name, LLVMTypeRef ret_type, LLVMTypeRef *param_types, int nparams)
 {
@@ -4849,7 +4863,6 @@ add_intrinsics (LLVMModuleRef module)
 		arg_types [1] = ret_type;
 		AddFunc (module, "llvm.x86.sse41.pminud", ret_type, arg_types, 2);
 		AddFunc (module, "llvm.x86.sse41.pmaxud", ret_type, arg_types, 2);
-		AddFunc (module, "llvm.x86.sse2.pcmpeq.d", ret_type, arg_types, 2);
 
 		ret_type = type_to_simd_type (MONO_TYPE_I2);
 		arg_types [0] = ret_type;
@@ -4857,7 +4870,6 @@ add_intrinsics (LLVMModuleRef module)
 		AddFunc (module, "llvm.x86.sse41.pminuw", ret_type, arg_types, 2);
 		AddFunc (module, "llvm.x86.sse2.pmins.w", ret_type, arg_types, 2);
 		AddFunc (module, "llvm.x86.sse41.pmaxuw", ret_type, arg_types, 2);
-		AddFunc (module, "llvm.x86.sse2.pcmpeq.w", ret_type, arg_types, 2);
 		AddFunc (module, "llvm.x86.sse2.padds.w", ret_type, arg_types, 2);
 		AddFunc (module, "llvm.x86.sse2.psubs.w", ret_type, arg_types, 2);
 		AddFunc (module, "llvm.x86.sse2.paddus.w", ret_type, arg_types, 2);
@@ -4871,18 +4883,11 @@ add_intrinsics (LLVMModuleRef module)
 		arg_types [1] = ret_type;
 		AddFunc (module, "llvm.x86.sse2.pminu.b", ret_type, arg_types, 2);
 		AddFunc (module, "llvm.x86.sse2.pmaxu.b", ret_type, arg_types, 2);
-		AddFunc (module, "llvm.x86.sse2.pcmpeq.b", ret_type, arg_types, 2);
-		AddFunc (module, "llvm.x86.sse2.pcmpgt.b", ret_type, arg_types, 2);
 		AddFunc (module, "llvm.x86.sse2.padds.b", ret_type, arg_types, 2);
 		AddFunc (module, "llvm.x86.sse2.psubs.b", ret_type, arg_types, 2);
 		AddFunc (module, "llvm.x86.sse2.paddus.b", ret_type, arg_types, 2);
 		AddFunc (module, "llvm.x86.sse2.psubus.b", ret_type, arg_types, 2);
 		AddFunc (module, "llvm.x86.sse2.pavg.b", ret_type, arg_types, 2);
-
-		ret_type = type_to_simd_type (MONO_TYPE_I8);
-		arg_types [0] = ret_type;
-		arg_types [1] = ret_type;
-		AddFunc (module, "llvm.x86.sse41.pcmpeqq", ret_type, arg_types, 2);
 
 		ret_type = type_to_simd_type (MONO_TYPE_R8);
 		arg_types [0] = ret_type;
@@ -5040,7 +5045,7 @@ init_jit_module (void)
 
 	jit_module.module = LLVMModuleCreateWithName ("mono");
 
-	ee = mono_llvm_create_ee (LLVMCreateModuleProviderForExistingModule (jit_module.module), alloc_cb, emitted_cb, exception_cb);
+	ee = mono_llvm_create_ee (LLVMCreateModuleProviderForExistingModule (jit_module.module), alloc_cb, emitted_cb, exception_cb, dlsym_cb);
 
 	add_intrinsics (jit_module.module);
 

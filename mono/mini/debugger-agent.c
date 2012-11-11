@@ -76,6 +76,7 @@ int WSAAPI getnameinfo(const struct sockaddr*,socklen_t,char*,DWORD,
 #include <mono/utils/mono-error-internals.h>
 #include <mono/utils/mono-stack-unwinding.h>
 #include <mono/utils/mono-time.h>
+#include <mono/utils/mono-threads.h>
 #include "debugger-agent.h"
 #include "mini.h"
 
@@ -85,10 +86,6 @@ int WSAAPI getnameinfo(const struct sockaddr*,socklen_t,char*,DWORD,
 
 #ifdef DISABLE_SOFT_DEBUG
 #define DISABLE_DEBUGGER_AGENT 1
-#endif
-
-#if defined(__MACH__)
-#include <mono/utils/mono-threads.h>
 #endif
 
 #ifndef DISABLE_DEBUGGER_AGENT
@@ -170,7 +167,6 @@ struct _InvokeData
 typedef struct {
 	MonoThreadUnwindState context;
 
-	gpointer resume_event;
 	/* This is computed on demand when it is requested using the wire protocol */
 	/* It is freed up when the thread is resumed */
 	int frame_count;
@@ -975,11 +971,6 @@ mono_debugger_agent_init (void)
 
 	if (!agent_config.onuncaught && !agent_config.onthrow)
 		finish_agent_init (TRUE);
-
-	/* FIXME: Is this still needed ? */
-#if defined(__MACH__)
-	mono_thread_info_disable_new_interrupt (TRUE);
-#endif
 }
 
 /*
@@ -1325,8 +1316,7 @@ socket_transport_connect (const char *address)
 #endif
 	}
 	
-	disconnected = !transport_handshake ();
-	if (disconnected)
+	if (!transport_handshake ())
 		exit (1);
 }
 
@@ -1455,6 +1445,8 @@ transport_handshake (void)
 	guint8 buf [128];
 	int res;
 	
+	disconnected = TRUE;
+	
 	/* Write handshake message */
 	sprintf (handshake_msg, "DWP-Handshake");
 	do {
@@ -1483,7 +1475,7 @@ transport_handshake (void)
 	 * Set TCP_NODELAY on the socket so the client receives events/command
 	 * results immediately.
 	 */
-	{
+	if (conn_fd) {
 		int flag = 1;
 		int result = setsockopt (conn_fd,
                                  IPPROTO_TCP,
@@ -1496,6 +1488,7 @@ transport_handshake (void)
 	set_keepalive ();
 #endif
 	
+	disconnected = FALSE;
 	return TRUE;
 }
 
@@ -2460,8 +2453,10 @@ mono_debugger_agent_thread_interrupt (void *sigctx, MonoJitInfo *ji)
 		return FALSE;
 
 	tls = mono_native_tls_get_value (debugger_tls_id);
-	if (!tls)
-		return FALSE;
+	if (!tls) {
+		DEBUG (1, fprintf (log_file, "[%p] Received interrupt with no TLS, continuing.\n", (gpointer)GetCurrentThreadId ()));
+ 		return FALSE;
+	}
 
 	return thread_interrupt (tls, NULL, sigctx, ji);
 }
@@ -2550,11 +2545,13 @@ notify_thread (gpointer key, gpointer value, gpointer user_data)
 		mono_thread_info_resume (mono_thread_info_get_tid (info));
 	} else {
 		res = mono_thread_kill (thread, mono_thread_get_abort_signal ());
-		if (res)
+		if (res) {
+			DEBUG(1, fprintf (log_file, "[%p] mono_thread_kill () failed for %p: %d...\n", (gpointer)GetCurrentThreadId (), (gpointer)tid, res));
 			/* 
 			 * Attached thread which died without detaching.
 			 */
 			tls->terminated = TRUE;
+		}
 	}
 #endif
 }
@@ -3650,7 +3647,6 @@ thread_startup (MonoProfiler *prof, uintptr_t tid)
 	g_assert (!tls);
 	// FIXME: Free this somewhere
 	tls = g_new0 (DebuggerTlsData, 1);
-	tls->resume_event = CreateEvent (NULL, FALSE, FALSE, NULL);
 	MONO_GC_REGISTER_ROOT_SINGLE (tls->thread);
 	tls->thread = thread;
 	mono_native_tls_set_value (debugger_tls_id, tls);

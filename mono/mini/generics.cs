@@ -941,4 +941,43 @@ class Tests {
 
 		return 0;
 	}
+
+	struct Record : Foo2<Record>.IRecord {
+		int counter;
+		int Foo2<Record>.IRecord.DoSomething () {
+			return counter++;
+		}
+	}
+
+	class Foo2<T> where T : Foo2<T>.IRecord {
+		public interface IRecord {
+			int DoSomething ();
+		}
+
+		public static int Extract (T[] t) {
+			return t[0].DoSomething ();
+		}
+	}
+
+	class Foo3<T> where T : IComparable {
+		public static int CompareTo (T[] t) {
+			// This is a constrained call to Enum.CompareTo ()
+			return t[0].CompareTo (t [0]);
+		}
+	}
+
+	public static int test_1_regress_constrained_iface_call_7571 () {
+        var r = new Record [10];
+        Foo2<Record>.Extract (r);
+		return Foo2<Record>.Extract (r);
+	}
+
+	enum ConstrainedEnum {
+		Val = 1
+	}
+
+	public static int test_0_regress_constrained_iface_call_enum () {
+		var r = new ConstrainedEnum [10];
+		return Foo3<ConstrainedEnum>.CompareTo (r);
+	}
 }
