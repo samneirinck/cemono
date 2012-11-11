@@ -18,7 +18,6 @@ namespace CryEngine
 
                 hash = hash * 29 + ScriptId.GetHashCode();
                 hash = hash * 29 + ReceiveUpdates.GetHashCode();
-                hash = hash * 29 + IMonoObjectHandle.GetHashCode();
 
                 return hash;
             }
@@ -57,11 +56,6 @@ namespace CryEngine
         /// This script instance's id, used to keep track of instances in <see cref="CryEngine.Initialization.ScriptManager"/>.
         /// </summary>
         public int ScriptId { internal set; get; }
-
-        /// <summary>
-        /// Handle to the native IMonoObject instance representing this script instance.
-        /// </summary>
-        internal IntPtr IMonoObjectHandle { get; set; }
 
         /// <summary>
         /// Controls whether the entity receives an update per frame.

@@ -46,6 +46,11 @@ public:
 	// IMonoScriptSystem
 	virtual bool IsInitialized() override { return m_pRootDomain != nullptr; }
 
+	virtual void Reload() override { Reload(false); }
+
+	virtual void AddListener(IMonoScriptEventListener *pListener) override { m_listeners.push_back(pListener); }
+	virtual void RemoveListener(IMonoScriptEventListener *pListener) override { stl::find_and_erase(m_listeners, pListener); }
+
 	virtual void Release() override { delete this; }
 
 	virtual void RegisterMethodBinding(const void *method, const char *fullMethodName) override;
@@ -82,8 +87,9 @@ public:
 	virtual void OnSystemEvent(ESystemEvent event,UINT_PTR wparam,UINT_PTR lparam);
 	// ~ISystemEventListener
 
+	void Reload(bool initialLoad);
 
-	CScriptDomain *TryGetDomain(MonoDomain *pAssembly);
+	CScriptDomain *TryGetDomain(MonoDomain *pDomain);
 	void OnDomainReleased(CScriptDomain *pDomain);
 
 	IMonoAssembly *GetDebugDatabaseCreator() { return m_pPdb2MdbAssembly; }
@@ -96,7 +102,7 @@ protected:
 	// ~IMonoScriptBind
 
 	// Externals
-	static void UpdateScriptInstance(CScriptObject *pObject, mono::object newInstance);
+	static void UpdateScriptInstance(CScriptObject *pObject, MonoObject *scriptInstance);
 	// ~Externals
 
 	bool CompleteInit();
@@ -106,6 +112,8 @@ protected:
 	// The primary app domain, not really used for anything besides holding the script domain. Do *not* unload this at runtime, we cannot execute another root domain again without restarting.
 	CScriptDomain *m_pRootDomain;
 	std::vector<CScriptDomain *> m_domains;
+
+	IMonoDomain *m_pScriptDomain;
 
 	IMonoObject *m_pScriptManager;
 
@@ -124,6 +132,8 @@ protected:
 
 	// ScriptBinds declared in this project are stored here to make sure they are destructed on shutdown.
 	std::vector<std::shared_ptr<IMonoScriptBind>> m_localScriptBinds;
+
+	std::vector<IMonoScriptEventListener *> m_listeners;
 };
 
 #endif //__MONO_H__

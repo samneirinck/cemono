@@ -29,7 +29,6 @@ CScriptAssembly::~CScriptAssembly()
 	for(auto it = m_classes.begin(); it != m_classes.end(); ++it)
 		delete *it;
 
-
 	m_classes.clear();
 
 	m_pObject = 0;

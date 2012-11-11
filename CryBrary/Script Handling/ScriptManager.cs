@@ -21,7 +21,7 @@ namespace CryEngine.Initialization
 {
     class ScriptManager
     {
-        public ScriptManager()
+        public ScriptManager(bool initialLoad = true)
         {
             Instance = this;
 
@@ -47,51 +47,40 @@ namespace CryEngine.Initialization
 
             TestManager.Init();
 
-            InitializeScriptDomain(true);
-
-            Formatter = new CrySerializer();
-        }
-
-        void InitializeScriptDomain(bool initialLoad = false)
-        {
-            if (!initialLoad)
-            {
-                using (var stream = File.Create(Path.Combine(PathUtils.TempFolder, "ScriptManager.CompiledScripts.scriptdump")))
-                    Formatter.Serialize(stream, Scripts);
-
-                AppDomain.Unload(ScriptDomain);
-            }
-
-            ScriptDomain = AppDomain.CreateDomain("ScriptDomain");
-
             RegisterInternalTypes();
 
             try
             {
-                LoadPlugins();
+                LoadPlugins(initialLoad);
             }
             catch (Exception ex)
             {
                 var scriptReloadMessage = new ScriptReloadMessage(ex, !initialLoad);
                 scriptReloadMessage.ShowDialog();
             }
-            finally
-            {
-                if (!initialLoad)
-                {
-                    using (var stream = File.Open(Path.Combine(PathUtils.TempFolder, "ScriptManager.CompiledScripts.scriptdump"), FileMode.Open))
-                        Scripts = Formatter.Deserialize(stream) as List<CryScript>;
 
-                    ForEach(ScriptType.Any, scriptInstance =>
-                    {
-                        if (scriptInstance.ScriptId > LastScriptId)
-                            LastScriptId = scriptInstance.ScriptId + 1;
+            Formatter = new CrySerializer();
+        }
 
-                        //if (scriptInstance.IMonoObjectHandleRef.Handle != IntPtr.Zero)
-                            //NativeMethods.ScriptSystem.UpdateScriptInstance(scriptInstance.IMonoObjectHandleRef.Handle, scriptInstance); // pass IMonoObject and scriptInstance to C++, which in turn updates the IMonoObject with the new scriptInstance.
-                    });
-                }
-            }
+        void Serialize()
+        {
+            using (var stream = File.Create(SerializedScriptsFile))
+                Formatter.Serialize(stream, Scripts);
+
+            using (var stream = File.Create(Path.Combine(PathUtils.TempFolder, "LastScriptId.scriptdump")))
+                Formatter.Serialize(stream, LastScriptId);
+        }
+
+        void Deserialize()
+        {
+            using (var stream = File.Open(SerializedScriptsFile, FileMode.Open))
+                Scripts = Formatter.Deserialize(stream) as List<CryScript>;
+
+            using (var stream = File.Open(SerializedLastScriptIdFile, FileMode.Open))
+                LastScriptId = (int)Formatter.Deserialize(stream);
+
+            File.Delete(SerializedScriptsFile);
+            File.Delete(SerializedLastScriptIdFile);
         }
 
         /// <summary>
@@ -103,11 +92,6 @@ namespace CryEngine.Initialization
             // Note: Flow nodes have to be registered from IGame::CompleteInit in order to be usable from within UI graphs. (Use IMonoScriptSystem::RegisterFlownodes)
             foreach (var node in FlowNodes)
                 FlowNode.Register(node);
-        }
-
-        public void OnReload()
-        {
-            InitializeScriptDomain();
         }
 
         public void OnRevert()
@@ -172,7 +156,7 @@ namespace CryEngine.Initialization
             }
         }
 
-        void LoadPlugins()
+        void LoadPlugins(bool initialLoad)
         {
             var pluginsDirectory = PathUtils.PluginsFolder;
             if (!Directory.Exists(pluginsDirectory))
@@ -194,61 +178,69 @@ namespace CryEngine.Initialization
                     var assemblyPaths = Directory.GetFiles(directory, "*.dll", SearchOption.AllDirectories);
                     var assemblies = new List<Assembly>();
 
+                    Debug.LogAlways("Loading assemblies");
                     foreach (var assemblyPath in assemblyPaths)
                     {
                         if (assemblyPath != compilerDll)
                             assemblies.Add(LoadAssembly(assemblyPath));
                     }
 
-                    foreach (var unprocessedScript in compiler.Process(assemblies))
+                    Debug.LogAlways("Compiler.Process");
+                    var scripts = compiler.Process(assemblies);
+                    Debug.LogAlways("~Compiler.Process");
+
+                    foreach (var unprocessedScript in scripts)
                     {
                         var script = unprocessedScript;
 
-                        if (script.RegistrationParams == null)
-                            continue;
-                        else if (script.RegistrationParams is ActorRegistrationParams)
+                        if (initialLoad)
                         {
-                            var registrationParams = (ActorRegistrationParams)script.RegistrationParams;
-
-                            NativeMethods.Actor.RegisterClass(script.ScriptName, script.Type.Implements(typeof(NativeActor)));
-                        }
-                        else if (script.RegistrationParams is EntityRegistrationParams)
-                        {
-                            var registrationParams = (EntityRegistrationParams)script.RegistrationParams;
-
-                            if (registrationParams.name == null)
-                                registrationParams.name = script.ScriptName;
-
-                            NativeMethods.Entity.RegisterClass(registrationParams);
-                        }
-                        else if (script.RegistrationParams is GameRulesRegistrationParams)
-                        {
-                            var registrationParams = (GameRulesRegistrationParams)script.RegistrationParams;
-
-                            if (registrationParams.name == null)
-                                registrationParams.name = script.ScriptName;
-
-                            NativeMethods.GameRules.RegisterGameMode(registrationParams.name);
-
-                            if (registrationParams.defaultGamemode || !hasDefaultGameRules)
+                            if (script.RegistrationParams == null)
+                                continue;
+                            else if (script.RegistrationParams is ActorRegistrationParams)
                             {
-                                NativeMethods.GameRules.SetDefaultGameMode(registrationParams.name);
+                                var registrationParams = (ActorRegistrationParams)script.RegistrationParams;
 
-                                hasDefaultGameRules = true;
+                                NativeMethods.Actor.RegisterClass(script.ScriptName, script.Type.Implements(typeof(NativeActor)));
                             }
-                        }
-                        else if (script.RegistrationParams is FlowNodeRegistrationParams)
-                        {
-                            var registrationParams = (FlowNodeRegistrationParams)script.RegistrationParams;
+                            else if (script.RegistrationParams is EntityRegistrationParams)
+                            {
+                                var registrationParams = (EntityRegistrationParams)script.RegistrationParams;
 
-                            if (registrationParams.name == null)
-                                registrationParams.name = script.ScriptName;
-                            if (registrationParams.category == null)
-                                registrationParams.category = script.Type.Namespace;
+                                if (registrationParams.name == null)
+                                    registrationParams.name = script.ScriptName;
 
-                            script.ScriptName = registrationParams.category + ":" + registrationParams.name;
+                                NativeMethods.Entity.RegisterClass(registrationParams);
+                            }
+                            else if (script.RegistrationParams is GameRulesRegistrationParams)
+                            {
+                                var registrationParams = (GameRulesRegistrationParams)script.RegistrationParams;
 
-                            FlowNodes.Add(script.ScriptName);
+                                if (registrationParams.name == null)
+                                    registrationParams.name = script.ScriptName;
+
+                                NativeMethods.GameRules.RegisterGameMode(registrationParams.name);
+
+                                if (registrationParams.defaultGamemode || !hasDefaultGameRules)
+                                {
+                                    NativeMethods.GameRules.SetDefaultGameMode(registrationParams.name);
+
+                                    hasDefaultGameRules = true;
+                                }
+                            }
+                            else if (script.RegistrationParams is FlowNodeRegistrationParams)
+                            {
+                                var registrationParams = (FlowNodeRegistrationParams)script.RegistrationParams;
+
+                                if (registrationParams.name == null)
+                                    registrationParams.name = script.ScriptName;
+                                if (registrationParams.category == null)
+                                    registrationParams.category = script.Type.Namespace;
+
+                                script.ScriptName = registrationParams.category + ":" + registrationParams.name;
+
+                                FlowNodes.Add(script.ScriptName);
+                            }
                         }
 
                         Scripts.Add(script);
@@ -585,6 +577,9 @@ namespace CryEngine.Initialization
         IFormatter Formatter { get; set; }
 
         List<string> FlowNodes { get; set; }
+
+        string SerializedScriptsFile { get { return Path.Combine(PathUtils.TempFolder, "CompiledScripts.scriptdump"); } }
+        string SerializedLastScriptIdFile { get { return Path.Combine(PathUtils.TempFolder, "LastScriptId.scriptdump"); } }
 
         public static ScriptManager Instance;
     }

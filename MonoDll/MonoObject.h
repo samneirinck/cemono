@@ -48,7 +48,7 @@ public:
 	virtual IMonoClass *GetClass() override;
 	// ~IMonoObject
 
-	void SetManagedObject(mono::object newObject, bool allowGC = true);
+	void SetManagedObject(MonoObject *newObject, bool allowGC = true);
 	static void HandleException(MonoObject *pException);
 
 protected:

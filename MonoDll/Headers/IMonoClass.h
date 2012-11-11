@@ -68,7 +68,7 @@ public:
 	/// <summary>
 	/// TODO
 	/// </summary>
-	virtual void SetPropertyValue(IMonoObject *pObject, const char *propertyName, IMonoObject *pNewValue) = 0;
+	virtual void SetPropertyValue(IMonoObject *pObject, const char *propertyName, mono::object newValue) = 0;
 	/// <summary>
 	/// TODO
 	/// </summary>
@@ -76,7 +76,7 @@ public:
 	/// <summary>
 	/// TODO
 	/// </summary>
-	virtual void SetFieldValue(IMonoObject *pObject, const char *fieldName, IMonoObject *pNewValue) = 0;
+	virtual void SetFieldValue(IMonoObject *pObject, const char *fieldName, mono::object newValue) = 0;
 };
 
 #endif //__I_MONO_CLASS_H__

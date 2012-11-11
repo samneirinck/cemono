@@ -175,7 +175,7 @@ inline IMonoObject *IMonoObject::GetPropertyValue(const char *propertyName)
 
 inline void IMonoObject::SetPropertyValue(const char *propertyName, IMonoObject *pNewValue)
 {
-	GetClass()->SetPropertyValue(this, propertyName, pNewValue);
+	GetClass()->SetPropertyValue(this, propertyName, (pNewValue != nullptr ? pNewValue->GetManagedObject() : nullptr));
 }
 
 inline IMonoObject *IMonoObject::GetFieldValue(const char *fieldName)
@@ -185,7 +185,7 @@ inline IMonoObject *IMonoObject::GetFieldValue(const char *fieldName)
 
 inline void IMonoObject::SetFieldValue(const char *fieldName, IMonoObject *pNewValue)
 {
-	GetClass()->SetFieldValue(this, fieldName, pNewValue);
+	GetClass()->SetFieldValue(this, fieldName, (pNewValue != nullptr ? pNewValue->GetManagedObject() : nullptr));
 }
 
 #endif //__I_MONO_OBJECT_H__

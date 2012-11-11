@@ -18,8 +18,8 @@ namespace CryEngine.Initialization
         {
             InitializeComponent();
 
-            tryAgainButton.Click += (s, a) => ScriptManager.Instance.OnReload();
-            revertButton.Click += (s, a) => ScriptManager.Instance.OnRevert();
+            //tryAgainButton.Click += (s, a) => ScriptManager.Instance.OnReload();
+            //revertButton.Click += (s, a) => ScriptManager.Instance.OnRevert();
             exitButton.Click += (s, a) => Process.GetCurrentProcess().Kill();
 
             if (!canRevert)

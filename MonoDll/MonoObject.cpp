@@ -11,13 +11,15 @@
 #include <mono/metadata/debug-helpers.h>
 
 CScriptObject::CScriptObject(MonoObject *pObject, bool allowGC)
+	: m_pObject(NULL)
 {
-	SetManagedObject((mono::object)pObject, allowGC);
+	SetManagedObject(pObject, allowGC);
 }
 
 CScriptObject::CScriptObject(MonoObject *object, IMonoArray *pConstructorParams)
+	: m_pObject(NULL)
 {
-	SetManagedObject((mono::object)object, true);
+	SetManagedObject(object, true);
 
 	if(pConstructorParams)
 		GetClass()->InvokeArray(this, ".ctor", pConstructorParams);
@@ -46,7 +48,7 @@ MonoClass *CScriptObject::GetMonoClass()
 
 IMonoClass *CScriptObject::GetClass()
 {
-	if(!m_pClass)
+	if(m_pClass == NULL)
 	{
 		if(CScriptDomain *pDomain = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->TryGetDomain(mono_object_get_domain(m_pObject)))
 		{
@@ -133,12 +135,12 @@ void CScriptObject::HandleException(MonoObject *pException)
 	}
 }
 
-void CScriptObject::SetManagedObject(mono::object newObject, bool allowGC)
+void CScriptObject::SetManagedObject(MonoObject *newObject, bool allowGC)
 {
 	CRY_ASSERT(newObject);
 
-	m_pObject = (MonoObject *)newObject;
 	m_pClass = NULL; // Class pointer is most definitely invalid now, force recollection on next GetClass call.
+	m_pObject = newObject;
 
 	// We need this to allow the GC to collect the class object later on.
 	if(allowGC)
