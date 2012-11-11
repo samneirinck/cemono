@@ -55,7 +55,7 @@ mono::object ToMonoObject(ScriptAnyValue anyValue)
 			IMonoClass *pVec3Class = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("Vec3");
 
 			Vec3 vec(anyValue.vec3.x, anyValue.vec3.y, anyValue.vec3.z);
-			return (mono::object)mono_value_box(mono_domain_get(), (MonoClass *)pVec3Class->GetManagedObject(), &vec);
+			return pVec3Class->BoxObject(&vec)->GetManagedObject();
 		}
 	case ANY_TTABLE:
 		return (mono::object)anyValue.table;
