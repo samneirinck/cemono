@@ -59,7 +59,7 @@ CScriptClass *CScriptAssembly::TryGetClass(MonoClass *pMonoClass)
 
 	for each(auto pClass in m_classes)
 	{
-		if(pClass->GetMonoClass() == pMonoClass)
+		if((MonoClass *)pClass->GetManagedObject() == pMonoClass)
 		{
 			pClass->AddRef();
 			return pClass;
