@@ -272,9 +272,6 @@
     <Filter Include="ScriptBinds\Game Logic">
       <UniqueIdentifier>{55fd45df-3f95-4840-8eab-7d7170031ae0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Interfaces">
-      <UniqueIdentifier>{2274758e-72ad-46e0-8409-df6cebf00772}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ActorSystem">
       <UniqueIdentifier>{7519e88b-de7a-4729-919b-85c4612989e9}</UniqueIdentifier>
     </Filter>
@@ -286,6 +283,9 @@
     </Filter>
     <Filter Include="EntitySystem\Native">
       <UniqueIdentifier>{688b9b2f-020f-49e4-ad34-bd78bb1927e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfaces">
+      <UniqueIdentifier>{2274758e-72ad-46e0-8409-df6cebf00772}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
