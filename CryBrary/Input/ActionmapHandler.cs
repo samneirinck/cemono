@@ -22,7 +22,8 @@ namespace CryEngine
                 actionmapDelegates.Add(actionMap, eventDelegates);
             }
 
-            eventDelegates.Add(eventDelegate);
+            if(!eventDelegates.Contains(eventDelegate))
+                eventDelegates.Add(eventDelegate);
         }
 
         public bool Remove(string actionMap, ActionMapEventDelegate eventDelegate)
