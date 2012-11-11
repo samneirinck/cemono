@@ -63,6 +63,8 @@ bool CActor::Init(IGameObject *pGameObject)
 
 void CActor::PostInit(IGameObject *pGameObject)
 {
+	if (m_pAnimatedCharacter)
+			m_pAnimatedCharacter->ResetState();
 }
 
 bool CActor::ReloadExtension( IGameObject *pGameObject, const SEntitySpawnParams &params )
@@ -148,7 +150,12 @@ void CActor::ProcessEvent(SEntityEvent& event)
 		GetGameObject()->RequestRemoteUpdate(eEA_Physics | eEA_GameClientDynamic | eEA_GameServerDynamic | eEA_GameClientStatic | eEA_GameServerStatic);
 		break;
 	case ENTITY_EVENT_START_GAME:
-		GetGameObject()->RequestRemoteUpdate(eEA_Physics | eEA_GameClientDynamic | eEA_GameServerDynamic | eEA_GameClientStatic | eEA_GameServerStatic);
+		{
+			GetGameObject()->RequestRemoteUpdate(eEA_Physics | eEA_GameClientDynamic | eEA_GameServerDynamic | eEA_GameClientStatic | eEA_GameServerStatic);
+
+			if (m_pAnimatedCharacter)
+				m_pAnimatedCharacter->ResetState();
+		}
 		break;
 	case ENTITY_EVENT_RESET:
 		{
