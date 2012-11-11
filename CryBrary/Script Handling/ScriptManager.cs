@@ -63,13 +63,31 @@ namespace CryEngine.Initialization
             Formatter = new CrySerializer();
         }
 
+        class ScriptManagerData : CryScriptInstance
+        {
+            public ScriptManagerData()
+            {
+                Input = new SerializableInput();
+            }
+
+            public SerializableInput Input { get; set; }
+            public int LastScriptId { get; set; }
+        }
+
         void Serialize()
         {
+            var data = new ScriptManagerData();
+            data.LastScriptId = LastScriptId;
+
+            data.Input.ActionmapEvents = Input.ActionmapEvents;
+
+            data.Input.KeyEvents = Input.KeyEventsInvocationList;
+            data.Input.MouseEvents = Input.MouseEventsInvocationList;
+
+            AddScriptInstance(data, ScriptType.CryScriptInstance);
+
             using (var stream = File.Create(SerializedScriptsFile))
                 Formatter.Serialize(stream, Scripts);
-
-            using (var stream = File.Create(Path.Combine(PathUtils.TempFolder, "LastScriptId.scriptdump")))
-                Formatter.Serialize(stream, LastScriptId);
         }
 
         void Deserialize()
@@ -77,11 +95,28 @@ namespace CryEngine.Initialization
             using (var stream = File.Open(SerializedScriptsFile, FileMode.Open))
                 Scripts = Formatter.Deserialize(stream) as List<CryScript>;
 
-            using (var stream = File.Open(SerializedLastScriptIdFile, FileMode.Open))
-                LastScriptId = (int)Formatter.Deserialize(stream);
-
             File.Delete(SerializedScriptsFile);
-            File.Delete(SerializedLastScriptIdFile);
+            File.Delete(SerializedScriptManagerDataFile);
+
+            var data = Find<ScriptManagerData>(ScriptType.CryScriptInstance, x => { return true; });
+
+            LastScriptId = data.LastScriptId;
+
+            Input.ActionmapEvents = data.Input.ActionmapEvents;
+
+            if (data.Input.KeyEvents != null)
+            {
+                foreach (var keyDelegate in data.Input.KeyEvents)
+                    Input.KeyEvents += keyDelegate as KeyEventDelegate;
+            }
+
+            if (data.Input.MouseEvents != null)
+            {
+                foreach (var mouseDelegate in data.Input.MouseEvents)
+                    Input.MouseEvents += mouseDelegate as MouseEventDelegate;
+            }
+
+            RemoveInstance(data.ScriptId, ScriptType.CryScriptInstance);
         }
 
         /// <summary>
@@ -580,7 +615,7 @@ namespace CryEngine.Initialization
         List<string> FlowNodes { get; set; }
 
         string SerializedScriptsFile { get { return Path.Combine(PathUtils.TempFolder, "CompiledScripts.scriptdump"); } }
-        string SerializedLastScriptIdFile { get { return Path.Combine(PathUtils.TempFolder, "LastScriptId.scriptdump"); } }
+        string SerializedScriptManagerDataFile { get { return Path.Combine(PathUtils.TempFolder, "ScriptManagerData.scriptdump"); } }
 
         public static ScriptManager Instance;
     }
