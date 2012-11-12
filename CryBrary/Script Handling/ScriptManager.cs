@@ -217,23 +217,20 @@ namespace CryEngine.Initialization
                     var assembly = LoadAssembly(compilerDll);
 
                     var compilerType = assembly.GetTypes().First(x => x.Implements<ScriptCompiler>());
-                    Debug.LogAlways("        Initializing {0} compiler...", compilerType.Name);
+                    Debug.LogAlways("        Initializing {0}...", compilerType.Name);
 
                     var compiler = Activator.CreateInstance(compilerType) as ScriptCompiler;
 
                     var assemblyPaths = Directory.GetFiles(directory, "*.dll", SearchOption.AllDirectories);
                     var assemblies = new List<Assembly>();
 
-                    Debug.LogAlways("Loading assemblies");
                     foreach (var assemblyPath in assemblyPaths)
                     {
                         if (assemblyPath != compilerDll)
                             assemblies.Add(LoadAssembly(assemblyPath));
                     }
 
-                    Debug.LogAlways("Compiler.Process");
                     var scripts = compiler.Process(assemblies);
-                    Debug.LogAlways("~Compiler.Process");
 
                     foreach (var unprocessedScript in scripts)
                     {
@@ -255,6 +252,8 @@ namespace CryEngine.Initialization
 
                                 if (registrationParams.name == null)
                                     registrationParams.name = script.ScriptName;
+                                if (registrationParams.category == null)
+                                    registrationParams.category = "Default";
 
                                 NativeMethods.Entity.RegisterClass(registrationParams);
                             }
