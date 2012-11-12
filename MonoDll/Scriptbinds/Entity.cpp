@@ -122,6 +122,9 @@ CScriptbind_Entity::CScriptbind_Entity()
 
 	REGISTER_METHOD(GetEntityFromPhysics);
 
+	REGISTER_METHOD(SetUpdatePolicy);
+	REGISTER_METHOD(GetUpdatePolicy);
+
 	//RegisterNativeEntityClass();
 
 	gEnv->pEntitySystem->AddSink(this, IEntitySystem::OnSpawn | IEntitySystem::OnRemove, 0);
@@ -948,4 +951,14 @@ bool CScriptbind_Entity::IsHidden(IEntity *pEntity)
 IEntity *CScriptbind_Entity::GetEntityFromPhysics(IPhysicalEntity *pPhysEnt)
 {
 	return gEnv->pEntitySystem->GetEntityFromPhysics(pPhysEnt);
+}
+
+void CScriptbind_Entity::SetUpdatePolicy(IEntity *pEntity, EEntityUpdatePolicy policy)
+{
+	pEntity->SetUpdatePolicy(policy);
+}
+
+EEntityUpdatePolicy CScriptbind_Entity::GetUpdatePolicy(IEntity *pEntity)
+{
+	return pEntity->GetUpdatePolicy();
 }

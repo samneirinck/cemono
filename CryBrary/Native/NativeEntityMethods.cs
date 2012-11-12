@@ -165,6 +165,11 @@ namespace CryEngine.Native
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern internal static IntPtr _GetEntityFromPhysics(IntPtr physEntPtr);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static EntityUpdatePolicy _GetUpdatePolicy(IntPtr entPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static void _SetUpdatePolicy(IntPtr entPtr, EntityUpdatePolicy policy);
 
         public void PlayAnimation(IntPtr ptr, string animationName, int slot, int layer, float blend, float speed, AnimationFlags flags)
         {
@@ -494,6 +499,16 @@ namespace CryEngine.Native
         public IntPtr GetEntityFromPhysics(IntPtr physEntPtr)
         {
             return _GetEntityFromPhysics(physEntPtr);
+        }
+
+        public void SetUpdatePolicy(IntPtr entPtr, EntityUpdatePolicy policy)
+        {
+            _SetUpdatePolicy(entPtr, policy);
+        }
+
+        public EntityUpdatePolicy GetUpdatePolicy(IntPtr entPtr)
+        {
+            return _GetUpdatePolicy(entPtr);
         }
     }
 }
