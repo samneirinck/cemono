@@ -11,7 +11,6 @@ namespace CryEngine
     {
         public EntityAttribute()
         {
-            Category = "Default";
             Flags = EntityClassFlags.Default;
         }
 
@@ -32,7 +31,6 @@ namespace CryEngine
 
         /// <summary>
         /// Gets or sets the category in which the entity will be placed.
-        /// Does not currently function. All entities are placed inside the Default folder.
         /// </summary>
         public string Category { get; set; }
 
