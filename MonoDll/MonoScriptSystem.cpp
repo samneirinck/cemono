@@ -56,7 +56,9 @@ CScriptSystem::CScriptSystem()
 	, m_pCryBraryAssembly(nullptr)
 	, m_pPdb2MdbAssembly(nullptr)
 	, m_pScriptManager(nullptr)
+	, m_pScriptDomain(nullptr)
 	, m_pInput(nullptr)
+	, m_bReloading(false)
 {
 	CryLogAlways("Initializing Mono Script System");
 
@@ -158,7 +160,9 @@ bool CScriptSystem::CompleteInit()
 
 	RegisterDefaultBindings();
 
-	Reload(true);
+	m_bFirstReload = true;
+	Reload();
+	m_bFirstReload = false;
 
 	gEnv->pGameFramework->RegisterListener(this, "CryMono", eFLPriority_Game);
 
@@ -173,39 +177,71 @@ bool CScriptSystem::CompleteInit()
 	return true;
 }
 
-void CScriptSystem::Reload(bool initialLoad)
+void CScriptSystem::Reload()
 {
-	if(!initialLoad)
+	m_bReloading = true;
+
+	if(!m_bFirstReload)
 	{
 		for each(auto listener in m_listeners)
 			listener->OnReloadStart();
 
 		m_pScriptManager->CallMethod("Serialize");
-		m_pScriptDomain->Release();
 	}
 
-	m_pScriptDomain = CreateDomain("ScriptDomain", true);
+	IMonoDomain *pScriptDomain = CreateDomain("ScriptDomain", true);
 
-	m_pCryBraryAssembly = m_pScriptDomain->LoadAssembly(PathUtils::GetBinaryPath() + "CryBrary.dll");
+	IMonoAssembly *pCryBraryAssembly = pScriptDomain->LoadAssembly(PathUtils::GetBinaryPath() + "CryBrary.dll");
 
 	IMonoArray *pCtorParams = CreateMonoArray(1);
-	pCtorParams->InsertAny(initialLoad);
-	m_pScriptManager = m_pCryBraryAssembly->GetClass("ScriptManager", "CryEngine.Initialization")->CreateInstance(pCtorParams);
+	pCtorParams->InsertAny(m_bFirstReload);
+	IMonoObject *pScriptManager = pCryBraryAssembly->GetClass("ScriptManager", "CryEngine.Initialization")->CreateInstance(pCtorParams);
 
-	if(!initialLoad)
-		m_pScriptManager->CallMethod("Deserialize");
+	auto result = pScriptManager->CallMethod("Initialize", m_bFirstReload)->Unbox<EScriptReloadResult>();
+	CryLogAlways("Initialized script manager, result was %i", result);
+	switch(result)
+	{
+	case EScriptReloadResult_Success:
+		{
+			// revert previous domain
+			if(!m_bFirstReload)
+				m_pScriptDomain->Release();
 
-	// Set Network.Editor etc.
-	IMonoClass *pClass = m_pCryBraryAssembly->GetClass("Network");
+			m_pScriptDomain = pScriptDomain;
+			m_pScriptManager = pScriptManager;
+			m_pCryBraryAssembly = pCryBraryAssembly;
 
-	IMonoArray *pArgs = CreateMonoArray(2);
-	pArgs->Insert(gEnv->IsEditor());
-	pArgs->Insert(gEnv->IsDedicated());
-	pClass->InvokeArray(NULL, "InitializeNetworkStatics", pArgs);
-	SAFE_RELEASE(pArgs);
+			if(!m_bFirstReload)
+				m_pScriptManager->CallMethod("Deserialize");
 
-	for each(auto listener in m_listeners)
-		listener->OnReloadComplete();
+			// Set Network.Editor etc.
+			IMonoClass *pClass = m_pCryBraryAssembly->GetClass("Network");
+
+			IMonoArray *pArgs = CreateMonoArray(2);
+			pArgs->Insert(gEnv->IsEditor());
+			pArgs->Insert(gEnv->IsDedicated());
+			pClass->InvokeArray(NULL, "InitializeNetworkStatics", pArgs);
+			SAFE_RELEASE(pArgs);
+
+			for each(auto listener in m_listeners)
+				listener->OnReloadComplete();
+		}
+		break;
+	case EScriptReloadResult_Retry:
+		Reload();
+		return;
+	case EScriptReloadResult_Revert:
+		{
+			pScriptDomain->Release();
+			m_pScriptDomain->SetActive();
+		}
+		break;
+	case EScriptReloadResult_Abort:
+		gEnv->pSystem->Quit();
+		break;
+	}
+
+	m_bReloading = false;
 }
 
 void CScriptSystem::OnSystemEvent(ESystemEvent event,UINT_PTR wparam,UINT_PTR lparam)
@@ -258,8 +294,6 @@ void CScriptSystem::RegisterDefaultBindings()
 
 #undef RegisterBindingAndSet
 #undef RegisterBinding
-
-	REGISTER_METHOD(UpdateScriptInstance);
 }
 
 void CScriptSystem::OnPostUpdate(float fDeltaTime)
@@ -270,12 +304,12 @@ void CScriptSystem::OnPostUpdate(float fDeltaTime)
 
 void CScriptSystem::OnFileChange(const char *fileName)
 {
-	if(g_pMonoCVars->mono_realtimeScripting == 0)
+	if(g_pMonoCVars->mono_realtimeScripting == 0 || m_bReloading)
 		return;
 
 	const char *fileExt = PathUtil::GetExt(fileName);
 	if(!strcmp(fileExt, "cs") || !strcmp(fileExt, "dll"))
-		Reload(false);
+		Reload();
 }
 
 void CScriptSystem::RegisterMethodBinding(const void *method, const char *fullMethodName)
@@ -338,12 +372,4 @@ CScriptDomain *CScriptSystem::TryGetDomain(MonoDomain *pMonoDomain)
 void CScriptSystem::OnDomainReleased(CScriptDomain *pDomain)
 {
 	stl::find_and_erase(m_domains, pDomain);
-}
-
-void CScriptSystem::UpdateScriptInstance(CScriptObject *pObject, MonoObject *scriptInstance)
-{
-	pObject->SetManagedObject(scriptInstance);
-	CryLogAlways("getclass");
-	pObject->GetClass();
-	CryLogAlways("done");
 }

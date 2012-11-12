@@ -64,7 +64,7 @@ bool CActor::Init(IGameObject *pGameObject)
 void CActor::PostInit(IGameObject *pGameObject)
 {
 	if (m_pAnimatedCharacter)
-			m_pAnimatedCharacter->ResetState();
+		m_pAnimatedCharacter->ResetState();
 }
 
 bool CActor::ReloadExtension( IGameObject *pGameObject, const SEntitySpawnParams &params )
