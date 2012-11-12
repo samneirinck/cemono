@@ -50,6 +50,13 @@ namespace CryEngine.Initialization
 
             RegisterInternalTypes();
 
+            Formatter = new CrySerializer();
+        }
+
+        public ScriptReloadResult Initialize(bool initialLoad)
+        {
+            var result = ScriptReloadResult.Success;
+
             try
             {
                 LoadPlugins(initialLoad);
@@ -58,9 +65,11 @@ namespace CryEngine.Initialization
             {
                 var scriptReloadMessage = new ScriptReloadMessage(ex, !initialLoad);
                 scriptReloadMessage.ShowDialog();
+
+                result = scriptReloadMessage.Result;
             }
 
-            Formatter = new CrySerializer();
+            return result;
         }
 
         class ScriptManagerData : CryScriptInstance

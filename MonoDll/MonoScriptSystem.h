@@ -29,12 +29,19 @@ class CInput;
 class CScriptDomain;
 class CScriptObject;
 
+enum EScriptReloadResult
+{
+	EScriptReloadResult_Success = 0,
+	EScriptReloadResult_Retry,
+	EScriptReloadResult_Revert,
+	EScriptReloadResult_Abort
+};
+
 class CScriptSystem
 	: public IMonoScriptSystem
 	, public IFileChangeListener
 	, public IGameFrameworkListener
 	, public ISystemEventListener
-	, public IMonoScriptBind
 {
 	typedef std::map<const void *, const char *> TMethodBindings;
 	typedef std::map<IMonoObject *, int> TScripts;
@@ -46,7 +53,7 @@ public:
 	// IMonoScriptSystem
 	virtual bool IsInitialized() override { return m_pRootDomain != nullptr; }
 
-	virtual void Reload() override { Reload(false); }
+	virtual void Reload() override;
 
 	virtual void AddListener(IMonoScriptEventListener *pListener) override { m_listeners.push_back(pListener); }
 	virtual void RemoveListener(IMonoScriptEventListener *pListener) override { stl::find_and_erase(m_listeners, pListener); }
@@ -87,8 +94,6 @@ public:
 	virtual void OnSystemEvent(ESystemEvent event,UINT_PTR wparam,UINT_PTR lparam);
 	// ~ISystemEventListener
 
-	void Reload(bool initialLoad);
-
 	CScriptDomain *TryGetDomain(MonoDomain *pDomain);
 	void OnDomainReleased(CScriptDomain *pDomain);
 
@@ -97,14 +102,6 @@ public:
 	CFlowManager *GetFlowManager() const { return m_pFlowManager; }
 
 protected:
-	// IMonoScriptBind
-	virtual const char *GetClassName() { return "NativeScriptSystemMethods"; }
-	// ~IMonoScriptBind
-
-	// Externals
-	static void UpdateScriptInstance(CScriptObject *pObject, MonoObject *scriptInstance);
-	// ~Externals
-
 	bool CompleteInit();
 
 	void RegisterDefaultBindings();
@@ -114,8 +111,10 @@ protected:
 	std::vector<CScriptDomain *> m_domains;
 
 	IMonoDomain *m_pScriptDomain;
-
 	IMonoObject *m_pScriptManager;
+
+	bool m_bFirstReload;
+	bool m_bReloading;
 
 	CFlowManager *m_pFlowManager;
 	CInput *m_pInput;

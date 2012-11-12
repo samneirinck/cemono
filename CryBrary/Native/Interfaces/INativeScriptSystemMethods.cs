@@ -4,6 +4,7 @@ namespace CryEngine.Native
 {
     interface INativeScriptSystemMethods
     {
-        void UpdateScriptInstance(IntPtr nativeObject, object newInstance);
+        void RevertAppDomain();
+        void ReloadAppDomain();
     }
 }
