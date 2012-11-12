@@ -48,7 +48,8 @@ namespace CryEngine.Initialization
 
             TestManager.Init();
 
-            RegisterInternalTypes();
+            if(initialLoad)
+                RegisterInternalTypes();
 
             Formatter = new CrySerializer();
         }
