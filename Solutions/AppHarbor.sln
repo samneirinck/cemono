@@ -7,6 +7,7 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		UnitTesting|x86 = UnitTests|x86
+		UnitTests|x86 = UnitTests|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{4A7993B3-6611-4D9D-B8AB-836D6C27B12B}.UnitTests|x86.ActiveCfg = UnitTests|x86
