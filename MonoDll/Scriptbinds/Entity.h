@@ -277,6 +277,9 @@ protected:
 	static bool IsHidden(IEntity *pEntity);
 
 	static IEntity *GetEntityFromPhysics(IPhysicalEntity *pPhysEnt);
+
+	static void SetUpdatePolicy(IEntity *pEntity, EEntityUpdatePolicy policy);
+	static EEntityUpdatePolicy GetUpdatePolicy(IEntity *pEntity);
 	// ~Scriptbinds
 
 	static std::vector<const char *> m_monoEntityClasses;

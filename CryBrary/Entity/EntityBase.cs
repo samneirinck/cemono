@@ -86,6 +86,8 @@ namespace CryEngine
         /// </summary>
         public EntityId Id { get; internal set; }
 
+        public EntityUpdatePolicy UpdatePolicy { get { return NativeMethods.Entity.GetUpdatePolicy(this.GetEntityHandle()); } set { NativeMethods.Entity.SetUpdatePolicy(this.GetEntityHandle(), value); } }
+
         /// <summary>
         /// Gets or sets entity velocity as set by the physics system.
         /// </summary>

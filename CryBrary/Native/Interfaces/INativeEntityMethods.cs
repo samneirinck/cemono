@@ -99,5 +99,8 @@ namespace CryEngine.Native
         bool IsHidden(IntPtr entityId);
 
         IntPtr GetEntityFromPhysics(IntPtr physEntPtr);
+
+        void SetUpdatePolicy(IntPtr entPtr, EntityUpdatePolicy policy);
+        EntityUpdatePolicy GetUpdatePolicy(IntPtr entPtr);
     }
 }
