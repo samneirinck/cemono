@@ -29,20 +29,20 @@ namespace CryEngine
             {
                 intValue = (int)value;
 
-                NativeMethods.CVar.RegisterCVarInt(Name, ref intValue, intValue, Flags, Help);
+                NativeCVarMethods.RegisterCVarInt(Name, ref intValue, intValue, Flags, Help);
             }
             else if (value is float || value is double)
             {
                 floatValue = (float)value;
 
-                NativeMethods.CVar.RegisterCVarFloat(Name, ref floatValue, floatValue, Flags, Help);
+                NativeCVarMethods.RegisterCVarFloat(Name, ref floatValue, floatValue, Flags, Help);
             }
             else if (value is string)
             {
                 stringValue = value as string;
 
                 // String CVars are not supported yet.
-                NativeMethods.CVar.RegisterCVarString(Name, stringValue, stringValue, Flags, Help);
+                NativeCVarMethods.RegisterCVarString(Name, stringValue, stringValue, Flags, Help);
             }
             else
                 throw new CVarException(string.Format("Invalid data type ({0}) used in CVar {1}.", value.GetType(), Name));

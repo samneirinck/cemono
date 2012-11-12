@@ -98,6 +98,32 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'UnitTests|x64'">
+    <OutputPath>bin\x64\UnitTests\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>CryBrary.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <WarningLevel>3</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>1591</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'UnitTests|x86'">
+    <OutputPath>bin\x86\UnitTests\</OutputPath>
+    <DefineConstants>TRACE;UNIT_TESTING</DefineConstants>
+    <DocumentationFile>CryBrary.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <WarningLevel>3</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>1591</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="Actor\Actor.cs" />
     <Compile Include="Actor\ActorBase.cs" />
@@ -138,7 +164,6 @@
     <Compile Include="Input\MouseEventArgs.cs" />
     <Compile Include="Input\SerializableInput.cs" />
     <Compile Include="Math\PlaneIntersectionType.cs" />
-    <Compile Include="Native\Interfaces\INativeScriptSystemMethods.cs" />
     <Compile Include="Native\NativeScriptSystemMethods.cs" />
     <Compile Include="Physics\Explosion.cs" />
     <Compile Include="Script Handling\ScriptInstanceDestroyedException.cs" />
@@ -148,7 +173,6 @@
     <Compile Include="Extensions\NativeActorExtensions.cs" />
     <Compile Include="Extensions\NativeAttachmentExtensions.cs" />
     <Compile Include="Extensions\NativeEntityExtensions.cs" />
-    <Compile Include="Native\Interfaces\INativeNetworkMethods.cs" />
     <Compile Include="Native\NativeNetworkMethods.cs" />
     <Compile Include="Network\RemoteInvocationException.cs" />
     <Compile Include="Script Handling\ScriptReloadResult.cs" />
@@ -156,27 +180,7 @@
     <Compile Include="Utils\ProjectSettings.cs" />
     <Compile Include="Entity\Extensions\AnimationFlags.cs" />
     <Compile Include="Entity\Extensions\EntityLight.cs" />
-    <Compile Include="Native\Interfaces\INative3DEngineMethods.cs" />
-    <Compile Include="Native\Interfaces\INativeActorMethods.cs" />
     <Compile Include="Actor\NativeActor.cs" />
-    <Compile Include="Native\Interfaces\INativeCVarMethods.cs" />
-    <Compile Include="Native\Interfaces\INativeDebugMethods.cs" />
-    <Compile Include="Native\Interfaces\INativeEntityMethods.cs" />
-    <Compile Include="Native\Interfaces\INativeFlowNodeMethods.cs" />
-    <Compile Include="Native\Interfaces\INativeGameRulesMethods.cs" />
-    <Compile Include="Native\Interfaces\INativeInputMethods.cs" />
-    <Compile Include="Native\Interfaces\INativeItemSystemMethods.cs" />
-    <Compile Include="Native\Interfaces\INativeLevelMethods.cs" />
-    <Compile Include="Native\Interfaces\INativeLoggingMethods.cs" />
-    <Compile Include="Native\Interfaces\INativeMaterialMethods.cs" />
-    <Compile Include="Native\Interfaces\INativeParticleEffectMethods.cs" />
-    <Compile Include="Native\Interfaces\INativePhysicsMethods.cs" />
-    <Compile Include="Native\Interfaces\INativeRendererMethods.cs" />
-    <Compile Include="Native\Interfaces\INativeScriptTableMethods.cs" />
-    <Compile Include="Native\Interfaces\INativeTimeMethods.cs" />
-    <Compile Include="Native\Interfaces\INativeUIMethods.cs" />
-    <Compile Include="Native\Interfaces\INativeViewMethods.cs" />
-    <Compile Include="Native\NativeMethods.cs" />
     <Compile Include="Native\3DEngine\Native3DEngineMethods.cs" />
     <Compile Include="Native\GameLogic\NativeActorMethods.cs" />
     <Compile Include="Async\Jobs\AsyncJob.cs" />
@@ -211,7 +215,6 @@
     <Compile Include="Native\NativeScriptTableMethods.cs" />
     <Compile Include="Native\Utils\NativeTimeMethods.cs" />
     <Compile Include="Native\Viewport\UI\NativeUIMethods.cs" />
-    <Compile Include="Native\Viewport\NativeViewMethods.cs" />
     <Compile Include="Network\RemoteInvocationAttribute.cs" />
     <Compile Include="Sandbox\Attributes.cs" />
     <Compile Include="Sandbox\FormLoader.cs">
@@ -233,7 +236,6 @@
     <Compile Include="Engine\Material\Material.cs" />
     <Compile Include="Engine\ParticleEffect.cs" />
     <Compile Include="Engine\Terrain.cs" />
-    <Compile Include="Engine\View.cs" />
     <Compile Include="Entity\EntityId.cs" />
     <Compile Include="Entity\NativeEntity.cs" />
     <Compile Include="Physics\PhysicalEntity.cs" />

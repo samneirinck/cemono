@@ -15,7 +15,7 @@ namespace CryEngine
 
         public void Activate()
         {
-            NativeMethods.FlowNode.ActivateOutput(ParentNodePointer, PortId);
+            NativeFlowNodeMethods.ActivateOutput(ParentNodePointer, PortId);
         }
 
         IntPtr ParentNodePointer { get; set; }
@@ -36,17 +36,17 @@ namespace CryEngine
         public void Activate(T value)
         {
             if (value is int)
-                NativeMethods.FlowNode.ActivateOutputInt(ParentNodePointer, PortId, System.Convert.ToInt32(value));
+                NativeFlowNodeMethods.ActivateOutputInt(ParentNodePointer, PortId, System.Convert.ToInt32(value));
             else if (value is float || value is double)
-                NativeMethods.FlowNode.ActivateOutputFloat(ParentNodePointer, PortId, System.Convert.ToSingle(value));
+                NativeFlowNodeMethods.ActivateOutputFloat(ParentNodePointer, PortId, System.Convert.ToSingle(value));
             else if (value is EntityId)
-                NativeMethods.FlowNode.ActivateOutputEntityId(ParentNodePointer, PortId, (uint)((EntityId)(object)value)._value);
+                NativeFlowNodeMethods.ActivateOutputEntityId(ParentNodePointer, PortId, (uint)((EntityId)(object)value)._value);
             else if (value is string)
-                NativeMethods.FlowNode.ActivateOutputString(ParentNodePointer, PortId, System.Convert.ToString(value));
+                NativeFlowNodeMethods.ActivateOutputString(ParentNodePointer, PortId, System.Convert.ToString(value));
             else if (value is bool)
-                NativeMethods.FlowNode.ActivateOutputBool(ParentNodePointer, PortId, System.Convert.ToBoolean(value));
+                NativeFlowNodeMethods.ActivateOutputBool(ParentNodePointer, PortId, System.Convert.ToBoolean(value));
             else if (value is Vec3)
-                NativeMethods.FlowNode.ActivateOutputVec3(ParentNodePointer, PortId, (Vec3)(object)value);
+                NativeFlowNodeMethods.ActivateOutputVec3(ParentNodePointer, PortId, (Vec3)(object)value);
             else
                 throw new ArgumentException("Attempted to activate output with invalid value!");
         }

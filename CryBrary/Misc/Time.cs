@@ -39,7 +39,7 @@ namespace CryEngine
         /// <summary>
         /// Sets / gets the time scale applied to time values.
         /// </summary>
-        public static float TimeScale { get { return _timeScale; } set { NativeMethods.Time.SetTimeScale(value); _timeScale = value; } }
+        public static float TimeScale { get { return _timeScale; } set { NativeTimeMethods.SetTimeScale(value); _timeScale = value; } }
 
         /// <summary>
         /// Returns the current framerate in frames/second.

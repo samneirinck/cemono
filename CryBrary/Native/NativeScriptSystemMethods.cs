@@ -6,27 +6,17 @@ using System.Text;
 
 namespace CryEngine.Native
 {
-    internal class NativeScriptSystemMethods : INativeScriptSystemMethods
+    internal class NativeScriptSystemMethods
     {
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern private static void _RevertAppDomain();
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern private static void _ReloadAppDomain();
-
         /// <summary>
         /// Revert the last script reload attempt.
         /// </summary>
-        public void RevertAppDomain()
-        {
-            _RevertAppDomain();
-        }
-
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        extern private static void RevertAppDomain();
         /// <summary>
         /// Attempt to reload scripts again
         /// </summary>
-        public void ReloadAppDomain()
-        {
-            _ReloadAppDomain();
-        }
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        extern private static void ReloadAppDomain();
     }
 }

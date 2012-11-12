@@ -125,7 +125,7 @@ namespace CryEngine
             {
                 object[] args = { t1, t2, t3 };
 
-                NativeMethods.UI.SendEvent(EventSystemPointer, EventId, args);
+                NativeUIMethods.SendEvent(EventSystemPointer, EventId, args);
             }
 
             private uint EventId { get; set; }

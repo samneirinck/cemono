@@ -9,7 +9,7 @@ using Xunit;
 
 namespace CryBrary.Tests.Serialization
 {
-	public class ScriptsTests : CryBraryTests
+	public class ScriptsTests
 	{
 		[Fact]
 		public void Serialize_Native_Scripts()

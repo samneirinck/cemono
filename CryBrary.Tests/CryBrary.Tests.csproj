@@ -47,6 +47,15 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'UnitTests|AnyCPU'">
+    <OutputPath>bin\UnitTests\</OutputPath>
+    <DefineConstants>TRACE;UNIT_TESTING</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Moq">
       <HintPath>..\CryBrary\References\Moq.dll</HintPath>
@@ -66,13 +75,9 @@
     <Compile Include="Async\AwaiterTests.cs" />
     <Compile Include="Async\FrameDelayJobTests.cs" />
     <Compile Include="Async\TimeDelayJobTests.cs" />
-    <Compile Include="Console\CVarTests.cs" />
-    <Compile Include="CryBraryTests.cs" />
     <Compile Include="Misc\ConvertTests.cs" />
     <Compile Include="Misc\UnusedMarkerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Scripts\Actor.cs" />
-    <Compile Include="Scripts\Entity.cs" />
     <Compile Include="Serialization\CrySerializerTests.cs" />
     <Compile Include="Serialization\ScriptsTests.cs" />
     <Compile Include="Serialization\UnusedMarkerSerializationTests.cs" />

@@ -4,511 +4,171 @@ using CryEngine.Initialization;
 
 namespace CryEngine.Native
 {
-    internal class NativeEntityMethods : INativeEntityMethods
+    internal class NativeEntityMethods
     {
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern internal static void _PlayAnimation(IntPtr ptr, string animationName, int slot, int layer, float blend, float speed, AnimationFlags flags);
+        extern internal static void PlayAnimation(IntPtr ptr, string animationName, int slot, int layer, float blend, float speed, AnimationFlags flags);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern internal static void _StopAnimationInLayer(IntPtr ptr, int slot, int layer, float blendOutTime);
+        extern internal static void StopAnimationInLayer(IntPtr ptr, int slot, int layer, float blendOutTime);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern internal static void _StopAnimationsInAllLayers(IntPtr ptr, int slot);
-
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern internal static EntityBase _SpawnEntity(EntitySpawnParams spawnParams, bool autoInit, out EntityInfo entityInfo);
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern internal static void _RemoveEntity(uint entityId, bool forceRemoveNow = false);
+        extern internal static void StopAnimationsInAllLayers(IntPtr ptr, int slot);
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern internal static IntPtr _GetEntity(uint entityId);
+        extern internal static EntityBase SpawnEntity(EntitySpawnParams spawnParams, bool autoInit, out EntityInfo entityInfo);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern internal static EntityId _GetEntityId(IntPtr entPtr);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static uint _FindEntity(string name);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static object[] _GetEntitiesByClass(string className);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static object[] _GetEntitiesInBox(BoundingBox bbox, EntityQueryFlags flags);
+        extern internal static void RemoveEntity(uint entityId, bool forceRemoveNow = false);
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern internal static bool _RegisterEntityClass(EntityRegistrationParams registerParams);
+        extern internal static IntPtr GetEntity(uint entityId);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        extern internal static EntityId GetEntityId(IntPtr entPtr);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static uint FindEntity(string name);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static object[] GetEntitiesByClass(string className);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static object[] GetEntitiesInBox(BoundingBox bbox, EntityQueryFlags flags);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        extern internal static bool RegisterEntityClass(EntityRegistrationParams registerParams);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static void _BreakIntoPieces(IntPtr ptr, int slot, int piecesSlot, BreakageParameters breakageParams);
+        extern internal static void BreakIntoPieces(IntPtr ptr, int slot, int piecesSlot, BreakageParameters breakageParams);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static string _GetName(IntPtr ptr);
+        extern internal static string GetName(IntPtr ptr);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static void _SetName(IntPtr ptr, string name);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static EntityFlags _GetFlags(IntPtr ptr);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static void _SetFlags(IntPtr ptr, EntityFlags name);
+        extern internal static void SetName(IntPtr ptr, string name);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static void _AddMovement(IntPtr animatedCharacterPtr, ref EntityMovementRequest request);
+        extern internal static EntityFlags GetFlags(IntPtr ptr);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static void SetFlags(IntPtr ptr, EntityFlags name);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static void _SetWorldTM(IntPtr ptr, Matrix34 tm);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static Matrix34 _GetWorldTM(IntPtr ptr);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static void _SetLocalTM(IntPtr ptr, Matrix34 tm);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static Matrix34 _GetLocalTM(IntPtr ptr);
+        extern internal static void AddMovement(IntPtr animatedCharacterPtr, ref EntityMovementRequest request);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static BoundingBox _GetWorldBoundingBox(IntPtr ptr);
+        extern internal static void SetWorldTM(IntPtr ptr, Matrix34 tm);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static BoundingBox _GetBoundingBox(IntPtr ptr);
-
+        extern internal static Matrix34 GetWorldTM(IntPtr ptr);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static EntitySlotFlags _GetSlotFlags(IntPtr ptr, int slot);
+        extern internal static void SetLocalTM(IntPtr ptr, Matrix34 tm);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static void _SetSlotFlags(IntPtr ptr, int slot, EntitySlotFlags slotFlags);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static void _SetWorldPos(IntPtr ptr, Vec3 newPos);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static Vec3 _GetWorldPos(IntPtr ptr);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static void _SetPos(IntPtr ptr, Vec3 newPos);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static Vec3 _GetPos(IntPtr ptr);
+        extern internal static Matrix34 GetLocalTM(IntPtr ptr);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static void _SetWorldRotation(IntPtr ptr, Quat newAngles);
+        extern internal static BoundingBox GetWorldBoundingBox(IntPtr ptr);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static Quat _GetWorldRotation(IntPtr ptr);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static void _SetRotation(IntPtr ptr, Quat newAngles);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static Quat _GetRotation(IntPtr ptr);
+        extern internal static BoundingBox GetBoundingBox(IntPtr ptr);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static void _LoadObject(IntPtr ptr, string fileName, int slot);
+        extern internal static EntitySlotFlags GetSlotFlags(IntPtr ptr, int slot);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static string _GetStaticObjectFilePath(IntPtr ptr, int slot);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static void _LoadCharacter(IntPtr ptr, string fileName, int slot);
+        extern internal static void SetSlotFlags(IntPtr ptr, int slot, EntitySlotFlags slotFlags);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static bool _AddEntityLink(IntPtr entPtr, string linkName, uint otherId, Quat relativeRot, Vec3 relativePos);
+        extern internal static void SetWorldPos(IntPtr ptr, Vec3 newPos);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static void _RemoveEntityLink(IntPtr entPtr, uint otherId);
-
+        extern internal static Vec3 GetWorldPos(IntPtr ptr);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static int _LoadLight(IntPtr entPtr, int slot, LightParams lightParams);
-
+        extern internal static void SetPos(IntPtr ptr, Vec3 newPos);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static void _FreeSlot(IntPtr entPtr, int slot);
+        extern internal static Vec3 GetPos(IntPtr ptr);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static int _GetAttachmentCount(IntPtr entPtr, int slot);
+        extern internal static void SetWorldRotation(IntPtr ptr, Quat newAngles);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static IntPtr _GetAttachmentByIndex(IntPtr entPtr, int index, int slot);
+        extern internal static Quat GetWorldRotation(IntPtr ptr);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static IntPtr _GetAttachmentByName(IntPtr entPtr, string name, int slot);
-
+        extern internal static void SetRotation(IntPtr ptr, Quat newAngles);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static void _AttachmentUseEntityPosition(IntPtr entityAttachmentPtr, bool use);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static void _AttachmentUseEntityRotation(IntPtr entityAttachmentPtr, bool use);
+        extern internal static Quat GetRotation(IntPtr ptr);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static IntPtr _LinkEntityToAttachment(IntPtr attachmentPtr, uint entityId);
+        extern internal static void LoadObject(IntPtr ptr, string fileName, int slot);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static string _GetAttachmentObject(IntPtr attachmentPtr);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static QuatT _GetAttachmentAbsolute(IntPtr attachmentPtr);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static QuatT _GetAttachmentRelative(IntPtr attachmentPtr);
+        extern internal static string GetStaticObjectFilePath(IntPtr ptr, int slot);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static QuatT _GetAttachmentDefaultAbsolute(IntPtr attachmentPtr);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static QuatT _GetAttachmentDefaultRelative(IntPtr attachmentPtr);
+        extern internal static void LoadCharacter(IntPtr ptr, string fileName, int slot);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static IntPtr _GetAttachmentMaterial(IntPtr attachmentPtr);
+        extern internal static bool AddEntityLink(IntPtr entPtr, string linkName, uint otherId, Quat relativeRot, Vec3 relativePos);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static void _SetAttachmentMaterial(IntPtr attachmentPtr, IntPtr materialPtr);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static QuatT _GetJointAbsolute(IntPtr entPtr, string jointName, int characterSlot);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static QuatT _GetJointAbsoluteDefault(IntPtr entPtr, string jointName, int characterSlot);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static QuatT _GetJointRelative(IntPtr entPtr, string jointName, int characterSlot);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static QuatT _GetJointRelativeDefault(IntPtr entPtr, string jointName, int characterSlot);
+        extern internal static void RemoveEntityLink(IntPtr entPtr, uint otherId);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static void _SetJointAbsolute(IntPtr entPtr, string jointName, int characterSlot, QuatT absolute);
+        extern internal static int LoadLight(IntPtr entPtr, int slot, LightParams lightParams);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static void _SetTriggerBBox(IntPtr entPtr, BoundingBox bounds);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static BoundingBox _GetTriggerBBox(IntPtr entPtr);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static void _InvalidateTrigger(IntPtr entPtr);
+        extern internal static void FreeSlot(IntPtr entPtr, int slot);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static IntPtr _AcquireAnimatedCharacter(uint entId);
+        extern internal static int GetAttachmentCount(IntPtr entPtr, int slot);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static IntPtr GetAttachmentByIndex(IntPtr entPtr, int index, int slot);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static IntPtr GetAttachmentByName(IntPtr entPtr, string name, int slot);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static void _Hide(IntPtr entityId, bool hide);
+        extern internal static void AttachmentUseEntityPosition(IntPtr entityAttachmentPtr, bool use);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static bool _IsHidden(IntPtr entityId);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static IntPtr _GetEntityFromPhysics(IntPtr physEntPtr);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static EntityUpdatePolicy _GetUpdatePolicy(IntPtr entPtr);
+        extern internal static void AttachmentUseEntityRotation(IntPtr entityAttachmentPtr, bool use);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static void _SetUpdatePolicy(IntPtr entPtr, EntityUpdatePolicy policy);
-
-        public void PlayAnimation(IntPtr ptr, string animationName, int slot, int layer, float blend, float speed, AnimationFlags flags)
-        {
-            _PlayAnimation(ptr, animationName, slot, layer, blend, speed, flags);
-        }
-
-        public void StopAnimationInLayer(IntPtr ptr, int slot, int layer, float blendOutTime)
-        {
-            _StopAnimationInLayer(ptr, slot, layer, blendOutTime);
-        }
-
-        public void StopAnimationsInAllLayers(IntPtr ptr, int slot)
-        {
-            _StopAnimationsInAllLayers(ptr, slot);
-        }
-
-        public EntityBase SpawnEntity(EntitySpawnParams spawnParams, bool autoInit, out EntityInfo entityInfo)
-        {
-            return _SpawnEntity(spawnParams, autoInit, out entityInfo);
-        }
-
-        public void RemoveEntity(EntityId entityId, bool forceRemoveNow = false)
-        {
-            _RemoveEntity(entityId, forceRemoveNow);
-        }
-
-        public IntPtr GetEntity(EntityId entityId)
-        {
-            return _GetEntity(entityId);
-        }
-
-        public EntityId GetEntityId(IntPtr entPtr)
-        {
-            return _GetEntityId(entPtr);
-        }
-
-        public uint FindEntity(string name)
-        {
-            return _FindEntity(name);
-        }
-
-        public object[] GetEntitiesByClass(string className)
-        {
-            return _GetEntitiesByClass(className);
-        }
-
-        public object[] GetEntitiesInBox(BoundingBox bbox, EntityQueryFlags flags)
-        {
-            return _GetEntitiesInBox(bbox, flags);
-        }
-
-        public bool RegisterEntityClass(EntityRegistrationParams registerParams)
-        {
-            return _RegisterEntityClass(registerParams);
-        }
-
-        public void BreakIntoPieces(IntPtr ptr, int slot, int piecesSlot, BreakageParameters breakageParams)
-        {
-            _BreakIntoPieces(ptr,slot,piecesSlot,breakageParams);
-        }
-
-        public string GetName(IntPtr ptr)
-        {
-            return _GetName(ptr);
-        }
-
-        public void SetName(IntPtr ptr, string name)
-        {
-            _SetName(ptr,name);
-        }
-
-        public EntityFlags GetFlags(IntPtr ptr)
-        {
-            return _GetFlags(ptr);
-        }
-
-        public void SetFlags(IntPtr ptr, EntityFlags name)
-        {
-            _SetFlags(ptr, name);
-        }
-
-        public void AddMovement(IntPtr ptr, ref EntityMovementRequest request)
-        {
-            _AddMovement(ptr, ref request);
-        }
-
-        public void SetWorldTM(IntPtr ptr, Matrix34 tm)
-        {
-            _SetWorldTM(ptr,tm);
-        }
-
-        public Matrix34 GetWorldTM(IntPtr ptr)
-        {
-            return _GetWorldTM(ptr);
-        }
-
-        public void SetLocalTM(IntPtr ptr, Matrix34 tm)
-        {
-            _SetLocalTM(ptr,tm);
-        }
-
-        public Matrix34 GetLocalTM(IntPtr ptr)
-        {
-            return _GetLocalTM(ptr);
-        }
-
-        public BoundingBox GetWorldBoundingBox(IntPtr ptr)
-        {
-            return _GetWorldBoundingBox(ptr);
-        }
-
-        public BoundingBox GetBoundingBox(IntPtr ptr)
-        {
-            return _GetBoundingBox(ptr);
-        }
-
-        public EntitySlotFlags GetSlotFlags(IntPtr ptr, int slot)
-        {
-            return _GetSlotFlags(ptr, slot);
-        }
-
-        public void SetSlotFlags(IntPtr ptr, int slot, EntitySlotFlags slotFlags)
-        {
-            _SetSlotFlags(ptr,slot,slotFlags);
-        }
-
-        public void SetWorldPos(IntPtr ptr, Vec3 newPos)
-        {
-            _SetWorldPos(ptr, newPos);
-        }
-
-        public Vec3 GetWorldPos(IntPtr ptr)
-        {
-            return _GetWorldPos(ptr);
-        }
-
-        public void SetPos(IntPtr ptr, Vec3 newPos)
-        {
-            _SetPos(ptr,newPos);
-        }
-
-        public Vec3 GetPos(IntPtr ptr)
-        {
-            return _GetPos(ptr);
-        }
-
-        public void SetWorldRotation(IntPtr ptr, Quat newAngles)
-        {
-            _SetWorldRotation(ptr,newAngles);
-        }
-
-        public Quat GetWorldRotation(IntPtr ptr)
-        {
-            return _GetWorldRotation(ptr);
-        }
-
-        public void SetRotation(IntPtr ptr, Quat newAngles)
-        {
-            _SetRotation(ptr,newAngles);
-        }
-
-        public Quat GetRotation(IntPtr ptr)
-        {
-            return _GetRotation(ptr);
-        }
-
-        public void LoadObject(IntPtr ptr, string fileName, int slot)
-        {
-            _LoadObject(ptr,fileName,slot);
-        }
-
-        public string GetStaticObjectFilePath(IntPtr ptr, int slot)
-        {
-            return _GetStaticObjectFilePath(ptr, slot);
-        }
-
-        public void LoadCharacter(IntPtr ptr, string fileName, int slot)
-        {
-            _LoadCharacter(ptr,fileName,slot);
-        }
-
-        public void RegisterClass(EntityRegistrationParams registrationParams)
-        {
-            _RegisterEntityClass(registrationParams);
-        }
-
-        public bool AddEntityLink(IntPtr entPtr, string linkName, EntityId otherId, Quat relativeRot, Vec3 relativePos)
-        {
-            return _AddEntityLink(entPtr, linkName, otherId, relativeRot, relativePos);
-        }
-
-        public void RemoveEntityLink(IntPtr entPtr, EntityId otherId)
-        {
-            _RemoveEntityLink(entPtr, otherId);
-        }
-
-        public int LoadLight(IntPtr entPtr, int slot, LightParams lightParams)
-        {
-            return _LoadLight(entPtr, slot, lightParams);
-        }
-
-        public void FreeSlot(IntPtr entPtr, int slot)
-        {
-            _FreeSlot(entPtr, slot);
-        }
-
-        public int GetAttachmentCount(IntPtr entPtr, int slot)
-        {
-            return _GetAttachmentCount(entPtr, slot);
-        }
-
-        public IntPtr GetAttachmentByIndex(IntPtr entPtr, int index, int slot)
-        {
-            return _GetAttachmentByIndex(entPtr, index, slot);
-        }
-
-        public IntPtr GetAttachmentByName(IntPtr entPtr, string name, int slot)
-        {
-            return _GetAttachmentByName(entPtr, name, slot);
-        }
-
-        public void AttachmentUseEntityPosition(IntPtr entityAttachmentPtr, bool use)
-        {
-            AttachmentUseEntityPosition(entityAttachmentPtr, use);
-        }
-
-        public void AttachmentUseEntityRotation(IntPtr entityAttachmentPtr, bool use)
-        {
-            _AttachmentUseEntityRotation(entityAttachmentPtr, use);
-        }
-
-        public IntPtr LinkEntityToAttachment(IntPtr attachmentPtr, uint entityId)
-        {
-            return _LinkEntityToAttachment(attachmentPtr, entityId);
-        }
-
-        public string GetAttachmentObject(IntPtr attachmentPtr)
-        {
-            return _GetAttachmentObject(attachmentPtr);
-        }
-
-        public QuatT GetAttachmentAbsolute(IntPtr attachmentPtr)
-        {
-            return _GetAttachmentAbsolute(attachmentPtr);
-        }
-
-        public QuatT GetAttachmentRelative(IntPtr attachmentPtr)
-        {
-            return _GetAttachmentRelative(attachmentPtr);
-        }
-
-        public QuatT GetAttachmentDefaultAbsolute(IntPtr attachmentPtr)
-        {
-            return _GetAttachmentDefaultAbsolute(attachmentPtr);
-        }
-
-        public QuatT GetAttachmentDefaultRelative(IntPtr attachmentPtr)
-        {
-            return _GetAttachmentDefaultRelative(attachmentPtr);
-        }
-
-        public IntPtr GetAttachmentMaterial(IntPtr attachmentPtr)
-        {
-            return _GetAttachmentMaterial(attachmentPtr); 
-        }
-
-        public void SetAttachmentMaterial(IntPtr attachmentPtr, IntPtr materialPtr)
-        {
-            _SetAttachmentMaterial(attachmentPtr, materialPtr);
-        }
-
-        public QuatT GetJointAbsolute(IntPtr entPtr, string jointName, int characterSlot)
-        {
-            return _GetJointAbsolute(entPtr, jointName, characterSlot);
-        }
-
-        public QuatT GetJointAbsoluteDefault(IntPtr entPtr, string jointName, int characterSlot)
-        {
-            return _GetJointAbsoluteDefault(entPtr, jointName, characterSlot);
-        }
-
-        public QuatT GetJointRelative(IntPtr entPtr, string jointName, int characterSlot)
-        {
-            return _GetJointRelative(entPtr, jointName, characterSlot);
-        }
-
-        public QuatT GetJointRelativeDefault(IntPtr entPtr, string jointName, int characterSlot)
-        {
-            return _GetJointRelativeDefault(entPtr, jointName, characterSlot);
-        }
-
-        public void SetJointAbsolute(IntPtr entPtr, string jointName, int characterSlot, QuatT absolute)
-        {
-            _SetJointAbsolute(entPtr, jointName, characterSlot, absolute);
-        }
-
-        public void SetTriggerBBox(IntPtr entPtr, BoundingBox bounds)
-        {
-            _SetTriggerBBox(entPtr, bounds);
-        }
-
-        public BoundingBox GetTriggerBBox(IntPtr entPtr)
-        {
-            return _GetTriggerBBox(entPtr);
-        }
-
-        public void InvalidateTrigger(IntPtr entPtr)
-        {
-            _InvalidateTrigger(entPtr);
-        }
-
-        public IntPtr AcquireAnimatedCharacter(uint entId)
-        {
-            return _AcquireAnimatedCharacter(entId);
-        }
-
-        public void Hide(IntPtr entityId, bool hide)
-        {
-            _Hide(entityId, hide);
-        }
-
-        public bool IsHidden(IntPtr entityId)
-        {
-            return _IsHidden(entityId);
-        }
-
-        public IntPtr GetEntityFromPhysics(IntPtr physEntPtr)
-        {
-            return _GetEntityFromPhysics(physEntPtr);
-        }
-
-        public void SetUpdatePolicy(IntPtr entPtr, EntityUpdatePolicy policy)
-        {
-            _SetUpdatePolicy(entPtr, policy);
-        }
-
-        public EntityUpdatePolicy GetUpdatePolicy(IntPtr entPtr)
-        {
-            return _GetUpdatePolicy(entPtr);
-        }
+        extern internal static IntPtr LinkEntityToAttachment(IntPtr attachmentPtr, uint entityId);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static string GetAttachmentObject(IntPtr attachmentPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static QuatT GetAttachmentAbsolute(IntPtr attachmentPtr);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static QuatT GetAttachmentRelative(IntPtr attachmentPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static QuatT GetAttachmentDefaultAbsolute(IntPtr attachmentPtr);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static QuatT GetAttachmentDefaultRelative(IntPtr attachmentPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static IntPtr GetAttachmentMaterial(IntPtr attachmentPtr);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static void SetAttachmentMaterial(IntPtr attachmentPtr, IntPtr materialPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static QuatT GetJointAbsolute(IntPtr entPtr, string jointName, int characterSlot);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static QuatT GetJointAbsoluteDefault(IntPtr entPtr, string jointName, int characterSlot);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static QuatT GetJointRelative(IntPtr entPtr, string jointName, int characterSlot);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static QuatT GetJointRelativeDefault(IntPtr entPtr, string jointName, int characterSlot);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static void SetJointAbsolute(IntPtr entPtr, string jointName, int characterSlot, QuatT absolute);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static void SetTriggerBBox(IntPtr entPtr, BoundingBox bounds);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static BoundingBox GetTriggerBBox(IntPtr entPtr);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static void InvalidateTrigger(IntPtr entPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static IntPtr AcquireAnimatedCharacter(uint entId);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static void Hide(IntPtr entityId, bool hide);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static bool IsHidden(IntPtr entityId);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static IntPtr GetEntityFromPhysics(IntPtr physEntPtr);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static EntityUpdatePolicy GetUpdatePolicy(IntPtr entPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static void SetUpdatePolicy(IntPtr entPtr, EntityUpdatePolicy policy);
     }
 }

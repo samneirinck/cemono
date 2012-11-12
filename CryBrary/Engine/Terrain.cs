@@ -7,12 +7,12 @@ namespace CryEngine
         /// <summary>
         /// Gets the size of the terrain in metres.
         /// </summary>
-        public static int Size { get { return NativeMethods.Engine3D.GetTerrainSize(); } }
+        public static int Size { get { return Native3DEngineMethods.GetTerrainSize(); } }
 
         /// <summary>
         /// Gets the size of each terrain unit.
         /// </summary>
-        public static int UnitsPerMetre { get { return NativeMethods.Engine3D.GetTerrainUnitSize(); } }
+        public static int UnitsPerMetre { get { return Native3DEngineMethods.GetTerrainUnitSize(); } }
 
         /// <summary>
         /// Gets the size of the terrain in units.
@@ -24,12 +24,12 @@ namespace CryEngine
 
         public static float GetTerrainElevation(int x, int y)
         {
-            return NativeMethods.Engine3D.GetTerrainZ(x, y);
+            return Native3DEngineMethods.GetTerrainZ(x, y);
         }
 
         public static float GetTerrainElevation(float x, float y, bool checkVoxels = false)
         {
-            return NativeMethods.Engine3D.GetTerrainElevation(x, y, checkVoxels);
+            return Native3DEngineMethods.GetTerrainElevation(x, y, checkVoxels);
         }
     }
 }

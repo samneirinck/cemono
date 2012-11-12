@@ -46,10 +46,12 @@ namespace CryEngine.Initialization
                 catch(UnauthorizedAccessException) { }
             }
 
+#if !UNIT_TESTING
             TestManager.Init();
 
             if(initialLoad)
                 RegisterInternalTypes();
+#endif
 
             Formatter = new CrySerializer();
         }
@@ -197,7 +199,7 @@ namespace CryEngine.Initialization
                 entityRegistrationParams.name = script.ScriptName;
                 entityRegistrationParams.flags = EntityClassFlags.Default | EntityClassFlags.Invisible; 
 
-                NativeMethods.Entity.RegisterClass(entityRegistrationParams);
+                NativeEntityMethods.RegisterEntityClass(entityRegistrationParams);
                 Scripts.Add(script);
             }
         }
@@ -244,7 +246,7 @@ namespace CryEngine.Initialization
                             {
                                 var registrationParams = (ActorRegistrationParams)script.RegistrationParams;
 
-                                NativeMethods.Actor.RegisterClass(script.ScriptName, script.Type.Implements(typeof(NativeActor)));
+                                NativeActorMethods.RegisterActorClass(script.ScriptName, script.Type.Implements(typeof(NativeActor)));
                             }
                             else if (script.RegistrationParams is EntityRegistrationParams)
                             {
@@ -255,7 +257,7 @@ namespace CryEngine.Initialization
                                 if (registrationParams.category == null)
                                     registrationParams.category = "Default";
 
-                                NativeMethods.Entity.RegisterClass(registrationParams);
+                                NativeEntityMethods.RegisterEntityClass(registrationParams);
                             }
                             else if (script.RegistrationParams is GameRulesRegistrationParams)
                             {
@@ -264,11 +266,11 @@ namespace CryEngine.Initialization
                                 if (registrationParams.name == null)
                                     registrationParams.name = script.ScriptName;
 
-                                NativeMethods.GameRules.RegisterGameMode(registrationParams.name);
+                                NativeGameRulesMethods.RegisterGameMode(registrationParams.name);
 
                                 if (registrationParams.defaultGamemode || !hasDefaultGameRules)
                                 {
-                                    NativeMethods.GameRules.SetDefaultGameMode(registrationParams.name);
+                                    NativeGameRulesMethods.SetDefaultGameMode(registrationParams.name);
 
                                     hasDefaultGameRules = true;
                                 }

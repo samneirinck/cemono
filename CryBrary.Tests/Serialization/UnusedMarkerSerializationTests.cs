@@ -9,7 +9,7 @@ using Xunit;
 
 namespace CryBrary.Tests.Serialization
 {
-    public class UnusedMarkerSerializationTests : CryBraryTests
+    public class UnusedMarkerSerializationTests
     {
         [Fact]
         public void Unused_Integer()

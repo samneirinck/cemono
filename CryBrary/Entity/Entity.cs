@@ -256,8 +256,8 @@ namespace CryEngine
         /// </summary>
         public BoundingBox TriggerBounds
         {
-            get { return NativeMethods.Entity.GetTriggerBBox(this.GetEntityHandle()); }
-            set { NativeMethods.Entity.SetTriggerBBox(this.GetEntityHandle(), value); }
+            get { return NativeEntityMethods.GetTriggerBBox(this.GetEntityHandle()); }
+            set { NativeEntityMethods.SetTriggerBBox(this.GetEntityHandle(), value); }
         }
 
         /// <summary>
@@ -265,7 +265,7 @@ namespace CryEngine
         /// </summary>
         public void InvalidateTrigger()
         {
-            NativeMethods.Entity.InvalidateTrigger(this.GetEntityHandle());;
+            NativeEntityMethods.InvalidateTrigger(this.GetEntityHandle());;
         }
 
         /*

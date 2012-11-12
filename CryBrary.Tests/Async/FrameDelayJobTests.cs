@@ -9,7 +9,7 @@ using Xunit;
 
 namespace CryBrary.Tests.Async
 {
-    public class FrameDelayJobTests : CryBraryTests
+    public class FrameDelayJobTests
     {
         [Fact]
         public void FrameDelayJob_NegativeNumberOfFrames_InstantExecution()

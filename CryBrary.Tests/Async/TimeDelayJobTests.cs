@@ -9,7 +9,7 @@ using Xunit;
 
 namespace CryBrary.Tests.Async
 {
-    public class TimeDelayJobTests : CryBraryTests
+    public class TimeDelayJobTests
     {
         [Fact]
         public void TimeDelayJobTests_NegativeTime_InstantExecution()
