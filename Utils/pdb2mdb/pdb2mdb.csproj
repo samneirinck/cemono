@@ -33,13 +33,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Cecil">
-      <HintPath>..\..\..\..\Engine\Mono\lib\mono\gac\Mono.Cecil\0.9.5.0__0738eb9f132ed756\Mono.Cecil.dll</HintPath>
+      <HintPath>..\..\..\..\Bin32\Plugins\CryMono\Mono\bin\Mono.Cecil.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil.Mdb">
-      <HintPath>..\..\..\..\Engine\Mono\lib\mono\gac\Mono.Cecil.Mdb\0.9.5.0__0738eb9f132ed756\Mono.Cecil.Mdb.dll</HintPath>
+      <HintPath>..\..\..\..\Bin32\Plugins\CryMono\Mono\bin\Mono.Cecil.Mdb.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil.Pdb">
-      <HintPath>..\..\..\..\Engine\Mono\lib\mono\gac\Mono.Cecil.Pdb\0.9.5.0__0738eb9f132ed756\Mono.Cecil.Pdb.dll</HintPath>
+      <HintPath>..\..\..\..\Bin32\Plugins\CryMono\Mono\bin\Mono.Cecil.Pdb.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

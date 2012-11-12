@@ -27,11 +27,11 @@ namespace CryEngine
 	partial class Console
 	{
 		[DllImport("CryMono.dll")]
-		extern static void _LogAlways(string msg);
+		extern static void LogAlways(string msg);
 		[DllImport("CryMono.dll")]
-		extern static void _Log(string msg);
+		extern static void Log(string msg);
 		[DllImport("CryMono.dll")]
-		extern static void _Warning(string msg);
+		extern static void Warning(string msg);
 
 		/// <summary>
 		/// Logs a message to the console
@@ -40,15 +40,7 @@ namespace CryEngine
 		/// <param name="args"></param>
 		public static void Log(string format, params object[] args)
 		{
-			_Log(string.Format(format, args));
-		}
-
-		/// <summary>
-		/// Logs a message to the console
-		/// </summary>
-		public static void Log(string msg)
-		{
-			_Log(msg);
+			Log(string.Format(format, args));
 		}
 
 		/// <summary>
@@ -58,15 +50,7 @@ namespace CryEngine
 		/// <param name="args"></param>
 		public static void LogAlways(string format, params object[] args)
 		{
-			_LogAlways(string.Format(format, args));
-		}
-
-		/// <summary>
-		/// Logs a message to the console, regardless of log_verbosity settings
-		/// </summary>
-		public static void LogAlways(string msg)
-		{
-			_LogAlways(msg);
+			LogAlways(string.Format(format, args));
 		}
 
 		/// <summary>
@@ -86,15 +70,7 @@ namespace CryEngine
 		/// <param name="args"></param>
 		public static void Warning(string format, params object[] args)
 		{
-			_Warning(string.Format(format, args));
-		}
-
-		/// <summary>
-		/// Outputs a warning message
-		/// </summary>
-		public static void Warning(string msg)
-		{
-			_Warning(msg);
+			Warning(string.Format(format, args));
 		}
 	}
 }
