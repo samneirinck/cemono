@@ -17,7 +17,7 @@ namespace CryEngine
             if (actor != null)
                 return actor;
 
-            var entityInfo = NativeMethods.Actor.GetActorInfoByChannelId((ushort)channelId);
+            var entityInfo = NativeActorMethods.GetActorInfoByChannelId((ushort)channelId);
             if (entityInfo.Id != 0)
                 return CreateNativeActor(entityInfo);
 
@@ -48,7 +48,7 @@ namespace CryEngine
                 return actor;
 
             // Couldn't find a CryMono entity, check if a non-managed one exists.
-            var actorInfo = NativeMethods.Actor.GetActorInfoById(actorId);
+            var actorInfo = NativeActorMethods.GetActorInfoById(actorId);
             if (actorInfo.Id != 0)
                 return CreateNativeActor(actorInfo);
 
@@ -94,7 +94,7 @@ namespace CryEngine
         {
             get
             {
-                var clientActorId = NativeMethods.Actor.GetClientActorId();
+                var clientActorId = NativeActorMethods.GetClientActorId();
                 if (clientActorId == 0)
                     return null;
 
@@ -153,7 +153,7 @@ namespace CryEngine
             if (actor != null)
                 return actor;
 
-            var info = NativeMethods.Actor.CreateActor(channelId, name, className, pos ?? new Vec3(0, 0, 0), rot ?? Quat.Identity, scale ?? new Vec3(1, 1, 1));
+            var info = NativeActorMethods.CreateActor(channelId, name, className, pos ?? new Vec3(0, 0, 0), rot ?? Quat.Identity, scale ?? new Vec3(1, 1, 1));
             if (info.Id == 0)
                 throw new Exception("Actor creation failed, make sure your IActor implementation is registered with the same name as your managed actor class.");
 
@@ -166,7 +166,7 @@ namespace CryEngine
         /// <param name="id"></param>
         public static void Remove(EntityId id)
         {
-            NativeMethods.Actor.RemoveActor(id);
+            NativeActorMethods.RemoveActor(id);
         }
 
         /// <summary>
@@ -175,9 +175,9 @@ namespace CryEngine
         /// <param name="channelId"></param>
         public static void Remove(int channelId)
         {
-            var actorInfo = NativeMethods.Actor.GetActorInfoByChannelId((ushort)channelId);
+            var actorInfo = NativeActorMethods.GetActorInfoByChannelId((ushort)channelId);
             if (actorInfo.Id != 0)
-                NativeMethods.Actor.RemoveActor(actorInfo.Id);
+                NativeActorMethods.RemoveActor(actorInfo.Id);
         }
     }
 }

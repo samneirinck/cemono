@@ -2,36 +2,15 @@
 
 namespace CryEngine.Native
 {
-    internal class NativeGameRulesMethods : INativeGameRulesMethods
+    internal class NativeGameRulesMethods
     {
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern internal static void _RegisterGameMode(string gamemode);
+        extern internal static void RegisterGameMode(string gamemode);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern internal static void _AddGameModeAlias(string gamemode, string alias);
+        extern internal static void AddGameModeAlias(string gamemode, string alias);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern internal static void _AddGameModeLevelLocation(string gamemode, string location);
+        extern internal static void AddGameModeLevelLocation(string gamemode, string location);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern internal static void _SetDefaultGameMode(string gamemode);
-
-
-        public void RegisterGameMode(string gamemode)
-        {
-            _RegisterGameMode(gamemode);
-        }
-
-        public void AddGameModeAlias(string gamemode, string alias)
-        {
-            _AddGameModeAlias(gamemode, alias);
-        }
-
-        public void AddGameModeLevelLocation(string gamemode, string location)
-        {
-            _AddGameModeLevelLocation(gamemode, location);
-        }
-
-        public void SetDefaultGameMode(string gamemode)
-        {
-            _SetDefaultGameMode(gamemode);
-        }
+        extern internal static void SetDefaultGameMode(string gamemode);
     }
 }

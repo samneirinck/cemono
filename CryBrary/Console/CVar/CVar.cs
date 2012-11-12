@@ -71,7 +71,7 @@ namespace CryEngine
         /// <returns>Newly null if failed, new CVar instance if successful</returns>
         public static CVar RegisterInt(string name, ref int value, string help = "", CVarFlags flags = CVarFlags.None)
         {
-            NativeMethods.CVar.RegisterCVarInt(name, ref value, value, flags, help);
+            NativeCVarMethods.RegisterCVarInt(name, ref value, value, flags, help);
 
             CVars.Add(new ExternalCVar(name));
 
@@ -88,7 +88,7 @@ namespace CryEngine
         /// <returns>Newly null if failed, new CVar instance if successful</returns>
         public static CVar RegisterFloat(string name, ref float value, string help = "", CVarFlags flags = CVarFlags.None)
         {
-            NativeMethods.CVar.RegisterCVarFloat(name, ref value, value, flags, help);
+            NativeCVarMethods.RegisterCVarFloat(name, ref value, value, flags, help);
 
             CVars.Add(new ExternalCVar(name));
 
@@ -106,7 +106,7 @@ namespace CryEngine
             if (cvar != default(CVar))
                 return cvar;
 
-            if (NativeMethods.CVar.HasCVar(name))
+            if (NativeCVarMethods.HasCVar(name))
             {
                 CVars.Add(new ExternalCVar(name));
 
@@ -135,7 +135,7 @@ namespace CryEngine
             if (attribute.Name == null)
                 attribute.Name = memberInfo.Name;
 
-            NativeMethods.CVar.RegisterCVarInt(attribute.Name, ref value, System.Convert.ToInt32(attribute.DefaultValue), attribute.Flags, attribute.Help);
+            NativeCVarMethods.RegisterCVarInt(attribute.Name, ref value, System.Convert.ToInt32(attribute.DefaultValue), attribute.Flags, attribute.Help);
 
             if (memberInfo.MemberType == MemberTypes.Field)
                 CVars.Add(new StaticCVarField(attribute, memberInfo as FieldInfo));
@@ -150,7 +150,7 @@ namespace CryEngine
             if (attribute.Name == null)
                 attribute.Name = memberInfo.Name;
 
-            NativeMethods.CVar.RegisterCVarFloat(attribute.Name, ref value, System.Convert.ToSingle(attribute.DefaultValue), attribute.Flags, attribute.Help);
+            NativeCVarMethods.RegisterCVarFloat(attribute.Name, ref value, System.Convert.ToSingle(attribute.DefaultValue), attribute.Flags, attribute.Help);
 
             if (memberInfo.MemberType == MemberTypes.Field)
                 CVars.Add(new StaticCVarField(attribute, memberInfo as FieldInfo));
@@ -165,7 +165,7 @@ namespace CryEngine
             if (attribute.Name == null)
                 attribute.Name = memberInfo.Name;
 
-            NativeMethods.CVar.RegisterCVarString(attribute.Name, value, (string)attribute.DefaultValue ?? string.Empty, attribute.Flags, attribute.Help);
+            NativeCVarMethods.RegisterCVarString(attribute.Name, value, (string)attribute.DefaultValue ?? string.Empty, attribute.Flags, attribute.Help);
 
             if (memberInfo.MemberType == MemberTypes.Field)
                 CVars.Add(new StaticCVarField(attribute, memberInfo as FieldInfo));

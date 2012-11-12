@@ -11,7 +11,7 @@ using Xunit;
 
 namespace CryBrary.Tests.Async
 {
-    public class AwaiterTests : CryBraryTests
+    public class AwaiterTests
     {
         public AwaiterTests()
         {

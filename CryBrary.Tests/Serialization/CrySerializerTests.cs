@@ -6,7 +6,7 @@ using Xunit;
 
 namespace CryBrary.Tests.Serialization
 {
-	public class CrySerializerTests : CryBraryTests
+	public class CrySerializerTests
 	{
 		public class TestClass
 		{

@@ -70,7 +70,7 @@ namespace CryEngine
             if (skipEntities != null && skipEntities.Length > 0)
                 skippedEntities = skipEntities.Cast<object>().ToArray();
 
-            return Native.NativeMethods.Physics.RayWorldIntersection(Position, Direction, objectTypes, flags, out hit, maxHits, skippedEntities);
+            return Native.NativePhysicsMethods.RayWorldIntersection(Position, Direction, objectTypes, flags, out hit, maxHits, skippedEntities);
         }
 
         public static int Cast(out RaycastHit hit, Vec3 pos, Vec3 dir, EntityQueryFlags objectTypes = EntityQueryFlags.All, RayWorldIntersectionFlags flags = RayWorldIntersectionFlags.AnyHit, int maxHits = 1, PhysicalEntity[] skipEntities = null)

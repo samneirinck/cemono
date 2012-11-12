@@ -40,17 +40,17 @@ CScriptbind_Console::CScriptbind_Console()
 
 extern "C"
 {
-	_declspec(dllexport) void __cdecl _LogAlways(const char *msg)
+	_declspec(dllexport) void __cdecl LogAlways(const char *msg)
 	{
 		CryLogAlways(msg);
 	}
 
-	_declspec(dllexport) void __cdecl _Log(const char *msg)
+	_declspec(dllexport) void __cdecl Log(const char *msg)
 	{
 		CryLog(msg);
 	}
 
-	_declspec(dllexport) void __cdecl _Warning(const char *msg)
+	_declspec(dllexport) void __cdecl Warning(const char *msg)
 	{
 		MonoWarning(msg); 
 	}

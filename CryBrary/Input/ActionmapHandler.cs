@@ -16,7 +16,7 @@ namespace CryEngine
             List<ActionMapEventDelegate> eventDelegates;
             if (!actionmapDelegates.TryGetValue(actionMap, out eventDelegates))
             {
-                NativeMethods.Input.RegisterAction(actionMap);
+                NativeInputMethods.RegisterAction(actionMap);
 
                 eventDelegates = new List<ActionMapEventDelegate>();
                 actionmapDelegates.Add(actionMap, eventDelegates);

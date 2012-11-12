@@ -2,15 +2,9 @@
 
 namespace CryEngine.Native
 {
-    internal class NativeInputMethods : INativeInputMethods
+    internal class NativeInputMethods
     {
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern private static void _RegisterAction(string actionName);
-
-        public void RegisterAction(string actionName)
-        {
-            _RegisterAction(actionName);
-        }
-
+        extern internal static void RegisterAction(string actionName);
     }
 }

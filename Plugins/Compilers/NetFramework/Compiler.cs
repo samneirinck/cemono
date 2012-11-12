@@ -71,10 +71,28 @@ namespace CryEngine.Compilers.NET
 			if (type.TryGetAttribute(out entAttribute))
 			{
 				entityRegistrationParams.name = entAttribute.Name;
-				entityRegistrationParams.category = entAttribute.Category;
-				entityRegistrationParams.editorHelper = entAttribute.EditorHelper;
-				entityRegistrationParams.editorIcon = entAttribute.Icon;
-				entityRegistrationParams.flags = entAttribute.Flags;
+
+                var curType = type;
+
+                var entType = typeof(Entity);
+                while (curType != entType)
+                {
+                    if (type.TryGetAttribute(out entAttribute))
+                    {
+                        // don't override if the type before this (or earlier) changed it.
+                        if(entityRegistrationParams.category == null)
+                            entityRegistrationParams.category = entAttribute.Category;
+                        if(entityRegistrationParams.editorHelper == null)
+                            entityRegistrationParams.editorHelper = entAttribute.EditorHelper;
+                        if(entityRegistrationParams.editorIcon  == null)
+                            entityRegistrationParams.editorIcon = entAttribute.Icon;
+                        if(entityRegistrationParams.flags == EntityClassFlags.Default)
+                            entityRegistrationParams.flags = entAttribute.Flags;
+                    }
+
+                    curType = curType.BaseType;
+
+                }
 			}
 
 			registrationParams = entityRegistrationParams;

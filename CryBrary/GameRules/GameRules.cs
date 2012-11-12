@@ -18,7 +18,7 @@ namespace CryEngine
             GameRules.Current = this;
 
             Id = 1;
-            this.SetEntityHandle(NativeMethods.Entity.GetEntity(Id));
+            this.SetEntityHandle(NativeEntityMethods.GetEntity(Id));
         }
 
         /// <summary>

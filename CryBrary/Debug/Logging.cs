@@ -32,7 +32,7 @@ namespace CryEngine
         /// <param name="args"></param>
         public static void Log(string format, params object[] args)
         {
-            NativeMethods.Log.Log(String.Format(format, args));
+            NativeLoggingMethods.Log(String.Format(format, args));
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace CryEngine
         /// </summary>
         public static void Log(string msg)
         {
-            NativeMethods.Log.Log(msg);
+            NativeLoggingMethods.Log(msg);
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace CryEngine
         /// <param name="args"></param>
         public static void LogAlways(string format, params object[] args)
         {
-            NativeMethods.Log.LogAlways(String.Format(format, args));
+            NativeLoggingMethods.LogAlways(String.Format(format, args));
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace CryEngine
         /// </summary>
         public static void LogAlways(string msg)
         {
-            NativeMethods.Log.LogAlways(msg);
+            NativeLoggingMethods.LogAlways(msg);
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace CryEngine
         /// <param name="args"></param>
         public static void LogWarning(string format, params object[] args)
         {
-            NativeMethods.Log.Warning(String.Format(format, args));
+            NativeLoggingMethods.Warning(String.Format(format, args));
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace CryEngine
         /// </summary>
         public static void LogWarning(string msg)
         {
-            NativeMethods.Log.Warning(msg);
+            NativeLoggingMethods.Warning(msg);
         }
 
         public static void LogStackTrace()
