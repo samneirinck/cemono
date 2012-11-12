@@ -6,13 +6,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryBrary.Tests", "..\CryBra
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		UnitTesting|x86 = UnitTesting|x86
+		UnitTests|x86 = UnitTests|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4A7993B3-6611-4D9D-B8AB-836D6C27B12B}.UnitTesting|x86.ActiveCfg = UnitTesting|x86
-		{4A7993B3-6611-4D9D-B8AB-836D6C27B12B}.UnitTesting|x86.Build.0 = UnitTesting|x86
-		{25588172-6725-4C61-8CE5-3799FA125533}.UnitTesting|x86.ActiveCfg = UnitTesting|Any CPU
-		{25588172-6725-4C61-8CE5-3799FA125533}.UnitTesting|x86.Build.0 = UnitTesting|Any CPU
+		{4A7993B3-6611-4D9D-B8AB-836D6C27B12B}.UnitTests|x86.ActiveCfg = UnitTests|x86
+		{4A7993B3-6611-4D9D-B8AB-836D6C27B12B}.UnitTests|x86.Build.0 = UnitTests|x86
+		{25588172-6725-4C61-8CE5-3799FA125533}.UnitTests|x86.ActiveCfg = UnitTests|Any CPU
+		{25588172-6725-4C61-8CE5-3799FA125533}.UnitTests|x86.Build.0 = UnitTests|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
