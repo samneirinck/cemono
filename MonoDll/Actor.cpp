@@ -58,6 +58,17 @@ bool CActor::Init(IGameObject *pGameObject)
 
 	GetEntity()->SetFlags(GetEntity()->GetFlags()|(ENTITY_FLAG_ON_RADAR|ENTITY_FLAG_CUSTOM_VIEWDIST_RATIO));
 
+	if (gEnv->bServer)
+	{
+		GetGameObject()->SetAspectProfile(eEA_Physics, eAP_Alive);
+	}
+
+	if(IEntityRenderProxy *pProxy = (IEntityRenderProxy *)GetEntity()->GetProxy(ENTITY_PROXY_RENDER))
+	{
+		if(IRenderNode *pRenderNode = pProxy->GetRenderNode())
+			pRenderNode->SetRndFlags(ERF_REGISTER_BY_POSITION, true);
+	}
+
 	return true; 
 }
 
@@ -65,6 +76,11 @@ void CActor::PostInit(IGameObject *pGameObject)
 {
 	if (m_pAnimatedCharacter)
 		m_pAnimatedCharacter->ResetState();
+
+	if(gEnv->bMultiplayer)
+		GetGameObject()->SetUpdateSlotEnableCondition( this, 0, eUEC_WithoutAI );
+	else if (!gEnv->bServer)
+		GetGameObject()->SetUpdateSlotEnableCondition( this, 0, eUEC_VisibleOrInRange );
 }
 
 bool CActor::ReloadExtension( IGameObject *pGameObject, const SEntitySpawnParams &params )
@@ -357,6 +373,7 @@ bool CActor::SetAspectProfile( EEntityAspects aspect, uint8 profile )
 
 void CActor::InitLocalPlayer()
 {
+	GetGameObject()->SetUpdateSlotEnableCondition( this, 0, eUEC_WithoutAI );
 	//gEnv->pGameFramework->GetIActorSystem()->SetLocalPlayerId(GetEntityId());
 }
 
