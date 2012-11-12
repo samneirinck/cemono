@@ -257,13 +257,15 @@ namespace CryEngine
         public BoundingBox TriggerBounds
         {
             get { return NativeMethods.Entity.GetTriggerBBox(this.GetEntityHandle()); }
-            set
-            {
-                if (value.Minimum == Vec3.Zero && value.Maximum == Vec3.Zero)
-                    NativeMethods.Entity.InvalidateTrigger(this.GetEntityHandle());
+            set { NativeMethods.Entity.SetTriggerBBox(this.GetEntityHandle(), value); }
+        }
 
-                NativeMethods.Entity.SetTriggerBBox(this.GetEntityHandle(), value);
-            }
+        /// <summary>
+        /// Invalidate the TriggerBounds, so it gets recalculated and catches things which are already inside when it gets enabled.
+        /// </summary>
+        public void InvalidateTrigger()
+        {
+            NativeMethods.Entity.InvalidateTrigger(this.GetEntityHandle());;
         }
 
         /*
