@@ -3,9 +3,6 @@
 
 #include <CryModuleDefs.h>
 
-// Add eCryM_Mono to the ECryModule enumeration, before ECryM_Num.
-#define eCryModule eCryM_Mono
-
 #define _FORCEDLL
 
 #ifndef _RELEASE

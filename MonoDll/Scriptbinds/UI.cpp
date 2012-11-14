@@ -39,7 +39,7 @@ T GetValue(const TUIData &arg)
 	return value;
 }
 
-void SEventSystemHandler::OnEvent(const SUIEvent& event)
+SUIArgumentsRet SEventSystemHandler::OnEvent(const SUIEvent& event)
 {
 	IMonoArray *pArgs = CreateMonoArray(3);
 
@@ -91,6 +91,8 @@ void SEventSystemHandler::OnEvent(const SUIEvent& event)
 	pArgs->Insert(pArray);
 
 	CUI::GetInstance()->GetClass()->InvokeArray(NULL, "OnEvent", pArgs);
+
+	return SUIArgumentsRet();
 }
 
 IUIEventSystem *CUI::CreateEventSystem(mono::string name, IUIEventSystem::EEventSystemType eventType)
