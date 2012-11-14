@@ -10,6 +10,7 @@ struct SCVars
 
 	int mono_realtimeScripting;
 	int mono_realtimeScriptingDebug;
+	int mono_realtimeScriptingDetectChanges;
 
 	int mono_softBreakpoints;
 
