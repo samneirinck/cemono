@@ -59,6 +59,7 @@ CScriptSystem::CScriptSystem()
 	, m_pScriptDomain(nullptr)
 	, m_pInput(nullptr)
 	, m_bReloading(false)
+	, m_bDetectedChanges(false)
 {
 	CryLogAlways("Initializing Mono Script System");
 
@@ -121,7 +122,10 @@ CScriptSystem::~CScriptSystem()
 	mono_gc_collect(mono_gc_max_generation());
 
 	if(gEnv->pSystem)
+	{
+		gEnv->pSystem->GetISystemEventDispatcher()->RemoveListener(this);
 		gEnv->pGameFramework->UnregisterListener(this);
+	}
 
 	if(IFileChangeMonitor *pFileChangeMonitor = gEnv->pFileChangeMonitor)
 		pFileChangeMonitor->UnregisterListener(this);
@@ -244,23 +248,6 @@ void CScriptSystem::Reload()
 	m_bReloading = false;
 }
 
-void CScriptSystem::OnSystemEvent(ESystemEvent event,UINT_PTR wparam,UINT_PTR lparam)
-{
-	switch(event)
-	{
-	case ESYSTEM_EVENT_GAME_POST_INIT:
-		{
-			if(gEnv->pGameFramework->GetIFlowSystem())
-			{
-				gEnv->pSystem->GetISystemEventDispatcher()->RemoveListener(this);
-
-				m_pScriptManager->CallMethod("RegisterFlownodes");
-			}
-		}
-		break;
-	}
-}
-
 void CScriptSystem::RegisterDefaultBindings()
 {
 	// Register what couldn't be registered earlier.
@@ -306,10 +293,38 @@ void CScriptSystem::OnFileChange(const char *fileName)
 {
 	if(g_pMonoCVars->mono_realtimeScripting == 0 || m_bReloading)
 		return;
+	
+	if(!GetFocus())
+	{
+		m_bDetectedChanges = true;
+		return;
+	}
 
 	const char *fileExt = PathUtil::GetExt(fileName);
 	if(!strcmp(fileExt, "cs") || !strcmp(fileExt, "dll"))
 		Reload();
+}
+
+void CScriptSystem::OnSystemEvent(ESystemEvent event,UINT_PTR wParam,UINT_PTR lparam)
+{
+	switch(event)
+	{
+	case ESYSTEM_EVENT_CHANGE_FOCUS:
+		{
+			if(wParam != 0 && m_bDetectedChanges)
+			{
+				Reload();
+				m_bDetectedChanges = false;
+			}
+		}
+		break;
+	case ESYSTEM_EVENT_GAME_POST_INIT:
+		{
+			if(m_pScriptManager && gEnv->pGameFramework->GetIFlowSystem())
+				m_pScriptManager->CallMethod("RegisterFlownodes");
+		}
+		break;
+	}
 }
 
 void CScriptSystem::RegisterMethodBinding(const void *method, const char *fullMethodName)
