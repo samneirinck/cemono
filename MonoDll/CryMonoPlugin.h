@@ -51,7 +51,7 @@ public:
 		if(!sAPIVersion)
 			return false;
 
-		return !strcmp(sAPIVersion, "3.4.0");
+		return !strcmp(sAPIVersion, "3.4.3");
 	}
 
     virtual bool Init(SSystemGlobalEnvironment &env, SSystemInitParams &startupParams, IPluginBase *pPluginManager, const char* sPluginDirectory)

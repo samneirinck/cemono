@@ -245,7 +245,6 @@ void CEntity::RMIParams::SerializeWith(TSerialize ser)
 	ser.Value("methodName", methodName);
 	ser.Value("targetId", targetId, 'eid');
 
-	CryLogAlways("length %i", length);
 	if(length > 0)
 	{
 		if(ser.IsWriting())
@@ -262,8 +261,6 @@ void CEntity::RMIParams::SerializeWith(TSerialize ser)
 				MonoAnyValue value;
 				value.SerializeWith(ser);
 				pArgs->InsertAny(value);
-
-				CryLogAlways(pArgs->GetItem(i)->ToString());
 			}
 		}
 	}

@@ -62,7 +62,8 @@ struct SEventSystemHandler
 	}
 
 	// IUIEventListener
-	virtual void OnEvent(const SUIEvent& event);
+	virtual SUIArgumentsRet OnEvent(const SUIEvent& event);
+	virtual void OnEventSystemDestroyed(IUIEventSystem* pEventSystem)  {}
 	// ~IUIEventListener
 
 	IUIEventSystem *GetEventSystem() { return m_pEventSystem; }
