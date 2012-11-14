@@ -183,6 +183,9 @@ bool CScriptSystem::CompleteInit()
 
 void CScriptSystem::Reload()
 {
+	if(g_pMonoCVars->mono_realtimeScripting == 0 || m_bReloading)
+		return;
+
 	m_bReloading = true;
 
 	if(!m_bFirstReload)
@@ -291,9 +294,9 @@ void CScriptSystem::OnPostUpdate(float fDeltaTime)
 
 void CScriptSystem::OnFileChange(const char *fileName)
 {
-	if(g_pMonoCVars->mono_realtimeScripting == 0 || m_bReloading)
+	if(g_pMonoCVars->mono_realtimeScriptingDetectChanges == 0)
 		return;
-	
+
 	if(!GetFocus())
 	{
 		m_bDetectedChanges = true;
