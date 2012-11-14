@@ -119,7 +119,7 @@ namespace CryEngine.Serialization
             else if (objectReference.SerializationType == SerializationType.Object && objectReference.Value is Vec3 && UnusedMarker.IsUnused((Vec3)objectReference.Value))
                 objectReference.SerializationType = SerializationType.UnusedMarker;
 
-            WriteLine(objectReference.SerializationType);
+            WriteLine((int)objectReference.SerializationType);
 
             switch(objectReference.SerializationType)
             {
@@ -185,7 +185,8 @@ namespace CryEngine.Serialization
 
         void WriteEnum(ObjectReference objectReference)
         {
-            WriteAny(objectReference);
+            WriteType(objectReference.Value.GetType());
+            WriteLine((int)objectReference.Value);
         }
 
         void WriteEnumerable(ObjectReference objectReference)
