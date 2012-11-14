@@ -344,6 +344,8 @@ IMonoObject *CScriptSystem::InstantiateScript(const char *scriptName, EMonoScrip
 
 	if(!pResult)
 		MonoWarning("Failed to instantiate script %s", scriptName);
+	else if(scriptType == eScriptFlag_GameRules)
+		pResult->CallMethod("InternalInitialize");
 
 	mono::object instance = pResult->GetManagedObject();
 	pResult->Release(false);
