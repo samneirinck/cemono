@@ -115,6 +115,7 @@ protected:
 
 	bool m_bFirstReload;
 	bool m_bReloading;
+	bool m_bDetectedChanges;
 
 	CFlowManager *m_pFlowManager;
 	CInput *m_pInput;

@@ -140,6 +140,8 @@ namespace CryEngine.Initialization
             // Note: Flow nodes have to be registered from IGame::CompleteInit in order to be usable from within UI graphs. (Use IMonoScriptSystem::RegisterFlownodes)
             foreach (var node in FlowNodes)
                 FlowNode.Register(node);
+
+            FlowNodes.Clear();
         }
 
         public void OnRevert()
