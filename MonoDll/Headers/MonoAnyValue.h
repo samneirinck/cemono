@@ -21,6 +21,7 @@ enum EMonoAnyType
 
 	eMonoAnyType_Integer,
 	eMonoAnyType_UnsignedInteger,
+	eMonoAnyType_EntityId,
 	eMonoAnyType_Short,
 	eMonoAnyType_UnsignedShort,
 	eMonoAnyType_Float,
@@ -28,8 +29,6 @@ enum EMonoAnyType
 
 	eMonoAnyType_String,
 	eMonoAnyType_Array,
-	eMonoAnyType_Class,
-	eMonoAnyType_Assembly,
 	eMonoAnyType_IntPtr,
 
 	eMonoAnyType_Last
@@ -64,6 +63,9 @@ struct MonoAnyValue : public ISerializable
 		case eMonoAnyType_UnsignedInteger:
 		case eMonoAnyType_UnsignedShort:
 			ser.Value("uint", u, 'ui32');
+			break;
+		case eMonoAnyType_EntityId:
+			ser.Value("entityId", u, 'eid');
 			break;
 		case eMonoAnyType_Integer:
 		case eMonoAnyType_Short:
@@ -100,6 +102,7 @@ struct MonoAnyValue : public ISerializable
 			return &b;
 		case eMonoAnyType_UnsignedInteger:
 		case eMonoAnyType_UnsignedShort:
+		case eMonoAnyType_EntityId:
 			return &u;
 		case eMonoAnyType_Integer:
 		case eMonoAnyType_Short:

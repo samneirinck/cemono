@@ -44,7 +44,7 @@ public:
 	// IMonoObject
 	virtual void Release(bool triggerGC = true) override;
 
-	virtual EMonoAnyType GetType() override { return eMonoAnyType_Assembly; }
+	virtual EMonoAnyType GetType() override { return eMonoAnyType_Unknown; }
 	virtual MonoAnyValue GetAnyValue() override { return MonoAnyValue(); }
 
 	virtual mono::object GetManagedObject() override { return (mono::object)mono_assembly_get_object(mono_domain_get(), mono_image_get_assembly((MonoImage *)m_pObject)); }

@@ -36,16 +36,12 @@ mono::object CConverter::BoxAnyValue(MonoAnyValue &any)
 	case eMonoAnyType_Integer:
 		return (mono::object)mono_value_box(mono_domain_get(), mono_get_int32_class(), &any.i);
 	case eMonoAnyType_UnsignedInteger:
+		return (mono::object)mono_value_box(mono_domain_get(), mono_get_uint32_class(), &any.u);
+	case eMonoAnyType_EntityId:
 		{
-			if(g_pMonoCVars->mono_boxUnsignedIntegersAsEntityIds)
-			{
-				IMonoClass *pEntityIdClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("EntityId");
-				return pEntityIdClass->BoxObject(&mono::entityId(any.u))->GetManagedObject();
-			}
-			else
-				return (mono::object)mono_value_box(mono_domain_get(), mono_get_uint32_class(), &any.u);
+			IMonoClass *pEntityIdClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("EntityId");
+			return pEntityIdClass->BoxObject(&mono::entityId(any.u))->GetManagedObject();
 		}
-		break;
 	case eMonoAnyType_Short:
 		return (mono::object)mono_value_box(mono_domain_get(), mono_get_int16_class(), &any.i);
 	case eMonoAnyType_UnsignedShort:

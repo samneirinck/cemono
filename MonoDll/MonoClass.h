@@ -51,7 +51,7 @@ public:
 	// IMonoObject
 	virtual void Release(bool triggerGC = true) override;
 
-	virtual EMonoAnyType GetType() override { return eMonoAnyType_Class; }
+	virtual EMonoAnyType GetType() override { return eMonoAnyType_Unknown; }
 	virtual MonoAnyValue GetAnyValue() override { return MonoAnyValue(); }
 
 	virtual mono::object GetManagedObject() override { return CScriptObject::GetManagedObject(); }
