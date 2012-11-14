@@ -81,11 +81,12 @@ struct MonoAnyValue : public ISerializable
 			{
 				if(ser.IsWriting())
 				{
-					serializedString = string(str);
+					auto serializedString = string(str);
 					ser.Value("str", serializedString); 
 				}
 				else
 				{
+					auto serializedString = string();
 					ser.Value("str", serializedString);
 					str = serializedString.c_str();
 				}
@@ -126,8 +127,6 @@ struct MonoAnyValue : public ISerializable
 		const char*		str;
 		struct { float x,y,z; } vec3;
 	};
-
-	string serializedString;
 };
 
 #endif //__MONO_ANY_VALUE__
