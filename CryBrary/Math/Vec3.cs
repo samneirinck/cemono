@@ -107,6 +107,21 @@ namespace CryEngine
             Z = values[2];
         }
 
+        public Vec3(Quat q)
+        {
+            Y = (float)Math.Asin(Math.Max(-1.0f, Math.Min(1.0f, -(q.V.X * q.V.Z - q.W * q.V.Y) * 2)));
+            if (Math.Abs(Math.Abs(Y) - (float)((float)Math.PI * 0.5f)) < 0.01f)
+            {
+                X = 0;
+                Z = (float)Math.Atan2(-2 * (q.V.X * q.V.Y - q.W * q.V.Z), 1 - (q.V.X * q.V.X + q.V.Z * q.V.Z) * 2);
+            }
+            else
+            {
+                X = (float)Math.Atan2((q.V.Y * q.V.Z + q.W * q.V.X) * 2, 1 - (q.V.X * q.V.X + q.V.Y * q.V.Y) * 2);
+                Z = (float)Math.Atan2((q.V.X * q.V.Y + q.W * q.V.Z) * 2, 1 - (q.V.Z * q.V.Z + q.V.Y * q.V.Y) * 2);
+            }
+        }
+
         /// <summary>
         /// Gets a value indicting whether this instance is normalized.
         /// </summary>

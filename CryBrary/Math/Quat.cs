@@ -373,6 +373,11 @@ namespace CryEngine
             vOut.Z = (r2.X*right.V.Y-r2.Y*right.V.X); vOut.Z+=vOut.Z+left.Z;
             return vOut;
         }
+
+        public static explicit operator Vec3(Quat value)
+        {
+            return new Vec3(value);
+        }
         #endregion
 
         #region Overrides
