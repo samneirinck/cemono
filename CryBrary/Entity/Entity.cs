@@ -46,7 +46,23 @@ namespace CryEngine
             OnSpawn();
         }
 
-        bool HasEditorPropertyBeenSet(object value, Type type)
+        private void InternalFullSerialize(Serialization.CrySerialize serialize) 
+        {
+            //var serialize = new Serialization.CrySerialize();
+            //serialize.Handle = handle;
+
+            FullSerialize(serialize);
+        }
+
+        private void InternalNetSerialize(Serialization.CrySerialize serialize, int aspect, byte profile, int flags) 
+        {
+            //var serialize = new Serialization.CrySerialize();
+            //serialize.Handle = handle;
+
+            NetSerialize(serialize, aspect, profile, flags);
+        }
+
+        private bool HasEditorPropertyBeenSet(object value, Type type)
         {
             object defaultVal = null;
             if (type.IsValueType)
@@ -159,6 +175,12 @@ namespace CryEngine
         protected virtual void OnPropertyChanged(MemberInfo memberInfo, EntityPropertyType propertyType, object newValue) { }
         
         protected virtual void OnPrePhysicsUpdate() {}
+
+        protected virtual void FullSerialize(Serialization.CrySerialize serialize) { }
+
+        protected virtual void NetSerialize(Serialization.CrySerialize serialize, int aspect, byte profile, int flags) { }
+
+        protected virtual void PostSerialize() { }
         #endregion
 
         #region Base Logic

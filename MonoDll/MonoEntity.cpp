@@ -186,80 +186,113 @@ void CEntity::FullSerialize(TSerialize ser)
 			pPropertyHandler->SetProperty(pEntity, i, propertyValue);
 		}
 	}
+
 	ser.EndGroup();
+
+	ser.BeginGroup("ManagedEntity");
+
+	IMonoArray *pArgs = CreateMonoArray(1);
+	pArgs->InsertNativePointer(&ser);
+
+	m_pScript->GetClass()->InvokeArray(m_pScript, "InternalFullSerialize", pArgs);
+
+	ser.EndGroup();
+}
+
+bool CEntity::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile, int flags)
+{
+	ser.BeginGroup("ManagedEntity");
+
+	IMonoArray *pArgs = CreateMonoArray(4);
+	pArgs->InsertNativePointer(&ser);
+	pArgs->Insert(aspect);
+	pArgs->Insert(profile);
+	pArgs->Insert(flags);
+
+	m_pScript->GetClass()->InvokeArray(m_pScript, "InternalNetSerialize", pArgs);
+
+	ser.EndGroup();
+
+	return true;
+}
+
+void CEntity::PostSerialize()
+{
+	m_pScript->CallMethod("PostSerialize");
 }
 
 void CEntity::SetPropertyValue(IEntityPropertyHandler::SPropertyInfo propertyInfo, const char *value)
 {
-	m_pScript->CallMethod("SetPropertyValue", propertyInfo.name, propertyInfo.type, value);
+	if(value != nullptr)
+		m_pScript->CallMethod("SetPropertyValue", propertyInfo.name, propertyInfo.type, value);
 }
 
 ///////////////////////////////////////////////////
 // Entity RMI's
 ///////////////////////////////////////////////////
-CEntity::RMIParams::RMIParams(IMonoArray *pArray, const char *funcName, int targetScript)
+CEntity::RMIParams::RMIParams(IMonoArray *pArray, const char *funcName, EntityId target)
 	: methodName(funcName)
-	, scriptId(targetScript)
+	, targetId(target)
+	, pArgs(pArray)
 {
-	length = pArray->GetSize();
-
-	if(length > 0)
-	{
-		anyValues = new MonoAnyValue[length];
-
-		for(int i = 0; i < length; i++)
-			anyValues[i] = pArray->GetItem(i)->GetAnyValue();
-	}
 }
 
 void CEntity::RMIParams::SerializeWith(TSerialize ser)
 {
+	int length = pArgs ? pArgs->GetSize() : 0;
 	ser.Value("length", length);
-	ser.Value("methodName", methodName);
-	ser.Value("scriptId", scriptId);
 
+	ser.Value("methodName", methodName);
+	ser.Value("targetId", targetId, 'eid');
+
+	CryLogAlways("length %i", length);
 	if(length > 0)
 	{
-		if(!anyValues)
-			anyValues = new MonoAnyValue[length];
+		if(ser.IsWriting())
+		{
+			for(int i = 0; i < length; i++)
+				pArgs->GetItem(i)->GetAnyValue().SerializeWith(ser);
+		}
+		else
+		{
+			pArgs = CreateMonoArray(length);
 
-		for(int i = 0; i < length; i++)
-			anyValues[i].SerializeWith(ser);
+			for(int i = 0; i < length; i++)
+			{
+				MonoAnyValue value;
+				value.SerializeWith(ser);
+				pArgs->InsertAny(value);
+
+				CryLogAlways(pArgs->GetItem(i)->ToString());
+			}
+		}
 	}
 }
 
 IMPLEMENT_RMI(CEntity, SvScriptRMI)
 {
-	IMonoArray *pArgs = NULL;
-	if(params.length > 0)
-	{
-		pArgs = CreateMonoArray(params.length);
+	IMonoClass *pNetworkClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("Network");
 
-		for(int i = 0; i < params.length; i++)
-			pArgs->Insert(params.anyValues[i]);
-	}
+	IMonoArray *pNetworkArgs = CreateMonoArray(3);
+	pNetworkArgs->Insert(ToMonoString(params.methodName.c_str()));
+	pNetworkArgs->Insert(params.pArgs);
+	pNetworkArgs->Insert(params.targetId);
 
-	IMonoObject *pScriptInstance = gEnv->pMonoScriptSystem->GetScriptManager()->CallMethod("GetScriptInstanceById", params.scriptId, eScriptFlag_Any);
-
-	pScriptInstance->CallMethod(params.methodName.c_str(), pArgs);
+	pNetworkClass->InvokeArray(nullptr, "OnRemoteInvocation", pNetworkArgs);
 
 	return true;
 }
 
 IMPLEMENT_RMI(CEntity, ClScriptRMI)
 {
-	IMonoArray *pArgs = NULL;
-	if(params.length > 0)
-	{
-		pArgs = CreateMonoArray(params.length);
+	IMonoClass *pNetworkClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("Network");
 
-		for(int i = 0; i < params.length; i++)
-			pArgs->Insert(params.anyValues[i]);
-	}
+	IMonoArray *pNetworkArgs = CreateMonoArray(3);
+	pNetworkArgs->Insert(ToMonoString(params.methodName.c_str()));
+	pNetworkArgs->Insert(params.pArgs);
+	pNetworkArgs->Insert(params.targetId);
 
-	IMonoObject *pScriptInstance = gEnv->pMonoScriptSystem->GetScriptManager()->CallMethod("GetScriptInstanceById", params.scriptId, eScriptFlag_Any);
-
-	pScriptInstance->CallMethod(params.methodName.c_str(), pArgs);
+	pNetworkClass->InvokeArray(nullptr, "OnRemoteInvocation", pNetworkArgs);
 
 	return true;
 }

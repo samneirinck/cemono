@@ -54,17 +54,11 @@
     <ClInclude Include="Headers\IMonoConverter.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="MonoConverter.h">
-      <Filter>Mono</Filter>
-    </ClInclude>
     <ClInclude Include="Headers\MonoAnyValue.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="MonoEntity.h">
       <Filter>EntitySystem</Filter>
-    </ClInclude>
-    <ClInclude Include="MonoCVars.h">
-      <Filter>Mono</Filter>
     </ClInclude>
     <ClInclude Include="PathUtils.h">
       <Filter>Utils</Filter>
@@ -144,6 +138,15 @@
     <ClInclude Include="CryScriptInstance.h">
       <Filter>Mono</Filter>
     </ClInclude>
+    <ClInclude Include="MonoConverter.h">
+      <Filter>Mono</Filter>
+    </ClInclude>
+    <ClInclude Include="MonoCVars.h">
+      <Filter>Mono</Filter>
+    </ClInclude>
+    <ClInclude Include="Scriptbinds\CrySerialize.h">
+      <Filter>ScriptBinds</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -162,9 +165,6 @@
     <ClCompile Include="MonoArray.cpp">
       <Filter>Wrappers</Filter>
     </ClCompile>
-    <ClCompile Include="MonoScriptSystem.cpp">
-      <Filter>Mono</Filter>
-    </ClCompile>
     <ClCompile Include="FlowManager.cpp">
       <Filter>FlowSystem</Filter>
     </ClCompile>
@@ -174,14 +174,8 @@
     <ClCompile Include="MonoObject.cpp">
       <Filter>Wrappers</Filter>
     </ClCompile>
-    <ClCompile Include="MonoConverter.cpp">
-      <Filter>Mono</Filter>
-    </ClCompile>
     <ClCompile Include="MonoEntity.cpp">
       <Filter>EntitySystem</Filter>
-    </ClCompile>
-    <ClCompile Include="MonoCVars.cpp">
-      <Filter>Mono</Filter>
     </ClCompile>
     <ClCompile Include="Scriptbinds\Console.cpp">
       <Filter>ScriptBinds\Utils</Filter>
@@ -243,8 +237,20 @@
     <ClCompile Include="NativeEntity.cpp">
       <Filter>EntitySystem\Native</Filter>
     </ClCompile>
+    <ClCompile Include="MonoScriptSystem.cpp">
+      <Filter>Mono</Filter>
+    </ClCompile>
     <ClCompile Include="CryScriptInstance.cpp">
       <Filter>Mono</Filter>
+    </ClCompile>
+    <ClCompile Include="MonoConverter.cpp">
+      <Filter>Mono</Filter>
+    </ClCompile>
+    <ClCompile Include="MonoCVars.cpp">
+      <Filter>Mono</Filter>
+    </ClCompile>
+    <ClCompile Include="Scriptbinds\CrySerialize.cpp">
+      <Filter>ScriptBinds</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

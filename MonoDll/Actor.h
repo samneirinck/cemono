@@ -21,6 +21,8 @@ class CActor
 	, public IGameObjectView
 	, public IGameObjectProfileManager
 {
+	friend class CSerializeWrapper<ISerialize>;
+
 public:
 	CActor();
 	~CActor();
@@ -145,9 +147,9 @@ public:
 	virtual bool ReloadExtension( IGameObject * pGameObject, const SEntitySpawnParams &params ) override;
 	virtual void PostReloadExtension( IGameObject * pGameObject, const SEntitySpawnParams &params ) override;
 	virtual bool GetEntityPoolSignature( TSerialize signature ) override { signature.BeginGroup("Actor"); signature.EndGroup(); return true;}
-	virtual void FullSerialize( TSerialize ser ) override {}
+	virtual void FullSerialize( TSerialize ser ) override;
 	virtual bool NetSerialize( TSerialize ser, EEntityAspects aspect, uint8 profile, int pflags ) override;
-	virtual void PostSerialize() override {}
+	virtual void PostSerialize() override;
 	virtual void SerializeSpawnInfo( TSerialize ser ) override {}
 	virtual ISerializableInfoPtr GetSpawnInfo() override { return nullptr; }
 	virtual void Update( SEntityUpdateContext& ctx, int updateSlot ) override {}

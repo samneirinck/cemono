@@ -18,14 +18,14 @@ CNetwork::~CNetwork()
 {
 }
 
-void CNetwork::RemoteInvocation(EntityId entityId, int scriptId, mono::string methodName, mono::object args, ERMInvocation target, int channelId)
+void CNetwork::RemoteInvocation(EntityId entityId, EntityId targetId, mono::string methodName, mono::object args, ERMInvocation target, int channelId)
 {
 	CRY_ASSERT(entityId != 0);
 
 	IGameObject *pGameObject = gEnv->pGameFramework->GetGameObject(entityId);
 	CRY_ASSERT(pGameObject);
 
-	CEntity::RMIParams params(*args, ToCryString(methodName), scriptId);
+	CEntity::RMIParams params(*args, ToCryString(methodName), targetId);
 
 	if(target & eRMI_ToServer)
 		pGameObject->InvokeRMI(CEntity::SvScriptRMI(), params, target, channelId);

@@ -58,10 +58,7 @@ bool CActor::Init(IGameObject *pGameObject)
 
 	GetEntity()->SetFlags(GetEntity()->GetFlags()|(ENTITY_FLAG_ON_RADAR|ENTITY_FLAG_CUSTOM_VIEWDIST_RATIO));
 
-	if (gEnv->bServer)
-	{
-		GetGameObject()->SetAspectProfile(eEA_Physics, eAP_Alive);
-	}
+	GetGameObject()->SetAspectProfile(eEA_Physics, eAP_Alive);
 
 	if(IEntityRenderProxy *pProxy = (IEntityRenderProxy *)GetEntity()->GetProxy(ENTITY_PROXY_RENDER))
 	{
@@ -467,5 +464,34 @@ bool CActor::NetSerialize( TSerialize ser, EEntityAspects aspect, uint8 profile,
 		// ~PLAYERPREDICTION
 	}
 
+	ser.BeginGroup("ManagedActor");
+
+	IMonoArray *pArgs = CreateMonoArray(4);
+	pArgs->InsertNativePointer(&ser);
+	pArgs->Insert(aspect);
+	pArgs->Insert(profile);
+	pArgs->Insert(pflags);
+
+	m_pScript->GetClass()->InvokeArray(m_pScript, "InternalNetSerialize", pArgs);
+
+	ser.EndGroup();
+
 	return true;
+}
+
+void CActor::FullSerialize(TSerialize ser)
+{
+	ser.BeginGroup("ManagedActor");
+
+	IMonoArray *pArgs = CreateMonoArray(1);
+	pArgs->InsertNativePointer(&ser);
+
+	m_pScript->GetClass()->InvokeArray(m_pScript, "InternalFullSerialize", pArgs);
+
+	ser.EndGroup();
+}
+
+void CActor::PostSerialize()
+{
+	m_pScript->CallMethod("PostSerialize");
 }
