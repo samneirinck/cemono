@@ -14,7 +14,6 @@
 
 /// <summary>
 /// Simple pre-processor method used to quickly register methods within scriptbinds.
-/// We add _'s before the method name to easily distinguish between standard methods and externals (scriptbinds) in C#.
 /// </summary>
 #define REGISTER_METHOD(method) gEnv->pMonoScriptSystem->RegisterMethodBinding(method, (GetNamespace() + (string)".").append(GetClassName()).append("::").append(#method))
 

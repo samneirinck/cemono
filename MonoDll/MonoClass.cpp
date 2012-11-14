@@ -136,7 +136,7 @@ MonoMethod *CScriptClass::GetMonoMethod(const char *methodName, IMonoArray *pArg
 						break;
 					else if(monoType == MONO_TYPE_I4 && anyType != eMonoAnyType_Integer)
 						break;
-					else if(monoType == MONO_TYPE_U4 && anyType != eMonoAnyType_UnsignedInteger)
+					else if(monoType == MONO_TYPE_U4 && (anyType != eMonoAnyType_UnsignedInteger && anyType != eMonoAnyType_EntityId))
 						break;
 					else if(monoType == MONO_TYPE_I2 && anyType != eMonoAnyType_Short)
 						break;

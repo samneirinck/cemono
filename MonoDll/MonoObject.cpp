@@ -83,8 +83,16 @@ EMonoAnyType CScriptObject::GetType()
 		return eMonoAnyType_String;
 	else if(pMonoClass==mono_get_intptr_class())
 		return eMonoAnyType_IntPtr;
-	//else if(!strcmp(className, "Vec3"))
-		//return eMonoAnyType_Vec3;
+	else if(pMonoClass == mono_get_array_class())
+		return eMonoAnyType_Array;
+	else
+	{
+		const char *className = mono_class_get_name(pMonoClass);
+		if(!strcmp(className, "EntityId"))
+			return eMonoAnyType_EntityId;
+		else if(!strcmp(className, "Vec3"))
+			return eMonoAnyType_Vec3;
+	}
 
 	return eMonoAnyType_Unknown;
 }
@@ -99,12 +107,21 @@ MonoAnyValue CScriptObject::GetAnyValue()
 		return Unbox<int>();
 	case eMonoAnyType_UnsignedInteger:
 		return Unbox<uint>();
+	case eMonoAnyType_EntityId:
+		{
+			MonoAnyValue value = Unbox<EntityId>();
+			value.type = eMonoAnyType_EntityId;
+
+			return value;
+		}
 	case eMonoAnyType_Short:
 		return Unbox<short>();
 	case eMonoAnyType_UnsignedShort:
 		return Unbox<unsigned short>();
 	case eMonoAnyType_Float:
 		return Unbox<float>();
+	case eMonoAnyType_Vec3:
+		return Unbox<Vec3>();
 	case eMonoAnyType_String:
 		return ToCryString((mono::string)GetManagedObject());
 	}
