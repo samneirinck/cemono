@@ -24,6 +24,9 @@ namespace CryEngine
 
         static void OnMouseEvent(int x, int y, MouseEvent mouseEvent, int wheelDelta)
         {
+            MouseDeltaX = MouseX - x;
+            MouseDeltaY = MouseY - y;
+
             MouseX = x;
             MouseY = y;
 
@@ -31,9 +34,11 @@ namespace CryEngine
                 MouseEvents(new MouseEventArgs(x, y, wheelDelta, mouseEvent));
         }
 
-        public static int MouseX { get; set; }
+        public static int MouseX { get; private set; }
+        public static int MouseY { get; private set; }
 
-        public static int MouseY { get; set; }
+        public static int MouseDeltaX { get; private set; }
+        public static int MouseDeltaY { get; private set; }
         #endregion
 
         public static event KeyEventDelegate KeyEvents;
