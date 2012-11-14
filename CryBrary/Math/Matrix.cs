@@ -1,4 +1,6 @@
-﻿namespace CryEngine
+﻿using System;
+
+namespace CryEngine
 {
     public struct Matrix33
     {
@@ -751,9 +753,9 @@
 
             // extract angle and axis
             double cosine = MathHelpers.Clamp((d.M00 + d.M11 + d.M22 - 1.0) * 0.5, -1.0, +1.0);
-            double angle = MathHelpers.Atan2(MathHelpers.Sqrt(1.0 - cosine * cosine), cosine);
+            double angle = Math.Atan2(Math.Sqrt(1.0 - cosine * cosine), cosine);
             var axis = new Vec3(d.M21 - d.M12, d.M02 - d.M20, d.M10 - d.M01);
-            double l = MathHelpers.Sqrt(axis | axis); if (l > 0.00001) axis /= (float)l; else axis = new Vec3(1, 0, 0);
+            double l = Math.Sqrt(axis | axis); if (l > 0.00001) axis /= (float)l; else axis = new Vec3(1, 0, 0);
             i.SetRotationAA((float)angle * t, axis); // angle interpolation and calculation of new delta-matrix (=26 flops) 
 
             // final concatenation (=39 flops)
@@ -820,12 +822,12 @@
         /// <returns></returns>
         int IsOrthonormal(float threshold = 0.001f)
         {
-            var d0 = MathHelpers.Abs(GetColumn0() | GetColumn1()); if (d0 > threshold) return 0;
-            var d1 = MathHelpers.Abs(GetColumn0() | GetColumn2()); if (d1 > threshold) return 0;
-            var d2 = MathHelpers.Abs(GetColumn1() | GetColumn2()); if (d2 > threshold) return 0;
-            var a = (int)System.Convert.ChangeType((MathHelpers.Abs(1 - (GetColumn0() | GetColumn0()))) < threshold, typeof(int));
-            var b = (int)System.Convert.ChangeType((MathHelpers.Abs(1 - (GetColumn1() | GetColumn1()))) < threshold, typeof(int));
-            var c = (int)System.Convert.ChangeType((MathHelpers.Abs(1 - (GetColumn2() | GetColumn2()))) < threshold, typeof(int));
+            var d0 = Math.Abs(GetColumn0() | GetColumn1()); if (d0 > threshold) return 0;
+            var d1 = Math.Abs(GetColumn0() | GetColumn2()); if (d1 > threshold) return 0;
+            var d2 = Math.Abs(GetColumn1() | GetColumn2()); if (d2 > threshold) return 0;
+            var a = (int)System.Convert.ChangeType((Math.Abs(1 - (GetColumn0() | GetColumn0()))) < threshold, typeof(int));
+            var b = (int)System.Convert.ChangeType((Math.Abs(1 - (GetColumn1() | GetColumn1()))) < threshold, typeof(int));
+            var c = (int)System.Convert.ChangeType((Math.Abs(1 - (GetColumn2() | GetColumn2()))) < threshold, typeof(int));
             return a & b & c;
         }
 
@@ -839,9 +841,9 @@
 
         public bool IsEquivalent(Matrix34 m, float e = 0.05f)
         {
-            return ((MathHelpers.Abs(M00 - m.M00) <= e) && (MathHelpers.Abs(M01 - m.M01) <= e) && (MathHelpers.Abs(M02 - m.M02) <= e) && (MathHelpers.Abs(M03 - m.M03) <= e) &&
-            (MathHelpers.Abs(M10 - m.M10) <= e) && (MathHelpers.Abs(M11 - m.M11) <= e) && (MathHelpers.Abs(M12 - m.M12) <= e) && (MathHelpers.Abs(M13 - m.M13) <= e) &&
-            (MathHelpers.Abs(M20 - m.M20) <= e) && (MathHelpers.Abs(M21 - m.M21) <= e) && (MathHelpers.Abs(M22 - m.M22) <= e) && (MathHelpers.Abs(M23 - m.M23) <= e));
+            return ((Math.Abs(M00 - m.M00) <= e) && (Math.Abs(M01 - m.M01) <= e) && (Math.Abs(M02 - m.M02) <= e) && (Math.Abs(M03 - m.M03) <= e) &&
+            (Math.Abs(M10 - m.M10) <= e) && (Math.Abs(M11 - m.M11) <= e) && (Math.Abs(M12 - m.M12) <= e) && (Math.Abs(M13 - m.M13) <= e) &&
+            (Math.Abs(M20 - m.M20) <= e) && (Math.Abs(M21 - m.M21) <= e) && (Math.Abs(M22 - m.M22) <= e) && (Math.Abs(M23 - m.M23) <= e));
         }
         #endregion
 
