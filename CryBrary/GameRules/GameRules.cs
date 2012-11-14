@@ -15,7 +15,7 @@ namespace CryEngine
     {
         internal void InternalInitialize()
         {
-            GameRules.Current = this;
+            Current = this;
 
             Id = 1;
             this.SetEntityHandle(NativeEntityMethods.GetEntity(Id));
