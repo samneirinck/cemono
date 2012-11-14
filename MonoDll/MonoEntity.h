@@ -47,8 +47,8 @@ public:
 	virtual bool GetEntityPoolSignature( TSerialize signature ) { return false; }
 	virtual void Release() { delete this; }
 	virtual void FullSerialize(TSerialize ser);
-	virtual bool NetSerialize( TSerialize ser, EEntityAspects aspect, uint8 profile, int flags ) { return true; }
-	virtual void PostSerialize() {}
+	virtual bool NetSerialize( TSerialize ser, EEntityAspects aspect, uint8 profile, int flags );
+	virtual void PostSerialize();
 	virtual void SerializeSpawnInfo( TSerialize ser ) {}
 	virtual ISerializableInfoPtr GetSpawnInfo() { return 0; }
 	virtual void Update( SEntityUpdateContext& ctx, int updateSlot ) {}
@@ -63,15 +63,14 @@ public:
 
 	struct RMIParams
 	{
-		RMIParams() : anyValues(NULL) {}
-		RMIParams(IMonoArray *pArray, const char *funcName, int targetScript);
+		RMIParams() : pArgs(NULL) {}
+		RMIParams(IMonoArray *pArray, const char *funcName, EntityId target);
 
 		void SerializeWith(TSerialize ser);
 
-		MonoAnyValue *anyValues;
-		int length;
+		IMonoArray *pArgs;
 		string methodName;
-		int scriptId;
+		EntityId targetId;
 	};
 
 	DECLARE_SERVER_RMI_NOATTACH(SvScriptRMI, RMIParams, eNRT_ReliableUnordered);

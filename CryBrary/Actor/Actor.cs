@@ -8,11 +8,24 @@ using CryEngine.Native;
 
 namespace CryEngine
 {
-    /// <summary>
-    /// WIP Player class. TODO: Redo, currently very limited in terms of callbacks + interoperability with C++ backend
-    /// </summary>
     public abstract partial class Actor : ActorBase
     {
+        private void InternalFullSerialize(Serialization.CrySerialize serialize)
+        {
+            //var serialize = new Serialization.CrySerialize();
+            //serialize.Handle = handle;
+
+            FullSerialize(serialize);
+        }
+
+        private void InternalNetSerialize(Serialization.CrySerialize serialize, int aspect, byte profile, int flags)
+        {
+           // var serialize = new Serialization.CrySerialize();
+            //serialize.Handle = handle;
+
+            NetSerialize(serialize, aspect, profile, flags);
+        }
+
         /// <summary>
         /// Sets / gets the current health of this actor.
         /// </summary>
@@ -39,6 +52,12 @@ namespace CryEngine
         /// Called prior to updating physics, useful for requesting movement.
         /// </summary>
         protected virtual void OnPrePhysicsUpdate() { }
+
+        protected virtual void FullSerialize(Serialization.CrySerialize serialize) { }
+
+        protected virtual void NetSerialize(Serialization.CrySerialize serialize, int aspect, byte profile, int flags) { }
+
+        protected virtual void PostSerialize() { }
         #endregion
     }
 }

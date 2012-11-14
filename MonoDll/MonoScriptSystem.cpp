@@ -43,6 +43,7 @@
 #include "Scriptbinds\Network.h"
 #include "Scriptbinds\Time.h"
 #include "Scriptbinds\ScriptTable.h" 
+#include "Scriptbinds\CrySerialize.h"
 
 #include "FlowManager.h"
 #include "MonoInput.h"
@@ -202,6 +203,7 @@ void CScriptSystem::Reload()
 
 	IMonoArray *pCtorParams = CreateMonoArray(1);
 	pCtorParams->InsertAny(m_bFirstReload);
+
 	IMonoObject *pScriptManager = pCryBraryAssembly->GetClass("ScriptManager", "CryEngine.Initialization")->CreateInstance(pCtorParams);
 
 	auto result = pScriptManager->CallMethod("Initialize", m_bFirstReload)->Unbox<EScriptReloadResult>();
@@ -277,6 +279,7 @@ void CScriptSystem::RegisterDefaultBindings()
 	RegisterBinding(CScriptbind_Entity);
 	RegisterBinding(CNetwork);
 	RegisterBinding(CScriptbind_ScriptTable);
+	RegisterBinding(CScriptbind_CrySerialize);
 
 #define RegisterBindingAndSet(var, T) RegisterBinding(T); var = (T *)m_localScriptBinds.back().get();
 	RegisterBindingAndSet(m_pFlowManager, CFlowManager);
