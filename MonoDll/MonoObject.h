@@ -45,6 +45,8 @@ public:
 
 	virtual mono::object GetManagedObject() override { return (mono::object)m_pObject; }
 
+	virtual const char *ToString() override;
+
 	virtual IMonoClass *GetClass() override;
 	// ~IMonoObject
 

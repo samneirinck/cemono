@@ -64,6 +64,8 @@ public:
 	virtual EMonoAnyType GetType() = 0;
 
 	virtual MonoAnyValue GetAnyValue() = 0;
+
+	virtual const char *ToString() = 0;
 	
 	/// <summary>
 	/// Returns the object as it is seen in managed code, can be passed directly across languages.

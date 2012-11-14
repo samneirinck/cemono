@@ -112,6 +112,21 @@ MonoAnyValue CScriptObject::GetAnyValue()
 	return MonoAnyValue();
 }
 
+const char *CScriptObject::ToString()
+{
+	MonoObject *pException = nullptr;
+
+	MonoMethod *method = mono_method_desc_search_in_class(mono_method_desc_new("::ToString()", false), GetMonoClass());
+	MonoObject *pResult = mono_runtime_invoke(method, m_pObject, nullptr, &pException);
+
+	if(pException)
+		HandleException(pException);
+	else
+		return ToCryString((mono::string)pResult);
+
+	return nullptr;
+}
+
 void CScriptObject::HandleException(MonoObject *pException)
 {
 	// Fatal errors override disabling the message box option

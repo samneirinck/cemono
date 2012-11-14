@@ -52,6 +52,8 @@ public:
 	virtual IMonoClass *GetClass() override { return CScriptObject::GetClass(); }
 
 	virtual void *UnboxObject() override { return CScriptObject::UnboxObject(); }
+
+	virtual const char *ToString() override { return CScriptObject::ToString(); }
 	// ~IMonoObject
 
 	/// <summary>
