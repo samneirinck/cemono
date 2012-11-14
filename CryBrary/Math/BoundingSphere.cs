@@ -203,7 +203,7 @@ namespace CryEngine
             }
 
             // Find the real distance from the DistanceSquared.
-            radius = MathHelpers.Sqrt(radius);
+            radius = (float)Math.Sqrt(radius);
 
             // Construct the sphere.
             result.Center = center;
@@ -235,8 +235,8 @@ namespace CryEngine
             float y = box.Minimum.Y - box.Maximum.Y;
             float z = box.Minimum.Z - box.Maximum.Z;
 
-            var distance = (MathHelpers.Sqrt((x * x) + (y * y) + (z * z)));
-            result.Radius = distance * 0.5f;
+            var distance = (Math.Sqrt((x * x) + (y * y) + (z * z)));
+            result.Radius = (float)distance * 0.5f;
         }
 
         /// <summary>

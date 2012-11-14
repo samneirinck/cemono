@@ -112,7 +112,7 @@ namespace CryEngine
         /// </summary>
         public bool IsNormalized
         {
-            get { return MathHelpers.Abs((X * X) + (Y * Y) + (Z * Z) - 1f) < MathHelpers.ZeroTolerance; }
+            get { return Math.Abs((X * X) + (Y * Y) + (Z * Z) - 1f) < MathHelpers.ZeroTolerance; }
         }
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace CryEngine
         /// </remarks>
         public float Length
         {
-            get { return MathHelpers.Sqrt((X * X) + (Y * Y) + (Z * Z)); }
+            get { return (float)Math.Sqrt((X * X) + (Y * Y) + (Z * Z)); }
         }
 
         /// <summary>
@@ -510,7 +510,7 @@ namespace CryEngine
             float y = value1.Y - value2.Y;
             float z = value1.Z - value2.Z;
 
-            result = MathHelpers.Sqrt((x * x) + (y * y) + (z * z));
+            result = (float)Math.Sqrt((x * x) + (y * y) + (z * z));
         }
 
         /// <summary>
@@ -529,7 +529,7 @@ namespace CryEngine
             float y = value1.Y - value2.Y;
             float z = value1.Z - value2.Z;
 
-            return MathHelpers.Sqrt((x * x) + (y * y) + (z * z));
+            return (float)Math.Sqrt((x * x) + (y * y) + (z * z));
         }
 
         /// <summary>
@@ -600,7 +600,7 @@ namespace CryEngine
 
         public bool IsEquivalent(Vec3 v1, float epsilon = 0.05f)
         {
-            return ((MathHelpers.Abs(X - v1.X) <= epsilon) && (MathHelpers.Abs(Y - v1.Y) <= epsilon) && (MathHelpers.Abs(Z - v1.Z) <= epsilon));
+            return ((Math.Abs(X - v1.X) <= epsilon) && (Math.Abs(Y - v1.Y) <= epsilon) && (Math.Abs(Z - v1.Z) <= epsilon));
         }
 
         /// <summary>
@@ -867,7 +867,7 @@ namespace CryEngine
                 result = Zero;
             else
             {
-                float cos2 = MathHelpers.Sqrt(radicand);
+                float cos2 = (float)Math.Sqrt(radicand);
                 result = (index * vector) + ((cos2 - index * cos1) * normal);
             }
         }
@@ -1320,9 +1320,9 @@ namespace CryEngine
         /// </returns>
         public bool Equals(Vec3 other, float epsilon)
         {
-            return (MathHelpers.Abs(other.X - X) < epsilon &&
-                MathHelpers.Abs(other.Y - Y) < epsilon &&
-                MathHelpers.Abs(other.Z - Z) < epsilon);
+            return (Math.Abs(other.X - X) < epsilon &&
+                Math.Abs(other.Y - Y) < epsilon &&
+                Math.Abs(other.Z - Z) < epsilon);
         }
 
         /// <summary>
