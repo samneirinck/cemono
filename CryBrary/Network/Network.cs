@@ -102,10 +102,7 @@ namespace CryEngine
 
             const string networkManagerName = "CryMonoNetworkManager";
             if (Entity.Find(networkManagerName) == null)
-            {
-                Debug.LogAlways("null");
                 NetworkManager = Entity.Spawn(networkManagerName, typeof(NativeEntity).Name);
-            }
 
             NativeNetworkMethods.RemoteInvocation(NetworkManager.Id, target.Id, method.Name, args, netTarget, -1);
         }
@@ -113,9 +110,6 @@ namespace CryEngine
         public static void OnRemoteInvocation(string methodName, object[] args, EntityId targetId)
         {
             var entity = Entity.Get(targetId);
-
-            foreach (var arg in args)
-                Debug.LogAlways("[arg] {0}", arg.ToString());
 
             entity.GetType().InvokeMember(methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, entity, args);
         }

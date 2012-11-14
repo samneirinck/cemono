@@ -49,34 +49,34 @@ namespace CryEngine.Serialization
             ValueString(Handle, name, ref obj, policy);
         }
 
-        void ValueInt(string name, ref int obj, int policy)
+        public void Value(string name, ref int obj, int policy = 0)
         {
-            ValueInt(name, ref obj, policy);
+            ValueInt(Handle, name, ref obj, policy);
         }
 
-        void ValueBool(string name, ref bool obj, int policy)
+        public void Value(string name, ref bool obj, int policy = 0)
         {
-            ValueBool(name, ref obj, policy);
+            ValueBool(Handle, name, ref obj, policy);
         }
 
-        void ValueEntityId(string name, ref EntityId obj, int policy)
+        public void Value(string name, ref EntityId obj, int policy = 0)
         {
             ValueEntityId(Handle, name, ref obj._value, policy);
         }
 
-        void ValueFloat(string name, ref float obj, int policy)
+        public void Value(string name, ref float obj, int policy = 0)
         {
             ValueFloat(Handle, name, ref obj, policy);
         }
 
-        void ValueVec3(string name, ref Vec3 obj, int policy)
+        public void Value(string name, ref Vec3 obj, int policy = 0)
         {
-            ValueVec3(name, ref obj, policy);
+            ValueVec3(Handle, name, ref obj, policy);
         }
 
-        void ValueQuat(string name, ref Quat obj, int policy)
+        public void Value(string name, ref Quat obj, int policy = 0)
         {
-            ValueQuat(name, ref obj, policy);
+            ValueQuat(Handle, name, ref obj, policy);
         }
 
         public void EnumValue(string name, ref object obj, int first, int last)
