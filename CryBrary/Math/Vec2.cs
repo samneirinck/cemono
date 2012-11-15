@@ -1052,7 +1052,7 @@ namespace CryEngine
         /// <returns>The result of the conversion.</returns>
         public static explicit operator Vec3(Vec2 value)
         {
-            return new Vec3(value, 0.0f);
+            return new Vec3(value);
         }
 
         /// <summary>

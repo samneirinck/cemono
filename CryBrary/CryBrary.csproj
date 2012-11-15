@@ -163,6 +163,8 @@
     <Compile Include="Input\MouseEvent.cs" />
     <Compile Include="Input\MouseEventArgs.cs" />
     <Compile Include="Input\SerializableInput.cs" />
+    <Compile Include="Math\Collision.cs" />
+    <Compile Include="Math\Plane.cs" />
     <Compile Include="Math\PlaneIntersectionType.cs" />
     <Compile Include="Native\NativeScriptSystemMethods.cs" />
     <Compile Include="Physics\Explosion.cs" />
@@ -242,7 +244,6 @@
     <Compile Include="Entity\NativeEntity.cs" />
     <Compile Include="Physics\PhysicalEntity.cs" />
     <Compile Include="Lua\ScriptTable.cs" />
-    <Compile Include="Math\Collision.cs" />
     <Compile Include="Script Handling\ScriptReloadMessage.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -254,7 +255,6 @@
     <Compile Include="Math\BoundingSphere.cs" />
     <Compile Include="Misc\Color.cs" />
     <Compile Include="Math\Matrix.cs" />
-    <Compile Include="Math\Plane.cs" />
     <Compile Include="Math\Ray.cs" />
     <Compile Include="Math\Vec2.cs" />
     <Compile Include="Math\Vec4.cs" />

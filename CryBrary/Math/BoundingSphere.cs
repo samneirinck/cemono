@@ -183,7 +183,7 @@ namespace CryEngine
             Vec3 center = Vec3.Zero;
             for (int i = 0; i < points.Length; ++i)
             {
-                Vec3.Add(ref points[i], ref center, out center);
+                center += points[i];
             }
 
             // This is the center of our sphere.
@@ -195,8 +195,7 @@ namespace CryEngine
             {
                 // We are doing a relative distance comparasin to find the maximum distance
                 // from the center of our sphere.
-                float distance;
-                Vec3.DistanceSquared(ref center, ref points[i], out distance);
+                float distance = center.GetDistanceSquared(points[i]);
 
                 if (distance > radius)
                     radius = distance;
@@ -229,7 +228,7 @@ namespace CryEngine
         /// <param name="result">When the method completes, the newly constructed bounding sphere.</param>
         public static void FromBox(ref BoundingBox box, out BoundingSphere result)
         {
-            Vec3.Lerp(ref box.Minimum, ref box.Maximum, 0.5f, out result.Center);
+            result.Center = Vec3.CreateLerp(box.Minimum, box.Maximum, 0.5f);
 
             float x = box.Minimum.X - box.Maximum.X;
             float y = box.Minimum.Y - box.Maximum.Y;
@@ -346,8 +345,7 @@ namespace CryEngine
             if (format == null)
                 return ToString();
 
-            return string.Format(CultureInfo.CurrentCulture, "Center:{0} Radius:{1}", Center.ToString(format, CultureInfo.CurrentCulture),
-                Radius.ToString(format, CultureInfo.CurrentCulture));
+            return string.Format(CultureInfo.CurrentCulture, "Center:{0} Radius:{1}", Center.ToString(), Radius.ToString());
         }
 
         /// <summary>
@@ -375,8 +373,7 @@ namespace CryEngine
             if (format == null)
                 return ToString(formatProvider);
 
-            return string.Format(formatProvider, "Center:{0} Radius:{1}", Center.ToString(format, formatProvider),
-                Radius.ToString(format, formatProvider));
+            return string.Format(formatProvider, "Center:{0} Radius:{1}", Center.ToString(), Radius.ToString());
         }
 
         /// <summary>
