@@ -132,8 +132,7 @@ namespace CryEngine
             // Source: Real-Time Collision Detection by Christer Ericson
             // Reference: Page 126
 
-            float dot;
-            Vec3.Dot(ref plane.Normal, ref point, out dot);
+            float dot = plane.Normal.Dot(point);
             float t = dot - plane.D;
 
             result = point - (t * plane.Normal);
@@ -168,7 +167,7 @@ namespace CryEngine
             // Reference: None
 
             // Get the unit direction from the sphere's center to the point.
-            Vec3.Subtract(ref point, ref sphere.Center, out result);
+            result = point - sphere.Center;
             result.Normalize();
 
             // Multiply the unit direction by the sphere's radius to get a vector
@@ -197,7 +196,7 @@ namespace CryEngine
             // Reference: None
 
             // Get the unit direction from the first sphere's center to the second sphere's center.
-            Vec3.Subtract(ref sphere2.Center, ref sphere1.Center, out result);
+            result = sphere2.Center - sphere1.Center;
             result.Normalize();
 
             // Multiply the unit direction by the first sphere's radius to get a vector
@@ -219,8 +218,7 @@ namespace CryEngine
             // Source: Real-Time Collision Detection by Christer Ericson
             // Reference: Page 127
 
-            float dot;
-            Vec3.Dot(ref plane.Normal, ref point, out dot);
+            float dot = plane.Normal.Dot(point);
             return dot - plane.D;
         }
 
@@ -315,8 +313,7 @@ namespace CryEngine
             // Source: Jorgy343
             // Reference: None
 
-            float distance;
-            Vec3.Distance(ref sphere.Center, ref point, out distance);
+            float distance = sphere.Center.GetDistance(point);
             distance -= sphere.Radius;
 
             return MathHelpers.Max(distance, 0f);
@@ -333,8 +330,7 @@ namespace CryEngine
             // Source: Jorgy343
             // Reference: None
 
-            float distance;
-            Vec3.Distance(ref sphere1.Center, ref sphere2.Center, out distance);
+            float distance = sphere1.Center.GetDistance(sphere2.Center);
             distance -= sphere1.Radius + sphere2.Radius;
 
             return MathHelpers.Max(distance, 0f);
@@ -351,8 +347,7 @@ namespace CryEngine
             // Source: RayIntersectsSphere
             // Reference: None
 
-            Vec3 m;
-            Vec3.Subtract(ref ray.Position, ref point, out m);
+            Vec3 m = ray.Position - point;
 
             // Same thing as RayIntersectsSphere except that the radius of the sphere (point)
             // is the epsilon for zero.
@@ -393,9 +388,7 @@ namespace CryEngine
             // Source: Real-Time Rendering, Third Edition
             // Reference: Page 780
 
-            Vec3 cross;
-
-            Vec3.Cross(ref ray1.Direction, ref ray2.Direction, out cross);
+            Vec3 cross = ray1.Direction.Cross(ray2.Direction);
             float denominator = cross.Length;
 
             // Lines are parallel.
@@ -481,8 +474,7 @@ namespace CryEngine
             // Source: Real-Time Collision Detection by Christer Ericson
             // Reference: Page 175
 
-            float direction;
-            Vec3.Dot(ref plane.Normal, ref ray.Direction, out direction);
+            float direction = plane.Normal.Dot(ray.Direction);
 
             if (Math.Abs(direction) < MathHelpers.ZeroTolerance)
             {
@@ -490,8 +482,7 @@ namespace CryEngine
                 return false;
             }
 
-            float position;
-            Vec3.Dot(ref plane.Normal, ref ray.Position, out position);
+            float position = plane.Normal.Dot(ray.Position);
             distance = (plane.D - position) / direction;
 
             if (distance < 0f)
@@ -804,8 +795,7 @@ namespace CryEngine
             // Source: Real-Time Collision Detection by Christer Ericson
             // Reference: Page 177
 
-            Vec3 m;
-            Vec3.Subtract(ref ray.Position, ref sphere.Center, out m);
+            Vec3 m = ray.Position - sphere.Center;
 
             float b = Vec3.Dot(m, ray.Direction);
             float c = Vec3.Dot(m, m) - (sphere.Radius * sphere.Radius);
@@ -861,8 +851,7 @@ namespace CryEngine
         /// <returns>Whether the two objects intersected.</returns>
         public static PlaneIntersectionType PlaneIntersectsPoint(ref Plane plane, ref Vec3 point)
         {
-            float distance;
-            Vec3.Dot(ref plane.Normal, ref point, out distance);
+            float distance = plane.Normal.Dot(point);
             distance += plane.D;
 
             if (distance > 0f)
@@ -882,13 +871,11 @@ namespace CryEngine
         /// <returns>Whether the two objects intersected.</returns>
         public static bool PlaneIntersectsPlane(ref Plane plane1, ref Plane plane2)
         {
-            Vec3 direction;
-            Vec3.Cross(ref plane1.Normal, ref plane2.Normal, out direction);
+            Vec3 direction = plane1.Normal.Cross(plane2.Normal);
 
             // If direction is the zero vector, the planes are parallel and possibly
             // coincident. It is not an intersection. The dot product will tell us.
-            float denominator;
-            Vec3.Dot(ref direction, ref direction, out denominator);
+            float denominator = direction.Dot(direction);
 
             if (Math.Abs(denominator) < MathHelpers.ZeroTolerance)
                 return false;
@@ -914,13 +901,11 @@ namespace CryEngine
             // Source: Real-Time Collision Detection by Christer Ericson
             // Reference: Page 207
 
-            Vec3 direction;
-            Vec3.Cross(ref plane1.Normal, ref plane2.Normal, out direction);
+            Vec3 direction = plane1.Normal.Cross(plane2.Normal);
 
             // If direction is the zero vector, the planes are parallel and possibly
             // coincident. It is not an intersection. The dot product will tell us.
-            float denominator;
-            Vec3.Dot(ref direction, ref direction, out denominator);
+            float denominator = direction.Dot(direction);
 
             // We assume the planes are normalized, therefore the denominator
             // only serves as a parallel and coincident check. Otherwise we need
@@ -931,9 +916,8 @@ namespace CryEngine
                 return false;
             }
 
-            Vec3 point;
             Vec3 temp = plane1.D * plane2.Normal - plane2.D * plane1.Normal;
-            Vec3.Cross(ref temp, ref direction, out point);
+            Vec3 point = temp.Cross(direction);
 
             line.Position = point;
             line.Direction = direction;
@@ -989,8 +973,7 @@ namespace CryEngine
             min.Y = (plane.Normal.Y >= 0.0f) ? box.Maximum.Y : box.Minimum.Y;
             min.Z = (plane.Normal.Z >= 0.0f) ? box.Maximum.Z : box.Minimum.Z;
 
-            float distance;
-            Vec3.Dot(ref plane.Normal, ref max, out distance);
+            float distance = plane.Normal.Dot(max);
 
             if (distance + plane.D > 0.0f)
                 return PlaneIntersectionType.Front;
@@ -1014,8 +997,7 @@ namespace CryEngine
             // Source: Real-Time Collision Detection by Christer Ericson
             // Reference: Page 160
 
-            float distance;
-            Vec3.Dot(ref plane.Normal, ref sphere.Center, out distance);
+            float distance = plane.Normal.Dot(sphere.Center);
             distance += plane.D;
 
             if (distance > sphere.Radius)
@@ -1084,7 +1066,7 @@ namespace CryEngine
 
             Vec3 vector;
             Vec3.Clamp(ref sphere.Center, ref box.Minimum, ref box.Maximum, out vector);
-            float distance = Vec3.DistanceSquared(sphere.Center, vector);
+            float distance = sphere.Center.GetDistanceSquared(vector);
 
             return distance <= sphere.Radius * sphere.Radius;
         }
@@ -1106,8 +1088,7 @@ namespace CryEngine
             ClosestPointPointTriangle(ref sphere.Center, ref vertex1, ref vertex2, ref vertex3, out point);
             Vec3 v = point - sphere.Center;
 
-            float dot;
-            Vec3.Dot(ref v, ref v, out dot);
+            float dot = v.Dot(v);
 
             return dot <= sphere.Radius * sphere.Radius;
         }
@@ -1121,7 +1102,7 @@ namespace CryEngine
         public static bool SphereIntersectsSphere(ref BoundingSphere sphere1, ref BoundingSphere sphere2)
         {
             float radiisum = sphere1.Radius + sphere2.Radius;
-            return Vec3.DistanceSquared(sphere1.Center, sphere2.Center) <= radiisum * radiisum;
+            return sphere1.Center.GetDistanceSquared(sphere2.Center) <= radiisum * radiisum;
         }
 
         /// <summary>
@@ -1199,7 +1180,7 @@ namespace CryEngine
         {
             Vec3 vector;
             Vec3.Clamp(ref sphere.Center, ref box.Minimum, ref box.Maximum, out vector);
-            float distance = Vec3.DistanceSquared(sphere.Center, vector);
+            float distance = sphere.Center.GetDistanceSquared(vector);
 
             if (distance > sphere.Radius * sphere.Radius)
                 return ContainmentType.Disjoint;
@@ -1222,7 +1203,7 @@ namespace CryEngine
         /// <returns>The type of containment the two objects have.</returns>
         public static bool SphereContainsPoint(ref BoundingSphere sphere, ref Vec3 point)
         {
-            return (Vec3.DistanceSquared(point, sphere.Center) <= sphere.Radius * sphere.Radius);
+            return (point.GetDistanceSquared(sphere.Center) <= sphere.Radius * sphere.Radius);
         }
 
         /// <summary>
@@ -1328,7 +1309,7 @@ namespace CryEngine
         /// <returns>The type of containment the two objects have.</returns>
         public static ContainmentType SphereContainsSphere(ref BoundingSphere sphere1, ref BoundingSphere sphere2)
         {
-            float distance = Vec3.Distance(sphere1.Center, sphere2.Center);
+            float distance = sphere1.Center.GetDistance(sphere2.Center);
 
             if (sphere1.Radius + sphere2.Radius < distance)
                 return ContainmentType.Disjoint;

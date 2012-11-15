@@ -267,6 +267,14 @@ namespace CryEngine
             }
         }
 
+        public float LengthSquared
+        {
+            get
+            {
+                return (float)W * W + V.X * V.X + V.Y * V.Y + V.Z * V.Z;
+            }
+        }
+
         public Vec3 Column0 { get { return new Vec3(2 * (V.X * V.X + W * W) - 1, 2 * (V.Y * V.X + V.Z * W), 2 * (V.Z * V.X - V.Y * W)); } }
 
         public Vec3 Column1 { get { return new Vec3(2 * (V.X * V.Y - V.Z * W), 2 * (V.Y * V.Y + W * W) - 1, 2 * (V.Z * V.Y + V.X * W)); } }

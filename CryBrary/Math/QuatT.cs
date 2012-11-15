@@ -112,7 +112,7 @@ namespace CryEngine
             return new QuatT(T * scale, Q.GetScaled(scale));
         }
 
-        public bool IsIdentity { get { return Q.IsIdentity && T.IsZero; } }
+        public bool IsIdentity { get { return Q.IsIdentity && T.IsZero(); } }
 
         public QuatT Inverted
         {
