@@ -455,7 +455,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Actor.h" />
-    <ClInclude Include="CryMonoPlugin.h" />
+    <ClInclude Include="CPluginCryMono.h" />
     <ClInclude Include="CryScriptInstance.h" />
     <ClInclude Include="FlowManager.h" />
     <ClInclude Include="FlowBaseNode.h" />
@@ -507,6 +507,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp" />
+    <ClCompile Include="CPluginCryMono.cpp" />
     <ClCompile Include="CryScriptInstance.cpp" />
     <ClCompile Include="FlowManager.cpp" />
     <ClCompile Include="MonoConverter.cpp" />

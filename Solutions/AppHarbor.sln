@@ -6,6 +6,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryBrary.Tests", "..\CryBra
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		UnitTesting|x86 = UnitTests|x86
 		UnitTests|x86 = UnitTests|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution

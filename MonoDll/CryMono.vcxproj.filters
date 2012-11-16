@@ -129,9 +129,6 @@
     <ClInclude Include="Scriptbinds\Network.h">
       <Filter>ScriptBinds</Filter>
     </ClInclude>
-    <ClInclude Include="CryMonoPlugin.h">
-      <Filter>Startup</Filter>
-    </ClInclude>
     <ClInclude Include="NativeEntity.h">
       <Filter>EntitySystem\Native</Filter>
     </ClInclude>
@@ -146,6 +143,9 @@
     </ClInclude>
     <ClInclude Include="Scriptbinds\CrySerialize.h">
       <Filter>ScriptBinds</Filter>
+    </ClInclude>
+    <ClInclude Include="CPluginCryMono.h">
+      <Filter>Startup</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -251,6 +251,9 @@
     </ClCompile>
     <ClCompile Include="Scriptbinds\CrySerialize.cpp">
       <Filter>ScriptBinds</Filter>
+    </ClCompile>
+    <ClCompile Include="CPluginCryMono.cpp">
+      <Filter>Startup</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
