@@ -8,7 +8,6 @@ namespace CryMonoPlugin
     CPluginCryMono::CPluginCryMono()
     {
         gPlugin = this;
-        gEnv->pMonoScriptSystem = NULL;
     }
 
     CPluginCryMono::~CPluginCryMono()
@@ -54,7 +53,6 @@ namespace CryMonoPlugin
         gPluginManager = ( PluginManager::IPluginManager* )pPluginManager->GetConcreteInterface( NULL );
         CPluginBaseMinimal::Init( env, startupParams, pPluginManager, sPluginDirectory );
 
-        SAFE_RELEASE(gEnv->pMonoScriptSystem);
         gEnv->pMonoScriptSystem = new CScriptSystem();
 
 #pragma warning(push)
