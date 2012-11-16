@@ -1,44 +1,40 @@
 #include "stdafx.h"
 
 #include <IPluginManager.h>
-#include "CryMonoPlugin.h"
+#include "CPluginCryMono.h"
 
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-
-BOOL APIENTRY DllMain( HMODULE hModule,
-					   DWORD  ul_reason_for_call,
-					   LPVOID lpReserved
-					 )
-{
-	switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-	case DLL_THREAD_ATTACH:
-	case DLL_THREAD_DETACH:
-	case DLL_PROCESS_DETACH:
-
-		break;
-	}
-
-
-	return TRUE;
-}
+PluginManager::IPluginManager* gPluginManager = NULL; //!< pointer to plugin manager
 
 extern "C"
 {
     MONO_API PluginManager::IPluginBase* GetPluginInterface( const char* sInterfaceVersion )
     {
         // This function should not create a new interface class each call.
-		static CCryMonoPlugin *modulePlugin = new CCryMonoPlugin();
-		return modulePlugin;
+        static CryMonoPlugin::CPluginCryMono modulePlugin;
+        CryMonoPlugin::gPlugin = &modulePlugin;
+        return static_cast<PluginManager::IPluginBase*>(CryMonoPlugin::gPlugin);
     }
 }
 
-extern "C"
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+
+BOOL APIENTRY DllMain( HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved )
 {
-	MONO_API void InitCryMono(ISystem *pSystem)
-	{
-		ModuleInitISystem(pSystem, "CryMono");
-	}
+    switch ( ul_reason_for_call )
+    {
+    case DLL_PROCESS_ATTACH:
+        break;
+
+    case DLL_THREAD_ATTACH:
+        break;
+
+    case DLL_THREAD_DETACH:
+        break;
+
+    case DLL_PROCESS_DETACH:
+        break;
+    }
+
+    return TRUE;
 }
