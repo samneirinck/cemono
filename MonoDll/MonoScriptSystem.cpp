@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "MonoScriptSystem.h"
 
-#include "PathUtils.h"
 #include "MonoAssembly.h"
 #include "MonoCommon.h"
 #include "MonoArray.h"
@@ -49,8 +48,10 @@
 #include "MonoInput.h"
 
 #include "MonoCVars.h"
+#include "PathUtils.h"
 
 SCVars *g_pMonoCVars = 0;
+CScriptSystem *g_pScriptSystem = 0;
 
 CScriptSystem::CScriptSystem() 
 	: m_pRootDomain(nullptr)
@@ -63,6 +64,9 @@ CScriptSystem::CScriptSystem()
 	, m_bDetectedChanges(false)
 {
 	CryLogAlways("Initializing Mono Script System");
+
+	g_pScriptSystem = this;
+	gEnv->pMonoScriptSystem = this; // temporary, replace when we can utilize g_pPluginManager->GetPluginByName.
 
 	m_pCVars = new SCVars();
 	g_pMonoCVars = m_pCVars;
@@ -105,8 +109,6 @@ CScriptSystem::CScriptSystem()
 
 	m_pConverter = new CConverter();
 
-	gEnv->pMonoScriptSystem = this;
-
 	if(!CompleteInit())
 		return;
 
@@ -136,8 +138,6 @@ CScriptSystem::~CScriptSystem()
 	SAFE_DELETE(m_pConverter);
 
 	SAFE_RELEASE(m_pScriptManager);
-
-	SAFE_DELETE(m_pCryBraryAssembly);
 
 	SAFE_DELETE(m_pCVars);
 

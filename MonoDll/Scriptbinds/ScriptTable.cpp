@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "ScriptTable.h"
 
+#include "MonoScriptSystem.h"
+
 #include <IEntitySystem.h>
 
 #include <IMonoClass.h>
@@ -52,7 +54,7 @@ mono::object ToMonoObject(ScriptAnyValue anyValue)
 		return (mono::object)mono_value_box(mono_domain_get(), mono_get_boolean_class(), &anyValue.b);
 	case ANY_TVECTOR:
 		{
-			IMonoClass *pVec3Class = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("Vec3");
+			IMonoClass *pVec3Class = g_pScriptSystem->GetCryBraryAssembly()->GetClass("Vec3");
 
 			Vec3 vec(anyValue.vec3.x, anyValue.vec3.y, anyValue.vec3.z);
 			return pVec3Class->BoxObject(&vec)->GetManagedObject();

@@ -67,7 +67,7 @@ namespace CryMonoPlugin
             {
                 if( !sInterfaceVersion || strcmp(sInterfaceVersion, CRYMONO_VERSION) == 0 )
                 {
-                    return gEnv->pMonoScriptSystem;
+                    return g_pScriptSystem;
                 }
                 else
                 {

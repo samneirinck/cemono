@@ -5,7 +5,7 @@
 
 void CmdReload(IConsoleCmdArgs *pCmdArgs)
 {
-	gEnv->pMonoScriptSystem->Reload();
+	g_pScriptSystem->Reload();
 }
 
 void SCVars::InitCVars(IConsole *pConsole)

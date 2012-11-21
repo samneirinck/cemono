@@ -7,19 +7,19 @@ CCryScriptInstance::CCryScriptInstance(mono::object scriptInstance)
 
 	m_scriptId = GetPropertyValue("ScriptId")->Unbox<int>();
 
-	gEnv->pMonoScriptSystem->AddListener(this);
+	g_pScriptSystem->AddListener(this);
 }
 
 CCryScriptInstance::~CCryScriptInstance()
 {
-	gEnv->pMonoScriptSystem->RemoveListener(this);
+	g_pScriptSystem->RemoveListener(this);
 
 	m_scriptId = 0;
 }
 
 void CCryScriptInstance::OnReloadComplete()
 {
-	if(IMonoObject *pResult = gEnv->pMonoScriptSystem->GetScriptManager()->CallMethod("GetScriptInstanceById", m_scriptId, eScriptFlag_Any))
+	if(IMonoObject *pResult = g_pScriptSystem->GetScriptManager()->CallMethod("GetScriptInstanceById", m_scriptId, eScriptFlag_Any))
 	{
 		SetManagedObject((MonoObject *)pResult->GetManagedObject());
 		pResult->Release(false);

@@ -218,7 +218,7 @@ void CScriptbind_Entity::OnSpawn(IEntity *pEntity,SEntitySpawnParams &params)
 
 bool CScriptbind_Entity::OnRemove(IEntity *pIEntity)
 {
-	if(IMonoClass *pEntityClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("Entity"))
+	if(IMonoClass *pEntityClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("Entity"))
 	{
 		IMonoArray *pArgs = CreateMonoArray(1);
 		pArgs->Insert(pIEntity->GetId());
@@ -420,7 +420,7 @@ mono::object CScriptbind_Entity::GetEntitiesByClass(mono::string _class)
 	if(classEntities.size()<1)
 		return nullptr;
 
-	IMonoClass *pEntityIdClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("EntityId");
+	IMonoClass *pEntityIdClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("EntityId");
 
 	IMonoArray *pArray = CreateMonoArray(classEntities.size());
 
@@ -435,7 +435,7 @@ mono::object CScriptbind_Entity::GetEntitiesInBox(AABB bbox, int objTypes)
 {
 	IPhysicalEntity **pEnts = nullptr;
 
-	IMonoClass *pEntityIdClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("EntityId");
+	IMonoClass *pEntityIdClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("EntityId");
 
 	int numEnts = gEnv->pPhysicalWorld->GetEntitiesInBox(bbox.min, bbox.max, pEnts, objTypes);
 	IMonoArray *pEntities = CreateMonoArray(numEnts);

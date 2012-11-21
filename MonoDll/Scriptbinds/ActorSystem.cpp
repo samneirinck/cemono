@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "ActorSystem.h"
 
+#include "MonoScriptSystem.h"
 #include "Actor.h"
 
 #include <IGameFramework.h>
@@ -45,9 +46,9 @@ void CActorSystem::OnSpawn(IEntity *pEntity,SEntitySpawnParams &params)
 	{
 		if(IActor *pActor = gEnv->pGameFramework->GetIActorSystem()->GetActor(pEntity->GetId()))
 		{
-			IMonoObject *pScript  = gEnv->pMonoScriptSystem->InstantiateScript(pEntity->GetClass()->GetName(), eScriptFlag_Actor);
+			IMonoObject *pScript  = g_pScriptSystem->InstantiateScript(pEntity->GetClass()->GetName(), eScriptFlag_Actor);
 
-			IMonoClass *pActorInfoClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("ActorInfo");
+			IMonoClass *pActorInfoClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("ActorInfo");
 
 			SMonoActorInfo actorInfo(pActor);
 

@@ -50,7 +50,7 @@ IMonoClass *CScriptObject::GetClass()
 {
 	if(m_pClass == NULL)
 	{
-		if(CScriptDomain *pDomain = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->TryGetDomain(mono_object_get_domain(m_pObject)))
+		if(CScriptDomain *pDomain = g_pScriptSystem->TryGetDomain(mono_object_get_domain(m_pObject)))
 		{
 			MonoClass *pMonoClass = GetMonoClass();
 
@@ -155,7 +155,7 @@ void CScriptObject::HandleException(MonoObject *pException)
 		args->InsertObject(*(mono::object)pException);
 		args->Insert(isFatal);
 
-		IMonoClass *pDebugClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("Debug");
+		IMonoClass *pDebugClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("Debug");
 		pDebugClass->InvokeArray(NULL, "DisplayException", args);
 		SAFE_RELEASE(args);
 	}

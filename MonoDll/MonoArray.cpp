@@ -91,12 +91,12 @@ void CScriptArray::InsertAny(MonoAnyValue value, int index)
 	if(value.type==eMonoAnyType_String)
 		Insert((mono::object)ToMonoString(value.str), index);
 	else
-		Insert(gEnv->pMonoScriptSystem->GetConverter()->BoxAnyValue(value), index);
+		Insert(g_pScriptSystem->GetConverter()->BoxAnyValue(value), index);
 }
 
 IMonoClass *CScriptArray::GetClass(MonoClass *pClass)
 {
-	if(CScriptDomain *pDomain = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->TryGetDomain(mono_object_get_domain(m_pObject)))
+	if(CScriptDomain *pDomain = g_pScriptSystem->TryGetDomain(mono_object_get_domain(m_pObject)))
 	{
 		MonoClass *pMonoClass = GetMonoClass();
 

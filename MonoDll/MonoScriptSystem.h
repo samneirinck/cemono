@@ -136,4 +136,6 @@ protected:
 	std::vector<IMonoScriptEventListener *> m_listeners;
 };
 
+extern CScriptSystem *g_pScriptSystem;
+
 #endif //__MONO_H__

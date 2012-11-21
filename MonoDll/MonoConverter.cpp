@@ -3,6 +3,7 @@
 
 #include "MonoCVars.h"
 
+#include "MonoScriptSystem.h"
 #include "MonoArray.h"
 #include "MonoObject.h"
 
@@ -39,7 +40,7 @@ mono::object CConverter::BoxAnyValue(MonoAnyValue &any)
 		return (mono::object)mono_value_box(mono_domain_get(), mono_get_uint32_class(), &any.u);
 	case eMonoAnyType_EntityId:
 		{
-			IMonoClass *pEntityIdClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("EntityId");
+			IMonoClass *pEntityIdClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("EntityId");
 			return pEntityIdClass->BoxObject(&mono::entityId(any.u))->GetManagedObject();
 		}
 	case eMonoAnyType_Short:
@@ -52,7 +53,7 @@ mono::object CConverter::BoxAnyValue(MonoAnyValue &any)
 		MonoWarning("IMonoConverter::BoxAnyValue does not support strings, utilize ToMonoString instead");
 	case eMonoAnyType_Vec3:
 		{
-			IMonoClass *pVec3Class = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("Vec3");
+			IMonoClass *pVec3Class = g_pScriptSystem->GetCryBraryAssembly()->GetClass("Vec3");
 			return pVec3Class->BoxObject(&any.vec3)->GetManagedObject();
 		}
 		break;

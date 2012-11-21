@@ -34,11 +34,11 @@ bool CFlowNode::CreatedNode(TFlowNodeId id, const char *name, TFlowNodeTypeId ty
 { 
 	if(pNode==this)
 	{
-		m_pNodeType = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager()->GetNodeType(gEnv->pFlowSystem->GetTypeName(typeId));
+		m_pNodeType = g_pScriptSystem->GetFlowManager()->GetNodeType(gEnv->pFlowSystem->GetTypeName(typeId));
 
-		IMonoObject *pScript = gEnv->pMonoScriptSystem->InstantiateScript(m_pNodeType->GetScriptName(), m_pNodeType->IsEntityNode() ? eScriptFlag_Entity : eScriptFlag_FlowNode);
+		IMonoObject *pScript = g_pScriptSystem->InstantiateScript(m_pNodeType->GetScriptName(), m_pNodeType->IsEntityNode() ? eScriptFlag_Entity : eScriptFlag_FlowNode);
 
-		IMonoClass *pNodeInfo = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("NodeInfo");
+		IMonoClass *pNodeInfo = g_pScriptSystem->GetCryBraryAssembly()->GetClass("NodeInfo");
 		pScript->CallMethod("InternalInitialize", pNodeInfo->BoxObject(&SMonoNodeInfo(this, id, m_pActInfo->pGraph->GetGraphId())));
 
 		m_pScript = pScript;

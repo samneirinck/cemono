@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "UI.h"
 
+#include "MonoScriptSystem.h"
 #include "MonoFlowNode.h"
 
 #include <IMonoClass.h>
@@ -22,7 +23,7 @@ CUI::CUI()
 
 IMonoClass *CUI::GetClass()
 {
-	return gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("UI");
+	return g_pScriptSystem->GetCryBraryAssembly()->GetClass("UI");
 }
 
 CUI::~CUI()
@@ -43,10 +44,10 @@ SUIArgumentsRet SEventSystemHandler::OnEvent(const SUIEvent& event)
 {
 	IMonoArray *pArgs = CreateMonoArray(3);
 
-	auto pConverter = gEnv->pMonoScriptSystem->GetConverter();
+	auto pConverter = g_pScriptSystem->GetConverter();
 
 	IMonoObject *pPointerWrapper = nullptr;
-	if(IMonoAssembly *pCryBraryAssembly = gEnv->pMonoScriptSystem->GetCryBraryAssembly())
+	if(IMonoAssembly *pCryBraryAssembly = g_pScriptSystem->GetCryBraryAssembly())
 	{
 		if(IMonoClass *pClass = pCryBraryAssembly->GetClass("PointerWrapper"))
 		{

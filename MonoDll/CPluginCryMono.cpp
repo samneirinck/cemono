@@ -32,7 +32,7 @@ namespace CryMonoPlugin
             {
                 if ( bWasInitialized )
                 {
-                    SAFE_RELEASE(gEnv->pMonoScriptSystem);
+                    SAFE_RELEASE(g_pScriptSystem);
 
                     // TODO: Cleanup stuff that can only be cleaned up if the plugin was initialized
                 }
@@ -53,11 +53,11 @@ namespace CryMonoPlugin
         gPluginManager = ( PluginManager::IPluginManager* )pPluginManager->GetConcreteInterface( NULL );
         CPluginBaseMinimal::Init( env, startupParams, pPluginManager, sPluginDirectory );
 
-        gEnv->pMonoScriptSystem = new CScriptSystem();
+        g_pScriptSystem = new CScriptSystem();
 
 #pragma warning(push)
 #pragma warning(disable : 4800 )
-        return bool( gEnv->pMonoScriptSystem );
+        return bool( g_pScriptSystem );
 #pragma warning(pop)
     }
 

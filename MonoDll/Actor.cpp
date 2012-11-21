@@ -2,6 +2,8 @@
 #include "StdAfx.h"
 #include "Actor.h"
 
+#include "MonoScriptSystem.h"
+
 #include <IGameRulesSystem.h>
 #include <IViewSystem.h>
 #include <ICryAnimation.h>
@@ -381,7 +383,7 @@ float CActor::GetHealth() const
 
 void CActor::SetHealth(float health)
 {
-	m_pScript->SetPropertyValue("Health", *gEnv->pMonoScriptSystem->GetConverter()->BoxAnyValue(MonoAnyValue(health)));
+	m_pScript->SetPropertyValue("Health", *g_pScriptSystem->GetConverter()->BoxAnyValue(MonoAnyValue(health)));
 }
 
 float CActor::GetMaxHealth() const
@@ -391,7 +393,7 @@ float CActor::GetMaxHealth() const
 
 void CActor::SetMaxHealth(float health)
 {
-	m_pScript->SetPropertyValue("MaxHealth", *gEnv->pMonoScriptSystem->GetConverter()->BoxAnyValue(MonoAnyValue(health)));
+	m_pScript->SetPropertyValue("MaxHealth", *g_pScriptSystem->GetConverter()->BoxAnyValue(MonoAnyValue(health)));
 }
 
 bool CActor::NetSerialize( TSerialize ser, EEntityAspects aspect, uint8 profile, int pflags )

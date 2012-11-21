@@ -2,6 +2,7 @@
 #include "MonoEntity.h"
 #include "MonoEntityPropertyHandler.h"
 
+#include "MonoScriptSystem.h"
 #include "Scriptbinds\Entity.h"
 
 #include <IEntityClass.h>
@@ -44,9 +45,9 @@ bool CEntity::Init(IGameObject *pGameObject)
 	IEntity *pEntity = GetEntity();
 	IEntityClass *pEntityClass = pEntity->GetClass();
 
-	m_pScript = gEnv->pMonoScriptSystem->InstantiateScript(pEntityClass->GetName(), eScriptFlag_Entity);
+	m_pScript = g_pScriptSystem->InstantiateScript(pEntityClass->GetName(), eScriptFlag_Entity);
 
-	IMonoClass *pEntityInfoClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("EntityInfo");
+	IMonoClass *pEntityInfoClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("EntityInfo");
 
 	SMonoEntityInfo entityInfo(pEntity);
 
@@ -268,7 +269,7 @@ void CEntity::RMIParams::SerializeWith(TSerialize ser)
 
 IMPLEMENT_RMI(CEntity, SvScriptRMI)
 {
-	IMonoClass *pNetworkClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("Network");
+	IMonoClass *pNetworkClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("Network");
 
 	IMonoArray *pNetworkArgs = CreateMonoArray(3);
 	pNetworkArgs->Insert(ToMonoString(params.methodName.c_str()));
@@ -282,7 +283,7 @@ IMPLEMENT_RMI(CEntity, SvScriptRMI)
 
 IMPLEMENT_RMI(CEntity, ClScriptRMI)
 {
-	IMonoClass *pNetworkClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("Network");
+	IMonoClass *pNetworkClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("Network");
 
 	IMonoArray *pNetworkArgs = CreateMonoArray(3);
 	pNetworkArgs->Insert(ToMonoString(params.methodName.c_str()));

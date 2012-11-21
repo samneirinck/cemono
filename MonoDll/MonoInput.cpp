@@ -1,6 +1,8 @@
 #include "StdAfx.h"
 #include "MonoInput.h"
 
+#include "MonoScriptSystem.h"
+
 #include <IGameFramework.h>
 
 #include <IMonoAssembly.h>
@@ -36,7 +38,7 @@ CInput::~CInput()
 
 IMonoClass *CInput::GetClass()
 {
-	return gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("Input");
+	return g_pScriptSystem->GetCryBraryAssembly()->GetClass("Input");
 }
 
 void CInput::OnHardwareMouseEvent(int iX,int iY,EHARDWAREMOUSEEVENT eHardwareMouseEvent, int wheelDelta)

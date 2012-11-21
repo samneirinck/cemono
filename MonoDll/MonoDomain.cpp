@@ -81,7 +81,7 @@ CScriptDomain::~CScriptDomain()
 		}
 	}
 
-	static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->OnDomainReleased(this);
+	g_pScriptSystem->OnDomainReleased(this);
 }
 
 bool CScriptDomain::SetActive(bool force)
@@ -110,7 +110,7 @@ IMonoAssembly *CScriptDomain::LoadAssembly(const char *file, bool shadowCopy)
 #ifndef _RELEASE
 	if(sAssemblyPath.find("pdb2mdb")==-1)
 	{
-		if(IMonoAssembly *pDebugDatabaseCreator = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetDebugDatabaseCreator())
+		if(IMonoAssembly *pDebugDatabaseCreator = g_pScriptSystem->GetDebugDatabaseCreator())
 		{
 			if(IMonoClass *pDriverClass = pDebugDatabaseCreator->GetClass("Driver", ""))
 			{

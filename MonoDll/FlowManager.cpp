@@ -42,7 +42,7 @@ void CFlowManager::Reset()
 {
 	for each(auto nodeType in m_nodeTypes)
 	{
-		IMonoObject *pScript = gEnv->pMonoScriptSystem->InstantiateScript(nodeType->GetScriptName(), eScriptFlag_FlowNode);
+		IMonoObject *pScript = g_pScriptSystem->InstantiateScript(nodeType->GetScriptName(), eScriptFlag_FlowNode);
 		nodeType->ReloadPorts(pScript);
 		SAFE_RELEASE(pScript);
 	}
@@ -54,7 +54,7 @@ void CFlowManager::RegisterNode(mono::string monoTypeName)
 	if(!pFlowSystem)
 		return;
 
-	CFlowManager *pFlowManager = static_cast<CScriptSystem *>(gEnv->pMonoScriptSystem)->GetFlowManager();
+	CFlowManager *pFlowManager = g_pScriptSystem->GetFlowManager();
 
 	const char *typeName = ToCryString(monoTypeName);
 

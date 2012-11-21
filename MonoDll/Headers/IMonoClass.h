@@ -19,7 +19,7 @@ struct IMonoArray;
 /// Reference to a Mono class, used to call static methods and etc.
 /// </summary>
 /// <example>
-/// IMonoScript *pCryNetwork = gEnv->pMonoScriptSystem->GetCustomClass("CryNetwork", "CryEngine");
+/// IMonoScript *pCryNetwork = g_pScriptSystem->GetCustomClass("CryNetwork", "CryEngine");
 /// </example>
 struct IMonoClass
 	: public IMonoObject
