@@ -11,6 +11,8 @@
 
 #include <MonoAnyValue.h>
 
+#include <IPluginManager.h>
+
 struct IMonoScriptManager;
 
 struct IMonoObject;
@@ -135,5 +137,15 @@ struct IMonoScriptEventListener
 	virtual void OnReloadStart() = 0;
 	virtual void OnReloadComplete() = 0;
 };
+
+static IMonoScriptSystem *_pMonoScriptSystem = nullptr; // internal storage to avoid having the extra overhead from having to call GetPluginByName all the time.
+
+static IMonoScriptSystem *GetMonoScriptSystem()
+{
+	if(_pMonoScriptSystem == nullptr)
+		_pMonoScriptSystem = static_cast<IMonoScriptSystem *>(gPluginManager->GetPluginByName("CryMono")->GetConcreteInterface());
+
+	return _pMonoScriptSystem;
+}
 
 #endif //__I_MONO_SCRIPT_SYSTEM_H__

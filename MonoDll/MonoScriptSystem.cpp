@@ -66,7 +66,6 @@ CScriptSystem::CScriptSystem()
 	CryLogAlways("Initializing Mono Script System");
 
 	g_pScriptSystem = this;
-	gEnv->pMonoScriptSystem = this; // temporary, replace when we can utilize g_pPluginManager->GetPluginByName.
 
 	m_pCVars = new SCVars();
 	g_pMonoCVars = m_pCVars;

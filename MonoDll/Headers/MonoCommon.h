@@ -46,7 +46,7 @@ inline const char *ToCryString(mono::string monoString)
 	if(!monoString)
 		return "";
 
-	return gEnv->pMonoScriptSystem->GetConverter()->ToString(monoString);
+	return GetMonoScriptSystem()->GetConverter()->ToString(monoString);
 }
 
 /// <summary>
@@ -54,7 +54,7 @@ inline const char *ToCryString(mono::string monoString)
 /// </summary>
 inline mono::string ToMonoString(const char *cryString)
 {
-	return gEnv->pMonoScriptSystem->GetConverter()->ToMonoString(cryString);
+	return GetMonoScriptSystem()->GetConverter()->ToMonoString(cryString);
 }
 
 /// <summary>
@@ -62,7 +62,7 @@ inline mono::string ToMonoString(const char *cryString)
 /// </summary>
 static IMonoArray *CreateMonoArray(int numArgs, IMonoClass *pElementClass = nullptr)
 {
-	return gEnv->pMonoScriptSystem->GetConverter()->CreateArray(numArgs, pElementClass);
+	return GetMonoScriptSystem()->GetConverter()->CreateArray(numArgs, pElementClass);
 }
 
 /// <summary>
@@ -98,12 +98,12 @@ namespace mono
 	public:
 		operator IMonoObject *() const
 		{
-			return gEnv->pMonoScriptSystem->GetConverter()->ToObject(const_cast<_object *>(this));
+			return GetMonoScriptSystem()->GetConverter()->ToObject(const_cast<_object *>(this));
 		}
 
 		operator IMonoArray *() const
 		{
-			return gEnv->pMonoScriptSystem->GetConverter()->ToArray(const_cast<_object *>(this));
+			return GetMonoScriptSystem()->GetConverter()->ToArray(const_cast<_object *>(this));
 		}
 	};
 

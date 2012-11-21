@@ -15,7 +15,7 @@
 /// <summary>
 /// Simple pre-processor method used to quickly register methods within scriptbinds.
 /// </summary>
-#define REGISTER_METHOD(method) gEnv->pMonoScriptSystem->RegisterMethodBinding(method, (GetNamespace() + (string)".").append(GetClassName()).append("::").append(#method))
+#define REGISTER_METHOD(method) GetMonoScriptSystem()->RegisterMethodBinding(method, (GetNamespace() + (string)".").append(GetClassName()).append("::").append(#method))
 
 /// <summary>
 /// </summary>
