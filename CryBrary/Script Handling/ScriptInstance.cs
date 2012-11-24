@@ -23,11 +23,6 @@ namespace CryEngine
             }
         }
 
-        void Test()
-        {
-            Debug.LogAlways("Success");
-        }
-
         public override bool Equals(object obj)
         {
             if (obj == null)

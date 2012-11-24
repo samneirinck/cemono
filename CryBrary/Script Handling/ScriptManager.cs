@@ -48,10 +48,10 @@ namespace CryEngine.Initialization
 
 #if !UNIT_TESTING
             TestManager.Init();
-
-            if(initialLoad)
-                RegisterInternalTypes();
 #endif
+
+            if (initialLoad)
+                RegisterInternalTypes();
 
             Formatter = new CrySerializer();
         }
@@ -466,7 +466,7 @@ namespace CryEngine.Initialization
             AddScriptInstance(script, instance);
         }
 
-        void AddScriptInstance(CryScript script, CryScriptInstance instance)
+        void AddScriptInstance(CryScript script, CryScriptInstance instance, int scriptId = -1)
         {
 #if !(RELEASE && RELEASE_DISABLE_CHECKS)
             if (script == default(CryScript))
@@ -480,7 +480,7 @@ namespace CryEngine.Initialization
                 throw new ArgumentException("Provided CryScript object was not present in the script collection", "script");
 #endif
 
-            instance.ScriptId = LastScriptId++;
+            instance.ScriptId = (scriptId != -1) ? scriptId : LastScriptId++;
 
             if (script.ScriptInstances == null)
                 script.ScriptInstances = new List<CryScriptInstance>();
@@ -488,6 +488,22 @@ namespace CryEngine.Initialization
             script.ScriptInstances.Add(instance);
 
             Scripts[index] = script;
+        }
+
+        public void ReplaceScriptInstance(CryScriptInstance newInstance, int scriptId, ScriptType scriptType)
+        {
+            RemoveInstance(scriptId, scriptType);
+
+            var script = FindScript(scriptType, x => x.Type == newInstance.GetType());
+            if (script == default(CryScript))
+            {
+                if (CryScript.TryCreate(newInstance.GetType(), out script))
+                    Scripts.Add(script);
+                else
+                    return;
+            }
+
+            AddScriptInstance(script, newInstance, scriptId);
         }
 
         public void RemoveInstance(int instanceId, ScriptType scriptType)

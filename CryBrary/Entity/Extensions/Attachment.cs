@@ -45,8 +45,7 @@ namespace CryEngine
             Id = tempEntity.Id;
             this.SetEntityHandle(tempEntity.GetEntityHandle());
 
-            ScriptManager.Instance.RemoveInstance(tempEntity.ScriptId, ScriptType.Entity);
-            ScriptManager.Instance.AddScriptInstance(this, ScriptType.Entity);
+            ScriptManager.Instance.ReplaceScriptInstance(this, tempEntity.ScriptId, ScriptType.Entity);
 
             this.SetEntityAttachmentHandle(NativeEntityMethods.LinkEntityToAttachment(this.GetAttachmentHandle(), Id));
 

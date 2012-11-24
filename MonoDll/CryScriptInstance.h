@@ -17,6 +17,8 @@ public:
 	virtual void OnReloadComplete();
 	// ~IMonoScriptEventListener
 
+	int GetScriptId() { return m_scriptId; }
+
 private:
 	int m_scriptId;
 };
