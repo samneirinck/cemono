@@ -120,6 +120,13 @@ CScriptSystem::~CScriptSystem()
 	for(auto it = m_localScriptBinds.begin(); it != m_localScriptBinds.end(); ++it)
 		(*it).reset();
 
+	SAFE_RELEASE(m_pScriptManager);
+
+	for(auto it = m_domains.rbegin(); it != m_domains.rend(); ++it)
+		SAFE_RELEASE(*it);
+
+	m_domains.clear();
+
 	// Force garbage collection of all generations.
 	mono_gc_collect(mono_gc_max_generation());
 
@@ -136,16 +143,7 @@ CScriptSystem::~CScriptSystem()
 
 	SAFE_DELETE(m_pConverter);
 
-	SAFE_RELEASE(m_pScriptManager);
-
 	SAFE_DELETE(m_pCVars);
-
-	for(auto it = ++m_domains.begin(); it != m_domains.end(); ++it)
-		SAFE_RELEASE(*it);
-
-	m_domains.clear();
-
-	SAFE_RELEASE(m_pRootDomain);
 }
 
 bool CScriptSystem::CompleteInit()
