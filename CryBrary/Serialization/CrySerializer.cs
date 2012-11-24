@@ -406,7 +406,7 @@ namespace CryEngine.Serialization
 
                     if (fieldInfo != null)
                         fieldInfo.SetValue(objReference.Value, fieldReference.Value);
-                    else
+                    else if(IsDebugModeEnabled)
                         throw new MissingFieldException(string.Format("Failed to find field {0} in type {1}", fieldReference.Name, type.Name));
                 }
 
