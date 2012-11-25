@@ -74,6 +74,8 @@ namespace CryEngine.Compilers.NET
 
                 var curType = type;
 
+                bool changedFlags = false;
+
                 var entType = typeof(Entity);
                 while (curType != entType)
                 {
@@ -86,8 +88,11 @@ namespace CryEngine.Compilers.NET
                             entityRegistrationParams.editorHelper = entAttribute.EditorHelper;
                         if(entityRegistrationParams.editorIcon  == null)
                             entityRegistrationParams.editorIcon = entAttribute.Icon;
-                        if(entityRegistrationParams.flags == EntityClassFlags.Default)
+                        if (!changedFlags)
+                        {
                             entityRegistrationParams.flags = entAttribute.Flags;
+                            changedFlags = true;
+                        }
                     }
 
                     curType = curType.BaseType;
