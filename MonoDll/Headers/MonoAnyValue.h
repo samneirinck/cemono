@@ -75,7 +75,19 @@ struct MonoAnyValue : public ISerializable
 			ser.Value("float", f);
 			break;
 		case eMonoAnyType_Vec3:
-			ser.Value("vec", Vec3(vec3.x, vec3.y, vec3.z));
+			{
+				if(ser.IsWriting())
+					ser.Value("vec", Vec3(vec3.x, vec3.y, vec3.z));
+				else
+				{
+					Vec3 v;
+					ser.Value("vec", v);
+
+					vec3.x = v.x;
+					vec3.y = v.y;
+					vec3.z = v.z;
+				}
+			}
 			break;
 		case eMonoAnyType_String:
 			{
