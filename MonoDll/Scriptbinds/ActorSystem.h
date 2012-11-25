@@ -50,7 +50,7 @@ class CActorSystem
 {
 public:
 	CActorSystem();
-	~CActorSystem() {}
+	~CActorSystem();
 
 	// IEntitySystemSink
 	virtual bool OnBeforeSpawn(SEntitySpawnParams &params) { return true; }

@@ -27,6 +27,11 @@ CActorSystem::CActorSystem()
 	gEnv->pEntitySystem->AddSink(this, IEntitySystem::OnSpawn, 0);
 }
 
+CActorSystem::~CActorSystem()
+{
+	gEnv->pEntitySystem->RemoveSink(this);
+}
+
 EMonoActorType CActorSystem::GetMonoActorType(const char *actorClassName)
 {
 	for each(auto classPair in m_monoActorClasses)

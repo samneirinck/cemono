@@ -160,7 +160,7 @@ class CScriptbind_Entity
 
 public:
 	CScriptbind_Entity();
-	~CScriptbind_Entity() {}
+	~CScriptbind_Entity();
 
 	// IEntitySystemSink
 	virtual bool OnBeforeSpawn(SEntitySpawnParams &params) { return true; }

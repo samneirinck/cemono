@@ -130,6 +130,11 @@ CScriptbind_Entity::CScriptbind_Entity()
 	gEnv->pEntitySystem->AddSink(this, IEntitySystem::OnSpawn | IEntitySystem::OnRemove, 0);
 }
 
+CScriptbind_Entity::~CScriptbind_Entity()
+{
+	gEnv->pEntitySystem->RemoveSink(this);
+}
+
 void CScriptbind_Entity::PlayAnimation(IEntity *pEntity, mono::string animationName, int slot, int layer, float blend, float speed, EAnimationFlags flags)
 {
 	// Animation graph input
