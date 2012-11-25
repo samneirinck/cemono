@@ -1,4 +1,4 @@
-CryMono (v0.6 RC3) - CryENGINE3 game development on the .NET/Mono platform
+CryMono (v0.6 RC4) - CryENGINE3 game development on the .NET/Mono platform
 	by Ink Studios Ltd. (Based on 'cemono' by Sam 'ins\' Neirinck)
 
 # Description
