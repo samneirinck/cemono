@@ -122,13 +122,13 @@ CScriptSystem::~CScriptSystem()
 
 	SAFE_RELEASE(m_pScriptManager);
 
+	// Force garbage collection of all generations.
+	mono_gc_collect(mono_gc_max_generation());
+
 	for(auto it = m_domains.rbegin(); it != m_domains.rend(); ++it)
 		SAFE_RELEASE(*it);
 
 	m_domains.clear();
-
-	// Force garbage collection of all generations.
-	mono_gc_collect(mono_gc_max_generation());
 
 	if(gEnv->pSystem)
 	{

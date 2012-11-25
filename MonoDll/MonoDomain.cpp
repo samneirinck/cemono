@@ -53,6 +53,8 @@ CScriptDomain::~CScriptDomain()
 	for each(auto assembly in m_assemblies)
 		delete assembly;
 
+	m_assemblies.clear();
+
 	if(m_bRootDomain)
 		mono_jit_cleanup(m_pDomain);
 	else
