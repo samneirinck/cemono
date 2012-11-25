@@ -11,6 +11,7 @@ namespace CryEngine
     /// <summary>
     /// Represents a character attachment, obtained via <see cref="CryEngine.EntityBase.GetAttachment(int, int)"/> and <see cref="CryEngine.EntityBase.GetAttachment(string, int)"/>.
     /// </summary>
+    [Entity(Flags = EntityClassFlags.Invisible)]
     public sealed class Attachment : Entity
     {
         #region Statics
