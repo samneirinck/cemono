@@ -13,15 +13,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NETFramework", "..\Plugins\
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		UnitTests|x86 = UnitTests|x86
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4A7993B3-6611-4D9D-B8AB-836D6C27B12B}.UnitTests|x86.ActiveCfg = UnitTests|x86
-		{4A7993B3-6611-4D9D-B8AB-836D6C27B12B}.UnitTests|x86.Build.0 = UnitTests|x86
-		{25588172-6725-4C61-8CE5-3799FA125533}.UnitTests|x86.ActiveCfg = UnitTests|Any CPU
-		{25588172-6725-4C61-8CE5-3799FA125533}.UnitTests|x86.Build.0 = UnitTests|Any CPU
-		{A0504507-678E-44B5-9517-F89EB8575D3F}.UnitTests|x86.ActiveCfg = UnitTests|x86
-		{A0504507-678E-44B5-9517-F89EB8575D3F}.UnitTests|x86.Build.0 = UnitTests|x86
+		{4A7993B3-6611-4D9D-B8AB-836D6C27B12B}.Release|x86.ActiveCfg = UnitTests|x86
+		{4A7993B3-6611-4D9D-B8AB-836D6C27B12B}.Release|x86.Build.0 = UnitTests|x86
+		{25588172-6725-4C61-8CE5-3799FA125533}.Release|x86.ActiveCfg = UnitTests|Any CPU
+		{25588172-6725-4C61-8CE5-3799FA125533}.Release|x86.Build.0 = UnitTests|Any CPU
+		{A0504507-678E-44B5-9517-F89EB8575D3F}.Release|x86.ActiveCfg = UnitTests|x86
+		{A0504507-678E-44B5-9517-F89EB8575D3F}.Release|x86.Build.0 = UnitTests|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
