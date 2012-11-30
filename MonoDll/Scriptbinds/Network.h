@@ -14,12 +14,12 @@
 
 #include <IGameObject.h>
 
-class CNetwork
+class CScriptbind_Network
 	: public IMonoScriptBind
 {
 public:
-	CNetwork();
-	~CNetwork();
+	CScriptbind_Network();
+	~CScriptbind_Network();
 
 	// IMonoScriptbind
 	virtual const char *GetClassName() { return "NativeNetworkMethods"; }

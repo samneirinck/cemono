@@ -274,7 +274,7 @@ void CScriptSystem::RegisterDefaultBindings()
 	RegisterBinding(CLevelSystem);
 	RegisterBinding(CScriptbind_UI);
 	RegisterBinding(CScriptbind_Entity);
-	RegisterBinding(CNetwork);
+	RegisterBinding(CScriptbind_Network);
 	RegisterBinding(CScriptbind_ScriptTable);
 	RegisterBinding(CScriptbind_CrySerialize);
 

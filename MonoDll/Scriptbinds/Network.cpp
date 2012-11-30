@@ -5,7 +5,7 @@
 
 #include <INetwork.h>
 
-CNetwork::CNetwork()
+CScriptbind_Network::CScriptbind_Network()
 {
 	REGISTER_METHOD(RemoteInvocation);
 
@@ -14,11 +14,11 @@ CNetwork::CNetwork()
 	REGISTER_METHOD(IsClient);
 }
 
-CNetwork::~CNetwork()
+CScriptbind_Network::~CScriptbind_Network()
 {
 }
 
-void CNetwork::RemoteInvocation(EntityId entityId, EntityId targetId, mono::string methodName, mono::object args, ERMInvocation target, int channelId)
+void CScriptbind_Network::RemoteInvocation(EntityId entityId, EntityId targetId, mono::string methodName, mono::object args, ERMInvocation target, int channelId)
 {
 	CRY_ASSERT(entityId != 0);
 
@@ -33,17 +33,17 @@ void CNetwork::RemoteInvocation(EntityId entityId, EntityId targetId, mono::stri
 		pGameObject->InvokeRMI(CEntity::ClScriptRMI(), params, target, channelId);
 }
 
-bool CNetwork::IsMultiplayer()
+bool CScriptbind_Network::IsMultiplayer()
 {
 	return gEnv->bMultiplayer;
 }
 
-bool CNetwork::IsServer()
+bool CScriptbind_Network::IsServer()
 {
 	return gEnv->bServer;
 }
 
-bool CNetwork::IsClient()
+bool CScriptbind_Network::IsClient()
 {
 	return gEnv->IsClient();
 }
