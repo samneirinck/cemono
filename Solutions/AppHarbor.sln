@@ -1,12 +1,18 @@
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryBrary", "..\CryBrary\CryBrary.csproj", "{4A7993B3-6611-4D9D-B8AB-836D6C27B12B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryBrary.Tests", "..\CryBrary.Tests\CryBrary.Tests.csproj", "{25588172-6725-4C61-8CE5-3799FA125533}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4A7993B3-6611-4D9D-B8AB-836D6C27B12B} = {4A7993B3-6611-4D9D-B8AB-836D6C27B12B}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{42CB6498-6C9A-49FF-A49C-8CD7C7C25EC3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NETFramework", "..\Plugins\Compilers\NetFramework\NETFramework.csproj", "{A0504507-678E-44B5-9517-F89EB8575D3F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		UnitTesting|x86 = UnitTests|x86
 		UnitTests|x86 = UnitTests|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
@@ -14,9 +20,14 @@ Global
 		{4A7993B3-6611-4D9D-B8AB-836D6C27B12B}.UnitTests|x86.Build.0 = UnitTests|x86
 		{25588172-6725-4C61-8CE5-3799FA125533}.UnitTests|x86.ActiveCfg = UnitTests|Any CPU
 		{25588172-6725-4C61-8CE5-3799FA125533}.UnitTests|x86.Build.0 = UnitTests|Any CPU
+		{A0504507-678E-44B5-9517-F89EB8575D3F}.UnitTests|x86.ActiveCfg = UnitTests|x86
+		{A0504507-678E-44B5-9517-F89EB8575D3F}.UnitTests|x86.Build.0 = UnitTests|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A0504507-678E-44B5-9517-F89EB8575D3F} = {42CB6498-6C9A-49FF-A49C-8CD7C7C25EC3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		DPBuild = 5
