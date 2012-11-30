@@ -11,6 +11,6 @@ To find out more about CryMono, visit our main page at <a href="http://crymono.i
 Our Visual Studio projects have been set up to expect all contents to be placed inside a folder within the Code folder shipped with the CryENGINE Free SDK.
 
 Example:
-D:\Dev\INK\CryENGINE\Code\CryMono
+C:\CryENGINE\Code\CryMono
 
 Using another folder structure is up to the developer, but will require customization in order for reference and output locations to be correct.
