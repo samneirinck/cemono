@@ -6,10 +6,10 @@
 
 #include <IMonoClass.h>
 
-CUI *CUI::m_pUI = nullptr;
-CUI::TEventHandlers CUI::m_eventHandlers = CUI::TEventHandlers();
+CScriptbind_UI *CScriptbind_UI::m_pUI = nullptr;
+CScriptbind_UI::TEventHandlers CScriptbind_UI::m_eventHandlers = CScriptbind_UI::TEventHandlers();
 
-CUI::CUI()
+CScriptbind_UI::CScriptbind_UI()
 {
 	m_pUI = this;
 
@@ -21,12 +21,12 @@ CUI::CUI()
 	REGISTER_METHOD(SendEvent);
 }
 
-IMonoClass *CUI::GetClass()
+IMonoClass *CScriptbind_UI::GetClass()
 {
 	return g_pScriptSystem->GetCryBraryAssembly()->GetClass("UI");
 }
 
-CUI::~CUI()
+CScriptbind_UI::~CScriptbind_UI()
 {
 	m_eventHandlers.clear();
 }
@@ -91,19 +91,19 @@ SUIArgumentsRet SEventSystemHandler::OnEvent(const SUIEvent& event)
 
 	pArgs->Insert(pArray);
 
-	CUI::GetInstance()->GetClass()->InvokeArray(NULL, "OnEvent", pArgs);
+	CScriptbind_UI::GetInstance()->GetClass()->InvokeArray(NULL, "OnEvent", pArgs);
 
 	return SUIArgumentsRet();
 }
 
-IUIEventSystem *CUI::CreateEventSystem(mono::string name, IUIEventSystem::EEventSystemType eventType)
+IUIEventSystem *CScriptbind_UI::CreateEventSystem(mono::string name, IUIEventSystem::EEventSystemType eventType)
 {
 	m_eventHandlers.push_back(SEventSystemHandler(ToCryString(name), eventType));
 
 	return m_eventHandlers.back().GetEventSystem();
 }
 
-unsigned int CUI::RegisterFunction(IUIEventSystem *pEventSystem, mono::string name, mono::string desc, mono::object inputs)
+unsigned int CScriptbind_UI::RegisterFunction(IUIEventSystem *pEventSystem, mono::string name, mono::string desc, mono::object inputs)
 {
 	SUIEventDesc eventDesc(ToCryString(name), ToCryString(desc));
 
@@ -137,7 +137,7 @@ unsigned int CUI::RegisterFunction(IUIEventSystem *pEventSystem, mono::string na
 	return pEventSystem->RegisterEvent(eventDesc);
 }
 
-unsigned int CUI::RegisterEvent(IUIEventSystem *pEventSystem, mono::string name, mono::string desc, mono::object outputs)
+unsigned int CScriptbind_UI::RegisterEvent(IUIEventSystem *pEventSystem, mono::string name, mono::string desc, mono::object outputs)
 {
 	SUIEventDesc eventDesc(ToCryString(name), ToCryString(desc));
 
@@ -171,7 +171,7 @@ unsigned int CUI::RegisterEvent(IUIEventSystem *pEventSystem, mono::string name,
 	return pEventSystem->RegisterEvent(eventDesc);
 }
 
-void CUI::SendEvent(IUIEventSystem *pEventSystem, unsigned int eventId, mono::object args)
+void CScriptbind_UI::SendEvent(IUIEventSystem *pEventSystem, unsigned int eventId, mono::object args)
 {
 	SUIEvent event(eventId);
 

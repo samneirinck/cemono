@@ -16,14 +16,14 @@
 
 struct SEventSystemHandler;
 
-class CUI 
+class CScriptbind_UI 
 	: public IMonoScriptBind
 {
 public:
-	CUI();
-	~CUI();
+	CScriptbind_UI();
+	~CScriptbind_UI();
 
-	static CUI *GetInstance() { return m_pUI; }
+	static CScriptbind_UI *GetInstance() { return m_pUI; }
 
 	// IMonoScriptBind
 	virtual const char *GetClassName() override { return "NativeUIMethods"; }
@@ -39,7 +39,7 @@ private:
 
 	static void SendEvent(IUIEventSystem *pEventSystem, unsigned int eventId, mono::object args);
 
-	static CUI *m_pUI;
+	static CScriptbind_UI *m_pUI;
 
 	typedef std::vector<SEventSystemHandler> TEventHandlers;
 	static TEventHandlers m_eventHandlers;

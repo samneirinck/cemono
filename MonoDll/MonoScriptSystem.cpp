@@ -272,7 +272,7 @@ void CScriptSystem::RegisterDefaultBindings()
 	RegisterBinding(CScriptbind_ParticleSystem);
 	RegisterBinding(CScriptbind_ViewSystem);
 	RegisterBinding(CLevelSystem);
-	RegisterBinding(CUI);
+	RegisterBinding(CScriptbind_UI);
 	RegisterBinding(CScriptbind_Entity);
 	RegisterBinding(CNetwork);
 	RegisterBinding(CScriptbind_ScriptTable);
