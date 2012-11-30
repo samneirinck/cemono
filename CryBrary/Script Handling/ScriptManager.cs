@@ -445,6 +445,8 @@ namespace CryEngine.Initialization
 
             AddScriptInstance(script, scriptInstance);
 
+            scriptInstance.Script = script;
+
             return scriptInstance;
         }
 

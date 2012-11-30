@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
+using CryEngine.Initialization;
+
 namespace CryEngine
 {
     public delegate void OnCryScriptInstanceDestroyedDelegate(CryScriptInstance scriptInstance);
@@ -10,6 +12,7 @@ namespace CryEngine
     /// </summary>
     public abstract class CryScriptInstance
     {
+        #region Overrides
         public override int GetHashCode()
         {
             unchecked // Overflow is fine, just wrap
@@ -33,6 +36,7 @@ namespace CryEngine
 
             return false;
         }
+        #endregion
 
         internal virtual void OnDestroyedInternal()
         {
@@ -42,15 +46,19 @@ namespace CryEngine
                 OnDestroyed(this);
         }
 
+        #region Callbacks
         /// <summary>
         /// Called each frame if script has been set to be regularly updated (See Updated property)
         /// </summary>
         public virtual void OnUpdate() { }
-        
+        #endregion
+
+
+        #region Properties
         /// <summary>
         /// This script instance's id, used to keep track of instances in <see cref="CryEngine.Initialization.ScriptManager"/>.
         /// </summary>
-        public int ScriptId { internal set; get; }
+        public int ScriptId { get; internal set; }
 
         /// <summary>
         /// Controls whether the entity receives an update per frame.
@@ -63,8 +71,16 @@ namespace CryEngine
         public bool IsDestroyed { get; private set; }
 
         /// <summary>
+        /// Gets the instance script, set in <see cref="CryEngine.Initialization.ScriptManager.CreateScriptInstance(CryEngine.Initialization.CryScript, object[])"/>.
+        /// </summary>
+        public CryScript Script { get; internal set; }
+        #endregion
+
+        #region Events
+        /// <summary>
         /// Event that is invoked when this script is destroyed from <see cref="CryEngine.Initialization.ScriptManager"/>.
         /// </summary>
         public event OnCryScriptInstanceDestroyedDelegate OnDestroyed;
+        #endregion
     }
 }
