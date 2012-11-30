@@ -10,11 +10,6 @@
 
 CScriptbind_Console::CScriptbind_Console()
 {
-	// Logging
-	//REGISTER_METHOD(LogAlways);
-	//REGISTER_METHOD(Log);
-	//REGISTER_METHOD(Warning);
-	
 	REGISTER_METHOD(HandleException);
 
 	// Console commands
@@ -36,24 +31,6 @@ CScriptbind_Console::CScriptbind_Console()
 	REGISTER_METHOD(SetCVarString);
 
 	REGISTER_METHOD(Execute);
-}
-
-extern "C"
-{
-	_declspec(dllexport) void __cdecl LogAlways(const char *msg)
-	{
-		CryLogAlways(msg);
-	}
-
-	_declspec(dllexport) void __cdecl Log(const char *msg)
-	{
-		CryLog(msg);
-	}
-
-	_declspec(dllexport) void __cdecl Warning(const char *msg)
-	{
-		MonoWarning(msg); 
-	}
 }
 
 void CScriptbind_Console::HandleException(mono::object exception)

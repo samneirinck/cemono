@@ -166,34 +166,34 @@
     <Compile Include="Math\Collision.cs" />
     <Compile Include="Math\Plane.cs" />
     <Compile Include="Math\PlaneIntersectionType.cs" />
-    <Compile Include="Native\NativeScriptSystemMethods.cs" />
+    <Compile Include="Script Handling\Native\NativeScriptSystemMethods.cs" />
     <Compile Include="Physics\Explosion.cs" />
     <Compile Include="Script Handling\ScriptInstanceDestroyedException.cs" />
     <Compile Include="Math\Angle.cs" />
     <Compile Include="Math\QuatT.cs" />
-    <Compile Include="Misc\MissingAttributeException.cs" />
+    <Compile Include="Misc\Exceptions\MissingAttributeException.cs" />
     <Compile Include="Extensions\NativeActorExtensions.cs" />
     <Compile Include="Extensions\NativeAttachmentExtensions.cs" />
     <Compile Include="Extensions\NativeEntityExtensions.cs" />
-    <Compile Include="Native\NativeNetworkMethods.cs" />
+    <Compile Include="Network\Native\NativeNetworkMethods.cs" />
     <Compile Include="Network\RemoteInvocationException.cs" />
     <Compile Include="Script Handling\ScriptReloadResult.cs" />
     <Compile Include="Serialization\CrySerialize.cs" />
     <Compile Include="Serialization\SerializationTarget.cs" />
     <Compile Include="Serialization\SerializationType.cs" />
-    <Compile Include="Utils\ProjectSettings.cs" />
+    <Compile Include="ProjectSettings.cs" />
     <Compile Include="Entity\Extensions\AnimationFlags.cs" />
     <Compile Include="Entity\Extensions\EntityLight.cs" />
     <Compile Include="Actor\NativeActor.cs" />
-    <Compile Include="Native\3DEngine\Native3DEngineMethods.cs" />
-    <Compile Include="Native\GameLogic\NativeActorMethods.cs" />
+    <Compile Include="Engine\Native\Native3DEngineMethods.cs" />
+    <Compile Include="Actor\Native\NativeActorMethods.cs" />
     <Compile Include="Async\Jobs\AsyncJob.cs" />
     <Compile Include="Async\Awaiter.cs" />
     <Compile Include="Async\Delay.cs" />
     <Compile Include="Async\Jobs\FrameDelayJob.cs" />
     <Compile Include="Async\Jobs\IAsyncJob.cs" />
     <Compile Include="Async\Jobs\TimeDelayJob.cs" />
-    <Compile Include="Engine\Level.cs" />
+    <Compile Include="Engine\Level\Level.cs" />
     <Compile Include="Entity\EntityBase.cs" />
     <Compile Include="Engine\TimeOfDay\TimeOfDay.cs" />
     <Compile Include="Extensions\IDictionary.cs" />
@@ -203,22 +203,20 @@
     <Compile Include="Misc\DelayedFunc.cs" />
     <Compile Include="Extensions\Enum.cs" />
     <Compile Include="Extensions\WinForms.cs" />
-    <Compile Include="Native\Utils\NativeCVarMethods.cs" />
-    <Compile Include="Native\Utils\NativeDebugMethods.cs" />
-    <Compile Include="Native\NativeEntityMethods.cs" />
-    <Compile Include="Native\NativeFlowNodeMethods.cs" />
-    <Compile Include="Native\GameLogic\NativeGameRulesMethods.cs" />
-    <Compile Include="Native\NativeInputMethods.cs" />
-    <Compile Include="Native\GameLogic\NativeItemSystemMethods.cs" />
-    <Compile Include="Native\NativeLevelMethods.cs" />
-    <Compile Include="Native\NativeLoggingMethods.cs" />
-    <Compile Include="Native\3DEngine\NativeMaterialMethods.cs" />
-    <Compile Include="Native\3DEngine\NativeParticleEffectMethods.cs" />
-    <Compile Include="Native\NativePhysicsMethods.cs" />
-    <Compile Include="Native\Viewport\NativeRendererMethods.cs" />
-    <Compile Include="Native\NativeScriptTableMethods.cs" />
-    <Compile Include="Native\Utils\NativeTimeMethods.cs" />
-    <Compile Include="Native\Viewport\UI\NativeUIMethods.cs" />
+    <Compile Include="Console\Native\NativeCVarMethods.cs" />
+    <Compile Include="Debug\Native\NativeDebugMethods.cs" />
+    <Compile Include="Entity\Native\NativeEntityMethods.cs" />
+    <Compile Include="FlowSystem\Native\NativeFlowNodeMethods.cs" />
+    <Compile Include="GameRules\Native\NativeGameRulesMethods.cs" />
+    <Compile Include="Input\Native\NativeInputMethods.cs" />
+    <Compile Include="Engine\Level\Native\NativeLevelMethods.cs" />
+    <Compile Include="Engine\Material\Native\NativeMaterialMethods.cs" />
+    <Compile Include="Engine\Particle effects\Native\NativeParticleEffectMethods.cs" />
+    <Compile Include="Physics\Native\NativePhysicsMethods.cs" />
+    <Compile Include="Engine\Renderer\Native\NativeRendererMethods.cs" />
+    <Compile Include="Engine\Lua\Native\NativeScriptTableMethods.cs" />
+    <Compile Include="Misc\Time\NativeTimeMethods.cs" />
+    <Compile Include="Engine\UI\Native\NativeUIMethods.cs" />
     <Compile Include="Network\RemoteInvocationAttribute.cs" />
     <Compile Include="Sandbox\Attributes.cs" />
     <Compile Include="Sandbox\FormLoader.cs">
@@ -238,12 +236,12 @@
     <Compile Include="Script Handling\ScriptRegistrationParams.cs" />
     <Compile Include="Script Handling\ScriptCompiler.cs" />
     <Compile Include="Engine\Material\Material.cs" />
-    <Compile Include="Engine\ParticleEffect.cs" />
+    <Compile Include="Engine\Particle effects\ParticleEffect.cs" />
     <Compile Include="Engine\Terrain.cs" />
     <Compile Include="Entity\EntityId.cs" />
     <Compile Include="Entity\NativeEntity.cs" />
     <Compile Include="Physics\PhysicalEntity.cs" />
-    <Compile Include="Lua\ScriptTable.cs" />
+    <Compile Include="Engine\Lua\ScriptTable.cs" />
     <Compile Include="Script Handling\ScriptReloadMessage.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -272,13 +270,12 @@
     <Compile Include="Testing\Internal.cs" />
     <Compile Include="Testing\Results.cs" />
     <Compile Include="Testing\Manager.cs" />
-    <Compile Include="UI\EventSystem.cs" />
-    <Compile Include="UI\UI.cs" />
+    <Compile Include="Engine\UI\EventSystem.cs" />
+    <Compile Include="Engine\UI\UI.cs" />
     <Compile Include="Misc\Convert.cs" />
     <Compile Include="Math\Math.cs" />
-    <Compile Include="Engine\3DEngine.cs" />
     <Compile Include="Physics\RaycastHit.cs" />
-    <Compile Include="Engine\Renderer.cs" />
+    <Compile Include="Engine\Renderer\Renderer.cs" />
     <Compile Include="Entity\Extensions\EntityMovement.cs" />
     <Compile Include="Network\Network.cs" />
     <Compile Include="Input\Input.cs" />
@@ -289,7 +286,7 @@
     <Compile Include="Console\ConsoleCommand\ConsoleCommand.cs" />
     <Compile Include="Entity\EntityConfig.cs" />
     <Compile Include="Console\CVar\CVar.cs" />
-    <Compile Include="Misc\Time.cs" />
+    <Compile Include="Misc\Time\Time.cs" />
     <Compile Include="Debug\Debug.cs" />
     <Compile Include="Extensions\Reflection.cs" />
     <Compile Include="Entity\EntityStatics.cs" />
@@ -297,13 +294,13 @@
     <Compile Include="FlowSystem\FlowNode.cs" />
     <Compile Include="Debug\Logging.cs" />
     <Compile Include="GameRules\GameRules.cs" />
-    <Compile Include="Utils\PointerWrapper.cs" />
-    <Compile Include="Utils\Statistics.cs" />
+    <Compile Include="Misc\PointerWrapper.cs" />
+    <Compile Include="Misc\Statistics.cs" />
     <Compile Include="Math\Vec3.cs" />
-    <Compile Include="Utils\PathUtils.cs" />
+    <Compile Include="Misc\PathUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Script Handling\ScriptManager.cs" />
-    <Compile Include="Utils\UnusedMarker.cs" />
+    <Compile Include="Misc\UnusedMarker.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -338,6 +335,7 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

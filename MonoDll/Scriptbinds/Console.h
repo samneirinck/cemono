@@ -23,11 +23,6 @@ protected:
 	virtual const char *GetClassName() { return "NativeCVarMethods"; }
 	// ~IMonoScriptBind
 
-	// Logging
-	//static void LogAlways(mono::string msg);
-	//static void Log(mono::string msg);
-	//static void Warning(mono::string msg);
-
 	static void HandleException(mono::object exception);
 
 	static void Execute(mono::string string, bool silent);

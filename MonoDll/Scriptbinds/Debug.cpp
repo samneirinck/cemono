@@ -40,3 +40,21 @@ IPersistantDebug *CScriptbind_Debug::GetIPersistentDebug()
 {
 	return gEnv->pGameFramework->GetIPersistantDebug();
 }
+
+extern "C"
+{
+	_declspec(dllexport) void __cdecl LogAlways(const char *msg)
+	{
+		CryLogAlways(msg);
+	}
+
+	_declspec(dllexport) void __cdecl Log(const char *msg)
+	{
+		CryLog(msg);
+	}
+
+	_declspec(dllexport) void __cdecl Warning(const char *msg)
+	{
+		MonoWarning(msg); 
+	}
+}
