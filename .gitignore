@@ -29,6 +29,7 @@
 *.exp
 *.lastbuildstate
 *.res
+*.lib
 ipch/
 obj/
 [Bb]in
@@ -56,8 +57,6 @@ _ReSharper*/
 
 # Output directory
 output
-
-MonoDll/Profile/CryMono.lib
 
 # Excludes
 !*/Utils/Debug
