@@ -3,15 +3,15 @@
 
 #include <IMonoScriptBind.h>
 
-class CTime : public IMonoScriptBind
+class CScriptbind_Time : public IMonoScriptBind
 {
 public:
-	CTime()
+	CScriptbind_Time()
 	{
 		REGISTER_METHOD(SetTimeScale);
 	}
 
-	~CTime() {}
+	~CScriptbind_Time() {}
 
 protected:
 	// IMonoScriptBind

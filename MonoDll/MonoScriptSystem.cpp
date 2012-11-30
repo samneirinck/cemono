@@ -267,7 +267,7 @@ void CScriptSystem::RegisterDefaultBindings()
 	RegisterBinding(CScriptbind_Console);
 	RegisterBinding(CGameRules);
 	RegisterBinding(CScriptbind_Debug);
-	RegisterBinding(CTime);
+	RegisterBinding(CScriptbind_Time);
 	RegisterBinding(CScriptbind_MaterialManager);
 	RegisterBinding(CScriptbind_ParticleSystem);
 	RegisterBinding(CScriptbind_ViewSystem);
