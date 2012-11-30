@@ -201,7 +201,10 @@ namespace CryEngine.Initialization
                 entityRegistrationParams.name = script.ScriptName;
                 entityRegistrationParams.flags = EntityClassFlags.Default | EntityClassFlags.Invisible; 
 
+#if !UNIT_TESTING
                 NativeEntityMethods.RegisterEntityClass(entityRegistrationParams);
+#endif
+
                 Scripts.Add(script);
             }
         }
