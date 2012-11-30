@@ -4,7 +4,7 @@
 #include <IGameRulesSystem.h>
 #include <IActorSystem.h>
 
-CGameRules::CGameRules()
+CScriptbind_GameRules::CScriptbind_GameRules()
 {
 	REGISTER_METHOD(RegisterGameMode);
 	REGISTER_METHOD(AddGameModeAlias);
@@ -13,7 +13,7 @@ CGameRules::CGameRules()
 }
 
 //-----------------------------------------------------------------------------
-void CGameRules::RegisterGameMode(mono::string gamemode)
+void CScriptbind_GameRules::RegisterGameMode(mono::string gamemode)
 {
 	// gEnv->pGameFramework is set too late, so we'll have to set it earlier in CGameStartup::InitFramework. (gEnv->pGameFramework = m_pFramework after the ModuleInitISystem call)
 	if(IGameRulesSystem *pGameRulesSystem = gEnv->pGameFramework ? gEnv->pGameFramework->GetIGameRulesSystem() : nullptr)
@@ -24,25 +24,25 @@ void CGameRules::RegisterGameMode(mono::string gamemode)
 }
 
 //-----------------------------------------------------------------------------
-void CGameRules::AddGameModeAlias(mono::string gamemode, mono::string alias)
+void CScriptbind_GameRules::AddGameModeAlias(mono::string gamemode, mono::string alias)
 {
 	gEnv->pGameFramework->GetIGameRulesSystem()->AddGameRulesAlias(*gamemode, *alias);
 }
 
 //-----------------------------------------------------------------------------
-void CGameRules::AddGameModeLevelLocation(mono::string gamemode, mono::string location)
+void CScriptbind_GameRules::AddGameModeLevelLocation(mono::string gamemode, mono::string location)
 {
 	gEnv->pGameFramework->GetIGameRulesSystem()->AddGameRulesLevelLocation(*gamemode, *location);
 }
 
 //-----------------------------------------------------------------------------
-void CGameRules::SetDefaultGameMode(mono::string gamemode)
+void CScriptbind_GameRules::SetDefaultGameMode(mono::string gamemode)
 {
 	gEnv->pConsole->GetCVar("sv_gamerulesdefault")->Set(*gamemode);
 }
 
 //-----------------------------------------------------------------------------
-EntityId CGameRules::GetPlayer()
+EntityId CScriptbind_GameRules::GetPlayer()
 {
 	return gEnv->pGameFramework->GetClientActorId();
 }
