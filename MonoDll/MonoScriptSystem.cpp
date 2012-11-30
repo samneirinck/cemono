@@ -271,7 +271,7 @@ void CScriptSystem::RegisterDefaultBindings()
 	RegisterBinding(CScriptbind_MaterialManager);
 	RegisterBinding(CScriptbind_ParticleSystem);
 	RegisterBinding(CScriptbind_ViewSystem);
-	RegisterBinding(CLevelSystem);
+	RegisterBinding(CScriptbind_LevelSystem);
 	RegisterBinding(CScriptbind_UI);
 	RegisterBinding(CScriptbind_Entity);
 	RegisterBinding(CScriptbind_Network);

@@ -15,12 +15,12 @@ struct IMonoScript;
 
 struct ILevelInfo;
 
-class CLevelSystem
+class CScriptbind_LevelSystem
 	: public IMonoScriptBind
 {
 public:
-	CLevelSystem();
-	~CLevelSystem() {}
+	CScriptbind_LevelSystem();
+	~CScriptbind_LevelSystem() {}
 
 	// IMonoScriptBind
 	virtual const char *GetClassName() { return "NativeLevelMethods"; }
