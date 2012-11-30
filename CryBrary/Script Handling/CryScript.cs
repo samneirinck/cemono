@@ -46,8 +46,6 @@ namespace CryEngine.Initialization
             }
             else if (type.Implements<UIEventSystem>())
                 scriptType |= ScriptType.UIEventSystem;
-            else if (type.Implements<ScriptCompiler>())
-                scriptType |= ScriptType.ScriptCompiler;
 
             if ((scriptType & (scriptType - 1)) == 0) // only had Any set.
             {
@@ -147,6 +145,5 @@ namespace CryEngine.Initialization
         /// <summary>
         /// </summary>
         UIEventSystem = 64,
-        ScriptCompiler = 128,
     }
 }

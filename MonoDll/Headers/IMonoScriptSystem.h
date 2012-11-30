@@ -56,7 +56,6 @@ enum EMonoScriptFlags
 	/// <summary>
 	/// </summary>
 	eScriptFlag_UIEventSystem = 64,
-	eScriptFlag_ScriptCompiler = 128,
 };
 
 /// <summary>
