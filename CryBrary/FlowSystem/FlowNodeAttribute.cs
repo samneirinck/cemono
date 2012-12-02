@@ -34,7 +34,5 @@ namespace CryEngine//.FlowSystem
         /// Gets or sets whether this node targets an entity. See <see cref="CryEngine.FlowNode.TargetEntity"/>
         /// </summary>
         public bool TargetsEntity { get; set; }
-
-        internal FlowNodeFlags Flags { get; set; }
     }
 }
