@@ -14,7 +14,6 @@ CFlowManager::CFlowManager()
 	: m_refs(0)
 {
 	REGISTER_METHOD(RegisterNode);
-	REGISTER_METHOD(GetNode);
 
 	REGISTER_METHOD(IsPortActive);
 
@@ -55,18 +54,6 @@ void CFlowManager::RegisterNode(mono::string monoTypeName)
 IFlowNodePtr CFlowManager::Create(IFlowNode::SActivationInfo *pActInfo)
 {
 	return new CFlowNode(pActInfo);
-}
-
-// Used after serialization to get the valid flownode pointer.
-IFlowNode *CFlowManager::GetNode(TFlowGraphId graphId, TFlowNodeId id)
-{
-	if(IFlowGraph *pGraph = gEnv->pFlowSystem->GetGraphById(graphId))
-	{
-		if(IFlowNodeData *pNodeData = pGraph->GetNodeData(id))
-			return pNodeData->GetNode();
-	}
-
-	return nullptr;
 }
 
 void CFlowManager::ActivateOutput(CFlowNode *pNode, int index) { pNode->ActivateOutput(index, 0); }

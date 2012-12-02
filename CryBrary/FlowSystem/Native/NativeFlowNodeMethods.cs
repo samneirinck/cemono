@@ -10,8 +10,6 @@ namespace CryEngine.Native
     {
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static void RegisterNode(string typeName);
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern internal static IntPtr GetNode(UInt32 graphId, UInt16 nodeId);
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static void SetRegularlyUpdated(IntPtr nodePtr, bool updated);

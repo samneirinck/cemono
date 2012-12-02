@@ -71,7 +71,6 @@ protected:
 
 	static void RegisterNode(mono::string typeName);
 
-	static IFlowNode *GetNode(TFlowGraphId graphId, TFlowNodeId id);
 	static bool IsPortActive(CFlowNode *pNode, int);
 
 	static int GetPortValueInt(CFlowNode *pNode, int);
