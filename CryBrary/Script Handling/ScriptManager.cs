@@ -136,8 +136,8 @@ namespace CryEngine.Initialization
         /// </summary>
         public void RegisterFlownodes()
         {
-            // These have to be registered later on due to the flow system being initialized late.
-            // Note: Flow nodes have to be registered from IGame::CompleteInit in order to be usable from within UI graphs. (Use IMonoScriptSystem::RegisterFlownodes)
+            // These have to be registered later due to the flow system being initialized late.
+            // Note: Flow nodes have to be registered from IGame::RegisterGameFlownodes in order to be usable from within UI graphs. (Use IMonoScriptSystem::RegisterFlownodes)
             foreach (var node in FlowNodes)
                 FlowNode.Register(node);
 
