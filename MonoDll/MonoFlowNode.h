@@ -87,7 +87,6 @@ private:
 	IFlowGraph *m_pHookedGraph;
 
 	IMonoObject *m_pScript;
-	std::shared_ptr<SNodeType> m_pNodeType;
 
 	ENodeCloneType m_cloneType;
 };
@@ -181,10 +180,7 @@ struct SMonoNodeConfig
 	ENodeCloneType cloneType;
 
 	mono::string description;
-};
 
-struct SMonoNodePortConfig
-{
 	mono::object inputs;
 	mono::object outputs;
 };

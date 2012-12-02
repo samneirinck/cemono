@@ -430,69 +430,69 @@ namespace CryEngine.Compilers.NET
 
             if (inputPortConfig.type == NodePortType.String)
             {
-                switch (portAttribute.Type)
+                switch (portAttribute.StringPortType)
                 {
-                    case PortType.Sound:
+                    case StringPortType.Sound:
                         portName = "sound_";
                         break;
-                    case PortType.DialogLine:
+                    case StringPortType.DialogLine:
                         portName = "dialogline_";
                         break;
-                    case PortType.Color:
+                    case StringPortType.Color:
                         portName = "color_";
                         break;
-                    case PortType.Texture:
+                    case StringPortType.Texture:
                         portName = "texture_";
                         break;
-                    case PortType.Object:
+                    case StringPortType.Object:
                         portName = "object_";
                         break;
-                    case PortType.File:
+                    case StringPortType.File:
                         portName = "file_";
                         break;
-                    case PortType.EquipmentPack:
+                    case StringPortType.EquipmentPack:
                         portName = "equip_";
                         break;
-                    case PortType.ReverbPreset:
+                    case StringPortType.ReverbPreset:
                         portName = "reverbpreset_";
                         break;
-                    case PortType.GameToken:
+                    case StringPortType.GameToken:
                         portName = "gametoken_";
                         break;
-                    case PortType.Material:
+                    case StringPortType.Material:
                         portName = "mat_";
                         break;
-                    case PortType.Sequence:
+                    case StringPortType.Sequence:
                         portName = "seq_";
                         break;
-                    case PortType.Mission:
+                    case StringPortType.Mission:
                         portName = "mission_";
                         break;
-                    case PortType.Animation:
+                    case StringPortType.Animation:
                         portName = "anim_";
                         break;
-                    case PortType.AnimationState:
+                    case StringPortType.AnimationState:
                         portName = "animstate_";
                         break;
-                    case PortType.AnimationStateEx:
+                    case StringPortType.AnimationStateEx:
                         portName = "animstateEx_";
                         break;
-                    case PortType.Bone:
+                    case StringPortType.Bone:
                         portName = "bone_";
                         break;
-                    case PortType.Attachment:
+                    case StringPortType.Attachment:
                         portName = "attachment_";
                         break;
-                    case PortType.Dialog:
+                    case StringPortType.Dialog:
                         portName = "dialog_";
                         break;
-                    case PortType.MaterialParamSlot:
+                    case StringPortType.MaterialParamSlot:
                         portName = "matparamslot_";
                         break;
-                    case PortType.MaterialParamName:
+                    case StringPortType.MaterialParamName:
                         portName = "matparamname_";
                         break;
-                    case PortType.MaterialParamCharacterAttachment:
+                    case StringPortType.MaterialParamCharacterAttachment:
                         portName = "matparamcharatt_";
                         break;
                 }

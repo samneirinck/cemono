@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CryEngine//.FlowSystem
 {
-    public enum PortType
+    public enum StringPortType
     {
         None,
 

@@ -289,12 +289,6 @@ namespace CryEngine
         {
             NativeEntityMethods.InvalidateTrigger(this.GetEntityHandle());;
         }
-
-        /*
-        internal override NodeConfig GetNodeConfig()
-        {
-            return new NodeConfig(FlowNodeCategory.Approved, "", FlowNodeFlags.HideUI | FlowNodeFlags.TargetEntity);
-        }*/
         #endregion
 
         #region Overrides

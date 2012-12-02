@@ -161,6 +161,7 @@
     <Compile Include="FlowSystem\FlowNodeType.cs" />
     <Compile Include="FlowSystem\Native\NodeConfig.cs" />
     <Compile Include="FlowSystem\Native\NodeInfo.cs" />
+    <Compile Include="FlowSystem\OutputPort.cs" />
     <Compile Include="FlowSystem\PortAttribute.cs" />
     <Compile Include="FlowSystem\PortType.cs" />
     <Compile Include="FlowSystem\UI\UIEvent.cs" />
@@ -177,10 +178,12 @@
     <Compile Include="Math\PlaneIntersectionType.cs" />
     <Compile Include="Script Handling\Native\NativeScriptSystemMethods.cs" />
     <Compile Include="Physics\Explosion.cs" />
-    <Compile Include="Script Handling\Registration params\Actor.cs" />
-    <Compile Include="Script Handling\Registration params\Entity.cs" />
-    <Compile Include="Script Handling\Registration params\FlowNode.cs" />
-    <Compile Include="Script Handling\Registration params\GameRules.cs" />
+    <Compile Include="Script Handling\Registration\Actor.cs" />
+    <Compile Include="Script Handling\Registration\Entity.cs" />
+    <Compile Include="Script Handling\Registration\FlowNode\InputPortConfig.cs" />
+    <Compile Include="Script Handling\Registration\FlowNode\OutputPortConfig.cs" />
+    <Compile Include="Script Handling\Registration\FlowNode\RegistrationParams.cs" />
+    <Compile Include="Script Handling\Registration\GameRules.cs" />
     <Compile Include="Script Handling\ScriptInstanceDestroyedException.cs" />
     <Compile Include="Math\Angle.cs" />
     <Compile Include="Math\QuatT.cs" />
@@ -246,7 +249,7 @@
     <Compile Include="Script Handling\ExceptionMessage.Designer.cs">
       <DependentUpon>ExceptionMessage.cs</DependentUpon>
     </Compile>
-    <Compile Include="Script Handling\Registration params\IScriptRegistrationParams.cs" />
+    <Compile Include="Script Handling\Registration\IScriptRegistrationParams.cs" />
     <Compile Include="Script Handling\ScriptCompiler.cs" />
     <Compile Include="Engine\Material\Material.cs" />
     <Compile Include="Engine\Particle effects\ParticleEffect.cs" />

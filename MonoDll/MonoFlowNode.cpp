@@ -17,7 +17,6 @@ CFlowNode::CFlowNode(SActivationInfo *pActInfo)
 	: m_pScript(nullptr)
 	, m_pActInfo(pActInfo)
 	, m_cloneType(eNCT_Instanced)
-	, m_pNodeType(nullptr)
 {
 	// We *have* to get the id right away or inputs won't work, so lets use this fugly solution.
 	pActInfo->pGraph->RegisterHook(this);
@@ -34,9 +33,7 @@ bool CFlowNode::CreatedNode(TFlowNodeId id, const char *name, TFlowNodeTypeId ty
 { 
 	if(pNode==this)
 	{
-		m_pNodeType = g_pScriptSystem->GetFlowManager()->GetNodeType(gEnv->pFlowSystem->GetTypeName(typeId));
-
-		IMonoObject *pScript = g_pScriptSystem->InstantiateScript(m_pNodeType->GetScriptName(), m_pNodeType->IsEntityNode() ? eScriptFlag_Entity : eScriptFlag_FlowNode);
+		IMonoObject *pScript = g_pScriptSystem->InstantiateScript(gEnv->pFlowSystem->GetTypeName(typeId), eScriptFlag_FlowNode);
 
 		IMonoClass *pNodeInfo = g_pScriptSystem->GetCryBraryAssembly()->GetClass("NodeInfo", "CryEngine.FlowSystem.Native");
 		pScript->CallMethod("InternalInitialize", pNodeInfo->BoxObject(&SMonoNodeInfo(this, id, m_pActInfo->pGraph->GetGraphId())));
@@ -141,7 +138,7 @@ void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 			m_pScript->CallMethod("OnInit");
 		}
 		break;
-	case eFE_SetEntityId:
+	/*case eFE_SetEntityId:
 		{
 			if(m_pNodeType->IsEntityNode())
 			{
@@ -161,7 +158,7 @@ void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 				}
 			}
 		}
-		break;
+		break;*/
 	}
 }
 
@@ -173,8 +170,14 @@ void CFlowNode::GetConfiguration(SFlowNodeConfig &config)
 	{
 		SMonoNodeConfig monoConfig = pResult->Unbox<SMonoNodeConfig>();
 
-		config.pInputPorts = m_pNodeType->GetInputPorts(m_pScript);
-		config.pOutputPorts = m_pNodeType->GetOutputPorts(m_pScript);
+		//config.pInputPorts = m_pNodeType->GetInputPorts(m_pScript);
+		//config.pOutputPorts = m_pNodeType->GetOutputPorts(m_pScript);
+
+		/*for(int i = 0; i < 1; i++)
+		{
+			auto node = config.pInputPorts[i];
+			CryLogAlways("found input %s", node.name);
+		}*/
 
 		config.nFlags |= monoConfig.flags;
 		config.sDescription = _HELP(ToCryString(monoConfig.description));

@@ -10,8 +10,6 @@
 #include "MonoScriptSystem.h"
 #include <IGameFramework.h>
 
-CFlowManager::TFlowTypes CFlowManager::m_nodeTypes = TFlowTypes();
-
 CFlowManager::CFlowManager()
 	: m_refs(0)
 {
@@ -40,12 +38,7 @@ CFlowManager::CFlowManager()
 
 void CFlowManager::Reset()
 {
-	for each(auto nodeType in m_nodeTypes)
-	{
-		IMonoObject *pScript = g_pScriptSystem->InstantiateScript(nodeType->GetScriptName(), eScriptFlag_FlowNode);
-		nodeType->ReloadPorts(pScript);
-		SAFE_RELEASE(pScript);
-	}
+	//gEnv->pFlowSystem->ReloadAllNodeTypes();
 }
 
 void CFlowManager::RegisterNode(mono::string monoTypeName)
@@ -56,26 +49,12 @@ void CFlowManager::RegisterNode(mono::string monoTypeName)
 
 	CFlowManager *pFlowManager = g_pScriptSystem->GetFlowManager();
 
-	const char *typeName = ToCryString(monoTypeName);
-
-	m_nodeTypes.push_back(std::shared_ptr<SNodeType>(new SNodeType(typeName)));
-	pFlowSystem->RegisterType(typeName, (IFlowNodeFactoryPtr)pFlowManager);
+	pFlowSystem->RegisterType(ToCryString(monoTypeName), (IFlowNodeFactoryPtr)pFlowManager);
 }
 
 IFlowNodePtr CFlowManager::Create(IFlowNode::SActivationInfo *pActInfo)
 {
 	return new CFlowNode(pActInfo);
-}
-
-std::shared_ptr<SNodeType> CFlowManager::GetNodeType(const char *name)
-{
-	for each(auto nodeType in m_nodeTypes)
-	{
-		if(!strcmp(nodeType->GetTypeName(), name))
-			return nodeType;
-	}
-
-	return nullptr;
 }
 
 // Used after serialization to get the valid flownode pointer.
@@ -146,6 +125,7 @@ IEntity *CFlowManager::GetTargetEntity(CFlowNode *pNode, EntityId &id)
 	return nullptr;
 }
 
+/*
 static const int MAX_NODE_PORT_COUNT = 20;
 void SNodeType::ReloadPorts(IMonoObject *pScript)
 {
@@ -181,4 +161,4 @@ void SNodeType::ReloadPorts(IMonoObject *pScript)
 
 		SAFE_RELEASE(pOutputPorts);
 	}
-}
+}*/

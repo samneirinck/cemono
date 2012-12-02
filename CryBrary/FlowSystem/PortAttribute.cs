@@ -12,6 +12,9 @@ namespace CryEngine//.FlowSystem
 
         public string Description { get; set; }
 
-        public PortType Type { get; set; }
+        /// <summary>
+        /// Only to be used for string ports
+        /// </summary>
+        public StringPortType StringPortType { get; set; }
     }
 }

@@ -19,43 +19,6 @@ struct IMonoScript;
 
 class CFlowNode;
 
-struct SNodeType
-{
-	SNodeType(const char *name) : typeName(name), pInputs(nullptr), pOutputs(nullptr)
-	{
-		if(bEntityNode = typeName.find("entity:") != string::npos)
-			scriptName = typeName.substr(7);
-		else 
-			scriptName = typeName;
-	}
-
-	void ReloadPorts(IMonoObject *pScript);
-	
-	/// <summary>
-	/// Gets the complete node type name, i.e. entity:Bouncy
-	/// </summary>
-	const char *GetTypeName() const { return typeName.c_str(); }
-
-	/// <summary>
-	/// Gets the node's script name, i.e. Bouncy
-	/// </summary>
-	const char *GetScriptName() const { return scriptName; }
-
-	bool IsEntityNode() const { return bEntityNode; }
-
-	SOutputPortConfig *GetOutputPorts(IMonoObject *pScript) { if(!pOutputs) ReloadPorts(pScript); return pOutputs; }
-	SInputPortConfig *GetInputPorts(IMonoObject *pScript) { if(!pInputs) ReloadPorts(pScript); return pInputs; }
-
-private:
-
-	string typeName;
-	string scriptName;
-	bool bEntityNode;
-
-	SOutputPortConfig *pOutputs;
-	SInputPortConfig *pInputs;
-};
-
 // Passed down to node script when initializing
 struct SMonoNodeInfo
 {
@@ -79,8 +42,6 @@ public:
 	CFlowManager();
 	~CFlowManager() {}
 
-	typedef std::vector<std::shared_ptr<SNodeType>> TFlowTypes;
-
 	// IFlowNodeFactory
 	virtual void AddRef() override { ++m_refs; }
 	// We want to manually kill this off, since it's used so often.
@@ -102,8 +63,6 @@ public:
 	virtual void OnPreScriptReload(bool initialLoad) {}
 	virtual void OnPostScriptReload(bool initialLoad) { if(initialLoad) Reset(); }
 	// ~IMonoScriptSystemListener
-
-	static std::shared_ptr<SNodeType> GetNodeType(const char *typeName);
 
 protected:
 	// IMonoScriptBind
@@ -131,8 +90,6 @@ protected:
 	static void ActivateOutputVec3(CFlowNode *pNode, int, Vec3);
 
 	static IEntity *GetTargetEntity(CFlowNode *pNode, EntityId &id);
-
-	static TFlowTypes m_nodeTypes;
 
 	int m_refs;
 };
