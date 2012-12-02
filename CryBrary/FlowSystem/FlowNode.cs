@@ -57,7 +57,7 @@ namespace CryEngine
         {
             var registrationParams = (FlowNodeRegistrationParams)Script.RegistrationParams;
 
-            return new NodeConfig(registrationParams.filter, registrationParams.description, registrationParams.hasTargetEntity ? FlowNodeFlags.TargetEntity : 0);
+            return new NodeConfig(registrationParams.filter, registrationParams.description, registrationParams.hasTargetEntity ? FlowNodeFlags.TargetEntity : 0, registrationParams.type);
         }
 
         internal virtual NodePortConfig GetPortConfig()

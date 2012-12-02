@@ -38,7 +38,7 @@ bool CFlowNode::CreatedNode(TFlowNodeId id, const char *name, TFlowNodeTypeId ty
 
 		IMonoObject *pScript = g_pScriptSystem->InstantiateScript(m_pNodeType->GetScriptName(), m_pNodeType->IsEntityNode() ? eScriptFlag_Entity : eScriptFlag_FlowNode);
 
-		IMonoClass *pNodeInfo = g_pScriptSystem->GetCryBraryAssembly()->GetClass("NodeInfo");
+		IMonoClass *pNodeInfo = g_pScriptSystem->GetCryBraryAssembly()->GetClass("NodeInfo", "CryEngine.FlowSystem.Native");
 		pScript->CallMethod("InternalInitialize", pNodeInfo->BoxObject(&SMonoNodeInfo(this, id, m_pActInfo->pGraph->GetGraphId())));
 
 		m_pScript = pScript;
@@ -179,5 +179,7 @@ void CFlowNode::GetConfiguration(SFlowNodeConfig &config)
 		config.nFlags |= monoConfig.flags;
 		config.sDescription = _HELP(ToCryString(monoConfig.description));
 		config.SetCategory(monoConfig.category);
+
+		m_cloneType = monoConfig.cloneType;
 	}
 }

@@ -178,6 +178,7 @@ struct SMonoNodeConfig
 {
 	EFlowNodeFlags flags;
 	EFlowNodeFlags category;
+	ENodeCloneType cloneType;
 
 	mono::string description;
 };

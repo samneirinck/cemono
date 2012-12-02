@@ -21,6 +21,10 @@ namespace CryEngine//.FlowSystem
         public FlowNodeFilter Filter { get; set; }
 
         /// <summary>
+        /// Gets or sets how the node is cloned.
+        /// </summary>
+        public FlowNodeType Type { get; set; }
+
         /// Gets or sets the node description
         /// </summary>
         public string Description { get; set; }

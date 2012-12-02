@@ -158,6 +158,7 @@
     <Compile Include="Extensions\NativeScriptTableExtensions.cs" />
     <Compile Include="FlowSystem\FlowNodeFilter.cs" />
     <Compile Include="FlowSystem\FlowNodeFlags.cs" />
+    <Compile Include="FlowSystem\FlowNodeType.cs" />
     <Compile Include="FlowSystem\Native\NodeConfig.cs" />
     <Compile Include="FlowSystem\Native\NodeInfo.cs" />
     <Compile Include="FlowSystem\PortAttribute.cs" />

@@ -277,6 +277,7 @@ namespace CryEngine.Compilers.NET
 
             var setFilter = false;
             var setTargetEntity = false;
+            var setType = false;
 
             var nodeType = type;
             while (nodeType != typeof(FlowNode))
@@ -298,8 +299,13 @@ namespace CryEngine.Compilers.NET
                     }
                     if (!setTargetEntity)
                     {
-                        nodeRegistrationParams.hasTargetEntity = nodeAttribute.HasTargetEntity;
+                        nodeRegistrationParams.hasTargetEntity = nodeAttribute.TargetsEntity;
                         setTargetEntity = true;
+                    }
+                    if (!setType)
+                    {
+                        nodeRegistrationParams.type = nodeAttribute.Type;
+                        setType = true;
                     }
                 }
 

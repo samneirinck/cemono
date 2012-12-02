@@ -16,6 +16,8 @@ namespace CryEngine.Initialization
 
         public FlowNodeFilter filter;
 
+        public FlowNodeType type;
+
         public bool hasTargetEntity;
 
         public InputPortConfig[] inputPorts;

@@ -7,17 +7,20 @@ namespace CryEngine.FlowSystem.Native
 {
     internal struct NodeConfig
     {
-        public NodeConfig(FlowNodeFilter cat, string desc, FlowNodeFlags nodeFlags = 0)
+        public NodeConfig(FlowNodeFilter cat, string desc, FlowNodeFlags nodeFlags = 0, FlowNodeType nodeType = FlowNodeType.Instanced)
             : this()
         {
             flags = nodeFlags;
             filter = cat;
             description = desc;
+            type = nodeType;
         }
 
         FlowNodeFlags flags;
 
         FlowNodeFilter filter;
+
+        FlowNodeType type;
 
         string description;
     }
