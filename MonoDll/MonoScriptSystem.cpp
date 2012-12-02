@@ -321,13 +321,13 @@ void CScriptSystem::OnSystemEvent(ESystemEvent event,UINT_PTR wParam,UINT_PTR lp
 			}
 		}
 		break;
-	case ESYSTEM_EVENT_GAME_POST_INIT:
-		{
-			if(m_pScriptManager && gEnv->pGameFramework->GetIFlowSystem())
-				m_pScriptManager->CallMethod("RegisterFlownodes");
-		}
-		break;
 	}
+}
+
+void CScriptSystem::RegisterFlownodes()
+{
+	if(m_pScriptManager && gEnv->pGameFramework->GetIFlowSystem())
+		m_pScriptManager->CallMethod("RegisterFlownodes");
 }
 
 void CScriptSystem::RegisterMethodBinding(const void *method, const char *fullMethodName)

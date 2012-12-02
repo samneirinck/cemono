@@ -75,7 +75,7 @@ public:
 
 	virtual IMonoConverter *GetConverter() override { return m_pConverter; }
 
-	virtual void RegisterFlownodes() { OnSystemEvent(ESYSTEM_EVENT_GAME_POST_INIT, 0, 0); }
+	virtual void RegisterFlownodes();
 	// ~IMonoScriptSystem
 
 	// IFileChangeMonitor
