@@ -91,39 +91,25 @@ void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 					switch(GetPortType(pActInfo, i))
 					{
 					case eFDT_Void:
-						{
-							m_pScript->CallMethod("OnPortActivated", i);
-						}
+						m_pScript->CallMethod("OnPortActivated", i);
 						break;
 					case eFDT_Int:
-						{
-							m_pScript->CallMethod("OnPortActivated", i, CFlowBaseNodeInternal::GetPortInt(pActInfo, i));
-						}
+						m_pScript->CallMethod("OnPortActivated", i, CFlowBaseNodeInternal::GetPortInt(pActInfo, i));
 						break;
 					case eFDT_Float:
-						{
-							m_pScript->CallMethod("OnPortActivated", i, CFlowBaseNodeInternal::GetPortFloat(pActInfo, i));
-						}
+						m_pScript->CallMethod("OnPortActivated", i, CFlowBaseNodeInternal::GetPortFloat(pActInfo, i));
 						break;
 					case eFDT_EntityId:
-						{
-							m_pScript->CallMethod("OnPortActivated", i, CFlowBaseNodeInternal::GetPortEntityId(pActInfo, i));
-						}
+						m_pScript->CallMethod("OnPortActivated", i, CFlowBaseNodeInternal::GetPortEntityId(pActInfo, i));
 						break;
 					case eFDT_Vec3:
-						{
-							m_pScript->CallMethod("OnPortActivated", i, CFlowBaseNodeInternal::GetPortVec3(pActInfo, i));
-						}
+						m_pScript->CallMethod("OnPortActivated", i, CFlowBaseNodeInternal::GetPortVec3(pActInfo, i));
 						break;
 					case eFDT_String:
-						{
-							m_pScript->CallMethod("OnPortActivated", i, CFlowBaseNodeInternal::GetPortString(pActInfo, i));
-						}
+						m_pScript->CallMethod("OnPortActivated", i, CFlowBaseNodeInternal::GetPortString(pActInfo, i));
 						break;
 					case eFDT_Bool:
-						{
-							m_pScript->CallMethod("OnPortActivated", i, CFlowBaseNodeInternal::GetPortBool(pActInfo, i));
-						}
+						m_pScript->CallMethod("OnPortActivated", i, CFlowBaseNodeInternal::GetPortBool(pActInfo, i));
 						break;
 					default:
 						break;
@@ -134,9 +120,7 @@ void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 		}
 		break;
 	case eFE_Initialize:
-		{
-			m_pScript->CallMethod("OnInit");
-		}
+		m_pScript->CallMethod("OnInit");
 		break;
 	/*case eFE_SetEntityId:
 		{
@@ -170,19 +154,45 @@ void CFlowNode::GetConfiguration(SFlowNodeConfig &config)
 	{
 		SMonoNodeConfig monoConfig = pResult->Unbox<SMonoNodeConfig>();
 
-		//config.pInputPorts = m_pNodeType->GetInputPorts(m_pScript);
-		//config.pOutputPorts = m_pNodeType->GetOutputPorts(m_pScript);
-
-		/*for(int i = 0; i < 1; i++)
-		{
-			auto node = config.pInputPorts[i];
-			CryLogAlways("found input %s", node.name);
-		}*/
-
 		config.nFlags |= monoConfig.flags;
 		config.sDescription = _HELP(ToCryString(monoConfig.description));
 		config.SetCategory(monoConfig.category);
 
 		m_cloneType = monoConfig.cloneType;
+
+		// Ports
+		static const int MAX_NODE_PORT_COUNT = 20;
+
+		SInputPortConfig nullptrConfig = {0};
+		SOutputPortConfig nullptrOutputConfig = {0};
+
+		IMonoArray *pInputPorts = *monoConfig.inputs;
+
+		auto pInputs = new SInputPortConfig[MAX_NODE_PORT_COUNT];
+
+		for(int i = 0; i < pInputPorts->GetSize(); i++)
+			pInputs[i] = pInputPorts->GetItem(i)->Unbox<SMonoInputPortConfig>().Convert();
+
+		for(int i = pInputPorts->GetSize(); i < MAX_NODE_PORT_COUNT; i++)
+			pInputs[i] = nullptrConfig;
+
+		config.pInputPorts = pInputs;
+
+		SAFE_RELEASE(pInputPorts);
+
+		// Convert MonoArray type to our custom CScriptArray for easier handling.
+		IMonoArray *pOutputPorts = *monoConfig.outputs;
+
+		auto pOutputs = new SOutputPortConfig[MAX_NODE_PORT_COUNT];
+
+		for(int i = 0; i < pOutputPorts->GetSize(); i++)
+			pOutputs[i] = pOutputPorts->GetItem(i)->Unbox<SMonoOutputPortConfig>().Convert();
+
+		for(int i = pOutputPorts->GetSize(); i < MAX_NODE_PORT_COUNT; i++)
+			pOutputs[i] = nullptrOutputConfig;
+
+		config.pOutputPorts = pOutputs;
+
+		SAFE_RELEASE(pOutputPorts);
 	}
 }

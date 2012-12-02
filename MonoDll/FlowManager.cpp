@@ -48,7 +48,8 @@ void CFlowManager::RegisterNode(mono::string monoTypeName)
 
 	CFlowManager *pFlowManager = g_pScriptSystem->GetFlowManager();
 
-	pFlowSystem->RegisterType(ToCryString(monoTypeName), (IFlowNodeFactoryPtr)pFlowManager);
+	const char *typeName = ToCryString(monoTypeName);
+	pFlowSystem->RegisterType(typeName, (IFlowNodeFactoryPtr)pFlowManager);
 }
 
 IFlowNodePtr CFlowManager::Create(IFlowNode::SActivationInfo *pActInfo)
@@ -111,41 +112,3 @@ IEntity *CFlowManager::GetTargetEntity(CFlowNode *pNode, EntityId &id)
 	MonoWarning("CFlowManager::GetTargetEntity returning nullptr target entity!");
 	return nullptr;
 }
-
-/*
-static const int MAX_NODE_PORT_COUNT = 20;
-void SNodeType::ReloadPorts(IMonoObject *pScript)
-{
-	if(IMonoObject *pResult = pScript->CallMethod("GetPortConfig"))
-	{
-		auto monoConfig = pResult->Unbox<SMonoNodePortConfig>();
-
-		SInputPortConfig nullptrConfig = {0};
-		SOutputPortConfig nullptrOutputConfig = {0};
-
-		IMonoArray *pInputPorts = *monoConfig.inputs;
-
-		pInputs = new SInputPortConfig[MAX_NODE_PORT_COUNT];
-
-		for(int i = 0; i < pInputPorts->GetSize(); i++)
-			pInputs[i] = pInputPorts->GetItem(i)->Unbox<SMonoInputPortConfig>().Convert();
-
-		for(int i = pInputPorts->GetSize(); i < MAX_NODE_PORT_COUNT; i++)
-			pInputs[i] = nullptrConfig;
-
-		SAFE_RELEASE(pInputPorts);
-
-		// Convert MonoArray type to our custom CScriptArray for easier handling.
-		IMonoArray *pOutputPorts = *monoConfig.outputs;
-
-		pOutputs = new SOutputPortConfig[MAX_NODE_PORT_COUNT];
-
-		for(int i = 0; i < pOutputPorts->GetSize(); i++)
-			pOutputs[i] = pOutputPorts->GetItem(i)->Unbox<SMonoOutputPortConfig>().Convert();
-
-		for(int i = pOutputPorts->GetSize(); i < MAX_NODE_PORT_COUNT; i++)
-			pOutputs[i] = nullptrOutputConfig;
-
-		SAFE_RELEASE(pOutputPorts);
-	}
-}*/
