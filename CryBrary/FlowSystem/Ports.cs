@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+
 using CryEngine.Native;
 
 namespace CryEngine
@@ -125,11 +127,11 @@ namespace CryEngine
 
     public struct NodePortConfig
     {
-        public NodePortConfig(object[] inputPorts, object[] outputPorts)
+        public NodePortConfig(InputPortConfig[] inputPorts, OutputPortConfig[] outputPorts)
             : this()
         {
-            inputs = inputPorts;
-            outputs = outputPorts;
+            inputs = inputPorts.Cast<object>().ToArray();
+            outputs = outputPorts.Cast<object>().ToArray();
         }
 
         public object[] inputs;

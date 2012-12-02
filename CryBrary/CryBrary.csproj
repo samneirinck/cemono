@@ -156,6 +156,8 @@
     <Compile Include="Entity\Extensions\Attachment.cs" />
     <Compile Include="Entity\Exceptions\EntityRemovalException.cs" />
     <Compile Include="Extensions\NativeScriptTableExtensions.cs" />
+    <Compile Include="FlowSystem\UI\UIEvent.cs" />
+    <Compile Include="FlowSystem\UI\UIFunction.cs" />
     <Compile Include="Input\ActionmapEventArgs.cs" />
     <Compile Include="Input\ActionmapHandler.cs" />
     <Compile Include="Input\KeyEvent.cs" />
@@ -168,6 +170,10 @@
     <Compile Include="Math\PlaneIntersectionType.cs" />
     <Compile Include="Script Handling\Native\NativeScriptSystemMethods.cs" />
     <Compile Include="Physics\Explosion.cs" />
+    <Compile Include="Script Handling\Registration params\Actor.cs" />
+    <Compile Include="Script Handling\Registration params\Entity.cs" />
+    <Compile Include="Script Handling\Registration params\FlowNode.cs" />
+    <Compile Include="Script Handling\Registration params\GameRules.cs" />
     <Compile Include="Script Handling\ScriptInstanceDestroyedException.cs" />
     <Compile Include="Math\Angle.cs" />
     <Compile Include="Math\QuatT.cs" />
@@ -216,7 +222,7 @@
     <Compile Include="Engine\Renderer\Native\NativeRendererMethods.cs" />
     <Compile Include="Engine\Lua\Native\NativeScriptTableMethods.cs" />
     <Compile Include="Misc\Time\NativeTimeMethods.cs" />
-    <Compile Include="Engine\UI\Native\NativeUIMethods.cs" />
+    <Compile Include="FlowSystem\UI\Native\NativeUIMethods.cs" />
     <Compile Include="Network\RemoteInvocationAttribute.cs" />
     <Compile Include="Sandbox\Attributes.cs" />
     <Compile Include="Sandbox\FormLoader.cs">
@@ -233,7 +239,7 @@
     <Compile Include="Script Handling\ExceptionMessage.Designer.cs">
       <DependentUpon>ExceptionMessage.cs</DependentUpon>
     </Compile>
-    <Compile Include="Script Handling\ScriptRegistrationParams.cs" />
+    <Compile Include="Script Handling\Registration params\IScriptRegistrationParams.cs" />
     <Compile Include="Script Handling\ScriptCompiler.cs" />
     <Compile Include="Engine\Material\Material.cs" />
     <Compile Include="Engine\Particle effects\ParticleEffect.cs" />
@@ -270,8 +276,8 @@
     <Compile Include="Testing\Internal.cs" />
     <Compile Include="Testing\Results.cs" />
     <Compile Include="Testing\Manager.cs" />
-    <Compile Include="Engine\UI\EventSystem.cs" />
-    <Compile Include="Engine\UI\UI.cs" />
+    <Compile Include="FlowSystem\UI\EventSystem.cs" />
+    <Compile Include="FlowSystem\UI\UI.cs" />
     <Compile Include="Misc\Convert.cs" />
     <Compile Include="Math\Math.cs" />
     <Compile Include="Physics\RaycastHit.cs" />

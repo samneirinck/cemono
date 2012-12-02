@@ -288,6 +288,8 @@ namespace CryEngine.Initialization
                                     registrationParams.name = script.ScriptName;
                                 if (registrationParams.category == null)
                                     registrationParams.category = script.Type.Namespace;
+                                if (registrationParams.filter == 0)
+                                    registrationParams.filter = FlowNodeFilter.Approved;
 
                                 script.ScriptName = registrationParams.category + ":" + registrationParams.name;
 

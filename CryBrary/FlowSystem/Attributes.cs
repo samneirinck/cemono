@@ -13,12 +13,12 @@ namespace CryEngine
         /// <summary>
         /// Gets or sets the category in which the node will appear when right-clicking in the Flowgraph Editor.
         /// </summary>
-        public string UICategory { get; set; }
+        public string Category { get; set; }
 
         /// <summary>
         /// Gets or sets the Sandbox filtering category
         /// </summary>
-        public FlowNodeCategory Category { get; set; }
+        public FlowNodeFilter Filter { get; set; }
 
         /// <summary>
         /// Gets or sets the node description
@@ -38,11 +38,6 @@ namespace CryEngine
         public string Description { get; set; }
 
         public PortType Type { get; set; }
-
-        internal FlowNodeFlags Flags { get; set; }
-
-        // Do not expose this directly, needs moar pretty wrap.
-        internal string UIConfig { get; set; }
     }
 
     public enum PortType
@@ -125,7 +120,7 @@ namespace CryEngine
         Unremovable = 0x0008,
     }
 
-    public enum FlowNodeCategory
+    public enum FlowNodeFilter
     {
         /// <summary>
         /// This node is approved for designers
