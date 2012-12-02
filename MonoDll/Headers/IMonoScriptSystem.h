@@ -126,7 +126,7 @@ struct IMonoScriptSystem
 	virtual IMonoConverter *GetConverter() = 0;
 
 	/// <summary>
-	/// If called prior to default CryMono flownode registration time (IGameFramework PostInit); flownodes are immediately registered.
+	/// Call from IGame::RegisterGameFlownodes in order to have CryMono flow nodes appear in the Flowgraph Editor.
 	/// </summary>
 	virtual void RegisterFlownodes() = 0;
 };
