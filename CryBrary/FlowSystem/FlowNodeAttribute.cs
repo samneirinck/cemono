@@ -25,11 +25,15 @@ namespace CryEngine//.FlowSystem
         /// </summary>
         public FlowNodeType Type { get; set; }
 
+        /// <summary>
         /// Gets or sets the node description
         /// </summary>
         public string Description { get; set; }
 
-        public bool HasTargetEntity { get; set; }
+        /// <summary>
+        /// Gets or sets whether this node targets an entity. See <see cref="CryEngine.FlowNode.TargetEntity"/>
+        /// </summary>
+        public bool TargetsEntity { get; set; }
 
         internal FlowNodeFlags Flags { get; set; }
     }
