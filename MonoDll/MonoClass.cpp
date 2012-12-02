@@ -55,7 +55,7 @@ IMonoObject *CScriptClass::CreateInstance(IMonoArray *pConstructorParams)
 IMonoObject *CScriptClass::InvokeArray(IMonoObject *pObject, const char *methodName, IMonoArray *pParams)
 {
 	MonoMethod *pMethod = GetMonoMethod(methodName, pParams);
-	CRY_ASSERT_MESSAGE(pMethod, "Failed to find the specified method.");
+	CRY_ASSERT_TRACE(pMethod, ("Failed to find the specified method %s", methodName));
 
 	MonoObject *pException = nullptr;
 	MonoObject *pResult = mono_runtime_invoke_array(pMethod, pObject ? pObject->GetManagedObject() : nullptr, pParams ? (MonoArray *)pParams->GetManagedObject() : nullptr, &pException);
@@ -71,7 +71,7 @@ IMonoObject *CScriptClass::InvokeArray(IMonoObject *pObject, const char *methodN
 IMonoObject *CScriptClass::Invoke(IMonoObject *pObject, const char *methodName, void **pParams, int numParams)
 {
 	MonoMethod *pMethod = GetMonoMethod(methodName, numParams);
-	CRY_ASSERT_MESSAGE(pMethod, "Failed to find the specified method.");
+	CRY_ASSERT_TRACE(pMethod, ("Failed to find the specified method %s", methodName));
 
 	MonoObject *pException = nullptr;
 	MonoObject *pResult = mono_runtime_invoke(pMethod, pObject ? pObject->GetManagedObject() : nullptr, pParams, &pException);
@@ -152,7 +152,6 @@ MonoMethod *CScriptClass::GetMonoMethod(const char *methodName, IMonoArray *pArg
 		}
 	}
 
-	MonoWarning("Failed to get method %s in class %s", methodName, GetName());
 	return nullptr;
 }
 
@@ -187,57 +186,56 @@ MonoMethod *CScriptClass::GetMonoMethod(const char *methodName, int numParams)
 			return pCurMethod;
 	}
 
-	MonoWarning("Failed to get method %s in class %s", methodName, GetName());
 	return nullptr;
 }
 
 IMonoObject *CScriptClass::GetPropertyValue(IMonoObject *pObject, const char *propertyName)
 {
-	if(MonoProperty *pProperty = GetMonoProperty(propertyName))
-	{
-		MonoObject *pException = nullptr;
+	MonoProperty *pProperty = GetMonoProperty(propertyName);
+	CRY_ASSERT_TRACE(pProperty, ("Failed to find the specified property %s", propertyName));
 
-		MonoObject *propertyValue = mono_property_get_value(pProperty, pObject ? pObject->GetManagedObject() : nullptr, nullptr, &pException);
+	MonoObject *pException = nullptr;
 
-		if(pException)
-			HandleException(pException);
-		else if(propertyValue)
-			return *(mono::object)propertyValue;
-	}
+	MonoObject *propertyValue = mono_property_get_value(pProperty, pObject ? pObject->GetManagedObject() : nullptr, nullptr, &pException);
+
+	if(pException)
+		HandleException(pException);
+	else if(propertyValue)
+		return *(mono::object)propertyValue;
 
 	return nullptr;
 }
 
 void CScriptClass::SetPropertyValue(IMonoObject *pObject, const char *propertyName, mono::object newValue)
 {
-	if(MonoProperty *pProperty = GetMonoProperty(propertyName))
-	{
-		void *args[1];
-		args[0] = newValue;
+	MonoProperty *pProperty = GetMonoProperty(propertyName);
+	CRY_ASSERT_TRACE(pProperty, ("Failed to find the specified property %s", propertyName));
 
-		mono_property_set_value(pProperty, pObject ? pObject->GetManagedObject() : nullptr, args, nullptr);
-	}
+	void *args[1];
+	args[0] = newValue;
+
+	mono_property_set_value(pProperty, pObject ? pObject->GetManagedObject() : nullptr, args, nullptr);
 }
 
 IMonoObject *CScriptClass::GetFieldValue(IMonoObject *pObject, const char *fieldName)
 {
-	if(MonoClassField *pField = GetMonoField(fieldName))
-	{
-		MonoObject *fieldValue = mono_field_get_value_object(mono_domain_get(), pField, (MonoObject *)(pObject ? pObject->GetManagedObject() : nullptr));
+	MonoClassField *pField = GetMonoField(fieldName);
+	CRY_ASSERT_TRACE(pField, ("Failed to find the specified field %s", fieldName));
 
-		if(fieldValue)
-			return *(mono::object)fieldValue;
+	MonoObject *fieldValue = mono_field_get_value_object(mono_domain_get(), pField, (MonoObject *)(pObject ? pObject->GetManagedObject() : nullptr));
 
-		return nullptr;
-	}
+	if(fieldValue)
+		return *(mono::object)fieldValue;
 
 	return nullptr;
 }
 
 void CScriptClass::SetFieldValue(IMonoObject *pObject, const char *fieldName, mono::object newValue)
 {
-	if(MonoClassField *pField = GetMonoField(fieldName))
-		mono_field_set_value((MonoObject *)(pObject ? pObject->GetManagedObject() : nullptr), pField, newValue);
+	MonoClassField *pField = GetMonoField(fieldName);
+	CRY_ASSERT_TRACE(pField, ("Failed to find the specified field %s", fieldName));
+
+	mono_field_set_value((MonoObject *)(pObject ? pObject->GetManagedObject() : nullptr), pField, newValue);
 }
 
 MonoProperty *CScriptClass::GetMonoProperty(const char *name)
