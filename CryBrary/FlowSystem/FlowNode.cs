@@ -9,6 +9,8 @@ using CryEngine.Extensions;
 using CryEngine.Initialization;
 using CryEngine.Native;
 
+using CryEngine.FlowSystem.Native;
+
 namespace CryEngine
 {
     public abstract class FlowNode : CryScriptInstance
@@ -250,38 +252,5 @@ namespace CryEngine
         internal UInt32 GraphId { get; set; }
 
         internal bool Initialized { get; set; }
-    }
-
-    struct NodeInfo
-    {
-        public NodeInfo(IntPtr Pointer, UInt16 NodeId, UInt32 GraphId)
-        {
-            nodePtr = Pointer;
-            nodeId = NodeId;
-            graphId = GraphId;
-        }
-
-        public IntPtr nodePtr;
-
-        public UInt16 nodeId;
-
-        public UInt32 graphId;
-    }
-
-    internal struct NodeConfig
-    {
-        public NodeConfig(FlowNodeFilter cat, string desc, FlowNodeFlags nodeFlags = 0)
-            : this()
-        {
-            flags = nodeFlags;
-            filter = cat;
-            description = desc;
-        }
-
-        FlowNodeFlags flags;
-
-        FlowNodeFilter filter;
-
-        string description;
     }
 }

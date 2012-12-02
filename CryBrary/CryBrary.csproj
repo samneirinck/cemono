@@ -156,6 +156,12 @@
     <Compile Include="Entity\Extensions\Attachment.cs" />
     <Compile Include="Entity\Exceptions\EntityRemovalException.cs" />
     <Compile Include="Extensions\NativeScriptTableExtensions.cs" />
+    <Compile Include="FlowSystem\FlowNodeFilter.cs" />
+    <Compile Include="FlowSystem\FlowNodeFlags.cs" />
+    <Compile Include="FlowSystem\Native\NodeConfig.cs" />
+    <Compile Include="FlowSystem\Native\NodeInfo.cs" />
+    <Compile Include="FlowSystem\PortAttribute.cs" />
+    <Compile Include="FlowSystem\PortType.cs" />
     <Compile Include="FlowSystem\UI\UIEvent.cs" />
     <Compile Include="FlowSystem\UI\UIFunction.cs" />
     <Compile Include="Input\ActionmapEventArgs.cs" />
@@ -204,7 +210,7 @@
     <Compile Include="Engine\TimeOfDay\TimeOfDay.cs" />
     <Compile Include="Extensions\IDictionary.cs" />
     <Compile Include="Extensions\IEnumerable.cs" />
-    <Compile Include="FlowSystem\Attributes.cs" />
+    <Compile Include="FlowSystem\FlowNodeAttribute.cs" />
     <Compile Include="FlowSystem\Ports.cs" />
     <Compile Include="Misc\DelayedFunc.cs" />
     <Compile Include="Extensions\Enum.cs" />
