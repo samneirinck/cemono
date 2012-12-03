@@ -11,7 +11,7 @@ using CryEngine.Native;
 
 using CryEngine.FlowSystem.Native;
 
-namespace CryEngine
+namespace CryEngine.FlowSystem
 {
     public abstract class FlowNode : CryScriptInstance
     {

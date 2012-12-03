@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CryEngine//.FlowSystem
+namespace CryEngine.FlowSystem
 {
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field)]
     public sealed class PortAttribute : Attribute

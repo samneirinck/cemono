@@ -5,6 +5,8 @@ using System.Text;
 
 using System.Reflection;
 
+using CryEngine.FlowSystem;
+
 namespace CryEngine.Initialization
 {
     public struct FlowNodeRegistrationParams : IScriptRegistrationParams

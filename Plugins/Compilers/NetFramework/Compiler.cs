@@ -4,10 +4,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+
 using CryEngine.Extensions;
 using CryEngine.Initialization;
 using CryEngine.Testing;
 using CryEngine.Utilities;
+
+using CryEngine.FlowSystem;
 
 namespace CryEngine.Compilers.NET
 {

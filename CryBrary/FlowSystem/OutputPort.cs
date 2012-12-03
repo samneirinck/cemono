@@ -1,8 +1,9 @@
 ﻿using System;
 
 using CryEngine.Native;
+using CryEngine.FlowSystem.Native;
 
-namespace CryEngine//.FlowSystem
+namespace CryEngine.FlowSystem
 {
     public sealed class OutputPort
     {

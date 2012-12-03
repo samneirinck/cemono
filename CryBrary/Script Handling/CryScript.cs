@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 using CryEngine.Extensions;
 
+using CryEngine.FlowSystem;
+
 namespace CryEngine.Initialization
 {
     /// <summary>

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CryEngine//.FlowSystem
+namespace CryEngine.FlowSystem
 {
     public enum FlowNodeType
     {
