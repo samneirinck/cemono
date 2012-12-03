@@ -44,8 +44,6 @@ namespace CryEngine.Initialization
                 else if (type.Implements<FlowNode>())
                     scriptType |= ScriptType.FlowNode;
             }
-            else if (type.Implements<UIEventSystem>())
-                scriptType |= ScriptType.UIEventSystem;
 
             if ((scriptType & (scriptType - 1)) == 0) // only had Any set.
             {

@@ -501,7 +501,6 @@
     <ClInclude Include="ScriptBinds\MaterialManager.h" />
     <ClInclude Include="Scriptbinds\ScriptTable.h" />
     <ClInclude Include="Scriptbinds\Time.h" />
-    <ClInclude Include="Scriptbinds\UI.h" />
     <ClInclude Include="Scriptbinds\ViewSystem.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
@@ -539,7 +538,6 @@
     <ClCompile Include="Scriptbinds\Renderer.cpp" />
     <ClCompile Include="ScriptBinds\MaterialManager.cpp" />
     <ClCompile Include="Scriptbinds\ScriptTable.cpp" />
-    <ClCompile Include="Scriptbinds\UI.cpp" />
     <ClCompile Include="Scriptbinds\ViewSystem.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

@@ -164,8 +164,6 @@
     <Compile Include="FlowSystem\OutputPort.cs" />
     <Compile Include="FlowSystem\PortAttribute.cs" />
     <Compile Include="FlowSystem\PortType.cs" />
-    <Compile Include="FlowSystem\UI\UIEvent.cs" />
-    <Compile Include="FlowSystem\UI\UIFunction.cs" />
     <Compile Include="Input\ActionmapEventArgs.cs" />
     <Compile Include="Input\ActionmapHandler.cs" />
     <Compile Include="Input\KeyEvent.cs" />
@@ -232,7 +230,6 @@
     <Compile Include="Engine\Renderer\Native\NativeRendererMethods.cs" />
     <Compile Include="Engine\Lua\Native\NativeScriptTableMethods.cs" />
     <Compile Include="Misc\Time\NativeTimeMethods.cs" />
-    <Compile Include="FlowSystem\UI\Native\NativeUIMethods.cs" />
     <Compile Include="Network\RemoteInvocationAttribute.cs" />
     <Compile Include="Sandbox\Attributes.cs" />
     <Compile Include="Sandbox\FormLoader.cs">
@@ -286,8 +283,6 @@
     <Compile Include="Testing\Internal.cs" />
     <Compile Include="Testing\Results.cs" />
     <Compile Include="Testing\Manager.cs" />
-    <Compile Include="FlowSystem\UI\EventSystem.cs" />
-    <Compile Include="FlowSystem\UI\UI.cs" />
     <Compile Include="Misc\Convert.cs" />
     <Compile Include="Math\Math.cs" />
     <Compile Include="Physics\RaycastHit.cs" />

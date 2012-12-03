@@ -37,7 +37,6 @@
 #include "Scriptbinds\ParticleSystem.h"
 #include "Scriptbinds\ViewSystem.h"
 #include "Scriptbinds\LevelSystem.h"
-#include "Scriptbinds\UI.h"
 #include "Scriptbinds\Entity.h"
 #include "Scriptbinds\Network.h"
 #include "Scriptbinds\Time.h"
@@ -272,7 +271,6 @@ void CScriptSystem::RegisterDefaultBindings()
 	RegisterBinding(CScriptbind_ParticleSystem);
 	RegisterBinding(CScriptbind_ViewSystem);
 	RegisterBinding(CScriptbind_LevelSystem);
-	RegisterBinding(CScriptbind_UI);
 	RegisterBinding(CScriptbind_Entity);
 	RegisterBinding(CScriptbind_Network);
 	RegisterBinding(CScriptbind_ScriptTable);
