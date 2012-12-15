@@ -74,17 +74,6 @@ CScriptSystem::CScriptSystem()
 
 	string monoCmdOptions = "";
 
-#ifndef _RELEASE
-	if(g_pMonoCVars->mono_softBreakpoints)
-	{
-		CryLogAlways("		[Performance Warning] Mono soft breakpoints are enabled!");
-
-		// Prevents managed null reference exceptions causing crashes in unmanaged code
-		// See: https://bugzilla.xamarin.com/show_bug.cgi?id=5963
-		monoCmdOptions.append("--soft-breakpoints");
-	}
-#endif
-
 	if(auto *pArg = gEnv->pSystem->GetICmdLine()->FindArg(eCLAT_Pre, "monoArgs"))
 		monoCmdOptions.append(pArg->GetValue());
 
@@ -93,6 +82,16 @@ CScriptSystem::CScriptSystem()
 	const ICmdLineArg* arg = gEnv->pSystem->GetICmdLine()->FindArg(eCLAT_Pre, "DEBUG");
 	if (arg != nullptr)
 		monoCmdOptions.append("--debugger-agent=transport=dt_socket,address=127.0.0.1:65432,embedding=1");
+#ifndef _RELEASE
+	else if(g_pMonoCVars->mono_softBreakpoints) // Soft breakpoints not compatible with debugging server
+	{
+		CryLogAlways("		[Performance Warning] Mono soft breakpoints are enabled!");
+
+		// Prevents managed null reference exceptions causing crashes in unmanaged code
+		// See: https://bugzilla.xamarin.com/show_bug.cgi?id=5963
+		monoCmdOptions.append("--soft-breakpoints");
+	}
+#endif
 
 	char *options = new char[monoCmdOptions.size() + 1];
 	strcpy(options, monoCmdOptions.c_str());
