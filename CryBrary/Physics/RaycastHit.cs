@@ -50,17 +50,28 @@ namespace CryEngine
         internal int partid;
         public int PartId { get { return partid; } }
 
-        internal short surface_idx;
-        public short SurfaceId { get { return surface_idx; } }
+        internal ushort surface_idx;
+        public int SurfaceId { get { return surface_idx; } }
 
-        internal short idmatOrg;    // original material index, not mapped with material mapping
-        //public short OriginalMaterialIndex { get { return idmatOrg; } }
+        /// <summary>
+        /// The surface type that the ray collided with.
+        /// </summary>
+        public SurfaceType SurfaceType { get { return SurfaceType.Get(SurfaceId); } }
+
+        internal short idmatOrg;
+        /// <summary>
+        /// original material index, not mapped with material mapping
+        /// </summary>
+        public short OriginalMaterialIndex { get { return idmatOrg; } }
 
         internal int foreignIdx;
-        //public int ForeignIDx { get { return foreignIdx; } }
+        public int ForeignIDx { get { return foreignIdx; } }
 
-        internal int inode; // BV tree node that had the intersection; can be used for "warm start" next time
-        //public int iNode { get { return inode; } }
+        internal int inode;
+        /// <summary>
+        /// BV tree node that had the intersection; can be used for "warm start" next time
+        /// </summary>
+        public int iNode { get { return inode; } }
 
         internal Vec3 pt;
         public Vec3 Point { get { return pt; } }
@@ -71,8 +82,11 @@ namespace CryEngine
         internal int bTerrain;    // global terrain hit
         public bool HitTerrain { get { return bTerrain == 1; } }
 
-        internal int iprim; // hit triangle index
-        //public int iPrim { get { return iprim; } }
+        internal int iprim;
+        /// <summary>
+        /// hit triangle index
+        /// </summary>
+        public int iPrim { get { return iprim; } }
 
         IntPtr nextHit;
     }
