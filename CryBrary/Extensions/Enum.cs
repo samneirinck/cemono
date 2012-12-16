@@ -14,9 +14,12 @@ namespace CryEngine.Extensions
                    select (T)Enum.Parse(typeof(T), value);
         }
 
-        public static bool ContainsFlag(this ScriptType scriptType, ScriptType flag)
+        //checks if the value contains the provided type
+        public static bool ContainsFlag<T>(this System.Enum type, T value)
         {
-            return (scriptType & flag) == flag;
+            var intValue = (int)(object)value;
+
+            return ((int)(object)type & intValue) == intValue;
         }
     }
 }
