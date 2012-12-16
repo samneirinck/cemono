@@ -60,7 +60,7 @@ namespace CryEngine
         /// <summary>
         /// Gets the surface type assigned to this material.
         /// </summary>
-        public string SurfaceType { get { return NativeMaterialMethods.GetSurfaceTypeName(Handle); } }
+        public SurfaceType SurfaceType { get { return SurfaceType.TryGet(NativeMaterialMethods.GetSurfaceType(Handle)); } }
 
         /// <summary>
         /// Gets the amount of shader parameters in this material.
