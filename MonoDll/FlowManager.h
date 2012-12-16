@@ -67,6 +67,7 @@ public:
 protected:
 	// IMonoScriptBind
 	virtual const char *GetClassName() { return "NativeFlowNodeMethods"; }
+	virtual const char *GetNamespace() { return "CryEngine.FlowSystem.Native"; }
 	// ~IMonoScriptBind
 
 	static void RegisterNode(mono::string typeName);
