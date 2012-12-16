@@ -88,7 +88,7 @@ namespace CryEngine
         /// </summary>
         public int iPrim { get { return iprim; } }
 
-        IntPtr nextHit;
+        IntPtr nextHit { get; set; }
     }
 
     [Flags]

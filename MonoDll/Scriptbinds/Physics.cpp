@@ -1,6 +1,8 @@
 #include "StdAfx.h"
 #include "Physics.h"
 
+#include "MonoScriptSystem.h"
+
 #include <IEntitySystem.h>
 
 #include <IMonoArray.h>
@@ -127,7 +129,7 @@ void CScriptbind_Physics::SetVelocity(IEntity *pEntity, Vec3 vel)
 	pPhysicalEntity->Action(&asv);
 }
 
-int CScriptbind_Physics::RayWorldIntersection(Vec3 origin, Vec3 dir, int objFlags, unsigned int flags, ray_hit &hit, int maxHits, mono::object skipEntities)
+mono::object CScriptbind_Physics::RayWorldIntersection(Vec3 origin, Vec3 dir, int objFlags, unsigned int flags, int maxHits, mono::object skipEntities)
 {
 	IPhysicalEntity **pSkipEnts = NULL;
 	int numSkipEnts = 0;
@@ -145,12 +147,23 @@ int CScriptbind_Physics::RayWorldIntersection(Vec3 origin, Vec3 dir, int objFlag
 		delete pSkipEntities;
 	}
 
-	hit = ray_hit();
-	int numHits = gEnv->pPhysicalWorld->RayWorldIntersection(origin, dir, objFlags, flags, &hit, maxHits, pSkipEnts, numSkipEnts);
+	ray_hit pHits[10];
+	int numHits = gEnv->pPhysicalWorld->RayWorldIntersection(origin, dir, objFlags, flags, pHits, maxHits, pSkipEnts, numSkipEnts);
 
 	SAFE_DELETE_ARRAY(pSkipEnts);
 
-	return numHits;
+	if(numHits > 0)
+	{
+		IMonoClass *pRayHitClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("RaycastHit");
+
+		IMonoArray *pRayHits = CreateMonoArray(numHits, pRayHitClass);
+		for(int i = 0; i < numHits; i++)
+			pRayHits->InsertObject(pRayHitClass->BoxObject(&pHits[i]));
+
+		return pRayHits->GetManagedObject();
+	}
+
+	return nullptr;
 }
 
 mono::object CScriptbind_Physics::SimulateExplosion(pe_explosion explosion)

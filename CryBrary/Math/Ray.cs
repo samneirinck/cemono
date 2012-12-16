@@ -65,21 +65,21 @@ namespace CryEngine
         /// <param name="flags"></param>
         /// <param name="maxHits"></param>
         /// <param name="skipEntities"></param>
-        /// <returns>The total amount of hits detected (solid and pierceable)</returns>
-        public int Cast(out RaycastHit hit, EntityQueryFlags objectTypes = EntityQueryFlags.All, RayWorldIntersectionFlags flags = RayWorldIntersectionFlags.AnyHit, int maxHits = 1, PhysicalEntity[] skipEntities = null)
+        /// <returns>Detected hits (solid and pierceable)</returns>
+        public IEnumerable<RaycastHit> Cast(EntityQueryFlags objectTypes = EntityQueryFlags.All, RayWorldIntersectionFlags flags = RayWorldIntersectionFlags.AnyHit, int maxHits = 1, PhysicalEntity[] skipEntities = null)
         {
             object[] skippedEntities = null;
             if (skipEntities != null && skipEntities.Length > 0)
                 skippedEntities = skipEntities.Cast<object>().ToArray();
 
-            return Native.NativePhysicsMethods.RayWorldIntersection(Position, Direction, objectTypes, flags, out hit, maxHits, skippedEntities);
+            return Native.NativePhysicsMethods.RayWorldIntersection(Position, Direction, objectTypes, flags, maxHits, skippedEntities);
         }
 
-        public static int Cast(out RaycastHit hit, Vec3 pos, Vec3 dir, EntityQueryFlags objectTypes = EntityQueryFlags.All, RayWorldIntersectionFlags flags = RayWorldIntersectionFlags.AnyHit, int maxHits = 1, PhysicalEntity[] skipEntities = null)
+        public static IEnumerable<RaycastHit> Cast(Vec3 pos, Vec3 dir, EntityQueryFlags objectTypes = EntityQueryFlags.All, RayWorldIntersectionFlags flags = RayWorldIntersectionFlags.AnyHit, int maxHits = 1, PhysicalEntity[] skipEntities = null)
         {
             var ray = new Ray(pos, dir);
 
-            return ray.Cast(out hit, objectTypes, flags, maxHits, skipEntities);
+            return ray.Cast(objectTypes, flags, maxHits, skipEntities);
         }
 
         /// <summary>
