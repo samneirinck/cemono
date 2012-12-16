@@ -65,24 +65,7 @@ public:
 	static mono::object SimulateExplosion(pe_explosion explosion);
 
 	static pe_status_living GetLivingEntityStatus(IEntity *pEntity);
-
-	static pe_action_impulse GetImpulseStruct()
-	{
-		pe_action_impulse impulse;
-		return impulse;
-	}
-
-	static pe_player_dimensions GetPlayerDimensionsStruct()
-	{
-		pe_player_dimensions pd;
-		return pd;
-	}
-
-	static pe_player_dynamics GetPlayerDynamicsStruct()
-	{
-		pe_player_dynamics pd;
-		return pd;
-	}
+	static pe_status_dynamics GetDynamicsEntityStatus(IEntity *pEntity);
 };
 
 #endif //__SCRIPTBIND_PHYSICALWORLD__

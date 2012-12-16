@@ -87,5 +87,18 @@ namespace CryEngine.Utilities
         {
             return IsUnused(var.X);
         }
+
+        public static IntPtr IntPtr
+        {
+            get
+            {
+                return new IntPtr(-1);
+            }
+        }
+
+        public static bool IsUnused(IntPtr var)
+        {
+            return var.ToInt32() == -1;
+        }
     }
 }

@@ -143,6 +143,9 @@
     <Compile Include="Engine\Material\MaterialFlags.cs" />
     <Compile Include="Engine\Material\ShaderColorParameter.cs" />
     <Compile Include="Engine\Material\ShaderFloatParameter.cs" />
+    <Compile Include="Engine\Material\SurfaceType\SurfaceType.cs" />
+    <Compile Include="Engine\Material\SurfaceType\SurfaceTypeFlags.cs" />
+    <Compile Include="Engine\Material\SurfaceType\SurfaceTypeParams.cs" />
     <Compile Include="Engine\TimeOfDay\CloudShadingParams.cs" />
     <Compile Include="Engine\TimeOfDay\ColorGradingParams.cs" />
     <Compile Include="Engine\TimeOfDay\FogParams.cs" />
@@ -174,6 +177,14 @@
     <Compile Include="Math\Collision.cs" />
     <Compile Include="Math\Plane.cs" />
     <Compile Include="Math\PlaneIntersectionType.cs" />
+    <Compile Include="Physics\Actions\Impulse.cs" />
+    <Compile Include="Physics\BreakageParameters.cs" />
+    <Compile Include="Physics\PhysicalizationFlags.cs" />
+    <Compile Include="Physics\PhysicalizationParams.cs" />
+    <Compile Include="Physics\PhysicalizationType.cs" />
+    <Compile Include="Physics\Status\DynamicsStatus.cs" />
+    <Compile Include="Physics\Status\LivingStatus.cs" />
+    <Compile Include="Physics\Status\Status.cs" />
     <Compile Include="Script Handling\Native\NativeScriptSystemMethods.cs" />
     <Compile Include="Physics\Explosion.cs" />
     <Compile Include="Script Handling\Registration\Actor.cs" />

@@ -25,6 +25,8 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
+using CryEngine.Physics;
+
 namespace CryEngine
 {
     /// <summary>

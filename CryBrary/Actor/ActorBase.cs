@@ -1,6 +1,8 @@
 ﻿using System;
 using CryEngine.Native;
 
+using CryEngine.Physics;
+
 namespace CryEngine
 {
     /// <summary>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using CryEngine.Native;
+using CryEngine.Physics;
 
 namespace CryEngine
 {

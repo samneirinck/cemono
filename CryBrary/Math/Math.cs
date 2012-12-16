@@ -189,7 +189,6 @@ namespace CryEngine
             return val2;
         }
 
-
         /// <summary>
         /// The value for which all absolute numbers smaller than are considered equal to zero.
         /// </summary>

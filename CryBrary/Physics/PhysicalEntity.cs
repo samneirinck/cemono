@@ -1,9 +1,15 @@
 ﻿using System;
-using CryEngine.Native;
 
 using System.Runtime.InteropServices;
 
-namespace CryEngine
+using CryEngine.Utilities;
+
+using CryEngine.Physics.Status;
+using CryEngine.Physics.Actions;
+
+using CryEngine.Native;
+
+namespace CryEngine.Physics
 {
     /// <summary>
     /// Physical entity present in the physics system.
@@ -211,7 +217,17 @@ namespace CryEngine
         #endregion
         #endregion
 
-        public pe_status_living LivingStatus { get { return NativePhysicsMethods.GetLivingEntityStatus(Owner.GetEntityHandle()); } }
+        PhysicalStatus status;
+        public PhysicalStatus Status 
+        { 
+            get 
+            {
+                if(status == null)
+                    status = new PhysicalStatus(this); 
+
+                return status;
+            }
+        }
 
         internal IntPtr PhysicsPointer { get; set; }
         private EntityBase owner;
@@ -234,7 +250,32 @@ namespace CryEngine
     {
         public static pe_player_dynamics Create()
         {
-            return NativePhysicsMethods.GetPlayerDynamicsStruct();
+            var dyn = new pe_player_dynamics();
+
+            dyn.type = 4;
+
+            dyn.kInertia = UnusedMarker.Float;
+            dyn.kInertiaAccel = UnusedMarker.Float;
+            dyn.kAirControl = UnusedMarker.Float;
+            dyn.gravity = UnusedMarker.Vec3;
+            dyn.nodSpeed = UnusedMarker.Float;
+            dyn.mass = UnusedMarker.Float;
+            dyn.bSwimming = UnusedMarker.Integer;
+            dyn.surface_idx = UnusedMarker.Integer;
+            dyn.bActive = UnusedMarker.Integer;
+            dyn.collTypes = UnusedMarker.Integer;
+            dyn.livingEntToIgnore = UnusedMarker.IntPtr;
+            dyn.minSlideAngle = UnusedMarker.Float;
+            dyn.maxClimbAngle = UnusedMarker.Float;
+            dyn.maxJumpAngle = UnusedMarker.Float;
+            dyn.minFallAngle = UnusedMarker.Float;
+            dyn.kAirResistance = UnusedMarker.Float;
+            dyn.bNetwork = UnusedMarker.Integer;
+            dyn.maxVelGround = UnusedMarker.Float;
+            dyn.timeImpulseRecover = UnusedMarker.Float;
+            dyn.iRequestedTime = UnusedMarker.Integer;
+
+            return dyn;
         }
 
         public int type;
@@ -265,7 +306,21 @@ namespace CryEngine
     {
         public static pe_player_dimensions Create()
         {
-            return NativePhysicsMethods.GetPlayerDimensionsStruct();
+            var dim = new pe_player_dimensions();
+
+            dim.type = 1;
+
+            dim.dirUnproj = new Vec3(0, 0, 1);
+
+            dim.sizeCollider = UnusedMarker.Vec3;
+            dim.heightPivot = UnusedMarker.Float;
+            dim.heightCollider = UnusedMarker.Float;
+            dim.heightEye = UnusedMarker.Float;
+            dim.heightHead = UnusedMarker.Float;
+            dim.headRadius = UnusedMarker.Float;
+            dim.bUseCapsule = UnusedMarker.Integer;
+
+            return dim;
         }
 
         public int type;
@@ -279,164 +334,5 @@ namespace CryEngine
         public Vec3 dirUnproj;    // unprojection direction to test in case the new position overlaps with the environment (can be 0 for 'auto')
         public float maxUnproj; // maximum allowed unprojection
         public int bUseCapsule; // switches between capsule and cylinder collider geometry
-    }
-
-    internal struct pe_action_impulse
-    {
-        public static pe_action_impulse Create()
-        {
-            return NativePhysicsMethods.GetImpulseStruct();
-        }
-
-        public int type;
-        public Vec3 impulse;
-        public Vec3 angImpulse;    // optional
-        public Vec3 point; // point of application, in world CS, optional
-        public int partid;    // receiver part identifier
-        public int ipart; // alternatively, part index can be used
-        public int iApplyTime; // 0-apply immediately, 1-apply before the next time step, 2-apply after the next time step
-        public int iSource; // reserved for internal use
-    }
-
-    public struct pe_status_living
-    {
-        internal int type;
-
-        /// <summary>
-        /// whether entity has no contact with ground
-        /// </summary>
-        internal int bFlying;
-        public bool IsFlying { get { return bFlying == 1; } }
-
-        internal float timeFlying;
-        /// <summary>
-        ///  for how long the entity was flying
-        /// </summary>
-        public float FlyTime { get { return timeFlying; } }
-
-        internal Vec3 camOffset; // camera offset
-        internal Vec3 vel; // actual velocity (as rate of position change)
-        internal Vec3 velUnconstrained; // 'physical' movement velocity
-        internal Vec3 velRequested;    // velocity requested in the last action
-        internal Vec3 velGround;
-        /// <summary>
-        /// velocity of the object entity is standing on
-        /// </summary>
-        public Vec3 GroundVelocity { get { return velGround; } }
-
-        internal float groundHeight;
-        /// <summary>
-        /// position where the last contact with the ground occured
-        /// </summary>
-        public float GroundHeight { get { return groundHeight; } }
-
-        internal Vec3 groundSlope;
-        public Vec3 GroundNormal { get { return groundSlope; } }
-
-        internal int groundSurfaceIdx;
-        public int GroundSurfaceIde { get { return groundSurfaceIdx; } }
-
-        internal int groundSurfaceIdxAux; // contact with the ground that also has default collision flags
-        internal IntPtr pGroundCollider;    // only returns an actual entity if the ground collider is not static
-        internal int iGroundColliderPart;
-        internal float timeSinceStanceChange;
-        // int bOnStairs; // tries to detect repeated abrupt ground height changes
-        internal int bStuck;    // tries to detect cases when the entity cannot move as before because of collisions
-        IntPtr pLockStep; // internal timestepping lock
-        internal int iCurTime; // quantised time
-        internal int bSquashed; // entity is being pushed by heavy objects from opposite directions
-    }
-
-    public enum BreakageType
-    {
-        Destroy = 0,
-        Freeze_Shatter
-    }
-
-    public struct BreakageParameters
-    {
-        public BreakageType type;                    // Type of the breakage.
-        public float fParticleLifeTime;        // Average lifetime of particle pieces.
-        public int nGenericCount;                // If not 0, force particle pieces to spawn generically, this many times.
-        public bool bForceEntity;                    // Force pieces to spawn as entities.
-        public bool bMaterialEffects;            // Automatically create "destroy" and "breakage" material effects on pieces.
-        public bool bOnlyHelperPieces;        // Only spawn helper pieces.
-
-        // Impulse params.
-        public float fExplodeImpulse;            // Outward impulse to apply.
-        public Vec3 vHitImpulse;                    // Hit impulse and center to apply.
-        public Vec3 vHitPoint;
-    }
-
-    internal struct PhysicalizationParams
-    {
-        public PhysicalizationType type;
-
-        public int flagsOR;
-        public int flagsAND;
-
-        /// <summary>
-        /// Index of object slot, -1 if all slots should be used.
-        /// </summary>
-        public int slot;
-
-        /// <summary>
-        /// Only one either density or mass must be set, parameter set to 0 is ignored.
-        /// </summary>
-        public float density;
-        public float mass;
-
-        /// <summary>
-        /// When physicalizing geometry can specify to use physics from different LOD.
-        /// Used for characters that have ragdoll physics in Lod1
-        /// </summary>
-        public int lod;
-
-        /// <summary>
-        /// Physical entity to attach this physics object (Only for Soft physical entity).
-        /// </summary>
-        public uint attachToEntity;
-
-        /// <summary>
-        /// Part ID in entity to attach to (Only for Soft physical entity).
-        /// </summary>
-        public int attachToPart;
-
-        /// <summary>
-        /// Used for character physicalization (Scale of force in character joint's springs).
-        /// </summary>
-        public float stiffnessScale;
-
-        /// <summary>
-        /// Copy joints velocities when converting a character to ragdoll.
-        /// </summary>
-        public bool copyJointVelocities;
-
-        public pe_player_dimensions playerDim;
-        public pe_player_dynamics playerDyn;
-    }
-
-    [Flags]
-    public enum PhysicalizationFlags
-    {
-        PushableByPlayers = 0x200,
-        FixedDamping = 0x40000,
-        NeverBreak = 0x40,
-        MonitorPostStep = 0x80000,
-        PlayersCanBreak = 0x400000,
-    }
-
-    public enum PhysicalizationType
-    {
-        None = 0,
-        Static,
-        Rigid,
-        WheeledVehicle,
-        Living,
-        Particle,
-        Articulated,
-        Rope,
-        Soft,
-        Area
     }
 }

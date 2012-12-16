@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 
 using CryEngine.Initialization;
 using CryEngine.Native;
+using CryEngine.Physics;
 
 namespace CryEngine
 {

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+
 using CryEngine.Native;
+using CryEngine.Physics;
 
 namespace CryEngine
 {

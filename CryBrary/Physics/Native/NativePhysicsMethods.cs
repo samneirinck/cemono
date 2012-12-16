@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
+using CryEngine.Physics;
+using CryEngine.Physics.Actions;
+using CryEngine.Physics.Status;
+
 namespace CryEngine.Native
 {
     internal static class NativePhysicsMethods
@@ -28,13 +32,8 @@ namespace CryEngine.Native
         extern internal static object[] SimulateExplosion(pe_explosion explosion);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static pe_status_living GetLivingEntityStatus(IntPtr entPtr);
-
+        extern internal static LivingPhysicsStatus GetLivingEntityStatus(IntPtr entPtr);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static pe_action_impulse GetImpulseStruct();
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static pe_player_dimensions GetPlayerDimensionsStruct();
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static pe_player_dynamics GetPlayerDynamicsStruct();
+        extern internal static DynamicsPhysicsStatus GetDynamicsEntityStatus(IntPtr entPtr);
     }
 }

@@ -23,10 +23,7 @@ CScriptbind_Physics::CScriptbind_Physics()
 	REGISTER_METHOD(SimulateExplosion);
 
 	REGISTER_METHOD(GetLivingEntityStatus);
-
-	REGISTER_METHOD(GetImpulseStruct);
-	REGISTER_METHOD(GetPlayerDimensionsStruct);
-	REGISTER_METHOD(GetPlayerDynamicsStruct);
+	REGISTER_METHOD(GetDynamicsEntityStatus);
 }
 
 IPhysicalEntity *CScriptbind_Physics::GetPhysicalEntity(IEntity *pEntity)
@@ -176,6 +173,15 @@ mono::object CScriptbind_Physics::SimulateExplosion(pe_explosion explosion)
 pe_status_living CScriptbind_Physics::GetLivingEntityStatus(IEntity *pEntity)
 {
 	pe_status_living status;
+	if(IPhysicalEntity *pPhysEnt = pEntity->GetPhysics())
+		pEntity->GetPhysics()->GetStatus(&status);
+
+	return status;
+}
+
+pe_status_dynamics CScriptbind_Physics::GetDynamicsEntityStatus(IEntity *pEntity)
+{
+	pe_status_dynamics status;
 	if(IPhysicalEntity *pPhysEnt = pEntity->GetPhysics())
 		pEntity->GetPhysics()->GetStatus(&status);
 
