@@ -230,6 +230,16 @@ namespace CryEngine
             return GetEntitiesCommon<T>(NativeEntityMethods.GetEntitiesInBox(bbox, flags));
         }
 
+        public static IEnumerable<EntityBase> QueryProximity(BoundingBox bbox, string className, EntityFlags flags = 0)
+        {
+            return GetEntitiesCommon<EntityBase>(NativeEntityMethods.QueryProximity(bbox, className, flags));
+        }
+
+        public static IEnumerable<T> QueryProximity<T>(BoundingBox bbox, EntityFlags flags = 0) where T : EntityBase
+        {
+            return GetEntitiesCommon<T>(NativeEntityMethods.QueryProximity(bbox, typeof(T).Name, flags));
+        }
+
         internal static IEnumerable<T> GetEntitiesCommon<T>(object[] ents) where T : EntityBase
         {
             if (ents == null || ents.Length <= 0)

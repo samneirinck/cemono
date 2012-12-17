@@ -34,6 +34,8 @@ CScriptbind_Entity::CScriptbind_Entity()
 	REGISTER_METHOD(GetEntitiesByClass);
 	REGISTER_METHOD(GetEntitiesInBox);
 
+	REGISTER_METHOD(QueryProximity);
+
 	REGISTER_METHOD(SetPos);
 	REGISTER_METHOD(GetPos);
 	REGISTER_METHOD(SetWorldPos);
@@ -409,15 +411,18 @@ EntityId CScriptbind_Entity::FindEntity(mono::string name)
 
 mono::object CScriptbind_Entity::GetEntitiesByClass(mono::string _class)
 {
-	const char *className = ToCryString(_class);
+	IEntityClass *pDesiredClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass(ToCryString(_class));
+
 	std::vector<EntityId> classEntities;
 
 	IEntityItPtr pIt = gEnv->pEntitySystem->GetEntityIterator();
+	pIt->MoveFirst();
+
 	while(!pIt->IsEnd())
 	{
 		if(IEntity *pEntity = pIt->Next())
 		{
-			if(!strcmp(pEntity->GetClass()->GetName(), className))
+			if(pEntity->GetClass() == pDesiredClass)
 				classEntities.push_back(pEntity->GetId());
 		}
 	}
@@ -429,9 +434,8 @@ mono::object CScriptbind_Entity::GetEntitiesByClass(mono::string _class)
 
 	IMonoArray *pArray = CreateMonoArray(classEntities.size());
 
-	for(std::vector<EntityId>::iterator it = classEntities.begin(); it != classEntities.end(); ++it)
+	for(auto it = classEntities.begin(); it != classEntities.end(); ++it)
 		pArray->Insert(pEntityIdClass->BoxObject(&mono::entityId(*it)));
-
 
 	return pArray->GetManagedObject();
 }
@@ -443,12 +447,43 @@ mono::object CScriptbind_Entity::GetEntitiesInBox(AABB bbox, int objTypes)
 	IMonoClass *pEntityIdClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("EntityId");
 
 	int numEnts = gEnv->pPhysicalWorld->GetEntitiesInBox(bbox.min, bbox.max, pEnts, objTypes);
-	IMonoArray *pEntities = CreateMonoArray(numEnts);
+	
+	if(numEnts > 0)
+		{
+		IMonoArray *pEntities = CreateMonoArray(numEnts);
 
-	for(int i = 0; i < numEnts; i++)
-		pEntities->Insert(pEntityIdClass->BoxObject(&mono::entityId(gEnv->pPhysicalWorld->GetPhysicalEntityId(pEnts[i]))));
+		for(int i = 0; i < numEnts; i++)
+			pEntities->Insert(pEntityIdClass->BoxObject(&mono::entityId(gEnv->pPhysicalWorld->GetPhysicalEntityId(pEnts[i]))));
 
-	return pEntities->GetManagedObject();
+		return pEntities->GetManagedObject();
+	}
+
+	return nullptr;
+}
+
+mono::object CScriptbind_Entity::QueryProximity(AABB box, mono::string className, uint32 nEntityFlags)
+{
+	SEntityProximityQuery query;
+
+	if(className != nullptr)
+		query.pEntityClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass(ToCryString(className));
+
+	query.box = box;
+	query.nEntityFlags = nEntityFlags;
+
+	gEnv->pEntitySystem->QueryProximity(query);
+
+	IMonoClass *pEntityIdClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("EntityId");
+	if(query.nCount > 0)
+	{
+		IMonoArray *pEntities = CreateMonoArray(query.nCount);
+		for(int i = 0; i < query.nCount; i++)
+			pEntities->Insert(pEntityIdClass->BoxObject(&mono::entityId(query.pEntities[i]->GetId())));
+
+		return pEntities->GetManagedObject();
+	}
+
+	return nullptr;
 }
 
 void CScriptbind_Entity::SetWorldTM(IEntity *pEntity, Matrix34 tm)

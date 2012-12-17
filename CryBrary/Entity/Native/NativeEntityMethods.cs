@@ -31,6 +31,9 @@ namespace CryEngine.Native
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern internal static object[] GetEntitiesInBox(BoundingBox bbox, EntityQueryFlags flags);
 
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static object[] QueryProximity(BoundingBox box, string className, EntityFlags flags);
+
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static bool RegisterEntityClass(EntityRegistrationParams registerParams);
 

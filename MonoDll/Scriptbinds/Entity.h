@@ -196,6 +196,8 @@ protected:
 	static mono::object GetEntitiesByClass(mono::string);
 	static mono::object GetEntitiesInBox(AABB bbox, int objTypes);
 
+	static mono::object QueryProximity(AABB box, mono::string className, uint32 nEntityFlags);
+
 	static void SetWorldPos(IEntity *pEnt, Vec3);
 	static Vec3 GetWorldPos(IEntity *pEnt);
 	static void SetPos(IEntity *pEnt, Vec3);
