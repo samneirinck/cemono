@@ -9,6 +9,8 @@ namespace CryEngine.Physics.Status
 {
     public class PhysicalStatus
     {
+        PhysicalStatus() { }
+
         public PhysicalStatus(PhysicalEntity physEnt)
         {
             PhysicalEntity = physEnt;
