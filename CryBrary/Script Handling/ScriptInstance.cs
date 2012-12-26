@@ -41,6 +41,7 @@ namespace CryEngine
         internal virtual void OnDestroyedInternal()
         {
             IsDestroyed = true;
+            ReceiveUpdates = false;
 
             if (OnDestroyed != null)
                 OnDestroyed(this);
