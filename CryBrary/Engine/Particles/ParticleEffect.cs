@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-using CryEngine.Native;
+using CryEngine.Engine.Particles.Native;
 
 namespace CryEngine
 {
@@ -8,6 +8,11 @@ namespace CryEngine
     {
         internal ParticleEffect(IntPtr ptr)
         {
+#if !(RELEASE && RELEASE_DISABLE_CHECKS)
+            if (ptr == IntPtr.Zero)
+                throw new NullPointerException();
+#endif
+
             Handle = ptr;
         }
 

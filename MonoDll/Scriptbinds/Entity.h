@@ -285,6 +285,8 @@ protected:
 
 	static bool IsPrePhysicsUpdateActive(IEntity *pEntity);
 	static void EnablePrePhysicsUpdate(IEntity *pEntity, bool enable);
+
+	static IParticleEmitter *LoadParticleEmitter(IEntity *pEntity, int slot, IParticleEffect *pEffect, SpawnParams &spawnParams);
 	// ~Scriptbinds
 
 	static std::vector<const char *> m_monoEntityClasses;

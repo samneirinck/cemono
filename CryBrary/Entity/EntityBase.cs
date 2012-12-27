@@ -357,5 +357,14 @@ namespace CryEngine
         {
             return NativeEntityMethods.GetJointRelativeDefault(this.GetEntityHandle(), jointName, characterSlot);
         }
+
+        public ParticleEmitter LoadParticleEmitter(ParticleEffect particleEffect, ref ParticleSpawnParameters spawnParams, int slot = -1)
+        {
+            var ptr = NativeEntityMethods.LoadParticleEmitter(this.GetEntityHandle(), slot, particleEffect.Handle, ref spawnParams);
+            if (ptr != IntPtr.Zero)
+                return new ParticleEmitter(ptr);
+
+            return null;
+        }
     }
 }

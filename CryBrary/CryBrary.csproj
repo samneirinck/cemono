@@ -140,12 +140,16 @@
     <Compile Include="Console\CVar\ExternalCVar.cs" />
     <Compile Include="Console\CVar\StaticCVarField.cs" />
     <Compile Include="Console\CVar\StaticCVarProperty.cs" />
+    <Compile Include="Engine\GeometryFormat.cs" />
+    <Compile Include="Engine\GeometryType.cs" />
     <Compile Include="Engine\Material\MaterialFlags.cs" />
     <Compile Include="Engine\Material\ShaderColorParameter.cs" />
     <Compile Include="Engine\Material\ShaderFloatParameter.cs" />
     <Compile Include="Engine\Material\SurfaceType\SurfaceType.cs" />
     <Compile Include="Engine\Material\SurfaceType\SurfaceTypeFlags.cs" />
     <Compile Include="Engine\Material\SurfaceType\SurfaceTypeParams.cs" />
+    <Compile Include="Engine\Particles\ParticleEmitter.cs" />
+    <Compile Include="Engine\Particles\ParticleSpawnParams.cs" />
     <Compile Include="Engine\TimeOfDay\CloudShadingParams.cs" />
     <Compile Include="Engine\TimeOfDay\ColorGradingParams.cs" />
     <Compile Include="Engine\TimeOfDay\FogParams.cs" />
@@ -177,6 +181,7 @@
     <Compile Include="Math\Collision.cs" />
     <Compile Include="Math\Plane.cs" />
     <Compile Include="Math\PlaneIntersectionType.cs" />
+    <Compile Include="Misc\Exceptions\NullPointerException.cs" />
     <Compile Include="Physics\Actions\Impulse.cs" />
     <Compile Include="Physics\BreakageParameters.cs" />
     <Compile Include="Physics\PhysicalizationFlags.cs" />
@@ -236,7 +241,7 @@
     <Compile Include="Input\Native\NativeInputMethods.cs" />
     <Compile Include="Engine\Level\Native\NativeLevelMethods.cs" />
     <Compile Include="Engine\Material\Native\NativeMaterialMethods.cs" />
-    <Compile Include="Engine\Particle effects\Native\NativeParticleEffectMethods.cs" />
+    <Compile Include="Engine\Particles\Native\NativeParticleEffectMethods.cs" />
     <Compile Include="Physics\Native\NativePhysicsMethods.cs" />
     <Compile Include="Engine\Renderer\Native\NativeRendererMethods.cs" />
     <Compile Include="Engine\Lua\Native\NativeScriptTableMethods.cs" />
@@ -260,7 +265,7 @@
     <Compile Include="Script Handling\Registration\IScriptRegistrationParams.cs" />
     <Compile Include="Script Handling\ScriptCompiler.cs" />
     <Compile Include="Engine\Material\Material.cs" />
-    <Compile Include="Engine\Particle effects\ParticleEffect.cs" />
+    <Compile Include="Engine\Particles\ParticleEffect.cs" />
     <Compile Include="Engine\Terrain.cs" />
     <Compile Include="Entity\EntityId.cs" />
     <Compile Include="Entity\NativeEntity.cs" />

@@ -180,5 +180,8 @@ namespace CryEngine.Native
         extern internal static bool IsPrePhysicsUpdateActive(IntPtr entPtr);
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern internal static void EnablePrePhysicsUpdate(IntPtr entPtr, bool enable);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static IntPtr LoadParticleEmitter(IntPtr entPtr, int slot, IntPtr particlePtr, ref ParticleSpawnParameters spawnParams);
     }
 }
