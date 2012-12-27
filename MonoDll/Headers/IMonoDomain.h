@@ -35,7 +35,7 @@ struct IMonoDomain
 	/// <summary>
 	/// Loads an assembly into the domain.
 	/// </summary>
-	virtual IMonoAssembly *LoadAssembly(const char *file, bool shadowCopy = false) = 0;
+	virtual IMonoAssembly *LoadAssembly(const char *file, bool shadowCopy = false, bool convertPdbToMdb = true) = 0;
 };
 
 /// <summary>

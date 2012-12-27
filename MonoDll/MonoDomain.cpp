@@ -91,7 +91,7 @@ bool CScriptDomain::SetActive(bool force)
 	return mono_domain_set(m_pDomain, force) == 1;
 }
 
-IMonoAssembly *CScriptDomain::LoadAssembly(const char *file, bool shadowCopy)
+IMonoAssembly *CScriptDomain::LoadAssembly(const char *file, bool shadowCopy, bool convertPdbToMdb)
 {
 	const char *path;
 	if(shadowCopy)
@@ -110,7 +110,7 @@ IMonoAssembly *CScriptDomain::LoadAssembly(const char *file, bool shadowCopy)
 
 	string sAssemblyPath(path);
 #ifndef _RELEASE
-	if(sAssemblyPath.find("pdb2mdb")==-1)
+	if(convertPdbToMdb && sAssemblyPath.find("pdb2mdb")==-1)
 	{
 		if(IMonoAssembly *pDebugDatabaseCreator = g_pScriptSystem->GetDebugDatabaseCreator())
 		{

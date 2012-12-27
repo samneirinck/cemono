@@ -30,7 +30,7 @@ public:
 
 	virtual bool IsRoot() override { return m_bRootDomain; }
 
-	virtual IMonoAssembly *LoadAssembly(const char *file, bool shadowCopy = false) override;
+	virtual IMonoAssembly *LoadAssembly(const char *file, bool shadowCopy = false, bool convertPdbToMdb = true) override;
 	// ~IMonoDomain
 
 	MonoDomain *GetMonoDomain() { return m_pDomain; }
