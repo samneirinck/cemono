@@ -149,13 +149,15 @@ void CScriptObject::HandleException(MonoObject *pException)
 	// Fatal errors override disabling the message box option
 	bool isFatal = g_pMonoCVars->mono_exceptionsTriggerFatalErrors != 0;
 
-	if(g_pMonoCVars->mono_exceptionsTriggerMessageBoxes || isFatal)
+	IMonoAssembly *pCryBraryAssembly = g_pScriptSystem->GetCryBraryAssembly();
+
+	if((g_pMonoCVars->mono_exceptionsTriggerMessageBoxes || isFatal) && pCryBraryAssembly)
 	{
 		auto args = CreateMonoArray(2);
 		args->InsertObject(*(mono::object)pException);
 		args->Insert(isFatal);
 
-		IMonoClass *pDebugClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("Debug");
+		IMonoClass *pDebugClass = pCryBraryAssembly->GetClass("Debug");
 		pDebugClass->InvokeArray(NULL, "DisplayException", args);
 		SAFE_RELEASE(args);
 	}
