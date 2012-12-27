@@ -54,7 +54,6 @@ namespace CryEngine
         public virtual void OnUpdate() { }
         #endregion
 
-
         #region Properties
         /// <summary>
         /// This script instance's id, used to keep track of instances in <see cref="CryEngine.Initialization.ScriptManager"/>.

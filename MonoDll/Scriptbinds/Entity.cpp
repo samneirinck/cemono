@@ -127,6 +127,8 @@ CScriptbind_Entity::CScriptbind_Entity()
 	REGISTER_METHOD(SetUpdatePolicy);
 	REGISTER_METHOD(GetUpdatePolicy);
 
+	REGISTER_METHOD(IsPrePhysicsUpdateActive);
+	REGISTER_METHOD(EnablePrePhysicsUpdate);
 	//RegisterNativeEntityClass();
 
 	gEnv->pEntitySystem->AddSink(this, IEntitySystem::OnSpawn | IEntitySystem::OnRemove, 0);
@@ -987,4 +989,15 @@ void CScriptbind_Entity::SetUpdatePolicy(IEntity *pEntity, EEntityUpdatePolicy p
 EEntityUpdatePolicy CScriptbind_Entity::GetUpdatePolicy(IEntity *pEntity)
 {
 	return pEntity->GetUpdatePolicy();
+}
+
+bool CScriptbind_Entity::IsPrePhysicsUpdateActive(IEntity *pEntity)
+{
+	return pEntity->IsPrePhysicsActive();
+}
+
+void CScriptbind_Entity::EnablePrePhysicsUpdate(IEntity *pEntity, bool enable)
+{
+	pEntity->PrePhysicsActivate(enable);
+}
 }

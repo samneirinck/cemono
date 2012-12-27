@@ -282,6 +282,9 @@ protected:
 
 	static void SetUpdatePolicy(IEntity *pEntity, EEntityUpdatePolicy policy);
 	static EEntityUpdatePolicy GetUpdatePolicy(IEntity *pEntity);
+
+	static bool IsPrePhysicsUpdateActive(IEntity *pEntity);
+	static void EnablePrePhysicsUpdate(IEntity *pEntity, bool enable);
 	// ~Scriptbinds
 
 	static std::vector<const char *> m_monoEntityClasses;

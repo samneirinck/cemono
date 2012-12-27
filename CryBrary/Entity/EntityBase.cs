@@ -89,6 +89,12 @@ namespace CryEngine
 
         public EntityUpdatePolicy UpdatePolicy { get { return NativeEntityMethods.GetUpdatePolicy(this.GetEntityHandle()); } set { NativeEntityMethods.SetUpdatePolicy(this.GetEntityHandle(), value); } }
 
+        public bool ReceivePrePhysicsUpdates
+        {
+            get { return NativeEntityMethods.IsPrePhysicsUpdateActive(this.GetEntityHandle()); }
+            set { NativeEntityMethods.EnablePrePhysicsUpdate(this.GetEntityHandle(), value); }
+        }
+
         /// <summary>
         /// Gets or sets entity velocity as set by the physics system.
         /// </summary>

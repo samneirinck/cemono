@@ -170,10 +170,15 @@ namespace CryEngine.Native
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern internal static IntPtr GetEntityFromPhysics(IntPtr physEntPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static void SetUpdatePolicy(IntPtr entPtr, EntityUpdatePolicy policy);
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern internal static EntityUpdatePolicy GetUpdatePolicy(IntPtr entPtr);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static void SetUpdatePolicy(IntPtr entPtr, EntityUpdatePolicy policy);
+        extern internal static bool IsPrePhysicsUpdateActive(IntPtr entPtr);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static void EnablePrePhysicsUpdate(IntPtr entPtr, bool enable);
     }
 }
