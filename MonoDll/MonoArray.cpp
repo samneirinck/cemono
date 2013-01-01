@@ -19,6 +19,8 @@ CScriptArray::CScriptArray(mono::object managedArray)
 
 	m_objectHandle = mono_gchandle_new(m_pObject, false);
 	m_pClass = NULL;
+
+	m_lastIndex = GetSize() - 1;
 }
 
 CScriptArray::CScriptArray(int size, IMonoClass *pContainingType)
