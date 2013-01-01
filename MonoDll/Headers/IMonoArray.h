@@ -36,6 +36,11 @@ public:
 	virtual void Clear() = 0;
 
 	/// <summary>
+	/// Removes the object at the specified index.
+	/// </summary>
+	virtual void Remove(int index) = 0;
+
+	/// <summary>
 	/// Resizes the array.
 	/// </summary>
 	virtual void Resize(int size) = 0;

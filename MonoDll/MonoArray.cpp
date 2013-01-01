@@ -57,6 +57,18 @@ void CScriptArray::Resize(int size)
 	}
 }
 
+void CScriptArray::Remove(int index)
+{
+	int size = GetSize();
+
+	CRY_ASSERT(index < size);
+
+	mono_array_set((MonoArray *)m_pObject, void *, index, nullptr);
+
+	if(index == size - 1)
+		m_lastIndex--;
+}
+
 IMonoObject *CScriptArray::GetItem(int index)
 { 
 	CRY_ASSERT(index <= GetSize());

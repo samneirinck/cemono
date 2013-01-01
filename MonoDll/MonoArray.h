@@ -31,7 +31,9 @@ public:
 	// IMonoArray
 	virtual void Clear() override { for(int i = 0; i < GetSize(); i++) mono_array_set((MonoArray *)m_pObject, void *, i, nullptr);  }
 
-	virtual void Resize(int size);
+	virtual void Remove(int index) override;
+
+	virtual void Resize(int size) override;
 	virtual int GetSize() const override { return (int)mono_array_length((MonoArray *)m_pObject); }
 
 	virtual IMonoClass *GetElementClass() override { return GetClass(m_pElementClass); }
