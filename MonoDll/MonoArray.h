@@ -38,6 +38,8 @@ public:
 	virtual void Resize(int size) override;
 	virtual int GetSize() const override { return (int)mono_array_length((MonoArray *)m_pObject); }
 
+	virtual IMonoArray *Clone() override { return new CScriptArray((mono::object)mono_array_clone((MonoArray *)m_pObject)); }
+
 	virtual IMonoClass *GetElementClass() override { return GetClass(m_pElementClass); }
 	virtual IMonoClass *GetDefaultElementClass() { return GetClass(m_pDefaultElementClass); }
 

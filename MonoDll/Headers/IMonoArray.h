@@ -50,6 +50,11 @@ public:
 	virtual int GetSize() const = 0;
 
 	/// <summary>
+	/// Clones the array.
+	/// </summary>
+	virtual IMonoArray *Clone() = 0;
+
+	/// <summary>
 	/// Gets the type of objects stored in this array.
 	/// </summary>
 	virtual IMonoClass *GetElementClass() = 0;
