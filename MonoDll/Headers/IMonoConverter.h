@@ -49,6 +49,13 @@ struct IMonoConverter
 	/// Vec3[] myElements;
 	/// </example>
 	virtual IMonoArray *CreateArray(int size, IMonoClass *pElementClass = nullptr) = 0;
+
+	/// <summary>
+	/// Creates a dynamically resizing mono array.
+	/// if element is null, uses object class.
+	/// </summary>
+	virtual IMonoArray *CreateDynamicArray(IMonoClass *pElementClass = nullptr, int size = 1) = 0;
+
 	/// <summary>
 	/// Converts a mono array to a IMonoArray. (To provide GetSize, GetItem etc functionality.)
 	/// </summary>

@@ -144,6 +144,9 @@
     <ClInclude Include="CPluginCryMono.h">
       <Filter>Startup</Filter>
     </ClInclude>
+    <ClInclude Include="DynMonoArray.h">
+      <Filter>Wrappers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -248,6 +251,9 @@
     </ClCompile>
     <ClCompile Include="CPluginCryMono.cpp">
       <Filter>Startup</Filter>
+    </ClCompile>
+    <ClCompile Include="DynMonoArray.cpp">
+      <Filter>Wrappers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

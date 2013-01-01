@@ -66,6 +66,14 @@ static IMonoArray *CreateMonoArray(int numArgs, IMonoClass *pElementClass = null
 }
 
 /// <summary>
+/// Creates an IDynMonoArray with the specified size.
+/// </summary>
+static IMonoArray *CreateDynamicMonoArray(IMonoClass *pElementClass = nullptr, int size = 1)
+{
+	return GetMonoScriptSystem()->GetConverter()->CreateDynamicArray(pElementClass, size);
+}
+
+/// <summary>
 /// Wrapped 'helpers' used to easily convert native mono objects to IMonoArray's, strings etc.
 /// </summary>
 namespace mono

@@ -5,6 +5,7 @@
 
 #include "MonoScriptSystem.h"
 #include "MonoArray.h"
+#include "DynMonoArray.h"
 #include "MonoObject.h"
 
 #include <IMonoAssembly.h>
@@ -12,6 +13,11 @@
 IMonoArray *CConverter::CreateArray(int numArgs, IMonoClass *pElementClass)
 {
 	return new CScriptArray(numArgs, pElementClass); 
+}
+
+IMonoArray *CConverter::CreateDynamicArray(IMonoClass *pElementClass, int size)
+{
+	return new CDynScriptArray(pElementClass, size);
 }
 
 IMonoArray *CConverter::ToArray(mono::object arr)

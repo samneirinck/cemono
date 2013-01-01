@@ -457,6 +457,7 @@
     <ClInclude Include="Actor.h" />
     <ClInclude Include="CPluginCryMono.h" />
     <ClInclude Include="CryScriptInstance.h" />
+    <ClInclude Include="DynMonoArray.h" />
     <ClInclude Include="FlowManager.h" />
     <ClInclude Include="FlowBaseNode.h" />
     <ClInclude Include="Headers\IMonoArray.h" />
@@ -508,6 +509,7 @@
     <ClCompile Include="Actor.cpp" />
     <ClCompile Include="CPluginCryMono.cpp" />
     <ClCompile Include="CryScriptInstance.cpp" />
+    <ClCompile Include="DynMonoArray.cpp" />
     <ClCompile Include="FlowManager.cpp" />
     <ClCompile Include="MonoConverter.cpp" />
     <ClCompile Include="MonoCVars.cpp" />
