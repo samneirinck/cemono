@@ -50,10 +50,13 @@ void CScriptArray::Resize(int size)
 
 	m_pObject = (MonoObject *)mono_array_new(mono_domain_get(), m_pElementClass, size);
 
-	for(int i = 0; i < size; i++)
+	for(int i = 0; i < oldArraySize; i++)
 	{
-		if(i > oldArraySize)
+		if(i < size)
+		{
 			mono_array_set((MonoArray *)m_pObject, MonoObject *, i, mono_array_get(pOldArray, MonoObject *, i));
+			m_lastIndex = i;
+		}
 	}
 }
 
