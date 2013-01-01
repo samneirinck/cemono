@@ -74,7 +74,7 @@ void CScriptArray::Remove(int index)
 
 IMonoObject *CScriptArray::GetItem(int index)
 { 
-	CRY_ASSERT(index <= GetSize());
+	CRY_ASSERT(index < GetSize());
 
 	if(mono::object monoObj = (mono::object)mono_array_get((MonoArray *)m_pObject, MonoObject *, index))
 		return *monoObj;
