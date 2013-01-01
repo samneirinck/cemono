@@ -99,9 +99,28 @@ namespace CryEngine.Native
         extern internal static void LoadCharacter(IntPtr ptr, string fileName, int slot);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static bool AddEntityLink(IntPtr entPtr, string linkName, uint otherId, Quat relativeRot, Vec3 relativePos);
+        extern internal static IntPtr AddEntityLink(IntPtr entPtr, string linkName, uint otherId, Quat relativeRot, Vec3 relativePos);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static void RemoveEntityLink(IntPtr entPtr, uint otherId);
+        extern internal static object[] GetEntityLinks(IntPtr entPtr);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static void RemoveAllEntityLinks(IntPtr entPtr);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static void RemoveEntityLink(IntPtr entPtr, IntPtr linkPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static string GetEntityLinkName(IntPtr linkPtr);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static EntityId GetEntityLinkTarget(IntPtr linkPtr);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static Quat GetEntityLinkRelativeRotation(IntPtr linkPtr);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static Vec3 GetEntityLinkRelativePosition(IntPtr linkPtr);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static void SetEntityLinkTarget(IntPtr linkPtr, EntityId target);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static void SetEntityLinkRelativeRotation(IntPtr linkPtr, Quat relRot);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static void SetEntityLinkRelativePosition(IntPtr linkPtr, Vec3 relPos);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern internal static int LoadLight(IntPtr entPtr, int slot, LightParams lightParams);

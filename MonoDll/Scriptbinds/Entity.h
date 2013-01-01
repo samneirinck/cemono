@@ -235,8 +235,18 @@ protected:
 	static void SetVisionParams(IEntity *pEntity, float r, float g, float b, float a);
 	static void SetHUDSilhouettesParams(IEntity *pEntity, float r, float g, float b, float a);
 
-	static bool AddEntityLink(IEntity *pEntity, mono::string linkName, EntityId otherId, Quat relativeRot, Vec3 relativePos);
-	static void RemoveEntityLink(IEntity *pEntity, EntityId otherId);
+	static IEntityLink *AddEntityLink(IEntity *pEntity, mono::string linkName, EntityId otherId, Quat relativeRot, Vec3 relativePos);
+	static mono::object GetEntityLinks(IEntity *pEntity);
+	static void RemoveAllEntityLinks(IEntity *pEntity);
+	static void RemoveEntityLink(IEntity *pEntity, IEntityLink *pLink);
+
+	static mono::string GetEntityLinkName(IEntityLink *pLink);
+	static EntityId GetEntityLinkTarget(IEntityLink *pLink);
+	static Quat GetEntityLinkRelativeRotation(IEntityLink *pLink);
+	static Vec3 GetEntityLinkRelativePosition(IEntityLink *pLink);
+	static void SetEntityLinkTarget(IEntityLink *pLink, EntityId);
+	static void SetEntityLinkRelativeRotation(IEntityLink *pLink, Quat);
+	static void SetEntityLinkRelativePosition(IEntityLink *pLink, Vec3);
 
 	static int LoadLight(IEntity *pEntity, int slot, SMonoLightParams light);
 	static void FreeSlot(IEntity *pEntity, int slot);

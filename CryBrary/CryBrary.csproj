@@ -159,6 +159,7 @@
     <Compile Include="Engine\TimeOfDay\SkyLightParams.cs" />
     <Compile Include="Engine\TimeOfDay\SkyParams.cs" />
     <Compile Include="Engine\TimeOfDay\SunRaysEffectParams.cs" />
+    <Compile Include="Entity\EntityLink.cs" />
     <Compile Include="Entity\EntityUpdatePolicy.cs" />
     <Compile Include="Entity\Extensions\Attachment.cs" />
     <Compile Include="Entity\Exceptions\EntityRemovalException.cs" />

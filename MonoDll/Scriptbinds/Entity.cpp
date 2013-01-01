@@ -78,8 +78,17 @@ CScriptbind_Entity::CScriptbind_Entity()
 	REGISTER_METHOD(StopAnimationsInAllLayers);
 
 	REGISTER_METHOD(AddEntityLink);
+	REGISTER_METHOD(GetEntityLinks);
+	REGISTER_METHOD(RemoveAllEntityLinks);
 	REGISTER_METHOD(RemoveEntityLink);
 
+	REGISTER_METHOD(GetEntityLinkName);
+	REGISTER_METHOD(GetEntityLinkTarget);
+	REGISTER_METHOD(GetEntityLinkRelativeRotation);
+	REGISTER_METHOD(GetEntityLinkRelativePosition);
+	REGISTER_METHOD(SetEntityLinkTarget);
+	REGISTER_METHOD(SetEntityLinkRelativeRotation);
+	REGISTER_METHOD(SetEntityLinkRelativePosition);
 	REGISTER_METHOD(LoadLight);
 
 	REGISTER_METHOD(FreeSlot);
@@ -640,21 +649,66 @@ void CScriptbind_Entity::SetHUDSilhouettesParams(IEntity *pEntity, float r, floa
 	pRenderProxy->SetVisionParams(r, g, b, a);
 }
 
-bool CScriptbind_Entity::AddEntityLink(IEntity *pEntity, mono::string linkName, EntityId otherId, Quat relativeRot, Vec3 relativePos)
+IEntityLink *CScriptbind_Entity::AddEntityLink(IEntity *pEntity, mono::string linkName, EntityId otherId, Quat relativeRot, Vec3 relativePos)
 {
-	return pEntity->AddEntityLink(ToCryString(linkName), otherId, relativeRot, relativePos) != nullptr;
+	return pEntity->AddEntityLink(ToCryString(linkName), otherId, relativeRot, relativePos);
 }
 
-void CScriptbind_Entity::RemoveEntityLink(IEntity *pEntity, EntityId otherId)
+mono::object CScriptbind_Entity::GetEntityLinks(IEntity *pEntity)
 {
-	for (IEntityLink *pLink = pEntity->GetEntityLinks();; pLink = pLink->next)
-    {
-		if(pLink->entityId == otherId)
-		{
-			pEntity->RemoveEntityLink(pLink);
-			break;
-		}
-	}
+	// the first link
+	IEntityLink *pLink = pEntity->GetEntityLinks();
+
+	IMonoArray *pDynArray = CreateDynamicMonoArray();
+	while(pLink != nullptr)
+		pDynArray->InsertNativePointer(pLink);
+
+	return pDynArray->GetManagedObject();
+}
+
+void CScriptbind_Entity::RemoveAllEntityLinks(IEntity *pEntity)
+{
+	pEntity->RemoveAllEntityLinks();
+}
+
+void CScriptbind_Entity::RemoveEntityLink(IEntity *pEntity, IEntityLink *pLink)
+{
+	pEntity->RemoveEntityLink(pLink);
+}
+
+mono::string CScriptbind_Entity::GetEntityLinkName(IEntityLink *pLink)
+{
+	return ToMonoString(pLink->name);
+}
+
+EntityId CScriptbind_Entity::GetEntityLinkTarget(IEntityLink *pLink)
+{
+	return pLink->entityId;
+}
+
+Quat CScriptbind_Entity::GetEntityLinkRelativeRotation(IEntityLink *pLink)
+{
+	return pLink->relRot;
+}
+
+Vec3 CScriptbind_Entity::GetEntityLinkRelativePosition(IEntityLink *pLink)
+{
+	return pLink->relPos;
+}
+
+void CScriptbind_Entity::SetEntityLinkTarget(IEntityLink *pLink, EntityId id)
+{
+	pLink->entityId = id;
+}
+
+void CScriptbind_Entity::SetEntityLinkRelativeRotation(IEntityLink *pLink, Quat relRot)
+{
+	pLink->relRot = relRot;
+}
+
+void CScriptbind_Entity::SetEntityLinkRelativePosition(IEntityLink *pLink, Vec3 relPos)
+{
+	pLink->relPos = relPos;
 }
 
 int CScriptbind_Entity::LoadLight(IEntity *pEntity, int slot, SMonoLightParams params)

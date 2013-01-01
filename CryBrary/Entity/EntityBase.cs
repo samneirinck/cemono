@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Linq;
+
+using System.Collections.Generic;
+
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -193,26 +197,19 @@ namespace CryEngine
         }
 #endregion
 
-        /// <summary>
-        /// Links to another entity, becoming the parent. Any change to the parent object is propagated to all child (linked) objects.
-        /// </summary>
-        /// <param name="linkName">Name of the link</param>
-        /// <param name="otherEntityId">Id of the entity we wish to be linked to</param>
-        /// <param name="relativeRot"></param>
-        /// <param name="relativePos"></param>
-        /// <returns>true if successful, otherwise false.</returns>
-        public bool Link(string linkName, EntityId otherEntityId, Quat relativeRot, Vec3 relativePos)
+        IEnumerable<EntityLink> Links
         {
-            return NativeEntityMethods.AddEntityLink(this.GetEntityHandle(), linkName, otherEntityId, relativeRot, relativePos);
+            get
+            {
+                var links = NativeEntityMethods.GetEntityLinks(this.GetEntityHandle());
+                foreach (var linkPtr in links)
+                    yield return new EntityLink((IntPtr)linkPtr, this);
+            }
         }
 
-        /// <summary>
-        /// Removes an entity link, see <see cref="Link"/>.
-        /// </summary>
-        /// <param name="otherEntityId">Id of the entity we are currently linked to</param>
-        public void Unlink(EntityId otherEntityId)
+        public void RemoveAllLinks()
         {
-            NativeEntityMethods.RemoveEntityLink(this.GetEntityHandle(), otherEntityId);
+            EntityLink.RemoveAll(this);
         }
 
         /// <summary>
