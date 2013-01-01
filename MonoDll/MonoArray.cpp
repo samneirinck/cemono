@@ -22,7 +22,7 @@ CScriptArray::CScriptArray(mono::object managedArray)
 }
 
 CScriptArray::CScriptArray(int size, IMonoClass *pContainingType)
-	: m_curIndex(0)
+	: m_lastIndex(0)
 {
 	CRY_ASSERT(size > 0);
 
@@ -37,7 +37,7 @@ CScriptArray::CScriptArray(int size, IMonoClass *pContainingType)
 
 CScriptArray::~CScriptArray()
 {
-	m_curIndex = 0;
+	m_lastIndex = 0;
 }
 
 void CScriptArray::Resize(int size)
@@ -69,11 +69,15 @@ IMonoObject *CScriptArray::GetItem(int index)
 
 void CScriptArray::Insert(mono::object object, int index)
 {
-	CRY_ASSERT((index == -1 ? m_curIndex : index) < GetSize());
+	if(index == -1)
+	{
+		index = m_lastIndex;
+		m_lastIndex++;
+	}
 
-	mono_array_set((MonoArray *)m_pObject, void *, index != -1 ? index : m_curIndex, object);
+	CRY_ASSERT(index < GetSize());
 
-	m_curIndex++;
+	mono_array_set((MonoArray *)m_pObject, void *, index, object);
 }
 
 void CScriptArray::InsertNativePointer(void *ptr, int index)

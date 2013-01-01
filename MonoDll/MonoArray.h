@@ -72,9 +72,10 @@ public:
 	inline void Insert(mono::object object, int index = -1);
 
 	static MonoClass *m_pDefaultElementClass;
-private:
 
-	int m_curIndex;
+protected:
+	// index of the last object in the array
+	int m_lastIndex;
 
 	MonoClass *m_pElementClass;
 };
