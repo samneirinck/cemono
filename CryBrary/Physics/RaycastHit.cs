@@ -44,6 +44,11 @@ namespace CryEngine
         internal IntPtr physicalCollider;
         public PhysicalEntity PhysicalCollider { get { return (physicalCollider != null ? new PhysicalEntity(physicalCollider) : null); } }
 
+        /// <summary>
+        /// Entity that the ray collided with.
+        /// </summary>
+        public EntityBase Entity { get { return PhysicalCollider.Owner; } }
+
         internal int ipart;
         public int iPart { get { return ipart; } }
 
