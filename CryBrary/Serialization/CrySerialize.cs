@@ -26,7 +26,7 @@ namespace CryEngine.Serialization
         private static extern void ValueQuat(IntPtr handle, string name, ref Quat obj, int policy);
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        private static extern void EnumValue(IntPtr handle, string name, ref object obj, int first, int last);
+        private static extern void EnumValue(IntPtr handle, string name, ref Int32 obj, int first, int last);
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         private static extern bool IsReading(IntPtr handle);
@@ -79,7 +79,7 @@ namespace CryEngine.Serialization
             ValueQuat(Handle, name, ref obj, policy);
         }
 
-        public void EnumValue(string name, ref object obj, int first, int last)
+        public void EnumValue(string name, ref Int32 obj, int first, int last)
         {
             EnumValue(Handle, name, ref obj, first, last);
         }
