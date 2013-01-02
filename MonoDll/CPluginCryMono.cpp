@@ -73,8 +73,8 @@ namespace CryMonoPlugin
             if ( gEnv && gEnv->pSystem && !gEnv->pSystem->IsQuitting() )
             {
                 // Flownodes
-                if(enFactoryType == FT_Flownode)
-					g_pScriptSystem->RegisterFlownodes();
+                //if(enFactoryType == FT_Flownode)
+					//g_pScriptSystem->RegisterFlownodes();
 			}
         }
 
