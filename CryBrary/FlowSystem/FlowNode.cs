@@ -22,16 +22,16 @@ namespace CryEngine.FlowSystem
 
         internal void InternalInitialize(NodeInfo nodeInfo)
         {
-            Handle = nodeInfo.nodePtr;
+            NodeHandle = nodeInfo.nodePtr;
             NodeId = nodeInfo.nodeId;
             GraphId = nodeInfo.graphId;
 
-            var registrationParams = (FlowNodeRegistrationParams)Script.RegistrationParams;
+            var registrationParams = (FlowNodeBaseRegistrationParams)Script.RegistrationParams;
 
             // create instances of OutputPort's.
-            for(int i = 0; i < registrationParams.outputMembers.Length; i++)
+            for(int i = 0; i < registrationParams.OutputMembers.Length; i++)
             {
-                var outputMember = registrationParams.outputMembers[i];
+                var outputMember = registrationParams.OutputMembers[i];
 
                 Type type;
                 if (outputMember.MemberType == MemberTypes.Field)
@@ -42,7 +42,7 @@ namespace CryEngine.FlowSystem
                 bool isGenericType = type.IsGenericType;
                 Type genericType = isGenericType ? type.GetGenericArguments()[0] : typeof(void);
 
-                object[] outputPortConstructorArgs = { Handle, i };
+                object[] outputPortConstructorArgs = { NodeHandle, i };
                 Type genericOutputPort = typeof(OutputPort<>);
                 object outputPort = Activator.CreateInstance(isGenericType ? genericOutputPort.MakeGenericType(genericType) : type, outputPortConstructorArgs);
 
@@ -57,16 +57,16 @@ namespace CryEngine.FlowSystem
         {
             var registrationParams = (FlowNodeRegistrationParams)Script.RegistrationParams;
 
-            return new NodeConfig(registrationParams.filter, registrationParams.description, registrationParams.hasTargetEntity ? FlowNodeFlags.TargetEntity : 0, registrationParams.type, registrationParams.inputPorts, registrationParams.outputPorts);
+            return new NodeConfig(registrationParams.filter, registrationParams.description, (registrationParams.hasTargetEntity ? FlowNodeFlags.TargetEntity : 0), registrationParams.type, registrationParams.InputPorts, registrationParams.OutputPorts);
         }
 
         int GetInputPortId(MethodInfo method)
         {
-            var registrationParams = (FlowNodeRegistrationParams)Script.RegistrationParams;
+            var registrationParams = (FlowNodeBaseRegistrationParams)Script.RegistrationParams;
 
-            for (int i = 0; i < registrationParams.inputMethods.Length; i++)
+            for (int i = 0; i < registrationParams.InputMethods.Length; i++)
             {
-                if (registrationParams.inputMethods[i] == method)
+                if (registrationParams.InputMethods[i] == method)
                     return i;
             }
 
@@ -79,9 +79,9 @@ namespace CryEngine.FlowSystem
         /// </summary>
         internal void OnPortActivated(int index, object value = null)
         {
-            var registrationParams = (FlowNodeRegistrationParams)Script.RegistrationParams;
+            var registrationParams = (FlowNodeBaseRegistrationParams)Script.RegistrationParams;
 
-            var method = registrationParams.inputMethods[index];
+            var method = registrationParams.InputMethods[index];
 
             if (value != null && method.GetParameters().Length > 0)
             {
@@ -94,6 +94,7 @@ namespace CryEngine.FlowSystem
 
         /// <summary>
         /// Called after level has been loaded, is not called on serialization.
+        /// Note that this is called prior to GameRules.OnClientConnect and OnClientEnteredGame!
         /// </summary>
         protected virtual void OnInit() { }
         #endregion
@@ -106,7 +107,7 @@ namespace CryEngine.FlowSystem
         /// <returns></returns>
         protected int GetPortInt(Action<int> port)
         {
-            return NativeFlowNodeMethods.GetPortValueInt(Handle, GetInputPortId(port.Method));
+            return NativeFlowNodeMethods.GetPortValueInt(NodeHandle, GetInputPortId(port.Method));
         }
 
         protected bool IsIntPortActive(Action<int> port)
@@ -121,7 +122,7 @@ namespace CryEngine.FlowSystem
                 throw new ArgumentException("T must be an enumerated type");
 #endif
 
-            return (T)Enum.ToObject(typeof(T), NativeFlowNodeMethods.GetPortValueInt(Handle, GetInputPortId(port.Method)));
+            return (T)Enum.ToObject(typeof(T), NativeFlowNodeMethods.GetPortValueInt(NodeHandle, GetInputPortId(port.Method)));
         }
 
         protected bool IsEnumPortActive(Action<Enum> port)
@@ -136,7 +137,7 @@ namespace CryEngine.FlowSystem
         /// <returns></returns>
         protected float GetPortFloat(Action<float> port)
         {
-            return NativeFlowNodeMethods.GetPortValueFloat(Handle, GetInputPortId(port.Method));
+            return NativeFlowNodeMethods.GetPortValueFloat(NodeHandle, GetInputPortId(port.Method));
         }
 
         protected bool IsFloatPortActive(Action<float> port)
@@ -151,7 +152,7 @@ namespace CryEngine.FlowSystem
         /// <returns></returns>
         protected Vec3 GetPortVec3(Action<Vec3> port)
         {
-            return NativeFlowNodeMethods.GetPortValueVec3(Handle, GetInputPortId(port.Method));
+            return NativeFlowNodeMethods.GetPortValueVec3(NodeHandle, GetInputPortId(port.Method));
         }
 
         protected bool IsVec3PortActive(Action<Vec3> port)
@@ -166,7 +167,7 @@ namespace CryEngine.FlowSystem
         /// <returns></returns>
         protected string GetPortString(Action<string> port)
         {
-            return NativeFlowNodeMethods.GetPortValueString(Handle, GetInputPortId(port.Method));
+            return NativeFlowNodeMethods.GetPortValueString(NodeHandle, GetInputPortId(port.Method));
         }
 
         protected bool IsStringPortActive(Action<string> port)
@@ -181,7 +182,7 @@ namespace CryEngine.FlowSystem
         /// <returns></returns>
         protected bool GetPortBool(Action<bool> port)
         {
-            return NativeFlowNodeMethods.GetPortValueBool(Handle, GetInputPortId(port.Method));
+            return NativeFlowNodeMethods.GetPortValueBool(NodeHandle, GetInputPortId(port.Method));
         }
 
         protected bool IsBoolPortActive(Action<bool> port)
@@ -191,7 +192,7 @@ namespace CryEngine.FlowSystem
 
         protected EntityId GetPortEntityId(Action<EntityId> port)
         {
-            return new EntityId(NativeFlowNodeMethods.GetPortValueEntityId(Handle, GetInputPortId(port.Method)));
+            return new EntityId(NativeFlowNodeMethods.GetPortValueEntityId(NodeHandle, GetInputPortId(port.Method)));
         }
 
         protected bool IsEntityIdPortActive(Action<EntityId> port)
@@ -204,15 +205,15 @@ namespace CryEngine.FlowSystem
         /// </summary>
         /// <param name="port"></param>
         /// <returns></returns>
-        private bool IsPortActive(int port) { return NativeFlowNodeMethods.IsPortActive(Handle, port); }
+        private bool IsPortActive(int port) { return NativeFlowNodeMethods.IsPortActive(NodeHandle, port); }
         #endregion
 
-        public EntityBase TargetEntity
+        public virtual EntityBase TargetEntity
         {
             get
             {
                 uint entId;
-                var entPtr = NativeFlowNodeMethods.GetTargetEntity(Handle, out entId);
+                var entPtr = NativeFlowNodeMethods.GetTargetEntity(NodeHandle, out entId);
 
                 if (entPtr != IntPtr.Zero)
                     return Entity.CreateNativeEntity(new EntityId(entId), entPtr);
@@ -229,7 +230,7 @@ namespace CryEngine.FlowSystem
                 int hash = 17;
 
                 hash = hash * 29 + ScriptId.GetHashCode();
-                hash = hash * 29 + Handle.GetHashCode();
+                hash = hash * 29 + NodeHandle.GetHashCode();
                 hash = hash * 29 + NodeId.GetHashCode();
                 hash = hash * 29 + GraphId.GetHashCode();
 
@@ -238,12 +239,9 @@ namespace CryEngine.FlowSystem
         }
         #endregion
 
-        public IntPtr Handle { get; set; }
+        public IntPtr NodeHandle { get; set; }
 
-        internal UInt16 NodeId { get; set; }
-
-        internal UInt32 GraphId { get; set; }
-
-        internal bool Initialized { get; set; }
+        public Int32 NodeId { get; set; }
+        public Int64 GraphId { get; set; }
     }
 }

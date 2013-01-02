@@ -159,6 +159,7 @@
     <Compile Include="Engine\TimeOfDay\SkyLightParams.cs" />
     <Compile Include="Engine\TimeOfDay\SkyParams.cs" />
     <Compile Include="Engine\TimeOfDay\SunRaysEffectParams.cs" />
+    <Compile Include="FlowSystem\EntityFlowNode.cs" />
     <Compile Include="Entity\EntityLink.cs" />
     <Compile Include="Entity\EntityUpdatePolicy.cs" />
     <Compile Include="Entity\Extensions\Attachment.cs" />
@@ -195,9 +196,10 @@
     <Compile Include="Physics\Explosion.cs" />
     <Compile Include="Script Handling\Registration\Actor.cs" />
     <Compile Include="Script Handling\Registration\Entity.cs" />
+    <Compile Include="Script Handling\Registration\EntityFlowNode.cs" />
     <Compile Include="Script Handling\Registration\FlowNode\InputPortConfig.cs" />
     <Compile Include="Script Handling\Registration\FlowNode\OutputPortConfig.cs" />
-    <Compile Include="Script Handling\Registration\FlowNode\RegistrationParams.cs" />
+    <Compile Include="Script Handling\Registration\FlowNode.cs" />
     <Compile Include="Script Handling\Registration\GameRules.cs" />
     <Compile Include="Script Handling\ScriptInstanceDestroyedException.cs" />
     <Compile Include="Math\Angle.cs" />

@@ -35,11 +35,6 @@ CFlowManager::CFlowManager()
 	REGISTER_METHOD(GetTargetEntity);
 }
 
-void CFlowManager::Reset()
-{
-	//gEnv->pFlowSystem->ReloadAllNodeTypes();
-}
-
 void CFlowManager::RegisterNode(mono::string monoTypeName)
 {
 	IFlowSystem *pFlowSystem = gEnv->pGameFramework->GetIFlowSystem();
@@ -54,6 +49,7 @@ void CFlowManager::RegisterNode(mono::string monoTypeName)
 
 IFlowNodePtr CFlowManager::Create(IFlowNode::SActivationInfo *pActInfo)
 {
+	CryLogAlways("Creating node");
 	return new CFlowNode(pActInfo);
 }
 

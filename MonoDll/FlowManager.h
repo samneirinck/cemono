@@ -53,7 +53,7 @@ public:
 		SIZER_SUBCOMPONENT_NAME(s, "CFlowManager");
 		s->Add(*this);
 	}
-	virtual void Reset() override;
+	virtual void Reset() override {}
 	// ~IFlowNodeFactory
 
 	// IMonoScriptSystemListener

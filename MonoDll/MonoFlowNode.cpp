@@ -18,6 +18,7 @@ CFlowNode::CFlowNode(SActivationInfo *pActInfo)
 	, m_pActInfo(pActInfo)
 	, m_cloneType(eNCT_Instanced)
 {
+	CryLogAlways("Created node");
 	// We *have* to get the id right away or inputs won't work, so lets use this fugly solution.
 	pActInfo->pGraph->RegisterHook(this);
 	// Keep it so we can unregister it after we've got what we came for.
@@ -33,6 +34,7 @@ bool CFlowNode::CreatedNode(TFlowNodeId id, const char *name, TFlowNodeTypeId ty
 { 
 	if(pNode==this)
 	{
+		CryLogAlways("Instantiating script %s", gEnv->pFlowSystem->GetTypeName(typeId));
 		IMonoObject *pScript = g_pScriptSystem->InstantiateScript(gEnv->pFlowSystem->GetTypeName(typeId), eScriptFlag_FlowNode);
 
 		IMonoClass *pNodeInfo = g_pScriptSystem->GetCryBraryAssembly()->GetClass("NodeInfo", "CryEngine.FlowSystem.Native");
@@ -122,27 +124,17 @@ void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 	case eFE_Initialize:
 		m_pScript->CallMethod("OnInit");
 		break;
-	/*case eFE_SetEntityId:
+	case eFE_SetEntityId:
 		{
-			if(m_pNodeType->IsEntityNode())
-			{
-				IMonoScript *pEntityScript = nullptr;
-				EntityId entId = pActInfo->pGraph->GetEntityId(pActInfo->myID);
-				if(pActInfo && entId)
-				{
-					if(IGameObject *pGameObject = gEnv->pGameFramework->GetGameObject(entId))
-					{
-						if(CEntity *pEntity = static_cast<CEntity *>(pGameObject->QueryExtension("MonoEntity")))
-						{
-							SAFE_RELEASE(m_pScript);
+			EntityId id = pActInfo->pGraph->GetEntityId(pActInfo->myID);
 
-							m_pScript = pEntity->GetScript();
-						}
-					}
-				}
-			}
+			void *params[2];
+			params[0] = gEnv->pEntitySystem->GetEntity(id);
+			params[1] = &id;
+
+			m_pScript->GetClass()->Invoke(m_pScript, "InternalSetTargetEntity", params, 2);
 		}
-		break;*/
+		break;
 	}
 }
 
@@ -195,4 +187,6 @@ void CFlowNode::GetConfiguration(SFlowNodeConfig &config)
 
 		SAFE_RELEASE(pOutputPorts);
 	}
+
+	CryLogAlways("ui class name %s desc %s flags %i", config.sUIClassName, config.sDescription, config.nFlags);
 }

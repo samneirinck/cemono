@@ -42,6 +42,52 @@ namespace CryEngine.Extensions
         {
             return thisType.ImplementsOrEquals(typeof(T));
         }
+
+        public static bool ImplementsGeneric(this Type thisType, Type genericBaseType)
+        {
+            var type = thisType;
+
+            while (type != null)
+            {
+                var interfaceTypes = type.GetInterfaces();
+
+                foreach (var it in interfaceTypes)
+                {
+                    if (it.IsGenericType && it.GetGenericTypeDefinition() == genericBaseType)
+                        return true;
+                }
+
+                if (type.IsGenericType && type.GetGenericTypeDefinition() == genericBaseType)
+                    return true;
+
+                type = type.BaseType;
+            }
+
+            return false;
+        }
+
+        public static IEnumerable<Type> GetGenericArguments(this Type thisType, Type genericBaseType)
+        {
+            var type = thisType;
+
+            while (type != null)
+            {
+                var interfaceTypes = type.GetInterfaces();
+
+                foreach (var it in interfaceTypes)
+                {
+                    if (it.IsGenericType && it.GetGenericTypeDefinition() == genericBaseType)
+                        return it.GetGenericArguments();
+                }
+
+                if (type.IsGenericType && type.GetGenericTypeDefinition() == genericBaseType)
+                    return type.GetGenericArguments();
+
+                type = type.BaseType;
+            }
+
+            return null;
+        }
         #endregion
 
         #region Attributes

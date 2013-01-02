@@ -46,6 +46,11 @@ namespace CryEngine.Compilers.NET
                         TryGetGamemodeParams(ref registrationParams, script.Type);
                     else if (script.ScriptType.ContainsFlag(ScriptType.Entity))
                         TryGetEntityParams(ref registrationParams, script.Type);
+                    else if (script.ScriptType.ContainsFlag(ScriptType.EntityFlowNode))
+                    {
+                        if (!TryGetEntityFlowNodeParams(ref registrationParams, script.Type))
+                            continue;
+                    }
                     else if (script.ScriptType.ContainsFlag(ScriptType.FlowNode))
                     {
                         if (!TryGetFlowNodeParams(ref registrationParams, script.Type))
@@ -176,8 +181,6 @@ namespace CryEngine.Compilers.NET
 		{
 			var entityRegistrationParams = new EntityRegistrationParams();
 
-			//LoadFlowNode(ref script, true);
-
 			BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
 			var folders = type.GetNestedTypes(flags).Where(x => x.ContainsAttribute<EditorPropertyFolderAttribute>());
 			var members = type.GetMembers(flags);
@@ -218,11 +221,11 @@ namespace CryEngine.Compilers.NET
                     // don't override if the type before this (or earlier) changed it.
                     if (entityRegistrationParams.name == null)
                         entityRegistrationParams.name = entAttribute.Name;
-                    if(entityRegistrationParams.category == null)
+                    if (entityRegistrationParams.category == null)
                         entityRegistrationParams.category = entAttribute.Category;
-                    if(entityRegistrationParams.editorHelper == null)
+                    if (entityRegistrationParams.editorHelper == null)
                         entityRegistrationParams.editorHelper = entAttribute.EditorHelper;
-                    if(entityRegistrationParams.editorIcon  == null)
+                    if (entityRegistrationParams.editorIcon == null)
                         entityRegistrationParams.editorIcon = entAttribute.Icon;
                     if (!changedFlags)
                     {
@@ -232,7 +235,6 @@ namespace CryEngine.Compilers.NET
                 }
 
                 curType = curType.BaseType;
-
             }
 
 			registrationParams = entityRegistrationParams;
@@ -272,11 +274,8 @@ namespace CryEngine.Compilers.NET
 		{
 			var nodeRegistrationParams = new FlowNodeRegistrationParams();
 
-            var inputs = new List<InputPortConfig>();
-            var outputs = new List<OutputPortConfig>();
-
-            var inputMethods = new List<MethodInfo>();
-            var outputMembers = new List<MemberInfo>();
+            var inputs = new Dictionary<InputPortConfig, MethodInfo>();
+            var outputs = new Dictionary<OutputPortConfig, MemberInfo>();
 
             var setFilter = false;
             var setTargetEntity = false;
@@ -312,7 +311,78 @@ namespace CryEngine.Compilers.NET
                     }
                 }
 
-                foreach (var member in nodeType.GetMembers(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
+                TryGetFlowNodePorts(nodeType, ref inputs, ref outputs);
+
+                nodeType = nodeType.BaseType;
+            }
+
+            if (inputs.Count == 0 && outputs.Count == 0)
+                return false;
+
+            nodeRegistrationParams.InputPorts = inputs.Keys.ToArray();
+            nodeRegistrationParams.OutputPorts = outputs.Keys.ToArray();
+
+            nodeRegistrationParams.InputMethods = inputs.Values.ToArray();
+            nodeRegistrationParams.OutputMembers = outputs.Values.ToArray();
+
+            registrationParams = nodeRegistrationParams;
+
+			return true;
+		}
+
+        bool TryGetEntityFlowNodeParams(ref IScriptRegistrationParams registrationParams, Type type)
+        {
+            var nodeRegistrationParams = new EntityFlowNodeRegistrationParams();
+
+            var curEntityType = type.GetGenericArguments(typeof(EntityFlowNode<>)).ElementAt(0);
+
+            var entType = typeof(EntityBase);
+
+            // This should not be specific to entities, all scripts should be able to utilize this parent class attribute functionality.
+            while (curEntityType != entType)
+            {
+                EntityAttribute entAttribute;
+                if (curEntityType.TryGetAttribute(out entAttribute))
+                {
+                    // don't override if the type before this (or earlier) changed it.
+                    if (nodeRegistrationParams.entityName == null)
+                        nodeRegistrationParams.entityName = entAttribute.Name;
+                }
+
+                curEntityType = curEntityType.BaseType;
+            }
+
+            if (nodeRegistrationParams.entityName == null)
+                nodeRegistrationParams.entityName = type.Name;
+
+            var inputs = new Dictionary<InputPortConfig, MethodInfo>();
+            var outputs = new Dictionary<OutputPortConfig, MemberInfo>();
+
+            var nodeType = type;
+            while (nodeType != typeof(FlowNode))
+            {
+                TryGetFlowNodePorts(nodeType, ref inputs, ref outputs);
+
+                nodeType = nodeType.BaseType;
+            }
+
+            if (inputs.Count == 0 && outputs.Count == 0)
+                return false;
+
+            nodeRegistrationParams.InputPorts = inputs.Keys.ToArray();
+            nodeRegistrationParams.OutputPorts = outputs.Keys.ToArray();
+
+            nodeRegistrationParams.InputMethods = inputs.Values.ToArray();
+            nodeRegistrationParams.OutputMembers = outputs.Values.ToArray();
+
+            registrationParams = nodeRegistrationParams;
+
+            return true;
+        }
+
+        void TryGetFlowNodePorts(Type type, ref Dictionary<InputPortConfig, MethodInfo> inputs, ref Dictionary<OutputPortConfig, MemberInfo> outputs)
+        {
+            foreach (var member in type.GetMembers(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
                 {
                     PortAttribute portAttribute;
                     if (member.TryGetAttribute(out portAttribute))
@@ -325,11 +395,7 @@ namespace CryEngine.Compilers.NET
 
                                     InputPortConfig inputPortConfig;
                                     if (TryGetFlowNodeInput(portAttribute, method, out inputPortConfig))
-                                    {
-                                        inputs.Add(inputPortConfig);
-
-                                        inputMethods.Add(method);
-                                    }
+                                        inputs.Add(inputPortConfig, method);
                                 }
                                 break;
                             case MemberTypes.Field:
@@ -337,33 +403,13 @@ namespace CryEngine.Compilers.NET
                                 {
                                     OutputPortConfig outputPortConfig;
                                     if (TryGetFlowNodeOutput(portAttribute, member, out outputPortConfig))
-                                    {
-                                        outputs.Add(outputPortConfig);
-
-                                        outputMembers.Add(member);
-                                    }
+                                        outputs.Add(outputPortConfig, member);
                                 }
                                 break;
                         }
                     }
                 }
-
-                nodeType = nodeType.BaseType;
-            }
-
-            if (inputs.Count == 0 && outputs.Count == 0)
-                return false;
-
-            nodeRegistrationParams.inputPorts = inputs.ToArray();
-            nodeRegistrationParams.outputPorts = outputs.ToArray();
-
-            nodeRegistrationParams.inputMethods = inputMethods.ToArray();
-            nodeRegistrationParams.outputMembers = outputMembers.ToArray();
-
-            registrationParams = nodeRegistrationParams;
-
-			return true;
-		}
+        }
 
         bool TryGetFlowNodeInput(PortAttribute portAttribute, MethodInfo method, out InputPortConfig inputPortConfig)
         {

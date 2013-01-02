@@ -11,37 +11,6 @@ namespace CryEngine.Utilities
     public static class PathUtils
     {
         /// <summary>
-        /// Gets the folder in which a certain type of scripts are located.
-        /// </summary>
-        /// <param name="scriptType"></param>
-        /// <returns>The folder in which scripts of this type are located; i.e. Game\Scripts\Entities</returns>
-        /// <example>GetScriptFolder(MonoScriptType.Entity)</example>
-        public static string GetScriptFolder(ScriptType scriptType)
-        {
-            string folder = "";
-            switch (scriptType)
-            {
-                case ScriptType.Actor:
-                    folder = @"Entities/Actor";
-                    break;
-                case ScriptType.Entity:
-                    folder = "Entities";
-                    break;
-                case ScriptType.FlowNode:
-                    folder = "FlowNodes";
-                    break;
-                case ScriptType.GameRules:
-                    folder = "GameRules";
-                    break;
-                case ScriptType.UIEventSystem:
-                    folder = "UI";
-                    break;
-            }
-
-            return Path.Combine(ScriptsFolder, folder);
-        }
-
-        /// <summary>
         /// Gets the root engine folder.
         /// </summary>
         /// <returns>The filepath to the root folder as a string, ex:</returns>

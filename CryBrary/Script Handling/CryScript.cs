@@ -44,7 +44,12 @@ namespace CryEngine.Initialization
                         scriptType |= ScriptType.GameRules;
                 }
                 else if (type.Implements<FlowNode>())
+                {
+                    if (type.ImplementsGeneric(typeof(EntityFlowNode<>)))
+                        scriptType |= ScriptType.EntityFlowNode;
+
                     scriptType |= ScriptType.FlowNode;
+                }
             }
 
             if ((scriptType & (scriptType - 1)) == 0) // only had Any set.
@@ -143,7 +148,8 @@ namespace CryEngine.Initialization
         /// </summary>
         Actor = 32,
         /// <summary>
+        /// Scripts deriving from EntityFlowNode.
         /// </summary>
-        UIEventSystem = 64,
+        EntityFlowNode = 64,
     }
 }
