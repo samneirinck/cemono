@@ -335,6 +335,7 @@ namespace CryEngine.Compilers.NET
             var nodeRegistrationParams = new EntityFlowNodeRegistrationParams();
 
             var curEntityType = type.GetGenericArguments(typeof(EntityFlowNode<>)).ElementAt(0);
+            nodeRegistrationParams.entityName = curEntityType.Name;
 
             var entType = typeof(EntityBase);
 
@@ -351,9 +352,6 @@ namespace CryEngine.Compilers.NET
 
                 curEntityType = curEntityType.BaseType;
             }
-
-            if (nodeRegistrationParams.entityName == null)
-                nodeRegistrationParams.entityName = type.Name;
 
             var inputs = new Dictionary<InputPortConfig, MethodInfo>();
             var outputs = new Dictionary<OutputPortConfig, MemberInfo>();
