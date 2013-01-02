@@ -32,30 +32,31 @@ enum EMonoScriptFlags
 	/// <summary>
 	/// Scripts not inheriting from CryScriptInstance will utilize this script type.
 	/// </summary>
-	eScriptFlag_Any = 1,
+	eScriptFlag_Any = BIT(0),
 	/// <summary>
 	/// Scripts inheriting from CryScriptInstance, but no other CryMono base script will be linked to this script type.
 	/// </summary>
-	eScriptFlag_CryScriptInstance = 2,
+	eScriptFlag_CryScriptInstance = BIT(1),
 	/// <summary>
 	/// Scripts directly inheriting from BaseGameRules will utilize this script type.
 	/// </summary>
-	eScriptFlag_GameRules = 4,
+	eScriptFlag_GameRules = BIT(2),
 	/// <summary>
 	/// Scripts directly inheriting from FlowNode will utilize this script type.
 	/// </summary>
-	eScriptFlag_FlowNode = 8,
+	eScriptFlag_FlowNode = BIT(3),
 	/// <summary>
 	/// Scripts directly inheriting from Entity will utilize this script type.
 	/// </summary>
-	eScriptFlag_Entity = 16,
+	eScriptFlag_Entity = BIT(4),
 	/// <summary>
 	/// Scripts directly inheriting from Actor will utilize this script type.
 	/// </summary>
-	eScriptFlag_Actor = 32,
+	eScriptFlag_Actor = BIT(5),
 	/// <summary>
+	/// Scripts directly inheriting from EntityFlowNode will utilize this script type.
 	/// </summary>
-	eScriptFlag_UIEventSystem = 64,
+	eScriptFlag_EntityFlowNode = BIT(6),
 };
 
 /// <summary>

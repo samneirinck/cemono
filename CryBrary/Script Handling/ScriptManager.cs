@@ -297,6 +297,14 @@ namespace CryEngine.Initialization
 
                                 FlowNodes.Add(script.ScriptName);
                             }
+                            else if (script.RegistrationParams is EntityFlowNodeRegistrationParams)
+                            {
+                                var registrationParams = (EntityFlowNodeRegistrationParams)script.RegistrationParams;
+
+                                script.ScriptName = "entity" + ":" + registrationParams.entityName;
+
+                                FlowNodes.Add(script.ScriptName);
+                            }
                         }
 
                         Scripts.Add(script);

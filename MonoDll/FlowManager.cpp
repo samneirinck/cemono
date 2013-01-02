@@ -35,20 +35,21 @@ CFlowManager::CFlowManager()
 	REGISTER_METHOD(GetTargetEntity);
 }
 
-void CFlowManager::Reset()
-{
-	//gEnv->pFlowSystem->ReloadAllNodeTypes();
-}
-
 void CFlowManager::RegisterNode(mono::string monoTypeName)
 {
 	IFlowSystem *pFlowSystem = gEnv->pGameFramework->GetIFlowSystem();
 	if(!pFlowSystem)
 		return;
 
-	CFlowManager *pFlowManager = g_pScriptSystem->GetFlowManager();
-
 	const char *typeName = ToCryString(monoTypeName);
+
+	CFlowManager *pFlowManager = g_pScriptSystem->GetFlowManager();
+	if(!pFlowManager)
+	{
+		MonoWarning("Aborting registration of node type %s, flow manager was null!", typeName);
+		return;
+	}
+
 	pFlowSystem->RegisterType(typeName, (IFlowNodeFactoryPtr)pFlowManager);
 }
 

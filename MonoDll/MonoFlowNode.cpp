@@ -122,27 +122,17 @@ void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 	case eFE_Initialize:
 		m_pScript->CallMethod("OnInit");
 		break;
-	/*case eFE_SetEntityId:
+	case eFE_SetEntityId:
 		{
-			if(m_pNodeType->IsEntityNode())
-			{
-				IMonoScript *pEntityScript = nullptr;
-				EntityId entId = pActInfo->pGraph->GetEntityId(pActInfo->myID);
-				if(pActInfo && entId)
-				{
-					if(IGameObject *pGameObject = gEnv->pGameFramework->GetGameObject(entId))
-					{
-						if(CEntity *pEntity = static_cast<CEntity *>(pGameObject->QueryExtension("MonoEntity")))
-						{
-							SAFE_RELEASE(m_pScript);
+			EntityId id = pActInfo->pGraph->GetEntityId(pActInfo->myID);
 
-							m_pScript = pEntity->GetScript();
-						}
-					}
-				}
-			}
+			void *params[2];
+			params[0] = gEnv->pEntitySystem->GetEntity(id);
+			params[1] = &id;
+
+			m_pScript->GetClass()->Invoke(m_pScript, "InternalSetTargetEntity", params, 2);
 		}
-		break;*/
+		break;
 	}
 }
 

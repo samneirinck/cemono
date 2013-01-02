@@ -229,6 +229,9 @@ void CScriptSystem::Reload()
 
 			for each(auto listener in m_listeners)
 				listener->OnReloadComplete();
+
+			if(!m_bFirstReload && gEnv->IsEditor())
+				gEnv->pFlowSystem->ReloadAllNodeTypes();
 		}
 		break;
 	case EScriptReloadResult_Retry:
