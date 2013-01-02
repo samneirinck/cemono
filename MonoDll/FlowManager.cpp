@@ -41,15 +41,20 @@ void CFlowManager::RegisterNode(mono::string monoTypeName)
 	if(!pFlowSystem)
 		return;
 
-	CFlowManager *pFlowManager = g_pScriptSystem->GetFlowManager();
-
 	const char *typeName = ToCryString(monoTypeName);
+
+	CFlowManager *pFlowManager = g_pScriptSystem->GetFlowManager();
+	if(!pFlowManager)
+	{
+		MonoWarning("Aborting registration of node type %s, flow manager was null!", typeName);
+		return;
+	}
+
 	pFlowSystem->RegisterType(typeName, (IFlowNodeFactoryPtr)pFlowManager);
 }
 
 IFlowNodePtr CFlowManager::Create(IFlowNode::SActivationInfo *pActInfo)
 {
-	CryLogAlways("Creating node");
 	return new CFlowNode(pActInfo);
 }
 

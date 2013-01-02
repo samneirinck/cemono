@@ -18,7 +18,6 @@ CFlowNode::CFlowNode(SActivationInfo *pActInfo)
 	, m_pActInfo(pActInfo)
 	, m_cloneType(eNCT_Instanced)
 {
-	CryLogAlways("Created node");
 	// We *have* to get the id right away or inputs won't work, so lets use this fugly solution.
 	pActInfo->pGraph->RegisterHook(this);
 	// Keep it so we can unregister it after we've got what we came for.
@@ -34,7 +33,6 @@ bool CFlowNode::CreatedNode(TFlowNodeId id, const char *name, TFlowNodeTypeId ty
 { 
 	if(pNode==this)
 	{
-		CryLogAlways("Instantiating script %s", gEnv->pFlowSystem->GetTypeName(typeId));
 		IMonoObject *pScript = g_pScriptSystem->InstantiateScript(gEnv->pFlowSystem->GetTypeName(typeId), eScriptFlag_FlowNode);
 
 		IMonoClass *pNodeInfo = g_pScriptSystem->GetCryBraryAssembly()->GetClass("NodeInfo", "CryEngine.FlowSystem.Native");
@@ -187,6 +185,4 @@ void CFlowNode::GetConfiguration(SFlowNodeConfig &config)
 
 		SAFE_RELEASE(pOutputPorts);
 	}
-
-	CryLogAlways("ui class name %s desc %s flags %i", config.sUIClassName, config.sDescription, config.nFlags);
 }
