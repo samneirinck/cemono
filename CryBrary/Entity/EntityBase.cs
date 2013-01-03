@@ -25,7 +25,7 @@ namespace CryEngine
         public Lua.ScriptTable ScriptTable { get { return Lua.ScriptTable.Get(this.GetEntityHandle()); } }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the player is hidden or not.
+        /// Gets or sets a value indicating whether the entity is hidden or not.
         /// </summary>
         public bool Hidden { get { return NativeEntityMethods.IsHidden(this.GetEntityHandle()); } set { NativeEntityMethods.Hide(this.GetEntityHandle(), value); } }
 
