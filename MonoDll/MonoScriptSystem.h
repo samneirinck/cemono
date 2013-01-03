@@ -119,6 +119,8 @@ protected:
 	bool m_bReloading;
 	bool m_bDetectedChanges;
 
+	bool m_bQuitting;
+
 	CFlowManager *m_pFlowManager;
 
 	IMonoConverter *m_pConverter;

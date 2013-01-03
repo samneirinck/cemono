@@ -116,9 +116,9 @@ CScriptSystem::CScriptSystem()
 CScriptSystem::~CScriptSystem()
 {
 	m_bQuitting = true;
+
 	for(auto it = m_localScriptBinds.begin(); it != m_localScriptBinds.end(); ++it)
 		delete (*it);
-
 	m_localScriptBinds.clear();
 
 	SAFE_RELEASE(m_pScriptManager);
@@ -128,7 +128,6 @@ CScriptSystem::~CScriptSystem()
 
 	for(auto it = m_domains.rbegin(); it != m_domains.rend(); ++it)
 		SAFE_RELEASE(*it);
-
 	m_domains.clear();
 
 	if(gEnv->pSystem)
