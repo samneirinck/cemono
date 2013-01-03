@@ -111,14 +111,14 @@ typedef struct _MonoLockFreeAllocDescriptor Descriptor;
 struct _MonoLockFreeAllocDescriptor {
 	MonoLockFreeQueueNode node;
 	MonoLockFreeAllocator *heap;
-	volatile Anchor anchor;
+	Anchor anchor;
 	unsigned int slot_size;
 	unsigned int max_count;
 	gpointer sb;
 #ifndef DESC_AVAIL_DUMMY
-	Descriptor * volatile next;
+	Descriptor *next;
 #endif
-	gboolean in_use;	/* used for debugging only */
+	gboolean in_use;
 };
 
 #define NUM_DESC_BATCH	64

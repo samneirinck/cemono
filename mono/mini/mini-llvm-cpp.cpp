@@ -20,14 +20,6 @@
 // possible
 //
 
-#include "config.h"
-//undef those as llvm defines them on its own config.h as well.
-#undef PACKAGE_BUGREPORT
-#undef PACKAGE_NAME
-#undef PACKAGE_STRING
-#undef PACKAGE_TARNAME
-#undef PACKAGE_VERSION
-
 #include <stdint.h>
 
 #include <llvm/Support/raw_ostream.h>
@@ -58,10 +50,6 @@
 #define LLVM_CHECK_VERSION(major,minor) \
 	((LLVM_MAJOR_VERSION > (major)) ||									\
 	 ((LLVM_MAJOR_VERSION == (major)) && (LLVM_MINOR_VERSION >= (minor))))
-
-// extern "C" void LLVMInitializeARMTargetInfo();
-// extern "C" void LLVMInitializeARMTarget ();
-// extern "C" void LLVMInitializeARMTargetMC ();
 
 using namespace llvm;
 
@@ -134,16 +122,20 @@ public:
 	}
 
 	virtual void* getPointerToNamedFunction(const std::string &Name, bool AbortOnFailure) {
-		void *res;
-		char *err;
+		if (!strcmp (Name.c_str (), "__bzero")) {
+			return (void*)bzero;
+		} else {
+			void *res;
+			char *err;
 
-		err = dlsym_cb (Name.c_str (), &res);
-		if (err) {
-			outs () << "Unable to resolve: " << Name << ": " << err << "\n";
-			assert(0);
-			return NULL;
+			err = dlsym_cb (Name.c_str (), &res);
+			if (err) {
+				outs () << "Unable to resolve: " << Name << ": " << err << "\n";
+				assert(0);
+				return NULL;
+			}
+			return res;
 		}
-		return res;
 	}
 };
 
@@ -518,15 +510,9 @@ mono_llvm_create_ee (LLVMModuleProviderRef MP, AllocCodeMemoryCb *alloc_cb, Func
 
   force_pass_linking ();
 
-#ifdef TARGET_ARM
-  LLVMInitializeARMTarget ();
-  LLVMInitializeARMTargetInfo ();
-  LLVMInitializeARMTargetMC ();
-#else
   LLVMInitializeX86Target ();
   LLVMInitializeX86TargetInfo ();
   LLVMInitializeX86TargetMC ();
-#endif
 
   mono_mm = new MonoJITMemoryManager ();
   mono_mm->alloc_cb = alloc_cb;

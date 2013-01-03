@@ -80,15 +80,6 @@ int WSAAPI getnameinfo(const struct sockaddr*,socklen_t,char*,DWORD,
 #include "debugger-agent.h"
 #include "mini.h"
 
-/*
-On iOS we can't use System.Environment.Exit () as it will do the wrong
-shutdown sequence.
-*/
-#if !defined (TARGET_IOS)
-#define TRY_MANAGED_SYSTEM_ENVIRONMENT_EXIT
-#endif
-
-
 #ifndef MONO_ARCH_SOFT_DEBUG_SUPPORTED
 #define DISABLE_DEBUGGER_AGENT 1
 #endif
@@ -1385,15 +1376,6 @@ static DebuggerTransport *transport;
 static DebuggerTransport transports [MAX_TRANSPORTS];
 static int ntransports;
 
-void
-mono_debugger_agent_register_transport (DebuggerTransport *trans);
-
-void
-mono_debugger_agent_register_transport (DebuggerTransport *trans)
-{
-	register_transport (trans);
-}
-
 static void
 register_transport (DebuggerTransport *trans)
 {
@@ -1454,12 +1436,6 @@ static int
 transport_recv (void *buf, int len)
 {
 	return transport->recv (buf, len);
-}
-
-gboolean
-mono_debugger_agent_transport_handshake (void)
-{
-	return transport_handshake ();
 }
 
 static gboolean
@@ -2560,19 +2536,13 @@ notify_thread (gpointer key, gpointer value, gpointer user_data)
 		MonoJitInfo *ji;
 
 		info = mono_thread_info_safe_suspend_sync ((MonoNativeThreadId)(gpointer)(gsize)thread->tid, FALSE);
-		if (!info) {
-			DEBUG(1, fprintf (log_file, "[%p] mono_thread_info_suspend_sync () failed for %p...\n", (gpointer)GetCurrentThreadId (), (gpointer)tid));
-			/* 
-			 * Attached thread which died without detaching.
-			 */
-			tls->terminated = TRUE;
-		} else {
-			ji = mono_jit_info_table_find (info->suspend_state.unwind_data [MONO_UNWIND_DATA_DOMAIN], MONO_CONTEXT_GET_IP (&info->suspend_state.ctx));
+		g_assert (info);
 
-			thread_interrupt (tls, info, NULL, ji);
+		ji = mono_jit_info_table_find (info->suspend_state.unwind_data [MONO_UNWIND_DATA_DOMAIN], MONO_CONTEXT_GET_IP (&info->suspend_state.ctx));
 
-			mono_thread_info_resume (mono_thread_info_get_tid (info));
-		}
+		thread_interrupt (tls, info, NULL, ji);
+
+		mono_thread_info_resume (mono_thread_info_get_tid (info));
 	} else {
 		res = mono_thread_kill (thread, mono_thread_get_abort_signal ());
 		if (res) {
@@ -5125,35 +5095,13 @@ mono_debugger_agent_debug_log_is_enabled (void)
 	return agent_config.enabled;
 }
 
-#ifdef PLATFORM_ANDROID
-void
-mono_debugger_agent_unhandled_exception (MonoException *exc)
-{
-	int suspend_policy;
-	GSList *events;
-	EventInfo ei;
-
-	if (!inited)
-		return;
-
-	memset (&ei, 0, sizeof (EventInfo));
-	ei.exc = (MonoObject*)exc;
-
-	mono_loader_lock ();
-	events = create_event_list (EVENT_KIND_EXCEPTION, NULL, NULL, &ei, &suspend_policy);
-	mono_loader_unlock ();
-
-	process_event (EVENT_KIND_EXCEPTION, &ei, 0, NULL, events, suspend_policy);
-}
-#endif
-
 void
 mono_debugger_agent_handle_exception (MonoException *exc, MonoContext *throw_ctx, 
 				      MonoContext *catch_ctx)
 {
-	int i, j, suspend_policy;
+	int suspend_policy;
 	GSList *events;
-	MonoJitInfo *ji, *catch_ji;
+	MonoJitInfo *ji;
 	EventInfo ei;
 	DebuggerTlsData *tls = NULL;
 
@@ -5216,45 +5164,15 @@ mono_debugger_agent_handle_exception (MonoException *exc, MonoContext *throw_ctx
 		return;
 
 	ji = mini_jit_info_table_find (mono_domain_get (), MONO_CONTEXT_GET_IP (throw_ctx), NULL);
-	if (catch_ctx)
-		catch_ji = mini_jit_info_table_find (mono_domain_get (), MONO_CONTEXT_GET_IP (catch_ctx), NULL);
-	else
-		catch_ji = NULL;
 
 	ei.exc = (MonoObject*)exc;
 	ei.caught = catch_ctx != NULL;
 
 	mono_loader_lock ();
-
-	/* Treat exceptions which are caught in non-user code as unhandled */
-	for (i = 0; i < event_requests->len; ++i) {
-		EventRequest *req = g_ptr_array_index (event_requests, i);
-		if (req->event_kind != EVENT_KIND_EXCEPTION)
-			continue;
-
-		for (j = 0; j < req->nmodifiers; ++j) {
-			Modifier *mod = &req->modifiers [j];
-
-			if (mod->kind == MOD_KIND_ASSEMBLY_ONLY && catch_ji) {
-				int k;
-				gboolean found = FALSE;
-				MonoAssembly **assemblies = mod->data.assemblies;
-
-				if (assemblies) {
-					for (k = 0; assemblies [k]; ++k)
-						if (assemblies [k] == catch_ji->method->klass->image->assembly)
-							found = TRUE;
-				}
-				if (!found)
-					ei.caught = FALSE;
-			}
-		}
-	}
-
 	events = create_event_list (EVENT_KIND_EXCEPTION, NULL, ji, &ei, &suspend_policy);
 	mono_loader_unlock ();
 
-	if (tls && ei.caught && catch_ctx) {
+	if (tls && catch_ctx) {
 		tls->catch_ctx = *catch_ctx;
 		tls->has_catch_ctx = TRUE;
 	}
@@ -6360,11 +6278,9 @@ vm_commands (int command, int id, guint8 *p, guint8 *end, Buffer *buf)
 		suspend_vm ();
 		wait_for_suspend ();
 
-#ifdef TRY_MANAGED_SYSTEM_ENVIRONMENT_EXIT
 		env_class = mono_class_from_name (mono_defaults.corlib, "System", "Environment");
 		if (env_class)
 			exit_method = mono_class_get_method_from_name (env_class, "Exit", 1);
-#endif
 
 		mono_loader_lock ();
 		thread = mono_g_hash_table_find (tid_to_thread, is_really_suspended, NULL);
@@ -8658,10 +8574,8 @@ debugger_thread (void *arg)
 		res = transport_recv (header, HEADER_LENGTH);
 
 		/* This will break if the socket is closed during shutdown too */
-		if (res != HEADER_LENGTH) {
-			DEBUG (1, fprintf (log_file, "[dbg] transport_recv () returned %d, expected %d.\n", res, HEADER_LENGTH));
+		if (res != HEADER_LENGTH)
 			break;
-		}
 
 		p = header;
 		end = header + HEADER_LENGTH;
@@ -8691,10 +8605,8 @@ debugger_thread (void *arg)
 		if (len - HEADER_LENGTH > 0)
 		{
 			res = transport_recv (data, len - HEADER_LENGTH);
-			if (res != len - HEADER_LENGTH) {
-				DEBUG (1, fprintf (log_file, "[dbg] transport_recv () returned %d, expected %d.\n", res, len - HEADER_LENGTH));
+			if (res != len - HEADER_LENGTH)
 				break;
-			}
 		}
 
 		p = data;

@@ -1,13 +1,10 @@
 /*
- * sgen-major-copying.c: The copying major collector.
+ * sgen-major-copying.c: Simple generational GC.
  *
  * Author:
  * 	Paolo Molaro (lupus@ximian.com)
  *
  * Copyright 2005-2010 Novell, Inc (http://www.novell.com)
- * Copyright 2001-2003 Ximian, Inc
- * Copyright 2003-2010 Novell, Inc.
- * Copyright (C) 2012 Xamarin Inc
  *
  * Thread start/stop adapted from Boehm's GC:
  * Copyright (c) 1994 by Xerox Corporation.  All rights reserved.
@@ -15,18 +12,37 @@
  * Copyright (c) 1998 by Fergus Henderson.  All rights reserved.
  * Copyright (c) 2000-2004 by Hewlett-Packard Company.  All rights reserved.
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public
- * License 2.0 as published by the Free Software Foundation;
+ * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
+ * OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Library General Public License for more details.
+ * Permission is hereby granted to use or copy this program
+ * for any purpose,  provided the above notices are retained on all copies.
+ * Permission to modify the code and to distribute modified code is granted,
+ * provided the above notices are retained, and a notice that the code was
+ * modified is included with the above copyright notice.
  *
- * You should have received a copy of the GNU Library General Public
- * License 2.0 along with this library; if not, write to the Free
- * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ * Copyright 2001-2003 Ximian, Inc
+ * Copyright 2003-2010 Novell, Inc.
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 #include "config.h"
@@ -42,8 +58,6 @@
 #include "metadata/object-internals.h"
 #include "metadata/profiler-private.h"
 #include "metadata/sgen-memory-governor.h"
-
-#ifndef DISABLE_SGEN_MAJOR_COPYING
 
 #define MAJOR_SECTION_SIZE		SGEN_PINNED_CHUNK_SIZE
 #define BLOCK_FOR_OBJECT(o)		SGEN_PINNED_CHUNK_FOR_PTR ((o))
@@ -121,7 +135,7 @@ alloc_major_section (void)
 	section->size = MAJOR_SECTION_SIZE - SGEN_SIZEOF_GC_MEM_SECTION;
 	section->end_data = section->data + section->size;
 	sgen_update_heap_boundaries ((mword)section->data, (mword)section->end_data);
-	SGEN_LOG (3, "New major heap section: (%p-%p), total: %lld", section->data, section->end_data, (long long int)mono_gc_get_heap_size ());
+	DEBUG (3, fprintf (gc_debug_file, "New major heap section: (%p-%p), total: %lld\n", section->data, section->end_data, (long long int)mono_gc_get_heap_size ()));
 	scan_starts = (section->size + SGEN_SCAN_START_SIZE - 1) / SGEN_SCAN_START_SIZE;
 	section->scan_starts = sgen_alloc_internal_dynamic (sizeof (char*) * scan_starts, INTERNAL_MEM_SCAN_STARTS, TRUE);
 	section->num_scan_start = scan_starts;
@@ -140,7 +154,7 @@ alloc_major_section (void)
 static void
 free_major_section (GCMemSection *section)
 {
-	SGEN_LOG (3, "Freed major section %p (%p-%p)", section, section->data, section->end_data);
+	DEBUG (3, fprintf (gc_debug_file, "Freed major section %p (%p-%p)\n", section, section->data, section->end_data));
 	sgen_free_internal_dynamic (section->scan_starts,
 			(section->size + SGEN_SCAN_START_SIZE - 1) / SGEN_SCAN_START_SIZE * sizeof (char*), INTERNAL_MEM_SCAN_STARTS);
 	sgen_free_os_memory (section, MAJOR_SECTION_SIZE, SGEN_ALLOC_HEAP);
@@ -185,10 +199,10 @@ major_alloc_object (int size, gboolean has_references)
 	if (dest + size > to_space_top) {
 		to_space_expand ();
 		(dest) = to_space_bumper;
-		SGEN_ASSERT (8, dest + size <= to_space_top, "space allocation overflow dest %p size %d to-space-top %p", dest, size, to_space_top);
+		DEBUG (8, g_assert (dest + size <= to_space_top));
 	}
 	to_space_bumper += size;
-	SGEN_ASSERT (8, to_space_bumper <= to_space_top, "to-space-bumper %p overflow to-space-top %p", to_space_bumper, to_space_top);
+	DEBUG (8, g_assert (to_space_bumper <= to_space_top));
 	to_space_section->scan_starts [(dest - (char*)to_space_section->data)/SGEN_SCAN_START_SIZE] = dest;
 	return dest;
 }
@@ -261,7 +275,7 @@ major_alloc_degraded (MonoVTable *vtable, size_t size)
 		sgen_register_major_sections_alloced (1);
 	}
 	section->next_data += size;
-	SGEN_LOG (3, "Allocated (degraded) object %p, vtable: %p (%s), size: %zd in section %p", p, vtable, vtable->klass->name, size, section);
+	DEBUG (3, fprintf (gc_debug_file, "Allocated (degraded) object %p, vtable: %p (%s), size: %zd in section %p\n", p, vtable, vtable->klass->name, size, section));
 	*p = vtable;
 	return p;
 }
@@ -281,11 +295,11 @@ major_copy_or_mark_object (void **obj_slot, SgenGrayQueue *queue)
 	char *obj = *obj_slot;
 	mword objsize;
 
-	SGEN_ASSERT (9, current_collection_generation == GENERATION_OLD, "old gen parallel allocator called from a %d collection", current_collection_generation);
+	DEBUG (9, g_assert (current_collection_generation == GENERATION_OLD));
 
 	HEAVY_STAT (++stat_copy_object_called_major);
 
-	SGEN_LOG (9, "Precise copy of %p from %p", obj, obj_slot);
+	DEBUG (9, fprintf (gc_debug_file, "Precise copy of %p from %p", obj, obj_slot));
 
 	/*
 	 * obj must belong to one of:
@@ -313,26 +327,23 @@ major_copy_or_mark_object (void **obj_slot, SgenGrayQueue *queue)
 	 */
 
 	if ((forwarded = SGEN_OBJECT_IS_FORWARDED (obj))) {
-		SGEN_ASSERT (9, (*(MonoVTable**)SGEN_LOAD_VTABLE (obj))->gc_descr,  "forwarded object %p has no gc descriptor", forwarded);
-		SGEN_LOG (9, " (already forwarded to %p)", forwarded);
+		DEBUG (9, g_assert (((MonoVTable*)SGEN_LOAD_VTABLE(obj))->gc_descr));
+		DEBUG (9, fprintf (gc_debug_file, " (already forwarded to %p)\n", forwarded));
 		HEAVY_STAT (++stat_major_copy_object_failed_forwarded);
 		*obj_slot = forwarded;
 		return;
 	}
 	if (SGEN_OBJECT_IS_PINNED (obj)) {
-		SGEN_ASSERT (9, ((MonoVTable*)SGEN_LOAD_VTABLE(obj))->gc_descr, "pinned object %p has no gc descriptor", obj);
-		SGEN_LOG (9, " (pinned, no change)");
+		DEBUG (9, g_assert (((MonoVTable*)SGEN_LOAD_VTABLE(obj))->gc_descr));
+		DEBUG (9, fprintf (gc_debug_file, " (pinned, no change)\n"));
 		HEAVY_STAT (++stat_major_copy_object_failed_pinned);
 		return;
 	}
 
 	if (ptr_in_nursery (obj)) {
 		/* A To Space object is already on its final destination for the current collection. */
-		if (sgen_nursery_is_to_space (obj)) {
-			SGEN_ASSERT (9, ((MonoVTable*)SGEN_LOAD_VTABLE(obj))->gc_descr, "to space object %p has no gc descriptor", obj);
-			SGEN_LOG (9, " (tospace, no change)");
+		if (sgen_nursery_is_to_space (obj))
 			return;
-		}
 		goto copy;
 	}
 
@@ -357,7 +368,7 @@ major_copy_or_mark_object (void **obj_slot, SgenGrayQueue *queue)
 	if (G_UNLIKELY (objsize > SGEN_MAX_SMALL_OBJ_SIZE || obj_is_from_pinned_alloc (obj))) {
 		if (SGEN_OBJECT_IS_PINNED (obj))
 			return;
-		SGEN_LOG (9, " (marked LOS/Pinned %p (%s), size: %td)", obj, sgen_safe_name (obj), objsize);
+		DEBUG (9, fprintf (gc_debug_file, " (marked LOS/Pinned %p (%s), size: %td)\n", obj, sgen_safe_name (obj), objsize));
 		binary_protocol_pin (obj, (gpointer)SGEN_LOAD_VTABLE (obj), sgen_safe_object_get_size ((MonoObject*)obj));
 		SGEN_PIN_OBJECT (obj);
 		GRAY_OBJECT_ENQUEUE (queue, obj);
@@ -371,8 +382,8 @@ major_copy_or_mark_object (void **obj_slot, SgenGrayQueue *queue)
 	 * not (4).
 	 */
 	if (MAJOR_OBJ_IS_IN_TO_SPACE (obj)) {
-		SGEN_ASSERT (9, objsize <= SGEN_MAX_SMALL_OBJ_SIZE, "object %p in to space is too big, size %d", objsize);
-		SGEN_LOG (9, " (already copied)");
+		DEBUG (9, g_assert (objsize <= SGEN_MAX_SMALL_OBJ_SIZE));
+		DEBUG (9, fprintf (gc_debug_file, " (already copied)\n"));
 		HEAVY_STAT (++stat_major_copy_object_failed_to_space);
 		return;
 	}
@@ -431,9 +442,9 @@ sweep_pinned_objects_callback (char *ptr, size_t size, void *data)
 {
 	if (SGEN_OBJECT_IS_PINNED (ptr)) {
 		SGEN_UNPIN_OBJECT (ptr);
-		SGEN_LOG (6, "Unmarked pinned object %p (%s)", ptr, sgen_safe_name (ptr));
+		DEBUG (6, fprintf (gc_debug_file, "Unmarked pinned object %p (%s)\n", ptr, sgen_safe_name (ptr)));
 	} else {
-		SGEN_LOG (6, "Freeing unmarked pinned object %p (%s)", ptr, sgen_safe_name (ptr));
+		DEBUG (6, fprintf (gc_debug_file, "Freeing unmarked pinned object %p (%s)\n", ptr, sgen_safe_name (ptr)));
 		free_pinned_object (ptr, size);
 	}
 }
@@ -470,7 +481,7 @@ pin_pinned_object_callback (void *addr, size_t slot_size, SgenGrayQueue *queue)
 		sgen_pin_stats_register_object ((char*) addr, sgen_safe_object_get_size ((MonoObject*) addr));
 	SGEN_PIN_OBJECT (addr);
 	GRAY_OBJECT_ENQUEUE (queue, addr);
-	SGEN_LOG (6, "Marked pinned object %p (%s) from roots", addr, sgen_safe_name (addr));
+	DEBUG (6, fprintf (gc_debug_file, "Marked pinned object %p (%s) from roots\n", addr, sgen_safe_name (addr)));
 }
 
 static void
@@ -536,7 +547,7 @@ major_sweep (void)
 			free_major_section (to_free);
 			continue;
 		} else {
-			SGEN_LOG (6, "Section %p has still pinned objects (%d)", section, section->pin_queue_num_entries);
+			DEBUG (6, fprintf (gc_debug_file, "Section %p has still pinned objects (%d)\n", section, section->pin_queue_num_entries));
 			build_section_fragments (section);
 		}
 		prev_section = section;
@@ -619,12 +630,9 @@ major_finish_major_collection (void)
 }
 
 static gboolean
-major_ptr_is_in_non_pinned_space (char *ptr, char **start)
+major_ptr_is_in_non_pinned_space (char *ptr)
 {
 	GCMemSection *section;
-
-	// FIXME:
-	*start = NULL;
 	for (section = section_list; section;) {
 		if (ptr >= section->data && ptr < section->data + section->size)
 			return TRUE;
@@ -690,16 +698,5 @@ sgen_copying_init (SgenMajorCollector *collector)
 	collector->major_ops.copy_or_mark_object = major_copy_or_mark_object;
 	collector->major_ops.scan_object = major_scan_object;
 }
-
-#else /* DISABLE_SGEN_MAJOR_COPYING */
-
-void
-sgen_copying_init (SgenMajorCollector *collector)
-{
-	fprintf (stderr, "Error: Mono was configured using --enable-minimal=sgen_copying.\n");
-	exit (1);
-}
-
-#endif /* DISABLE_SGEN_MAJOR_COPYING */
 
 #endif

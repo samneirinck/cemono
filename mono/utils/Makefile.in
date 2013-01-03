@@ -36,10 +36,9 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-@CROSS_COMPILE_FALSE@@X86_TRUE@am__append_1 = mach-support-x86.c
-@AMD64_TRUE@@CROSS_COMPILE_FALSE@am__append_2 = mach-support-amd64.c
-@ARM_TRUE@@CROSS_COMPILE_FALSE@am__append_3 = mach-support-arm.c
-@CROSS_COMPILE_TRUE@am__append_4 = mach-support-unknown.c
+@X86_TRUE@am__append_1 = mach-support-x86.c
+@AMD64_TRUE@am__append_2 = mach-support-amd64.c
+@ARM_TRUE@am__append_3 = mach-support-arm.c
 subdir = mono/utils
 DIST_COMMON = $(libmonoutilsinclude_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in ChangeLog
@@ -86,8 +85,7 @@ am__libmonoutils_la_SOURCES_DIST = mono-md5.c mono-sha1.c \
 	mono-linked-list-set.h mono-threads.c mono-threads-posix.c \
 	mono-threads-mach.c mono-threads-windows.c mono-threads.h \
 	mono-tls.h linux_magic.h mono-memory-model.h \
-	mach-support-x86.c mach-support-amd64.c mach-support-arm.c \
-	mach-support-unknown.c
+	mach-support-x86.c mach-support-amd64.c mach-support-arm.c
 am__objects_1 = mono-md5.lo mono-sha1.lo mono-logger.lo \
 	mono-codeman.lo dlmalloc.lo mono-counters.lo mono-dl.lo \
 	mono-internal-hash.lo mono-io-portability.lo monobitset.lo \
@@ -100,14 +98,11 @@ am__objects_1 = mono-md5.lo mono-sha1.lo mono-logger.lo \
 	lock-free-queue.lo lock-free-alloc.lo lock-free-array-queue.lo \
 	mono-linked-list-set.lo mono-threads.lo mono-threads-posix.lo \
 	mono-threads-mach.lo mono-threads-windows.lo
-@CROSS_COMPILE_FALSE@@X86_TRUE@am__objects_2 = mach-support-x86.lo
-@AMD64_TRUE@@CROSS_COMPILE_FALSE@am__objects_3 =  \
-@AMD64_TRUE@@CROSS_COMPILE_FALSE@	mach-support-amd64.lo
-@ARM_TRUE@@CROSS_COMPILE_FALSE@am__objects_4 = mach-support-arm.lo
-@CROSS_COMPILE_TRUE@am__objects_5 = mach-support-unknown.lo
-am__objects_6 = $(am__objects_2) $(am__objects_3) $(am__objects_4) \
-	$(am__objects_5)
-am_libmonoutils_la_OBJECTS = $(am__objects_1) $(am__objects_6)
+@X86_TRUE@am__objects_2 = mach-support-x86.lo
+@AMD64_TRUE@am__objects_3 = mach-support-amd64.lo
+@ARM_TRUE@am__objects_4 = mach-support-arm.lo
+am__objects_5 = $(am__objects_2) $(am__objects_3) $(am__objects_4)
+am_libmonoutils_la_OBJECTS = $(am__objects_1) $(am__objects_5)
 libmonoutils_la_OBJECTS = $(am_libmonoutils_la_OBJECTS)
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
@@ -452,8 +447,7 @@ monoutils_sources = \
 	linux_magic.h	\
 	mono-memory-model.h
 
-arch_sources = $(am__append_1) $(am__append_2) $(am__append_3) \
-	$(am__append_4)
+arch_sources = $(am__append_1) $(am__append_2) $(am__append_3)
 libmonoutils_la_SOURCES = $(monoutils_sources) $(arch_sources)
 libmonoutilsincludedir = $(includedir)/mono-$(API_VER)/mono/utils
 libmonoutilsinclude_HEADERS = \
@@ -523,7 +517,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lock-free-queue.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mach-support-amd64.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mach-support-arm.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mach-support-unknown.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mach-support-x86.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mach-support.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mono-codeman.Plo@am__quote@

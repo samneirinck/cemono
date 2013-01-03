@@ -9,17 +9,12 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir) 	\
 	$(GLIB_CFLAGS)
 
-if !DISABLE_LIBRARIES
 if !DISABLE_PROFILER
 if JIT_SUPPORTED
 bin_PROGRAMS = mprof-report
 lib_LTLIBRARIES = libmono-profiler-cov.la libmono-profiler-aot.la libmono-profiler-iomap.la libmono-profiler-log.la
 if PLATFORM_DARWIN
 libmono_profiler_log_la_LDFLAGS = -Wl,-undefined -Wl,suppress -Wl,-flat_namespace
-endif
-if PLATFORM_ANDROID
-libmono_profiler_log_la_LDFLAGS = -avoid-version
-endif
 endif
 endif
 endif
@@ -29,9 +24,6 @@ if HAVE_OPROFILE
 endif
 
 if SUPPORT_BOEHM
-if DISABLE_EXECUTABLES
-LIBMONO=$(top_builddir)/mono/mini/$(LIBMONO_LA)
-else
 if !SHARED_MONO
 static_libs=	\
 	$(top_builddir)/mono/metadata/libmonoruntime-static.la	\
@@ -43,7 +35,6 @@ static_libs=	\
 LIBMONO=$(top_builddir)/mono/mini/$(LIBMONO_LA) $(static_libs)
 else
 LIBMONO=$(top_builddir)/mono/mini/$(LIBMONO_LA)
-endif
 endif
 else
 LIBMONO=$(top_builddir)/mono/mini/libmonosgen-$(API_VER).la
@@ -59,10 +50,6 @@ libmono_profiler_iomap_la_SOURCES = mono-profiler-iomap.c
 libmono_profiler_iomap_la_LIBADD = $(LIBMONO) $(GLIB_LIBS) $(LIBICONV)
 libmono_profiler_log_la_SOURCES = proflog.c
 libmono_profiler_log_la_LIBADD = $(LIBMONO) $(Z_LIBS)
-
-if PLATFORM_ANDROID
-libmono_profiler_log_la_LIBADD += $(GLIB_LIBS)
-endif
 
 mprof_report_SOURCES = decode.c
 mprof_report_LDADD = $(Z_LIBS)

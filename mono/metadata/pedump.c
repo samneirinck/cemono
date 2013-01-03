@@ -649,9 +649,7 @@ main (int argc, char *argv [])
 	if (!file)
 		usage ();
 
-#ifndef DISABLE_PERFCOUNTERS
 	mono_perfcounters_init ();
-#endif
 	mono_metadata_init ();
 	mono_images_init ();
 	mono_assemblies_init ();

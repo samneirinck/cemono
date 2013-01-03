@@ -8,20 +8,25 @@
  * Copyright 2005-2011 Novell, Inc (http://www.novell.com)
  * Copyright 2011 Xamarin Inc (http://www.xamarin.com)
  * Copyright 2011 Xamarin, Inc.
- * Copyright (C) 2012 Xamarin Inc
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public
- * License 2.0 as published by the Free Software Foundation;
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Library General Public License for more details.
- *
- * You should have received a copy of the GNU Library General Public
- * License 2.0 along with this library; if not, write to the Free
- * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 #include "config.h"
@@ -116,7 +121,7 @@ restart_threads_until_none_in_managed_allocator (void)
 			if (!info->thread_is_dying && (!info->stack_start || info->in_critical_region ||
 					is_ip_in_managed_allocator (info->stopped_domain, info->stopped_ip))) {
 				binary_protocol_thread_restart ((gpointer)mono_thread_info_get_tid (info));
-				SGEN_LOG (3, "thread %p resumed.", (void*)info->info.native_handle);
+				DEBUG (3, fprintf (gc_debug_file, "thread %p resumed.\n", (void*)info->info.native_handle));
 				result = sgen_resume_thread (info);
 				if (result) {
 					++restart_count;
@@ -219,7 +224,7 @@ sgen_stop_world (int generation)
 	update_current_thread_stack (&count);
 
 	sgen_global_stop_count++;
-	SGEN_LOG (3, "stopping world n %d from %p %p", sgen_global_stop_count, mono_thread_info_current (), (gpointer)mono_native_thread_id_get ());
+	DEBUG (3, fprintf (gc_debug_file, "stopping world n %d from %p %p\n", sgen_global_stop_count, mono_thread_info_current (), (gpointer)mono_native_thread_id_get ()));
 	TV_GETTIME (stop_world_time);
 	count = sgen_thread_handshake (TRUE);
 	dead = restart_threads_until_none_in_managed_allocator ();
@@ -227,7 +232,7 @@ sgen_stop_world (int generation)
 		g_error ("More threads have died (%d) that been initialy suspended %d", dead, count);
 	count -= dead;
 
-	SGEN_LOG (3, "world stopped %d thread(s)", count);
+	DEBUG (3, fprintf (gc_debug_file, "world stopped %d thread(s)\n", count));
 	mono_profiler_gc_event (MONO_GC_EVENT_POST_STOP_WORLD, generation);
 
 	sgen_memgov_collection_start (generation);
@@ -265,7 +270,7 @@ sgen_restart_world (int generation, GGTimingInfo *timing)
 	TV_GETTIME (end_sw);
 	usec = TV_ELAPSED (stop_world_time, end_sw);
 	max_pause_usec = MAX (usec, max_pause_usec);
-	SGEN_LOG (2, "restarted %d thread(s) (pause time: %d usec, max: %d)", count, (int)usec, (int)max_pause_usec);
+	DEBUG (2, fprintf (gc_debug_file, "restarted %d thread(s) (pause time: %d usec, max: %d)\n", count, (int)usec, (int)max_pause_usec));
 	mono_profiler_gc_event (MONO_GC_EVENT_POST_START_WORLD, generation);
 
 	bridge_process (generation);

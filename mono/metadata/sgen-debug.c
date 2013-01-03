@@ -8,20 +8,25 @@
  * Copyright 2005-2011 Novell, Inc (http://www.novell.com)
  * Copyright 2011 Xamarin Inc (http://www.xamarin.com)
  * Copyright 2011 Xamarin, Inc.
- * Copyright (C) 2012 Xamarin Inc
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public
- * License 2.0 as published by the Free Software Foundation;
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Library General Public License for more details.
- *
- * You should have received a copy of the GNU Library General Public
- * License 2.0 along with this library; if not, write to the Free
- * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 #include "config.h"
@@ -76,15 +81,8 @@ describe_ptr (char *ptr)
 			else
 				printf ("Pointer is at offset 0x%x of object %p in LOS space.\n", (int)(ptr - start), start);
 			ptr = start;
-		} else if (major_collector.ptr_is_in_non_pinned_space (ptr, &start)) {
-			if (ptr == start)
-				printf ("Pointer is the start of object %p in oldspace.\n", start);
-			else if (start)
-				printf ("Pointer is at offset 0x%x of object %p in oldspace.\n", (int)(ptr - start), start);
-			else
-				printf ("Pointer inside oldspace.\n");
-			if (start)
-				ptr = start;
+		} else if (major_collector.ptr_is_in_non_pinned_space (ptr)) {
+			printf ("Pointer inside oldspace.\n");
 		} else if (major_collector.obj_is_from_pinned_alloc (ptr)) {
 			printf ("Pointer is inside a pinned chunk.\n");
 		} else {
@@ -132,7 +130,7 @@ static gboolean missing_remsets;
 #define HANDLE_PTR(ptr,obj)	do {	\
 	if (*(ptr) && sgen_ptr_in_nursery ((char*)*(ptr))) { \
 		if (!sgen_get_remset ()->find_address ((char*)(ptr))) { \
-			SGEN_LOG (1, "Oldspace->newspace reference %p at offset %td in object %p (%s.%s) not found in remsets.", *(ptr), (char*)(ptr) - (char*)(obj), (obj), ((MonoObject*)(obj))->vtable->klass->name_space, ((MonoObject*)(obj))->vtable->klass->name); \
+			fprintf (gc_debug_file, "Oldspace->newspace reference %p at offset %td in object %p (%s.%s) not found in remsets.\n", *(ptr), (char*)(ptr) - (char*)(obj), (obj), ((MonoObject*)(obj))->vtable->klass->name_space, ((MonoObject*)(obj))->vtable->klass->name); \
 			binary_protocol_missing_remset ((obj), (gpointer)LOAD_VTABLE ((obj)), (char*)(ptr) - (char*)(obj), *(ptr), (gpointer)LOAD_VTABLE(*(ptr)), object_is_pinned (*(ptr))); \
 			if (!object_is_pinned (*(ptr)))								\
 				missing_remsets = TRUE;									\
@@ -148,7 +146,7 @@ static void
 check_consistency_callback (char *start, size_t size, void *dummy)
 {
 	GCVTable *vt = (GCVTable*)LOAD_VTABLE (start);
-	SGEN_LOG (8, "Scanning object %p, vtable: %p (%s)", start, vt, vt->klass->name);
+	DEBUG (8, fprintf (gc_debug_file, "Scanning object %p, vtable: %p (%s)\n", start, vt, vt->klass->name));
 
 #define SCAN_OBJECT_ACTION
 #include "sgen-scan-object.h"
@@ -166,14 +164,14 @@ sgen_check_consistency (void)
 
 	missing_remsets = FALSE;
 
-	SGEN_LOG (1, "Begin heap consistency check...");
+	DEBUG (1, fprintf (gc_debug_file, "Begin heap consistency check...\n"));
 
 	// Check that oldspace->newspace pointers are registered with the collector
 	major_collector.iterate_objects (TRUE, TRUE, (IterateObjectCallbackFunc)check_consistency_callback, NULL);
 
 	sgen_los_iterate_objects ((IterateObjectCallbackFunc)check_consistency_callback, NULL);
 
-	SGEN_LOG (1, "Heap consistency check done.");
+	DEBUG (1, fprintf (gc_debug_file, "Heap consistency check done.\n"));
 
 	if (!binary_protocol_is_enabled ())
 		g_assert (!missing_remsets);
@@ -257,23 +255,24 @@ describe_nursery_ptr (char *ptr)
 {
 	int i;
 
+	fprintf (gc_debug_file, "nursery-ptr ");
 	for (i = 0; i < valid_nursery_object_count; ++i) {
 		if (valid_nursery_objects [i] >= ptr)
 			break;
 	}
 
 	if (i >= valid_nursery_object_count || valid_nursery_objects [i] + safe_object_get_size ((MonoObject *)valid_nursery_objects [i]) < ptr) {
-		SGEN_LOG (1, "nursery-ptr (unalloc'd-memory)");
+		fprintf (gc_debug_file, "(unalloc'd-memory)");
 	} else {
 		char *obj = valid_nursery_objects [i];
 		MonoVTable *vtable = (MonoVTable*)LOAD_VTABLE (obj);
 		int size = safe_object_get_size ((MonoObject *)obj);
 
 		if (obj == ptr)
-			SGEN_LOG (1, "nursery-ptr (object %s.%s size %d)", 
+			fprintf (gc_debug_file, "(object %s.%s size %d)", 
 				vtable->klass->name_space, vtable->klass->name, size);
 		else
-			SGEN_LOG (1, "nursery-ptr (interior-ptr offset %td of %p (%s.%s) size %d)",
+			fprintf (gc_debug_file, "(interior-ptr offset %td of %p (%s.%s) size %d)",
 				ptr - obj, obj,
 				vtable->klass->name_space, vtable->klass->name, size);
 	}
@@ -302,7 +301,7 @@ describe_pointer (char *ptr)
 	} else if (major_collector.describe_pointer (ptr)) {
 		//Nothing really
 	} else if (!mono_sgen_los_describe_pointer (ptr)) {
-		SGEN_LOG (1, "\tnon-heap-ptr");
+		fprintf (gc_debug_file, "non-heap-ptr");
 	}
 }
 
@@ -312,10 +311,11 @@ bad_pointer_spew (char *obj, char **slot)
 	char *ptr = *slot;
 	MonoVTable *vtable = (MonoVTable*)LOAD_VTABLE (obj);
 
-	SGEN_LOG (1, "Invalid object pointer %p at offset %td in object %p (%s.%s):", ptr,
+	fprintf (gc_debug_file, "Invalid object pointer %p [", ptr);
+	describe_pointer (ptr);
+	fprintf (gc_debug_file, "] at offset %td in object %p (%s.%s).\n",
 		(char*)slot - obj,
 		obj, vtable->klass->name_space, vtable->klass->name);
-	describe_pointer (ptr);
 	broken_heap = TRUE;
 }
 
@@ -325,7 +325,7 @@ missing_remset_spew (char *obj, char **slot)
 	char *ptr = *slot;
 	MonoVTable *vtable = (MonoVTable*)LOAD_VTABLE (obj);
 
-    SGEN_LOG (1, "Oldspace->newspace reference %p at offset %td in object %p (%s.%s) not found in remsets.",
+    fprintf (gc_debug_file,  "Oldspace->newspace reference %p at offset %td in object %p (%s.%s) not found in remsets.\n",
  		ptr, (char*)slot - obj, obj, 
 		vtable->klass->name_space, vtable->klass->name);
 
@@ -413,7 +413,7 @@ find_pinning_ref_from_thread (char *obj, size_t size)
 			continue;
 		while (start < (char**)info->stack_end) {
 			if (*start >= obj && *start < endobj) {
-				SGEN_LOG (1, "Object %p referenced in thread %p (id %p) at %p, stack: %p-%p", obj, info, (gpointer)mono_thread_info_get_tid (info), start, info->stack_start, info->stack_end);
+				DEBUG (0, fprintf (gc_debug_file, "Object %p referenced in thread %p (id %p) at %p, stack: %p-%p\n", obj, info, (gpointer)mono_thread_info_get_tid (info), start, info->stack_start, info->stack_end));
 			}
 			start++;
 		}
@@ -426,7 +426,7 @@ find_pinning_ref_from_thread (char *obj, size_t size)
 #endif
 
 			if (w >= (mword)obj && w < (mword)obj + size)
-				SGEN_LOG (1, "Object %p referenced in saved reg %d of thread %p (id %p)", obj, j, info, (gpointer)mono_thread_info_get_tid (info));
+				DEBUG (0, fprintf (gc_debug_file, "Object %p referenced in saved reg %d of thread %p (id %p)\n", obj, j, info, (gpointer)mono_thread_info_get_tid (info)));
 		} END_FOREACH_THREAD
 	}
 }
@@ -446,7 +446,7 @@ find_pinning_reference (char *obj, size_t size)
 		if (!root->root_desc) {
 			while (start < (char**)root->end_root) {
 				if (*start >= obj && *start < endobj) {
-					SGEN_LOG (1, "Object %p referenced in pinned roots %p-%p\n", obj, start, root->end_root);
+					DEBUG (0, fprintf (gc_debug_file, "Object %p referenced in pinned roots %p-%p\n", obj, start, root->end_root));
 				}
 				start++;
 			}

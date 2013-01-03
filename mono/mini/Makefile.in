@@ -337,10 +337,8 @@ libmono_2_0_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(libmono_2_0_la_CFLAGS) $(CFLAGS) $(libmono_2_0_la_LDFLAGS) \
 	$(LDFLAGS) -o $@
-@DISABLE_EXECUTABLES_FALSE@@JIT_SUPPORTED_TRUE@@SHARED_MONO_TRUE@@SUPPORT_BOEHM_TRUE@am_libmono_2_0_la_rpath = -rpath \
-@DISABLE_EXECUTABLES_FALSE@@JIT_SUPPORTED_TRUE@@SHARED_MONO_TRUE@@SUPPORT_BOEHM_TRUE@	$(libdir)
-@DISABLE_EXECUTABLES_TRUE@@JIT_SUPPORTED_TRUE@@SUPPORT_BOEHM_TRUE@am_libmono_2_0_la_rpath = -rpath \
-@DISABLE_EXECUTABLES_TRUE@@JIT_SUPPORTED_TRUE@@SUPPORT_BOEHM_TRUE@	$(libdir)
+@JIT_SUPPORTED_TRUE@@SHARED_MONO_TRUE@@SUPPORT_BOEHM_TRUE@am_libmono_2_0_la_rpath = -rpath \
+@JIT_SUPPORTED_TRUE@@SHARED_MONO_TRUE@@SUPPORT_BOEHM_TRUE@	$(libdir)
 @JIT_SUPPORTED_TRUE@@LOADED_LLVM_TRUE@@PLATFORM_DARWIN_FALSE@am__DEPENDENCIES_6 = $(top_builddir)/mono/mini/libmono-$(API_VER).la \
 @JIT_SUPPORTED_TRUE@@LOADED_LLVM_TRUE@@PLATFORM_DARWIN_FALSE@	$(am__DEPENDENCIES_4)
 @JIT_SUPPORTED_TRUE@@LOADED_LLVM_TRUE@libmono_llvm_la_DEPENDENCIES =  \
@@ -490,12 +488,10 @@ am_libmonosgen_2_0_la_OBJECTS =
 libmonosgen_2_0_la_OBJECTS = $(am_libmonosgen_2_0_la_OBJECTS)
 libmonosgen_2_0_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
-	$(libmonosgen_2_0_la_CFLAGS) $(CFLAGS) \
-	$(libmonosgen_2_0_la_LDFLAGS) $(LDFLAGS) -o $@
-@DISABLE_EXECUTABLES_FALSE@@JIT_SUPPORTED_TRUE@@SHARED_MONO_TRUE@@SUPPORT_SGEN_TRUE@am_libmonosgen_2_0_la_rpath = -rpath \
-@DISABLE_EXECUTABLES_FALSE@@JIT_SUPPORTED_TRUE@@SHARED_MONO_TRUE@@SUPPORT_SGEN_TRUE@	$(libdir)
-@DISABLE_EXECUTABLES_TRUE@@JIT_SUPPORTED_TRUE@@SUPPORT_SGEN_TRUE@am_libmonosgen_2_0_la_rpath = -rpath \
-@DISABLE_EXECUTABLES_TRUE@@JIT_SUPPORTED_TRUE@@SUPPORT_SGEN_TRUE@	$(libdir)
+	$(libmonosgen_2_0_la_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
+	$(LDFLAGS) -o $@
+@JIT_SUPPORTED_TRUE@@SHARED_MONO_TRUE@@SUPPORT_SGEN_TRUE@am_libmonosgen_2_0_la_rpath = -rpath \
+@JIT_SUPPORTED_TRUE@@SHARED_MONO_TRUE@@SUPPORT_SGEN_TRUE@	$(libdir)
 @JIT_SUPPORTED_TRUE@@SUPPORT_BOEHM_TRUE@am__EXEEXT_1 = mono$(EXEEXT)
 @JIT_SUPPORTED_TRUE@@SUPPORT_SGEN_TRUE@am__EXEEXT_2 =  \
 @JIT_SUPPORTED_TRUE@@SUPPORT_SGEN_TRUE@	mono-sgen$(EXEEXT)
@@ -886,8 +882,7 @@ genmdesc_CFLAGS = $(AM_CFLAGS)
 @JIT_SUPPORTED_TRUE@@SUPPORT_BOEHM_TRUE@boehm_libraries = libmono-2.0.la
 @JIT_SUPPORTED_TRUE@@SUPPORT_BOEHM_TRUE@boehm_static_libraries = libmini-static.la $(static_libs)
 @JIT_SUPPORTED_TRUE@@SUPPORT_BOEHM_TRUE@boehm_binaries = mono
-@DISABLE_EXECUTABLES_FALSE@@JIT_SUPPORTED_TRUE@@SHARED_MONO_TRUE@shared_libraries = $(boehm_libraries) $(sgen_libraries)
-@DISABLE_EXECUTABLES_TRUE@@JIT_SUPPORTED_TRUE@shared_libraries = $(boehm_libraries) $(sgen_libraries)
+@JIT_SUPPORTED_TRUE@@SHARED_MONO_TRUE@shared_libraries = $(boehm_libraries) $(sgen_libraries)
 @JIT_SUPPORTED_TRUE@lib_LTLIBRARIES = $(shared_libraries) \
 @JIT_SUPPORTED_TRUE@	$(am__append_2)
 @JIT_SUPPORTED_TRUE@@SHARED_MONO_FALSE@mini_common_lib = 
@@ -1188,7 +1183,6 @@ libmono_2_0_la_LIBADD = libmini.la $(libs) $(LIBMONO_DTRACE_OBJECT)
 libmonosgen_2_0_la_SOURCES = 
 libmonosgen_2_0_la_CFLAGS = $(mono_sgen_CFLAGS)
 libmonosgen_2_0_la_LIBADD = libmini.la $(sgen_libs) $(LIBMONO_DTRACE_OBJECT)
-@PLATFORM_ANDROID_TRUE@libmonosgen_2_0_la_LDFLAGS = -avoid-version
 @MOONLIGHT_TRUE@libmono_moon_la_SOURCES = $(libmini_la_SOURCES)
 @MOONLIGHT_BOEHM_FALSE@@MOONLIGHT_TRUE@libmono_moon_la_CFLAGS = $(mono_sgen_CFLAGS) $(MOONLIGHT_DEFINES)
 @MOONLIGHT_BOEHM_TRUE@@MOONLIGHT_TRUE@libmono_moon_la_CFLAGS = $(mono_CFLAGS) $(MOONLIGHT_DEFINES)
@@ -3883,10 +3877,10 @@ gctest: mono gc-test.exe
 	MONO_DEBUG_OPTIONS=clear-nursery-at-gc $(RUNTIME) --regression gc-test.exe
 
 aotcheck: mono $(regtests)
-	rm -rf *.exe.so *.exe.dylib *.exe.dylib.dSYM
+	rm -f *.exe.so *.exe.dylib *.exe.dylib.dSYM
 	$(RUNTIME) $(LLVM_AOT_RUNTIME_OPTS) --aot $(regtests) || exit 1
 	for i in $(regtests); do $(RUNTIME_AOTCHECK) --regression $$i || exit 1; done
-	rm -rf *.exe.so *.exe.dylib *.exe.dylib.dSYM
+	rm -f *.exe.so *.exe.dylib *.exe.dylib.dSYM
 
 llvmaotcheck:
 	$(MAKE) aotcheck LLVM=1

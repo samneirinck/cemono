@@ -24,12 +24,8 @@ endif
 if DISABLE_EXECUTABLES
 bin_PROGRAMS =
 else
-if DISABLE_LIBRARIES
-bin_PROGRAMS =
-else
 if SUPPORT_BOEHM
 bin_PROGRAMS = monodis
-endif
 endif
 endif
 

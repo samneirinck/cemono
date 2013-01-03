@@ -114,7 +114,6 @@ static const AssemblyVersionMap framework_assemblies [] = {
 	{"System.Management", 0},
 	{"System.Messaging", 0},
 	{"System.Runtime.Remoting", 0},
-	{"System.Runtime.Serialization", 3},
 	{"System.Runtime.Serialization.Formatters.Soap", 0},
 	{"System.Security", 0},
 	{"System.ServiceProcess", 0},

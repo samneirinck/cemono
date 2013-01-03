@@ -5060,10 +5060,8 @@ mini_method_compile (MonoMethod *method, guint32 opts, MonoDomain *domain, gbool
 	}
 
 	/* collect statistics */
-#ifndef DISABLE_PERFCOUNTERS
 	mono_perfcounters->jit_methods++;
 	mono_perfcounters->jit_bytes += header->code_size;
-#endif
 	mono_jit_stats.allocated_code_size += cfg->code_len;
 	code_size_ratio = cfg->code_len;
 	if (code_size_ratio > mono_jit_stats.biggest_method_size && mono_jit_stats.enabled) {
@@ -5292,7 +5290,7 @@ mono_jit_compile_method_inner (MonoMethod *method, MonoDomain *target_domain, in
 
 	if (mono_aot_only) {
 		char *fullname = mono_method_full_name (method, TRUE);
-		char *msg = g_strdup_printf ("Attempting to JIT compile method '%s' while running with --aot-only. See http://docs.xamarin.com/ios/about/limitations for more information.\n", fullname);
+		char *msg = g_strdup_printf ("Attempting to JIT compile method '%s' while running with --aot-only.\n", fullname);
 
 		*jit_ex = mono_get_exception_execution_engine (msg);
 		g_free (fullname);
@@ -5599,7 +5597,7 @@ static void
 invalidated_delegate_trampoline (char *desc)
 {
 	g_error ("Unmanaged code called delegate of type %s which was already garbage collected.\n"
-		 "See http://www.mono-project.com/Diagnostic:Delegate for an explanation and ways to fix this.",
+		 "See http://www.go-mono.com/delegate.html for an explanation and ways to fix this.",
 		 desc);
 }
 #endif
@@ -6475,6 +6473,7 @@ mini_init (const char *filename, const char *runtime_version)
 		g_thread_init (NULL);
 
 	mono_native_tls_alloc (&mono_jit_tls_id, NULL);
+	setup_jit_tls_data ((gpointer)-1, mono_thread_abort);
 
 	if (default_opt & MONO_OPT_AOT)
 		mono_aot_init ();
@@ -6566,11 +6565,6 @@ mini_init (const char *filename, const char *runtime_version)
 				ves_icall_System_Security_SecurityFrame_GetSecurityStack);
 	mono_add_internal_call ("Mono.Runtime::mono_runtime_install_handlers", 
 				mono_runtime_install_handlers);
-
-#ifdef PLATFORM_ANDROID
-	mono_add_internal_call ("System.Diagnostics.Debugger::Mono_UnhandledException_internal",
-				mono_debugger_agent_unhandled_exception);
-#endif
 
 	mono_create_helper_signatures ();
 

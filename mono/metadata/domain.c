@@ -121,12 +121,12 @@ static MonoAotModuleInfoTable *aot_modules = NULL;
 /* This is the list of runtime versions supported by this JIT.
  */
 static const MonoRuntimeInfo supported_runtimes[] = {
-	{"v2.0.50215","2.0", { {2,0,0,0}, { 8,0,0,0}, {3,5,0,0}, {3,0,0,0} } },
-	{"v2.0.50727","2.0", { {2,0,0,0}, { 8,0,0,0}, {3,5,0,0}, {3,0,0,0} } },
-	{"v4.0.30319","4.5", { {4,0,0,0}, {10,0,0,0}, {4,0,0,0}, {4,0,0,0} } },
-	{"v4.0.30128","4.0", { {4,0,0,0}, {10,0,0,0}, {4,0,0,0}, {4,0,0,0} } },
-	{"v4.0.20506","4.0", { {4,0,0,0}, {10,0,0,0}, {4,0,0,0}, {4,0,0,0} } },
-	{"moonlight", "2.1", { {2,0,5,0}, { 9,0,0,0}, {3,5,0,0}, {3,0,0,0} } },
+	{"v2.0.50215","2.0", { {2,0,0,0},    {8,0,0,0}, { 3, 5, 0, 0 } }	},
+	{"v2.0.50727","2.0", { {2,0,0,0},    {8,0,0,0}, { 3, 5, 0, 0 } }	},
+	{"v4.0.30319","4.5", { {4,0,0,0},    {10,0,0,0}, { 4, 0, 0, 0 } }   },
+	{"v4.0.30128","4.0", { {4,0,0,0},    {10,0,0,0}, { 4, 0, 0, 0 } }   },
+	{"v4.0.20506","4.0", { {4,0,0,0},    {10,0,0,0}, { 4, 0, 0, 0 } }   },
+	{"moonlight", "2.1", { {2,0,5,0},    {9,0,0,0}, { 3, 5, 0, 0 } }    },
 };
 
 
@@ -1227,10 +1227,8 @@ mono_domain_create (void)
 	domain_id_alloc (domain);
 	mono_appdomains_unlock ();
 
-#ifndef DISABLE_PERFCOUNTERS
 	mono_perfcounters->loader_appdomains++;
 	mono_perfcounters->loader_total_appdomains++;
-#endif
 
 	mono_debug_domain_create (domain);
 
@@ -1276,9 +1274,7 @@ mono_init_internal (const char *filename, const char *exe_filename, const char *
 	wapi_init ();
 #endif
 
-#ifndef DISABLE_PERFCOUNTERS
 	mono_perfcounters_init ();
-#endif
 
 	mono_counters_register ("Max native code in a domain", MONO_COUNTER_INT|MONO_COUNTER_JIT, &max_domain_code_size);
 	mono_counters_register ("Max code space allocated in a domain", MONO_COUNTER_INT|MONO_COUNTER_JIT, &max_domain_code_alloc);
@@ -1612,13 +1608,11 @@ mono_init_internal (const char *filename, const char *exe_filename, const char *
 		mono_defaults.corlib, "System.Reflection", "CustomAttributeData");
 
 	/* these are initialized lazily when COM features are used */
-#ifndef DISABLE_COM
 	mono_defaults.variant_class = NULL;
 	mono_defaults.com_object_class = NULL;
 	mono_defaults.com_interop_proxy_class = NULL;
 	mono_defaults.iunknown_class = NULL;
 	mono_defaults.idispatch_class = NULL;
-#endif
 
 	/*
 	 * Note that mono_defaults.generic_*_class is only non-NULL if we're
@@ -1694,7 +1688,6 @@ mono_init_version (const char *domain_name, const char *version)
 	return mono_init_internal (domain_name, NULL, version);
 }
 
-#ifndef DISABLE_COM
 /**
  * mono_init_com_types:
  *
@@ -1734,7 +1727,6 @@ mono_init_com_types (void)
 
 	initialized = TRUE;
 }
-#endif /*DISABLE_COM*/
 
 /**
  * mono_cleanup:
@@ -2058,9 +2050,7 @@ mono_domain_free (MonoDomain *domain, gboolean force)
 	mono_mempool_invalidate (domain->mp);
 	mono_code_manager_invalidate (domain->code_mp);
 #else
-#ifndef DISABLE_PERFCOUNTERS
 	mono_perfcounters->loader_bytes -= mono_mempool_get_allocated (domain->mp);
-#endif
 	mono_mempool_destroy (domain->mp);
 	domain->mp = NULL;
 	mono_code_manager_destroy (domain->code_mp);
@@ -2104,9 +2094,7 @@ mono_domain_free (MonoDomain *domain, gboolean force)
 
 	mono_gc_free_fixed (domain);
 
-#ifndef DISABLE_PERFCOUNTERS
 	mono_perfcounters->loader_appdomains--;
-#endif
 
 	if (domain == mono_root_domain)
 		mono_root_domain = NULL;
@@ -2150,9 +2138,7 @@ mono_domain_alloc (MonoDomain *domain, guint size)
 	gpointer res;
 
 	mono_domain_lock (domain);
-#ifndef DISABLE_PERFCOUNTERS
 	mono_perfcounters->loader_bytes += size;
-#endif
 	res = mono_mempool_alloc (domain->mp, size);
 	mono_domain_unlock (domain);
 
@@ -2170,9 +2156,7 @@ mono_domain_alloc0 (MonoDomain *domain, guint size)
 	gpointer res;
 
 	mono_domain_lock (domain);
-#ifndef DISABLE_PERFCOUNTERS
 	mono_perfcounters->loader_bytes += size;
-#endif
 	res = mono_mempool_alloc0 (domain->mp, size);
 	mono_domain_unlock (domain);
 

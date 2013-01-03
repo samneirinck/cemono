@@ -85,7 +85,24 @@ am__libmonoruntime_static_la_SOURCES_DIST = console-unix.c \
 	sysmath.c tabledefs.h threads.c threads-types.h threadpool.c \
 	threadpool.h threadpool-internals.h verify.c \
 	verify-internals.h wrapper-types.h appdomain.c domain.c gc.c \
-	monitor.c mono-hash.c object.c reflection.c boehm-gc.c
+	monitor.c mono-hash.c object.c reflection.c sgen-os-posix.c \
+	sgen-os-mach.c sgen-os-win32.c sgen-gc.c sgen-internal.c \
+	sgen-pinned-allocator.c sgen-marksweep.c \
+	sgen-marksweep-fixed.c sgen-marksweep-par.c \
+	sgen-marksweep-fixed-par.c sgen-major-copying.c sgen-los.c \
+	sgen-protocol.c sgen-bridge.c sgen-bridge.h sgen-toggleref.c \
+	sgen-toggleref.h sgen-gc.h sgen-conf.h sgen-archdep.h \
+	sgen-cardtable.c sgen-cardtable.h sgen-ssb.c sgen-ssb.h \
+	sgen-pinning.c sgen-pinning.h sgen-pinning-stats.c \
+	sgen-workers.c sgen-workers.h sgen-gray.c sgen-gray.h \
+	sgen-major-copy-object.h sgen-minor-copy-object.h \
+	sgen-copy-object.h sgen-major-scan-object.h \
+	sgen-minor-scan-object.h sgen-protocol.h sgen-scan-object.h \
+	sgen-nursery-allocator.c sgen-hash-table.c sgen-hash-table.h \
+	sgen-descriptor.c sgen-descriptor.h sgen-alloc.c sgen-debug.c \
+	sgen-simple-nursery.c sgen-split-nursery.c \
+	sgen-memory-governor.c sgen-memory-governor.h sgen-stw.c \
+	sgen-fin-weak-hash.c boehm-gc.c
 @HOST_WIN32_FALSE@am__objects_1 =  \
 @HOST_WIN32_FALSE@	libmonoruntime_static_la-console-unix.lo
 @HOST_WIN32_TRUE@am__objects_2 =  \
@@ -146,9 +163,41 @@ am__objects_5 = libmonoruntime_static_la-appdomain.lo \
 	libmonoruntime_static_la-mono-hash.lo \
 	libmonoruntime_static_la-object.lo \
 	libmonoruntime_static_la-reflection.lo
-am__objects_6 = libmonoruntime_static_la-boehm-gc.lo
-am__objects_7 = $(am__objects_4) $(am__objects_5) $(am__objects_6)
-am_libmonoruntime_static_la_OBJECTS = $(am__objects_7)
+am__objects_6 = libmonoruntime_static_la-sgen-os-posix.lo \
+	libmonoruntime_static_la-sgen-os-mach.lo \
+	libmonoruntime_static_la-sgen-os-win32.lo \
+	libmonoruntime_static_la-sgen-gc.lo \
+	libmonoruntime_static_la-sgen-internal.lo \
+	libmonoruntime_static_la-sgen-pinned-allocator.lo \
+	libmonoruntime_static_la-sgen-marksweep.lo \
+	libmonoruntime_static_la-sgen-marksweep-fixed.lo \
+	libmonoruntime_static_la-sgen-marksweep-par.lo \
+	libmonoruntime_static_la-sgen-marksweep-fixed-par.lo \
+	libmonoruntime_static_la-sgen-major-copying.lo \
+	libmonoruntime_static_la-sgen-los.lo \
+	libmonoruntime_static_la-sgen-protocol.lo \
+	libmonoruntime_static_la-sgen-bridge.lo \
+	libmonoruntime_static_la-sgen-toggleref.lo \
+	libmonoruntime_static_la-sgen-cardtable.lo \
+	libmonoruntime_static_la-sgen-ssb.lo \
+	libmonoruntime_static_la-sgen-pinning.lo \
+	libmonoruntime_static_la-sgen-pinning-stats.lo \
+	libmonoruntime_static_la-sgen-workers.lo \
+	libmonoruntime_static_la-sgen-gray.lo \
+	libmonoruntime_static_la-sgen-nursery-allocator.lo \
+	libmonoruntime_static_la-sgen-hash-table.lo \
+	libmonoruntime_static_la-sgen-descriptor.lo \
+	libmonoruntime_static_la-sgen-alloc.lo \
+	libmonoruntime_static_la-sgen-debug.lo \
+	libmonoruntime_static_la-sgen-simple-nursery.lo \
+	libmonoruntime_static_la-sgen-split-nursery.lo \
+	libmonoruntime_static_la-sgen-memory-governor.lo \
+	libmonoruntime_static_la-sgen-stw.lo \
+	libmonoruntime_static_la-sgen-fin-weak-hash.lo
+am__objects_7 = libmonoruntime_static_la-boehm-gc.lo
+am__objects_8 = $(am__objects_4) $(am__objects_5) $(am__objects_6) \
+	$(am__objects_7)
+am_libmonoruntime_static_la_OBJECTS = $(am__objects_8)
 libmonoruntime_static_la_OBJECTS =  \
 	$(am_libmonoruntime_static_la_OBJECTS)
 AM_V_lt = $(am__v_lt_$(V))
@@ -187,12 +236,29 @@ am__libmonoruntime_la_SOURCES_DIST = console-unix.c console-win32.c \
 	tabledefs.h threads.c threads-types.h threadpool.c \
 	threadpool.h threadpool-internals.h verify.c \
 	verify-internals.h wrapper-types.h appdomain.c domain.c gc.c \
-	monitor.c mono-hash.c object.c reflection.c boehm-gc.c
-@HOST_WIN32_FALSE@am__objects_8 = libmonoruntime_la-console-unix.lo
-@HOST_WIN32_TRUE@am__objects_9 = libmonoruntime_la-console-win32.lo
-@HOST_WIN32_FALSE@am__objects_10 = $(am__objects_8)
-@HOST_WIN32_TRUE@am__objects_10 = $(am__objects_9)
-am__objects_11 = $(am__objects_10) libmonoruntime_la-assembly.lo \
+	monitor.c mono-hash.c object.c reflection.c sgen-os-posix.c \
+	sgen-os-mach.c sgen-os-win32.c sgen-gc.c sgen-internal.c \
+	sgen-pinned-allocator.c sgen-marksweep.c \
+	sgen-marksweep-fixed.c sgen-marksweep-par.c \
+	sgen-marksweep-fixed-par.c sgen-major-copying.c sgen-los.c \
+	sgen-protocol.c sgen-bridge.c sgen-bridge.h sgen-toggleref.c \
+	sgen-toggleref.h sgen-gc.h sgen-conf.h sgen-archdep.h \
+	sgen-cardtable.c sgen-cardtable.h sgen-ssb.c sgen-ssb.h \
+	sgen-pinning.c sgen-pinning.h sgen-pinning-stats.c \
+	sgen-workers.c sgen-workers.h sgen-gray.c sgen-gray.h \
+	sgen-major-copy-object.h sgen-minor-copy-object.h \
+	sgen-copy-object.h sgen-major-scan-object.h \
+	sgen-minor-scan-object.h sgen-protocol.h sgen-scan-object.h \
+	sgen-nursery-allocator.c sgen-hash-table.c sgen-hash-table.h \
+	sgen-descriptor.c sgen-descriptor.h sgen-alloc.c sgen-debug.c \
+	sgen-simple-nursery.c sgen-split-nursery.c \
+	sgen-memory-governor.c sgen-memory-governor.h sgen-stw.c \
+	sgen-fin-weak-hash.c boehm-gc.c
+@HOST_WIN32_FALSE@am__objects_9 = libmonoruntime_la-console-unix.lo
+@HOST_WIN32_TRUE@am__objects_10 = libmonoruntime_la-console-win32.lo
+@HOST_WIN32_FALSE@am__objects_11 = $(am__objects_9)
+@HOST_WIN32_TRUE@am__objects_11 = $(am__objects_10)
+am__objects_12 = $(am__objects_11) libmonoruntime_la-assembly.lo \
 	libmonoruntime_la-attach.lo libmonoruntime_la-class.lo \
 	libmonoruntime_la-cominterop.lo libmonoruntime_la-coree.lo \
 	libmonoruntime_la-debug-helpers.lo \
@@ -223,20 +289,51 @@ am__objects_11 = $(am__objects_10) libmonoruntime_la-assembly.lo \
 	libmonoruntime_la-string-icalls.lo \
 	libmonoruntime_la-sysmath.lo libmonoruntime_la-threads.lo \
 	libmonoruntime_la-threadpool.lo libmonoruntime_la-verify.lo
-am__objects_12 = libmonoruntime_la-appdomain.lo \
+am__objects_13 = libmonoruntime_la-appdomain.lo \
 	libmonoruntime_la-domain.lo libmonoruntime_la-gc.lo \
 	libmonoruntime_la-monitor.lo libmonoruntime_la-mono-hash.lo \
 	libmonoruntime_la-object.lo libmonoruntime_la-reflection.lo
-am__objects_13 = libmonoruntime_la-boehm-gc.lo
-am_libmonoruntime_la_OBJECTS = $(am__objects_11) $(am__objects_12) \
-	$(am__objects_13)
+am__objects_14 = libmonoruntime_la-sgen-os-posix.lo \
+	libmonoruntime_la-sgen-os-mach.lo \
+	libmonoruntime_la-sgen-os-win32.lo \
+	libmonoruntime_la-sgen-gc.lo \
+	libmonoruntime_la-sgen-internal.lo \
+	libmonoruntime_la-sgen-pinned-allocator.lo \
+	libmonoruntime_la-sgen-marksweep.lo \
+	libmonoruntime_la-sgen-marksweep-fixed.lo \
+	libmonoruntime_la-sgen-marksweep-par.lo \
+	libmonoruntime_la-sgen-marksweep-fixed-par.lo \
+	libmonoruntime_la-sgen-major-copying.lo \
+	libmonoruntime_la-sgen-los.lo \
+	libmonoruntime_la-sgen-protocol.lo \
+	libmonoruntime_la-sgen-bridge.lo \
+	libmonoruntime_la-sgen-toggleref.lo \
+	libmonoruntime_la-sgen-cardtable.lo \
+	libmonoruntime_la-sgen-ssb.lo \
+	libmonoruntime_la-sgen-pinning.lo \
+	libmonoruntime_la-sgen-pinning-stats.lo \
+	libmonoruntime_la-sgen-workers.lo \
+	libmonoruntime_la-sgen-gray.lo \
+	libmonoruntime_la-sgen-nursery-allocator.lo \
+	libmonoruntime_la-sgen-hash-table.lo \
+	libmonoruntime_la-sgen-descriptor.lo \
+	libmonoruntime_la-sgen-alloc.lo \
+	libmonoruntime_la-sgen-debug.lo \
+	libmonoruntime_la-sgen-simple-nursery.lo \
+	libmonoruntime_la-sgen-split-nursery.lo \
+	libmonoruntime_la-sgen-memory-governor.lo \
+	libmonoruntime_la-sgen-stw.lo \
+	libmonoruntime_la-sgen-fin-weak-hash.lo
+am__objects_15 = libmonoruntime_la-boehm-gc.lo
+am_libmonoruntime_la_OBJECTS = $(am__objects_12) $(am__objects_13) \
+	$(am__objects_14) $(am__objects_15)
 libmonoruntime_la_OBJECTS = $(am_libmonoruntime_la_OBJECTS)
 libmonoruntime_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(libmonoruntime_la_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
 @DISABLE_EXECUTABLES_FALSE@@SHARED_MONO_TRUE@@SUPPORT_BOEHM_TRUE@am_libmonoruntime_la_rpath =
-@DISABLE_EXECUTABLES_TRUE@@SUPPORT_BOEHM_TRUE@am_libmonoruntime_la_rpath =
+@DISABLE_EXECUTABLES_TRUE@@SHARED_MONO_TRUE@@SUPPORT_BOEHM_TRUE@am_libmonoruntime_la_rpath =
 libmonoruntimemoon_la_LIBADD =
 am__libmonoruntimemoon_la_SOURCES_DIST = console-unix.c \
 	console-win32.c assembly.c attach.h attach.c \
@@ -265,14 +362,31 @@ am__libmonoruntimemoon_la_SOURCES_DIST = console-unix.c \
 	sysmath.c tabledefs.h threads.c threads-types.h threadpool.c \
 	threadpool.h threadpool-internals.h verify.c \
 	verify-internals.h wrapper-types.h appdomain.c domain.c gc.c \
-	monitor.c mono-hash.c object.c reflection.c boehm-gc.c
-@HOST_WIN32_FALSE@am__objects_14 =  \
+	monitor.c mono-hash.c object.c reflection.c sgen-os-posix.c \
+	sgen-os-mach.c sgen-os-win32.c sgen-gc.c sgen-internal.c \
+	sgen-pinned-allocator.c sgen-marksweep.c \
+	sgen-marksweep-fixed.c sgen-marksweep-par.c \
+	sgen-marksweep-fixed-par.c sgen-major-copying.c sgen-los.c \
+	sgen-protocol.c sgen-bridge.c sgen-bridge.h sgen-toggleref.c \
+	sgen-toggleref.h sgen-gc.h sgen-conf.h sgen-archdep.h \
+	sgen-cardtable.c sgen-cardtable.h sgen-ssb.c sgen-ssb.h \
+	sgen-pinning.c sgen-pinning.h sgen-pinning-stats.c \
+	sgen-workers.c sgen-workers.h sgen-gray.c sgen-gray.h \
+	sgen-major-copy-object.h sgen-minor-copy-object.h \
+	sgen-copy-object.h sgen-major-scan-object.h \
+	sgen-minor-scan-object.h sgen-protocol.h sgen-scan-object.h \
+	sgen-nursery-allocator.c sgen-hash-table.c sgen-hash-table.h \
+	sgen-descriptor.c sgen-descriptor.h sgen-alloc.c sgen-debug.c \
+	sgen-simple-nursery.c sgen-split-nursery.c \
+	sgen-memory-governor.c sgen-memory-governor.h sgen-stw.c \
+	sgen-fin-weak-hash.c boehm-gc.c
+@HOST_WIN32_FALSE@am__objects_16 =  \
 @HOST_WIN32_FALSE@	libmonoruntimemoon_la-console-unix.lo
-@HOST_WIN32_TRUE@am__objects_15 =  \
+@HOST_WIN32_TRUE@am__objects_17 =  \
 @HOST_WIN32_TRUE@	libmonoruntimemoon_la-console-win32.lo
-@HOST_WIN32_FALSE@am__objects_16 = $(am__objects_14)
-@HOST_WIN32_TRUE@am__objects_16 = $(am__objects_15)
-am__objects_17 = $(am__objects_16) libmonoruntimemoon_la-assembly.lo \
+@HOST_WIN32_FALSE@am__objects_18 = $(am__objects_16)
+@HOST_WIN32_TRUE@am__objects_18 = $(am__objects_17)
+am__objects_19 = $(am__objects_18) libmonoruntimemoon_la-assembly.lo \
 	libmonoruntimemoon_la-attach.lo libmonoruntimemoon_la-class.lo \
 	libmonoruntimemoon_la-cominterop.lo \
 	libmonoruntimemoon_la-coree.lo \
@@ -316,15 +430,47 @@ am__objects_17 = $(am__objects_16) libmonoruntimemoon_la-assembly.lo \
 	libmonoruntimemoon_la-threads.lo \
 	libmonoruntimemoon_la-threadpool.lo \
 	libmonoruntimemoon_la-verify.lo
-am__objects_18 = libmonoruntimemoon_la-appdomain.lo \
+am__objects_20 = libmonoruntimemoon_la-appdomain.lo \
 	libmonoruntimemoon_la-domain.lo libmonoruntimemoon_la-gc.lo \
 	libmonoruntimemoon_la-monitor.lo \
 	libmonoruntimemoon_la-mono-hash.lo \
 	libmonoruntimemoon_la-object.lo \
 	libmonoruntimemoon_la-reflection.lo
-am__objects_19 = libmonoruntimemoon_la-boehm-gc.lo
-am__objects_20 = $(am__objects_17) $(am__objects_18) $(am__objects_19)
-@MOONLIGHT_TRUE@am_libmonoruntimemoon_la_OBJECTS = $(am__objects_20)
+am__objects_21 = libmonoruntimemoon_la-sgen-os-posix.lo \
+	libmonoruntimemoon_la-sgen-os-mach.lo \
+	libmonoruntimemoon_la-sgen-os-win32.lo \
+	libmonoruntimemoon_la-sgen-gc.lo \
+	libmonoruntimemoon_la-sgen-internal.lo \
+	libmonoruntimemoon_la-sgen-pinned-allocator.lo \
+	libmonoruntimemoon_la-sgen-marksweep.lo \
+	libmonoruntimemoon_la-sgen-marksweep-fixed.lo \
+	libmonoruntimemoon_la-sgen-marksweep-par.lo \
+	libmonoruntimemoon_la-sgen-marksweep-fixed-par.lo \
+	libmonoruntimemoon_la-sgen-major-copying.lo \
+	libmonoruntimemoon_la-sgen-los.lo \
+	libmonoruntimemoon_la-sgen-protocol.lo \
+	libmonoruntimemoon_la-sgen-bridge.lo \
+	libmonoruntimemoon_la-sgen-toggleref.lo \
+	libmonoruntimemoon_la-sgen-cardtable.lo \
+	libmonoruntimemoon_la-sgen-ssb.lo \
+	libmonoruntimemoon_la-sgen-pinning.lo \
+	libmonoruntimemoon_la-sgen-pinning-stats.lo \
+	libmonoruntimemoon_la-sgen-workers.lo \
+	libmonoruntimemoon_la-sgen-gray.lo \
+	libmonoruntimemoon_la-sgen-nursery-allocator.lo \
+	libmonoruntimemoon_la-sgen-hash-table.lo \
+	libmonoruntimemoon_la-sgen-descriptor.lo \
+	libmonoruntimemoon_la-sgen-alloc.lo \
+	libmonoruntimemoon_la-sgen-debug.lo \
+	libmonoruntimemoon_la-sgen-simple-nursery.lo \
+	libmonoruntimemoon_la-sgen-split-nursery.lo \
+	libmonoruntimemoon_la-sgen-memory-governor.lo \
+	libmonoruntimemoon_la-sgen-stw.lo \
+	libmonoruntimemoon_la-sgen-fin-weak-hash.lo
+am__objects_22 = libmonoruntimemoon_la-boehm-gc.lo
+am__objects_23 = $(am__objects_19) $(am__objects_20) $(am__objects_21) \
+	$(am__objects_22)
+@MOONLIGHT_TRUE@am_libmonoruntimemoon_la_OBJECTS = $(am__objects_23)
 libmonoruntimemoon_la_OBJECTS = $(am_libmonoruntimemoon_la_OBJECTS)
 libmonoruntimemoon_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
@@ -376,12 +522,12 @@ am__libmonoruntimesgen_static_la_SOURCES_DIST = console-unix.c \
 	sgen-descriptor.c sgen-descriptor.h sgen-alloc.c sgen-debug.c \
 	sgen-simple-nursery.c sgen-split-nursery.c \
 	sgen-memory-governor.c sgen-memory-governor.h sgen-stw.c \
-	sgen-fin-weak-hash.c
-@HOST_WIN32_FALSE@am__objects_21 = libmonoruntimesgen_static_la-console-unix.lo
-@HOST_WIN32_TRUE@am__objects_22 = libmonoruntimesgen_static_la-console-win32.lo
-@HOST_WIN32_FALSE@am__objects_23 = $(am__objects_21)
-@HOST_WIN32_TRUE@am__objects_23 = $(am__objects_22)
-am__objects_24 = $(am__objects_23) \
+	sgen-fin-weak-hash.c boehm-gc.c
+@HOST_WIN32_FALSE@am__objects_24 = libmonoruntimesgen_static_la-console-unix.lo
+@HOST_WIN32_TRUE@am__objects_25 = libmonoruntimesgen_static_la-console-win32.lo
+@HOST_WIN32_FALSE@am__objects_26 = $(am__objects_24)
+@HOST_WIN32_TRUE@am__objects_26 = $(am__objects_25)
+am__objects_27 = $(am__objects_26) \
 	libmonoruntimesgen_static_la-assembly.lo \
 	libmonoruntimesgen_static_la-attach.lo \
 	libmonoruntimesgen_static_la-class.lo \
@@ -429,14 +575,14 @@ am__objects_24 = $(am__objects_23) \
 	libmonoruntimesgen_static_la-threads.lo \
 	libmonoruntimesgen_static_la-threadpool.lo \
 	libmonoruntimesgen_static_la-verify.lo
-am__objects_25 = libmonoruntimesgen_static_la-appdomain.lo \
+am__objects_28 = libmonoruntimesgen_static_la-appdomain.lo \
 	libmonoruntimesgen_static_la-domain.lo \
 	libmonoruntimesgen_static_la-gc.lo \
 	libmonoruntimesgen_static_la-monitor.lo \
 	libmonoruntimesgen_static_la-mono-hash.lo \
 	libmonoruntimesgen_static_la-object.lo \
 	libmonoruntimesgen_static_la-reflection.lo
-am__objects_26 = libmonoruntimesgen_static_la-sgen-os-posix.lo \
+am__objects_29 = libmonoruntimesgen_static_la-sgen-os-posix.lo \
 	libmonoruntimesgen_static_la-sgen-os-mach.lo \
 	libmonoruntimesgen_static_la-sgen-os-win32.lo \
 	libmonoruntimesgen_static_la-sgen-gc.lo \
@@ -467,8 +613,10 @@ am__objects_26 = libmonoruntimesgen_static_la-sgen-os-posix.lo \
 	libmonoruntimesgen_static_la-sgen-memory-governor.lo \
 	libmonoruntimesgen_static_la-sgen-stw.lo \
 	libmonoruntimesgen_static_la-sgen-fin-weak-hash.lo
-am__objects_27 = $(am__objects_24) $(am__objects_25) $(am__objects_26)
-am_libmonoruntimesgen_static_la_OBJECTS = $(am__objects_27)
+am__objects_30 = libmonoruntimesgen_static_la-boehm-gc.lo
+am__objects_31 = $(am__objects_27) $(am__objects_28) $(am__objects_29) \
+	$(am__objects_30)
+am_libmonoruntimesgen_static_la_OBJECTS = $(am__objects_31)
 libmonoruntimesgen_static_la_OBJECTS =  \
 	$(am_libmonoruntimesgen_static_la_OBJECTS)
 libmonoruntimesgen_static_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
@@ -521,14 +669,14 @@ am__libmonoruntimesgen_la_SOURCES_DIST = console-unix.c \
 	sgen-descriptor.c sgen-descriptor.h sgen-alloc.c sgen-debug.c \
 	sgen-simple-nursery.c sgen-split-nursery.c \
 	sgen-memory-governor.c sgen-memory-governor.h sgen-stw.c \
-	sgen-fin-weak-hash.c
-@HOST_WIN32_FALSE@am__objects_28 =  \
+	sgen-fin-weak-hash.c boehm-gc.c
+@HOST_WIN32_FALSE@am__objects_32 =  \
 @HOST_WIN32_FALSE@	libmonoruntimesgen_la-console-unix.lo
-@HOST_WIN32_TRUE@am__objects_29 =  \
+@HOST_WIN32_TRUE@am__objects_33 =  \
 @HOST_WIN32_TRUE@	libmonoruntimesgen_la-console-win32.lo
-@HOST_WIN32_FALSE@am__objects_30 = $(am__objects_28)
-@HOST_WIN32_TRUE@am__objects_30 = $(am__objects_29)
-am__objects_31 = $(am__objects_30) libmonoruntimesgen_la-assembly.lo \
+@HOST_WIN32_FALSE@am__objects_34 = $(am__objects_32)
+@HOST_WIN32_TRUE@am__objects_34 = $(am__objects_33)
+am__objects_35 = $(am__objects_34) libmonoruntimesgen_la-assembly.lo \
 	libmonoruntimesgen_la-attach.lo libmonoruntimesgen_la-class.lo \
 	libmonoruntimesgen_la-cominterop.lo \
 	libmonoruntimesgen_la-coree.lo \
@@ -572,13 +720,13 @@ am__objects_31 = $(am__objects_30) libmonoruntimesgen_la-assembly.lo \
 	libmonoruntimesgen_la-threads.lo \
 	libmonoruntimesgen_la-threadpool.lo \
 	libmonoruntimesgen_la-verify.lo
-am__objects_32 = libmonoruntimesgen_la-appdomain.lo \
+am__objects_36 = libmonoruntimesgen_la-appdomain.lo \
 	libmonoruntimesgen_la-domain.lo libmonoruntimesgen_la-gc.lo \
 	libmonoruntimesgen_la-monitor.lo \
 	libmonoruntimesgen_la-mono-hash.lo \
 	libmonoruntimesgen_la-object.lo \
 	libmonoruntimesgen_la-reflection.lo
-am__objects_33 = libmonoruntimesgen_la-sgen-os-posix.lo \
+am__objects_37 = libmonoruntimesgen_la-sgen-os-posix.lo \
 	libmonoruntimesgen_la-sgen-os-mach.lo \
 	libmonoruntimesgen_la-sgen-os-win32.lo \
 	libmonoruntimesgen_la-sgen-gc.lo \
@@ -609,15 +757,17 @@ am__objects_33 = libmonoruntimesgen_la-sgen-os-posix.lo \
 	libmonoruntimesgen_la-sgen-memory-governor.lo \
 	libmonoruntimesgen_la-sgen-stw.lo \
 	libmonoruntimesgen_la-sgen-fin-weak-hash.lo
-am_libmonoruntimesgen_la_OBJECTS = $(am__objects_31) $(am__objects_32) \
-	$(am__objects_33)
+am__objects_38 = libmonoruntimesgen_la-boehm-gc.lo
+am__objects_39 = $(am__objects_35) $(am__objects_36) $(am__objects_37) \
+	$(am__objects_38)
+am_libmonoruntimesgen_la_OBJECTS = $(am__objects_39)
 libmonoruntimesgen_la_OBJECTS = $(am_libmonoruntimesgen_la_OBJECTS)
 libmonoruntimesgen_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(libmonoruntimesgen_la_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 @DISABLE_EXECUTABLES_FALSE@@SHARED_MONO_TRUE@@SUPPORT_SGEN_TRUE@am_libmonoruntimesgen_la_rpath =
-@DISABLE_EXECUTABLES_TRUE@@SUPPORT_SGEN_TRUE@am_libmonoruntimesgen_la_rpath =
+@DISABLE_EXECUTABLES_TRUE@@SHARED_MONO_TRUE@@SUPPORT_SGEN_TRUE@am_libmonoruntimesgen_la_rpath =
 am__installdirs = "$(DESTDIR)$(bindir)" \
 	"$(DESTDIR)$(libmonoruntimeincludedir)"
 PROGRAMS = $(bin_PROGRAMS)
@@ -913,16 +1063,14 @@ top_srcdir = @top_srcdir@
 @HOST_WIN32_FALSE@unix_sources = \
 @HOST_WIN32_FALSE@	console-unix.c
 
-@DISABLE_EXECUTABLES_FALSE@@SHARED_MONO_TRUE@@SUPPORT_SGEN_TRUE@shared_sgen_libraries = libmonoruntimesgen.la 
 
 #
 # libtool is not capable of creating static/shared versions of the same
 # convenience lib, so we have to do it ourselves
 #
-@DISABLE_EXECUTABLES_TRUE@@SUPPORT_SGEN_TRUE@shared_sgen_libraries = libmonoruntimesgen.la 
+@SHARED_MONO_TRUE@@SUPPORT_SGEN_TRUE@shared_sgen_libraries = libmonoruntimesgen.la 
 @SUPPORT_SGEN_TRUE@sgen_libraries = $(shared_sgen_libraries) libmonoruntimesgen-static.la 
-@DISABLE_EXECUTABLES_FALSE@@SHARED_MONO_TRUE@@SUPPORT_BOEHM_TRUE@shared_boehm_libraries = libmonoruntime.la
-@DISABLE_EXECUTABLES_TRUE@@SUPPORT_BOEHM_TRUE@shared_boehm_libraries = libmonoruntime.la
+@SHARED_MONO_TRUE@@SUPPORT_BOEHM_TRUE@shared_boehm_libraries = libmonoruntime.la
 @SUPPORT_BOEHM_TRUE@boehm_libraries = $(shared_boehm_libraries) libmonoruntime-static.la
 @MOONLIGHT_TRUE@moonlight_libraries = libmonoruntimemoon.la
 @DISABLE_EXECUTABLES_FALSE@noinst_LTLIBRARIES = $(boehm_libraries) $(sgen_libraries) $(moonlight_libraries)
@@ -1105,17 +1253,17 @@ sgen_sources = \
 	sgen-stw.c				\
 	sgen-fin-weak-hash.c
 
-libmonoruntime_la_SOURCES = $(common_sources) $(gc_dependent_sources) $(boehm_sources)
+libmonoruntime_la_SOURCES = $(common_sources) $(gc_dependent_sources) $(sgen_sources) $(boehm_sources)
 libmonoruntime_la_CFLAGS = $(BOEHM_DEFINES)
 @MOONLIGHT_TRUE@libmonoruntimemoon_la_SOURCES = $(libmonoruntime_la_SOURCES)
 @MOONLIGHT_BOEHM_FALSE@@MOONLIGHT_TRUE@libmonoruntimemoon_la_CFLAGS = $(MOONLIGHT_DEFINES) $(SGEN_DEFINES)
 @MOONLIGHT_BOEHM_TRUE@@MOONLIGHT_TRUE@libmonoruntimemoon_la_CFLAGS = $(MOONLIGHT_DEFINES) $(BOEHM_DEFINES)
-libmonoruntimesgen_la_SOURCES = $(common_sources) $(gc_dependent_sources) $(sgen_sources)
+libmonoruntimesgen_la_SOURCES = $(libmonoruntime_la_SOURCES)
 libmonoruntimesgen_la_CFLAGS = $(SGEN_DEFINES)
 libmonoruntime_static_la_SOURCES = $(libmonoruntime_la_SOURCES)
 libmonoruntime_static_la_LDFLAGS = -static
 libmonoruntime_static_la_CFLAGS = $(BOEHM_DEFINES)
-libmonoruntimesgen_static_la_SOURCES = $(libmonoruntimesgen_la_SOURCES)
+libmonoruntimesgen_static_la_SOURCES = $(libmonoruntime_la_SOURCES)
 libmonoruntimesgen_static_la_LDFLAGS = -static
 libmonoruntimesgen_static_la_CFLAGS = $(SGEN_DEFINES)
 libmonoruntimeincludedir = $(includedir)/mono-$(API_VER)/mono/metadata
@@ -1314,6 +1462,37 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-security-core-clr.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-security-manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-security.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-sgen-alloc.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-sgen-bridge.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-sgen-cardtable.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-sgen-debug.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-sgen-descriptor.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-sgen-fin-weak-hash.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-sgen-gc.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-sgen-gray.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-sgen-hash-table.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-sgen-internal.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-sgen-los.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-sgen-major-copying.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-sgen-marksweep-fixed-par.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-sgen-marksweep-fixed.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-sgen-marksweep-par.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-sgen-marksweep.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-sgen-memory-governor.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-sgen-nursery-allocator.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-sgen-os-mach.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-sgen-os-posix.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-sgen-os-win32.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-sgen-pinned-allocator.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-sgen-pinning-stats.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-sgen-pinning.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-sgen-protocol.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-sgen-simple-nursery.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-sgen-split-nursery.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-sgen-ssb.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-sgen-stw.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-sgen-toggleref.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-sgen-workers.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-socket-io.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-string-icalls.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_la-sysmath.Plo@am__quote@
@@ -1371,6 +1550,37 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-security-core-clr.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-security-manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-security.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-sgen-alloc.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-sgen-bridge.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-sgen-cardtable.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-sgen-debug.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-sgen-descriptor.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-sgen-fin-weak-hash.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-sgen-gc.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-sgen-gray.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-sgen-hash-table.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-sgen-internal.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-sgen-los.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-sgen-major-copying.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-sgen-marksweep-fixed-par.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-sgen-marksweep-fixed.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-sgen-marksweep-par.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-sgen-marksweep.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-sgen-memory-governor.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-sgen-nursery-allocator.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-sgen-os-mach.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-sgen-os-posix.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-sgen-os-win32.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-sgen-pinned-allocator.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-sgen-pinning-stats.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-sgen-pinning.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-sgen-protocol.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-sgen-simple-nursery.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-sgen-split-nursery.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-sgen-ssb.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-sgen-stw.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-sgen-toggleref.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-sgen-workers.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-socket-io.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-string-icalls.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntime_static_la-sysmath.Plo@am__quote@
@@ -1428,6 +1638,37 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-security-core-clr.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-security-manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-security.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-sgen-alloc.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-sgen-bridge.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-sgen-cardtable.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-sgen-debug.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-sgen-descriptor.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-sgen-fin-weak-hash.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-sgen-gc.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-sgen-gray.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-sgen-hash-table.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-sgen-internal.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-sgen-los.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-sgen-major-copying.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-sgen-marksweep-fixed-par.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-sgen-marksweep-fixed.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-sgen-marksweep-par.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-sgen-marksweep.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-sgen-memory-governor.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-sgen-nursery-allocator.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-sgen-os-mach.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-sgen-os-posix.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-sgen-os-win32.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-sgen-pinned-allocator.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-sgen-pinning-stats.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-sgen-pinning.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-sgen-protocol.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-sgen-simple-nursery.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-sgen-split-nursery.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-sgen-ssb.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-sgen-stw.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-sgen-toggleref.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-sgen-workers.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-socket-io.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-string-icalls.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimemoon_la-sysmath.Plo@am__quote@
@@ -1437,6 +1678,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimesgen_la-appdomain.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimesgen_la-assembly.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimesgen_la-attach.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimesgen_la-boehm-gc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimesgen_la-class.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimesgen_la-cominterop.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimesgen_la-console-unix.Plo@am__quote@
@@ -1524,6 +1766,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimesgen_static_la-appdomain.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimesgen_static_la-assembly.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimesgen_static_la-attach.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimesgen_static_la-boehm-gc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimesgen_static_la-class.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimesgen_static_la-cominterop.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libmonoruntimesgen_static_la-console-unix.Plo@am__quote@
@@ -2082,6 +2325,254 @@ libmonoruntime_static_la-reflection.lo: reflection.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_static_la-reflection.lo `test -f 'reflection.c' || echo '$(srcdir)/'`reflection.c
 
+libmonoruntime_static_la-sgen-os-posix.lo: sgen-os-posix.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_static_la-sgen-os-posix.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_static_la-sgen-os-posix.Tpo -c -o libmonoruntime_static_la-sgen-os-posix.lo `test -f 'sgen-os-posix.c' || echo '$(srcdir)/'`sgen-os-posix.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_static_la-sgen-os-posix.Tpo $(DEPDIR)/libmonoruntime_static_la-sgen-os-posix.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-os-posix.c' object='libmonoruntime_static_la-sgen-os-posix.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_static_la-sgen-os-posix.lo `test -f 'sgen-os-posix.c' || echo '$(srcdir)/'`sgen-os-posix.c
+
+libmonoruntime_static_la-sgen-os-mach.lo: sgen-os-mach.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_static_la-sgen-os-mach.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_static_la-sgen-os-mach.Tpo -c -o libmonoruntime_static_la-sgen-os-mach.lo `test -f 'sgen-os-mach.c' || echo '$(srcdir)/'`sgen-os-mach.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_static_la-sgen-os-mach.Tpo $(DEPDIR)/libmonoruntime_static_la-sgen-os-mach.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-os-mach.c' object='libmonoruntime_static_la-sgen-os-mach.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_static_la-sgen-os-mach.lo `test -f 'sgen-os-mach.c' || echo '$(srcdir)/'`sgen-os-mach.c
+
+libmonoruntime_static_la-sgen-os-win32.lo: sgen-os-win32.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_static_la-sgen-os-win32.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_static_la-sgen-os-win32.Tpo -c -o libmonoruntime_static_la-sgen-os-win32.lo `test -f 'sgen-os-win32.c' || echo '$(srcdir)/'`sgen-os-win32.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_static_la-sgen-os-win32.Tpo $(DEPDIR)/libmonoruntime_static_la-sgen-os-win32.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-os-win32.c' object='libmonoruntime_static_la-sgen-os-win32.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_static_la-sgen-os-win32.lo `test -f 'sgen-os-win32.c' || echo '$(srcdir)/'`sgen-os-win32.c
+
+libmonoruntime_static_la-sgen-gc.lo: sgen-gc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_static_la-sgen-gc.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_static_la-sgen-gc.Tpo -c -o libmonoruntime_static_la-sgen-gc.lo `test -f 'sgen-gc.c' || echo '$(srcdir)/'`sgen-gc.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_static_la-sgen-gc.Tpo $(DEPDIR)/libmonoruntime_static_la-sgen-gc.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-gc.c' object='libmonoruntime_static_la-sgen-gc.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_static_la-sgen-gc.lo `test -f 'sgen-gc.c' || echo '$(srcdir)/'`sgen-gc.c
+
+libmonoruntime_static_la-sgen-internal.lo: sgen-internal.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_static_la-sgen-internal.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_static_la-sgen-internal.Tpo -c -o libmonoruntime_static_la-sgen-internal.lo `test -f 'sgen-internal.c' || echo '$(srcdir)/'`sgen-internal.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_static_la-sgen-internal.Tpo $(DEPDIR)/libmonoruntime_static_la-sgen-internal.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-internal.c' object='libmonoruntime_static_la-sgen-internal.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_static_la-sgen-internal.lo `test -f 'sgen-internal.c' || echo '$(srcdir)/'`sgen-internal.c
+
+libmonoruntime_static_la-sgen-pinned-allocator.lo: sgen-pinned-allocator.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_static_la-sgen-pinned-allocator.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_static_la-sgen-pinned-allocator.Tpo -c -o libmonoruntime_static_la-sgen-pinned-allocator.lo `test -f 'sgen-pinned-allocator.c' || echo '$(srcdir)/'`sgen-pinned-allocator.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_static_la-sgen-pinned-allocator.Tpo $(DEPDIR)/libmonoruntime_static_la-sgen-pinned-allocator.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-pinned-allocator.c' object='libmonoruntime_static_la-sgen-pinned-allocator.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_static_la-sgen-pinned-allocator.lo `test -f 'sgen-pinned-allocator.c' || echo '$(srcdir)/'`sgen-pinned-allocator.c
+
+libmonoruntime_static_la-sgen-marksweep.lo: sgen-marksweep.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_static_la-sgen-marksweep.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_static_la-sgen-marksweep.Tpo -c -o libmonoruntime_static_la-sgen-marksweep.lo `test -f 'sgen-marksweep.c' || echo '$(srcdir)/'`sgen-marksweep.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_static_la-sgen-marksweep.Tpo $(DEPDIR)/libmonoruntime_static_la-sgen-marksweep.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-marksweep.c' object='libmonoruntime_static_la-sgen-marksweep.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_static_la-sgen-marksweep.lo `test -f 'sgen-marksweep.c' || echo '$(srcdir)/'`sgen-marksweep.c
+
+libmonoruntime_static_la-sgen-marksweep-fixed.lo: sgen-marksweep-fixed.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_static_la-sgen-marksweep-fixed.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_static_la-sgen-marksweep-fixed.Tpo -c -o libmonoruntime_static_la-sgen-marksweep-fixed.lo `test -f 'sgen-marksweep-fixed.c' || echo '$(srcdir)/'`sgen-marksweep-fixed.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_static_la-sgen-marksweep-fixed.Tpo $(DEPDIR)/libmonoruntime_static_la-sgen-marksweep-fixed.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-marksweep-fixed.c' object='libmonoruntime_static_la-sgen-marksweep-fixed.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_static_la-sgen-marksweep-fixed.lo `test -f 'sgen-marksweep-fixed.c' || echo '$(srcdir)/'`sgen-marksweep-fixed.c
+
+libmonoruntime_static_la-sgen-marksweep-par.lo: sgen-marksweep-par.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_static_la-sgen-marksweep-par.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_static_la-sgen-marksweep-par.Tpo -c -o libmonoruntime_static_la-sgen-marksweep-par.lo `test -f 'sgen-marksweep-par.c' || echo '$(srcdir)/'`sgen-marksweep-par.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_static_la-sgen-marksweep-par.Tpo $(DEPDIR)/libmonoruntime_static_la-sgen-marksweep-par.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-marksweep-par.c' object='libmonoruntime_static_la-sgen-marksweep-par.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_static_la-sgen-marksweep-par.lo `test -f 'sgen-marksweep-par.c' || echo '$(srcdir)/'`sgen-marksweep-par.c
+
+libmonoruntime_static_la-sgen-marksweep-fixed-par.lo: sgen-marksweep-fixed-par.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_static_la-sgen-marksweep-fixed-par.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_static_la-sgen-marksweep-fixed-par.Tpo -c -o libmonoruntime_static_la-sgen-marksweep-fixed-par.lo `test -f 'sgen-marksweep-fixed-par.c' || echo '$(srcdir)/'`sgen-marksweep-fixed-par.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_static_la-sgen-marksweep-fixed-par.Tpo $(DEPDIR)/libmonoruntime_static_la-sgen-marksweep-fixed-par.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-marksweep-fixed-par.c' object='libmonoruntime_static_la-sgen-marksweep-fixed-par.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_static_la-sgen-marksweep-fixed-par.lo `test -f 'sgen-marksweep-fixed-par.c' || echo '$(srcdir)/'`sgen-marksweep-fixed-par.c
+
+libmonoruntime_static_la-sgen-major-copying.lo: sgen-major-copying.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_static_la-sgen-major-copying.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_static_la-sgen-major-copying.Tpo -c -o libmonoruntime_static_la-sgen-major-copying.lo `test -f 'sgen-major-copying.c' || echo '$(srcdir)/'`sgen-major-copying.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_static_la-sgen-major-copying.Tpo $(DEPDIR)/libmonoruntime_static_la-sgen-major-copying.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-major-copying.c' object='libmonoruntime_static_la-sgen-major-copying.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_static_la-sgen-major-copying.lo `test -f 'sgen-major-copying.c' || echo '$(srcdir)/'`sgen-major-copying.c
+
+libmonoruntime_static_la-sgen-los.lo: sgen-los.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_static_la-sgen-los.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_static_la-sgen-los.Tpo -c -o libmonoruntime_static_la-sgen-los.lo `test -f 'sgen-los.c' || echo '$(srcdir)/'`sgen-los.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_static_la-sgen-los.Tpo $(DEPDIR)/libmonoruntime_static_la-sgen-los.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-los.c' object='libmonoruntime_static_la-sgen-los.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_static_la-sgen-los.lo `test -f 'sgen-los.c' || echo '$(srcdir)/'`sgen-los.c
+
+libmonoruntime_static_la-sgen-protocol.lo: sgen-protocol.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_static_la-sgen-protocol.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_static_la-sgen-protocol.Tpo -c -o libmonoruntime_static_la-sgen-protocol.lo `test -f 'sgen-protocol.c' || echo '$(srcdir)/'`sgen-protocol.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_static_la-sgen-protocol.Tpo $(DEPDIR)/libmonoruntime_static_la-sgen-protocol.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-protocol.c' object='libmonoruntime_static_la-sgen-protocol.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_static_la-sgen-protocol.lo `test -f 'sgen-protocol.c' || echo '$(srcdir)/'`sgen-protocol.c
+
+libmonoruntime_static_la-sgen-bridge.lo: sgen-bridge.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_static_la-sgen-bridge.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_static_la-sgen-bridge.Tpo -c -o libmonoruntime_static_la-sgen-bridge.lo `test -f 'sgen-bridge.c' || echo '$(srcdir)/'`sgen-bridge.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_static_la-sgen-bridge.Tpo $(DEPDIR)/libmonoruntime_static_la-sgen-bridge.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-bridge.c' object='libmonoruntime_static_la-sgen-bridge.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_static_la-sgen-bridge.lo `test -f 'sgen-bridge.c' || echo '$(srcdir)/'`sgen-bridge.c
+
+libmonoruntime_static_la-sgen-toggleref.lo: sgen-toggleref.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_static_la-sgen-toggleref.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_static_la-sgen-toggleref.Tpo -c -o libmonoruntime_static_la-sgen-toggleref.lo `test -f 'sgen-toggleref.c' || echo '$(srcdir)/'`sgen-toggleref.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_static_la-sgen-toggleref.Tpo $(DEPDIR)/libmonoruntime_static_la-sgen-toggleref.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-toggleref.c' object='libmonoruntime_static_la-sgen-toggleref.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_static_la-sgen-toggleref.lo `test -f 'sgen-toggleref.c' || echo '$(srcdir)/'`sgen-toggleref.c
+
+libmonoruntime_static_la-sgen-cardtable.lo: sgen-cardtable.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_static_la-sgen-cardtable.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_static_la-sgen-cardtable.Tpo -c -o libmonoruntime_static_la-sgen-cardtable.lo `test -f 'sgen-cardtable.c' || echo '$(srcdir)/'`sgen-cardtable.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_static_la-sgen-cardtable.Tpo $(DEPDIR)/libmonoruntime_static_la-sgen-cardtable.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-cardtable.c' object='libmonoruntime_static_la-sgen-cardtable.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_static_la-sgen-cardtable.lo `test -f 'sgen-cardtable.c' || echo '$(srcdir)/'`sgen-cardtable.c
+
+libmonoruntime_static_la-sgen-ssb.lo: sgen-ssb.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_static_la-sgen-ssb.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_static_la-sgen-ssb.Tpo -c -o libmonoruntime_static_la-sgen-ssb.lo `test -f 'sgen-ssb.c' || echo '$(srcdir)/'`sgen-ssb.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_static_la-sgen-ssb.Tpo $(DEPDIR)/libmonoruntime_static_la-sgen-ssb.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-ssb.c' object='libmonoruntime_static_la-sgen-ssb.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_static_la-sgen-ssb.lo `test -f 'sgen-ssb.c' || echo '$(srcdir)/'`sgen-ssb.c
+
+libmonoruntime_static_la-sgen-pinning.lo: sgen-pinning.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_static_la-sgen-pinning.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_static_la-sgen-pinning.Tpo -c -o libmonoruntime_static_la-sgen-pinning.lo `test -f 'sgen-pinning.c' || echo '$(srcdir)/'`sgen-pinning.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_static_la-sgen-pinning.Tpo $(DEPDIR)/libmonoruntime_static_la-sgen-pinning.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-pinning.c' object='libmonoruntime_static_la-sgen-pinning.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_static_la-sgen-pinning.lo `test -f 'sgen-pinning.c' || echo '$(srcdir)/'`sgen-pinning.c
+
+libmonoruntime_static_la-sgen-pinning-stats.lo: sgen-pinning-stats.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_static_la-sgen-pinning-stats.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_static_la-sgen-pinning-stats.Tpo -c -o libmonoruntime_static_la-sgen-pinning-stats.lo `test -f 'sgen-pinning-stats.c' || echo '$(srcdir)/'`sgen-pinning-stats.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_static_la-sgen-pinning-stats.Tpo $(DEPDIR)/libmonoruntime_static_la-sgen-pinning-stats.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-pinning-stats.c' object='libmonoruntime_static_la-sgen-pinning-stats.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_static_la-sgen-pinning-stats.lo `test -f 'sgen-pinning-stats.c' || echo '$(srcdir)/'`sgen-pinning-stats.c
+
+libmonoruntime_static_la-sgen-workers.lo: sgen-workers.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_static_la-sgen-workers.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_static_la-sgen-workers.Tpo -c -o libmonoruntime_static_la-sgen-workers.lo `test -f 'sgen-workers.c' || echo '$(srcdir)/'`sgen-workers.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_static_la-sgen-workers.Tpo $(DEPDIR)/libmonoruntime_static_la-sgen-workers.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-workers.c' object='libmonoruntime_static_la-sgen-workers.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_static_la-sgen-workers.lo `test -f 'sgen-workers.c' || echo '$(srcdir)/'`sgen-workers.c
+
+libmonoruntime_static_la-sgen-gray.lo: sgen-gray.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_static_la-sgen-gray.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_static_la-sgen-gray.Tpo -c -o libmonoruntime_static_la-sgen-gray.lo `test -f 'sgen-gray.c' || echo '$(srcdir)/'`sgen-gray.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_static_la-sgen-gray.Tpo $(DEPDIR)/libmonoruntime_static_la-sgen-gray.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-gray.c' object='libmonoruntime_static_la-sgen-gray.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_static_la-sgen-gray.lo `test -f 'sgen-gray.c' || echo '$(srcdir)/'`sgen-gray.c
+
+libmonoruntime_static_la-sgen-nursery-allocator.lo: sgen-nursery-allocator.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_static_la-sgen-nursery-allocator.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_static_la-sgen-nursery-allocator.Tpo -c -o libmonoruntime_static_la-sgen-nursery-allocator.lo `test -f 'sgen-nursery-allocator.c' || echo '$(srcdir)/'`sgen-nursery-allocator.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_static_la-sgen-nursery-allocator.Tpo $(DEPDIR)/libmonoruntime_static_la-sgen-nursery-allocator.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-nursery-allocator.c' object='libmonoruntime_static_la-sgen-nursery-allocator.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_static_la-sgen-nursery-allocator.lo `test -f 'sgen-nursery-allocator.c' || echo '$(srcdir)/'`sgen-nursery-allocator.c
+
+libmonoruntime_static_la-sgen-hash-table.lo: sgen-hash-table.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_static_la-sgen-hash-table.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_static_la-sgen-hash-table.Tpo -c -o libmonoruntime_static_la-sgen-hash-table.lo `test -f 'sgen-hash-table.c' || echo '$(srcdir)/'`sgen-hash-table.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_static_la-sgen-hash-table.Tpo $(DEPDIR)/libmonoruntime_static_la-sgen-hash-table.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-hash-table.c' object='libmonoruntime_static_la-sgen-hash-table.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_static_la-sgen-hash-table.lo `test -f 'sgen-hash-table.c' || echo '$(srcdir)/'`sgen-hash-table.c
+
+libmonoruntime_static_la-sgen-descriptor.lo: sgen-descriptor.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_static_la-sgen-descriptor.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_static_la-sgen-descriptor.Tpo -c -o libmonoruntime_static_la-sgen-descriptor.lo `test -f 'sgen-descriptor.c' || echo '$(srcdir)/'`sgen-descriptor.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_static_la-sgen-descriptor.Tpo $(DEPDIR)/libmonoruntime_static_la-sgen-descriptor.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-descriptor.c' object='libmonoruntime_static_la-sgen-descriptor.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_static_la-sgen-descriptor.lo `test -f 'sgen-descriptor.c' || echo '$(srcdir)/'`sgen-descriptor.c
+
+libmonoruntime_static_la-sgen-alloc.lo: sgen-alloc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_static_la-sgen-alloc.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_static_la-sgen-alloc.Tpo -c -o libmonoruntime_static_la-sgen-alloc.lo `test -f 'sgen-alloc.c' || echo '$(srcdir)/'`sgen-alloc.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_static_la-sgen-alloc.Tpo $(DEPDIR)/libmonoruntime_static_la-sgen-alloc.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-alloc.c' object='libmonoruntime_static_la-sgen-alloc.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_static_la-sgen-alloc.lo `test -f 'sgen-alloc.c' || echo '$(srcdir)/'`sgen-alloc.c
+
+libmonoruntime_static_la-sgen-debug.lo: sgen-debug.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_static_la-sgen-debug.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_static_la-sgen-debug.Tpo -c -o libmonoruntime_static_la-sgen-debug.lo `test -f 'sgen-debug.c' || echo '$(srcdir)/'`sgen-debug.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_static_la-sgen-debug.Tpo $(DEPDIR)/libmonoruntime_static_la-sgen-debug.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-debug.c' object='libmonoruntime_static_la-sgen-debug.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_static_la-sgen-debug.lo `test -f 'sgen-debug.c' || echo '$(srcdir)/'`sgen-debug.c
+
+libmonoruntime_static_la-sgen-simple-nursery.lo: sgen-simple-nursery.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_static_la-sgen-simple-nursery.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_static_la-sgen-simple-nursery.Tpo -c -o libmonoruntime_static_la-sgen-simple-nursery.lo `test -f 'sgen-simple-nursery.c' || echo '$(srcdir)/'`sgen-simple-nursery.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_static_la-sgen-simple-nursery.Tpo $(DEPDIR)/libmonoruntime_static_la-sgen-simple-nursery.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-simple-nursery.c' object='libmonoruntime_static_la-sgen-simple-nursery.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_static_la-sgen-simple-nursery.lo `test -f 'sgen-simple-nursery.c' || echo '$(srcdir)/'`sgen-simple-nursery.c
+
+libmonoruntime_static_la-sgen-split-nursery.lo: sgen-split-nursery.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_static_la-sgen-split-nursery.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_static_la-sgen-split-nursery.Tpo -c -o libmonoruntime_static_la-sgen-split-nursery.lo `test -f 'sgen-split-nursery.c' || echo '$(srcdir)/'`sgen-split-nursery.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_static_la-sgen-split-nursery.Tpo $(DEPDIR)/libmonoruntime_static_la-sgen-split-nursery.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-split-nursery.c' object='libmonoruntime_static_la-sgen-split-nursery.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_static_la-sgen-split-nursery.lo `test -f 'sgen-split-nursery.c' || echo '$(srcdir)/'`sgen-split-nursery.c
+
+libmonoruntime_static_la-sgen-memory-governor.lo: sgen-memory-governor.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_static_la-sgen-memory-governor.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_static_la-sgen-memory-governor.Tpo -c -o libmonoruntime_static_la-sgen-memory-governor.lo `test -f 'sgen-memory-governor.c' || echo '$(srcdir)/'`sgen-memory-governor.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_static_la-sgen-memory-governor.Tpo $(DEPDIR)/libmonoruntime_static_la-sgen-memory-governor.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-memory-governor.c' object='libmonoruntime_static_la-sgen-memory-governor.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_static_la-sgen-memory-governor.lo `test -f 'sgen-memory-governor.c' || echo '$(srcdir)/'`sgen-memory-governor.c
+
+libmonoruntime_static_la-sgen-stw.lo: sgen-stw.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_static_la-sgen-stw.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_static_la-sgen-stw.Tpo -c -o libmonoruntime_static_la-sgen-stw.lo `test -f 'sgen-stw.c' || echo '$(srcdir)/'`sgen-stw.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_static_la-sgen-stw.Tpo $(DEPDIR)/libmonoruntime_static_la-sgen-stw.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-stw.c' object='libmonoruntime_static_la-sgen-stw.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_static_la-sgen-stw.lo `test -f 'sgen-stw.c' || echo '$(srcdir)/'`sgen-stw.c
+
+libmonoruntime_static_la-sgen-fin-weak-hash.lo: sgen-fin-weak-hash.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_static_la-sgen-fin-weak-hash.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_static_la-sgen-fin-weak-hash.Tpo -c -o libmonoruntime_static_la-sgen-fin-weak-hash.lo `test -f 'sgen-fin-weak-hash.c' || echo '$(srcdir)/'`sgen-fin-weak-hash.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_static_la-sgen-fin-weak-hash.Tpo $(DEPDIR)/libmonoruntime_static_la-sgen-fin-weak-hash.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-fin-weak-hash.c' object='libmonoruntime_static_la-sgen-fin-weak-hash.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_static_la-sgen-fin-weak-hash.lo `test -f 'sgen-fin-weak-hash.c' || echo '$(srcdir)/'`sgen-fin-weak-hash.c
+
 libmonoruntime_static_la-boehm-gc.lo: boehm-gc.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_static_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_static_la-boehm-gc.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_static_la-boehm-gc.Tpo -c -o libmonoruntime_static_la-boehm-gc.lo `test -f 'boehm-gc.c' || echo '$(srcdir)/'`boehm-gc.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_static_la-boehm-gc.Tpo $(DEPDIR)/libmonoruntime_static_la-boehm-gc.Plo
@@ -2538,6 +3029,254 @@ libmonoruntime_la-reflection.lo: reflection.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_la-reflection.lo `test -f 'reflection.c' || echo '$(srcdir)/'`reflection.c
 
+libmonoruntime_la-sgen-os-posix.lo: sgen-os-posix.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_la-sgen-os-posix.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_la-sgen-os-posix.Tpo -c -o libmonoruntime_la-sgen-os-posix.lo `test -f 'sgen-os-posix.c' || echo '$(srcdir)/'`sgen-os-posix.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_la-sgen-os-posix.Tpo $(DEPDIR)/libmonoruntime_la-sgen-os-posix.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-os-posix.c' object='libmonoruntime_la-sgen-os-posix.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_la-sgen-os-posix.lo `test -f 'sgen-os-posix.c' || echo '$(srcdir)/'`sgen-os-posix.c
+
+libmonoruntime_la-sgen-os-mach.lo: sgen-os-mach.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_la-sgen-os-mach.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_la-sgen-os-mach.Tpo -c -o libmonoruntime_la-sgen-os-mach.lo `test -f 'sgen-os-mach.c' || echo '$(srcdir)/'`sgen-os-mach.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_la-sgen-os-mach.Tpo $(DEPDIR)/libmonoruntime_la-sgen-os-mach.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-os-mach.c' object='libmonoruntime_la-sgen-os-mach.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_la-sgen-os-mach.lo `test -f 'sgen-os-mach.c' || echo '$(srcdir)/'`sgen-os-mach.c
+
+libmonoruntime_la-sgen-os-win32.lo: sgen-os-win32.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_la-sgen-os-win32.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_la-sgen-os-win32.Tpo -c -o libmonoruntime_la-sgen-os-win32.lo `test -f 'sgen-os-win32.c' || echo '$(srcdir)/'`sgen-os-win32.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_la-sgen-os-win32.Tpo $(DEPDIR)/libmonoruntime_la-sgen-os-win32.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-os-win32.c' object='libmonoruntime_la-sgen-os-win32.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_la-sgen-os-win32.lo `test -f 'sgen-os-win32.c' || echo '$(srcdir)/'`sgen-os-win32.c
+
+libmonoruntime_la-sgen-gc.lo: sgen-gc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_la-sgen-gc.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_la-sgen-gc.Tpo -c -o libmonoruntime_la-sgen-gc.lo `test -f 'sgen-gc.c' || echo '$(srcdir)/'`sgen-gc.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_la-sgen-gc.Tpo $(DEPDIR)/libmonoruntime_la-sgen-gc.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-gc.c' object='libmonoruntime_la-sgen-gc.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_la-sgen-gc.lo `test -f 'sgen-gc.c' || echo '$(srcdir)/'`sgen-gc.c
+
+libmonoruntime_la-sgen-internal.lo: sgen-internal.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_la-sgen-internal.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_la-sgen-internal.Tpo -c -o libmonoruntime_la-sgen-internal.lo `test -f 'sgen-internal.c' || echo '$(srcdir)/'`sgen-internal.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_la-sgen-internal.Tpo $(DEPDIR)/libmonoruntime_la-sgen-internal.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-internal.c' object='libmonoruntime_la-sgen-internal.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_la-sgen-internal.lo `test -f 'sgen-internal.c' || echo '$(srcdir)/'`sgen-internal.c
+
+libmonoruntime_la-sgen-pinned-allocator.lo: sgen-pinned-allocator.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_la-sgen-pinned-allocator.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_la-sgen-pinned-allocator.Tpo -c -o libmonoruntime_la-sgen-pinned-allocator.lo `test -f 'sgen-pinned-allocator.c' || echo '$(srcdir)/'`sgen-pinned-allocator.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_la-sgen-pinned-allocator.Tpo $(DEPDIR)/libmonoruntime_la-sgen-pinned-allocator.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-pinned-allocator.c' object='libmonoruntime_la-sgen-pinned-allocator.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_la-sgen-pinned-allocator.lo `test -f 'sgen-pinned-allocator.c' || echo '$(srcdir)/'`sgen-pinned-allocator.c
+
+libmonoruntime_la-sgen-marksweep.lo: sgen-marksweep.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_la-sgen-marksweep.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_la-sgen-marksweep.Tpo -c -o libmonoruntime_la-sgen-marksweep.lo `test -f 'sgen-marksweep.c' || echo '$(srcdir)/'`sgen-marksweep.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_la-sgen-marksweep.Tpo $(DEPDIR)/libmonoruntime_la-sgen-marksweep.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-marksweep.c' object='libmonoruntime_la-sgen-marksweep.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_la-sgen-marksweep.lo `test -f 'sgen-marksweep.c' || echo '$(srcdir)/'`sgen-marksweep.c
+
+libmonoruntime_la-sgen-marksweep-fixed.lo: sgen-marksweep-fixed.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_la-sgen-marksweep-fixed.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_la-sgen-marksweep-fixed.Tpo -c -o libmonoruntime_la-sgen-marksweep-fixed.lo `test -f 'sgen-marksweep-fixed.c' || echo '$(srcdir)/'`sgen-marksweep-fixed.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_la-sgen-marksweep-fixed.Tpo $(DEPDIR)/libmonoruntime_la-sgen-marksweep-fixed.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-marksweep-fixed.c' object='libmonoruntime_la-sgen-marksweep-fixed.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_la-sgen-marksweep-fixed.lo `test -f 'sgen-marksweep-fixed.c' || echo '$(srcdir)/'`sgen-marksweep-fixed.c
+
+libmonoruntime_la-sgen-marksweep-par.lo: sgen-marksweep-par.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_la-sgen-marksweep-par.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_la-sgen-marksweep-par.Tpo -c -o libmonoruntime_la-sgen-marksweep-par.lo `test -f 'sgen-marksweep-par.c' || echo '$(srcdir)/'`sgen-marksweep-par.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_la-sgen-marksweep-par.Tpo $(DEPDIR)/libmonoruntime_la-sgen-marksweep-par.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-marksweep-par.c' object='libmonoruntime_la-sgen-marksweep-par.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_la-sgen-marksweep-par.lo `test -f 'sgen-marksweep-par.c' || echo '$(srcdir)/'`sgen-marksweep-par.c
+
+libmonoruntime_la-sgen-marksweep-fixed-par.lo: sgen-marksweep-fixed-par.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_la-sgen-marksweep-fixed-par.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_la-sgen-marksweep-fixed-par.Tpo -c -o libmonoruntime_la-sgen-marksweep-fixed-par.lo `test -f 'sgen-marksweep-fixed-par.c' || echo '$(srcdir)/'`sgen-marksweep-fixed-par.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_la-sgen-marksweep-fixed-par.Tpo $(DEPDIR)/libmonoruntime_la-sgen-marksweep-fixed-par.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-marksweep-fixed-par.c' object='libmonoruntime_la-sgen-marksweep-fixed-par.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_la-sgen-marksweep-fixed-par.lo `test -f 'sgen-marksweep-fixed-par.c' || echo '$(srcdir)/'`sgen-marksweep-fixed-par.c
+
+libmonoruntime_la-sgen-major-copying.lo: sgen-major-copying.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_la-sgen-major-copying.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_la-sgen-major-copying.Tpo -c -o libmonoruntime_la-sgen-major-copying.lo `test -f 'sgen-major-copying.c' || echo '$(srcdir)/'`sgen-major-copying.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_la-sgen-major-copying.Tpo $(DEPDIR)/libmonoruntime_la-sgen-major-copying.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-major-copying.c' object='libmonoruntime_la-sgen-major-copying.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_la-sgen-major-copying.lo `test -f 'sgen-major-copying.c' || echo '$(srcdir)/'`sgen-major-copying.c
+
+libmonoruntime_la-sgen-los.lo: sgen-los.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_la-sgen-los.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_la-sgen-los.Tpo -c -o libmonoruntime_la-sgen-los.lo `test -f 'sgen-los.c' || echo '$(srcdir)/'`sgen-los.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_la-sgen-los.Tpo $(DEPDIR)/libmonoruntime_la-sgen-los.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-los.c' object='libmonoruntime_la-sgen-los.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_la-sgen-los.lo `test -f 'sgen-los.c' || echo '$(srcdir)/'`sgen-los.c
+
+libmonoruntime_la-sgen-protocol.lo: sgen-protocol.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_la-sgen-protocol.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_la-sgen-protocol.Tpo -c -o libmonoruntime_la-sgen-protocol.lo `test -f 'sgen-protocol.c' || echo '$(srcdir)/'`sgen-protocol.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_la-sgen-protocol.Tpo $(DEPDIR)/libmonoruntime_la-sgen-protocol.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-protocol.c' object='libmonoruntime_la-sgen-protocol.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_la-sgen-protocol.lo `test -f 'sgen-protocol.c' || echo '$(srcdir)/'`sgen-protocol.c
+
+libmonoruntime_la-sgen-bridge.lo: sgen-bridge.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_la-sgen-bridge.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_la-sgen-bridge.Tpo -c -o libmonoruntime_la-sgen-bridge.lo `test -f 'sgen-bridge.c' || echo '$(srcdir)/'`sgen-bridge.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_la-sgen-bridge.Tpo $(DEPDIR)/libmonoruntime_la-sgen-bridge.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-bridge.c' object='libmonoruntime_la-sgen-bridge.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_la-sgen-bridge.lo `test -f 'sgen-bridge.c' || echo '$(srcdir)/'`sgen-bridge.c
+
+libmonoruntime_la-sgen-toggleref.lo: sgen-toggleref.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_la-sgen-toggleref.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_la-sgen-toggleref.Tpo -c -o libmonoruntime_la-sgen-toggleref.lo `test -f 'sgen-toggleref.c' || echo '$(srcdir)/'`sgen-toggleref.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_la-sgen-toggleref.Tpo $(DEPDIR)/libmonoruntime_la-sgen-toggleref.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-toggleref.c' object='libmonoruntime_la-sgen-toggleref.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_la-sgen-toggleref.lo `test -f 'sgen-toggleref.c' || echo '$(srcdir)/'`sgen-toggleref.c
+
+libmonoruntime_la-sgen-cardtable.lo: sgen-cardtable.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_la-sgen-cardtable.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_la-sgen-cardtable.Tpo -c -o libmonoruntime_la-sgen-cardtable.lo `test -f 'sgen-cardtable.c' || echo '$(srcdir)/'`sgen-cardtable.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_la-sgen-cardtable.Tpo $(DEPDIR)/libmonoruntime_la-sgen-cardtable.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-cardtable.c' object='libmonoruntime_la-sgen-cardtable.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_la-sgen-cardtable.lo `test -f 'sgen-cardtable.c' || echo '$(srcdir)/'`sgen-cardtable.c
+
+libmonoruntime_la-sgen-ssb.lo: sgen-ssb.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_la-sgen-ssb.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_la-sgen-ssb.Tpo -c -o libmonoruntime_la-sgen-ssb.lo `test -f 'sgen-ssb.c' || echo '$(srcdir)/'`sgen-ssb.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_la-sgen-ssb.Tpo $(DEPDIR)/libmonoruntime_la-sgen-ssb.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-ssb.c' object='libmonoruntime_la-sgen-ssb.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_la-sgen-ssb.lo `test -f 'sgen-ssb.c' || echo '$(srcdir)/'`sgen-ssb.c
+
+libmonoruntime_la-sgen-pinning.lo: sgen-pinning.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_la-sgen-pinning.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_la-sgen-pinning.Tpo -c -o libmonoruntime_la-sgen-pinning.lo `test -f 'sgen-pinning.c' || echo '$(srcdir)/'`sgen-pinning.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_la-sgen-pinning.Tpo $(DEPDIR)/libmonoruntime_la-sgen-pinning.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-pinning.c' object='libmonoruntime_la-sgen-pinning.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_la-sgen-pinning.lo `test -f 'sgen-pinning.c' || echo '$(srcdir)/'`sgen-pinning.c
+
+libmonoruntime_la-sgen-pinning-stats.lo: sgen-pinning-stats.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_la-sgen-pinning-stats.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_la-sgen-pinning-stats.Tpo -c -o libmonoruntime_la-sgen-pinning-stats.lo `test -f 'sgen-pinning-stats.c' || echo '$(srcdir)/'`sgen-pinning-stats.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_la-sgen-pinning-stats.Tpo $(DEPDIR)/libmonoruntime_la-sgen-pinning-stats.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-pinning-stats.c' object='libmonoruntime_la-sgen-pinning-stats.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_la-sgen-pinning-stats.lo `test -f 'sgen-pinning-stats.c' || echo '$(srcdir)/'`sgen-pinning-stats.c
+
+libmonoruntime_la-sgen-workers.lo: sgen-workers.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_la-sgen-workers.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_la-sgen-workers.Tpo -c -o libmonoruntime_la-sgen-workers.lo `test -f 'sgen-workers.c' || echo '$(srcdir)/'`sgen-workers.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_la-sgen-workers.Tpo $(DEPDIR)/libmonoruntime_la-sgen-workers.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-workers.c' object='libmonoruntime_la-sgen-workers.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_la-sgen-workers.lo `test -f 'sgen-workers.c' || echo '$(srcdir)/'`sgen-workers.c
+
+libmonoruntime_la-sgen-gray.lo: sgen-gray.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_la-sgen-gray.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_la-sgen-gray.Tpo -c -o libmonoruntime_la-sgen-gray.lo `test -f 'sgen-gray.c' || echo '$(srcdir)/'`sgen-gray.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_la-sgen-gray.Tpo $(DEPDIR)/libmonoruntime_la-sgen-gray.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-gray.c' object='libmonoruntime_la-sgen-gray.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_la-sgen-gray.lo `test -f 'sgen-gray.c' || echo '$(srcdir)/'`sgen-gray.c
+
+libmonoruntime_la-sgen-nursery-allocator.lo: sgen-nursery-allocator.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_la-sgen-nursery-allocator.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_la-sgen-nursery-allocator.Tpo -c -o libmonoruntime_la-sgen-nursery-allocator.lo `test -f 'sgen-nursery-allocator.c' || echo '$(srcdir)/'`sgen-nursery-allocator.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_la-sgen-nursery-allocator.Tpo $(DEPDIR)/libmonoruntime_la-sgen-nursery-allocator.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-nursery-allocator.c' object='libmonoruntime_la-sgen-nursery-allocator.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_la-sgen-nursery-allocator.lo `test -f 'sgen-nursery-allocator.c' || echo '$(srcdir)/'`sgen-nursery-allocator.c
+
+libmonoruntime_la-sgen-hash-table.lo: sgen-hash-table.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_la-sgen-hash-table.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_la-sgen-hash-table.Tpo -c -o libmonoruntime_la-sgen-hash-table.lo `test -f 'sgen-hash-table.c' || echo '$(srcdir)/'`sgen-hash-table.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_la-sgen-hash-table.Tpo $(DEPDIR)/libmonoruntime_la-sgen-hash-table.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-hash-table.c' object='libmonoruntime_la-sgen-hash-table.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_la-sgen-hash-table.lo `test -f 'sgen-hash-table.c' || echo '$(srcdir)/'`sgen-hash-table.c
+
+libmonoruntime_la-sgen-descriptor.lo: sgen-descriptor.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_la-sgen-descriptor.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_la-sgen-descriptor.Tpo -c -o libmonoruntime_la-sgen-descriptor.lo `test -f 'sgen-descriptor.c' || echo '$(srcdir)/'`sgen-descriptor.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_la-sgen-descriptor.Tpo $(DEPDIR)/libmonoruntime_la-sgen-descriptor.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-descriptor.c' object='libmonoruntime_la-sgen-descriptor.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_la-sgen-descriptor.lo `test -f 'sgen-descriptor.c' || echo '$(srcdir)/'`sgen-descriptor.c
+
+libmonoruntime_la-sgen-alloc.lo: sgen-alloc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_la-sgen-alloc.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_la-sgen-alloc.Tpo -c -o libmonoruntime_la-sgen-alloc.lo `test -f 'sgen-alloc.c' || echo '$(srcdir)/'`sgen-alloc.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_la-sgen-alloc.Tpo $(DEPDIR)/libmonoruntime_la-sgen-alloc.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-alloc.c' object='libmonoruntime_la-sgen-alloc.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_la-sgen-alloc.lo `test -f 'sgen-alloc.c' || echo '$(srcdir)/'`sgen-alloc.c
+
+libmonoruntime_la-sgen-debug.lo: sgen-debug.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_la-sgen-debug.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_la-sgen-debug.Tpo -c -o libmonoruntime_la-sgen-debug.lo `test -f 'sgen-debug.c' || echo '$(srcdir)/'`sgen-debug.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_la-sgen-debug.Tpo $(DEPDIR)/libmonoruntime_la-sgen-debug.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-debug.c' object='libmonoruntime_la-sgen-debug.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_la-sgen-debug.lo `test -f 'sgen-debug.c' || echo '$(srcdir)/'`sgen-debug.c
+
+libmonoruntime_la-sgen-simple-nursery.lo: sgen-simple-nursery.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_la-sgen-simple-nursery.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_la-sgen-simple-nursery.Tpo -c -o libmonoruntime_la-sgen-simple-nursery.lo `test -f 'sgen-simple-nursery.c' || echo '$(srcdir)/'`sgen-simple-nursery.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_la-sgen-simple-nursery.Tpo $(DEPDIR)/libmonoruntime_la-sgen-simple-nursery.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-simple-nursery.c' object='libmonoruntime_la-sgen-simple-nursery.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_la-sgen-simple-nursery.lo `test -f 'sgen-simple-nursery.c' || echo '$(srcdir)/'`sgen-simple-nursery.c
+
+libmonoruntime_la-sgen-split-nursery.lo: sgen-split-nursery.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_la-sgen-split-nursery.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_la-sgen-split-nursery.Tpo -c -o libmonoruntime_la-sgen-split-nursery.lo `test -f 'sgen-split-nursery.c' || echo '$(srcdir)/'`sgen-split-nursery.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_la-sgen-split-nursery.Tpo $(DEPDIR)/libmonoruntime_la-sgen-split-nursery.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-split-nursery.c' object='libmonoruntime_la-sgen-split-nursery.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_la-sgen-split-nursery.lo `test -f 'sgen-split-nursery.c' || echo '$(srcdir)/'`sgen-split-nursery.c
+
+libmonoruntime_la-sgen-memory-governor.lo: sgen-memory-governor.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_la-sgen-memory-governor.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_la-sgen-memory-governor.Tpo -c -o libmonoruntime_la-sgen-memory-governor.lo `test -f 'sgen-memory-governor.c' || echo '$(srcdir)/'`sgen-memory-governor.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_la-sgen-memory-governor.Tpo $(DEPDIR)/libmonoruntime_la-sgen-memory-governor.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-memory-governor.c' object='libmonoruntime_la-sgen-memory-governor.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_la-sgen-memory-governor.lo `test -f 'sgen-memory-governor.c' || echo '$(srcdir)/'`sgen-memory-governor.c
+
+libmonoruntime_la-sgen-stw.lo: sgen-stw.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_la-sgen-stw.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_la-sgen-stw.Tpo -c -o libmonoruntime_la-sgen-stw.lo `test -f 'sgen-stw.c' || echo '$(srcdir)/'`sgen-stw.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_la-sgen-stw.Tpo $(DEPDIR)/libmonoruntime_la-sgen-stw.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-stw.c' object='libmonoruntime_la-sgen-stw.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_la-sgen-stw.lo `test -f 'sgen-stw.c' || echo '$(srcdir)/'`sgen-stw.c
+
+libmonoruntime_la-sgen-fin-weak-hash.lo: sgen-fin-weak-hash.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_la-sgen-fin-weak-hash.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_la-sgen-fin-weak-hash.Tpo -c -o libmonoruntime_la-sgen-fin-weak-hash.lo `test -f 'sgen-fin-weak-hash.c' || echo '$(srcdir)/'`sgen-fin-weak-hash.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_la-sgen-fin-weak-hash.Tpo $(DEPDIR)/libmonoruntime_la-sgen-fin-weak-hash.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-fin-weak-hash.c' object='libmonoruntime_la-sgen-fin-weak-hash.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -c -o libmonoruntime_la-sgen-fin-weak-hash.lo `test -f 'sgen-fin-weak-hash.c' || echo '$(srcdir)/'`sgen-fin-weak-hash.c
+
 libmonoruntime_la-boehm-gc.lo: boehm-gc.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntime_la_CFLAGS) $(CFLAGS) -MT libmonoruntime_la-boehm-gc.lo -MD -MP -MF $(DEPDIR)/libmonoruntime_la-boehm-gc.Tpo -c -o libmonoruntime_la-boehm-gc.lo `test -f 'boehm-gc.c' || echo '$(srcdir)/'`boehm-gc.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntime_la-boehm-gc.Tpo $(DEPDIR)/libmonoruntime_la-boehm-gc.Plo
@@ -2993,6 +3732,254 @@ libmonoruntimemoon_la-reflection.lo: reflection.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='reflection.c' object='libmonoruntimemoon_la-reflection.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimemoon_la-reflection.lo `test -f 'reflection.c' || echo '$(srcdir)/'`reflection.c
+
+libmonoruntimemoon_la-sgen-os-posix.lo: sgen-os-posix.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -MT libmonoruntimemoon_la-sgen-os-posix.lo -MD -MP -MF $(DEPDIR)/libmonoruntimemoon_la-sgen-os-posix.Tpo -c -o libmonoruntimemoon_la-sgen-os-posix.lo `test -f 'sgen-os-posix.c' || echo '$(srcdir)/'`sgen-os-posix.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimemoon_la-sgen-os-posix.Tpo $(DEPDIR)/libmonoruntimemoon_la-sgen-os-posix.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-os-posix.c' object='libmonoruntimemoon_la-sgen-os-posix.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimemoon_la-sgen-os-posix.lo `test -f 'sgen-os-posix.c' || echo '$(srcdir)/'`sgen-os-posix.c
+
+libmonoruntimemoon_la-sgen-os-mach.lo: sgen-os-mach.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -MT libmonoruntimemoon_la-sgen-os-mach.lo -MD -MP -MF $(DEPDIR)/libmonoruntimemoon_la-sgen-os-mach.Tpo -c -o libmonoruntimemoon_la-sgen-os-mach.lo `test -f 'sgen-os-mach.c' || echo '$(srcdir)/'`sgen-os-mach.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimemoon_la-sgen-os-mach.Tpo $(DEPDIR)/libmonoruntimemoon_la-sgen-os-mach.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-os-mach.c' object='libmonoruntimemoon_la-sgen-os-mach.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimemoon_la-sgen-os-mach.lo `test -f 'sgen-os-mach.c' || echo '$(srcdir)/'`sgen-os-mach.c
+
+libmonoruntimemoon_la-sgen-os-win32.lo: sgen-os-win32.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -MT libmonoruntimemoon_la-sgen-os-win32.lo -MD -MP -MF $(DEPDIR)/libmonoruntimemoon_la-sgen-os-win32.Tpo -c -o libmonoruntimemoon_la-sgen-os-win32.lo `test -f 'sgen-os-win32.c' || echo '$(srcdir)/'`sgen-os-win32.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimemoon_la-sgen-os-win32.Tpo $(DEPDIR)/libmonoruntimemoon_la-sgen-os-win32.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-os-win32.c' object='libmonoruntimemoon_la-sgen-os-win32.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimemoon_la-sgen-os-win32.lo `test -f 'sgen-os-win32.c' || echo '$(srcdir)/'`sgen-os-win32.c
+
+libmonoruntimemoon_la-sgen-gc.lo: sgen-gc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -MT libmonoruntimemoon_la-sgen-gc.lo -MD -MP -MF $(DEPDIR)/libmonoruntimemoon_la-sgen-gc.Tpo -c -o libmonoruntimemoon_la-sgen-gc.lo `test -f 'sgen-gc.c' || echo '$(srcdir)/'`sgen-gc.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimemoon_la-sgen-gc.Tpo $(DEPDIR)/libmonoruntimemoon_la-sgen-gc.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-gc.c' object='libmonoruntimemoon_la-sgen-gc.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimemoon_la-sgen-gc.lo `test -f 'sgen-gc.c' || echo '$(srcdir)/'`sgen-gc.c
+
+libmonoruntimemoon_la-sgen-internal.lo: sgen-internal.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -MT libmonoruntimemoon_la-sgen-internal.lo -MD -MP -MF $(DEPDIR)/libmonoruntimemoon_la-sgen-internal.Tpo -c -o libmonoruntimemoon_la-sgen-internal.lo `test -f 'sgen-internal.c' || echo '$(srcdir)/'`sgen-internal.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimemoon_la-sgen-internal.Tpo $(DEPDIR)/libmonoruntimemoon_la-sgen-internal.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-internal.c' object='libmonoruntimemoon_la-sgen-internal.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimemoon_la-sgen-internal.lo `test -f 'sgen-internal.c' || echo '$(srcdir)/'`sgen-internal.c
+
+libmonoruntimemoon_la-sgen-pinned-allocator.lo: sgen-pinned-allocator.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -MT libmonoruntimemoon_la-sgen-pinned-allocator.lo -MD -MP -MF $(DEPDIR)/libmonoruntimemoon_la-sgen-pinned-allocator.Tpo -c -o libmonoruntimemoon_la-sgen-pinned-allocator.lo `test -f 'sgen-pinned-allocator.c' || echo '$(srcdir)/'`sgen-pinned-allocator.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimemoon_la-sgen-pinned-allocator.Tpo $(DEPDIR)/libmonoruntimemoon_la-sgen-pinned-allocator.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-pinned-allocator.c' object='libmonoruntimemoon_la-sgen-pinned-allocator.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimemoon_la-sgen-pinned-allocator.lo `test -f 'sgen-pinned-allocator.c' || echo '$(srcdir)/'`sgen-pinned-allocator.c
+
+libmonoruntimemoon_la-sgen-marksweep.lo: sgen-marksweep.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -MT libmonoruntimemoon_la-sgen-marksweep.lo -MD -MP -MF $(DEPDIR)/libmonoruntimemoon_la-sgen-marksweep.Tpo -c -o libmonoruntimemoon_la-sgen-marksweep.lo `test -f 'sgen-marksweep.c' || echo '$(srcdir)/'`sgen-marksweep.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimemoon_la-sgen-marksweep.Tpo $(DEPDIR)/libmonoruntimemoon_la-sgen-marksweep.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-marksweep.c' object='libmonoruntimemoon_la-sgen-marksweep.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimemoon_la-sgen-marksweep.lo `test -f 'sgen-marksweep.c' || echo '$(srcdir)/'`sgen-marksweep.c
+
+libmonoruntimemoon_la-sgen-marksweep-fixed.lo: sgen-marksweep-fixed.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -MT libmonoruntimemoon_la-sgen-marksweep-fixed.lo -MD -MP -MF $(DEPDIR)/libmonoruntimemoon_la-sgen-marksweep-fixed.Tpo -c -o libmonoruntimemoon_la-sgen-marksweep-fixed.lo `test -f 'sgen-marksweep-fixed.c' || echo '$(srcdir)/'`sgen-marksweep-fixed.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimemoon_la-sgen-marksweep-fixed.Tpo $(DEPDIR)/libmonoruntimemoon_la-sgen-marksweep-fixed.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-marksweep-fixed.c' object='libmonoruntimemoon_la-sgen-marksweep-fixed.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimemoon_la-sgen-marksweep-fixed.lo `test -f 'sgen-marksweep-fixed.c' || echo '$(srcdir)/'`sgen-marksweep-fixed.c
+
+libmonoruntimemoon_la-sgen-marksweep-par.lo: sgen-marksweep-par.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -MT libmonoruntimemoon_la-sgen-marksweep-par.lo -MD -MP -MF $(DEPDIR)/libmonoruntimemoon_la-sgen-marksweep-par.Tpo -c -o libmonoruntimemoon_la-sgen-marksweep-par.lo `test -f 'sgen-marksweep-par.c' || echo '$(srcdir)/'`sgen-marksweep-par.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimemoon_la-sgen-marksweep-par.Tpo $(DEPDIR)/libmonoruntimemoon_la-sgen-marksweep-par.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-marksweep-par.c' object='libmonoruntimemoon_la-sgen-marksweep-par.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimemoon_la-sgen-marksweep-par.lo `test -f 'sgen-marksweep-par.c' || echo '$(srcdir)/'`sgen-marksweep-par.c
+
+libmonoruntimemoon_la-sgen-marksweep-fixed-par.lo: sgen-marksweep-fixed-par.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -MT libmonoruntimemoon_la-sgen-marksweep-fixed-par.lo -MD -MP -MF $(DEPDIR)/libmonoruntimemoon_la-sgen-marksweep-fixed-par.Tpo -c -o libmonoruntimemoon_la-sgen-marksweep-fixed-par.lo `test -f 'sgen-marksweep-fixed-par.c' || echo '$(srcdir)/'`sgen-marksweep-fixed-par.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimemoon_la-sgen-marksweep-fixed-par.Tpo $(DEPDIR)/libmonoruntimemoon_la-sgen-marksweep-fixed-par.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-marksweep-fixed-par.c' object='libmonoruntimemoon_la-sgen-marksweep-fixed-par.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimemoon_la-sgen-marksweep-fixed-par.lo `test -f 'sgen-marksweep-fixed-par.c' || echo '$(srcdir)/'`sgen-marksweep-fixed-par.c
+
+libmonoruntimemoon_la-sgen-major-copying.lo: sgen-major-copying.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -MT libmonoruntimemoon_la-sgen-major-copying.lo -MD -MP -MF $(DEPDIR)/libmonoruntimemoon_la-sgen-major-copying.Tpo -c -o libmonoruntimemoon_la-sgen-major-copying.lo `test -f 'sgen-major-copying.c' || echo '$(srcdir)/'`sgen-major-copying.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimemoon_la-sgen-major-copying.Tpo $(DEPDIR)/libmonoruntimemoon_la-sgen-major-copying.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-major-copying.c' object='libmonoruntimemoon_la-sgen-major-copying.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimemoon_la-sgen-major-copying.lo `test -f 'sgen-major-copying.c' || echo '$(srcdir)/'`sgen-major-copying.c
+
+libmonoruntimemoon_la-sgen-los.lo: sgen-los.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -MT libmonoruntimemoon_la-sgen-los.lo -MD -MP -MF $(DEPDIR)/libmonoruntimemoon_la-sgen-los.Tpo -c -o libmonoruntimemoon_la-sgen-los.lo `test -f 'sgen-los.c' || echo '$(srcdir)/'`sgen-los.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimemoon_la-sgen-los.Tpo $(DEPDIR)/libmonoruntimemoon_la-sgen-los.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-los.c' object='libmonoruntimemoon_la-sgen-los.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimemoon_la-sgen-los.lo `test -f 'sgen-los.c' || echo '$(srcdir)/'`sgen-los.c
+
+libmonoruntimemoon_la-sgen-protocol.lo: sgen-protocol.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -MT libmonoruntimemoon_la-sgen-protocol.lo -MD -MP -MF $(DEPDIR)/libmonoruntimemoon_la-sgen-protocol.Tpo -c -o libmonoruntimemoon_la-sgen-protocol.lo `test -f 'sgen-protocol.c' || echo '$(srcdir)/'`sgen-protocol.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimemoon_la-sgen-protocol.Tpo $(DEPDIR)/libmonoruntimemoon_la-sgen-protocol.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-protocol.c' object='libmonoruntimemoon_la-sgen-protocol.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimemoon_la-sgen-protocol.lo `test -f 'sgen-protocol.c' || echo '$(srcdir)/'`sgen-protocol.c
+
+libmonoruntimemoon_la-sgen-bridge.lo: sgen-bridge.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -MT libmonoruntimemoon_la-sgen-bridge.lo -MD -MP -MF $(DEPDIR)/libmonoruntimemoon_la-sgen-bridge.Tpo -c -o libmonoruntimemoon_la-sgen-bridge.lo `test -f 'sgen-bridge.c' || echo '$(srcdir)/'`sgen-bridge.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimemoon_la-sgen-bridge.Tpo $(DEPDIR)/libmonoruntimemoon_la-sgen-bridge.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-bridge.c' object='libmonoruntimemoon_la-sgen-bridge.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimemoon_la-sgen-bridge.lo `test -f 'sgen-bridge.c' || echo '$(srcdir)/'`sgen-bridge.c
+
+libmonoruntimemoon_la-sgen-toggleref.lo: sgen-toggleref.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -MT libmonoruntimemoon_la-sgen-toggleref.lo -MD -MP -MF $(DEPDIR)/libmonoruntimemoon_la-sgen-toggleref.Tpo -c -o libmonoruntimemoon_la-sgen-toggleref.lo `test -f 'sgen-toggleref.c' || echo '$(srcdir)/'`sgen-toggleref.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimemoon_la-sgen-toggleref.Tpo $(DEPDIR)/libmonoruntimemoon_la-sgen-toggleref.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-toggleref.c' object='libmonoruntimemoon_la-sgen-toggleref.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimemoon_la-sgen-toggleref.lo `test -f 'sgen-toggleref.c' || echo '$(srcdir)/'`sgen-toggleref.c
+
+libmonoruntimemoon_la-sgen-cardtable.lo: sgen-cardtable.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -MT libmonoruntimemoon_la-sgen-cardtable.lo -MD -MP -MF $(DEPDIR)/libmonoruntimemoon_la-sgen-cardtable.Tpo -c -o libmonoruntimemoon_la-sgen-cardtable.lo `test -f 'sgen-cardtable.c' || echo '$(srcdir)/'`sgen-cardtable.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimemoon_la-sgen-cardtable.Tpo $(DEPDIR)/libmonoruntimemoon_la-sgen-cardtable.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-cardtable.c' object='libmonoruntimemoon_la-sgen-cardtable.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimemoon_la-sgen-cardtable.lo `test -f 'sgen-cardtable.c' || echo '$(srcdir)/'`sgen-cardtable.c
+
+libmonoruntimemoon_la-sgen-ssb.lo: sgen-ssb.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -MT libmonoruntimemoon_la-sgen-ssb.lo -MD -MP -MF $(DEPDIR)/libmonoruntimemoon_la-sgen-ssb.Tpo -c -o libmonoruntimemoon_la-sgen-ssb.lo `test -f 'sgen-ssb.c' || echo '$(srcdir)/'`sgen-ssb.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimemoon_la-sgen-ssb.Tpo $(DEPDIR)/libmonoruntimemoon_la-sgen-ssb.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-ssb.c' object='libmonoruntimemoon_la-sgen-ssb.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimemoon_la-sgen-ssb.lo `test -f 'sgen-ssb.c' || echo '$(srcdir)/'`sgen-ssb.c
+
+libmonoruntimemoon_la-sgen-pinning.lo: sgen-pinning.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -MT libmonoruntimemoon_la-sgen-pinning.lo -MD -MP -MF $(DEPDIR)/libmonoruntimemoon_la-sgen-pinning.Tpo -c -o libmonoruntimemoon_la-sgen-pinning.lo `test -f 'sgen-pinning.c' || echo '$(srcdir)/'`sgen-pinning.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimemoon_la-sgen-pinning.Tpo $(DEPDIR)/libmonoruntimemoon_la-sgen-pinning.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-pinning.c' object='libmonoruntimemoon_la-sgen-pinning.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimemoon_la-sgen-pinning.lo `test -f 'sgen-pinning.c' || echo '$(srcdir)/'`sgen-pinning.c
+
+libmonoruntimemoon_la-sgen-pinning-stats.lo: sgen-pinning-stats.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -MT libmonoruntimemoon_la-sgen-pinning-stats.lo -MD -MP -MF $(DEPDIR)/libmonoruntimemoon_la-sgen-pinning-stats.Tpo -c -o libmonoruntimemoon_la-sgen-pinning-stats.lo `test -f 'sgen-pinning-stats.c' || echo '$(srcdir)/'`sgen-pinning-stats.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimemoon_la-sgen-pinning-stats.Tpo $(DEPDIR)/libmonoruntimemoon_la-sgen-pinning-stats.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-pinning-stats.c' object='libmonoruntimemoon_la-sgen-pinning-stats.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimemoon_la-sgen-pinning-stats.lo `test -f 'sgen-pinning-stats.c' || echo '$(srcdir)/'`sgen-pinning-stats.c
+
+libmonoruntimemoon_la-sgen-workers.lo: sgen-workers.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -MT libmonoruntimemoon_la-sgen-workers.lo -MD -MP -MF $(DEPDIR)/libmonoruntimemoon_la-sgen-workers.Tpo -c -o libmonoruntimemoon_la-sgen-workers.lo `test -f 'sgen-workers.c' || echo '$(srcdir)/'`sgen-workers.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimemoon_la-sgen-workers.Tpo $(DEPDIR)/libmonoruntimemoon_la-sgen-workers.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-workers.c' object='libmonoruntimemoon_la-sgen-workers.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimemoon_la-sgen-workers.lo `test -f 'sgen-workers.c' || echo '$(srcdir)/'`sgen-workers.c
+
+libmonoruntimemoon_la-sgen-gray.lo: sgen-gray.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -MT libmonoruntimemoon_la-sgen-gray.lo -MD -MP -MF $(DEPDIR)/libmonoruntimemoon_la-sgen-gray.Tpo -c -o libmonoruntimemoon_la-sgen-gray.lo `test -f 'sgen-gray.c' || echo '$(srcdir)/'`sgen-gray.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimemoon_la-sgen-gray.Tpo $(DEPDIR)/libmonoruntimemoon_la-sgen-gray.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-gray.c' object='libmonoruntimemoon_la-sgen-gray.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimemoon_la-sgen-gray.lo `test -f 'sgen-gray.c' || echo '$(srcdir)/'`sgen-gray.c
+
+libmonoruntimemoon_la-sgen-nursery-allocator.lo: sgen-nursery-allocator.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -MT libmonoruntimemoon_la-sgen-nursery-allocator.lo -MD -MP -MF $(DEPDIR)/libmonoruntimemoon_la-sgen-nursery-allocator.Tpo -c -o libmonoruntimemoon_la-sgen-nursery-allocator.lo `test -f 'sgen-nursery-allocator.c' || echo '$(srcdir)/'`sgen-nursery-allocator.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimemoon_la-sgen-nursery-allocator.Tpo $(DEPDIR)/libmonoruntimemoon_la-sgen-nursery-allocator.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-nursery-allocator.c' object='libmonoruntimemoon_la-sgen-nursery-allocator.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimemoon_la-sgen-nursery-allocator.lo `test -f 'sgen-nursery-allocator.c' || echo '$(srcdir)/'`sgen-nursery-allocator.c
+
+libmonoruntimemoon_la-sgen-hash-table.lo: sgen-hash-table.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -MT libmonoruntimemoon_la-sgen-hash-table.lo -MD -MP -MF $(DEPDIR)/libmonoruntimemoon_la-sgen-hash-table.Tpo -c -o libmonoruntimemoon_la-sgen-hash-table.lo `test -f 'sgen-hash-table.c' || echo '$(srcdir)/'`sgen-hash-table.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimemoon_la-sgen-hash-table.Tpo $(DEPDIR)/libmonoruntimemoon_la-sgen-hash-table.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-hash-table.c' object='libmonoruntimemoon_la-sgen-hash-table.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimemoon_la-sgen-hash-table.lo `test -f 'sgen-hash-table.c' || echo '$(srcdir)/'`sgen-hash-table.c
+
+libmonoruntimemoon_la-sgen-descriptor.lo: sgen-descriptor.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -MT libmonoruntimemoon_la-sgen-descriptor.lo -MD -MP -MF $(DEPDIR)/libmonoruntimemoon_la-sgen-descriptor.Tpo -c -o libmonoruntimemoon_la-sgen-descriptor.lo `test -f 'sgen-descriptor.c' || echo '$(srcdir)/'`sgen-descriptor.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimemoon_la-sgen-descriptor.Tpo $(DEPDIR)/libmonoruntimemoon_la-sgen-descriptor.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-descriptor.c' object='libmonoruntimemoon_la-sgen-descriptor.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimemoon_la-sgen-descriptor.lo `test -f 'sgen-descriptor.c' || echo '$(srcdir)/'`sgen-descriptor.c
+
+libmonoruntimemoon_la-sgen-alloc.lo: sgen-alloc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -MT libmonoruntimemoon_la-sgen-alloc.lo -MD -MP -MF $(DEPDIR)/libmonoruntimemoon_la-sgen-alloc.Tpo -c -o libmonoruntimemoon_la-sgen-alloc.lo `test -f 'sgen-alloc.c' || echo '$(srcdir)/'`sgen-alloc.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimemoon_la-sgen-alloc.Tpo $(DEPDIR)/libmonoruntimemoon_la-sgen-alloc.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-alloc.c' object='libmonoruntimemoon_la-sgen-alloc.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimemoon_la-sgen-alloc.lo `test -f 'sgen-alloc.c' || echo '$(srcdir)/'`sgen-alloc.c
+
+libmonoruntimemoon_la-sgen-debug.lo: sgen-debug.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -MT libmonoruntimemoon_la-sgen-debug.lo -MD -MP -MF $(DEPDIR)/libmonoruntimemoon_la-sgen-debug.Tpo -c -o libmonoruntimemoon_la-sgen-debug.lo `test -f 'sgen-debug.c' || echo '$(srcdir)/'`sgen-debug.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimemoon_la-sgen-debug.Tpo $(DEPDIR)/libmonoruntimemoon_la-sgen-debug.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-debug.c' object='libmonoruntimemoon_la-sgen-debug.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimemoon_la-sgen-debug.lo `test -f 'sgen-debug.c' || echo '$(srcdir)/'`sgen-debug.c
+
+libmonoruntimemoon_la-sgen-simple-nursery.lo: sgen-simple-nursery.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -MT libmonoruntimemoon_la-sgen-simple-nursery.lo -MD -MP -MF $(DEPDIR)/libmonoruntimemoon_la-sgen-simple-nursery.Tpo -c -o libmonoruntimemoon_la-sgen-simple-nursery.lo `test -f 'sgen-simple-nursery.c' || echo '$(srcdir)/'`sgen-simple-nursery.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimemoon_la-sgen-simple-nursery.Tpo $(DEPDIR)/libmonoruntimemoon_la-sgen-simple-nursery.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-simple-nursery.c' object='libmonoruntimemoon_la-sgen-simple-nursery.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimemoon_la-sgen-simple-nursery.lo `test -f 'sgen-simple-nursery.c' || echo '$(srcdir)/'`sgen-simple-nursery.c
+
+libmonoruntimemoon_la-sgen-split-nursery.lo: sgen-split-nursery.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -MT libmonoruntimemoon_la-sgen-split-nursery.lo -MD -MP -MF $(DEPDIR)/libmonoruntimemoon_la-sgen-split-nursery.Tpo -c -o libmonoruntimemoon_la-sgen-split-nursery.lo `test -f 'sgen-split-nursery.c' || echo '$(srcdir)/'`sgen-split-nursery.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimemoon_la-sgen-split-nursery.Tpo $(DEPDIR)/libmonoruntimemoon_la-sgen-split-nursery.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-split-nursery.c' object='libmonoruntimemoon_la-sgen-split-nursery.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimemoon_la-sgen-split-nursery.lo `test -f 'sgen-split-nursery.c' || echo '$(srcdir)/'`sgen-split-nursery.c
+
+libmonoruntimemoon_la-sgen-memory-governor.lo: sgen-memory-governor.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -MT libmonoruntimemoon_la-sgen-memory-governor.lo -MD -MP -MF $(DEPDIR)/libmonoruntimemoon_la-sgen-memory-governor.Tpo -c -o libmonoruntimemoon_la-sgen-memory-governor.lo `test -f 'sgen-memory-governor.c' || echo '$(srcdir)/'`sgen-memory-governor.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimemoon_la-sgen-memory-governor.Tpo $(DEPDIR)/libmonoruntimemoon_la-sgen-memory-governor.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-memory-governor.c' object='libmonoruntimemoon_la-sgen-memory-governor.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimemoon_la-sgen-memory-governor.lo `test -f 'sgen-memory-governor.c' || echo '$(srcdir)/'`sgen-memory-governor.c
+
+libmonoruntimemoon_la-sgen-stw.lo: sgen-stw.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -MT libmonoruntimemoon_la-sgen-stw.lo -MD -MP -MF $(DEPDIR)/libmonoruntimemoon_la-sgen-stw.Tpo -c -o libmonoruntimemoon_la-sgen-stw.lo `test -f 'sgen-stw.c' || echo '$(srcdir)/'`sgen-stw.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimemoon_la-sgen-stw.Tpo $(DEPDIR)/libmonoruntimemoon_la-sgen-stw.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-stw.c' object='libmonoruntimemoon_la-sgen-stw.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimemoon_la-sgen-stw.lo `test -f 'sgen-stw.c' || echo '$(srcdir)/'`sgen-stw.c
+
+libmonoruntimemoon_la-sgen-fin-weak-hash.lo: sgen-fin-weak-hash.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -MT libmonoruntimemoon_la-sgen-fin-weak-hash.lo -MD -MP -MF $(DEPDIR)/libmonoruntimemoon_la-sgen-fin-weak-hash.Tpo -c -o libmonoruntimemoon_la-sgen-fin-weak-hash.lo `test -f 'sgen-fin-weak-hash.c' || echo '$(srcdir)/'`sgen-fin-weak-hash.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimemoon_la-sgen-fin-weak-hash.Tpo $(DEPDIR)/libmonoruntimemoon_la-sgen-fin-weak-hash.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-fin-weak-hash.c' object='libmonoruntimemoon_la-sgen-fin-weak-hash.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimemoon_la-sgen-fin-weak-hash.lo `test -f 'sgen-fin-weak-hash.c' || echo '$(srcdir)/'`sgen-fin-weak-hash.c
 
 libmonoruntimemoon_la-boehm-gc.lo: boehm-gc.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimemoon_la_CFLAGS) $(CFLAGS) -MT libmonoruntimemoon_la-boehm-gc.lo -MD -MP -MF $(DEPDIR)/libmonoruntimemoon_la-boehm-gc.Tpo -c -o libmonoruntimemoon_la-boehm-gc.lo `test -f 'boehm-gc.c' || echo '$(srcdir)/'`boehm-gc.c
@@ -3698,6 +4685,14 @@ libmonoruntimesgen_static_la-sgen-fin-weak-hash.lo: sgen-fin-weak-hash.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimesgen_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimesgen_static_la-sgen-fin-weak-hash.lo `test -f 'sgen-fin-weak-hash.c' || echo '$(srcdir)/'`sgen-fin-weak-hash.c
 
+libmonoruntimesgen_static_la-boehm-gc.lo: boehm-gc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimesgen_static_la_CFLAGS) $(CFLAGS) -MT libmonoruntimesgen_static_la-boehm-gc.lo -MD -MP -MF $(DEPDIR)/libmonoruntimesgen_static_la-boehm-gc.Tpo -c -o libmonoruntimesgen_static_la-boehm-gc.lo `test -f 'boehm-gc.c' || echo '$(srcdir)/'`boehm-gc.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimesgen_static_la-boehm-gc.Tpo $(DEPDIR)/libmonoruntimesgen_static_la-boehm-gc.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm-gc.c' object='libmonoruntimesgen_static_la-boehm-gc.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimesgen_static_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimesgen_static_la-boehm-gc.lo `test -f 'boehm-gc.c' || echo '$(srcdir)/'`boehm-gc.c
+
 libmonoruntimesgen_la-console-unix.lo: console-unix.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimesgen_la_CFLAGS) $(CFLAGS) -MT libmonoruntimesgen_la-console-unix.lo -MD -MP -MF $(DEPDIR)/libmonoruntimesgen_la-console-unix.Tpo -c -o libmonoruntimesgen_la-console-unix.lo `test -f 'console-unix.c' || echo '$(srcdir)/'`console-unix.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimesgen_la-console-unix.Tpo $(DEPDIR)/libmonoruntimesgen_la-console-unix.Plo
@@ -4393,6 +5388,14 @@ libmonoruntimesgen_la-sgen-fin-weak-hash.lo: sgen-fin-weak-hash.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sgen-fin-weak-hash.c' object='libmonoruntimesgen_la-sgen-fin-weak-hash.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimesgen_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimesgen_la-sgen-fin-weak-hash.lo `test -f 'sgen-fin-weak-hash.c' || echo '$(srcdir)/'`sgen-fin-weak-hash.c
+
+libmonoruntimesgen_la-boehm-gc.lo: boehm-gc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimesgen_la_CFLAGS) $(CFLAGS) -MT libmonoruntimesgen_la-boehm-gc.lo -MD -MP -MF $(DEPDIR)/libmonoruntimesgen_la-boehm-gc.Tpo -c -o libmonoruntimesgen_la-boehm-gc.lo `test -f 'boehm-gc.c' || echo '$(srcdir)/'`boehm-gc.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libmonoruntimesgen_la-boehm-gc.Tpo $(DEPDIR)/libmonoruntimesgen_la-boehm-gc.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='boehm-gc.c' object='libmonoruntimesgen_la-boehm-gc.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libmonoruntimesgen_la_CFLAGS) $(CFLAGS) -c -o libmonoruntimesgen_la-boehm-gc.lo `test -f 'boehm-gc.c' || echo '$(srcdir)/'`boehm-gc.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

@@ -1,5 +1,5 @@
 /*
- * sgen-los.c: Large objects space.
+ * sgen-los.c: Simple generational GC.
  *
  * Author:
  * 	Paolo Molaro (lupus@ximian.com)
@@ -11,22 +11,38 @@
  * Copyright (c) 1996 by Silicon Graphics.  All rights reserved.
  * Copyright (c) 1998 by Fergus Henderson.  All rights reserved.
  * Copyright (c) 2000-2004 by Hewlett-Packard Company.  All rights reserved.
+ *
+ * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
+ * OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
+ *
+ * Permission is hereby granted to use or copy this program
+ * for any purpose,  provided the above notices are retained on all copies.
+ * Permission to modify the code and to distribute modified code is granted,
+ * provided the above notices are retained, and a notice that the code was
+ * modified is included with the above copyright notice.
+ *
+ *
  * Copyright 2001-2003 Ximian, Inc
  * Copyright 2003-2010 Novell, Inc.
- * Copyright (C) 2012 Xamarin Inc
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public
- * License 2.0 as published by the Free Software Foundation;
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Library General Public License for more details.
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
  *
- * You should have received a copy of the GNU Library General Public
- * License 2.0 along with this library; if not, write to the Free
- * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 #include "config.h"
@@ -292,7 +308,7 @@ sgen_los_free_object (LOSObject *obj)
 {
 #ifndef LOS_DUMMY
 	size_t size = obj->size;
-	SGEN_LOG (4, "Freed large object %p, size %lu", obj->data, (unsigned long)obj->size);
+	DEBUG (4, fprintf (gc_debug_file, "Freed large object %p, size %lu\n", obj->data, (unsigned long)obj->size));
 	binary_protocol_empty (obj->data, obj->size);
 
 	los_memory_usage -= size;
@@ -378,7 +394,7 @@ sgen_los_alloc_large_inner (MonoVTable *vtable, size_t size)
 	los_object_list = obj;
 	los_memory_usage += size;
 	los_num_objects++;
-	SGEN_LOG (4, "Allocated large object %p, vtable: %p (%s), size: %zd", obj->data, vtable, vtable->klass->name, size);
+	DEBUG (4, fprintf (gc_debug_file, "Allocated large object %p, vtable: %p (%s), size: %zd\n", obj->data, vtable, vtable->klass->name, size));
 	binary_protocol_alloc (obj->data, vtable, size);
 
 #ifdef LOS_CONSISTENCY_CHECK
@@ -493,23 +509,22 @@ mono_sgen_los_describe_pointer (char *ptr)
 
 	for (obj = los_object_list; obj; obj = obj->next) {
 		MonoVTable *vtable;
-		const char *los_kind;
 		if (obj->data > ptr || obj->data + obj->size <= ptr)
 			continue;
 
 		if (obj->size > LOS_SECTION_OBJECT_LIMIT)
-			los_kind = "huge-los-ptr ";
+			fprintf (gc_debug_file, "huge-los-ptr ");
 		else
-			los_kind = "los-ptr ";
+			fprintf (gc_debug_file, "los-ptr ");
 
 		vtable = (MonoVTable*)SGEN_LOAD_VTABLE (obj->data);
 
 		if (obj->data == ptr)
-			SGEN_LOG (1, "%s (object %s.%s size %d)", 
-					 los_kind, vtable->klass->name_space, vtable->klass->name, (int)obj->size);
+			fprintf (gc_debug_file, "(object %s.%s size %d)", 
+					 vtable->klass->name_space, vtable->klass->name, (int)obj->size);
 		else
-			SGEN_LOG (1, "%s (interior-ptr offset %td of %p (%s.%s) size %d)",
-					 los_kind, ptr - obj->data, obj->data,
+			fprintf (gc_debug_file, "(interior-ptr offset %td of %p (%s.%s) size %d)",
+					 ptr - obj->data, obj->data,
 					 vtable->klass->name_space, vtable->klass->name, (int)obj->size);
 
 		return TRUE;

@@ -1,22 +1,25 @@
 /*
- * sgen-gray.c: Gray queue management.
- *
  * Copyright 2001-2003 Ximian, Inc
  * Copyright 2003-2010 Novell, Inc.
- * Copyright (C) 2012 Xamarin Inc
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public
- * License 2.0 as published by the Free Software Foundation;
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Library General Public License for more details.
- *
- * You should have received a copy of the GNU Library General Public
- * License 2.0 along with this library; if not, write to the Free
- * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "config.h"
 #ifdef HAVE_SGEN_GC
@@ -65,14 +68,14 @@ sgen_gray_object_free_queue_section (GrayQueueSection *section)
 void
 sgen_gray_object_enqueue (SgenGrayQueue *queue, char *obj)
 {
-	SGEN_ASSERT (9, obj, "enqueueing a null object");
+	DEBUG (9, g_assert (obj));
 	//sgen_check_objref (obj);
 	if (G_UNLIKELY (!queue->first || queue->first->end == SGEN_GRAY_QUEUE_SECTION_SIZE))
 		sgen_gray_object_alloc_queue_section (queue);
-	SGEN_ASSERT (9, queue->first->end < SGEN_GRAY_QUEUE_SECTION_SIZE, "gray queue %p overflow, first %p, end %d", queue, queue->first, queue->first->end);
+	DEBUG (9, g_assert (queue->first && queue->first->end < SGEN_GRAY_QUEUE_SECTION_SIZE));
 	queue->first->objects [queue->first->end++] = obj;
 
-	SGEN_LOG_DO (9, ++queue->balance);
+	DEBUG (9, ++queue->balance);
 }
 
 char*
@@ -83,7 +86,7 @@ sgen_gray_object_dequeue (SgenGrayQueue *queue)
 	if (sgen_gray_object_queue_is_empty (queue))
 		return NULL;
 
-	SGEN_ASSERT (9, queue->first->end, "gray queue %p underflow, first %p, end %d", queue, queue->first, queue->first->end);
+	DEBUG (9, g_assert (queue->first->end));
 
 	obj = queue->first->objects [--queue->first->end];
 
@@ -94,7 +97,7 @@ sgen_gray_object_dequeue (SgenGrayQueue *queue)
 		queue->free_list = section;
 	}
 
-	SGEN_LOG_DO (9, --queue->balance);
+	DEBUG (9, --queue->balance);
 
 	return obj;
 }
@@ -129,7 +132,7 @@ sgen_gray_object_queue_init (SgenGrayQueue *queue)
 	int i;
 
 	g_assert (sgen_gray_object_queue_is_empty (queue));
-	SGEN_ASSERT (9, queue->balance == 0, "unbalanced queue on init %d", queue->balance);
+	DEBUG (9, g_assert (queue->balance == 0));
 
 	/* Free the extra sections allocated during the last collection */
 	i = 0;

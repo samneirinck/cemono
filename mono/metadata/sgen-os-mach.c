@@ -1,5 +1,5 @@
 /*
- * sgen-os-mach.c: Mach-OS support.
+ * sgen-os-mach.c: Simple generational GC.
  *
  * Author:
  *	Paolo Molaro (lupus@ximian.com)
@@ -7,20 +7,25 @@
  * 	Geoff Norton (gnorton@novell.com)
  *
  * Copyright 2010 Novell, Inc (http://www.novell.com)
- * Copyright (C) 2012 Xamarin Inc
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public
- * License 2.0 as published by the Free Software Foundation;
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Library General Public License for more details.
- *
- * You should have received a copy of the GNU Library General Public
- * License 2.0 along with this library; if not, write to the Free
- * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 #include "config.h"
@@ -71,7 +76,7 @@ sgen_suspend_thread (SgenThreadInfo *info)
 	ctx.uc_mcontext = mctx;
 
 	info->stopped_domain = mono_mach_arch_get_tls_value_from_thread (
-		mono_thread_info_get_tid (info), mono_domain_get_tls_key ());
+		mono_thread_info_get_tid (info), mono_domain_get_tls_offset ());
 	info->stopped_ip = (gpointer) mono_mach_arch_get_ip (state);
 	info->stack_start = NULL;
 	stack_start = (char*) mono_mach_arch_get_sp (state) - REDZONE_SIZE;
@@ -92,7 +97,7 @@ sgen_suspend_thread (SgenThreadInfo *info)
 	if (mono_gc_get_gc_callbacks ()->thread_suspend_func)
 		mono_gc_get_gc_callbacks ()->thread_suspend_func (info->runtime_data, &ctx, NULL);
 
-	SGEN_LOG (2, "thread %p stopped at %p stack_start=%p", (void*)info->info.native_handle, info->stopped_ip, info->stack_start);
+	DEBUG (1, fprintf (gc_debug_file, "thread %p stopped at %p stack_start=%p\n", (void*)info->info.native_handle, info->stopped_ip, info->stack_start));
 
 	binary_protocol_thread_suspend ((gpointer)mono_thread_info_get_tid (info), info->stopped_ip);
 

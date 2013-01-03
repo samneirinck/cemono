@@ -242,9 +242,7 @@ mon_finalize (MonoThreadsSync *mon)
 
 	mon->data = monitor_freelist;
 	monitor_freelist = mon;
-#ifndef DISABLE_PERFCOUNTERS
 	mono_perfcounters->gc_sync_blocks--;
-#endif
 }
 
 /* LOCKING: this is called with monitor_mutex held */
@@ -312,9 +310,7 @@ mon_new (gsize id)
 	new->owner = id;
 	new->nest = 1;
 	
-#ifndef DISABLE_PERFCOUNTERS
 	mono_perfcounters->gc_sync_blocks++;
-#endif
 	return new;
 }
 
@@ -540,9 +536,7 @@ retry:
 	}
 
 	/* The object must be locked by someone else... */
-#ifndef DISABLE_PERFCOUNTERS
 	mono_perfcounters->thread_contentions++;
-#endif
 
 	/* If ms is 0 we don't block, but just fail straight away */
 	if (ms == 0) {
@@ -618,10 +612,8 @@ retry_contended:
 	
 	InterlockedIncrement (&mon->entry_count);
 
-#ifndef DISABLE_PERFCOUNTERS
 	mono_perfcounters->thread_queue_len++;
 	mono_perfcounters->thread_queue_max++;
-#endif
 	thread = mono_thread_internal_current ();
 
 	mono_thread_set_state (thread, ThreadState_WaitSleepJoin);
@@ -635,9 +627,7 @@ retry_contended:
 	mono_thread_clr_state (thread, ThreadState_WaitSleepJoin);
 	
 	InterlockedDecrement (&mon->entry_count);
-#ifndef DISABLE_PERFCOUNTERS
 	mono_perfcounters->thread_queue_len--;
-#endif
 
 	if (ms != INFINITE) {
 		now = mono_msec_ticks ();

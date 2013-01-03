@@ -35,7 +35,7 @@
 typedef struct _MonoLockFreeQueueNode MonoLockFreeQueueNode;
 
 struct _MonoLockFreeQueueNode {
-	MonoLockFreeQueueNode * volatile next;
+	MonoLockFreeQueueNode *next;
 #ifdef QUEUE_DEBUG
 	gint32 in_queue;
 #endif
@@ -43,16 +43,16 @@ struct _MonoLockFreeQueueNode {
 
 typedef struct {
 	MonoLockFreeQueueNode node;
-	volatile gint32 in_use;
+	gint32 in_use;
 } MonoLockFreeQueueDummy;
 
 #define MONO_LOCK_FREE_QUEUE_NUM_DUMMIES	2
 
 typedef struct {
-	MonoLockFreeQueueNode * volatile head;
-	MonoLockFreeQueueNode * volatile tail;
+	volatile MonoLockFreeQueueNode *head;
+	volatile MonoLockFreeQueueNode *tail;
 	MonoLockFreeQueueDummy dummies [MONO_LOCK_FREE_QUEUE_NUM_DUMMIES];
-	volatile gint32 has_dummy;
+	gint32 has_dummy;
 } MonoLockFreeQueue;
 
 void mono_lock_free_queue_init (MonoLockFreeQueue *q) MONO_INTERNAL;
