@@ -195,7 +195,7 @@ namespace CryEngine.Serialization
             var numElements = array.Count();
             WriteLine(numElements);
 
-            WriteType(GetIEnumerableElementType(array.GetType()));
+            WriteType(GetIEnumerableElementType(objectReference.Value.GetType()));
 
             for (int i = 0; i < numElements; i++)
                 StartWrite(new ObjectReference(i.ToString(), array.ElementAt(i)));
