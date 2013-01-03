@@ -125,6 +125,7 @@ typedef struct MonoAotOptions {
 	gboolean log_generics;
 	gboolean direct_pinvoke;
 	gboolean direct_icalls;
+	gboolean no_direct_calls;
 	int nthreads;
 	int ntrampolines;
 	int nrgctx_trampolines;
@@ -217,6 +218,10 @@ typedef struct MonoAotCompile {
 	GHashTable *plt_entry_debug_sym_cache;
 	gboolean thumb_mixed, need_no_dead_strip, need_pt_gnu_stack;
 	GHashTable *ginst_hash;
+	gboolean global_symbols;
+#ifdef MONOTOUCH
+	gboolean direct_method_addresses;
+#endif
 } MonoAotCompile;
 
 typedef struct {
@@ -608,6 +613,11 @@ arch_init (MonoAotCompile *acfg)
 
 #if defined(__linux__) && !defined(TARGET_ARM)
 	acfg->need_pt_gnu_stack = TRUE;
+#endif
+
+#ifdef MONOTOUCH
+	acfg->direct_method_addresses = TRUE;
+	acfg->global_symbols = TRUE;
 #endif
 }
 
@@ -3703,7 +3713,7 @@ is_direct_callable (MonoAotCompile *acfg, MonoMethod *method, MonoJumpInfo *patc
 				// FIXME: Maybe call the wrapper directly ?
 				direct_callable = FALSE;
 
-			if (acfg->aot_opts.soft_debug) {
+			if (acfg->aot_opts.soft_debug || acfg->aot_opts.no_direct_calls) {
 				/* Disable this so all calls go through load_method (), see the
 				 * mini_get_debug_options ()->load_aot_jit_info_eagerly = TRUE; line in
 				 * mono_debugger_agent_init ().
@@ -3773,7 +3783,7 @@ emit_and_reloc_code (MonoAotCompile *acfg, MonoMethod *method, guint8 *code, gui
 	MonoMethodHeader *header;
 	gboolean skip, direct_call;
 	guint32 got_slot;
-	char direct_call_target [1024];
+	const char *direct_call_target;
 	const char *direct_pinvoke;
 
 	if (method) {
@@ -3826,8 +3836,9 @@ emit_and_reloc_code (MonoAotCompile *acfg, MonoMethod *method, guint8 *code, gui
 						MonoCompile *callee_cfg = g_hash_table_lookup (acfg->method_to_cfg, patch_info->data.method);
 						//printf ("DIRECT: %s %s\n", method ? mono_method_full_name (method, TRUE) : "", mono_method_full_name (callee_cfg->method, TRUE));
 						direct_call = TRUE;
-						g_assert (strlen (callee_cfg->asm_symbol) < 1000);
-						sprintf (direct_call_target, "%s", callee_cfg->asm_symbol);
+						direct_call_target = callee_cfg->asm_symbol;
+						patch_info->type = MONO_PATCH_INFO_NONE;
+						acfg->stats.direct_calls ++;
 					}
 
 					acfg->stats.all_calls ++;
@@ -3846,7 +3857,7 @@ emit_and_reloc_code (MonoAotCompile *acfg, MonoMethod *method, guint8 *code, gui
 #endif
 							direct_call = TRUE;
 							g_assert (strlen (direct_pinvoke) < 1000);
-							sprintf (direct_call_target, "%s%s", prefix, direct_pinvoke);
+							direct_call_target = g_strdup_printf ("%s%s", prefix, direct_pinvoke);
 						}
 					}
 				}
@@ -3861,7 +3872,7 @@ emit_and_reloc_code (MonoAotCompile *acfg, MonoMethod *method, guint8 *code, gui
 					if (plt_entry) {
 						/* This patch has a PLT entry, so we must emit a call to the PLT entry */
 						direct_call = TRUE;
-						sprintf (direct_call_target, "%s", plt_entry->symbol);
+						direct_call_target = plt_entry->symbol;
 		
 						/* Nullify the patch */
 						patch_info->type = MONO_PATCH_INFO_NONE;
@@ -3969,7 +3980,7 @@ emit_method_code (MonoAotCompile *acfg, MonoCompile *cfg)
 	int method_index;
 	guint8 *code;
 	char *debug_sym = NULL;
-	char symbol [128];
+	char *symbol = NULL;
 	int func_alignment = AOT_FUNC_ALIGNMENT;
 	MonoMethodHeader *header;
 	char *export_name;
@@ -3979,15 +3990,19 @@ emit_method_code (MonoAotCompile *acfg, MonoCompile *cfg)
 	header = cfg->header;
 
 	method_index = get_method_index (acfg, method);
+	symbol = g_strdup_printf ("%sme_%x", acfg->temp_prefix, method_index);
+
 
 	/* Make the labels local */
-	sprintf (symbol, "%s", cfg->asm_symbol);
-
 	emit_section_change (acfg, ".text", 0);
 	emit_alignment (acfg, func_alignment);
-	emit_label (acfg, symbol);
+	
+	if (acfg->global_symbols && acfg->need_no_dead_strip)
+		fprintf (acfg->fp, "	.no_dead_strip %s\n", cfg->asm_symbol);
+	
+	emit_label (acfg, cfg->asm_symbol);
 
-	if (acfg->aot_opts.write_symbols) {
+	if (acfg->aot_opts.write_symbols && !acfg->global_symbols) {
 		/* 
 		 * Write a C style symbol for every method, this has two uses:
 		 * - it works on platforms where the dwarf debugging info is not
@@ -3996,7 +4011,6 @@ emit_method_code (MonoAotCompile *acfg, MonoCompile *cfg)
 		 */
 		debug_sym = get_debug_sym (method, "", acfg->method_label_hash);
 
-		sprintf (symbol, "%sme_%x", acfg->temp_prefix, method_index);
 		if (acfg->need_no_dead_strip)
 			fprintf (acfg->fp, "	.no_dead_strip %s\n", debug_sym);
 		emit_local_symbol (acfg, debug_sym, symbol, TRUE);
@@ -4011,7 +4025,7 @@ emit_method_code (MonoAotCompile *acfg, MonoCompile *cfg)
 	}
 
 	if (cfg->verbose_level > 0)
-		g_print ("Method %s emitted as %s\n", mono_method_full_name (method, TRUE), symbol);
+		g_print ("Method %s emitted as %s\n", mono_method_full_name (method, TRUE), cfg->asm_symbol);
 
 	acfg->stats.code_size += cfg->code_len;
 
@@ -4026,8 +4040,8 @@ emit_method_code (MonoAotCompile *acfg, MonoCompile *cfg)
 		g_free (debug_sym);
 	}
 
-	sprintf (symbol, "%sme_%x", acfg->temp_prefix, method_index);
 	emit_label (acfg, symbol);
+	g_free (symbol);
 }
 
 /**
@@ -4755,12 +4769,14 @@ emit_plt (MonoAotCompile *acfg)
 			/* Emit only a thumb version */
 			continue;
 
-		if (!acfg->thumb_mixed)
+		if (acfg->llvm && !acfg->thumb_mixed)
 			emit_label (acfg, plt_entry->llvm_symbol);
 
 		if (debug_sym) {
-			if (acfg->need_no_dead_strip)
+			if (acfg->need_no_dead_strip) {
+				img_writer_emit_unset_mode (acfg->w);
 				fprintf (acfg->fp, "	.no_dead_strip %s\n", debug_sym);
+			}
 			emit_local_symbol (acfg, debug_sym, NULL, TRUE);
 			emit_label (acfg, debug_sym);
 		}
@@ -5246,6 +5262,12 @@ mono_aot_parse_options (const char *aot_options, MonoAotOptions *opts)
 			opts->direct_pinvoke = TRUE;
 		} else if (str_begins_with (arg, "direct-icalls")) {
 			opts->direct_icalls = TRUE;
+#if defined(TARGET_ARM)
+		} else if (str_begins_with (arg, "iphone-abi")) {
+			// older full-aot users did depend on this.
+#endif
+		} else if (str_begins_with (arg, "no-direct-calls")) {
+			opts->no_direct_calls = TRUE;
 		} else if (str_begins_with (arg, "print-skipped")) {
 			opts->print_skipped_methods = TRUE;
 		} else if (str_begins_with (arg, "stats")) {
@@ -5872,7 +5894,7 @@ mono_aot_patch_info_dup (MonoJumpInfo* ji)
 static void
 emit_llvm_file (MonoAotCompile *acfg)
 {
-	char *command, *opts;
+	char *command, *opts, *tempbc;
 	int i;
 	MonoJumpInfo *patch_info;
 
@@ -5906,7 +5928,7 @@ emit_llvm_file (MonoAotCompile *acfg)
 		 */
 		if (strcmp (acfg->image->assembly->aname.name, "mscorlib") == 0) {
 			/* For the generic + rgctx trampolines */
-			acfg->final_got_size += 200;
+			acfg->final_got_size += 400;
 			/* For the specific trampolines */
 			for (ntype = 0; ntype < MONO_AOT_TRAMP_NUM; ++ntype)
 				acfg->final_got_size += acfg->num_trampolines [ntype] * 2;
@@ -5914,7 +5936,9 @@ emit_llvm_file (MonoAotCompile *acfg)
 	}
 
 
-	mono_llvm_emit_aot_module ("temp.bc", acfg->final_got_size);
+	tempbc = g_strdup_printf ("%s.bc", acfg->tmpfname);
+	mono_llvm_emit_aot_module (tempbc, acfg->final_got_size);
+	g_free (tempbc);
 
 	/*
 	 * FIXME: Experiment with adding optimizations, the -std-compile-opts set takes
@@ -5933,7 +5957,7 @@ emit_llvm_file (MonoAotCompile *acfg)
 	opts = g_strdup ("-instcombine -simplifycfg");
 	opts = g_strdup ("-simplifycfg -domtree -domfrontier -scalarrepl -instcombine -simplifycfg -domtree -domfrontier -scalarrepl -simplify-libcalls -instcombine -simplifycfg -instcombine -simplifycfg -reassociate -domtree -loops -loop-simplify -domfrontier -loop-simplify -lcssa -loop-rotate -licm -lcssa -loop-unswitch -instcombine -scalar-evolution -loop-simplify -lcssa -iv-users -indvars -loop-deletion -loop-simplify -lcssa -loop-unroll -instcombine -memdep -gvn -memdep -memcpyopt -sccp -instcombine -domtree -memdep -dse -adce -simplifycfg -preverify -domtree -verify");
 #if 1
-	command = g_strdup_printf ("%sopt -f %s -o temp.opt.bc temp.bc", acfg->aot_opts.llvm_path, opts);
+	command = g_strdup_printf ("%sopt -f %s -o %s.opt.bc %s.bc", acfg->aot_opts.llvm_path, opts, acfg->tmpfname, acfg->tmpfname);
 	printf ("Executing opt: %s\n", command);
 	if (system (command) != 0) {
 		exit (1);
@@ -5956,7 +5980,7 @@ emit_llvm_file (MonoAotCompile *acfg)
 		g_string_append_printf (acfg->llc_args, " -relocation-model=pic");
 	unlink (acfg->tmpfname);
 
-	command = g_strdup_printf ("%sllc %s -disable-gnu-eh-frame -enable-mono-eh-frame -o %s temp.opt.bc", acfg->aot_opts.llvm_path, acfg->llc_args->str, acfg->tmpfname);
+	command = g_strdup_printf ("%sllc %s -disable-gnu-eh-frame -enable-mono-eh-frame -o %s %s.opt.bc", acfg->aot_opts.llvm_path, acfg->llc_args->str, acfg->tmpfname, acfg->tmpfname);
 
 	printf ("Executing llc: %s\n", command);
 
@@ -6074,6 +6098,46 @@ emit_code (MonoAotCompile *acfg)
 		}
 	}
 
+#ifdef MONOTOUCH
+	if (acfg->direct_method_addresses) {
+		acfg->flags |= MONO_AOT_FILE_FLAG_DIRECT_METHOD_ADDRESSES;
+
+		sprintf (symbol, "method_addresses");
+		emit_section_change (acfg, RODATA_SECT, 1);
+		emit_alignment (acfg, 8);
+		emit_label (acfg, symbol);
+
+		for (i = 0; i < acfg->nmethods; ++i) {
+			if (acfg->cfgs [i]) {
+				emit_pointer (acfg, acfg->cfgs [i]->asm_symbol);
+			} else {
+				emit_pointer (acfg, NULL);
+			}
+		}
+
+		/* Empty */
+		sprintf (symbol, "code_offsets");
+		emit_section_change (acfg, RODATA_SECT, 1);
+		emit_alignment (acfg, 8);
+		emit_label (acfg, symbol);
+	} else {
+		sprintf (symbol, "code_offsets");
+		emit_section_change (acfg, RODATA_SECT, 1);
+		emit_alignment (acfg, 8);
+		emit_label (acfg, symbol);
+
+		acfg->stats.offsets_size += acfg->nmethods * 4;
+
+		sprintf (end_symbol, "methods");
+		for (i = 0; i < acfg->nmethods; ++i) {
+			if (acfg->cfgs [i]) {
+				emit_symbol_diff (acfg, acfg->cfgs [i]->asm_symbol, end_symbol, 0);
+			} else {
+				emit_int32 (acfg, 0xffffffff);
+			}
+		}
+	}
+#else
 	sprintf (symbol, "code_offsets");
 	emit_section_change (acfg, RODATA_SECT, 1);
 	emit_alignment (acfg, 8);
@@ -6089,6 +6153,7 @@ emit_code (MonoAotCompile *acfg)
 			emit_int32 (acfg, 0xffffffff);
 		}
 	}
+#endif
 	emit_line (acfg);
 
 	/* Emit a sorted table mapping methods to their unbox trampolines */
@@ -6997,6 +7062,9 @@ emit_file_info (MonoAotCompile *acfg)
 	emit_pointer (acfg, "method_info_offsets");
 	emit_pointer (acfg, "ex_info_offsets");
 	emit_pointer (acfg, "code_offsets");
+#ifdef MONOTOUCH
+	emit_pointer (acfg, "method_addresses");
+#endif
 	emit_pointer (acfg, "extra_method_info_offsets");
 	emit_pointer (acfg, "extra_method_table");
 	emit_pointer (acfg, "got_info_offsets");
@@ -7048,20 +7116,22 @@ emit_file_info (MonoAotCompile *acfg)
 		emit_int32 (acfg, acfg->trampoline_size [i]);
 
 #if defined (TARGET_ARM) && defined (TARGET_MACH)
-       {
-               MonoType t;
-               int align = 0;
+	{
+		MonoType t;
+		int align = 0;
 
-               t.type = MONO_TYPE_R8;
-               mono_type_size (&t, &align);
+		memset (&t, 0, sizeof (MonoType));
+		t.type = MONO_TYPE_R8;
+		mono_type_size (&t, &align);
 
-               emit_int32 (acfg, align);
+		emit_int32 (acfg, align);
 
-               t.type = MONO_TYPE_I8;
-               mono_type_size (&t, &align);
+		memset (&t, 0, sizeof (MonoType));
+		t.type = MONO_TYPE_I8;
+		mono_type_size (&t, &align);
 
-               emit_int32 (acfg, align);
-       }
+		emit_int32 (acfg, align);
+	}
 #else
 	emit_int32 (acfg, __alignof__ (double));
 	emit_int32 (acfg, __alignof__ (gint64));
@@ -7112,7 +7182,7 @@ emit_dwarf_info (MonoAotCompile *acfg)
 {
 #ifdef EMIT_DWARF_INFO
 	int i;
-	char symbol [128], symbol2 [128];
+	char symbol2 [128];
 
 	/* DIEs for methods */
 	for (i = 0; i < acfg->nmethods; ++i) {
@@ -7125,10 +7195,9 @@ emit_dwarf_info (MonoAotCompile *acfg)
 		if (cfg->compile_llvm)
 			continue;
 
-		sprintf (symbol, "%s", cfg->asm_symbol);
 		sprintf (symbol2, "%sme_%x", acfg->temp_prefix, i);
 
-		mono_dwarf_writer_emit_method (acfg->dwarf, cfg, cfg->method, symbol, symbol2, cfg->jit_info->code_start, cfg->jit_info->code_size, cfg->args, cfg->locals, cfg->unwind_ops, mono_debug_find_method (cfg->jit_info->method, mono_domain_get ()));
+		mono_dwarf_writer_emit_method (acfg->dwarf, cfg, cfg->method, cfg->asm_symbol, symbol2, cfg->jit_info->code_start, cfg->jit_info->code_size, cfg->args, cfg->locals, cfg->unwind_ops, mono_debug_find_method (cfg->jit_info->method, mono_domain_get ()));
 	}
 #endif
 }
@@ -7694,6 +7763,8 @@ mono_compile_assembly (MonoAssembly *ass, guint32 opts, const char *aot_options)
 
 			if (COMPILE_LLVM (cfg))
 				cfg->asm_symbol = g_strdup_printf ("%s%s", acfg->llvm_label_prefix, cfg->llvm_method_name);
+			else if (acfg->global_symbols)
+				cfg->asm_symbol = get_debug_sym (cfg->method, "", acfg->method_label_hash);
 			else
 				cfg->asm_symbol = g_strdup_printf ("%s%sm_%x", acfg->temp_prefix, acfg->llvm_label_prefix, method_index);
 		}

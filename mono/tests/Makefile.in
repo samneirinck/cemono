@@ -866,7 +866,7 @@ EXTRA_DIST = test-driver $(TEST_CS_SRC_DIST) $(TEST_IL_SRC) \
 	$(PREREQ_IL_SRC) $(PREREQ_CS_SRC) load-missing.il t-missing.cs \
 	load-exceptions.cs sgen-bridge.cs sgen-descriptors.cs \
 	sgen-gshared-vtype.cs sgen-bridge-major-fragmentation.cs \
-	gen-runtime-invoke.cs make-imt-test.cs \
+	sgen-domain-unload.cs gen-runtime-invoke.cs make-imt-test.cs \
 	test-inline-call-stack-library.cs test-inline-call-stack.cs \
 	unhandled-exception-base-configuration.config \
 	unhandled-exception-legacy-configuration.config \
@@ -886,7 +886,8 @@ EXTRA_DIST = test-driver $(TEST_CS_SRC_DIST) $(TEST_IL_SRC) \
 OK_G_SYMBOLS = 'g_list\|g_slist\|g_concat_dir_and_file'
 SGEN_TESTS = \
 	sgen-descriptors.exe	\
-	sgen-gshared-vtype.exe
+	sgen-gshared-vtype.exe	\
+	sgen-domain-unload.exe
 
 GSHARED_TESTS = \
 		generics-sharing.2.exe shared-generic-methods.2.exe	\
@@ -1538,23 +1539,23 @@ test-type-load: TestDriver.dll
 sgen-regular-tests: $(SGEN_TESTS)
 	@for fn in $+ ; do	\
 		echo "Testing $$fn ...";	\
-		MONO_GC_PARAMS=major=marksweep-par MONO_ENV_OPTIONS="--gc=sgen" $(RUNTIME) $$fn > $$fn.stdout 2> $$fn.stderr || exit 1;	\
-		MONO_ENV_OPTIONS="--gc=sgen"                                    $(RUNTIME) $$fn > $$fn.stdout 2> $$fn.stderr || exit 1;	\
-		MONO_GC_PARAMS=major=marksweep-par,minor=split MONO_ENV_OPTIONS="--gc=sgen" $(RUNTIME) $$fn > $$fn.stdout 2> $$fn.stderr || exit 1;	\
-		MONO_GC_PARAMS=minor=split MONO_ENV_OPTIONS="--gc=sgen"                     $(RUNTIME) $$fn > $$fn.stdout 2> $$fn.stderr || exit 1;	\
-		MONO_GC_PARAMS=major=marksweep,concurrent-sweep MONO_ENV_OPTIONS="--gc=sgen" $(RUNTIME) $$fn > $$fn.stdout 2> $$fn.stderr || exit 1;	\
-		MONO_GC_PARAMS=minor=split,major=marksweep,concurrent-sweep MONO_ENV_OPTIONS="--gc=sgen" $(RUNTIME) $$fn > $$fn.stdout 2> $$fn.stderr || exit 1;	\
-		MONO_GC_PARAMS=major=marksweep-par,minor=split,alloc-ratio=95 MONO_ENV_OPTIONS="--gc=sgen" $(RUNTIME) $$fn > $$fn.stdout 2> $$fn.stderr || exit 1;	\
-		MONO_GC_PARAMS=minor=split,alloc-ratio=95 MONO_ENV_OPTIONS="--gc=sgen"                     $(RUNTIME) $$fn > $$fn.stdout 2> $$fn.stderr || exit 1;	\
+		MONO_GC_PARAMS=major=marksweep-par MONO_ENV_OPTIONS="--gc=sgen" $(RUNTIME) $$fn > $$fn.1.stdout 2> $$fn.1.stderr || exit 1;	\
+		MONO_ENV_OPTIONS="--gc=sgen"                                    $(RUNTIME) $$fn > $$fn.2.stdout 2> $$fn.2.stderr || exit 1;	\
+		MONO_GC_PARAMS=major=marksweep-par,minor=split MONO_ENV_OPTIONS="--gc=sgen" $(RUNTIME) $$fn > $$fn.3.stdout 2> $$fn.3.stderr || exit 1;	\
+		MONO_GC_PARAMS=minor=split MONO_ENV_OPTIONS="--gc=sgen"                     $(RUNTIME) $$fn > $$fn.4.stdout 2> $$fn.4.stderr || exit 1;	\
+		MONO_GC_PARAMS=major=marksweep,concurrent-sweep MONO_ENV_OPTIONS="--gc=sgen" $(RUNTIME) $$fn > $$fn.5.stdout 2> $$fn.5.stderr || exit 1;	\
+		MONO_GC_PARAMS=minor=split,major=marksweep,concurrent-sweep MONO_ENV_OPTIONS="--gc=sgen" $(RUNTIME) $$fn > $$fn.6.stdout 2> $$fn.6.stderr || exit 1;	\
+		MONO_GC_PARAMS=major=marksweep-par,minor=split,alloc-ratio=95 MONO_ENV_OPTIONS="--gc=sgen" $(RUNTIME) $$fn > $$fn.7.stdout 2> $$fn.7.stderr || exit 1;	\
+		MONO_GC_PARAMS=minor=split,alloc-ratio=95 MONO_ENV_OPTIONS="--gc=sgen"                     $(RUNTIME) $$fn > $$fn.8.stdout 2> $$fn.8.stderr || exit 1;	\
 	done
 
 sgen-tests: sgen-regular-tests sgen-bridge.exe sgen-bridge-major-fragmentation.exe
 	@echo "Testing sgen-bridge.exe ...";	\
-	MONO_GC_PARAMS=bridge=Bridge MONO_ENV_OPTIONS="--gc=sgen" $(RUNTIME) sgen-bridge.exe > sgen-bridge.exe.stdout 2> sgen-bridge.exe.stderr || exit 1;	\
-	MONO_GC_PARAMS=bridge=Bridge,minor=split MONO_ENV_OPTIONS="--gc=sgen" $(RUNTIME) sgen-bridge.exe > sgen-bridge.exe.stdout 2> sgen-bridge.exe.stderr || exit 1;	\
+	MONO_GC_PARAMS=bridge=Bridge MONO_ENV_OPTIONS="--gc=sgen" $(RUNTIME) sgen-bridge.exe > sgen-bridge.exe.1.stdout 2> sgen-bridge.exe.1.stderr || exit 1;	\
+	MONO_GC_PARAMS=bridge=Bridge,minor=split MONO_ENV_OPTIONS="--gc=sgen" $(RUNTIME) sgen-bridge.exe > sgen-bridge.exe.2.stdout 2> sgen-bridge.exe.2.stderr || exit 1;	\
 	echo "Testing sgen-bridge-major-fragmentation.exe ...";	\
-	MONO_GC_PARAMS=bridge=Bridge MONO_ENV_OPTIONS="--gc=sgen" $(RUNTIME) sgen-bridge-major-fragmentation.exe > sgen-bridge-major-fragmentation.exe.stdout 2> sgen-bridge-major-fragmentation.exe.stderr || exit 1;	\
-	MONO_GC_PARAMS=bridge=Bridge,minor=split MONO_ENV_OPTIONS="--gc=sgen" $(RUNTIME) sgen-bridge-major-fragmentation.exe > sgen-bridge-major-fragmentation.exe.stdout 2> sgen-bridge-major-fragmentation.exe.stderr || exit 1;
+	MONO_GC_PARAMS=bridge=Bridge MONO_ENV_OPTIONS="--gc=sgen" $(RUNTIME) sgen-bridge-major-fragmentation.exe > sgen-bridge-major-fragmentation.exe.1.stdout 2> sgen-bridge-major-fragmentation.exe.1.stderr || exit 1;	\
+	MONO_GC_PARAMS=bridge=Bridge,minor=split MONO_ENV_OPTIONS="--gc=sgen" $(RUNTIME) sgen-bridge-major-fragmentation.exe > sgen-bridge-major-fragmentation.exe.2.stdout 2> sgen-bridge-major-fragmentation.exe.2.stderr || exit 1;
 runtime-invoke.gen.exe: TestDriver.dll gen-runtime-invoke.exe
 	$(RUNTIME) gen-runtime-invoke.exe > runtime-invoke.gen.cs
 	$(MCS) -out:runtime-invoke.gen.exe -r:TestDriver.dll runtime-invoke.gen.cs

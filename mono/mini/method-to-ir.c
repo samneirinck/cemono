@@ -3920,6 +3920,7 @@ mono_emit_load_got_addr (MonoCompile *cfg)
 		return;
 
 	MONO_INST_NEW (cfg, getaddr, OP_LOAD_GOTADDR);
+	getaddr->cil_code = cfg->header->code;
 	getaddr->dreg = cfg->got_var->dreg;
 
 	/* Add it to the start of the first bblock */
@@ -5990,6 +5991,9 @@ mono_method_to_ir (MonoCompile *cfg, MonoMethod *method, MonoBasicBlock *start_b
 	init_locals = header->init_locals;
 
 	seq_points = cfg->gen_seq_points && cfg->method == method;
+#ifdef PLATFORM_ANDROID
+	seq_points &= cfg->method->wrapper_type == MONO_WRAPPER_NONE;
+#endif
 
 	if (cfg->gen_seq_points && cfg->method == method) {
 		minfo = mono_debug_lookup_method (method);
@@ -10088,6 +10092,8 @@ mono_method_to_ir (MonoCompile *cfg, MonoMethod *method, MonoBasicBlock *start_b
 				token = read32 (ip + 2);
 				func = mono_method_get_wrapper_data (method, token);
 				info = mono_find_jit_icall_by_addr (func);
+				if (!info)
+					g_error ("Could not find icall address in wrapper %s", mono_method_full_name (method, 1));
 				g_assert (info);
 
 				CHECK_STACK (info->sig->param_count);
@@ -10844,7 +10850,7 @@ mono_method_to_ir (MonoCompile *cfg, MonoMethod *method, MonoBasicBlock *start_b
 				break;
 			}
 			case CEE_SIZEOF: {
-				guint32 align;
+				guint32 val;
 				int ialign;
 
 				CHECK_STACK_OVF (1);
@@ -10852,14 +10858,14 @@ mono_method_to_ir (MonoCompile *cfg, MonoMethod *method, MonoBasicBlock *start_b
 				token = read32 (ip + 2);
 				if (mono_metadata_token_table (token) == MONO_TABLE_TYPESPEC && !method->klass->image->dynamic && !generic_context) {
 					MonoType *type = mono_type_create_from_typespec (image, token);
-					token = mono_type_size (type, &ialign);
+					val = mono_type_size (type, &ialign);
 				} else {
 					MonoClass *klass = mono_class_get_full (image, token, generic_context);
 					CHECK_TYPELOAD (klass);
 					mono_class_init (klass);
-					token = mono_class_value_size (klass, &align);
+					val = mono_type_size (&klass->byval_arg, &ialign);
 				}
-				EMIT_NEW_ICONST (cfg, ins, token);
+				EMIT_NEW_ICONST (cfg, ins, val);
 				*sp++= ins;
 				ip += 6;
 				break;

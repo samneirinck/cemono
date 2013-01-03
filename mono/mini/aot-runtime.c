@@ -98,6 +98,9 @@ typedef struct MonoAotModule {
 	guint8 *plt_end;
 	guint8 *blob;
 	gint32 *code_offsets;
+#ifdef MONOTOUCH
+	gpointer *method_addresses;
+#endif
 	/* This contains <offset, index> pairs sorted by offset */
 	/* This is needed because LLVM emitted methods can be in any order */
 	gint32 *sorted_code_offsets;
@@ -1568,6 +1571,9 @@ load_aot_module (MonoAssembly *assembly, gpointer user_data)
 	}
 
 	amodule->code_offsets = info->code_offsets;
+#ifdef MONOTOUCH
+	amodule->method_addresses = info->method_addresses;
+#endif
 	amodule->code = info->methods;
 #ifdef TARGET_ARM
 	/* Mask out thumb interop bit */
@@ -1593,6 +1599,19 @@ load_aot_module (MonoAssembly *assembly, gpointer user_data)
 	amodule->trampolines [MONO_AOT_TRAMP_STATIC_RGCTX] = info->static_rgctx_trampolines;
 	amodule->trampolines [MONO_AOT_TRAMP_IMT_THUNK] = info->imt_thunks;
 	amodule->thumb_end = info->thumb_end;
+
+#ifdef MONOTOUCH
+	if (info->flags & MONO_AOT_FILE_FLAG_DIRECT_METHOD_ADDRESSES) {
+		/* Compute code_offsets from the method addresses */
+		amodule->code_offsets = g_malloc0 (amodule->info.nmethods * sizeof (gint32));
+		for (i = 0; i < amodule->info.nmethods; ++i) {
+			if (!amodule->method_addresses [i])
+				amodule->code_offsets [i] = 0xffffffff;
+			else
+				amodule->code_offsets [i] = (char*)amodule->method_addresses [i] - (char*)amodule->code;
+		}
+	}
+#endif
 
 	if (make_unreadable) {
 #ifndef TARGET_WIN32
@@ -2946,7 +2965,7 @@ load_method (MonoDomain *domain, MonoAotModule *amodule, MonoImage *image, MonoM
 			if (!method)
 				method = mono_get_method (image, token, NULL);
 			full_name = mono_method_full_name (method, TRUE);
-			mono_trace (G_LOG_LEVEL_DEBUG, MONO_TRACE_AOT, "AOT NOT FOUND: %s.\n", full_name);
+			mono_trace (G_LOG_LEVEL_DEBUG, MONO_TRACE_AOT, "AOT NOT FOUND: %s.", full_name);
 			g_free (full_name);
 		}
 		return NULL;
@@ -2956,7 +2975,7 @@ load_method (MonoDomain *domain, MonoAotModule *amodule, MonoImage *image, MonoM
 
 	info = &amodule->blob [mono_aot_get_offset (amodule->method_info_offsets, method_index)];
 
-	if (amodule->thumb_end && code < amodule->thumb_end) {
+	if (amodule->thumb_end && code < amodule->thumb_end && ((amodule->info.flags & MONO_AOT_FILE_FLAG_DIRECT_METHOD_ADDRESSES) == 0)) {
 		/* Convert this into a thumb address */
 		g_assert ((amodule->code_offsets [method_index] & 0x1) == 0);
 		code = &amodule->code [amodule->code_offsets [method_index] + 1];
@@ -3058,7 +3077,7 @@ load_method (MonoDomain *domain, MonoAotModule *amodule, MonoImage *image, MonoM
 		if (!jinfo)
 			jinfo = mono_aot_find_jit_info (domain, amodule->assembly->image, code);
 
-		mono_trace (G_LOG_LEVEL_DEBUG, MONO_TRACE_AOT, "AOT FOUND method %s [%p - %p %p]\n", full_name, code, code + jinfo->code_size, info);
+		mono_trace (G_LOG_LEVEL_DEBUG, MONO_TRACE_AOT, "AOT FOUND method %s [%p - %p %p]", full_name, code, code + jinfo->code_size, info);
 		g_free (full_name);
 	}
 
@@ -3653,10 +3672,23 @@ mono_aot_get_plt_entry (guint8 *code)
 	g_assert_not_reached ();
 #endif
 
+#ifdef MONOTOUCH
+	while (target != NULL) {
+		if ((target >= (guint8*)(amodule->plt)) && (target < (guint8*)(amodule->plt_end)))
+			return target;
+		
+		// Add 4 since mono_arch_get_call_target assumes we're passing
+		// the instruction after the actual branch instruction.
+		target = mono_arch_get_call_target (target + 4);
+	}
+
+	return NULL;
+#else
 	if ((target >= (guint8*)(amodule->plt)) && (target < (guint8*)(amodule->plt_end)))
 		return target;
 	else
 		return NULL;
+#endif
 }
 
 /*
@@ -3869,9 +3901,12 @@ get_numerous_trampoline (MonoAotTrampoline tramp_type, int n_got_slots, MonoAotM
 
 	*out_amodule = amodule;
 
-	if (amodule->trampoline_index [tramp_type] == amodule->info.num_trampolines [tramp_type])
-		g_error ("Ran out of trampolines of type %d in '%s' (%d)\n", tramp_type, image->name, amodule->info.num_trampolines [tramp_type]);
-
+	if (amodule->trampoline_index [tramp_type] == amodule->info.num_trampolines [tramp_type]) {
+		g_error ("Ran out of trampolines of type %d in '%s' (%d)%s\n", 
+			 tramp_type, image->name, amodule->info.num_trampolines [tramp_type],
+			 ""
+			 );
+	}
 	index = amodule->trampoline_index [tramp_type] ++;
 
 	mono_aot_unlock ();

@@ -296,9 +296,10 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-@CROSS_COMPILING_FALSE@@MOONLIGHT_FALSE@SUBDIRS = arch utils io-layer cil metadata $(interpreter_dir) mini dis monograph tests benchmark profiler
-@CROSS_COMPILING_FALSE@@MOONLIGHT_TRUE@SUBDIRS = arch utils io-layer metadata mini
-@CROSS_COMPILING_TRUE@SUBDIRS = arch utils io-layer cil metadata $(interpreter_dir) mini dis
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_FALSE@@MOONLIGHT_FALSE@SUBDIRS = arch utils io-layer cil metadata $(interpreter_dir) mini dis monograph tests benchmark profiler
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_FALSE@@MOONLIGHT_TRUE@SUBDIRS = arch utils io-layer metadata mini
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_TRUE@SUBDIRS = utils io-layer metadata arch mini profiler
+@CROSS_COMPILING_TRUE@SUBDIRS = arch utils io-layer cil metadata $(interpreter_dir) mini dis profiler
 DIST_SUBDIRS = arch utils io-layer cil metadata interpreter mini dis monograph tests benchmark profiler
 all: all-recursive
 
@@ -647,27 +648,49 @@ uninstall-am:
 	uninstall uninstall-am
 
 
-@CROSS_COMPILING_FALSE@@MOONLIGHT_TRUE@moon-do-build:
-@CROSS_COMPILING_FALSE@@MOONLIGHT_TRUE@	@list='$(SUBDIRS)'; for subdir in $$list; do \
-@CROSS_COMPILING_FALSE@@MOONLIGHT_TRUE@	  case "x$$subdir" in \
-@CROSS_COMPILING_FALSE@@MOONLIGHT_TRUE@		xmetadata ) target="moon-do-build" ;; \
-@CROSS_COMPILING_FALSE@@MOONLIGHT_TRUE@		xmini ) target="moon-do-build" ;; \
-@CROSS_COMPILING_FALSE@@MOONLIGHT_TRUE@		* ) target="all" ;; \
-@CROSS_COMPILING_FALSE@@MOONLIGHT_TRUE@	  esac; \
-@CROSS_COMPILING_FALSE@@MOONLIGHT_TRUE@	  echo "Making $$target in $$subdir"; \
-@CROSS_COMPILING_FALSE@@MOONLIGHT_TRUE@	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$target); \
-@CROSS_COMPILING_FALSE@@MOONLIGHT_TRUE@    done;
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_TRUE@monotouch-do-build:
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_TRUE@	@list='$(SUBDIRS)'; for subdir in $$list; do \
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_TRUE@	  case "x$$subdir" in \
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_TRUE@		xmetadata ) target="monotouch-do-build" ;; \
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_TRUE@		xmini ) target="monotouch-do-build" ;; \
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_TRUE@		* ) target="all" ;; \
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_TRUE@	  esac; \
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_TRUE@	  echo "Making $$target in $$subdir"; \
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_TRUE@	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$target); \
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_TRUE@    done;
 
-@CROSS_COMPILING_FALSE@@MOONLIGHT_TRUE@moon-do-clean:
-@CROSS_COMPILING_FALSE@@MOONLIGHT_TRUE@	@list='$(SUBDIRS)'; for subdir in $$list; do \
-@CROSS_COMPILING_FALSE@@MOONLIGHT_TRUE@	  case "x$$subdir" in \
-@CROSS_COMPILING_FALSE@@MOONLIGHT_TRUE@		xmetadata ) target="moon-do-clean" ;; \
-@CROSS_COMPILING_FALSE@@MOONLIGHT_TRUE@		xmini ) target="moon-do-clean" ;; \
-@CROSS_COMPILING_FALSE@@MOONLIGHT_TRUE@		* ) target="clean" ;; \
-@CROSS_COMPILING_FALSE@@MOONLIGHT_TRUE@	  esac; \
-@CROSS_COMPILING_FALSE@@MOONLIGHT_TRUE@	  echo "Making $$target in $$subdir"; \
-@CROSS_COMPILING_FALSE@@MOONLIGHT_TRUE@	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$target); \
-@CROSS_COMPILING_FALSE@@MOONLIGHT_TRUE@    done;
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_TRUE@monotouch-do-clean:
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_TRUE@	@list='$(SUBDIRS)'; for subdir in $$list; do \
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_TRUE@	  case "x$$subdir" in \
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_TRUE@		xmetadata ) target="monotouch-do-clean" ;; \
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_TRUE@		xmini ) target="monotouch-do-clean" ;; \
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_TRUE@		* ) target="clean" ;; \
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_TRUE@	  esac; \
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_TRUE@	  echo "Making $$target in $$subdir"; \
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_TRUE@	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$target); \
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_TRUE@    done;
+
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_FALSE@@MOONLIGHT_TRUE@moon-do-build:
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_FALSE@@MOONLIGHT_TRUE@	@list='$(SUBDIRS)'; for subdir in $$list; do \
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_FALSE@@MOONLIGHT_TRUE@	  case "x$$subdir" in \
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_FALSE@@MOONLIGHT_TRUE@		xmetadata ) target="moon-do-build" ;; \
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_FALSE@@MOONLIGHT_TRUE@		xmini ) target="moon-do-build" ;; \
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_FALSE@@MOONLIGHT_TRUE@		* ) target="all" ;; \
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_FALSE@@MOONLIGHT_TRUE@	  esac; \
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_FALSE@@MOONLIGHT_TRUE@	  echo "Making $$target in $$subdir"; \
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_FALSE@@MOONLIGHT_TRUE@	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$target); \
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_FALSE@@MOONLIGHT_TRUE@    done;
+
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_FALSE@@MOONLIGHT_TRUE@moon-do-clean:
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_FALSE@@MOONLIGHT_TRUE@	@list='$(SUBDIRS)'; for subdir in $$list; do \
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_FALSE@@MOONLIGHT_TRUE@	  case "x$$subdir" in \
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_FALSE@@MOONLIGHT_TRUE@		xmetadata ) target="moon-do-clean" ;; \
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_FALSE@@MOONLIGHT_TRUE@		xmini ) target="moon-do-clean" ;; \
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_FALSE@@MOONLIGHT_TRUE@		* ) target="clean" ;; \
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_FALSE@@MOONLIGHT_TRUE@	  esac; \
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_FALSE@@MOONLIGHT_TRUE@	  echo "Making $$target in $$subdir"; \
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_FALSE@@MOONLIGHT_TRUE@	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$target); \
+@CROSS_COMPILING_FALSE@@INSTALL_MONOTOUCH_FALSE@@MOONLIGHT_TRUE@    done;
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

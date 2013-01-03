@@ -1821,7 +1821,7 @@ process_call (EmitContext *ctx, MonoBasicBlock *bb, LLVMBuilderRef *builder_ref,
 	LLVMValueRef *args;
 	LLVMCallInfo *cinfo;
 	GSList *l;
-	int i, len;
+	int i, len, nargs;
 	gboolean vretaddr;
 	LLVMTypeRef llvm_sig;
 	gpointer target;
@@ -1943,23 +1943,27 @@ process_call (EmitContext *ctx, MonoBasicBlock *bb, LLVMBuilderRef *builder_ref,
 	/* 
 	 * Collect and convert arguments
 	 */
-	len = sizeof (LLVMValueRef) * ((sig->param_count * 2) + sig->hasthis + vretaddr + call->rgctx_reg);
+	nargs = (sig->param_count * 2) + sig->hasthis + vretaddr + call->rgctx_reg + call->imt_arg_reg;
+	len = sizeof (LLVMValueRef) * nargs;
 	args = alloca (len);
 	memset (args, 0, len);
 	l = call->out_ireg_args;
 
 	if (call->rgctx_arg_reg) {
 		g_assert (values [call->rgctx_arg_reg]);
+		g_assert (sinfo.rgctx_arg_pindex < nargs);
 		args [sinfo.rgctx_arg_pindex] = values [call->rgctx_arg_reg];
 	}
 	if (call->imt_arg_reg) {
 		g_assert (values [call->imt_arg_reg]);
+		g_assert (sinfo.imt_arg_pindex < nargs);
 		args [sinfo.imt_arg_pindex] = values [call->imt_arg_reg];
 	}
 
 	if (vretaddr) {
 		if (!addresses [call->inst.dreg])
 			addresses [call->inst.dreg] = build_alloca (ctx, sig->ret);
+		g_assert (sinfo.vret_arg_pindex < nargs);
 		args [sinfo.vret_arg_pindex] = LLVMBuildPtrToInt (builder, addresses [call->inst.dreg], IntPtrType (), "");
 	}
 
@@ -4112,18 +4116,16 @@ process_bb (EmitContext *ctx, MonoBasicBlock *bb)
 void
 mono_llvm_check_method_supported (MonoCompile *cfg)
 {
-	/*
 	MonoMethodHeader *header = cfg->header;
 	MonoExceptionClause *clause;
 	int i;
-	*/
 
 	if (cfg->method->save_lmf) {
 		cfg->exception_message = g_strdup ("lmf");
 		cfg->disable_llvm = TRUE;
 	}
 
-#if 0
+#if 1
 	for (i = 0; i < header->num_clauses; ++i) {
 		clause = &header->clauses [i];
 		
@@ -4744,11 +4746,21 @@ static char*
 dlsym_cb (const char *name, void **symbol)
 {
 	MonoDl *current;
+	char *err;
 
-	current = mono_dl_open (NULL, 0, NULL);
-	g_assert (current);
+	err = NULL;
+	if (!strcmp (name, "__bzero")) {
+		*symbol = (void*)bzero;
+	} else {
+		current = mono_dl_open (NULL, 0, NULL);
+		g_assert (current);
 
-	return mono_dl_symbol (current, name, symbol);
+		err = mono_dl_symbol (current, name, symbol);
+	}
+#ifdef MONO_ARCH_HAVE_CREATE_LLVM_NATIVE_THUNK
+	*symbol = (char*)mono_arch_create_llvm_native_thunk (mono_domain_get (), (guint8*)(*symbol));
+#endif
+	return err;
 }
 
 static inline void

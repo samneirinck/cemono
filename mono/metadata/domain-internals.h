@@ -373,7 +373,6 @@ struct _MonoDomain {
 
 	/* Used by threadpool.c */
 	MonoImage *system_image;
-	MonoImage *system_net_dll;
 	MonoClass *corlib_asyncresult_class;
 	MonoClass *socket_class;
 	MonoClass *ad_unloaded_ex_class;
@@ -394,7 +393,7 @@ typedef struct  {
 typedef struct  {
 	const char runtime_version [12];
 	const char framework_version [4];
-	const AssemblyVersionSet version_sets [3];
+	const AssemblyVersionSet version_sets [4];
 } MonoRuntimeInfo;
 
 #define mono_domain_lock(domain) mono_locks_acquire(&(domain)->lock, DomainLock)

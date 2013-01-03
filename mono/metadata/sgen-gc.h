@@ -1,26 +1,23 @@
 /*
+ * sgen-gc.c: Simple generational GC.
+ *
  * Copyright 2001-2003 Ximian, Inc
  * Copyright 2003-2010 Novell, Inc.
  * Copyright 2011 Xamarin Inc (http://www.xamarin.com)
- * 
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- * 
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * Copyright (C) 2012 Xamarin Inc
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License 2.0 as published by the Free Software Foundation;
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License 2.0 along with this library; if not, write to the Free
+ * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 #ifndef __MONO_SGENGC_H__
 #define __MONO_SGENGC_H__
@@ -41,6 +38,7 @@ typedef struct _SgenThreadInfo SgenThreadInfo;
 #include <mono/utils/mono-compiler.h>
 #include <mono/utils/mono-threads.h>
 #include <mono/utils/dtrace.h>
+#include <mono/utils/mono-logger-internal.h>
 #include <mono/io-layer/mono-mutex.h>
 #include <mono/metadata/class-internals.h>
 #include <mono/metadata/object-internals.h>
@@ -242,7 +240,27 @@ extern long long stat_objects_copied_major;
 #define HEAVY_STAT(x)
 #endif
 
-#define DEBUG(level,a) do {if (G_UNLIKELY ((level) <= SGEN_MAX_DEBUG_LEVEL && (level) <= gc_debug_level)) { a; fflush (gc_debug_file); } } while (0)
+#define SGEN_ASSERT(level, a, ...) do {	\
+	if (G_UNLIKELY ((level) <= SGEN_MAX_ASSERT_LEVEL && !(a))) {	\
+		g_error (__VA_ARGS__);	\
+} } while (0)
+
+
+#define SGEN_LOG(level, format, ...) do {      \
+	if (G_UNLIKELY ((level) <= SGEN_MAX_DEBUG_LEVEL && (level) <= gc_debug_level)) {	\
+		mono_gc_printf (gc_debug_file, format, ##__VA_ARGS__);	\
+} } while (0)
+
+#define SGEN_COND_LOG(level, cond, format, ...) do {	\
+	if (G_UNLIKELY ((level) <= SGEN_MAX_DEBUG_LEVEL && (level) <= gc_debug_level)) {	\
+		if (cond)	\
+			mono_gc_printf (gc_debug_file, format, ##__VA_ARGS__);	\
+} } while (0)
+
+#define SGEN_LOG_DO(level, fun) do {	\
+	if (G_UNLIKELY ((level) <= SGEN_MAX_DEBUG_LEVEL && (level) <= gc_debug_level)) {	\
+		fun;	\
+} } while (0)
 
 extern int gc_debug_level;
 extern FILE* gc_debug_file;
@@ -501,9 +519,6 @@ void sgen_free_internal_dynamic (void *addr, size_t size, int type) MONO_INTERNA
 void* sgen_alloc_pinned (SgenPinnedAllocator *allocator, size_t size) MONO_INTERNAL;
 void sgen_free_pinned (SgenPinnedAllocator *allocator, void *addr, size_t size) MONO_INTERNAL;
 
-
-void sgen_debug_printf (int level, const char *format, ...) MONO_INTERNAL;
-
 gboolean sgen_parse_environment_string_extract_number (const char *str, glong *out) MONO_INTERNAL;
 
 void sgen_pinned_scan_objects (SgenPinnedAllocator *alc, IterateObjectCallbackFunc callback, void *callback_data) MONO_INTERNAL;
@@ -591,8 +606,8 @@ sgen_nursery_is_to_space (char *object)
 	int byte = idx / 8;
 	int bit = idx & 0x7;
 
-	DEBUG (4, g_assert (sgen_ptr_in_nursery (object)));
-	DEBUG (4, g_assert (byte < sgen_space_bitmap_size));
+	SGEN_ASSERT (4, sgen_ptr_in_nursery (object), "object %p is not in nursery [%p - %p]", object, sgen_get_nursery_start (), sgen_get_nursery_end ());
+	SGEN_ASSERT (4, byte < sgen_space_bitmap_size, "byte index %d out of range", byte, sgen_space_bitmap_size);
 
 	return (sgen_space_bitmap [byte] & (1 << bit)) != 0;
 }
@@ -683,7 +698,7 @@ struct _SgenMajorCollector {
 	void (*start_major_collection) (void);
 	void (*finish_major_collection) (void);
 	void (*have_computed_minor_collection_allowance) (void);
-	gboolean (*ptr_is_in_non_pinned_space) (char *ptr);
+	gboolean (*ptr_is_in_non_pinned_space) (char *ptr, char **start);
 	gboolean (*obj_is_from_pinned_alloc) (char *obj);
 	void (*report_pinned_memory_usage) (void);
 	int (*get_num_major_sections) (void);
@@ -892,7 +907,6 @@ void sgen_los_iterate_objects (IterateObjectCallbackFunc cb, void *user_data) MO
 void sgen_los_iterate_live_block_ranges (sgen_cardtable_block_callback callback) MONO_INTERNAL;
 void sgen_los_scan_card_table (SgenGrayQueue *queue) MONO_INTERNAL;
 void sgen_major_collector_scan_card_table (SgenGrayQueue *queue) MONO_INTERNAL;
-FILE *sgen_get_logfile (void) MONO_INTERNAL;
 gboolean sgen_los_is_valid_object (char *object) MONO_INTERNAL;
 gboolean mono_sgen_los_describe_pointer (char *ptr) MONO_INTERNAL;
 
@@ -923,7 +937,7 @@ char* sgen_par_alloc_for_promotion (char *obj, size_t objsize, gboolean has_refe
 extern MonoNativeTlsKey thread_info_key;
 
 #ifdef HAVE_KW_THREAD
-extern __thread SgenThreadInfo *thread_info;
+extern __thread SgenThreadInfo *sgen_thread_info;
 extern __thread gpointer *store_remset_buffer;
 extern __thread long store_remset_buffer_index;
 extern __thread char *stack_end;
@@ -935,7 +949,7 @@ extern __thread long *store_remset_buffer_index_addr;
 #define REMEMBERED_SET	remembered_set
 #define STORE_REMSET_BUFFER	store_remset_buffer
 #define STORE_REMSET_BUFFER_INDEX	store_remset_buffer_index
-#define IN_CRITICAL_REGION thread_info->in_critical_region
+#define IN_CRITICAL_REGION sgen_thread_info->in_critical_region
 #else
 #define TLAB_ACCESS_INIT	SgenThreadInfo *__thread_info__ = mono_native_tls_get_value (thread_info_key)
 #define REMEMBERED_SET	(__thread_info__->remset)
@@ -947,7 +961,7 @@ extern __thread long *store_remset_buffer_index_addr;
 #ifndef DISABLE_CRITICAL_REGION
 
 #ifdef HAVE_KW_THREAD
-#define IN_CRITICAL_REGION thread_info->in_critical_region
+#define IN_CRITICAL_REGION sgen_thread_info->in_critical_region
 #else
 #define IN_CRITICAL_REGION (__thread_info__->in_critical_region)
 #endif

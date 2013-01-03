@@ -39,15 +39,23 @@ endif
 # convenience lib, so we have to do it ourselves
 #
 if SUPPORT_SGEN
+if DISABLE_EXECUTABLES
+shared_sgen_libraries = libmonoruntimesgen.la 
+else
 if SHARED_MONO
 shared_sgen_libraries = libmonoruntimesgen.la 
+endif
 endif
 sgen_libraries = $(shared_sgen_libraries) libmonoruntimesgen-static.la 
 endif
 
 if SUPPORT_BOEHM
+if DISABLE_EXECUTABLES
+shared_boehm_libraries = libmonoruntime.la
+else
 if SHARED_MONO
 shared_boehm_libraries = libmonoruntime.la
+endif
 endif
 boehm_libraries = $(shared_boehm_libraries) libmonoruntime-static.la
 endif
@@ -257,7 +265,7 @@ sgen_sources = \
 	sgen-stw.c				\
 	sgen-fin-weak-hash.c
 
-libmonoruntime_la_SOURCES = $(common_sources) $(gc_dependent_sources) $(sgen_sources) $(boehm_sources)
+libmonoruntime_la_SOURCES = $(common_sources) $(gc_dependent_sources) $(boehm_sources)
 libmonoruntime_la_CFLAGS = $(BOEHM_DEFINES)
 
 if MOONLIGHT
@@ -269,14 +277,14 @@ libmonoruntimemoon_la_CFLAGS = $(MOONLIGHT_DEFINES) $(SGEN_DEFINES)
 endif
 endif
 
-libmonoruntimesgen_la_SOURCES = $(libmonoruntime_la_SOURCES)
+libmonoruntimesgen_la_SOURCES = $(common_sources) $(gc_dependent_sources) $(sgen_sources)
 libmonoruntimesgen_la_CFLAGS = $(SGEN_DEFINES)
 
 libmonoruntime_static_la_SOURCES = $(libmonoruntime_la_SOURCES)
 libmonoruntime_static_la_LDFLAGS = -static
 libmonoruntime_static_la_CFLAGS = $(BOEHM_DEFINES)
 
-libmonoruntimesgen_static_la_SOURCES = $(libmonoruntime_la_SOURCES)
+libmonoruntimesgen_static_la_SOURCES = $(libmonoruntimesgen_la_SOURCES)
 libmonoruntimesgen_static_la_LDFLAGS = -static
 libmonoruntimesgen_static_la_CFLAGS = $(SGEN_DEFINES)
 

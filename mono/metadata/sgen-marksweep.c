@@ -1,29 +1,24 @@
 /*
- * sgen-marksweep.c: Simple generational GC.
+ * sgen-marksweep.c: The Mark & Sweep major collector.
  *
  * Author:
  * 	Mark Probst <mark.probst@gmail.com>
  *
  * Copyright 2009-2010 Novell, Inc.
- * 
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- * 
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * Copyright (C) 2012 Xamarin Inc
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License 2.0 as published by the Free Software Foundation;
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License 2.0 along with this library; if not, write to the Free
+ * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 #include "config.h"
@@ -88,6 +83,7 @@ struct _MSBlockInfo {
 	unsigned int has_references : 1;
 	unsigned int has_pinned : 1;	/* means cannot evacuate */
 	unsigned int is_to_space : 1;
+	unsigned int swept : 1;
 #ifdef FIXED_HEAP
 	unsigned int used : 1;
 	unsigned int zeroed : 1;
@@ -113,6 +109,7 @@ static MSBlockInfo *block_infos;
 #endif
 
 #define MS_BLOCK_OBJ(b,i)		((b)->block + MS_BLOCK_SKIP + (b)->obj_size * (i))
+#define MS_BLOCK_OBJ_FOR_SIZE(b,i,obj_size)		((b)->block + MS_BLOCK_SKIP + (obj_size) * (i))
 #define MS_BLOCK_DATA_FOR_OBJ(o)	((char*)((mword)(o) & ~(mword)(MS_BLOCK_SIZE - 1)))
 
 #ifdef FIXED_HEAP
@@ -185,6 +182,7 @@ static gboolean *evacuate_block_obj_sizes;
 static float evacuation_threshold = 0.666;
 
 static gboolean concurrent_sweep = FALSE;
+static gboolean lazy_sweep = TRUE;
 static gboolean have_swept;
 
 /* all allocated blocks in the system */
@@ -216,6 +214,7 @@ static MonoNativeTlsKey workers_free_block_lists_key;
 
 static long long stat_major_blocks_alloced = 0;
 static long long stat_major_blocks_freed = 0;
+static long long stat_major_blocks_lazy_swept = 0;
 static long long stat_major_objects_evacuated = 0;
 static long long stat_time_wait_for_sweep = 0;
 
@@ -223,6 +222,9 @@ static gboolean ms_sweep_in_progress = FALSE;
 static MonoNativeThreadId ms_sweep_thread;
 static MonoSemType ms_sweep_cmd_semaphore;
 static MonoSemType ms_sweep_done_semaphore;
+
+static void
+sweep_block (MSBlockInfo *block);
 
 static void
 ms_signal_sweep_command (void)
@@ -273,7 +275,7 @@ static int
 ms_find_block_obj_size_index (int size)
 {
 	int i;
-	DEBUG (9, g_assert (size <= SGEN_MAX_SMALL_OBJ_SIZE));
+	SGEN_ASSERT (9, size <= SGEN_MAX_SMALL_OBJ_SIZE, "size %d is bigger than max small object size %d", size, SGEN_MAX_SMALL_OBJ_SIZE);
 	for (i = 0; i < num_block_obj_sizes; ++i)
 		if (block_obj_sizes [i] >= size)
 			return i;
@@ -458,7 +460,8 @@ check_block_free_list (MSBlockInfo *block, int size, gboolean pinned)
 
 		/* blocks in the free lists must have at least
 		   one free slot */
-		g_assert (block->free_list);
+		if (block->swept)
+			g_assert (block->free_list);
 
 #ifdef FIXED_HEAP
 		/* the block must not be in the empty_blocks list */
@@ -518,8 +521,10 @@ consistency_check (void)
 		g_assert (num_free == 0);
 
 		/* check all mark words are zero */
-		for (i = 0; i < MS_NUM_MARK_WORDS; ++i)
-			g_assert (block->mark_words [i] == 0);
+		if (block->swept) {
+			for (i = 0; i < MS_NUM_MARK_WORDS; ++i)
+				g_assert (block->mark_words [i] == 0);
+		}
 	} END_FOREACH_BLOCK;
 
 	/* check free blocks */
@@ -558,7 +563,7 @@ ms_alloc_block (int size_index, gboolean pinned, gboolean has_references)
 	info = sgen_alloc_internal (INTERNAL_MEM_MS_BLOCK_INFO);
 #endif
 
-	DEBUG (9, g_assert (count >= 2));
+	SGEN_ASSERT (9, count >= 2, "block with %d objects, it must hold at least 2", count);
 
 	info->obj_size = size;
 	info->obj_size_index = size_index;
@@ -566,6 +571,7 @@ ms_alloc_block (int size_index, gboolean pinned, gboolean has_references)
 	info->has_references = has_references;
 	info->has_pinned = pinned;
 	info->is_to_space = (sgen_get_current_collection_generation () == GENERATION_OLD); /*FIXME WHY??? */
+	info->swept = 1;
 #ifndef FIXED_HEAP
 	info->block = ms_get_empty_block ();
 
@@ -626,10 +632,15 @@ unlink_slot_from_free_list_uncontested (MSBlockInfo **free_blocks, int size_inde
 	void *obj;
 
 	block = free_blocks [size_index];
-	DEBUG (9, g_assert (block));
+	SGEN_ASSERT (9, block, "no free block to unlink from free_blocks %p size_index %d", free_blocks, size_index);
+
+	if (G_UNLIKELY (!block->swept)) {
+		stat_major_blocks_lazy_swept ++;
+		sweep_block (block);
+	}
 
 	obj = block->free_list;
-	DEBUG (9, g_assert (obj));
+	SGEN_ASSERT (9, obj, "block %p in free list had no available object to alloc from", block);
 
 	block->free_list = *(void**)obj;
 	if (!block->free_list) {
@@ -669,8 +680,8 @@ alloc_obj_par (int size, gboolean pinned, gboolean has_references)
 	MSBlockInfo *block;
 	void *obj;
 
-	DEBUG (9, g_assert (!ms_sweep_in_progress));
-	DEBUG (9, g_assert (current_collection_generation == GENERATION_OLD));
+	SGEN_ASSERT (9, !ms_sweep_in_progress, "concurrent sweep in progress with concurrent allocation");
+	SGEN_ASSERT (9, current_collection_generation == GENERATION_OLD, "old gen parallel allocator called from a %d collection", current_collection_generation);
 
 	if (free_blocks_local [size_index]) {
 	get_slot:
@@ -728,10 +739,11 @@ alloc_obj (int size, gboolean pinned, gboolean has_references)
 	void *obj;
 
 #ifdef SGEN_PARALLEL_MARK
-	DEBUG (9, g_assert (current_collection_generation != GENERATION_OLD));
+	SGEN_ASSERT (9, current_collection_generation == GENERATION_OLD, "old gen parallel allocator called from a %d collection", current_collection_generation);
+
 #endif
 
-	DEBUG (9, g_assert (!ms_sweep_in_progress));
+	SGEN_ASSERT (9, !ms_sweep_in_progress, "concurrent sweep in progress with concurrent allocation");
 
 	if (!free_blocks [size_index]) {
 		if (G_UNLIKELY (!ms_alloc_block (size_index, pinned, has_references)))
@@ -767,14 +779,17 @@ free_object (char *obj, size_t size, gboolean pinned)
 {
 	MSBlockInfo *block = MS_BLOCK_FOR_OBJ (obj);
 	int word, bit;
-	DEBUG (9, g_assert ((pinned && block->pinned) || (!pinned && !block->pinned)));
-	DEBUG (9, g_assert (MS_OBJ_ALLOCED (obj, block)));
+
+	if (!block->swept)
+		sweep_block (block);
+	SGEN_ASSERT (9, (pinned && block->pinned) || (!pinned && !block->pinned), "free-object pinning mixup object %p pinned %d block %p pinned %d", obj, pinned, block, block->pinned);
+	SGEN_ASSERT (9, MS_OBJ_ALLOCED (obj, block), "object %p is already free", obj);
 	MS_CALC_MARK_BIT (word, bit, obj);
-	DEBUG (9, g_assert (!MS_MARK_BIT (block, word, bit)));
+	SGEN_ASSERT (9, !MS_MARK_BIT (block, word, bit), "object %p has mark bit set");
 	if (!block->free_list) {
 		MSBlockInfo **free_blocks = FREE_BLOCKS (pinned, block->has_references);
 		int size_index = MS_BLOCK_OBJ_SIZE_INDEX (size);
-		DEBUG (9, g_assert (!block->next_free));
+		SGEN_ASSERT (9, !block->next_free, "block %p doesn't have a free-list of object but belongs to a free-list of blocks");
 		block->next_free = free_blocks [size_index];
 		free_blocks [size_index] = block;
 	}
@@ -871,19 +886,30 @@ major_is_object_live (char *obj)
 
 	/* now we know it's in a major block */
 	block = MS_BLOCK_FOR_OBJ (obj);
-	DEBUG (9, g_assert (!block->pinned));
+	SGEN_ASSERT (9, !block->pinned, "block %p is pinned, BTW why is this bad?");
 	MS_CALC_MARK_BIT (word, bit, obj);
 	return MS_MARK_BIT (block, word, bit) ? TRUE : FALSE;
 }
 
 static gboolean
-major_ptr_is_in_non_pinned_space (char *ptr)
+major_ptr_is_in_non_pinned_space (char *ptr, char **start)
 {
 	MSBlockInfo *block;
 
 	FOREACH_BLOCK (block) {
-		if (ptr >= block->block && ptr <= block->block + MS_BLOCK_SIZE)
+		if (ptr >= block->block && ptr <= block->block + MS_BLOCK_SIZE) {
+			int count = MS_BLOCK_FREE / block->obj_size;
+			int i;
+
+			*start = NULL;
+			for (i = 0; i <= count; ++i) {
+				if (ptr >= MS_BLOCK_OBJ (block, i) && ptr < MS_BLOCK_OBJ (block, i + 1)) {
+					*start = MS_BLOCK_OBJ (block, i);
+					break;
+				}
+			}
 			return !block->pinned;
+		}
 	} END_FOREACH_BLOCK;
 	return FALSE;
 }
@@ -903,6 +929,8 @@ major_iterate_objects (gboolean non_pinned, gboolean pinned, IterateObjectCallba
 			continue;
 		if (!block->pinned && !non_pinned)
 			continue;
+		if (lazy_sweep)
+			sweep_block (block);
 
 		for (i = 0; i < count; ++i) {
 			void **obj = (void**) MS_BLOCK_OBJ (block, i);
@@ -950,7 +978,7 @@ major_describe_pointer (char *ptr)
 		if ((block->block > ptr) || ((block->block + MS_BLOCK_SIZE) <= ptr))
 			continue;
 
-		fprintf (gc_debug_file, "major-ptr (block %p sz %d pin %d ref %d) ",
+		SGEN_LOG (1, "major-ptr (block %p sz %d pin %d ref %d) ",
 			block->block, block->obj_size, block->pinned, block->has_references);
 
 		idx = MS_BLOCK_OBJ_INDEX (ptr, block);
@@ -960,16 +988,16 @@ major_describe_pointer (char *ptr)
 		
 		if (obj == ptr) {
 			if (live)
-				fprintf (gc_debug_file, "(object %s.%s)", vtable->klass->name_space, vtable->klass->name);
+				SGEN_LOG (1, "\t(object %s.%s)", vtable->klass->name_space, vtable->klass->name);
 			else
-				fprintf (gc_debug_file, "(dead-object)");
+				SGEN_LOG (1, "(dead-object)");
 		} else {
 			if (live)
-				fprintf (gc_debug_file, "(interior-ptr offset %td of %p %s.%s)",
+				SGEN_LOG (1, "(interior-ptr offset %td of %p %s.%s)",
 					ptr - obj,
 					obj, vtable->klass->name_space, vtable->klass->name);
 			else
-				fprintf (gc_debug_file, "(dead-interior-ptr to %td to %p)",
+				SGEN_LOG (1, "(dead-interior-ptr to %td to %p)",
 					ptr - obj, obj);
 		}
 
@@ -1051,7 +1079,7 @@ major_dump_heap (FILE *heap_dump_file)
 #define MS_MARK_OBJECT_AND_ENQUEUE(obj,block,queue) do {		\
 		int __word, __bit;					\
 		MS_CALC_MARK_BIT (__word, __bit, (obj));		\
-		DEBUG (9, g_assert (MS_OBJ_ALLOCED ((obj), (block))));	\
+		SGEN_ASSERT (9, MS_OBJ_ALLOCED ((obj), (block)), "object %p not allocated", obj);	\
 		if (!MS_MARK_BIT ((block), __word, __bit)) {		\
 			MS_SET_MARK_BIT ((block), __word, __bit);	\
 			if ((block)->has_references)			\
@@ -1062,7 +1090,7 @@ major_dump_heap (FILE *heap_dump_file)
 #define MS_PAR_MARK_OBJECT_AND_ENQUEUE(obj,block,queue) do {		\
 		int __word, __bit;					\
 		gboolean __was_marked;					\
-		DEBUG (9, g_assert (MS_OBJ_ALLOCED ((obj), (block))));	\
+		SGEN_ASSERT (9, MS_OBJ_ALLOCED ((obj), (block)), "object %p not allocated", obj);	\
 		MS_CALC_MARK_BIT (__word, __bit, (obj));		\
 		MS_PAR_SET_MARK_BIT (__was_marked, (block), __word, __bit); \
 		if (!__was_marked) {					\
@@ -1093,8 +1121,8 @@ major_copy_or_mark_object (void **ptr, SgenGrayQueue *queue)
 
 	HEAVY_STAT (++stat_copy_object_called_major);
 
-	DEBUG (9, g_assert (obj));
-	DEBUG (9, g_assert (current_collection_generation == GENERATION_OLD));
+	SGEN_ASSERT (9, obj, "null object from pointer %p", ptr);
+	SGEN_ASSERT (9, current_collection_generation == GENERATION_OLD, "old gen parallel allocator called from a %d collection", current_collection_generation);
 
 	if (sgen_ptr_in_nursery (obj)) {
 		int word, bit;
@@ -1166,7 +1194,7 @@ major_copy_or_mark_object (void **ptr, SgenGrayQueue *queue)
 			if (!sgen_ptr_in_nursery (obj)) {
 				block = MS_BLOCK_FOR_OBJ (obj);
 				MS_CALC_MARK_BIT (word, bit, obj);
-				DEBUG (9, g_assert (!MS_MARK_BIT (block, word, bit)));
+				SGEN_ASSERT (9, !MS_MARK_BIT (block, word, bit), "object %p already marked", obj);
 				MS_PAR_SET_MARK_BIT (was_marked, block, word, bit);
 			}
 		} else {
@@ -1256,8 +1284,8 @@ major_copy_or_mark_object (void **ptr, SgenGrayQueue *queue)
 
 	HEAVY_STAT (++stat_copy_object_called_major);
 
-	DEBUG (9, g_assert (obj));
-	DEBUG (9, g_assert (current_collection_generation == GENERATION_OLD));
+	SGEN_ASSERT (9, obj, "null object from pointer %p", ptr);
+	SGEN_ASSERT (9, current_collection_generation == GENERATION_OLD, "old gen parallel allocator called from a %d collection", current_collection_generation);
 
 	if (sgen_ptr_in_nursery (obj)) {
 		int word, bit;
@@ -1308,7 +1336,7 @@ major_copy_or_mark_object (void **ptr, SgenGrayQueue *queue)
 		if (!sgen_ptr_in_nursery (obj)) {
 			block = MS_BLOCK_FOR_OBJ (obj);
 			MS_CALC_MARK_BIT (word, bit, obj);
-			DEBUG (9, g_assert (!MS_MARK_BIT (block, word, bit)));
+			SGEN_ASSERT (9, !MS_MARK_BIT (block, word, bit), "object %p already marked", obj);
 			MS_SET_MARK_BIT (block, word, bit);
 		}
 	} else {
@@ -1397,12 +1425,103 @@ mark_pinned_objects_in_block (MSBlockInfo *block, SgenGrayQueue *queue)
 
 	for (i = 0; i < block->pin_queue_num_entries; ++i) {
 		int index = MS_BLOCK_OBJ_INDEX (block->pin_queue_start [i], block);
-		DEBUG (9, g_assert (index >= 0 && index < MS_BLOCK_FREE / block->obj_size));
+		SGEN_ASSERT (9, index >= 0 && index < MS_BLOCK_FREE / block->obj_size, "invalid object %p index %d max-index %d", block->pin_queue_start [i], index, MS_BLOCK_FREE / block->obj_size);
 		if (index == last_index)
 			continue;
 		MS_MARK_OBJECT_AND_ENQUEUE_CHECKED (MS_BLOCK_OBJ (block, index), block, queue);
 		last_index = index;
 	}
+}
+
+static inline void
+sweep_block_for_size (MSBlockInfo *block, int count, int obj_size)
+{
+	int obj_index;
+
+	for (obj_index = 0; obj_index < count; ++obj_index) {
+		int word, bit;
+		void *obj = MS_BLOCK_OBJ_FOR_SIZE (block, obj_index, obj_size);
+
+		MS_CALC_MARK_BIT (word, bit, obj);
+		if (MS_MARK_BIT (block, word, bit)) {
+			SGEN_ASSERT (9, MS_OBJ_ALLOCED (obj, block), "object %p not allocated", obj);
+		} else {
+			/* an unmarked object */
+			if (MS_OBJ_ALLOCED (obj, block)) {
+				/*
+				 * FIXME: Merge consecutive
+				 * slots for lower reporting
+				 * overhead.  Maybe memset
+				 * will also benefit?
+				 */
+				binary_protocol_empty (obj, obj_size);
+				MONO_GC_MAJOR_SWEPT ((mword)obj, obj_size);
+				memset (obj, 0, obj_size);
+			}
+			*(void**)obj = block->free_list;
+			block->free_list = obj;
+		}
+	}
+}
+
+/*
+ * sweep_block:
+ *
+ *   Traverse BLOCK, freeing and zeroing unused objects.
+ */
+static void
+sweep_block (MSBlockInfo *block)
+{
+	int count;
+
+	if (block->swept)
+		return;
+
+	count = MS_BLOCK_FREE / block->obj_size;
+
+	block->free_list = NULL;
+
+	/* Use inline instances specialized to constant sizes, this allows the compiler to replace the memset calls with inline code */
+	// FIXME: Add more sizes
+	switch (block->obj_size) {
+	case 16:
+		sweep_block_for_size (block, count, 16);
+		break;
+	default:
+		sweep_block_for_size (block, count, block->obj_size);
+		break;
+	}
+
+	/* reset mark bits */
+	memset (block->mark_words, 0, sizeof (mword) * MS_NUM_MARK_WORDS);
+
+	/*
+	 * FIXME: reverse free list so that it's in address
+	 * order
+	 */
+
+	block->swept = 1;
+}
+
+static inline int
+bitcount (mword d)
+{
+#if SIZEOF_VOID_P == 8
+	/* http://www.jjj.de/bitwizardry/bitwizardrypage.html */
+	d -=  (d>>1) & 0x5555555555555555;
+	d  = ((d>>2) & 0x3333333333333333) + (d & 0x3333333333333333);
+	d  = ((d>>4) + d) & 0x0f0f0f0f0f0f0f0f;
+	d *= 0x0101010101010101;
+	return d >> 56;
+#else
+	/* http://aggregate.org/MAGIC/ */
+	d -= ((d >> 1) & 0x55555555);
+	d = (((d >> 2) & 0x33333333) + (d & 0x33333333));
+	d = (((d >> 4) + d) & 0x0f0f0f0f);
+	d += (d >> 8);
+	d += (d >> 16);
+	return (d & 0x0000003f);
+#endif
 }
 
 static void
@@ -1434,8 +1553,9 @@ ms_sweep (void)
 		int count;
 		gboolean have_live = FALSE;
 		gboolean has_pinned;
-		int obj_index;
+		gboolean have_free = FALSE;
 		int obj_size_index;
+		int nused = 0;
 
 		obj_size_index = block->obj_size_index;
 
@@ -1443,49 +1563,27 @@ ms_sweep (void)
 		block->has_pinned = block->pinned;
 
 		block->is_to_space = FALSE;
+		block->swept = 0;
 
 		count = MS_BLOCK_FREE / block->obj_size;
-		block->free_list = NULL;
 
-		for (obj_index = 0; obj_index < count; ++obj_index) {
-			int word, bit;
-			void *obj = MS_BLOCK_OBJ (block, obj_index);
-
-			MS_CALC_MARK_BIT (word, bit, obj);
-			if (MS_MARK_BIT (block, word, bit)) {
-				DEBUG (9, g_assert (MS_OBJ_ALLOCED (obj, block)));
-				have_live = TRUE;
-				if (!has_pinned)
-					++slots_used [obj_size_index];
-			} else {
-				/* an unmarked object */
-				if (MS_OBJ_ALLOCED (obj, block)) {
-					/*
-					 * FIXME: Merge consecutive
-					 * slots for lower reporting
-					 * overhead.  Maybe memset
-					 * will also benefit?
-					 */
-					binary_protocol_empty (obj, block->obj_size);
-					MONO_GC_MAJOR_SWEPT ((mword)obj, block->obj_size);
-					memset (obj, 0, block->obj_size);
-				}
-				*(void**)obj = block->free_list;
-				block->free_list = obj;
-			}
+		/* Count marked objects in the block */
+		for (i = 0; i < MS_NUM_MARK_WORDS; ++i) {
+			nused += bitcount (block->mark_words [i]);
 		}
+		if (nused) {
+			have_live = TRUE;
+		}
+		if (nused < count)
+			have_free = TRUE;
 
-		/* reset mark bits */
-		memset (block->mark_words, 0, sizeof (mword) * MS_NUM_MARK_WORDS);
-
-		/*
-		 * FIXME: reverse free list so that it's in address
-		 * order
-		 */
+		if (!lazy_sweep)
+			sweep_block (block);
 
 		if (have_live) {
 			if (!has_pinned) {
 				++num_blocks [obj_size_index];
+				slots_used [obj_size_index] += nused;
 				slots_available [obj_size_index] += count;
 			}
 
@@ -1495,7 +1593,7 @@ ms_sweep (void)
 			 * If there are free slots in the block, add
 			 * the block to the corresponding free list.
 			 */
-			if (block->free_list) {
+			if (have_free) {
 				MSBlockInfo **free_blocks = FREE_BLOCKS (block->pinned, block->has_references);
 				int index = MS_BLOCK_OBJ_SIZE_INDEX (block->obj_size);
 				block->next_free = free_blocks [index];
@@ -1521,7 +1619,6 @@ ms_sweep (void)
 			--num_major_sections;
 		}
 	}
-
 	for (i = 0; i < num_block_obj_sizes; ++i) {
 		float usage = (float)slots_used [i] / (float)slots_available [i];
 		if (num_blocks [i] > 5 && usage < evacuation_threshold) {
@@ -1680,6 +1777,20 @@ major_start_major_collection (void)
 
 		free_block_lists [0][i] = NULL;
 		free_block_lists [MS_BLOCK_FLAG_REFS][i] = NULL;
+	}
+
+	// Sweep all unswept blocks
+	if (lazy_sweep) {
+		MSBlockInfo **iter;
+
+		iter = &all_blocks;
+		while (*iter) {
+			MSBlockInfo *block = *iter;
+
+			sweep_block (block);
+
+			iter = &block->next;
+		}
 	}
 }
 
@@ -1923,6 +2034,9 @@ major_scan_card_table (SgenGrayQueue *queue)
 				continue;
 #endif
 
+			if (!block->swept)
+				sweep_block (block);
+
 			obj = (char*)MS_BLOCK_OBJ_FAST (block_start, block_obj_size, 0);
 			end = block_start + MS_BLOCK_SIZE;
 			base = sgen_card_table_align_pointer (obj);
@@ -1959,6 +2073,9 @@ major_scan_card_table (SgenGrayQueue *queue)
 
 				if (!*card_data)
 					continue;
+
+				if (!block->swept)
+					sweep_block (block);
 
 				HEAVY_STAT (++marked_cards);
 
@@ -2109,6 +2226,7 @@ sgen_marksweep_init
 
 	mono_counters_register ("# major blocks allocated", MONO_COUNTER_GC | MONO_COUNTER_LONG, &stat_major_blocks_alloced);
 	mono_counters_register ("# major blocks freed", MONO_COUNTER_GC | MONO_COUNTER_LONG, &stat_major_blocks_freed);
+	mono_counters_register ("# major blocks lazy swept", MONO_COUNTER_GC | MONO_COUNTER_LONG, &stat_major_blocks_lazy_swept);
 	mono_counters_register ("# major objects evacuated", MONO_COUNTER_GC | MONO_COUNTER_LONG, &stat_major_objects_evacuated);
 	mono_counters_register ("Wait for sweep time", MONO_COUNTER_GC | MONO_COUNTER_TIME_INTERVAL, &stat_time_wait_for_sweep);
 #ifdef SGEN_PARALLEL_MARK

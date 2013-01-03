@@ -112,8 +112,12 @@ endif
 
 noinst_PROGRAMS = genmdesc
 
+if DISABLE_EXECUTABLES
+shared_libraries = $(boehm_libraries) $(sgen_libraries)
+else
 if SHARED_MONO
 shared_libraries = $(boehm_libraries) $(sgen_libraries)
+endif
 endif
 
 lib_LTLIBRARIES = $(shared_libraries)
@@ -543,6 +547,10 @@ libmonosgen_2_0_la_SOURCES =
 libmonosgen_2_0_la_CFLAGS = $(mono_sgen_CFLAGS)
 libmonosgen_2_0_la_LIBADD = libmini.la $(sgen_libs) $(LIBMONO_DTRACE_OBJECT)
 
+if PLATFORM_ANDROID
+libmonosgen_2_0_la_LDFLAGS = -avoid-version
+endif
+
 if MOONLIGHT
 libmono_moon_la_SOURCES = $(libmini_la_SOURCES)
 if MOONLIGHT_BOEHM
@@ -662,10 +670,10 @@ gctest: mono gc-test.exe
 LLVM_AOT_RUNTIME_OPTS=$(if $(LLVM),--llvm,)
 
 aotcheck: mono $(regtests)
-	rm -f *.exe.so *.exe.dylib *.exe.dylib.dSYM
+	rm -rf *.exe.so *.exe.dylib *.exe.dylib.dSYM
 	$(RUNTIME) $(LLVM_AOT_RUNTIME_OPTS) --aot $(regtests) || exit 1
 	for i in $(regtests); do $(RUNTIME_AOTCHECK) --regression $$i || exit 1; done
-	rm -f *.exe.so *.exe.dylib *.exe.dylib.dSYM
+	rm -rf *.exe.so *.exe.dylib *.exe.dylib.dSYM
 
 llvmaotcheck:
 	$(MAKE) aotcheck LLVM=1

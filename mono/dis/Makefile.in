@@ -36,7 +36,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-@DISABLE_EXECUTABLES_FALSE@@SUPPORT_BOEHM_TRUE@bin_PROGRAMS = monodis$(EXEEXT)
+@DISABLE_EXECUTABLES_FALSE@@DISABLE_LIBRARIES_FALSE@@SUPPORT_BOEHM_TRUE@bin_PROGRAMS = monodis$(EXEEXT)
 subdir = mono/dis
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in ChangeLog \
 	TODO
