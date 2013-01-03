@@ -101,6 +101,8 @@ public:
 
 	CFlowManager *GetFlowManager() const { return m_pFlowManager; }
 
+	void EraseBinding(IMonoScriptBind *pScriptBind);
+
 protected:
 	bool CompleteInit();
 
@@ -118,7 +120,6 @@ protected:
 	bool m_bDetectedChanges;
 
 	CFlowManager *m_pFlowManager;
-	CInput *m_pInput;
 
 	IMonoConverter *m_pConverter;
 
@@ -130,8 +131,7 @@ protected:
 	// We temporarily store scriptbind methods here if developers attempt to register them prior to the script system has been initialized properly.
 	TMethodBindings m_methodBindings;
 
-	// ScriptBinds declared in this project are stored here to make sure they are destructed on shutdown.
-	std::vector<std::shared_ptr<IMonoScriptBind>> m_localScriptBinds;
+	std::vector<IMonoScriptBind *> m_localScriptBinds;
 
 	std::vector<IMonoScriptEventListener *> m_listeners;
 };

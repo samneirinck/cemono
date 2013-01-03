@@ -35,6 +35,11 @@ CFlowManager::CFlowManager()
 	REGISTER_METHOD(GetTargetEntity);
 }
 
+CFlowManager::~CFlowManager()
+{
+	g_pScriptSystem->EraseBinding(this);
+}
+
 void CFlowManager::RegisterNode(mono::string monoTypeName)
 {
 	IFlowSystem *pFlowSystem = gEnv->pGameFramework->GetIFlowSystem();

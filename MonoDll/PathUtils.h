@@ -14,7 +14,6 @@
 
 #include <Windows.h>
 #undef GetTempPath
-#undef GetClassName
 
 class PathUtils
 {

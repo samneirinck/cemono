@@ -40,7 +40,7 @@ class CFlowManager
 {
 public:
 	CFlowManager();
-	~CFlowManager() {}
+	~CFlowManager();
 
 	// IFlowNodeFactory
 	virtual void AddRef() override { ++m_refs; }

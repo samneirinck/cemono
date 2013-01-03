@@ -11,8 +11,6 @@
 #include <mono/metadata/debug-helpers.h>
 #include <mono/metadata/assembly.h>
 
-#include <Windows.h>
-
 CScriptAssembly::CScriptAssembly(CScriptDomain *pDomain, MonoImage *pImage, const char *path, bool nativeAssembly)
 	: m_pDomain(pDomain)
 	, m_bNative(nativeAssembly) // true if this assembly was loaded via C++.

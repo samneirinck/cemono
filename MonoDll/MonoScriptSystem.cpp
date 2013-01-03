@@ -58,7 +58,6 @@ CScriptSystem::CScriptSystem()
 	, m_pPdb2MdbAssembly(nullptr)
 	, m_pScriptManager(nullptr)
 	, m_pScriptDomain(nullptr)
-	, m_pInput(nullptr)
 	, m_bReloading(false)
 	, m_bDetectedChanges(false)
 {
@@ -116,7 +115,9 @@ CScriptSystem::CScriptSystem()
 CScriptSystem::~CScriptSystem()
 {
 	for(auto it = m_localScriptBinds.begin(); it != m_localScriptBinds.end(); ++it)
-		(*it).reset();
+		delete (*it);
+
+	m_localScriptBinds.clear();
 
 	SAFE_RELEASE(m_pScriptManager);
 
@@ -260,7 +261,7 @@ void CScriptSystem::RegisterDefaultBindings()
 			RegisterMethodBinding((*it).first, (*it).second);
 	}
 
-#define RegisterBinding(T) m_localScriptBinds.push_back(std::shared_ptr<IMonoScriptBind>(new T()));
+#define RegisterBinding(T) m_localScriptBinds.push_back(new T());
 	RegisterBinding(CActorSystem);
 	RegisterBinding(CScriptbind_3DEngine);
 	RegisterBinding(CScriptbind_Physics);
@@ -277,13 +278,18 @@ void CScriptSystem::RegisterDefaultBindings()
 	RegisterBinding(CScriptbind_Network);
 	RegisterBinding(CScriptbind_ScriptTable);
 	RegisterBinding(CScriptbind_CrySerialize);
+	RegisterBinding(CInput);
 
-#define RegisterBindingAndSet(var, T) RegisterBinding(T); var = (T *)m_localScriptBinds.back().get();
+#define RegisterBindingAndSet(var, T) RegisterBinding(T); var = (T *)m_localScriptBinds.back();
 	RegisterBindingAndSet(m_pFlowManager, CFlowManager);
-	RegisterBindingAndSet(m_pInput, CInput);
 
 #undef RegisterBindingAndSet
 #undef RegisterBinding
+}
+
+void CScriptSystem::EraseBinding(IMonoScriptBind *pScriptBind)
+{
+	stl::find_and_erase(m_localScriptBinds, pScriptBind);
 }
 
 void CScriptSystem::OnPostUpdate(float fDeltaTime)
