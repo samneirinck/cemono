@@ -148,7 +148,8 @@ CScriptbind_Entity::CScriptbind_Entity()
 
 CScriptbind_Entity::~CScriptbind_Entity()
 {
-	gEnv->pEntitySystem->RemoveSink(this);
+	if(gEnv->pEntitySystem)
+		gEnv->pEntitySystem->RemoveSink(this);
 }
 
 void CScriptbind_Entity::PlayAnimation(IEntity *pEntity, mono::string animationName, int slot, int layer, float blend, float speed, EAnimationFlags flags)

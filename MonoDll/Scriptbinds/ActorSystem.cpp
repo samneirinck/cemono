@@ -29,7 +29,8 @@ CActorSystem::CActorSystem()
 
 CActorSystem::~CActorSystem()
 {
-	gEnv->pEntitySystem->RemoveSink(this);
+	if(gEnv->pEntitySystem )
+		gEnv->pEntitySystem->RemoveSink(this);
 }
 
 EMonoActorType CActorSystem::GetMonoActorType(const char *actorClassName)
