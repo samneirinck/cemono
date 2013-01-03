@@ -60,6 +60,7 @@ CScriptSystem::CScriptSystem()
 	, m_pScriptDomain(nullptr)
 	, m_bReloading(false)
 	, m_bDetectedChanges(false)
+	, m_bQuitting(false)
 {
 	CryLogAlways("Initializing Mono Script System");
 
@@ -114,6 +115,7 @@ CScriptSystem::CScriptSystem()
 
 CScriptSystem::~CScriptSystem()
 {
+	m_bQuitting = true;
 	for(auto it = m_localScriptBinds.begin(); it != m_localScriptBinds.end(); ++it)
 		delete (*it);
 
@@ -397,5 +399,6 @@ CScriptDomain *CScriptSystem::TryGetDomain(MonoDomain *pMonoDomain)
 
 void CScriptSystem::OnDomainReleased(CScriptDomain *pDomain)
 {
-	stl::find_and_erase(m_domains, pDomain);
+	if(!m_bQuitting)
+		stl::find_and_erase(m_domains, pDomain);
 }

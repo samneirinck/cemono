@@ -12,6 +12,7 @@
 
 CScriptDomain::CScriptDomain(ERuntimeVersion runtimeVersion)
 	: m_bRootDomain(true)
+	, m_bDestroying(false)
 {
 	const char *version = "v2.0.50727";
 	switch(runtimeVersion)
@@ -41,6 +42,7 @@ CScriptDomain::CScriptDomain(ERuntimeVersion runtimeVersion)
 
 CScriptDomain::CScriptDomain(const char *name, bool setActive)
 	: m_bRootDomain(false)
+	, m_bDestroying(false)
 {
 	m_pDomain = mono_domain_create_appdomain(const_cast<char *>(name), nullptr);
 
@@ -50,10 +52,14 @@ CScriptDomain::CScriptDomain(const char *name, bool setActive)
 
 CScriptDomain::~CScriptDomain()
 {
+	m_bDestroying = true;
+
+	CryLogAlways("CScriptDomain::~CScriptDomain (%s)", m_bRootDomain ? "root" : "slave");
 	for each(auto assembly in m_assemblies)
 		delete assembly;
 
 	m_assemblies.clear();
+	CryLogAlways("~assemblies");
 
 	if(m_bRootDomain)
 		mono_jit_cleanup(m_pDomain);
@@ -83,7 +89,10 @@ CScriptDomain::~CScriptDomain()
 		}
 	}
 
+	CryLogAlways("~cleanup");
 	g_pScriptSystem->OnDomainReleased(this);
+
+	CryLogAlways("~CScriptDomain::~CScriptDomain");
 }
 
 bool CScriptDomain::SetActive(bool force)
@@ -135,7 +144,8 @@ IMonoAssembly *CScriptDomain::LoadAssembly(const char *file, bool shadowCopy, bo
 
 void CScriptDomain::OnAssemblyReleased(CScriptAssembly *pAssembly)
 {
-	stl::find_and_erase(m_assemblies, pAssembly);
+	if(!m_bDestroying)
+		stl::find_and_erase(m_assemblies, pAssembly);
 }
 
 CScriptAssembly *CScriptDomain::TryGetAssembly(MonoImage *pImage)

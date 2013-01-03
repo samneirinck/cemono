@@ -70,6 +70,8 @@ private:
 	string m_path;
 	bool m_bNative;
 
+	bool m_bDestroying;
+
 	std::vector<CScriptClass *> m_classes;
 	CScriptDomain *m_pDomain;
 };

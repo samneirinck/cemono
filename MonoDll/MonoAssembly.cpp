@@ -14,6 +14,7 @@
 CScriptAssembly::CScriptAssembly(CScriptDomain *pDomain, MonoImage *pImage, const char *path, bool nativeAssembly)
 	: m_pDomain(pDomain)
 	, m_bNative(nativeAssembly) // true if this assembly was loaded via C++.
+	, m_bDestroying(false)
 {
 	CRY_ASSERT(pImage);
 	m_pObject = (MonoObject *)pImage;
@@ -24,6 +25,8 @@ CScriptAssembly::CScriptAssembly(CScriptDomain *pDomain, MonoImage *pImage, cons
 
 CScriptAssembly::~CScriptAssembly()
 {
+	m_bDestroying = true;
+
 	for(auto it = m_classes.begin(); it != m_classes.end(); ++it)
 		delete *it;
 
@@ -44,7 +47,8 @@ void CScriptAssembly::Release(bool triggerGC)
 
 void CScriptAssembly::OnClassReleased(CScriptClass *pClass)
 {
-	stl::find_and_erase(m_classes, pClass);
+	if(!m_bDestroying)
+		stl::find_and_erase(m_classes, pClass);
 }
 
 IMonoClass *CScriptAssembly::GetClass(const char *className, const char *nameSpace)

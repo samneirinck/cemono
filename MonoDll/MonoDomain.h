@@ -44,6 +44,7 @@ private:
 	std::vector<CScriptAssembly *> m_assemblies;
 
 	bool m_bRootDomain;
+	bool m_bDestroying;
 };
 
 #endif //__SCRIPT_DOMAIN_H_
