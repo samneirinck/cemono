@@ -210,19 +210,12 @@ namespace CryEngine.FlowSystem
         private bool IsPortActive(int port) { return NativeFlowNodeMethods.IsPortActive(NodeHandle, port); }
         #endregion
 
-        public virtual EntityBase TargetEntity
+        internal void InternalSetTargetEntity(IntPtr handle, EntityId entId)
         {
-            get
-            {
-                uint entId;
-                var entPtr = NativeFlowNodeMethods.GetTargetEntity(NodeHandle, out entId);
-
-                if (entPtr != IntPtr.Zero)
-                    return Entity.CreateNativeEntity(new EntityId(entId), entPtr);
-
-                return null;
-            }
+            TargetEntity = Entity.CreateNativeEntity(entId, handle);
         }
+
+        public EntityBase TargetEntity { get; private set; }
 
         #region Overrides
         public override int GetHashCode()

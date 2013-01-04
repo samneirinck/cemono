@@ -17,13 +17,5 @@ namespace CryEngine.FlowSystem
 
             return new NodeConfig(FlowNodeFilter.Approved, "", FlowNodeFlags.HideUI, FlowNodeType.Instanced, registrationParams.InputPorts, registrationParams.OutputPorts);
         }
-
-        internal void InternalSetTargetEntity(IntPtr handle, EntityId entId)
-        {
-            targetEntity = Entity.CreateNativeEntity(entId, handle);
-        }
-
-        EntityBase targetEntity;
-        public override EntityBase TargetEntity { get { return targetEntity; } }
     }
 }
