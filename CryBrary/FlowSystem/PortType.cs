@@ -16,11 +16,6 @@ namespace CryEngine.FlowSystem
 
         DialogLine,
 
-        /// <summary>
-        /// Only applicable on Vec3 inputs.
-        /// </summary>
-        Color,
-
         Texture,
 
         Object,

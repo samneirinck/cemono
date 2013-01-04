@@ -411,6 +411,8 @@ namespace CryEngine.Compilers.NET
 
         bool TryGetFlowNodeInput(PortAttribute portAttribute, MethodInfo method, out InputPortConfig inputPortConfig)
         {
+            string portPrefix = null;
+
             object defaultVal = null;
 
             inputPortConfig = new InputPortConfig();
@@ -441,7 +443,7 @@ namespace CryEngine.Compilers.NET
                     }
                 }
                 else
-                    inputPortConfig.type = GetFlowNodePortType(parameter.ParameterType);
+                    inputPortConfig.type = GetFlowNodePortType(parameter.ParameterType, out portPrefix, portAttribute);
 
                 if (parameter.IsOptional && defaultVal == null)
                     defaultVal = parameter.DefaultValue;
@@ -473,85 +475,16 @@ namespace CryEngine.Compilers.NET
             else
                 inputPortConfig.type = NodePortType.Void;
 
-            string portName = "";
+            string portName = (portAttribute.Name ?? method.Name);
 
-            if (inputPortConfig.type == NodePortType.String)
-            {
-                switch (portAttribute.StringPortType)
-                {
-                    case StringPortType.Sound:
-                        portName = "sound_";
-                        break;
-                    case StringPortType.DialogLine:
-                        portName = "dialogline_";
-                        break;
-                    case StringPortType.Color:
-                        portName = "color_";
-                        break;
-                    case StringPortType.Texture:
-                        portName = "texture_";
-                        break;
-                    case StringPortType.Object:
-                        portName = "object_";
-                        break;
-                    case StringPortType.File:
-                        portName = "file_";
-                        break;
-                    case StringPortType.EquipmentPack:
-                        portName = "equip_";
-                        break;
-                    case StringPortType.ReverbPreset:
-                        portName = "reverbpreset_";
-                        break;
-                    case StringPortType.GameToken:
-                        portName = "gametoken_";
-                        break;
-                    case StringPortType.Material:
-                        portName = "mat_";
-                        break;
-                    case StringPortType.Sequence:
-                        portName = "seq_";
-                        break;
-                    case StringPortType.Mission:
-                        portName = "mission_";
-                        break;
-                    case StringPortType.Animation:
-                        portName = "anim_";
-                        break;
-                    case StringPortType.AnimationState:
-                        portName = "animstate_";
-                        break;
-                    case StringPortType.AnimationStateEx:
-                        portName = "animstateEx_";
-                        break;
-                    case StringPortType.Bone:
-                        portName = "bone_";
-                        break;
-                    case StringPortType.Attachment:
-                        portName = "attachment_";
-                        break;
-                    case StringPortType.Dialog:
-                        portName = "dialog_";
-                        break;
-                    case StringPortType.MaterialParamSlot:
-                        portName = "matparamslot_";
-                        break;
-                    case StringPortType.MaterialParamName:
-                        portName = "matparamname_";
-                        break;
-                    case StringPortType.MaterialParamCharacterAttachment:
-                        portName = "matparamcharatt_";
-                        break;
-                }
-            }
+            if (portPrefix != null)
+                inputPortConfig.name = portPrefix + portName;
+            else
+                inputPortConfig.name = portName;
 
-            portName += (portAttribute.Name ?? method.Name);
-
-            inputPortConfig.name = portName;
             inputPortConfig.defaultValue = defaultVal;
             inputPortConfig.description = portAttribute.Description;
             inputPortConfig.humanName = portAttribute.Name ?? method.Name;
-
             return true;
         }
 
@@ -574,7 +507,8 @@ namespace CryEngine.Compilers.NET
                 bool isGenericType = type.IsGenericType;
                 Type genericType = isGenericType ? type.GetGenericArguments()[0] : typeof(void);
 
-                outputPortConfig.type = GetFlowNodePortType(genericType);
+                string prefix;
+                outputPortConfig.type = GetFlowNodePortType(genericType, out prefix, portAttribute);
 
                 return true;
             }
@@ -582,8 +516,10 @@ namespace CryEngine.Compilers.NET
             return false;
         }
 
-        NodePortType GetFlowNodePortType(Type type)
+        NodePortType GetFlowNodePortType(Type type, out string prefix, PortAttribute portAttribute)
         {
+            prefix = null;
+
             if (type == typeof(void))
                 return NodePortType.Void;
             if (type == typeof(int))
@@ -591,14 +527,85 @@ namespace CryEngine.Compilers.NET
             if (type == typeof(float))
                 return NodePortType.Float;
             if (type == typeof(string))
+            {
+                switch (portAttribute.StringPortType)
+                {
+                    case StringPortType.Sound:
+                        prefix = "sound_";
+                        break;
+                    case StringPortType.DialogLine:
+                        prefix = "dialogline_";
+                        break;
+                    case StringPortType.Texture:
+                        prefix = "texture_";
+                        break;
+                    case StringPortType.Object:
+                        prefix = "object_";
+                        break;
+                    case StringPortType.File:
+                        prefix = "file_";
+                        break;
+                    case StringPortType.EquipmentPack:
+                        prefix = "equip_";
+                        break;
+                    case StringPortType.ReverbPreset:
+                        prefix = "reverbpreset_";
+                        break;
+                    case StringPortType.GameToken:
+                        prefix = "gametoken_";
+                        break;
+                    case StringPortType.Material:
+                        prefix = "mat_";
+                        break;
+                    case StringPortType.Sequence:
+                        prefix = "seq_";
+                        break;
+                    case StringPortType.Mission:
+                        prefix = "mission_";
+                        break;
+                    case StringPortType.Animation:
+                        prefix = "anim_";
+                        break;
+                    case StringPortType.AnimationState:
+                        prefix = "animstate_";
+                        break;
+                    case StringPortType.AnimationStateEx:
+                        prefix = "animstateEx_";
+                        break;
+                    case StringPortType.Bone:
+                        prefix = "bone_";
+                        break;
+                    case StringPortType.Attachment:
+                        prefix = "attachment_";
+                        break;
+                    case StringPortType.Dialog:
+                        prefix = "dialog_";
+                        break;
+                    case StringPortType.MaterialParamSlot:
+                        prefix = "matparamslot_";
+                        break;
+                    case StringPortType.MaterialParamName:
+                        prefix = "matparamname_";
+                        break;
+                    case StringPortType.MaterialParamCharacterAttachment:
+                        prefix = "matparamcharatt_";
+                        break;
+                }
+
                 return NodePortType.String;
+            }
             if (type == typeof(Vec3))
                 return NodePortType.Vec3;
+            if (type == typeof(Color))
+            {
+                prefix = "color_";
+                return NodePortType.Vec3; // implicit operator takes care of conversion
+            }
             if (type == typeof(bool))
                 return NodePortType.Bool;
             if (type == typeof(EntityId))
                 return NodePortType.EntityId;
-            
+
             throw new ArgumentException("Invalid flownode port type specified!");
         }
         #endregion

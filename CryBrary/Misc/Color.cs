@@ -1,10 +1,13 @@
 ﻿using System;
 
+using System.ComponentModel;
+
 namespace CryEngine
 {
     /// <summary>
     /// Defines a color in terms of its red, green, blue and alpha values.
     /// </summary>
+    [TypeConverter(typeof(Misc.TypeConverters.ColorTypeConverter))]
     public struct Color
     {
         /// <summary>
@@ -17,11 +20,6 @@ namespace CryEngine
         public Color(float red, float green, float blue, float alpha = 1)
             : this()
         {
-#if !(RELEASE && RELEASE_DISABLE_CHECKS)
-            if (!MathHelpers.IsInRange(red, 0, 1) || !MathHelpers.IsInRange(green, 0, 1) || !MathHelpers.IsInRange(blue, 0, 1) || !MathHelpers.IsInRange(alpha, 0, 1))
-                throw new ArgumentException("Color and alpha values must be between 0 and 1.");
-#endif
-
             R = red;
             G = green;
             B = blue;

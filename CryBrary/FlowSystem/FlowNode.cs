@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
+using System.ComponentModel;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 
 using CryEngine.Extensions;
 using CryEngine.Initialization;
@@ -85,12 +86,27 @@ namespace CryEngine.FlowSystem
 
             var method = registrationParams.InputMethods[index];
 
-            if (value != null && method.GetParameters().Length > 0)
+            var parameters = method.GetParameters();
+            int parameterCount = parameters.Length;
+
+            if (value != null && parameterCount == 1)
             {
-                var parameters = new[] { value };
-                method.Invoke(this, parameters);
+                var paramType = method.GetParameters().ElementAt(0).ParameterType;
+                var valueType = value.GetType();
+
+                if (paramType != valueType)
+                {
+                    var typeConverter = TypeDescriptor.GetConverter(paramType);
+                    if (typeConverter == null || !typeConverter.CanConvertFrom(valueType))
+                        return;
+
+                    value = typeConverter.ConvertFrom(value);
+                }
+
+                var args = new[] { value };
+                method.Invoke(this, args);
             }
-            else
+            else if(parameterCount == 0)
                 method.Invoke(this, null);
         }
 
