@@ -9,9 +9,6 @@ namespace CryEngine.FlowSystem
     {
         None,
 
-        /// <summary>
-        /// Only applicable on string inputs.
-        /// </summary>
         Sound,
 
         DialogLine,
@@ -28,9 +25,6 @@ namespace CryEngine.FlowSystem
 
         GameToken,
 
-        /// <summary>
-        /// Only applicable on string inputs.
-        /// </summary>
         Material,
 
         Sequence,
