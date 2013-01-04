@@ -26,14 +26,14 @@ namespace CryEngine.Physics
         internal PhysicalEntity(IntPtr physEntPtr)
             : this()
         {
-            PhysicsPointer = physEntPtr;
+            Handle = physEntPtr;
         }
 
         internal PhysicalEntity(EntityBase _entity)
             : this()
         {
             owner = _entity;
-            PhysicsPointer = NativePhysicsMethods.GetPhysicalEntity(Owner.GetEntityHandle());
+            Handle = NativePhysicsMethods.GetPhysicalEntity(Owner.GetEntityHandle());
         }
 
         public void Break(BreakageParameters breakageParams)
@@ -229,14 +229,18 @@ namespace CryEngine.Physics
             }
         }
 
-        internal IntPtr PhysicsPointer { get; set; }
+        /// <summary>
+        /// IPhysicalEntity *
+        /// </summary>
+        internal IntPtr Handle { get; set; }
+
         private EntityBase owner;
         public EntityBase Owner
         {
             get
             {
                 if (owner == null)
-                    owner = Entity.Get(NativeEntityMethods.GetEntityFromPhysics(PhysicsPointer));
+                    owner = Entity.Get(NativeEntityMethods.GetEntityFromPhysics(Handle));
 
                 return owner;
             }
