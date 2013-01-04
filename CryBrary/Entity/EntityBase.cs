@@ -202,7 +202,7 @@ namespace CryEngine
         }
 #endregion
 
-        IEnumerable<EntityLink> Links
+        public IEnumerable<EntityLink> Links
         {
             get
             {
