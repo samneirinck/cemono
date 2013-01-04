@@ -102,112 +102,32 @@ namespace CryEngine.FlowSystem
         #endregion
 
         #region External methods
-        /// <summary>
-        /// Gets the int value of an flownode port.
-        /// </summary>
-        /// <param name="port"></param>
-        /// <returns></returns>
-        protected int GetPortInt(Action<int> port)
+        protected bool IsPortActive<T>(Action<T> port)
         {
-            return NativeFlowNodeMethods.GetPortValueInt(NodeHandle, GetInputPortId(port.Method));
+            return NativeFlowNodeMethods.IsPortActive(NodeHandle, GetInputPortId(port.Method));
         }
 
-        protected bool IsIntPortActive(Action<int> port)
+        protected T GetPortValue<T>(Action<T> port)
         {
-            return IsPortActive(GetInputPortId(port.Method));
+            var type = typeof(T);
+
+            if (type == typeof(int))
+                return (T)(object)NativeFlowNodeMethods.GetPortValueInt(NodeHandle, GetInputPortId(port.Method));
+            if (type == typeof(float))
+                return (T)(object)NativeFlowNodeMethods.GetPortValueFloat(NodeHandle, GetInputPortId(port.Method));
+            if (type == typeof(Vec3) || type == typeof(Color))
+                return (T)(object)NativeFlowNodeMethods.GetPortValueVec3(NodeHandle, GetInputPortId(port.Method));
+            if (type == typeof(string))
+                return (T)(object)NativeFlowNodeMethods.GetPortValueString(NodeHandle, GetInputPortId(port.Method));
+            if (type == typeof(bool))
+                return (T)(object)NativeFlowNodeMethods.GetPortValueBool(NodeHandle, GetInputPortId(port.Method));
+            if (type == typeof(EntityId))
+                return (T)(object)NativeFlowNodeMethods.GetPortValueEntityId(NodeHandle, GetInputPortId(port.Method));
+            if (type.IsEnum)
+                return (T)Enum.ToObject(typeof(T), NativeFlowNodeMethods.GetPortValueInt(NodeHandle, GetInputPortId(port.Method)));
+
+            throw new ArgumentException("Invalid flownode port type specified!");
         }
-
-        protected T GetPortEnum<T>(Action<T> port) where T : struct
-        {
-#if !(RELEASE && RELEASE_DISABLE_CHECKS)
-            if (!typeof(T).IsEnum)
-                throw new ArgumentException("T must be an enumerated type");
-#endif
-
-            return (T)Enum.ToObject(typeof(T), NativeFlowNodeMethods.GetPortValueInt(NodeHandle, GetInputPortId(port.Method)));
-        }
-
-        protected bool IsEnumPortActive(Action<Enum> port)
-        {
-            return IsPortActive(GetInputPortId(port.Method));
-        }
-
-        /// <summary>
-        /// Gets the float value of an flownode port.
-        /// </summary>
-        /// <param name="port"></param>
-        /// <returns></returns>
-        protected float GetPortFloat(Action<float> port)
-        {
-            return NativeFlowNodeMethods.GetPortValueFloat(NodeHandle, GetInputPortId(port.Method));
-        }
-
-        protected bool IsFloatPortActive(Action<float> port)
-        {
-            return IsPortActive(GetInputPortId(port.Method));
-        }
-
-        /// <summary>
-        /// Gets the int value of an flownode port.
-        /// </summary>
-        /// <param name="port"></param>
-        /// <returns></returns>
-        protected Vec3 GetPortVec3(Action<Vec3> port)
-        {
-            return NativeFlowNodeMethods.GetPortValueVec3(NodeHandle, GetInputPortId(port.Method));
-        }
-
-        protected bool IsVec3PortActive(Action<Vec3> port)
-        {
-            return IsPortActive(GetInputPortId(port.Method));
-        }
-
-        /// <summary>
-        /// Gets the string value of an flownode port.
-        /// </summary>
-        /// <param name="port"></param>
-        /// <returns></returns>
-        protected string GetPortString(Action<string> port)
-        {
-            return NativeFlowNodeMethods.GetPortValueString(NodeHandle, GetInputPortId(port.Method));
-        }
-
-        protected bool IsStringPortActive(Action<string> port)
-        {
-            return IsPortActive(GetInputPortId(port.Method));
-        }
-
-        /// <summary>
-        /// Gets the bool value of an flownode port.
-        /// </summary>
-        /// <param name="port"></param>
-        /// <returns></returns>
-        protected bool GetPortBool(Action<bool> port)
-        {
-            return NativeFlowNodeMethods.GetPortValueBool(NodeHandle, GetInputPortId(port.Method));
-        }
-
-        protected bool IsBoolPortActive(Action<bool> port)
-        {
-            return IsPortActive(GetInputPortId(port.Method));
-        }
-
-        protected EntityId GetPortEntityId(Action<EntityId> port)
-        {
-            return new EntityId(NativeFlowNodeMethods.GetPortValueEntityId(NodeHandle, GetInputPortId(port.Method)));
-        }
-
-        protected bool IsEntityIdPortActive(Action<EntityId> port)
-        {
-            return IsPortActive(GetInputPortId(port.Method));
-        }
-
-        /// <summary>
-        /// Used to check whether an input port is currently activated.
-        /// </summary>
-        /// <param name="port"></param>
-        /// <returns></returns>
-        private bool IsPortActive(int port) { return NativeFlowNodeMethods.IsPortActive(NodeHandle, port); }
         #endregion
 
         internal void InternalSetTargetEntity(IntPtr handle, EntityId entId)
