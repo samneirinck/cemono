@@ -45,7 +45,7 @@ namespace CryEngine.Initialization
                             File.Delete(file);
                     }
                 }
-                catch(UnauthorizedAccessException) { }
+                catch (UnauthorizedAccessException) { }
             }
 
 #if !UNIT_TESTING
@@ -165,7 +165,7 @@ namespace CryEngine.Initialization
                     var gacFolder = Path.Combine(PathUtils.MonoFolder, "lib", "mono", "gac");
                     foreach (var assemblyLocation in Directory.GetFiles(gacFolder, "*.dll", SearchOption.AllDirectories))
                     {
-                        var separator = new [] { "__" };
+                        var separator = new[] { "__" };
                         var splitParentDir = Directory.GetParent(assemblyLocation).Name.Split(separator, StringSplitOptions.RemoveEmptyEntries);
 
                         var assembly = Assembly.Load(Path.GetFileName(assemblyLocation) + string.Format(", Version={0}, Culture=neutral, PublicKeyToken={1}", splitParentDir.ElementAt(0), splitParentDir.ElementAt(1)));
@@ -201,7 +201,7 @@ namespace CryEngine.Initialization
                 var entityRegistrationParams = new EntityRegistrationParams();
 
                 entityRegistrationParams.name = script.ScriptName;
-                entityRegistrationParams.flags = EntityClassFlags.Default | EntityClassFlags.Invisible; 
+                entityRegistrationParams.flags = EntityClassFlags.Default | EntityClassFlags.Invisible;
 
 #if !UNIT_TESTING
                 NativeEntityMethods.RegisterEntityClass(entityRegistrationParams);
@@ -265,6 +265,8 @@ namespace CryEngine.Initialization
                                     registrationParams.category = "Default";
 
                                 NativeEntityMethods.RegisterEntityClass(registrationParams);
+
+                                script.RegistrationParams = registrationParams;
                             }
                             else if (script.RegistrationParams is GameRulesRegistrationParams)
                             {
@@ -281,6 +283,8 @@ namespace CryEngine.Initialization
 
                                     hasDefaultGameRules = true;
                                 }
+
+                                script.RegistrationParams = registrationParams;
                             }
                             else if (script.RegistrationParams is FlowNodeRegistrationParams)
                             {
@@ -292,6 +296,8 @@ namespace CryEngine.Initialization
                                     registrationParams.category = script.Type.Namespace;
                                 if (registrationParams.filter == 0)
                                     registrationParams.filter = FlowNodeFilter.Approved;
+
+                                script.RegistrationParams = registrationParams;
 
                                 script.ScriptName = registrationParams.category + ":" + registrationParams.name;
 
@@ -354,7 +360,7 @@ namespace CryEngine.Initialization
                 {
                     File.Copy(currentPath, newPath, overwrite);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     if (ex is UnauthorizedAccessException || ex is IOException)
                     {
@@ -548,15 +554,15 @@ namespace CryEngine.Initialization
                     if (script.ScriptInstances != null)
                     {
                         numRemoved += script.ScriptInstances.RemoveAll(x =>
+                        {
+                            if (match(x as T))
                             {
-                                if (match(x as T))
-                                {
-                                    x.OnDestroyedInternal();
-                                    return true;
-                                }
+                                x.OnDestroyedInternal();
+                                return true;
+                            }
 
-                                return false;
-                            });
+                            return false;
+                        });
                     }
                 }
 
