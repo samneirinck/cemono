@@ -207,6 +207,9 @@ namespace CryEngine
             get
             {
                 var links = NativeEntityMethods.GetEntityLinks(this.GetEntityHandle());
+                if (links == null)
+                    yield break;
+
                 foreach (var linkPtr in links)
                     yield return new EntityLink((IntPtr)linkPtr, this);
             }
