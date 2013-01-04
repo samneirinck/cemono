@@ -20,7 +20,7 @@ namespace CryEngine.FlowSystem
             NativeFlowNodeMethods.RegisterNode(typeName);
         }
 
-        internal void InternalInitialize(NodeInfo nodeInfo)
+        internal bool InternalInitialize(NodeInfo nodeInfo)
         {
             NodeHandle = nodeInfo.nodePtr;
             NodeId = nodeInfo.nodeId;
@@ -51,6 +51,8 @@ namespace CryEngine.FlowSystem
                 else
                     (outputMember as PropertyInfo).SetValue(this, outputPort, null);
             }
+
+            return true;
         }
 
         internal virtual NodeConfig GetNodeConfig()

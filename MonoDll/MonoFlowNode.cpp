@@ -33,14 +33,20 @@ bool CFlowNode::CreatedNode(TFlowNodeId id, const char *name, TFlowNodeTypeId ty
 { 
 	if(pNode==this)
 	{
+		const char *typeName = gEnv->pFlowSystem->GetTypeName(typeId);
+
 		IMonoObject *pScript = g_pScriptSystem->InstantiateScript(gEnv->pFlowSystem->GetTypeName(typeId), eScriptFlag_FlowNode);
 
 		IMonoClass *pNodeInfo = g_pScriptSystem->GetCryBraryAssembly()->GetClass("NodeInfo", "CryEngine.FlowSystem.Native");
-		pScript->CallMethod("InternalInitialize", pNodeInfo->BoxObject(&SMonoNodeInfo(this, id, m_pActInfo->pGraph->GetGraphId())));
-
+		
+		IMonoObject *pResult = pScript->CallMethod("InternalInitialize", pNodeInfo->BoxObject(&SMonoNodeInfo(this, id, m_pActInfo->pGraph->GetGraphId())));
+		
 		m_pScript = pScript;
+		if(pResult)
+			return pResult->Unbox<bool>();
 
-		return pScript != nullptr;
+		CryLogAlways("Failed to create node %s", gEnv->pFlowSystem->GetTypeName(typeId));
+		return false;
 	}
 
 	return true; 
