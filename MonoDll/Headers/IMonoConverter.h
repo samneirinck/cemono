@@ -54,7 +54,7 @@ struct IMonoConverter
 	/// Creates a dynamically resizing mono array.
 	/// if element is null, uses object class.
 	/// </summary>
-	virtual IMonoArray *CreateDynamicArray(IMonoClass *pElementClass = nullptr, int size = 1) = 0;
+	virtual IMonoArray *CreateDynamicArray(IMonoClass *pElementClass = nullptr, int size = 0) = 0;
 
 	/// <summary>
 	/// Converts a mono array to a IMonoArray. (To provide GetSize, GetItem etc functionality.)
