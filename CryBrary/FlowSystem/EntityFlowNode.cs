@@ -15,7 +15,7 @@ namespace CryEngine.FlowSystem
         {
             var registrationParams = (EntityFlowNodeRegistrationParams)Script.RegistrationParams;
 
-            return new NodeConfig(FlowNodeFilter.Approved, "", FlowNodeFlags.HideUI, FlowNodeType.Instanced, registrationParams.InputPorts, registrationParams.OutputPorts);
+            return new NodeConfig(FlowNodeFilter.Approved, "", FlowNodeFlags.HideUI | FlowNodeFlags.TargetEntity, FlowNodeType.Instanced, registrationParams.InputPorts, registrationParams.OutputPorts);
         }
     }
 }
