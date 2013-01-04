@@ -210,8 +210,11 @@ namespace CryEngine
                 if (links == null)
                     yield break;
 
-                foreach (var linkPtr in links)
-                    yield return new EntityLink((IntPtr)linkPtr, this);
+                foreach (IntPtr linkPtr in links)
+                {
+                    if(linkPtr != IntPtr.Zero)
+                        yield return new EntityLink(linkPtr, this);
+                }
             }
         }
 
