@@ -371,11 +371,6 @@ namespace CryEngine
         {
             return !(left == right);
         }
-
-        public static implicit operator Color(Vec3 vec)
-        {
-            return new Color(vec.X, vec.Y, vec.Z);
-        }
         #endregion
 
         #region Overrides
