@@ -135,12 +135,11 @@ void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 		break;
 	case eFE_SetEntityId:
 		{
-			EntityId id = pActInfo->pGraph->GetEntityId(pActInfo->myID);
-			if(IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id))
+			if(pActInfo->pEntity)
 			{
 				IMonoArray *pParams = CreateMonoArray(2);
-				pParams->InsertNativePointer(pEntity);
-				pParams->Insert(id);
+				pParams->InsertNativePointer(pActInfo->pEntity);
+				pParams->Insert(pActInfo->pEntity->GetId());
 
 				m_pScript->GetClass()->InvokeArray(m_pScript, "InternalSetTargetEntity", pParams);
 			}
