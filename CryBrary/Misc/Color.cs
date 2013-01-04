@@ -14,7 +14,7 @@ namespace CryEngine
         /// <param name="green"></param>
         /// <param name="blue"></param>
         /// <param name="alpha"></param>
-        public Color(float red, float green, float blue, float alpha)
+        public Color(float red, float green, float blue, float alpha = 1)
             : this()
         {
 #if !(RELEASE && RELEASE_DISABLE_CHECKS)
@@ -29,12 +29,11 @@ namespace CryEngine
         }
 
         /// <summary>
-        /// Constructs a new color object specifying the red, green, and blue values.
+        /// Constructs a new color object specifying the red, green, blue and alpha values.
         /// </summary>
-        /// <param name="red"></param>
-        /// <param name="green"></param>
-        /// <param name="blue"></param>
-        public Color(float red, float green, float blue) : this(red, green, blue, 1) { }
+        /// <param name="rgb"></param>
+        /// <param name="a"></param>
+        public Color(Vec3 rgb, float a = 1) : this(rgb.X, rgb.Y, rgb.Z, a) { }
 
         /// <summary>
         /// Constructs a new greyscale color object.
@@ -83,6 +82,16 @@ namespace CryEngine
         {
             return col1.R != col2.R || col1.G != col2.G || col1.B != col2.B || col1.A != col2.A;
         }
+
+        public static implicit operator Color(Vec3 vec)
+        {
+            return new Color(vec.X, vec.Y, vec.Z);
+        }
+
+        public static implicit operator Vec3(Color clr)
+        {
+            return new Vec3(clr.R, clr.G, clr.B);
+        }
         #endregion
 
         /// <summary>
@@ -113,10 +122,5 @@ namespace CryEngine
         public static Color Black { get { return new Color(0); } }
         public static Color White { get { return new Color(1); } }
         #endregion
-
-        public static implicit operator Vec3(Color clr)
-        {
-            return new Vec3(clr.R, clr.G, clr.B);
-        }
     }
 }
