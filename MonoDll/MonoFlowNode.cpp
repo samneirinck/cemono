@@ -151,35 +151,31 @@ void CFlowNode::GetConfiguration(SFlowNodeConfig &config)
 		m_cloneType = monoConfig.cloneType;
 
 		// Ports
-		static const int MAX_NODE_PORT_COUNT = 20;
-
-		SInputPortConfig nullptrConfig = {0};
-		SOutputPortConfig nullptrOutputConfig = {0};
-
 		IMonoArray *pInputPorts = *monoConfig.inputs;
+		int numInputs = pInputPorts->GetSize();
 
-		auto pInputs = new SInputPortConfig[MAX_NODE_PORT_COUNT];
+		auto pInputs = new SInputPortConfig[numInputs + 1];
 
-		for(int i = 0; i < pInputPorts->GetSize(); i++)
+		for(int i = 0; i < numInputs; i++)
 			pInputs[i] = pInputPorts->GetItem(i)->Unbox<SMonoInputPortConfig>().Convert();
 
-		for(int i = pInputPorts->GetSize(); i < MAX_NODE_PORT_COUNT; i++)
-			pInputs[i] = nullptrConfig;
+		SInputPortConfig nullptrInputConfig = {0};
+		pInputs[numInputs] = nullptrInputConfig;
 
 		config.pInputPorts = pInputs;
 
 		SAFE_RELEASE(pInputPorts);
 
-		// Convert MonoArray type to our custom CScriptArray for easier handling.
 		IMonoArray *pOutputPorts = *monoConfig.outputs;
+		int numOutputs = pOutputPorts->GetSize();
 
-		auto pOutputs = new SOutputPortConfig[MAX_NODE_PORT_COUNT];
+		auto pOutputs = new SOutputPortConfig[numOutputs + 1];
 
-		for(int i = 0; i < pOutputPorts->GetSize(); i++)
+		for(int i = 0; i < numOutputs; i++)
 			pOutputs[i] = pOutputPorts->GetItem(i)->Unbox<SMonoOutputPortConfig>().Convert();
 
-		for(int i = pOutputPorts->GetSize(); i < MAX_NODE_PORT_COUNT; i++)
-			pOutputs[i] = nullptrOutputConfig;
+		SOutputPortConfig nullptrOutputConfig = {0};
+		pOutputs[numOutputs] = nullptrOutputConfig;
 
 		config.pOutputPorts = pOutputs;
 
