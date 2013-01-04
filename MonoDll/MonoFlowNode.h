@@ -89,6 +89,8 @@ private:
 	IMonoObject *m_pScript;
 
 	ENodeCloneType m_cloneType;
+
+	uint32 m_flags;
 };
 
 struct SMonoInputPortConfig

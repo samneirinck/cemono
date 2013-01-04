@@ -17,6 +17,7 @@ CFlowNode::CFlowNode(SActivationInfo *pActInfo)
 	: m_pScript(nullptr)
 	, m_pActInfo(pActInfo)
 	, m_cloneType(eNCT_Instanced)
+	, m_flags(0)
 {
 	// We *have* to get the id right away or inputs won't work, so lets use this fugly solution.
 	pActInfo->pGraph->RegisterHook(this);
@@ -90,7 +91,11 @@ void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 			if(!pNodeData)
 				return;
 
-			for(int i = 0; i < pNodeData->GetNumInputPorts(); i++)
+			int numInputPorts = pNodeData->GetNumInputPorts();
+			if(m_flags & EFLN_TARGET_ENTITY)
+				numInputPorts--; // last input is the entity port.
+
+			for(int i = 0; i < numInputPorts; i++)
 			{
 				if(IsPortActive(i))
 				{
@@ -155,6 +160,8 @@ void CFlowNode::GetConfiguration(SFlowNodeConfig &config)
 		config.nFlags |= monoConfig.flags;
 		config.sDescription = _HELP(ToCryString(monoConfig.description));
 		config.SetCategory(monoConfig.category);
+
+		m_flags = config.nFlags;
 
 		m_cloneType = monoConfig.cloneType;
 
