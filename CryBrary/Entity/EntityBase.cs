@@ -181,6 +181,11 @@ namespace CryEngine
         /// <returns>null if failed, otherwise the attachment.</returns>
         public Attachment GetAttachment(string name, int characterSlot = 0)
         {
+#if !(RELEASE && RELEASE_DISABLE_CHECKS)
+            if (String.IsNullOrEmpty(name))
+                throw new ArgumentNullException("name");
+#endif
+
             var ptr = NativeEntityMethods.GetAttachmentByName(this.GetEntityHandle(), name, characterSlot);
 
             return Attachment.TryAdd(ptr, this);
