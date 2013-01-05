@@ -74,6 +74,6 @@ namespace CryEngine
         /// <summary>
         /// Gets or sets the native ISurfaceType pointer.
         /// </summary>
-        public IntPtr Handle { get; set; }
+        internal IntPtr Handle { get; set; }
     }
 }

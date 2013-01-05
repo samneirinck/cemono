@@ -164,7 +164,6 @@
     <Compile Include="Entity\EntityUpdatePolicy.cs" />
     <Compile Include="Entity\Extensions\Attachment.cs" />
     <Compile Include="Entity\Exceptions\EntityRemovalException.cs" />
-    <Compile Include="Extensions\NativeScriptTableExtensions.cs" />
     <Compile Include="FlowSystem\FlowNodeFilter.cs" />
     <Compile Include="FlowSystem\FlowNodeFlags.cs" />
     <Compile Include="FlowSystem\FlowNodeType.cs" />
@@ -206,9 +205,7 @@
     <Compile Include="Math\Angle.cs" />
     <Compile Include="Math\QuatT.cs" />
     <Compile Include="Misc\Exceptions\MissingAttributeException.cs" />
-    <Compile Include="Extensions\NativeActorExtensions.cs" />
-    <Compile Include="Extensions\NativeAttachmentExtensions.cs" />
-    <Compile Include="Extensions\NativeEntityExtensions.cs" />
+    <Compile Include="Extensions\NativeHandleExtensions.cs" />
     <Compile Include="Network\Native\NativeNetworkMethods.cs" />
     <Compile Include="Network\RemoteInvocationException.cs" />
     <Compile Include="Script Handling\ScriptReloadResult.cs" />

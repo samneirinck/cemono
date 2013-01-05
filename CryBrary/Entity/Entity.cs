@@ -25,8 +25,8 @@ namespace CryEngine
         [EditorBrowsable(EditorBrowsableState.Never)]
         internal virtual void InternalSpawn(EntityInfo entInfo)
         {
-            this.SetEntityHandle(entInfo.IEntityPtr);
-            this.SetAnimatedCharacterHandle(entInfo.IAnimatedCharacterPtr);
+            this.SetIEntity(entInfo.IEntityPtr);
+            this.SetIAnimatedCharacter(entInfo.IAnimatedCharacterPtr);
             Id = entInfo.Id;
 
             foreach (var property in GetType().GetProperties())
@@ -278,8 +278,8 @@ namespace CryEngine
         /// </summary>
         public BoundingBox TriggerBounds
         {
-            get { return NativeEntityMethods.GetTriggerBBox(this.GetEntityHandle()); }
-            set { NativeEntityMethods.SetTriggerBBox(this.GetEntityHandle(), value); }
+            get { return NativeEntityMethods.GetTriggerBBox(this.GetIEntity()); }
+            set { NativeEntityMethods.SetTriggerBBox(this.GetIEntity(), value); }
         }
 
         /// <summary>
@@ -287,7 +287,7 @@ namespace CryEngine
         /// </summary>
         public void InvalidateTrigger()
         {
-            NativeEntityMethods.InvalidateTrigger(this.GetEntityHandle());;
+            NativeEntityMethods.InvalidateTrigger(this.GetIEntity());;
         }
         #endregion
 

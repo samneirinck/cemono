@@ -23,7 +23,7 @@ namespace CryEngine.FlowSystem
 
         internal bool InternalInitialize(NodeInfo nodeInfo)
         {
-            NodeHandle = nodeInfo.nodePtr;
+            Handle = nodeInfo.nodePtr;
             NodeId = nodeInfo.nodeId;
             GraphId = nodeInfo.graphId;
 
@@ -43,7 +43,7 @@ namespace CryEngine.FlowSystem
                 bool isGenericType = type.IsGenericType;
                 Type genericType = isGenericType ? type.GetGenericArguments()[0] : typeof(void);
 
-                object[] outputPortConstructorArgs = { NodeHandle, i };
+                object[] outputPortConstructorArgs = { Handle, i };
                 Type genericOutputPort = typeof(OutputPort<>);
                 object outputPort = Activator.CreateInstance(isGenericType ? genericOutputPort.MakeGenericType(genericType) : type, outputPortConstructorArgs);
 
@@ -120,7 +120,7 @@ namespace CryEngine.FlowSystem
         #region External methods
         protected bool IsPortActive<T>(Action<T> port)
         {
-            return NativeFlowNodeMethods.IsPortActive(NodeHandle, GetInputPortId(port.Method));
+            return NativeFlowNodeMethods.IsPortActive(Handle, GetInputPortId(port.Method));
         }
 
         protected T GetPortValue<T>(Action<T> port)
@@ -128,19 +128,19 @@ namespace CryEngine.FlowSystem
             var type = typeof(T);
 
             if (type == typeof(int))
-                return (T)(object)NativeFlowNodeMethods.GetPortValueInt(NodeHandle, GetInputPortId(port.Method));
+                return (T)(object)NativeFlowNodeMethods.GetPortValueInt(Handle, GetInputPortId(port.Method));
             if (type == typeof(float))
-                return (T)(object)NativeFlowNodeMethods.GetPortValueFloat(NodeHandle, GetInputPortId(port.Method));
+                return (T)(object)NativeFlowNodeMethods.GetPortValueFloat(Handle, GetInputPortId(port.Method));
             if (type == typeof(Vec3) || type == typeof(Color))
-                return (T)(object)NativeFlowNodeMethods.GetPortValueVec3(NodeHandle, GetInputPortId(port.Method));
+                return (T)(object)NativeFlowNodeMethods.GetPortValueVec3(Handle, GetInputPortId(port.Method));
             if (type == typeof(string))
-                return (T)(object)NativeFlowNodeMethods.GetPortValueString(NodeHandle, GetInputPortId(port.Method));
+                return (T)(object)NativeFlowNodeMethods.GetPortValueString(Handle, GetInputPortId(port.Method));
             if (type == typeof(bool))
-                return (T)(object)NativeFlowNodeMethods.GetPortValueBool(NodeHandle, GetInputPortId(port.Method));
+                return (T)(object)NativeFlowNodeMethods.GetPortValueBool(Handle, GetInputPortId(port.Method));
             if (type == typeof(EntityId))
-                return (T)(object)NativeFlowNodeMethods.GetPortValueEntityId(NodeHandle, GetInputPortId(port.Method));
+                return (T)(object)NativeFlowNodeMethods.GetPortValueEntityId(Handle, GetInputPortId(port.Method));
             if (type.IsEnum)
-                return (T)Enum.ToObject(typeof(T), NativeFlowNodeMethods.GetPortValueInt(NodeHandle, GetInputPortId(port.Method)));
+                return (T)Enum.ToObject(typeof(T), NativeFlowNodeMethods.GetPortValueInt(Handle, GetInputPortId(port.Method)));
 
             throw new ArgumentException("Invalid flownode port type specified!");
         }
@@ -161,7 +161,7 @@ namespace CryEngine.FlowSystem
                 int hash = 17;
 
                 hash = hash * 29 + ScriptId.GetHashCode();
-                hash = hash * 29 + NodeHandle.GetHashCode();
+                hash = hash * 29 + Handle.GetHashCode();
                 hash = hash * 29 + NodeId.GetHashCode();
                 hash = hash * 29 + GraphId.GetHashCode();
 
@@ -170,7 +170,7 @@ namespace CryEngine.FlowSystem
         }
         #endregion
 
-        public IntPtr NodeHandle { get; set; }
+        internal IntPtr Handle { get; set; }
 
         public Int32 NodeId { get; set; }
         public Int64 GraphId { get; set; }

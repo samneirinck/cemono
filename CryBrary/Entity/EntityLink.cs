@@ -12,12 +12,12 @@ namespace CryEngine
         #region Statics
         public static EntityLink Create(EntityBase parent, EntityBase slave, string linkName, Vec3? relativePos = null, Quat? relativeRot = null)
         {
-            return new EntityLink(NativeEntityMethods.AddEntityLink(parent.GetEntityHandle(), linkName, slave.Id, relativeRot ?? Quat.Identity, relativePos ?? Vec3.Zero), parent);
+            return new EntityLink(NativeEntityMethods.AddEntityLink(parent.GetIEntity(), linkName, slave.Id, relativeRot ?? Quat.Identity, relativePos ?? Vec3.Zero), parent);
         }
 
         public static void RemoveAll(EntityBase parent)
         {
-            NativeEntityMethods.RemoveAllEntityLinks(parent.GetEntityHandle());
+            NativeEntityMethods.RemoveAllEntityLinks(parent.GetIEntity());
         }
         #endregion
 
@@ -29,13 +29,13 @@ namespace CryEngine
 
         public void Remove()
         {
-            NativeEntityMethods.RemoveEntityLink(Parent.GetEntityHandle(), Handle);
+            NativeEntityMethods.RemoveEntityLink(Parent.GetIEntity(), Handle);
         }
 
         /// <summary>
         /// Native IEntityLink handle
         /// </summary>
-        public IntPtr Handle { get; private set; }
+        internal IntPtr Handle { get; set; }
 
         public EntityBase Parent { get; private set; }
         public EntityBase Slave

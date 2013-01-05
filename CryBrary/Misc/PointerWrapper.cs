@@ -2,7 +2,7 @@
 
 namespace CryEngine.Utilities
 {
-    internal struct PointerWrapper
+    public struct PointerWrapper
     {
         public PointerWrapper(IntPtr pointer)
         {
