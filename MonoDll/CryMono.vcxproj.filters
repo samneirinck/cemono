@@ -147,6 +147,12 @@
     <ClInclude Include="DynMonoArray.h">
       <Filter>Wrappers</Filter>
     </ClInclude>
+    <ClInclude Include="Headers\IMonoException.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="MonoException.h">
+      <Filter>Wrappers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />

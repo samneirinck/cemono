@@ -3,6 +3,8 @@
 
 #include "MonoScriptSystem.h"
 #include "MonoDomain.h"
+#include "MonoException.h"
+
 #include "PathUtils.h"
 
 #include <MonoClass.h>
@@ -10,6 +12,7 @@
 #include <mono/mini/jit.h>
 #include <mono/metadata/debug-helpers.h>
 #include <mono/metadata/assembly.h>
+#include <mono/metadata/exception.h>
 
 CScriptAssembly::CScriptAssembly(CScriptDomain *pDomain, MonoImage *pImage, const char *path, bool nativeAssembly)
 	: m_pDomain(pDomain)
@@ -78,4 +81,15 @@ CScriptClass *CScriptAssembly::TryGetClass(MonoClass *pMonoClass)
 	pScriptClass->AddRef();
 
 	return pScriptClass;
+}
+
+IMonoException *CScriptAssembly::GetException(const char *nameSpace, const char *exceptionClass, const char *message)
+{
+	MonoException *pException;
+	if(message != nullptr)
+		pException = mono_exception_from_name_msg((MonoImage *)m_pObject, nameSpace, exceptionClass, message);
+	else
+		pException = mono_exception_from_name((MonoImage *)m_pObject, nameSpace, exceptionClass);
+
+	return new CScriptException(pException);
 }
