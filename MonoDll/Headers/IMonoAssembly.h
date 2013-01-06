@@ -10,9 +10,9 @@
 #define __I_MONO_ASSEMBLY__
 
 #include <IMonoObject.h>
+#include <IMonoException.h>
 
 struct IMonoClass;
-struct IMonoException;
 
 namespace mono { class _object; typedef _object* object; }
 
