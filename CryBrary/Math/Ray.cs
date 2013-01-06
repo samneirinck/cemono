@@ -64,18 +64,24 @@ namespace CryEngine
         /// <param name="objectTypes"></param>
         /// <param name="flags"></param>
         /// <param name="maxHits"></param>
-        /// <param name="skipEntities"></param>
+        /// <param name="skipEntities">an array of IPhysicalEntity handles. <see cref="CryEngine.Native.NativeHandleExtensions.GetIPhysicalEntity"/></param>
         /// <returns>Detected hits (solid and pierceable)</returns>
-        public IEnumerable<RaycastHit> Cast(EntityQueryFlags objectTypes = EntityQueryFlags.All, RayWorldIntersectionFlags flags = RayWorldIntersectionFlags.AnyHit, int maxHits = 1, PhysicalEntity[] skipEntities = null)
+        public IEnumerable<RaycastHit> Cast(EntityQueryFlags objectTypes = EntityQueryFlags.All, RayWorldIntersectionFlags flags = RayWorldIntersectionFlags.AnyHit, int maxHits = 1, IntPtr[] skipEntities = null)
         {
-            object[] skippedEntities = null;
-            if (skipEntities != null && skipEntities.Length > 0)
-                skippedEntities = skipEntities.Cast<object>().ToArray();
+            if (skipEntities != null && skipEntities.Length == 0)
+                skipEntities = null;
 
-            return Native.NativePhysicsMethods.RayWorldIntersection(Position, Direction, objectTypes, flags, maxHits, skippedEntities);
+            object[] hits;
+            var numHits = Native.NativePhysicsMethods.RayWorldIntersection(Position, Direction, objectTypes, flags, maxHits, skipEntities, out hits);
+            if (numHits > 0)
+            {
+                return hits.Cast<RaycastHit>();
+            }
+
+            return new List<RaycastHit>();
         }
 
-        public static IEnumerable<RaycastHit> Cast(Vec3 pos, Vec3 dir, EntityQueryFlags objectTypes = EntityQueryFlags.All, RayWorldIntersectionFlags flags = RayWorldIntersectionFlags.AnyHit, int maxHits = 1, PhysicalEntity[] skipEntities = null)
+        public static IEnumerable<RaycastHit> Cast(Vec3 pos, Vec3 dir, EntityQueryFlags objectTypes = EntityQueryFlags.All, RayWorldIntersectionFlags flags = RayWorldIntersectionFlags.AnyHit, int maxHits = 1, IntPtr[] skipEntities = null)
         {
             var ray = new Ray(pos, dir);
 
