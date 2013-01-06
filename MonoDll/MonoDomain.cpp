@@ -54,12 +54,10 @@ CScriptDomain::~CScriptDomain()
 {
 	m_bDestroying = true;
 
-	CryLogAlways("CScriptDomain::~CScriptDomain (%s)", m_bRootDomain ? "root" : "slave");
 	for each(auto assembly in m_assemblies)
 		delete assembly;
 
 	m_assemblies.clear();
-	CryLogAlways("~assemblies");
 
 	if(m_bRootDomain)
 		mono_jit_cleanup(m_pDomain);
@@ -81,7 +79,7 @@ CScriptDomain::~CScriptDomain()
 		}
 
 		if(pException)	
-		{			
+		{	
 			MonoWarning("An exception was raised during ScriptDomain unload:");
 			MonoMethod *pExceptionMethod = mono_method_desc_search_in_class(mono_method_desc_new("::ToString()", false),mono_get_exception_class());		
 			MonoString *exceptionString = (MonoString *)mono_runtime_invoke(pExceptionMethod, pException, nullptr, nullptr);		
@@ -89,10 +87,7 @@ CScriptDomain::~CScriptDomain()
 		}
 	}
 
-	CryLogAlways("~cleanup");
 	g_pScriptSystem->OnDomainReleased(this);
-
-	CryLogAlways("~CScriptDomain::~CScriptDomain");
 }
 
 bool CScriptDomain::SetActive(bool force)

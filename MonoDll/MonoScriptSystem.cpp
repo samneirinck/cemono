@@ -204,7 +204,6 @@ void CScriptSystem::Reload()
 	IMonoObject *pScriptManager = pCryBraryAssembly->GetClass("ScriptManager", "CryEngine.Initialization")->CreateInstance(pCtorParams);
 
 	auto result = pScriptManager->CallMethod("Initialize", m_bFirstReload)->Unbox<EScriptReloadResult>();
-	CryLogAlways("Initialized script manager, result was %i", result);
 	switch(result)
 	{
 	case EScriptReloadResult_Success:
@@ -350,7 +349,7 @@ IMonoObject *CScriptSystem::InstantiateScript(const char *scriptName, EMonoScrip
 	IMonoObject *pResult = m_pScriptManager->CallMethod("CreateScriptInstance", scriptName, scriptType, pConstructorParameters, throwOnFail);
 
 	if(!pResult)
-		MonoWarning("Failed to instantiate script %s", scriptName);
+		return nullptr;
 	else if(scriptType == eScriptFlag_GameRules)
 		pResult->CallMethod("InternalInitialize");
 

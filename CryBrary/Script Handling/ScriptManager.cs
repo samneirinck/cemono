@@ -442,10 +442,10 @@ namespace CryEngine.Initialization
                     return null;
             }
 
-            return CreateScriptInstance(script, constructorParams);
+            return CreateScriptInstance(script, constructorParams, throwOnFail);
         }
 
-        public CryScriptInstance CreateScriptInstance(CryScript script, object[] constructorParams = null)
+        public CryScriptInstance CreateScriptInstance(CryScript script, object[] constructorParams = null, bool throwOnFail = true)
         {
 #if !(RELEASE && RELEASE_DISABLE_CHECKS)
             if (script == default(CryScript))
@@ -455,7 +455,12 @@ namespace CryEngine.Initialization
             var scriptInstance = Activator.CreateInstance(script.Type, constructorParams) as CryScriptInstance;
 #if !(RELEASE && RELEASE_DISABLE_CHECKS)
             if (scriptInstance == null)
-                throw new ArgumentException("Failed to create instance, make sure type derives from CryScriptInstance", "scriptName");
+            {
+                if (throwOnFail)
+                    throw new ArgumentException("Failed to create instance, make sure type derives from CryScriptInstance", "scriptName");
+                else
+                    return null;
+            }
 #endif
 
             if (script.ScriptType == ScriptType.GameRules)
