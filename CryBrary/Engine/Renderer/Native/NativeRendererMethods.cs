@@ -11,6 +11,8 @@ namespace CryEngine.Native
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static Vec3 ScreenToWorld(int x, int y);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        extern internal static int UnProjectFromScreen(float sx, float sy, float sz, out float px, out float py, out float pz);
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static void DrawTextToScreen(float x, float y, float fontSize, Color color, bool center, string text);

@@ -7,6 +7,7 @@ CScriptbind_Renderer::CScriptbind_Renderer()
 	REGISTER_METHOD(GetHeight);
 
 	REGISTER_METHOD(ScreenToWorld);
+	REGISTER_METHOD(UnProjectFromScreen);
 
 	REGISTER_METHOD(DrawTextToScreen);
 
@@ -33,6 +34,11 @@ int CScriptbind_Renderer::GetWidth()
 int CScriptbind_Renderer::GetHeight()
 {
 	return gEnv->pRenderer->GetHeight();
+}
+
+int CScriptbind_Renderer::UnProjectFromScreen(float sx, float sy, float sz, float &px, float &py, float &pz)
+{
+	return gEnv->pRenderer->UnProjectFromScreen(sx, sy, sz, &px, &py, &pz);
 }
 
 Vec3 CScriptbind_Renderer::ScreenToWorld(int x, int y)
