@@ -27,6 +27,7 @@ protected:
 	static int GetHeight();
 
 	static Vec3 ScreenToWorld(int x, int y);
+	static int UnProjectFromScreen(float sx, float sy, float sz, float &px, float &py, float &pz);
 
 	static void DrawTextToScreen(float xpos, float ypos, float fontSize, ColorF color, bool center, mono::string text);
 

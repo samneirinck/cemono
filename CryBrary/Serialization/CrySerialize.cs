@@ -91,6 +91,6 @@ namespace CryEngine.Serialization
 
         public SerializationTarget Target { get { return GetSerializationTarget(Handle); } }
 
-        public IntPtr Handle { get; set; }
+        internal IntPtr Handle { get; set; }
     }
 }

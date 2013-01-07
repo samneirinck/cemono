@@ -15,8 +15,8 @@ namespace CryEngine
         internal NativeActor(ActorInfo actorInfo)
         {
             Id = new EntityId(actorInfo.Id);
-            this.SetEntityHandle(actorInfo.EntityPtr);
-            this.SetActorHandle(actorInfo.ActorPtr);
+            this.SetIEntity(actorInfo.EntityPtr);
+            this.SetIActor(actorInfo.ActorPtr);
         }
 
         internal NativeActor(EntityId id)

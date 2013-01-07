@@ -10,6 +10,7 @@
 #define __I_MONO_ASSEMBLY__
 
 #include <IMonoObject.h>
+#include <IMonoException.h>
 
 struct IMonoClass;
 
@@ -54,6 +55,11 @@ public:
 	/// Gets the domain this assembly is loaded in.
 	/// </summary>
 	virtual IMonoDomain *GetDomain() = 0;
+
+	/// <summmary>
+	/// Retrieves a throwable exception from the assembly.
+	/// </summary>
+	virtual IMonoException *GetException(const char *nameSpace, const char *exceptionClass, const char *message = nullptr) = 0;
 };
 
 #endif //__I_MONO_ASSEMBLY__`	

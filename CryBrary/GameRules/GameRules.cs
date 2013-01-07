@@ -18,7 +18,7 @@ namespace CryEngine
             Current = this;
 
             Id = 1;
-            this.SetEntityHandle(NativeEntityMethods.GetEntity(Id));
+            this.SetIEntity(NativeEntityMethods.GetEntity(Id));
         }
 
         /// <summary>

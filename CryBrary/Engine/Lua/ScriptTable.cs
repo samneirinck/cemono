@@ -37,7 +37,7 @@ namespace CryEngine.Lua
 
         public static ScriptTable Get(EntityBase entity)
         {
-            return Get(entity.GetEntityHandle());
+            return Get(entity.GetIEntity());
         }
 
         /// <summary>

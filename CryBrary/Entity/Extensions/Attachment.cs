@@ -37,30 +37,30 @@ namespace CryEngine
             Owner = owner;
             Owner.OnDestroyed += (instance) => { NativeEntityMethods.RemoveEntity(Id, false); };
 
-            this.SetAttachmentHandle(ptr);
+            this.SetIAttachment(ptr);
 
-            string attachmentObject = NativeEntityMethods.GetAttachmentObject(this.GetAttachmentHandle());
+            string attachmentObject = NativeEntityMethods.GetAttachmentObject(this.GetIAttachment());
 
             var tempEntity = Entity.Spawn("AttachmentEntity", typeof(NativeEntity).Name);
 
             Id = tempEntity.Id;
-            this.SetEntityHandle(tempEntity.GetEntityHandle());
+            this.SetIEntity(tempEntity.GetIEntity());
 
             ScriptManager.Instance.ReplaceScriptInstance(this, tempEntity.ScriptId, ScriptType.Entity);
 
-            this.SetEntityAttachmentHandle(NativeEntityMethods.LinkEntityToAttachment(this.GetAttachmentHandle(), Id));
+            EntityAttachmentHandle = NativeEntityMethods.LinkEntityToAttachment(this.GetIAttachment(), Id);
 
             if (!String.IsNullOrEmpty(attachmentObject)) // Just in case it had a model loaded by default
                 LoadObject(attachmentObject);
         }
 
-        public QuatT Absolute { get { return NativeEntityMethods.GetAttachmentAbsolute(this.GetAttachmentHandle()); } }
+        public QuatT Absolute { get { return NativeEntityMethods.GetAttachmentAbsolute(this.GetIAttachment()); } }
 
-        public QuatT Relative { get { return NativeEntityMethods.GetAttachmentRelative(this.GetAttachmentHandle()); } }
+        public QuatT Relative { get { return NativeEntityMethods.GetAttachmentRelative(this.GetIAttachment()); } }
 
-        public QuatT DefaultAbsolute { get { return NativeEntityMethods.GetAttachmentDefaultAbsolute(this.GetAttachmentHandle()); } }
+        public QuatT DefaultAbsolute { get { return NativeEntityMethods.GetAttachmentDefaultAbsolute(this.GetIAttachment()); } }
 
-        public QuatT DefaultRelative { get { return NativeEntityMethods.GetAttachmentDefaultRelative(this.GetAttachmentHandle()); } }
+        public QuatT DefaultRelative { get { return NativeEntityMethods.GetAttachmentDefaultRelative(this.GetIAttachment()); } }
 
         /// <summary>
         /// Gets the entity this attachment is attached to.
@@ -79,7 +79,7 @@ namespace CryEngine
             {
                 useEntityPos = value;
 
-                NativeEntityMethods.AttachmentUseEntityPosition(this.GetEntityAttachmentHandle(), value);
+                NativeEntityMethods.AttachmentUseEntityPosition(this.EntityAttachmentHandle, value);
             }
         }
 
@@ -95,7 +95,7 @@ namespace CryEngine
             {
                 useEntityRot = value;
 
-                NativeEntityMethods.AttachmentUseEntityRotation(this.GetEntityAttachmentHandle(), value);
+                NativeEntityMethods.AttachmentUseEntityRotation(this.EntityAttachmentHandle, value);
             }
         }
 

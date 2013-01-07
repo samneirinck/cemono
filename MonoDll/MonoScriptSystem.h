@@ -75,7 +75,7 @@ public:
 
 	virtual IMonoConverter *GetConverter() override { return m_pConverter; }
 
-	virtual void RegisterFlownodes();
+	virtual void RegisterFlownodes() override;
 	// ~IMonoScriptSystem
 
 	// IFileChangeMonitor

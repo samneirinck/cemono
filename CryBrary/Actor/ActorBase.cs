@@ -18,12 +18,12 @@ namespace CryEngine
         /// <summary>
         /// Gets or sets the current health of this actor.
         /// </summary>
-        public virtual float Health { get { return NativeActorMethods.GetPlayerHealth(this.GetActorHandle()); } set { NativeActorMethods.SetPlayerHealth(this.GetActorHandle(), value); } }
+        public virtual float Health { get { return NativeActorMethods.GetPlayerHealth(this.GetIActor()); } set { NativeActorMethods.SetPlayerHealth(this.GetIActor(), value); } }
 
         /// <summary>
         /// Gets or sets the max health value for this actor.
         /// </summary>
-        public virtual float MaxHealth { get { return NativeActorMethods.GetPlayerMaxHealth(this.GetActorHandle()); } set { NativeActorMethods.SetPlayerMaxHealth(this.GetActorHandle(), value); } }
+        public virtual float MaxHealth { get { return NativeActorMethods.GetPlayerMaxHealth(this.GetIActor()); } set { NativeActorMethods.SetPlayerMaxHealth(this.GetIActor(), value); } }
 
         /// <summary>
         /// Gets a value indicating whether this actor has died. Returns true if <see cref="Health"/> is equal to or below 0.
@@ -83,8 +83,8 @@ namespace CryEngine
         {
             System.Diagnostics.Contracts.Contract.Requires(actorInfo.ChannelId > 0);
             Id = new EntityId(actorInfo.Id);
-            this.SetActorHandle(actorInfo.ActorPtr);
-            this.SetEntityHandle(actorInfo.EntityPtr);
+            this.SetIActor(actorInfo.ActorPtr);
+            this.SetIEntity(actorInfo.EntityPtr);
 
             ChannelId = actorInfo.ChannelId;
 

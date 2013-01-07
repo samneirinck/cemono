@@ -16,8 +16,8 @@ namespace CryEngine.Physics.Status
             PhysicalEntity = physEnt;
         }
 
-        public LivingPhysicsStatus Living { get { return NativePhysicsMethods.GetLivingEntityStatus(PhysicalEntity.Owner.GetEntityHandle()); } }
-        public DynamicsPhysicsStatus Dynamics { get { return NativePhysicsMethods.GetDynamicsEntityStatus(PhysicalEntity.Owner.GetEntityHandle()); } }
+        public LivingPhysicsStatus Living { get { return NativePhysicsMethods.GetLivingEntityStatus(PhysicalEntity.Owner.GetIEntity()); } }
+        public DynamicsPhysicsStatus Dynamics { get { return NativePhysicsMethods.GetDynamicsEntityStatus(PhysicalEntity.Owner.GetIEntity()); } }
 
         private PhysicalEntity PhysicalEntity { get; set; }
     }

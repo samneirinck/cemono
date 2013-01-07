@@ -33,12 +33,12 @@ namespace CryEngine.Physics
             : this()
         {
             owner = _entity;
-            Handle = NativePhysicsMethods.GetPhysicalEntity(Owner.GetEntityHandle());
+            Handle = NativePhysicsMethods.GetPhysicalEntity(Owner.GetIEntity());
         }
 
         public void Break(BreakageParameters breakageParams)
         {
-            NativeEntityMethods.BreakIntoPieces(Owner.GetEntityHandle(), 0, 0, breakageParams);
+            NativeEntityMethods.BreakIntoPieces(Owner.GetIEntity(), 0, 0, breakageParams);
         }
 
         #region Basics
@@ -52,7 +52,7 @@ namespace CryEngine.Physics
         /// </summary>
         public void Save()
         {
-            NativePhysicsMethods.Physicalize(Owner.GetEntityHandle(), _params);
+            NativePhysicsMethods.Physicalize(Owner.GetIEntity(), _params);
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace CryEngine.Physics
             if (point != null)
                 impulse.point = point.Value;
 
-            NativePhysicsMethods.AddImpulse(Owner.GetEntityHandle(), impulse);
+            NativePhysicsMethods.AddImpulse(Owner.GetIEntity(), impulse);
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace CryEngine.Physics
         public bool Resting
         {
             get { throw new NotImplementedException(); }
-            set { NativePhysicsMethods.Sleep(Owner.GetEntityHandle(), value); }
+            set { NativePhysicsMethods.Sleep(Owner.GetIEntity(), value); }
         }
 
         /// <summary>

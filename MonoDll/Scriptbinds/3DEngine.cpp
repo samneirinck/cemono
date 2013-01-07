@@ -20,6 +20,8 @@ CScriptbind_3DEngine::CScriptbind_3DEngine()
 	REGISTER_METHOD(SetTimeOfDayVariableValueColor);
 
 	REGISTER_METHOD(ActivatePortal);
+
+	REGISTER_METHOD(GetMaxViewDistance);
 }
 
 float CScriptbind_3DEngine::GetTerrainElevation(float x, float y, bool includeOutdoorVoxels)
@@ -116,4 +118,9 @@ void CScriptbind_3DEngine::SetTimeOfDayVariableValueColor(ITimeOfDay::ETimeOfDay
 void CScriptbind_3DEngine::ActivatePortal(Vec3 pos, bool activate, mono::string entityName)
 {
 	gEnv->p3DEngine->ActivatePortal(pos, activate, ToCryString(entityName));
+}
+
+float CScriptbind_3DEngine::GetMaxViewDistance()
+{
+	return gEnv->p3DEngine->GetMaxViewDistance();
 }

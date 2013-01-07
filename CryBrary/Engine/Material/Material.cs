@@ -76,7 +76,7 @@ namespace CryEngine
         /// <summary>
         /// Gets or sets the native IMaterial pointer.
         /// </summary>
-        public IntPtr Handle { get; set; }
+        internal IntPtr Handle { get; set; }
         #endregion
 
         #region Statics
@@ -108,7 +108,7 @@ namespace CryEngine
                 throw new ArgumentNullException("entity");
 #endif
 
-            var ptr = NativeMaterialMethods.GetMaterial(entity.GetEntityHandle(), slot);
+            var ptr = NativeMaterialMethods.GetMaterial(entity.GetIEntity(), slot);
             return TryAdd(ptr);
         }
 
@@ -121,7 +121,7 @@ namespace CryEngine
                 throw new ArgumentNullException("mat");
 #endif
 
-            NativeMaterialMethods.SetMaterial(entity.GetEntityHandle(), mat.Handle, slot);
+            NativeMaterialMethods.SetMaterial(entity.GetIEntity(), mat.Handle, slot);
         }
         #endregion
 

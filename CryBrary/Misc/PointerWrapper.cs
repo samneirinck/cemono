@@ -2,13 +2,19 @@
 
 namespace CryEngine.Utilities
 {
-    internal struct PointerWrapper
+    /// <summary>
+    /// Wrapper to be able to make sure that we're getting the correct handle in C++.
+    /// In native code, interpret as struct MyStruct { void *pHandle; } (See mono::pointer)
+    /// </summary>
+    public struct PointerWrapper
     {
         public PointerWrapper(IntPtr pointer)
         {
-            ptr = pointer;
+            Handle = pointer;
         }
 
-        public IntPtr ptr;
+        public bool IsZero { get { return Handle == IntPtr.Zero; } }
+
+        public IntPtr Handle;
     }
 }

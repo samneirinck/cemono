@@ -20,6 +20,11 @@ namespace CryEngine
             return NativeRendererMethods.ScreenToWorld(x, y);
         }
 
+        public static int UnProjectFromScreen(float sx, float sy, float sz, out float px, out float py, out float pz)
+        {
+            return NativeRendererMethods.UnProjectFromScreen(sx, sy, sz, out px, out py, out pz);
+        }
+
         public static void DrawTextToScreen(float x, float y, float fontSize, Color color, string text, params object[] args)
         {
             DrawTextToScreen(x, y, fontSize, color, false, text, args);
