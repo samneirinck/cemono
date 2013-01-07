@@ -40,7 +40,14 @@ namespace CryEngine
         public EntityBase Parent { get; private set; }
         public EntityBase Slave
         {
-            get { return Entity.Get(NativeEntityMethods.GetEntityLinkTarget(Handle)); }
+            get 
+            {
+                var slaveId = NativeEntityMethods.GetEntityLinkTarget(Handle);
+                if (slaveId == 0)
+                    return null;
+
+                return Entity.Get(slaveId); 
+            }
             set { NativeEntityMethods.SetEntityLinkTarget(Handle, value.Id); }
         }
 
