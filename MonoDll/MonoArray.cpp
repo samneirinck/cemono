@@ -24,7 +24,7 @@ CScriptArray::CScriptArray(mono::object managedArray)
 }
 
 CScriptArray::CScriptArray(int size, IMonoClass *pContainingType)
-	: m_lastIndex(0)
+	: m_lastIndex(-1)
 {
 	CRY_ASSERT(size >= 0);
 
@@ -88,8 +88,8 @@ void CScriptArray::Insert(mono::object object, int index)
 {
 	if(index == -1)
 	{
-		index = m_lastIndex;
 		m_lastIndex++;
+		index = m_lastIndex;
 	}
 
 	CRY_ASSERT(index < GetSize());
