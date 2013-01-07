@@ -26,7 +26,7 @@ CScriptArray::CScriptArray(mono::object managedArray)
 CScriptArray::CScriptArray(int size, IMonoClass *pContainingType)
 	: m_lastIndex(0)
 {
-	CRY_ASSERT(size > 0);
+	CRY_ASSERT(size >= 0);
 
 	m_pElementClass = (pContainingType ? (MonoClass *)(pContainingType->GetManagedObject()) : m_pDefaultElementClass);
 	CRY_ASSERT(m_pElementClass);

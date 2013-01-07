@@ -3,7 +3,7 @@
 
 CDynScriptArray::CDynScriptArray(IMonoClass *pContainingType, int size)
 {
-	CRY_ASSERT(size > 0);
+	CRY_ASSERT(size >= 0);
 
 	m_lastIndex = 0;
 

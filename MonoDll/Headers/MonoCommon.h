@@ -68,7 +68,7 @@ static IMonoArray *CreateMonoArray(int numArgs, IMonoClass *pElementClass = null
 /// <summary>
 /// Creates an IDynMonoArray with the specified size.
 /// </summary>
-static IMonoArray *CreateDynamicMonoArray(IMonoClass *pElementClass = nullptr, int size = 1)
+static IMonoArray *CreateDynamicMonoArray(IMonoClass *pElementClass = nullptr, int size = 0)
 {
 	return GetMonoScriptSystem()->GetConverter()->CreateDynamicArray(pElementClass, size);
 }
