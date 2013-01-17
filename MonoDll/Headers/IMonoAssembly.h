@@ -59,7 +59,21 @@ public:
 	/// <summmary>
 	/// Retrieves a throwable exception from the assembly.
 	/// </summary>
-	virtual IMonoException *GetException(const char *nameSpace, const char *exceptionClass, const char *message = nullptr) = 0;
+	virtual IMonoException *GetException(const char *nameSpace, const char *exceptionClass, const char *message = nullptr, ...)
+	{
+		va_list	args;
+		char szBuffer[4096];
+		va_start(args, message);
+		int count = vsnprintf_s(szBuffer, sizeof(szBuffer), message, args);
+		if ( count == -1 || count >=sizeof(szBuffer) )
+			szBuffer[sizeof(szBuffer)-1] = '\0';
+		va_end(args);
+
+		return _GetException(nameSpace, exceptionClass, szBuffer);
+	}
+
+private:
+	virtual IMonoException *_GetException(const char *nameSpace, const char *exceptionClass, const char *message) = 0;
 };
 
 #endif //__I_MONO_ASSEMBLY__`	

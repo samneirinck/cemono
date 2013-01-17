@@ -40,7 +40,7 @@ public:
 
 	virtual IMonoDomain *GetDomain() override { return (IMonoDomain *)m_pDomain; }
 
-	virtual IMonoException *GetException(const char *nameSpace, const char *exceptionClass, const char *message = nullptr);
+	virtual IMonoException *_GetException(const char *nameSpace, const char *exceptionClass, const char *message = nullptr);
 	// ~IMonoAssembly
 
 	// IMonoObject
