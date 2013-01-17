@@ -256,12 +256,56 @@ void CScriptClass::SetFieldValue(IMonoObject *pObject, const char *fieldName, mo
 
 MonoProperty *CScriptClass::GetMonoProperty(const char *name)
 {
-	return mono_class_get_property_from_name((MonoClass *)m_pObject, name);
+	MonoClass *pClass = (MonoClass *)m_pObject;
+	MonoProperty *pCurProperty = nullptr;
+
+	void *pIterator = 0;
+
+	while (pClass != nullptr)
+	{
+		pCurProperty = mono_class_get_properties(pClass, &pIterator);
+		if(pCurProperty == nullptr)
+		{
+			pClass = mono_class_get_parent(pClass);
+			if(pClass == mono_get_object_class())
+				break;
+
+			pIterator = 0;
+			continue;
+		}
+
+		if(!strcmp(mono_property_get_name(pCurProperty), name))
+			return pCurProperty;
+	}
+
+	return nullptr;
 }
 
 MonoClassField *CScriptClass::GetMonoField(const char *name)
 {
-	return mono_class_get_field_from_name((MonoClass *)m_pObject, name);
+	MonoClass *pClass = (MonoClass *)m_pObject;
+	MonoClassField *pCurField = nullptr;
+
+	void *pIterator = 0;
+
+	while (pClass != nullptr)
+	{
+		pCurField = mono_class_get_fields(pClass, &pIterator);
+		if(pCurField == nullptr)
+		{
+			pClass = mono_class_get_parent(pClass);
+			if(pClass == mono_get_object_class())
+				break;
+
+			pIterator = 0;
+			continue;
+		}
+
+		if(!strcmp(mono_field_get_name(pCurField), name))
+			return pCurField;
+	}
+
+	return nullptr;
 }
 
 IMonoObject *CScriptClass::BoxObject(void *object)
