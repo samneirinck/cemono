@@ -31,6 +31,8 @@ CActorSystem::~CActorSystem()
 {
 	if(gEnv->pEntitySystem )
 		gEnv->pEntitySystem->RemoveSink(this);
+	else
+		MonoWarning("Failed to unregister CActorSystem entity sink!");
 }
 
 EMonoActorType CActorSystem::GetMonoActorType(const char *actorClassName)
