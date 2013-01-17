@@ -31,6 +31,8 @@ public:
 	virtual bool IsRoot() override { return m_bRootDomain; }
 
 	virtual IMonoAssembly *LoadAssembly(const char *file, bool shadowCopy = false, bool convertPdbToMdb = true) override;
+
+	virtual const char *GetName() { return m_name; }
 	// ~IMonoDomain
 
 	MonoDomain *GetMonoDomain() { return m_pDomain; }
@@ -45,6 +47,8 @@ private:
 
 	bool m_bRootDomain;
 	bool m_bDestroying;
+
+	const char *m_name;
 };
 
 #endif //__SCRIPT_DOMAIN_H_

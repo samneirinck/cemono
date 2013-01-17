@@ -16,6 +16,7 @@
 CScriptDomain::CScriptDomain(ERuntimeVersion runtimeVersion)
 	: m_bRootDomain(true)
 	, m_bDestroying(false)
+	, m_name("root")
 {
 	const char *version = "v2.0.50727";
 	switch(runtimeVersion)
@@ -46,6 +47,7 @@ CScriptDomain::CScriptDomain(ERuntimeVersion runtimeVersion)
 CScriptDomain::CScriptDomain(const char *name, bool setActive)
 	: m_bRootDomain(false)
 	, m_bDestroying(false)
+	, m_name(name)
 {
 	m_pDomain = mono_domain_create_appdomain(const_cast<char *>(name), nullptr);
 
