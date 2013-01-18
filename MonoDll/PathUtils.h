@@ -12,9 +12,6 @@
 #define MONO_CONFIG_PATH "etc"
 #define MONO_LIB_PATH "lib"
 
-#include <Windows.h>
-#undef GetTempPath
-
 class PathUtils
 {
 public:
@@ -46,20 +43,6 @@ public:
 	static string GetLibPath()
 	{
 		return GetMonoPath().append(MONO_LIB_PATH).append("\\");
-	}
-
-	static string GetTempPath()
-	{
-		TCHAR tempPath[MAX_PATH];
-		GetTempPathA(MAX_PATH, tempPath);
-
-		string cryMonoTempDir = string(tempPath) + string("CryMono//");
-
-		DWORD attribs = GetFileAttributesA(cryMonoTempDir.c_str());
-		if(attribs == INVALID_FILE_ATTRIBUTES || attribs | FILE_ATTRIBUTE_DIRECTORY)
-			CryCreateDirectory(cryMonoTempDir.c_str(), nullptr);
-
-		return cryMonoTempDir.c_str();
 	}
 };
 

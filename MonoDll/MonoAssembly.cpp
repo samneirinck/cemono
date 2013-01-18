@@ -83,7 +83,7 @@ CScriptClass *CScriptAssembly::TryGetClass(MonoClass *pMonoClass)
 	return pScriptClass;
 }
 
-IMonoException *CScriptAssembly::GetException(const char *nameSpace, const char *exceptionClass, const char *message)
+IMonoException *CScriptAssembly::_GetException(const char *nameSpace, const char *exceptionClass, const char *message)
 {
 	MonoException *pException;
 	if(message != nullptr)

@@ -28,8 +28,6 @@ namespace CryEngine.Initialization
         {
             Instance = this;
 
-            if (FlowNodes == null)
-                FlowNodes = new List<string>();
             if (Scripts == null)
                 Scripts = new List<CryScript>();
 
@@ -140,10 +138,10 @@ namespace CryEngine.Initialization
         {
             // These have to be registered later due to the flow system being initialized late.
             // Note: Flow nodes have to be registered from IGame::RegisterGameFlownodes in order to be usable from within UI graphs. (Use IMonoScriptSystem::RegisterFlownodes)
-            foreach (var node in FlowNodes)
-                FlowNode.Register(node);
-
-            FlowNodes.Clear();
+            ForEachScript(ScriptType.FlowNode, x =>
+                {
+                    FlowNode.Register(x.ScriptName);
+                });
         }
 
         public void OnRevert()
@@ -300,16 +298,12 @@ namespace CryEngine.Initialization
                                 script.RegistrationParams = registrationParams;
 
                                 script.ScriptName = registrationParams.category + ":" + registrationParams.name;
-
-                                FlowNodes.Add(script.ScriptName);
                             }
                             else if (script.RegistrationParams is EntityFlowNodeRegistrationParams)
                             {
                                 var registrationParams = (EntityFlowNodeRegistrationParams)script.RegistrationParams;
 
                                 script.ScriptName = "entity" + ":" + registrationParams.entityName;
-
-                                FlowNodes.Add(script.ScriptName);
                             }
                         }
 
@@ -668,8 +662,6 @@ namespace CryEngine.Initialization
 
         AppDomain ScriptDomain { get; set; }
         IFormatter Formatter { get; set; }
-
-        List<string> FlowNodes { get; set; }
 
         string SerializedScriptsFile { get { return Path.Combine(PathUtils.TempFolder, "CompiledScripts.scriptdump"); } }
         string SerializedScriptManagerDataFile { get { return Path.Combine(PathUtils.TempFolder, "ScriptManagerData.scriptdump"); } }

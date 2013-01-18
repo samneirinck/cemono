@@ -49,6 +49,10 @@
 #include "MonoCVars.h"
 #include "PathUtils.h"
 
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#undef GetClassName
+
 SCVars *g_pMonoCVars = 0;
 CScriptSystem *g_pScriptSystem = 0;
 
@@ -127,7 +131,7 @@ CScriptSystem::~CScriptSystem()
 	mono_gc_collect(mono_gc_max_generation());
 
 	for(auto it = m_domains.rbegin(); it != m_domains.rend(); ++it)
-		SAFE_RELEASE(*it);
+		(*it)->Release();
 	m_domains.clear();
 
 	if(gEnv->pSystem)
@@ -228,11 +232,11 @@ void CScriptSystem::Reload()
 			pClass->InvokeArray(NULL, "InitializeNetworkStatics", pArgs);
 			SAFE_RELEASE(pArgs);
 
-			for each(auto listener in m_listeners)
-				listener->OnReloadComplete();
-
 			if(!m_bFirstReload && gEnv->IsEditor())
 				gEnv->pFlowSystem->ReloadAllNodeTypes();
+
+			for each(auto listener in m_listeners)
+				listener->OnReloadComplete();
 		}
 		break;
 	case EScriptReloadResult_Retry:
@@ -280,8 +284,8 @@ void CScriptSystem::RegisterDefaultBindings()
 	RegisterBinding(CScriptbind_CrySerialize);
 	RegisterBinding(CInput);
 
-#define RegisterBindingAndSet(var, T) RegisterBinding(T); var = (T *)m_localScriptBinds.back();
-	RegisterBindingAndSet(m_pFlowManager, CFlowManager);
+	m_pFlowManager = new CFlowManager();
+	m_pFlowManager->AddRef();
 
 #undef RegisterBindingAndSet
 #undef RegisterBinding
@@ -289,7 +293,8 @@ void CScriptSystem::RegisterDefaultBindings()
 
 void CScriptSystem::EraseBinding(IMonoScriptBind *pScriptBind)
 {
-	stl::find_and_erase(m_localScriptBinds, pScriptBind);
+	if(!m_bQuitting)
+		stl::find_and_erase(m_localScriptBinds, pScriptBind);
 }
 
 void CScriptSystem::OnPostUpdate(float fDeltaTime)

@@ -10,9 +10,13 @@
 #include <mono/metadata/debug-helpers.h>
 #include <mono/metadata/assembly.h>
 
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
 CScriptDomain::CScriptDomain(ERuntimeVersion runtimeVersion)
 	: m_bRootDomain(true)
 	, m_bDestroying(false)
+	, m_name("root")
 {
 	const char *version = "v2.0.50727";
 	switch(runtimeVersion)
@@ -43,6 +47,7 @@ CScriptDomain::CScriptDomain(ERuntimeVersion runtimeVersion)
 CScriptDomain::CScriptDomain(const char *name, bool setActive)
 	: m_bRootDomain(false)
 	, m_bDestroying(false)
+	, m_name(name)
 {
 	m_pDomain = mono_domain_create_appdomain(const_cast<char *>(name), nullptr);
 
@@ -95,11 +100,25 @@ bool CScriptDomain::SetActive(bool force)
 	return mono_domain_set(m_pDomain, force) == 1;
 }
 
+string GetTempPath()
+{
+	TCHAR tempPath[MAX_PATH];
+	GetTempPathA(MAX_PATH, tempPath);
+
+	string cryMonoTempDir = string(tempPath) + string("CryMono//");
+
+	DWORD attribs = GetFileAttributesA(cryMonoTempDir.c_str());
+	if(attribs == INVALID_FILE_ATTRIBUTES || attribs | FILE_ATTRIBUTE_DIRECTORY)
+		CryCreateDirectory(cryMonoTempDir.c_str(), nullptr);
+
+	return cryMonoTempDir;
+}
+
 IMonoAssembly *CScriptDomain::LoadAssembly(const char *file, bool shadowCopy, bool convertPdbToMdb)
 {
 	const char *path;
 	if(shadowCopy)
-		path = PathUtils::GetTempPath().append(PathUtil::GetFile(file));
+		path = GetTempPath().append(PathUtil::GetFile(file));
 	else
 		path = file;
 
