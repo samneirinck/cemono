@@ -199,7 +199,11 @@ namespace CryEngine
 
             var property = GetType().GetProperty(propertyName);
             if (property != null)
-                return property.GetValue(this, null).ToString();
+            {
+                var propertyValue = property.GetValue(this, null);
+                if(propertyValue != null)
+                    return propertyValue.ToString();
+            }
 
             return null;
         }
