@@ -57,11 +57,6 @@ namespace CryEngine
         public float Max { get; set; }
 
         /// <summary>
-        /// Gets or sets the default value
-        /// </summary>
-        public object DefaultValue { get; set; }
-
-        /// <summary>
         /// Gets or sets the property type.
         /// Should be used for special types such as files.
         /// </summary>

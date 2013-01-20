@@ -29,20 +29,6 @@ namespace CryEngine
             this.SetIAnimatedCharacter(entInfo.IAnimatedCharacterPtr);
             Id = entInfo.Id;
 
-            foreach (var property in GetType().GetProperties())
-            {
-                EditorPropertyAttribute attr;
-                if (property.TryGetAttribute(out attr) && attr.DefaultValue != null && !HasEditorPropertyBeenSet(property.GetValue(this, null), property.PropertyType))
-                    property.SetValue(this, attr.DefaultValue, null);
-            }
-
-            foreach (var field in GetType().GetFields())
-            {
-                EditorPropertyAttribute attr;
-                if (field.TryGetAttribute(out attr) && attr.DefaultValue != null && !HasEditorPropertyBeenSet(field.GetValue(this), field.FieldType))
-                    field.SetValue(this, attr.DefaultValue);
-            }
-
             OnSpawn();
         }
 
