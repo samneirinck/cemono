@@ -275,55 +275,62 @@ bool CScriptbind_Entity::RegisterEntityClass(SEntityRegistrationParams params)
 	}
 
 	std::vector<IEntityPropertyHandler::SPropertyInfo> properties;
-	if(params.Properties != nullptr)
+	if(params.Folders != nullptr)
 	{
-		IMonoArray *propertiesArray = *params.Properties;
+		IMonoArray *pFolderArray = *params.Folders;
 
-		int numProperties = propertiesArray->GetSize();
+		int numFolders = pFolderArray->GetSize();
 	
-		const char *currentFolder = NULL;
-		for	(int i = 0; i < numProperties; ++i)
+		for	(int iFolder = 0; iFolder < numFolders; ++iFolder)
 		{
-			IMonoObject *pItem = propertiesArray->GetItem(i);
-			CRY_ASSERT(pItem);
+			IMonoObject *pFolderObject = pFolderArray->GetItem(iFolder);
+			if(!pFolderObject)
+				continue;
 
-			SMonoEntityProperty monoProperty = pItem->Unbox<SMonoEntityProperty>();
+			auto folder = pFolderObject->Unbox<SMonoEntityPropertyFolder>();
+			if(folder.properties == nullptr)
+				continue;
 
-			if(monoProperty.folder)
+			bool bDefaultFolder = !strcmp(ToCryString(folder.name), "Default") && iFolder == 0;
+
+			if(!bDefaultFolder) // first element contains properties not organized into folders
 			{
-				currentFolder = ToCryString(monoProperty.folder);
-				if(currentFolder && strcmp(currentFolder, ""))
-				{
-					IEntityPropertyHandler::SPropertyInfo groupInfo;
-					groupInfo.name = currentFolder;
-					groupInfo.type = IEntityPropertyHandler::FolderBegin;
+				IEntityPropertyHandler::SPropertyInfo folderInfo;
+				folderInfo.name = ToCryString(folder.name);
+				folderInfo.type = IEntityPropertyHandler::FolderBegin;
 
-					properties.push_back(groupInfo);
-				}
-				else
-					currentFolder = NULL;
+				properties.push_back(folderInfo);
 			}
-			else
-				currentFolder = NULL;
 
-			IEntityPropertyHandler::SPropertyInfo propertyInfo;
+			IMonoArray *pPropertyArray = *folder.properties;
 
-			propertyInfo.name = ToCryString(monoProperty.name);
-			propertyInfo.description = ToCryString(monoProperty.description);
-			propertyInfo.editType = ToCryString(monoProperty.editType);
-			propertyInfo.type = monoProperty.type;
-			propertyInfo.limits.min = monoProperty.limits.min;
-			propertyInfo.limits.max = monoProperty.limits.max;
-
-			properties.push_back(propertyInfo);
-
-			if(currentFolder)
+			for(int iProperty = 0; iProperty < pPropertyArray->GetSize(); iProperty++)
 			{
-				IEntityPropertyHandler::SPropertyInfo groupInfo;
-				groupInfo.name = currentFolder;
-				groupInfo.type = IEntityPropertyHandler::FolderEnd;
+				IMonoObject *pPropertyObject = pPropertyArray->GetItem(iProperty);
+				if(pPropertyObject == nullptr)
+					continue;
 
-				properties.push_back(groupInfo);
+				auto property = pPropertyObject->Unbox<SMonoEntityProperty>();
+
+				IEntityPropertyHandler::SPropertyInfo propertyInfo;
+
+				propertyInfo.name = ToCryString(property.name);
+				propertyInfo.description = ToCryString(property.description);
+				propertyInfo.editType = ToCryString(property.editType);
+				propertyInfo.type = property.type;
+				propertyInfo.limits.min = property.limits.min;
+				propertyInfo.limits.max = property.limits.max;
+
+				properties.push_back(propertyInfo);
+			}
+
+			if(!bDefaultFolder)
+			{
+				IEntityPropertyHandler::SPropertyInfo folderInfo;
+				folderInfo.name = ToCryString(folder.name);
+				folderInfo.type = IEntityPropertyHandler::FolderEnd;
+
+				properties.push_back(folderInfo);
 			}
 		}
 	}

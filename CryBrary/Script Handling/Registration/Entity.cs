@@ -1,4 +1,6 @@
-﻿namespace CryEngine.Initialization
+﻿using System.Collections.Generic;
+
+namespace CryEngine.Initialization
 {
     public struct EntityRegistrationParams : IScriptRegistrationParams
     {
@@ -10,6 +12,10 @@
 
         public EntityClassFlags flags;
 
-        public object[] properties;
+        /// <summary>
+        /// EntityPropertyFolder array containing properties.
+        /// The first index contains a fake folder which is referred to as the default category.
+        /// </summary>
+        public object[] propertyFolders;
     }
 }

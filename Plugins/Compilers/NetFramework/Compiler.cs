@@ -182,30 +182,29 @@ namespace CryEngine.Compilers.NET
 			var entityRegistrationParams = new EntityRegistrationParams();
 
 			BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-			var folders = type.GetNestedTypes(flags).Where(x => x.ContainsAttribute<EditorPropertyFolderAttribute>());
 			var members = type.GetMembers(flags);
-			var entityProperties = new List<object>();
+            var entityProperties = new Dictionary<string, List<EntityProperty>>();
 
-			EntityProperty property;
-			members.ForEach(member =>
-				{
-					if (TryGetEntityProperty(member, out property))
-						entityProperties.Add(property);
-				});
+            members.ForEach(member => TryGetEntityProperty(member, ref entityProperties));
 
-			folders.ForEach(folder =>
-				{
-					folder.GetMembers().ForEach(member =>
-						{
-							if (TryGetEntityProperty(member, out property))
-							{
-								property.folder = folder.Name;
-								entityProperties.Add(property);
-							}
-						});
-				});
+            int numProperties = entityProperties.Count;
+            if (numProperties > 0)
+            {
+                var folders = new EntityPropertyFolder[numProperties];
 
-			entityRegistrationParams.properties = entityProperties.ToArray();
+                for (int i = 0; i < numProperties; i++)
+                {
+                    var folderPair = entityProperties.ElementAt(i);
+                    var folder = new EntityPropertyFolder();
+
+                    folder.name = folderPair.Key;
+                    folder.properties = folderPair.Value.Cast<object>().ToArray();
+
+                    folders[i] = folder;
+                }
+
+                entityRegistrationParams.propertyFolders = folders.Cast<object>().ToArray();
+            }
 
             var curType = type;
 
@@ -242,7 +241,7 @@ namespace CryEngine.Compilers.NET
 			return true;
 		}
 
-		bool TryGetEntityProperty(MemberInfo memberInfo, out EntityProperty property)
+        bool TryGetEntityProperty(MemberInfo memberInfo, ref Dictionary<string, List<EntityProperty>> folders)
 		{
 			EditorPropertyAttribute propertyAttribute;
 			if (memberInfo.TryGetAttribute(out propertyAttribute))
@@ -260,11 +259,19 @@ namespace CryEngine.Compilers.NET
 
 				var limits = new EntityPropertyLimits(propertyAttribute.Min, propertyAttribute.Max);
 
-				property = new EntityProperty(memberInfo.Name, propertyAttribute.Description, Entity.GetEditorType(memberType, propertyAttribute.Type), limits, propertyAttribute.Flags);
+                var property = new EntityProperty(propertyAttribute.Name ?? memberInfo.Name, propertyAttribute.Description, Entity.GetEditorType(memberType, propertyAttribute.Type), limits, propertyAttribute.Flags);
+
+                if (propertyAttribute.Folder == null)
+                    propertyAttribute.Folder = "Default";
+
+                if (!folders.ContainsKey(propertyAttribute.Folder))
+                    folders.Add(propertyAttribute.Folder, new List<EntityProperty>());
+
+                folders[propertyAttribute.Folder].Add(property);
+
 				return true;
 			}
 
-			property = new EntityProperty();
 			return false;
 		}
         #endregion

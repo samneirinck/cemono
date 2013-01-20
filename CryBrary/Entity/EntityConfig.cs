@@ -70,13 +70,21 @@ namespace CryEngine
         public int Flags { get; set; }
 
         /// <summary>
+        /// Gets or sets the name of the property, if not set the entity class name will be used.
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
         /// Gets or sets the description to display when the user hovers over this property inside Sandbox.
         /// </summary>
         public string Description { get; set; }
-    }
 
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
-    public sealed class EditorPropertyFolderAttribute : Attribute { }
+        /// <summary>
+        /// Folder in which the entity property resides.
+        /// If null, not contained in a folder.
+        /// </summary>
+        public string Folder { get; set; }
+    }
 
     /// <summary>
     /// Defines the list of supported editor types.
@@ -109,6 +117,12 @@ namespace CryEngine
 
         public float min;
         public float max;
+    }
+
+    public struct EntityPropertyFolder
+    {
+        public string name;
+        public object[] properties;
     }
 
     public struct EntityProperty
@@ -145,8 +159,6 @@ namespace CryEngine
 #pragma warning disable 414
         private string editType;
 #pragma warning restore 414
-
-        public string folder;
 
         private EntityPropertyType _type;
 
