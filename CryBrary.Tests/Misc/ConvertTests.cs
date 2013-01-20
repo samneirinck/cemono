@@ -14,9 +14,9 @@ namespace CryBrary.Tests.Misc
             const string allUppercaseBool = "TRUE";
 
             // Act
-            object allLowercaseBoolResult = CryEngine.Convert.FromString(CryEngine.EntityPropertyType.Bool, allLowercaseBool);
-            object capitalizedBoolResult = CryEngine.Convert.FromString(CryEngine.EntityPropertyType.Bool, capitalizedBool);
-            object allUppercaseBoolResult = CryEngine.Convert.FromString(CryEngine.EntityPropertyType.Bool, allUppercaseBool);
+            object allLowercaseBoolResult = CryEngine.Convert.FromString(CryEngine.EditorPropertyType.Bool, allLowercaseBool);
+            object capitalizedBoolResult = CryEngine.Convert.FromString(CryEngine.EditorPropertyType.Bool, capitalizedBool);
+            object allUppercaseBoolResult = CryEngine.Convert.FromString(CryEngine.EditorPropertyType.Bool, allUppercaseBool);
 
             // Assert
             Assert.True(allLowercaseBoolResult is bool);
@@ -38,7 +38,7 @@ namespace CryBrary.Tests.Misc
 			// Assert
             Assert.Throws<ArgumentNullException>(() => {
                 // Act
-                CryEngine.Convert.FromString(CryEngine.EntityPropertyType.Bool, input);
+                CryEngine.Convert.FromString(CryEngine.EditorPropertyType.Bool, input);
             });
 		}
     }

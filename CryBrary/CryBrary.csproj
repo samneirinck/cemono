@@ -130,9 +130,11 @@
     <Compile Include="Actor\ActorInfo.cs" />
     <Compile Include="Actor\ActorStatics.cs" />
     <Compile Include="Actor\ViewParams.cs" />
+    <Compile Include="Attributes\GameRulesAttribute.cs" />
+    <Compile Include="Attributes\SandboxExtensionAttribute.cs" />
     <Compile Include="Console\ConsoleCommand\ConsoleCommandArgs.cs" />
-    <Compile Include="Console\ConsoleCommand\ConsoleCommandAttribute.cs" />
-    <Compile Include="Console\CVar\CVarAttribute.cs" />
+    <Compile Include="Attributes\ConsoleCommandAttribute.cs" />
+    <Compile Include="Attributes\CVarAttribute.cs" />
     <Compile Include="Console\CVar\CVarException.cs" />
     <Compile Include="Console\CVar\CVarFlags.cs" />
     <Compile Include="Console\CVar\CVarType.cs" />
@@ -159,6 +161,11 @@
     <Compile Include="Engine\TimeOfDay\SkyLightParams.cs" />
     <Compile Include="Engine\TimeOfDay\SkyParams.cs" />
     <Compile Include="Engine\TimeOfDay\SunRaysEffectParams.cs" />
+    <Compile Include="Attributes\EditorPropertyAttribute.cs" />
+    <Compile Include="Attributes\EntityAttribute.cs" />
+    <Compile Include="Entity\Editor Properties\EditorPropertyFolder.cs" />
+    <Compile Include="Entity\Editor Properties\EditorPropertyLimits.cs" />
+    <Compile Include="Entity\Editor Properties\EditorPropertyType.cs" />
     <Compile Include="FlowSystem\EntityFlowNode.cs" />
     <Compile Include="Entity\EntityLink.cs" />
     <Compile Include="Entity\EntityUpdatePolicy.cs" />
@@ -170,7 +177,7 @@
     <Compile Include="FlowSystem\Native\NodeConfig.cs" />
     <Compile Include="FlowSystem\Native\NodeInfo.cs" />
     <Compile Include="FlowSystem\OutputPort.cs" />
-    <Compile Include="FlowSystem\PortAttribute.cs" />
+    <Compile Include="Attributes\PortAttribute.cs" />
     <Compile Include="FlowSystem\PortType.cs" />
     <Compile Include="Input\ActionmapEventArgs.cs" />
     <Compile Include="Input\ActionmapHandler.cs" />
@@ -229,7 +236,7 @@
     <Compile Include="Engine\TimeOfDay\TimeOfDay.cs" />
     <Compile Include="Extensions\IDictionary.cs" />
     <Compile Include="Extensions\IEnumerable.cs" />
-    <Compile Include="FlowSystem\FlowNodeAttribute.cs" />
+    <Compile Include="Attributes\FlowNodeAttribute.cs" />
     <Compile Include="FlowSystem\Ports.cs" />
     <Compile Include="Misc\DelayedFunc.cs" />
     <Compile Include="Extensions\Enum.cs" />
@@ -248,7 +255,6 @@
     <Compile Include="Engine\Lua\Native\NativeScriptTableMethods.cs" />
     <Compile Include="Misc\Time\NativeTimeMethods.cs" />
     <Compile Include="Network\RemoteInvocationAttribute.cs" />
-    <Compile Include="Sandbox\Attributes.cs" />
     <Compile Include="Sandbox\FormLoader.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -310,9 +316,9 @@
     <Compile Include="Math\Quat.cs" />
     <Compile Include="Entity\Interface.cs" />
     <Compile Include="Script Handling\ScriptInstance.cs" />
-    <Compile Include="Misc\CompilationAttributes.cs" />
+    <Compile Include="Attributes\CompilationAttributes.cs" />
     <Compile Include="Console\ConsoleCommand\ConsoleCommand.cs" />
-    <Compile Include="Entity\EntityConfig.cs" />
+    <Compile Include="Entity\Editor Properties\EditorProperty.cs" />
     <Compile Include="Console\CVar\CVar.cs" />
     <Compile Include="Misc\Time\Time.cs" />
     <Compile Include="Debug\Debug.cs" />

@@ -158,7 +158,7 @@ namespace CryEngine
         /// <param name="memberInfo"></param>
         /// <param name="propertyType"></param>
         /// <param name="newValue"></param>
-        protected virtual void OnPropertyChanged(MemberInfo memberInfo, EntityPropertyType propertyType, object newValue) { }
+        protected virtual void OnPropertyChanged(MemberInfo memberInfo, EditorPropertyType propertyType, object newValue) { }
         
         protected virtual void OnPrePhysicsUpdate() {}
 
@@ -194,14 +194,14 @@ namespace CryEngine
             return null;
         }
 
-        internal virtual void SetPropertyValue(string propertyName, EntityPropertyType propertyType, string valueString)
+        internal virtual void SetPropertyValue(string propertyName, EditorPropertyType propertyType, string valueString)
         {
 #if !((RELEASE && RELEASE_DISABLE_CHECKS))
             if (valueString == null)
                 throw new ArgumentNullException("valueString");
             if (propertyName == null)
                 throw new ArgumentNullException("propertyName");
-            if (valueString.Length < 1 && propertyType != EntityPropertyType.String)
+            if (valueString.Length < 1 && propertyType != EditorPropertyType.String)
                 throw new ArgumentException("value was empty!");
             if (propertyName.Length < 1)
                 throw new ArgumentException("propertyName was empty!");
@@ -221,24 +221,24 @@ namespace CryEngine
             OnPropertyChanged(member, propertyType, value);
         }
 
-        public static EntityPropertyType GetEditorType(Type type, EntityPropertyType propertyType)
+        public static EditorPropertyType GetEditorType(Type type, EditorPropertyType propertyType)
         {
             //If a special type is needed, do this here.
             switch (propertyType)
             {
-                case EntityPropertyType.Object:
-                case EntityPropertyType.Texture:
-                case EntityPropertyType.File:
-                case EntityPropertyType.Sound:
-                case EntityPropertyType.Dialogue:
-                case EntityPropertyType.Sequence:
+                case EditorPropertyType.Object:
+                case EditorPropertyType.Texture:
+                case EditorPropertyType.File:
+                case EditorPropertyType.Sound:
+                case EditorPropertyType.Dialogue:
+                case EditorPropertyType.Sequence:
                     {
                         if (type == typeof(string))
                             return propertyType;
 
                         throw new EntityException("File selector type was specified, but property was not a string.");
                     }
-                case EntityPropertyType.Color:
+                case EditorPropertyType.Color:
                     {
                         if (type == typeof(Vec3))
                             return propertyType;
@@ -249,15 +249,15 @@ namespace CryEngine
 
             //OH PROGRAMMING GODS, FORGIVE ME
             if (type == typeof(string))
-                return EntityPropertyType.String;
+                return EditorPropertyType.String;
             if (type == typeof(int))
-                return EntityPropertyType.Int;
+                return EditorPropertyType.Int;
             if (type == typeof(float) || type == typeof(double))
-                return EntityPropertyType.Float;
+                return EditorPropertyType.Float;
             if (type == typeof(bool))
-                return EntityPropertyType.Bool;
+                return EditorPropertyType.Bool;
             if (type == typeof(Vec3))
-                return EntityPropertyType.Vec3;
+                return EditorPropertyType.Vec3;
             
             throw new EntityException("Invalid property type specified.");
         }

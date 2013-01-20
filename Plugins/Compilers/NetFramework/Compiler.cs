@@ -183,19 +183,19 @@ namespace CryEngine.Compilers.NET
 
 			BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
 			var members = type.GetMembers(flags);
-            var entityProperties = new Dictionary<string, List<EntityProperty>>();
+            var entityProperties = new Dictionary<string, List<EditorProperty>>();
 
             members.ForEach(member => TryGetEntityProperty(member, ref entityProperties));
 
             int numProperties = entityProperties.Count;
             if (numProperties > 0)
             {
-                var folders = new EntityPropertyFolder[numProperties];
+                var folders = new EditorPropertyFolder[numProperties];
 
                 for (int i = 0; i < numProperties; i++)
                 {
                     var folderPair = entityProperties.ElementAt(i);
-                    var folder = new EntityPropertyFolder();
+                    var folder = new EditorPropertyFolder();
 
                     folder.name = folderPair.Key;
                     folder.properties = folderPair.Value.Cast<object>().ToArray();
@@ -241,7 +241,7 @@ namespace CryEngine.Compilers.NET
 			return true;
 		}
 
-        bool TryGetEntityProperty(MemberInfo memberInfo, ref Dictionary<string, List<EntityProperty>> folders)
+        bool TryGetEntityProperty(MemberInfo memberInfo, ref Dictionary<string, List<EditorProperty>> folders)
 		{
 			EditorPropertyAttribute propertyAttribute;
 			if (memberInfo.TryGetAttribute(out propertyAttribute))
@@ -257,15 +257,15 @@ namespace CryEngine.Compilers.NET
 						break;
 				}
 
-				var limits = new EntityPropertyLimits(propertyAttribute.Min, propertyAttribute.Max);
+				var limits = new EditorPropertyLimits(propertyAttribute.Min, propertyAttribute.Max);
 
-                var property = new EntityProperty(propertyAttribute.Name ?? memberInfo.Name, propertyAttribute.Description, Entity.GetEditorType(memberType, propertyAttribute.Type), limits, propertyAttribute.Flags);
+                var property = new EditorProperty(propertyAttribute.Name ?? memberInfo.Name, propertyAttribute.Description, Entity.GetEditorType(memberType, propertyAttribute.Type), limits, propertyAttribute.Flags);
 
                 if (propertyAttribute.Folder == null)
                     propertyAttribute.Folder = "Default";
 
                 if (!folders.ContainsKey(propertyAttribute.Folder))
-                    folders.Add(propertyAttribute.Folder, new List<EntityProperty>());
+                    folders.Add(propertyAttribute.Folder, new List<EditorProperty>());
 
                 folders[propertyAttribute.Folder].Add(property);
 
