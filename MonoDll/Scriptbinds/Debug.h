@@ -30,6 +30,9 @@ protected:
 	static void AddDirection(Vec3 pos, float radius, Vec3 dir, ColorF color, float timeout);
 	static void AddPersistentText2D(mono::string text, float size, ColorF color, float timeout);
 	static void AddPersistentLine(Vec3 pos, Vec3 end, ColorF clr, float timeout);
+
+	static void AddAABB(Vec3 pos, AABB aabb, ColorF clr, float timeout);
+	//static void 
 	// ~IPersistentDebug
 
 	// ~Externals

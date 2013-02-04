@@ -9,6 +9,8 @@ CScriptbind_Debug::CScriptbind_Debug()
 	REGISTER_METHOD(AddDirection);
 	REGISTER_METHOD(AddPersistentText2D);
 	REGISTER_METHOD(AddPersistentLine);
+
+	REGISTER_METHOD(AddAABB);
 }
 
 void CScriptbind_Debug::AddPersistentSphere(Vec3 pos, float radius, ColorF color, float timeout)
@@ -34,6 +36,12 @@ void CScriptbind_Debug::AddPersistentLine(Vec3 pos, Vec3 end, ColorF clr, float 
 {
 	GetIPersistentDebug()->Begin("TestAddPersistentLine", false);
 	GetIPersistentDebug()->AddLine(pos, end, clr, timeout);
+}
+
+void CScriptbind_Debug::AddAABB(Vec3 pos, AABB aabb, ColorF clr, float timeout)
+{
+	GetIPersistentDebug()->Begin("TestAddAABB", false);
+	GetIPersistentDebug()->AddAABB(pos, aabb, clr, timeout);
 }
 
 IPersistantDebug *CScriptbind_Debug::GetIPersistentDebug()

@@ -18,6 +18,9 @@ namespace CryEngine.Native
         extern internal static void AddPersistentText2D(string text, float size, Color color, float timeout);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static void AddAABB(Vec3 pos, BoundingBox bbox, Color color, float timeout);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         extern internal static void AddPersistentLine(Vec3 pos, Vec3 end, Color color, float timeout);
         #endregion
 

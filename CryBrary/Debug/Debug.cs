@@ -28,5 +28,10 @@ namespace CryEngine
         {
             NativeDebugMethods.AddPersistentLine(startPos, endPos, color, timeout);
         }
+
+        public static void DrawBoundingBox(Vec3 pos, BoundingBox bbox, Color color, float timeout)
+        {
+            NativeDebugMethods.AddAABB(pos, bbox, color, timeout);
+        }
     }
 }
