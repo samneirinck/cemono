@@ -18,26 +18,26 @@ namespace CryEngine.Utilities
         static string RootFolder { get { return Directory.GetCurrentDirectory(); } }
 
         /// <summary>
-        /// Gets the current folder containing binaries relevant to current build type (Bin32 / Bin64).
+        /// Gets the folder containing binaries relevant to current build type (Bin32 / Bin64).
         /// </summary>
         /// <returns>The filepath to the Binary folder as a string, ex:
         /// <example>"C:\CryENGINE3\Bin32"</example></returns>
         public static string BinaryFolder { get { return Path.Combine(RootFolder, "Bin" + (IntPtr.Size * 8).ToString()); } }
 
         /// <summary>
-        /// PluginSDK main directory
+        /// Gets the folder containing CryMono configuration files.
         /// </summary>
-        public static string NativePluginsFolder { get { return Path.Combine(RootFolder, "Plugins"); } }
+        public static string ConfigFolder { get; internal set; }
 
         /// <summary>
         /// Directory from which CryMono will load managed plugins.
         /// </summary>
-        public static string PluginsFolder { get { return Path.Combine(RootFolder, "Bin32", "Plugins", "CryMono", "Plugins"); } }
+        public static string PluginsFolder { get { return Path.Combine(ConfigFolder, "Plugins"); } }
 
         /// <summary>
         /// Gets the Mono folder containing essential Mono libraries and configuration files.
         /// </summary>
-        public static string MonoFolder { get { return Path.Combine(RootFolder, "Bin32", "Plugins", "CryMono", "Mono"); } }
+        public static string MonoFolder { get { return Path.Combine(ConfigFolder, "Mono"); } }
 
         /// <summary>
         /// Gets the engine folder.

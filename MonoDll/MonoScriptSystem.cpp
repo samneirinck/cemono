@@ -74,7 +74,7 @@ CScriptSystem::CScriptSystem()
 	g_pMonoCVars = m_pCVars;
 	
 	// We should look into storing mono binaries, configuration as well as scripts via CryPak.
-	mono_set_dirs(PathUtils::GetLibPath(), PathUtils::GetConfigPath());
+	mono_set_dirs(PathUtils::GetMonoLibPath(), PathUtils::GetMonoConfigPath());
 
 	string monoCmdOptions = "";
 
@@ -202,8 +202,9 @@ void CScriptSystem::Reload()
 
 	IMonoAssembly *pCryBraryAssembly = pScriptDomain->LoadAssembly(PathUtils::GetBinaryPath() + "CryBrary.dll");
 
-	IMonoArray *pCtorParams = CreateMonoArray(1);
+	IMonoArray *pCtorParams = CreateMonoArray(2);
 	pCtorParams->InsertAny(m_bFirstReload);
+	pCtorParams->InsertMonoString(ToMonoString(PathUtils::GetConfigPath()));
 
 	IMonoObject *pScriptManager = pCryBraryAssembly->GetClass("ScriptManager", "CryEngine.Initialization")->CreateInstance(pCtorParams);
 

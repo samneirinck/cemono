@@ -17,12 +17,20 @@ class PathUtils
 public:
 	static string GetBinaryPath(bool force32 = false)
 	{
+		string binPath = "Bin32\\";
+
 #ifdef WIN64
 		if(!force32)
-			return "Bin64\\Plugins\\CryMono\\";
+			binPath = "Bin64\\";
 #endif
 
-		return "Bin32\\Plugins\\CryMono\\";
+		return binPath.append("Plugins\\CryMono\\");
+	}
+
+	// Path to directory which contains CryMono config & utils, e.g. Mono/ & Plugins/.
+	static string GetConfigPath()
+	{
+		return GetBinaryPath();
 	}
 
 	static string GetEnginePath()
@@ -32,15 +40,15 @@ public:
 
 	static string GetMonoPath()
 	{
-		return GetBinaryPath(true).append("Mono").append("\\");
+		return GetConfigPath().append("Mono").append("\\");
 	}
 
-	static string GetConfigPath()
+	static string GetMonoConfigPath()
 	{
 		return GetMonoPath().append(MONO_CONFIG_PATH).append("\\");
 	}
 
-	static string GetLibPath()
+	static string GetMonoLibPath()
 	{
 		return GetMonoPath().append(MONO_LIB_PATH).append("\\");
 	}

@@ -24,8 +24,10 @@ namespace CryEngine.Initialization
 {
     class ScriptManager
     {
-        public ScriptManager(bool initialLoad = true)
+        public ScriptManager(bool initialLoad = true, string configPath = "")
         {
+            PathUtils.ConfigFolder = configPath;
+
             Instance = this;
 
             if (Scripts == null)
