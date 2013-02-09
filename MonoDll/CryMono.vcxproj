@@ -164,7 +164,7 @@
       <Optimization>Full</Optimization>
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>.\;..\..\CryEngine\CryCommon;..\..\CryEngine\CryAction;..\..\SDKs\;..\..\SDKs\boost;Headers;..\;..\..\Plugin_SDK\inc</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\;..\..\CryEngine\CryCommon;..\..\CryEngine\CryAction;..\..\SDKs\;..\..\SDKs\boost;Headers;..\mono;..\..\Plugin_SDK\inc</AdditionalIncludeDirectories>
       <StringPooling>
       </StringPooling>
       <MinimalRebuild>
@@ -206,7 +206,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>.\;..\..\CryEngine\CryCommon;..\..\CryEngine\CryAction;..\..\SDKs\;..\..\SDKs\boost;Headers;..\;..\..\Plugin_SDK\inc</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\;..\..\CryEngine\CryCommon;..\..\CryEngine\CryAction;..\..\SDKs\;..\..\SDKs\boost;Headers;..\mono;..\..\Plugin_SDK\inc</AdditionalIncludeDirectories>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>
       </MinimalRebuild>
@@ -248,7 +248,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\;..\..\CryEngine\CryCommon;..\..\CryEngine\CryAction;..\..\SDKs\;..\..\SDKs\boost;Headers;..\;..\..\Plugin_SDK\inc</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\;..\..\CryEngine\CryCommon;..\..\CryEngine\CryAction;..\..\SDKs\;..\..\SDKs\boost;Headers;..\mono;..\..\Plugin_SDK\inc</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>
@@ -283,7 +283,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>CEMONO_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\;..\..\CryEngine\CryCommon;..\..\CryEngine\CryAction;..\..\SDKs\;..\..\SDKs\boost;Headers;..\;..\..\Plugin_SDK\inc</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\;..\..\CryEngine\CryCommon;..\..\CryEngine\CryAction;..\..\SDKs\;..\..\SDKs\boost;Headers;..\mono;..\..\Plugin_SDK\inc</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>
@@ -318,7 +318,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>CEMONO_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\;..\..\CryEngine\CryCommon;..\..\CryEngine\CryAction;..\..\SDKs\;..\..\SDKs\boost;Headers;..\;..\..\Plugin_SDK\inc</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\;..\..\CryEngine\CryCommon;..\..\CryEngine\CryAction;..\..\SDKs\;..\..\SDKs\boost;Headers;..\mono;..\..\Plugin_SDK\inc</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>
@@ -354,7 +354,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\;..\..\CryEngine\CryCommon;..\..\CryEngine\CryAction;..\..\SDKs\;..\..\SDKs\boost;Headers;..\;..\..\Plugin_SDK\inc</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\;..\..\CryEngine\CryCommon;..\..\CryEngine\CryAction;..\..\SDKs\;..\..\SDKs\boost;Headers;..\mono;..\..\Plugin_SDK\inc</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <MultiProcessorCompilation>
       </MultiProcessorCompilation>
@@ -390,7 +390,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\;..\..\CryEngine\CryCommon;..\..\CryEngine\CryAction;..\..\SDKs\;..\..\SDKs\boost;Headers;..\;..\..\Plugin_SDK\inc</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\;..\..\CryEngine\CryCommon;..\..\CryEngine\CryAction;..\..\SDKs\;..\..\SDKs\boost;Headers;..\mono;..\..\Plugin_SDK\inc</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <MultiProcessorCompilation>
       </MultiProcessorCompilation>
@@ -426,7 +426,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\;..\..\CryEngine\CryCommon;..\..\CryEngine\CryAction;..\..\SDKs\;..\..\SDKs\boost;Headers;..\;..\..\Plugin_SDK\inc</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\;..\..\CryEngine\CryCommon;..\..\CryEngine\CryAction;..\..\SDKs\;..\..\SDKs\boost;Headers;..\mono;..\..\Plugin_SDK\inc</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <MultiProcessorCompilation>
       </MultiProcessorCompilation>
