@@ -17,7 +17,9 @@ CInput::CInput()
 
 	gEnv->pGameFramework->GetIActionMapManager()->AddExtraActionListener(this);
 	gEnv->pHardwareMouse->AddListener(this);
-	gEnv->pInput->AddEventListener(this);
+
+	if(gEnv->pInput)
+		gEnv->pInput->AddEventListener(this);
 }
 
 CInput::~CInput()
