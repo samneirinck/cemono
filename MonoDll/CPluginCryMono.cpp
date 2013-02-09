@@ -1,6 +1,7 @@
 #include <StdAfx.h>
 #include <CPluginCryMono.h>
 
+#ifdef PLUGIN_SDK
 namespace CryMonoPlugin
 {
     CPluginCryMono* gPlugin = NULL;
@@ -81,3 +82,5 @@ namespace CryMonoPlugin
         return bRet;
     }
 }
+
+#endif // #ifdef PLUGIN_SDK

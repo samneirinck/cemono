@@ -68,6 +68,10 @@ CScriptSystem::CScriptSystem()
 {
 	CryLogAlways("Initializing Mono Script System");
 
+#ifndef PLUGIN_SDK
+	gEnv->pMonoScriptSystem = this;
+#endif;
+
 	g_pScriptSystem = this;
 
 	m_pCVars = new SCVars();

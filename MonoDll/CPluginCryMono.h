@@ -1,10 +1,12 @@
-#pragma once
+#ifndef ___CRYMONO_PLUGINSDK_INTEGRATION_H__
+#define ___CRYMONO_PLUGINSDK_INTEGRATION_H__
+#include "MonoScriptSystem.h"
+
+#ifdef PLUGIN_SDK
 
 #include <IPluginManager.h>
 #include <IPluginBase.h>
 #include <CPluginBaseMinimal.hpp>
-
-#include "MonoScriptSystem.h"
 
 #define PLUGIN_NAME "CryMono"
 #define CRYMONO_VERSION "0.6-dev"
@@ -78,3 +80,6 @@ namespace CryMonoPlugin
 
     extern CPluginCryMono* gPlugin;
 }
+
+#endif // PLUGIN_SDK
+#endif // ___CRYMONO_PLUGINSDK_INTEGRATION_H__

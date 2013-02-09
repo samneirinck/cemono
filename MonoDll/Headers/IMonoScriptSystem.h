@@ -11,7 +11,11 @@
 
 #include <MonoAnyValue.h>
 
+// Undefine if Plugin SDK shouldn't be used
+#define PLUGIN_SDK
+#ifdef PLUGIN_SDK
 #include <IPluginManager.h>
+#endif
 
 struct IMonoScriptManager;
 
@@ -130,6 +134,13 @@ struct IMonoScriptSystem
 	/// Call from IGame::RegisterGameFlownodes in order to have CryMono flow nodes appear in the Flowgraph Editor.
 	/// </summary>
 	virtual void RegisterFlownodes() = 0;
+
+#ifndef PLUGIN_SDK
+	/// <summary>
+	/// Entry point of the dll, used to set up CryMono when not using the Plugin SDK.
+	/// </summary>
+	typedef IMonoScriptSystem *(*TEntryFunction)(ISystem* pSystem);
+#endif
 };
 
 struct IMonoScriptEventListener
@@ -138,6 +149,7 @@ struct IMonoScriptEventListener
 	virtual void OnReloadComplete() = 0;
 };
 
+#ifdef PLUGIN_SDK
 static IMonoScriptSystem *_pMonoScriptSystem = nullptr; // internal storage to avoid having the extra overhead from having to call GetPluginByName all the time.
 
 static IMonoScriptSystem *GetMonoScriptSystem()
@@ -147,5 +159,11 @@ static IMonoScriptSystem *GetMonoScriptSystem()
 
 	return _pMonoScriptSystem;
 }
+#else
+static IMonoScriptSystem *GetMonoScriptSystem()
+{
+	return gEnv->pMonoScriptSystem;
+}
+#endif
 
 #endif //__I_MONO_SCRIPT_SYSTEM_H__
