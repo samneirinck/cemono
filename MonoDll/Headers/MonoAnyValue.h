@@ -50,7 +50,9 @@ struct MonoAnyValue : public ISerializable
 	MonoAnyValue(string value) : type(eMonoAnyType_String) { str = value.c_str(); }
 	MonoAnyValue(Vec3 value) : type(eMonoAnyType_Vec3) { vec3.x = value.x; vec3.y = value.y; vec3.z = value.z; }
 	MonoAnyValue(Ang3 value) : type(eMonoAnyType_Vec3) { vec3.x = value.x; vec3.y = value.y; vec3.z = value.z; }
+#ifdef WIN64
 	MonoAnyValue(intptr_t value) : type(eMonoAnyType_IntPtr) { i = value; }
+#endif
 
 	virtual void SerializeWith(TSerialize ser) override
 	{

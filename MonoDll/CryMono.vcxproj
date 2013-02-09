@@ -198,6 +198,9 @@
       <LargeAddressAware>true</LargeAddressAware>
       <ImportLibrary>$(IntDir)$(TargetName).lib</ImportLibrary>
     </Link>
+    <PreBuildEvent>
+      <Command>lib /nologo /def:"$(SolutionDir)../mono/msvc/mono.def" /out:"$(SolutionDir)../MonoDll/Libraries/x86/mono.lib" /machine:x86</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -238,6 +241,9 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <ImportLibrary>$(IntDir)$(TargetName).lib</ImportLibrary>
     </Link>
+    <PreBuildEvent>
+      <Command>lib /nologo /def:"$(SolutionDir)../mono/msvc/mono.def" /out:"$(SolutionDir)../MonoDll/Libraries/x64/mono.lib" /machine:x64</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -274,6 +280,9 @@
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <ImportLibrary>$(IntDir)$(TargetName).lib</ImportLibrary>
     </Link>
+    <PreBuildEvent>
+      <Command>lib /nologo /def:"$(SolutionDir)../mono/msvc/mono.def" /out:"$(SolutionDir)../MonoDll/Libraries/x86/mono.lib" /machine:x86</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
     <ClCompile>
@@ -309,6 +318,9 @@
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <ImportLibrary>$(IntDir)$(TargetName).lib</ImportLibrary>
     </Link>
+    <PreBuildEvent>
+      <Command>lib /nologo /def:"$(SolutionDir)../mono/msvc/mono.def" /out:"$(SolutionDir)../MonoDll/Libraries/x86/mono.lib" /machine:x86</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='UnitTests|Win32'">
     <ClCompile>
@@ -344,6 +356,9 @@
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <ImportLibrary>$(IntDir)$(TargetName).lib</ImportLibrary>
     </Link>
+    <PreBuildEvent>
+      <Command>lib /nologo /def:"$(SolutionDir)../mono/msvc/mono.def" /out:"$(SolutionDir)../MonoDll/Libraries/x86/mono.lib" /machine:x86</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -380,6 +395,9 @@
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <ImportLibrary>$(IntDir)$(TargetName).lib</ImportLibrary>
     </Link>
+    <PreBuildEvent>
+      <Command>lib /nologo /def:"$(SolutionDir)../mono/msvc/mono.def" /out:"$(SolutionDir)../MonoDll/Libraries/x64/mono.lib" /machine:x64</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <ClCompile>
@@ -416,6 +434,9 @@
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <ImportLibrary>$(IntDir)$(TargetName).lib</ImportLibrary>
     </Link>
+    <PreBuildEvent>
+      <Command>lib /nologo /def:"$(SolutionDir)../mono/msvc/mono.def" /out:"$(SolutionDir)../MonoDll/Libraries/x64/mono.lib" /machine:x64</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='UnitTests|x64'">
     <ClCompile>
@@ -452,6 +473,9 @@
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <ImportLibrary>$(IntDir)$(TargetName).lib</ImportLibrary>
     </Link>
+    <PreBuildEvent>
+      <Command>lib /nologo /def:"$(SolutionDir)../mono/msvc/mono.def" /out:"$(SolutionDir)../MonoDll/Libraries/x64/mono.lib" /machine:x64</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Actor.h" />
