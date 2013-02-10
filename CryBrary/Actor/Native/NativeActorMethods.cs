@@ -5,7 +5,6 @@ namespace CryEngine.Native
 {
     internal static class NativeActorMethods
     {
-        #region Externals
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static float GetPlayerHealth(IntPtr actorPtr);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
@@ -29,6 +28,8 @@ namespace CryEngine.Native
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static uint GetClientActorId();
-        #endregion
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static void RemoteInvocation(uint entityId, uint targetId, string methodName, object[] args, NetworkTarget target, int channelId);
     }
 }

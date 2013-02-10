@@ -128,6 +128,7 @@
     <Compile Include="Actor\Actor.cs" />
     <Compile Include="Actor\ActorBase.cs" />
     <Compile Include="Actor\ActorInfo.cs" />
+    <Compile Include="Actor\ActorNetworking.cs" />
     <Compile Include="Actor\ActorStatics.cs" />
     <Compile Include="Actor\ViewParams.cs" />
     <Compile Include="Attributes\GameRulesAttribute.cs" />
@@ -166,6 +167,7 @@
     <Compile Include="Entity\Editor Properties\EditorPropertyFolder.cs" />
     <Compile Include="Entity\Editor Properties\EditorPropertyLimits.cs" />
     <Compile Include="Entity\Editor Properties\EditorPropertyType.cs" />
+    <Compile Include="Entity\EntityNetworking.cs" />
     <Compile Include="FlowSystem\EntityFlowNode.cs" />
     <Compile Include="Entity\EntityLink.cs" />
     <Compile Include="Entity\EntityUpdatePolicy.cs" />

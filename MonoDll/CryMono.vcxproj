@@ -199,8 +199,12 @@
       <ImportLibrary>$(IntDir)$(TargetName).lib</ImportLibrary>
     </Link>
     <PreBuildEvent>
-      <Command>lib /nologo /def:"$(SolutionDir)../mono/msvc/mono.def" /out:"$(SolutionDir)../MonoDll/Libraries/x86/mono.lib" /machine:x86</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
+    <PreLinkEvent>
+      <Command>lib /nologo /def:"$(SolutionDir)../mono/msvc/mono.def" /out:"$(SolutionDir)../MonoDll/Libraries/x86/mono.lib" /machine:x86</Command>
+    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>

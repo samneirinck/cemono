@@ -82,6 +82,8 @@ protected:
 
 	static EntityId GetClientActorId();
 
+	static void RemoteInvocation(EntityId entityId, EntityId targetId, mono::string methodName, mono::object args, ERMInvocation target, int channelId);
+
 	typedef std::map<const char *, EMonoActorType> TActorClasses;
 	static TActorClasses m_monoActorClasses;
 };

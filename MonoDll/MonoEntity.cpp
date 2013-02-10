@@ -269,28 +269,28 @@ void CEntity::RMIParams::SerializeWith(TSerialize ser)
 
 IMPLEMENT_RMI(CEntity, SvScriptRMI)
 {
-	IMonoClass *pNetworkClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("Network");
+	IMonoClass *pEntityClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("Entity");
 
 	IMonoArray *pNetworkArgs = CreateMonoArray(3);
 	pNetworkArgs->Insert(ToMonoString(params.methodName.c_str()));
 	pNetworkArgs->Insert(params.pArgs);
 	pNetworkArgs->Insert(params.targetId);
 
-	pNetworkClass->InvokeArray(nullptr, "OnRemoteInvocation", pNetworkArgs);
+	pEntityClass->InvokeArray(nullptr, "OnRemoteInvocation", pNetworkArgs);
 
 	return true;
 }
 
 IMPLEMENT_RMI(CEntity, ClScriptRMI)
 {
-	IMonoClass *pNetworkClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("Network");
+	IMonoClass *pEntityClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("Entity");
 
 	IMonoArray *pNetworkArgs = CreateMonoArray(3);
 	pNetworkArgs->Insert(ToMonoString(params.methodName.c_str()));
 	pNetworkArgs->Insert(params.pArgs);
 	pNetworkArgs->Insert(params.targetId);
 
-	pNetworkClass->InvokeArray(nullptr, "OnRemoteInvocation", pNetworkArgs);
+	pEntityClass->InvokeArray(nullptr, "OnRemoteInvocation", pNetworkArgs);
 
 	return true;
 }

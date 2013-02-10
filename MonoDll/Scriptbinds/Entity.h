@@ -301,6 +301,8 @@ protected:
 	static void EnablePrePhysicsUpdate(IEntity *pEntity, bool enable);
 
 	static IParticleEmitter *LoadParticleEmitter(IEntity *pEntity, int slot, IParticleEffect *pEffect, SpawnParams &spawnParams);
+	
+	static void RemoteInvocation(EntityId entityId, EntityId targetId, mono::string methodName, mono::object args, ERMInvocation target, int channelId);
 	// ~Scriptbinds
 
 	static std::vector<const char *> m_monoEntityClasses;

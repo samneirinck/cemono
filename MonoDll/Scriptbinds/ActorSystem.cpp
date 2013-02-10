@@ -4,6 +4,8 @@
 #include "MonoScriptSystem.h"
 #include "Actor.h"
 
+#include "MonoEntity.h"
+
 #include <IGameFramework.h>
 
 CActorSystem::TActorClasses CActorSystem::m_monoActorClasses = TActorClasses();
@@ -23,6 +25,8 @@ CActorSystem::CActorSystem()
 	REGISTER_METHOD(RemoveActor);
 
 	REGISTER_METHOD(GetClientActorId);
+
+	REGISTER_METHOD(RemoteInvocation);
 
 	gEnv->pEntitySystem->AddSink(this, IEntitySystem::OnSpawn, 0);
 }
@@ -132,4 +136,19 @@ float CActorSystem::GetPlayerMaxHealth(IActor *pActor)
 void CActorSystem::SetPlayerMaxHealth(IActor *pActor, float newMaxHealth)
 {
 	pActor->SetMaxHealth(newMaxHealth);
+}
+
+void CActorSystem::RemoteInvocation(EntityId entityId, EntityId targetId, mono::string methodName, mono::object args, ERMInvocation target, int channelId)
+{
+	CRY_ASSERT(entityId != 0);
+
+	IGameObject *pGameObject = gEnv->pGameFramework->GetGameObject(entityId);
+	CRY_ASSERT(pGameObject);
+
+	CEntity::RMIParams params(*args, ToCryString(methodName), targetId);
+
+	if(target & eRMI_ToServer)
+		pGameObject->InvokeRMI(CActor::SvScriptRMI(), params, target, channelId);
+	else
+		pGameObject->InvokeRMI(CActor::ClScriptRMI(), params, target, channelId);
 }

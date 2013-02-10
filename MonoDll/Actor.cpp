@@ -497,3 +497,31 @@ void CActor::PostSerialize()
 {
 	m_pScript->CallMethod("PostSerialize");
 }
+
+IMPLEMENT_RMI(CActor, SvScriptRMI)
+{
+	IMonoClass *pActorClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("Actor");
+
+	IMonoArray *pNetworkArgs = CreateMonoArray(3);
+	pNetworkArgs->Insert(ToMonoString(params.methodName.c_str()));
+	pNetworkArgs->Insert(params.pArgs);
+	pNetworkArgs->Insert(params.targetId);
+
+	pActorClass->InvokeArray(nullptr, "OnRemoteInvocation", pNetworkArgs);
+
+	return true;
+}
+
+IMPLEMENT_RMI(CActor, ClScriptRMI)
+{
+	IMonoClass *pActorClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("Actor");
+
+	IMonoArray *pNetworkArgs = CreateMonoArray(3);
+	pNetworkArgs->Insert(ToMonoString(params.methodName.c_str()));
+	pNetworkArgs->Insert(params.pArgs);
+	pNetworkArgs->Insert(params.targetId);
+
+	pActorClass->InvokeArray(nullptr, "OnRemoteInvocation", pNetworkArgs);
+
+	return true;
+}
