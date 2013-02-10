@@ -271,7 +271,7 @@ void CScriptSystem::RegisterDefaultBindings()
 	}
 
 #define RegisterBinding(T) m_localScriptBinds.push_back(new T());
-	RegisterBinding(CActorSystem);
+	RegisterBinding(CScriptbind_ActorSystem);
 	RegisterBinding(CScriptbind_3DEngine);
 	RegisterBinding(CScriptbind_Physics);
 	RegisterBinding(CScriptbind_Renderer);

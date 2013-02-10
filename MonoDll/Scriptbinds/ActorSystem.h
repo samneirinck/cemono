@@ -44,13 +44,13 @@ enum EMonoActorType
 	EMonoActorType_None,
 };
 
-class CActorSystem 
+class CScriptbind_ActorSystem 
 	: public IMonoScriptBind
 	, public IEntitySystemSink
 {
 public:
-	CActorSystem();
-	~CActorSystem();
+	CScriptbind_ActorSystem();
+	~CScriptbind_ActorSystem();
 
 	// IEntitySystemSink
 	virtual bool OnBeforeSpawn(SEntitySpawnParams &params) { return true; }

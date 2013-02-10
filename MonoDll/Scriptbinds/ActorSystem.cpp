@@ -8,9 +8,9 @@
 
 #include <IGameFramework.h>
 
-CActorSystem::TActorClasses CActorSystem::m_monoActorClasses = TActorClasses();
+CScriptbind_ActorSystem::TActorClasses CScriptbind_ActorSystem::m_monoActorClasses = TActorClasses();
 
-CActorSystem::CActorSystem()
+CScriptbind_ActorSystem::CScriptbind_ActorSystem()
 {
 	REGISTER_METHOD(GetPlayerHealth);
 	REGISTER_METHOD(SetPlayerHealth);
@@ -31,7 +31,7 @@ CActorSystem::CActorSystem()
 	gEnv->pEntitySystem->AddSink(this, IEntitySystem::OnSpawn, 0);
 }
 
-CActorSystem::~CActorSystem()
+CScriptbind_ActorSystem::~CScriptbind_ActorSystem()
 {
 	if(gEnv->pEntitySystem )
 		gEnv->pEntitySystem->RemoveSink(this);
@@ -39,7 +39,7 @@ CActorSystem::~CActorSystem()
 		MonoWarning("Failed to unregister CActorSystem entity sink!");
 }
 
-EMonoActorType CActorSystem::GetMonoActorType(const char *actorClassName)
+EMonoActorType CScriptbind_ActorSystem::GetMonoActorType(const char *actorClassName)
 {
 	for each(auto classPair in m_monoActorClasses)
 	{
@@ -50,7 +50,7 @@ EMonoActorType CActorSystem::GetMonoActorType(const char *actorClassName)
 	return EMonoActorType_None;
 }
 
-void CActorSystem::OnSpawn(IEntity *pEntity,SEntitySpawnParams &params)
+void CScriptbind_ActorSystem::OnSpawn(IEntity *pEntity,SEntitySpawnParams &params)
 {
 	EMonoActorType actorType = GetMonoActorType(pEntity->GetClass()->GetName());
 
@@ -72,7 +72,7 @@ void CActorSystem::OnSpawn(IEntity *pEntity,SEntitySpawnParams &params)
 	}
 }
 
-SMonoActorInfo CActorSystem::GetActorInfoByChannelId(uint16 channelId)
+SMonoActorInfo CScriptbind_ActorSystem::GetActorInfoByChannelId(uint16 channelId)
 {
 	if(IActor *pActor = gEnv->pGameFramework->GetIActorSystem()->GetActorByChannelId(channelId))
 		return SMonoActorInfo(pActor);
@@ -80,7 +80,7 @@ SMonoActorInfo CActorSystem::GetActorInfoByChannelId(uint16 channelId)
 	return SMonoActorInfo();
 }
 
-SMonoActorInfo CActorSystem::GetActorInfoById(EntityId id)
+SMonoActorInfo CScriptbind_ActorSystem::GetActorInfoById(EntityId id)
 {
 	if(IActor *pActor = gEnv->pGameFramework->GetIActorSystem()->GetActor(id))
 		return SMonoActorInfo(pActor);
@@ -88,7 +88,7 @@ SMonoActorInfo CActorSystem::GetActorInfoById(EntityId id)
 	return SMonoActorInfo();
 }
 
-void CActorSystem::RegisterActorClass(mono::string name, bool isNative)
+void CScriptbind_ActorSystem::RegisterActorClass(mono::string name, bool isNative)
 {
 	const char *className = ToCryString(name);
 
@@ -98,7 +98,7 @@ void CActorSystem::RegisterActorClass(mono::string name, bool isNative)
 	m_monoActorClasses.insert(TActorClasses::value_type(className, isNative ? EMonoActorType_Native : EMonoActorType_Managed));
 }
 
-SMonoActorInfo CActorSystem::CreateActor(int channelId, mono::string name, mono::string className, Vec3 pos, Quat rot, Vec3 scale)
+SMonoActorInfo CScriptbind_ActorSystem::CreateActor(int channelId, mono::string name, mono::string className, Vec3 pos, Quat rot, Vec3 scale)
 {
 	const char *sClassName = ToCryString(className);
 
@@ -108,37 +108,37 @@ SMonoActorInfo CActorSystem::CreateActor(int channelId, mono::string name, mono:
 	return SMonoActorInfo();
 }
 
-void CActorSystem::RemoveActor(EntityId id)
+void CScriptbind_ActorSystem::RemoveActor(EntityId id)
 {
 	gEnv->pGameFramework->GetIActorSystem()->RemoveActor(id);
 }
 
-EntityId CActorSystem::GetClientActorId()
+EntityId CScriptbind_ActorSystem::GetClientActorId()
 {
 	return gEnv->pGameFramework->GetClientActorId();
 }
 
-float CActorSystem::GetPlayerHealth(IActor *pActor)
+float CScriptbind_ActorSystem::GetPlayerHealth(IActor *pActor)
 {
 	return pActor->GetHealth();
 }
 
-void CActorSystem::SetPlayerHealth(IActor *pActor, float newHealth)
+void CScriptbind_ActorSystem::SetPlayerHealth(IActor *pActor, float newHealth)
 {
 	pActor->SetHealth(newHealth);
 }
 
-float CActorSystem::GetPlayerMaxHealth(IActor *pActor)
+float CScriptbind_ActorSystem::GetPlayerMaxHealth(IActor *pActor)
 {
 	return pActor->GetMaxHealth();
 }
 
-void CActorSystem::SetPlayerMaxHealth(IActor *pActor, float newMaxHealth)
+void CScriptbind_ActorSystem::SetPlayerMaxHealth(IActor *pActor, float newMaxHealth)
 {
 	pActor->SetMaxHealth(newMaxHealth);
 }
 
-void CActorSystem::RemoteInvocation(EntityId entityId, EntityId targetId, mono::string methodName, mono::object args, ERMInvocation target, int channelId)
+void CScriptbind_ActorSystem::RemoteInvocation(EntityId entityId, EntityId targetId, mono::string methodName, mono::object args, ERMInvocation target, int channelId)
 {
 	CRY_ASSERT(entityId != 0);
 
