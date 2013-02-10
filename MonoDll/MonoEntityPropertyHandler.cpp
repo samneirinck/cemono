@@ -87,9 +87,9 @@ void CEntityPropertyHandler::SetProperty(IEntity *pIEntity, int index, const cha
 {
 	EntityId id = pIEntity->GetId();
 
-	CEntity *pEntity = nullptr;
+	CMonoEntityExtension *pEntity = nullptr;
 	if(IGameObject *pGameObject = gEnv->pGameFramework->GetGameObject(id))
-		pEntity = static_cast<CEntity *>(pGameObject->QueryExtension(pIEntity->GetClass()->GetName()));
+		pEntity = static_cast<CMonoEntityExtension *>(pGameObject->QueryExtension(pIEntity->GetClass()->GetName()));
 
 	// Only true after game has started, limiting this to changes made in Editor.
 	if(pEntity && pEntity->IsInitialized())
@@ -121,7 +121,7 @@ const char *CEntityPropertyHandler::GetProperty(IEntity *pIEntity, int index) co
 {
 	if(IGameObject *pGameObject = gEnv->pGameFramework->GetGameObject(pIEntity->GetId()))
 	{
-		if(CEntity *pEntity = static_cast<CEntity *>(pGameObject->QueryExtension(pIEntity->GetClass()->GetName())))
+		if(CMonoEntityExtension *pEntity = static_cast<CMonoEntityExtension *>(pGameObject->QueryExtension(pIEntity->GetClass()->GetName())))
 		{
 			if(IMonoObject *pResult = pEntity->GetScript()->CallMethod("GetPropertyValue", m_properties.at(index).name))
 				return ToCryString((mono::string)pResult->GetManagedObject());

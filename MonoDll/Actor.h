@@ -171,8 +171,8 @@ public:
 	virtual uint8 GetDefaultProfile(EEntityAspects aspect) { return aspect == eEA_Physics ? eAP_NotPhysicalized : 0; }
 	// ~IGameObjectProfileManager
 
-	DECLARE_SERVER_RMI_NOATTACH(SvScriptRMI, CEntity::RMIParams, eNRT_ReliableUnordered);
-	DECLARE_CLIENT_RMI_NOATTACH(ClScriptRMI, CEntity::RMIParams, eNRT_ReliableUnordered);
+	DECLARE_SERVER_RMI_NOATTACH(SvScriptRMI, CMonoEntityExtension::RMIParams, eNRT_ReliableUnordered);
+	DECLARE_CLIENT_RMI_NOATTACH(ClScriptRMI, CMonoEntityExtension::RMIParams, eNRT_ReliableUnordered);
 
 	void SetScript(IMonoObject *pObject);
 

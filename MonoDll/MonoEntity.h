@@ -30,12 +30,12 @@ struct SQueuedProperty
 	IEntityPropertyHandler::SPropertyInfo propertyInfo;
 };
 
-class CEntity
+class CMonoEntityExtension
 	: public CGameObjectExtensionHelper<CEntity, IGameObjectExtension>
 {
 public:
-	CEntity();
-	virtual ~CEntity();
+	CMonoEntityExtension();
+	virtual ~CMonoEntityExtension();
 
 	// IGameObjectExtension
 	virtual bool Init(IGameObject *pGameObject);

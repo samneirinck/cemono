@@ -263,8 +263,8 @@ bool CScriptbind_Entity::OnRemove(IEntity *pIEntity)
 struct SMonoEntityCreator
 	: public IGameObjectExtensionCreatorBase
 {
-	virtual IGameObjectExtension *Create() { return new CEntity(); }
-	virtual void GetGameObjectExtensionRMIData(void **ppRMI, size_t *nCount) { return CEntity::GetGameObjectExtensionRMIData(ppRMI, nCount); }
+	virtual IGameObjectExtension *Create() { return new CMonoEntityExtension(); }
+	virtual void GetGameObjectExtensionRMIData(void **ppRMI, size_t *nCount) { return CMonoEntityExtension::GetGameObjectExtensionRMIData(ppRMI, nCount); }
 };
 
 bool CScriptbind_Entity::RegisterEntityClass(SEntityRegistrationParams params)
@@ -403,7 +403,7 @@ mono::object CScriptbind_Entity::SpawnEntity(EntitySpawnParams monoParams, bool 
 
 			if(IGameObject *pGameObject = gEnv->pGameFramework->GetGameObject(spawnParams.id))
 			{
-				if(CEntity *pEntity = static_cast<CEntity *>(pGameObject->QueryExtension(className)))
+				if(CMonoEntityExtension *pEntity = static_cast<CMonoEntityExtension *>(pGameObject->QueryExtension(className)))
 					return pEntity->GetScript()->GetManagedObject();
 			}
 		}
@@ -1088,10 +1088,10 @@ void CScriptbind_Entity::RemoteInvocation(EntityId entityId, EntityId targetId, 
 	IGameObject *pGameObject = gEnv->pGameFramework->GetGameObject(entityId);
 	CRY_ASSERT(pGameObject);
 
-	CEntity::RMIParams params(*args, ToCryString(methodName), targetId);
+	CMonoEntityExtension::RMIParams params(*args, ToCryString(methodName), targetId);
 
 	if(target & eRMI_ToServer)
-		pGameObject->InvokeRMI(CEntity::SvScriptRMI(), params, target, channelId);
+		pGameObject->InvokeRMI(CMonoEntityExtension::SvScriptRMI(), params, target, channelId);
 	else
-		pGameObject->InvokeRMI(CEntity::ClScriptRMI(), params, target, channelId);
+		pGameObject->InvokeRMI(CMonoEntityExtension::ClScriptRMI(), params, target, channelId);
 }

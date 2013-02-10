@@ -14,14 +14,14 @@
 
 #include <MonoCommon.h>
 
-CEntity::CEntity()
+CMonoEntityExtension::CMonoEntityExtension()
 	: m_pScript(nullptr)
 	, m_bInitialized(false)
 	, m_pAnimatedCharacter(nullptr)
 {
 }
 
-CEntity::~CEntity()
+CMonoEntityExtension::~CMonoEntityExtension()
 {
 	SAFE_RELEASE(m_pScript);
 
@@ -32,7 +32,7 @@ CEntity::~CEntity()
 	}
 }
 
-bool CEntity::Init(IGameObject *pGameObject)
+bool CMonoEntityExtension::Init(IGameObject *pGameObject)
 {
 	SetGameObject(pGameObject);
 
@@ -71,12 +71,12 @@ bool CEntity::Init(IGameObject *pGameObject)
 	return true;
 }
 
-void CEntity::PostInit(IGameObject *pGameObject)
+void CMonoEntityExtension::PostInit(IGameObject *pGameObject)
 {
 	Reset(false);
 }
 
-void CEntity::Reset(bool enteringGamemode)
+void CMonoEntityExtension::Reset(bool enteringGamemode)
 {
 	if(m_pAnimatedCharacter)
 		m_pAnimatedCharacter->ResetState();
@@ -84,7 +84,7 @@ void CEntity::Reset(bool enteringGamemode)
 		m_pAnimatedCharacter->ResetState();
 }
 
-void CEntity::ProcessEvent(SEntityEvent &event)
+void CMonoEntityExtension::ProcessEvent(SEntityEvent &event)
 {
 	switch(event.event)
 	{
@@ -161,7 +161,7 @@ void CEntity::ProcessEvent(SEntityEvent &event)
 	}
 }
 
-void CEntity::FullSerialize(TSerialize ser)
+void CMonoEntityExtension::FullSerialize(TSerialize ser)
 {
 	IEntity *pEntity = GetEntity();
 
@@ -200,7 +200,7 @@ void CEntity::FullSerialize(TSerialize ser)
 	ser.EndGroup();
 }
 
-bool CEntity::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile, int flags)
+bool CMonoEntityExtension::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile, int flags)
 {
 	ser.BeginGroup("ManagedEntity");
 
@@ -217,12 +217,12 @@ bool CEntity::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile,
 	return true;
 }
 
-void CEntity::PostSerialize()
+void CMonoEntityExtension::PostSerialize()
 {
 	m_pScript->CallMethod("PostSerialize");
 }
 
-void CEntity::SetPropertyValue(IEntityPropertyHandler::SPropertyInfo propertyInfo, const char *value)
+void CMonoEntityExtension::SetPropertyValue(IEntityPropertyHandler::SPropertyInfo propertyInfo, const char *value)
 {
 	if(value != nullptr)
 		m_pScript->CallMethod("SetPropertyValue", propertyInfo.name, propertyInfo.type, value);
@@ -231,14 +231,14 @@ void CEntity::SetPropertyValue(IEntityPropertyHandler::SPropertyInfo propertyInf
 ///////////////////////////////////////////////////
 // Entity RMI's
 ///////////////////////////////////////////////////
-CEntity::RMIParams::RMIParams(IMonoArray *pArray, const char *funcName, EntityId target)
+CMonoEntityExtension::RMIParams::RMIParams(IMonoArray *pArray, const char *funcName, EntityId target)
 	: methodName(funcName)
 	, targetId(target)
 	, pArgs(pArray)
 {
 }
 
-void CEntity::RMIParams::SerializeWith(TSerialize ser)
+void CMonoEntityExtension::RMIParams::SerializeWith(TSerialize ser)
 {
 	int length = pArgs ? pArgs->GetSize() : 0;
 	ser.Value("length", length);
@@ -267,7 +267,7 @@ void CEntity::RMIParams::SerializeWith(TSerialize ser)
 	}
 }
 
-IMPLEMENT_RMI(CEntity, SvScriptRMI)
+IMPLEMENT_RMI(CMonoEntityExtension, SvScriptRMI)
 {
 	IMonoClass *pEntityClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("Entity");
 
@@ -281,7 +281,7 @@ IMPLEMENT_RMI(CEntity, SvScriptRMI)
 	return true;
 }
 
-IMPLEMENT_RMI(CEntity, ClScriptRMI)
+IMPLEMENT_RMI(CMonoEntityExtension, ClScriptRMI)
 {
 	IMonoClass *pEntityClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("Entity");
 

@@ -145,7 +145,7 @@ void CActorSystem::RemoteInvocation(EntityId entityId, EntityId targetId, mono::
 	IGameObject *pGameObject = gEnv->pGameFramework->GetGameObject(entityId);
 	CRY_ASSERT(pGameObject);
 
-	CEntity::RMIParams params(*args, ToCryString(methodName), targetId);
+	CMonoEntityExtension::RMIParams params(*args, ToCryString(methodName), targetId);
 
 	if(target & eRMI_ToServer)
 		pGameObject->InvokeRMI(CActor::SvScriptRMI(), params, target, channelId);
