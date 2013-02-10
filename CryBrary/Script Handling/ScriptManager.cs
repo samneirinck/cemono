@@ -85,6 +85,8 @@ namespace CryEngine.Initialization
             }
 
             public SerializableInput Input { get; set; }
+            public EntityId GameRulesId { get; set; }
+
             public int LastScriptId { get; set; }
         }
 
@@ -97,6 +99,11 @@ namespace CryEngine.Initialization
 
             data.Input.KeyEvents = Input.KeyEventsInvocationList;
             data.Input.MouseEvents = Input.MouseEventsInvocationList;
+
+            if (GameRules.Current != null)
+                data.GameRulesId = GameRules.Current.Id;
+            else
+                data.GameRulesId = -1;
 
             AddScriptInstance(data, ScriptType.CryScriptInstance);
 
@@ -129,6 +136,9 @@ namespace CryEngine.Initialization
                 foreach (var mouseDelegate in data.Input.MouseEvents)
                     Input.MouseEvents += mouseDelegate as MouseEventDelegate;
             }
+
+            if (data.GameRulesId != -1)
+                GameRules.Current = Entity.Get(data.GameRulesId) as GameRules;
 
             RemoveInstance(data.ScriptId, ScriptType.CryScriptInstance);
         }
