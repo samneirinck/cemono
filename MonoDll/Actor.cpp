@@ -11,7 +11,7 @@
 #include <IMonoAssembly.h>
 #include <IMonoClass.h>
 
-CActor::CActor()
+CMonoActor::CMonoActor()
 	: m_pAnimatedCharacter(NULL)
 	, m_bClient(false)
 	, m_bMigrating(false)
@@ -21,7 +21,7 @@ CActor::CActor()
 }
 
 
-CActor::~CActor()
+CMonoActor::~CMonoActor()
 {
 	GetGameObject()->EnablePhysicsEvent( false, eEPE_OnPostStepImmediate );
 
@@ -38,7 +38,7 @@ CActor::~CActor()
 		pActorSystem->RemoveActor(GetEntityId());
 }
 
-bool CActor::Init(IGameObject *pGameObject)
+bool CMonoActor::Init(IGameObject *pGameObject)
 {
 	SetGameObject(pGameObject);
 
@@ -71,7 +71,7 @@ bool CActor::Init(IGameObject *pGameObject)
 	return true; 
 }
 
-void CActor::PostInit(IGameObject *pGameObject)
+void CMonoActor::PostInit(IGameObject *pGameObject)
 {
 	if (m_pAnimatedCharacter)
 		m_pAnimatedCharacter->ResetState();
@@ -82,7 +82,7 @@ void CActor::PostInit(IGameObject *pGameObject)
 		GetGameObject()->SetUpdateSlotEnableCondition( this, 0, eUEC_VisibleOrInRange );
 }
 
-bool CActor::ReloadExtension( IGameObject *pGameObject, const SEntitySpawnParams &params )
+bool CMonoActor::ReloadExtension( IGameObject *pGameObject, const SEntitySpawnParams &params )
 {
 	CRY_ASSERT(GetGameObject() == pGameObject);
 
@@ -107,7 +107,7 @@ bool CActor::ReloadExtension( IGameObject *pGameObject, const SEntitySpawnParams
 	return true;
 }
 
-void CActor::PostReloadExtension( IGameObject * pGameObject, const SEntitySpawnParams &params )
+void CMonoActor::PostReloadExtension( IGameObject * pGameObject, const SEntitySpawnParams &params )
 {
 	CRY_ASSERT(GetGameObject() == pGameObject);
 
@@ -117,7 +117,7 @@ void CActor::PostReloadExtension( IGameObject * pGameObject, const SEntitySpawnP
 		(ENTITY_FLAG_ON_RADAR | ENTITY_FLAG_CUSTOM_VIEWDIST_RATIO | ENTITY_FLAG_TRIGGER_AREAS));
 }
 
-void CActor::SetAuthority( bool auth )
+void CMonoActor::SetAuthority( bool auth )
 {
 	// we've been given authority of this entity, mark the physics as changed
 	// so that we send a current position, failure to do this can result in server/client
@@ -126,7 +126,7 @@ void CActor::SetAuthority( bool auth )
 		CHANGED_NETWORK_STATE(this, eEA_Physics);
 }
 
-void CActor::HandleEvent(const SGameObjectEvent &event)
+void CMonoActor::HandleEvent(const SGameObjectEvent &event)
 {
 	if (event.event == 276 /* Ragdoll, defined in GameDll ._. */)
 	{
@@ -156,7 +156,7 @@ void CActor::HandleEvent(const SGameObjectEvent &event)
 	}
 }
 
-void CActor::ProcessEvent(SEntityEvent& event)
+void CMonoActor::ProcessEvent(SEntityEvent& event)
 {
 	switch (event.event)
 	{
@@ -193,12 +193,12 @@ void CActor::ProcessEvent(SEntityEvent& event)
   }  
 }
 
-void CActor::SetScript(IMonoObject *pObject)
+void CMonoActor::SetScript(IMonoObject *pObject)
 {
 	m_pScript = pObject;
 }
 
-void CActor::UpdateView(SViewParams &viewParams)
+void CMonoActor::UpdateView(SViewParams &viewParams)
 {
 	void *args[1];
 	args[0] = &viewParams;
@@ -206,7 +206,7 @@ void CActor::UpdateView(SViewParams &viewParams)
 	m_pScript->GetClass()->Invoke(m_pScript, "UpdateView", args, 1);
 }
 
-bool CActor::SetAspectProfile( EEntityAspects aspect, uint8 profile )
+bool CMonoActor::SetAspectProfile( EEntityAspects aspect, uint8 profile )
 {
 	bool res(false);
 
@@ -370,33 +370,33 @@ bool CActor::SetAspectProfile( EEntityAspects aspect, uint8 profile )
 	return res;
 }
 
-void CActor::InitLocalPlayer()
+void CMonoActor::InitLocalPlayer()
 {
 	GetGameObject()->SetUpdateSlotEnableCondition( this, 0, eUEC_WithoutAI );
 	//gEnv->pGameFramework->GetIActorSystem()->SetLocalPlayerId(GetEntityId());
 }
 
-float CActor::GetHealth() const
+float CMonoActor::GetHealth() const
 {
 	return m_pScript->GetPropertyValue("Health")->Unbox<float>();
 }
 
-void CActor::SetHealth(float health)
+void CMonoActor::SetHealth(float health)
 {
 	m_pScript->SetPropertyValue("Health", *g_pScriptSystem->GetConverter()->BoxAnyValue(MonoAnyValue(health)));
 }
 
-float CActor::GetMaxHealth() const
+float CMonoActor::GetMaxHealth() const
 {
 	return m_pScript->GetPropertyValue("MaxHealth")->Unbox<float>();
 }
 
-void CActor::SetMaxHealth(float health)
+void CMonoActor::SetMaxHealth(float health)
 {
 	m_pScript->SetPropertyValue("MaxHealth", *g_pScriptSystem->GetConverter()->BoxAnyValue(MonoAnyValue(health)));
 }
 
-bool CActor::NetSerialize( TSerialize ser, EEntityAspects aspect, uint8 profile, int pflags )
+bool CMonoActor::NetSerialize( TSerialize ser, EEntityAspects aspect, uint8 profile, int pflags )
 {
 	if (aspect == eEA_Physics)
 	{
@@ -481,7 +481,7 @@ bool CActor::NetSerialize( TSerialize ser, EEntityAspects aspect, uint8 profile,
 	return true;
 }
 
-void CActor::FullSerialize(TSerialize ser)
+void CMonoActor::FullSerialize(TSerialize ser)
 {
 	ser.BeginGroup("ManagedActor");
 
@@ -493,12 +493,12 @@ void CActor::FullSerialize(TSerialize ser)
 	ser.EndGroup();
 }
 
-void CActor::PostSerialize()
+void CMonoActor::PostSerialize()
 {
 	m_pScript->CallMethod("PostSerialize");
 }
 
-IMPLEMENT_RMI(CActor, SvScriptRMI)
+IMPLEMENT_RMI(CMonoActor, SvScriptRMI)
 {
 	IMonoClass *pActorClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("Actor");
 
@@ -512,7 +512,7 @@ IMPLEMENT_RMI(CActor, SvScriptRMI)
 	return true;
 }
 
-IMPLEMENT_RMI(CActor, ClScriptRMI)
+IMPLEMENT_RMI(CMonoActor, ClScriptRMI)
 {
 	IMonoClass *pActorClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("Actor");
 

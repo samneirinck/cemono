@@ -67,7 +67,7 @@ void CActorSystem::OnSpawn(IEntity *pEntity,SEntitySpawnParams &params)
 			pScript->CallMethod("InternalSpawn", pActorInfoClass->BoxObject(&actorInfo));
 
 			if(actorType == EMonoActorType_Managed)
-				static_cast<CActor *>(pActor)->SetScript(pScript);
+				static_cast<CMonoActor *>(pActor)->SetScript(pScript);
 		}
 	}
 }
@@ -93,7 +93,7 @@ void CActorSystem::RegisterActorClass(mono::string name, bool isNative)
 	const char *className = ToCryString(name);
 
 	if(!isNative)
-		gEnv->pGameFramework->RegisterFactory(className, (CActor *)0, false, (CActor *)0);
+		gEnv->pGameFramework->RegisterFactory(className, (CMonoActor *)0, false, (CMonoActor *)0);
 
 	m_monoActorClasses.insert(TActorClasses::value_type(className, isNative ? EMonoActorType_Native : EMonoActorType_Managed));
 }
@@ -148,7 +148,7 @@ void CActorSystem::RemoteInvocation(EntityId entityId, EntityId targetId, mono::
 	CMonoEntityExtension::RMIParams params(*args, ToCryString(methodName), targetId);
 
 	if(target & eRMI_ToServer)
-		pGameObject->InvokeRMI(CActor::SvScriptRMI(), params, target, channelId);
+		pGameObject->InvokeRMI(CMonoActor::SvScriptRMI(), params, target, channelId);
 	else
-		pGameObject->InvokeRMI(CActor::ClScriptRMI(), params, target, channelId);
+		pGameObject->InvokeRMI(CMonoActor::ClScriptRMI(), params, target, channelId);
 }

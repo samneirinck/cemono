@@ -17,16 +17,16 @@
 
 struct IMonoObject;
 
-class CActor 
-	: public CGameObjectExtensionHelper<CActor, IActor, 2>
+class CMonoActor
+	: public CGameObjectExtensionHelper<CMonoActor, IActor, 2>
 	, public IGameObjectView
 	, public IGameObjectProfileManager
 {
 	friend class CSerializeWrapper<ISerialize>;
 
 public:
-	CActor();
-	~CActor();
+	CMonoActor();
+	~CMonoActor();
 
 	// IActor
 	virtual void	SetHealth( float health ) override;
