@@ -287,7 +287,7 @@ void CScriptSystem::RegisterDefaultBindings()
 	RegisterBinding(CScriptbind_Network);
 	RegisterBinding(CScriptbind_ScriptTable);
 	RegisterBinding(CScriptbind_CrySerialize);
-	RegisterBinding(CInput);
+	RegisterBinding(CScriptbind_Input);
 
 	m_pFlowManager = new CFlowManager();
 	m_pFlowManager->AddRef();

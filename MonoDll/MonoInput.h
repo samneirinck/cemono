@@ -16,15 +16,15 @@
 
 struct IMonoScript;
 
-class CInput 
+class CScriptbind_Input
 	: public IMonoScriptBind
 	, public IActionListener
 	, public IHardwareMouseEventListener
 	, public IInputEventListener
 {
 public:
-	CInput();
-	~CInput();
+	CScriptbind_Input();
+	~CScriptbind_Input();
 
 	// IMonoScriptBind
 	virtual const char *GetClassName() { return "NativeInputMethods"; }
@@ -49,5 +49,5 @@ private:
 
 	bool OnActionTriggered(EntityId entityId, const ActionId& actionId, int activationMode, float value);
 
-	static TActionHandler<CInput>	s_actionHandler;
+	static TActionHandler<CScriptbind_Input>	s_actionHandler;
 };
