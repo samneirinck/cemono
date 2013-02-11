@@ -98,7 +98,19 @@ namespace CryEngine
         {
             var entity = Entity.Get(targetId);
 
-            entity.GetType().InvokeMember(methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, entity, args);
+            var type = entity.GetType();
+            while (type != null)
+            {
+                var methodInfo = type.GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                if (methodInfo != null)
+                {
+                    methodInfo.Invoke(entity, args);
+
+                    return;
+                }
+
+                type = type.BaseType;
+            }
         }
     }
 }
