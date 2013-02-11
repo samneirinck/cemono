@@ -218,7 +218,16 @@ mono::object CScriptDomain::BoxAnyValue(MonoAnyValue &any)
 	case eMonoAnyType_Vec3:
 		{
 			IMonoClass *pVec3Class = g_pScriptSystem->GetCryBraryAssembly()->GetClass("Vec3");
-			return pVec3Class->BoxObject(&any.vec3, this)->GetManagedObject();
+			
+			Vec3 vec3(any.vec4.x, any.vec4.y, any.vec4.z);
+			return pVec3Class->BoxObject(&vec3, this)->GetManagedObject();
+		}
+		break;
+	case eMonoAnyType_Quat:
+		{
+			IMonoClass *pQuatClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("Quat");
+			
+			return pQuatClass->BoxObject(&any.vec4, this)->GetManagedObject();
 		}
 		break;
 	}

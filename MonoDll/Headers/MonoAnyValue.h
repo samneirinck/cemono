@@ -26,6 +26,7 @@ enum EMonoAnyType
 	eMonoAnyType_UnsignedShort,
 	eMonoAnyType_Float,
 	eMonoAnyType_Vec3,
+	eMonoAnyType_Quat,
 
 	eMonoAnyType_String,
 	eMonoAnyType_Array,
@@ -48,8 +49,9 @@ struct MonoAnyValue : public ISerializable
 	MonoAnyValue(float value) : type(eMonoAnyType_Float) { f = value; }
 	MonoAnyValue(const char *value) : type(eMonoAnyType_String) { str = value; }
 	MonoAnyValue(string value) : type(eMonoAnyType_String) { str = value.c_str(); }
-	MonoAnyValue(Vec3 value) : type(eMonoAnyType_Vec3) { vec3.x = value.x; vec3.y = value.y; vec3.z = value.z; }
-	MonoAnyValue(Ang3 value) : type(eMonoAnyType_Vec3) { vec3.x = value.x; vec3.y = value.y; vec3.z = value.z; }
+	MonoAnyValue(Vec3 value) : type(eMonoAnyType_Vec3) { vec4.x = value.x; vec4.y = value.y; vec4.z = value.z; }
+	MonoAnyValue(Ang3 value) : type(eMonoAnyType_Vec3) { vec4.x = value.x; vec4.y = value.y; vec4.z = value.z; }
+	MonoAnyValue(Quat value) : type(eMonoAnyType_Quat) { vec4.x = value.v.x; vec4.y = value.v.y; vec4.z = value.v.z; vec4.w = value.w; }
 #ifdef WIN64
 	MonoAnyValue(intptr_t value) : type(eMonoAnyType_IntPtr) { i = value; }
 #endif
@@ -80,15 +82,31 @@ struct MonoAnyValue : public ISerializable
 		case eMonoAnyType_Vec3:
 			{
 				if(ser.IsWriting())
-					ser.Value("vec", Vec3(vec3.x, vec3.y, vec3.z));
+					ser.Value("vec", Vec3(vec4.x, vec4.y, vec4.z));
 				else
 				{
 					Vec3 v;
 					ser.Value("vec", v);
 
-					vec3.x = v.x;
-					vec3.y = v.y;
-					vec3.z = v.z;
+					vec4.x = v.x;
+					vec4.y = v.y;
+					vec4.z = v.z;
+				}
+			}
+			break;
+		case eMonoAnyType_Quat:
+			{
+				if(ser.IsWriting())
+					ser.Value("quat", Quat(vec4.w, vec4.x, vec4.y, vec4.z));
+				else
+				{
+					Quat q;
+					ser.Value("quat", q);
+
+					vec4.w = q.w;
+					vec4.x = q.v.x;
+					vec4.y = q.v.y;
+					vec4.z = q.v.z;
 				}
 			}
 			break;
@@ -126,7 +144,7 @@ struct MonoAnyValue : public ISerializable
 		case eMonoAnyType_Float:
 			return &f;
 		case eMonoAnyType_Vec3:
-			return Vec3(vec3.x, vec3.y, vec3.z);
+			return Vec3(vec4.x, vec4.y, vec4.z);
 		case eMonoAnyType_String:
 			return &str;
 		}
@@ -140,7 +158,7 @@ struct MonoAnyValue : public ISerializable
 		int				i;
 		unsigned int	u;
 		const char*		str;
-		struct { float x,y,z; } vec3;
+		struct { float x,y,z,w; } vec4;
 	};
 };
 

@@ -92,6 +92,8 @@ EMonoAnyType CScriptObject::GetType()
 			return eMonoAnyType_EntityId;
 		else if(!strcmp(className, "Vec3"))
 			return eMonoAnyType_Vec3;
+		else if(!strcmp(className, "Quat"))
+			return eMonoAnyType_Quat;
 	}
 
 	return eMonoAnyType_Unknown;
@@ -122,6 +124,8 @@ MonoAnyValue CScriptObject::GetAnyValue()
 		return Unbox<float>();
 	case eMonoAnyType_Vec3:
 		return Unbox<Vec3>();
+	case eMonoAnyType_Quat:
+		return Unbox<Quat>();
 	case eMonoAnyType_String:
 		return ToCryString((mono::string)GetManagedObject());
 	}
