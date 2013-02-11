@@ -255,7 +255,7 @@ void CMonoEntityExtension::RMIParams::SerializeWith(TSerialize ser)
 		}
 		else
 		{
-			pArgs = CreateMonoArray(length);
+			pArgs = g_pScriptSystem->GetScriptDomain()->CreateArray(length);
 
 			for(int i = 0; i < length; i++)
 			{
