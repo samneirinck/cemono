@@ -391,6 +391,11 @@ IMonoDomain *CScriptSystem::CreateDomain(const char *name, bool setActive)
 	return pDomain;
 }
 
+IMonoDomain *CScriptSystem::GetActiveDomain()
+{
+	return TryGetDomain(mono_domain_get());
+}
+
 CScriptDomain *CScriptSystem::TryGetDomain(MonoDomain *pMonoDomain)
 {
 	for each(auto domain in m_domains)

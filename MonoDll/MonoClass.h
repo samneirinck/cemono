@@ -35,7 +35,7 @@ public:
 
 	virtual IMonoObject *CreateInstance(IMonoArray *pConstructorParams = nullptr) override;
 
-	IMonoObject *BoxObject(void *object) override;
+	IMonoObject *BoxObject(void *object, IMonoDomain *pDomain = nullptr) override;
 
 	virtual void AddRef() override { ++m_refs; }
 

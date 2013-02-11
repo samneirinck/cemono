@@ -126,6 +126,16 @@ struct IMonoScriptSystem
 	virtual IMonoDomain *CreateDomain(const char *name, bool setActive = false) = 0;
 
 	/// <summary>
+	/// Gets the currently active app domain.
+	/// </summary>
+	virtual IMonoDomain *GetActiveDomain() = 0;
+
+	/// <summary>
+	/// Gets the domain in which scripts are stored and executed.
+	/// </summary>
+	virtual IMonoDomain *GetScriptDomain() = 0;
+
+	/// <summary>
 	/// Retrieves an instance of the IMonoConverter; a class used to easily convert C# types to C++ and the other way around.
 	/// </summary>
 	virtual IMonoConverter *GetConverter() = 0;

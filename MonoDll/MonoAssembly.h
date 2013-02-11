@@ -49,7 +49,7 @@ public:
 	virtual EMonoAnyType GetType() override { return eMonoAnyType_Unknown; }
 	virtual MonoAnyValue GetAnyValue() override { return MonoAnyValue(); }
 
-	virtual mono::object GetManagedObject() override { return (mono::object)mono_assembly_get_object(mono_domain_get(), mono_image_get_assembly((MonoImage *)m_pObject)); }
+	virtual mono::object GetManagedObject() override;
 
 	virtual IMonoClass *GetClass() override { return CScriptObject::GetClass(); }
 

@@ -3,9 +3,10 @@
 
 #include "MonoScriptSystem.h"
 
+#include "MonoDomain.h"
+#include "MonoAssembly.h"
 #include "MonoArray.h"
 #include "MonoObject.h"
-#include "MonoAssembly.h"
 
 #include "MonoCVars.h"
 
@@ -47,7 +48,9 @@ void CScriptClass::Release(bool triggerGC)
 
 IMonoObject *CScriptClass::CreateInstance(IMonoArray *pConstructorParams)
 {
-	MonoObject *pInstance = mono_object_new(mono_domain_get(), (MonoClass *)m_pObject);
+	CScriptDomain *pDomain = static_cast<CScriptDomain *>(GetAssembly()->GetDomain());
+
+	MonoObject *pInstance = mono_object_new(pDomain->GetMonoDomain(), (MonoClass *)m_pObject);
 
 	return new CScriptObject(pInstance, pConstructorParams);
 }
@@ -234,7 +237,9 @@ IMonoObject *CScriptClass::GetFieldValue(IMonoObject *pObject, const char *field
 	MonoClassField *pField = GetMonoField(fieldName);
 	if(pField)
 	{
-		MonoObject *fieldValue = mono_field_get_value_object(mono_domain_get(), pField, (MonoObject *)(pObject ? pObject->GetManagedObject() : nullptr));
+		CScriptDomain *pDomain = static_cast<CScriptDomain *>(GetAssembly()->GetDomain());
+
+		MonoObject *fieldValue = mono_field_get_value_object(pDomain->GetMonoDomain(), pField, (MonoObject *)(pObject ? pObject->GetManagedObject() : nullptr));
 
 		if(fieldValue)
 			return *(mono::object)fieldValue;
@@ -308,7 +313,10 @@ MonoClassField *CScriptClass::GetMonoField(const char *name)
 	return nullptr;
 }
 
-IMonoObject *CScriptClass::BoxObject(void *object)
+IMonoObject *CScriptClass::BoxObject(void *object, IMonoDomain *pDomain)
 {
-	return *(mono::object)mono_value_box(mono_domain_get(), (MonoClass *)m_pObject, object);
+	if(pDomain == nullptr)
+		pDomain = g_pScriptSystem->GetActiveDomain();
+
+	return *(mono::object)mono_value_box(static_cast<CScriptDomain *>(pDomain)->GetMonoDomain(), (MonoClass *)m_pObject, object);
 }

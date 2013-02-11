@@ -10,6 +10,10 @@
 #define __I_MONO_DOMAIN_H__
 
 struct IMonoAssembly;
+struct IMonoClass;
+struct IMonoArray;
+
+#include <MonoCommon.h>
 
 struct IMonoDomain
 {
@@ -41,6 +45,33 @@ struct IMonoDomain
 	/// Gets domain name chosen at creation.
 	/// </summary>
 	virtual const char *GetName() = 0;
+
+	/// <summary>
+	/// Creates an IMonoArray with the pre-determined size.
+	/// If element is nullptr, uses object class.
+	/// </summary>
+	/// <example>
+	/// [Native C++]
+	/// IMonoClass *pElementClass = gEnv->pMonoScriptSystem->GetCryBraryAssembly()->GetClass("Vec3");
+	/// CreateArray(3, pElementClass);
+	/// 
+	/// [Managed]
+	/// Vec3[] myElements;
+	/// </example>
+	virtual IMonoArray *CreateArray(int size, IMonoClass *pElementClass = nullptr) = 0;
+
+	/// <summary>
+	/// Creates a dynamically resizing mono array.
+	/// if element is null, uses object class.
+	/// </summary>
+	virtual IMonoArray *CreateDynamicArray(IMonoClass *pElementClass = nullptr, int size = 0) = 0;
+
+	virtual mono::object BoxAnyValue(MonoAnyValue &value) = 0;
+
+	/// <summary>
+	/// Converts a C++ style character array to a managed string.
+	/// </summary>
+	virtual mono::string CreateMonoString(const char *cStr) = 0;
 };
 
 /// <summary>
@@ -59,5 +90,30 @@ enum ERuntimeVersion
 	eRV_4_30128,
 	eRV_4_30319
 };
+
+
+/// <summary>
+/// Creates an IMonoArray with the specified size.
+/// </summary>
+static IMonoArray *CreateMonoArray(int numArgs, IMonoClass *pElementClass = nullptr)
+{
+	return GetMonoScriptSystem()->GetActiveDomain()->CreateArray(numArgs, pElementClass);
+}
+
+/// <summary>
+/// Creates an IDynMonoArray with the specified size.
+/// </summary>
+static IMonoArray *CreateDynamicMonoArray(IMonoClass *pElementClass = nullptr, int size = 0)
+{
+	return GetMonoScriptSystem()->GetActiveDomain()->CreateDynamicArray(pElementClass, size);
+}
+
+/// <summary>
+/// Converts a C# string to the C++ equivalent.
+/// </summary>
+inline mono::string ToMonoString(const char *cryString)
+{
+	return GetMonoScriptSystem()->GetActiveDomain()->CreateMonoString(cryString);
+}
 
 #endif //__I_MONO_DOMAIN_H__

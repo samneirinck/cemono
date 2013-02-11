@@ -72,6 +72,8 @@ public:
 
 	virtual IMonoDomain *GetRootDomain() override { return (IMonoDomain *)m_pRootDomain; }
 	virtual IMonoDomain *CreateDomain(const char *name, bool setActive = false);
+	virtual IMonoDomain *GetActiveDomain();
+	virtual IMonoDomain *GetScriptDomain() { return m_pScriptDomain; }
 
 	virtual IMonoConverter *GetConverter() override { return m_pConverter; }
 

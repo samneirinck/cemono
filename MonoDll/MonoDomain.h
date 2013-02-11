@@ -19,7 +19,7 @@ public:
 	// Create root domain
 	CScriptDomain(ERuntimeVersion runtimeVersion = eRV_2_50727);
 	CScriptDomain(const char *name, bool setActive = false);
-	CScriptDomain(MonoDomain *pMonoDomain) : m_pDomain(pMonoDomain), m_bRootDomain(false) {}
+	CScriptDomain(MonoDomain *pMonoDomain) : m_pDomain(pMonoDomain), m_bRootDomain(false), m_name("<unknown>") {}
 	~CScriptDomain();
 
 	// IMonoDomain
@@ -32,7 +32,14 @@ public:
 
 	virtual IMonoAssembly *LoadAssembly(const char *file, bool shadowCopy = false, bool convertPdbToMdb = true) override;
 
-	virtual const char *GetName() { return m_name; }
+	virtual const char *GetName() override { return m_name; }
+
+	virtual IMonoArray *CreateArray(int size, IMonoClass *pElementClass = nullptr) override;
+	virtual IMonoArray *CreateDynamicArray(IMonoClass *pElementClass = nullptr, int size = 0) override;
+	
+	virtual mono::object BoxAnyValue(MonoAnyValue &any) override;
+
+	virtual mono::string CreateMonoString(const char *cStr) override { return (mono::string)mono_string_new(m_pDomain, cStr); }
 	// ~IMonoDomain
 
 	MonoDomain *GetMonoDomain() { return m_pDomain; }

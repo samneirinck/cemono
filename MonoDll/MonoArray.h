@@ -24,7 +24,7 @@ public:
 	// Used on MonoArray's returned from C#.
 	CScriptArray(mono::object monoArray);
 	// Used to send arrays to C#.
-	CScriptArray(int size, IMonoClass *pContainingType = nullptr);
+	CScriptArray(MonoDomain *pDomain, int size, IMonoClass *pContainingType = nullptr);
 
 	CScriptArray() {}
 

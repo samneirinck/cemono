@@ -383,7 +383,7 @@ float CMonoActor::GetHealth() const
 
 void CMonoActor::SetHealth(float health)
 {
-	m_pScript->SetPropertyValue("Health", *g_pScriptSystem->GetConverter()->BoxAnyValue(MonoAnyValue(health)));
+	m_pScript->SetPropertyValue("Health", *g_pScriptSystem->GetActiveDomain()->BoxAnyValue(MonoAnyValue(health)));
 }
 
 float CMonoActor::GetMaxHealth() const
@@ -393,7 +393,7 @@ float CMonoActor::GetMaxHealth() const
 
 void CMonoActor::SetMaxHealth(float health)
 {
-	m_pScript->SetPropertyValue("MaxHealth", *g_pScriptSystem->GetConverter()->BoxAnyValue(MonoAnyValue(health)));
+	m_pScript->SetPropertyValue("MaxHealth", *g_pScriptSystem->GetActiveDomain()->BoxAnyValue(MonoAnyValue(health)));
 }
 
 bool CMonoActor::NetSerialize( TSerialize ser, EEntityAspects aspect, uint8 profile, int pflags )

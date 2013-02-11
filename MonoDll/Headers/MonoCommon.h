@@ -37,6 +37,7 @@ namespace mono
 #include <IMonoConverter.h>
 
 #include <IMonoObject.h>
+#include <IMonoDomain.h>
 
 /// <summary>
 /// Converts a C++ string to the C# equivalent.
@@ -47,30 +48,6 @@ inline const char *ToCryString(mono::string monoString)
 		return "";
 
 	return GetMonoScriptSystem()->GetConverter()->ToString(monoString);
-}
-
-/// <summary>
-/// Converts a C# string to the C++ equivalent.
-/// </summary>
-inline mono::string ToMonoString(const char *cryString)
-{
-	return GetMonoScriptSystem()->GetConverter()->ToMonoString(cryString);
-}
-
-/// <summary>
-/// Creates an IMonoArray with the specified size.
-/// </summary>
-static IMonoArray *CreateMonoArray(int numArgs, IMonoClass *pElementClass = nullptr)
-{
-	return GetMonoScriptSystem()->GetConverter()->CreateArray(numArgs, pElementClass);
-}
-
-/// <summary>
-/// Creates an IDynMonoArray with the specified size.
-/// </summary>
-static IMonoArray *CreateDynamicMonoArray(IMonoClass *pElementClass = nullptr, int size = 0)
-{
-	return GetMonoScriptSystem()->GetConverter()->CreateDynamicArray(pElementClass, size);
 }
 
 /// <summary>

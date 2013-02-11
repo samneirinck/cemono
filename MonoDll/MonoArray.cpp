@@ -23,15 +23,16 @@ CScriptArray::CScriptArray(mono::object managedArray)
 	m_lastIndex = GetSize() - 1;
 }
 
-CScriptArray::CScriptArray(int size, IMonoClass *pContainingType)
+CScriptArray::CScriptArray(MonoDomain *pDomain, int size, IMonoClass *pContainingType)
 	: m_lastIndex(-1)
 {
 	CRY_ASSERT(size >= 0);
+	CRY_ASSERT(pDomain);
 
 	m_pElementClass = (pContainingType ? (MonoClass *)(pContainingType->GetManagedObject()) : m_pDefaultElementClass);
 	CRY_ASSERT(m_pElementClass);
 
-	m_pObject = (MonoObject *)mono_array_new(mono_domain_get(), m_pElementClass, size);
+	m_pObject = (MonoObject *)mono_array_new(pDomain, m_pElementClass, size);
 
 	m_objectHandle = mono_gchandle_new(m_pObject, false);
 	m_pClass = NULL;
@@ -50,7 +51,9 @@ void CScriptArray::Resize(int size)
 
 	MonoArray *pOldArray = (MonoArray *)m_pObject;
 
-	m_pObject = (MonoObject *)mono_array_new(mono_domain_get(), m_pElementClass, size);
+	CScriptDomain *pDomain = static_cast<CScriptDomain *>(GetClass()->GetAssembly()->GetDomain());
+
+	m_pObject = (MonoObject *)mono_array_new(pDomain->GetMonoDomain(), m_pElementClass, size);
 
 	for(int i = 0; i < oldArraySize; i++)
 	{
@@ -99,7 +102,9 @@ void CScriptArray::Insert(mono::object object, int index)
 
 void CScriptArray::InsertNativePointer(void *ptr, int index)
 {
-	Insert((mono::object)mono_value_box(mono_domain_get(), mono_get_intptr_class(), ptr), index);
+	CScriptDomain *pDomain = static_cast<CScriptDomain *>(GetClass()->GetAssembly()->GetDomain());
+
+	Insert((mono::object)mono_value_box(pDomain->GetMonoDomain(), mono_get_intptr_class(), ptr), index);
 }
 
 void CScriptArray::InsertObject(IMonoObject *pObject, int index)
@@ -109,10 +114,12 @@ void CScriptArray::InsertObject(IMonoObject *pObject, int index)
 
 void CScriptArray::InsertAny(MonoAnyValue value, int index)
 { 
+	IMonoDomain *pDomain = GetClass()->GetAssembly()->GetDomain();
+
 	if(value.type==eMonoAnyType_String)
-		Insert((mono::object)ToMonoString(value.str), index);
+		Insert((mono::object)pDomain->CreateMonoString(value.str), index);
 	else
-		Insert(g_pScriptSystem->GetConverter()->BoxAnyValue(value), index);
+		Insert(pDomain->BoxAnyValue(value), index);
 }
 
 IMonoClass *CScriptArray::GetClass(MonoClass *pClass)

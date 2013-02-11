@@ -7,7 +7,7 @@ class CDynScriptArray
 	: public CScriptArray
 {
 public:
-	CDynScriptArray(IMonoClass *pContainingType = nullptr, int size = 0);
+	CDynScriptArray(MonoDomain *pDomain, IMonoClass *pContainingType = nullptr, int size = 0);
 	CDynScriptArray(mono::object monoArray) : CScriptArray(monoArray) {}
 
 	// CScriptArray

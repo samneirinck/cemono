@@ -50,7 +50,7 @@ public:
 	/// <summary>
 	/// Boxes a type to be received as a managed type.
 	/// </summary>
-	virtual IMonoObject *BoxObject(void *object) = 0;
+	virtual IMonoObject *BoxObject(void *object, IMonoDomain *pDomain = nullptr) = 0;
 
 	/// <summary>
 	/// TODO

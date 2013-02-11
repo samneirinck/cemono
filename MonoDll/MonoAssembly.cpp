@@ -93,3 +93,10 @@ IMonoException *CScriptAssembly::_GetException(const char *nameSpace, const char
 
 	return new CScriptException(pException);
 }
+
+mono::object CScriptAssembly::GetManagedObject() 
+{
+	CScriptDomain *pDomain = static_cast<CScriptDomain *>(GetDomain());
+
+	return (mono::object)mono_assembly_get_object(pDomain->GetMonoDomain(), mono_image_get_assembly((MonoImage *)m_pObject)); 
+}
