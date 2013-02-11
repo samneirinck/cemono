@@ -93,12 +93,5 @@ namespace CryEngine
 
             NativeActorMethods.RemoteInvocation(Id, target.Id, method.Name, args, netTarget, -1);
         }
-
-        static void OnRemoteInvocation(string methodName, object[] args, EntityId targetId)
-        {
-            var actor = Actor.Get(targetId);
-
-            actor.GetType().InvokeMember(methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, actor, args);
-        }
     }
 }

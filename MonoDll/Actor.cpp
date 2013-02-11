@@ -504,7 +504,7 @@ void CMonoActor::PostSerialize()
 
 IMPLEMENT_RMI(CMonoActor, SvScriptRMI)
 {
-	IMonoClass *pActorClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("Actor");
+	IMonoClass *pActorClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("Entity");
 
 	IMonoArray *pNetworkArgs = CreateMonoArray(3);
 	pNetworkArgs->Insert(ToMonoString(params.methodName.c_str()));
@@ -518,7 +518,7 @@ IMPLEMENT_RMI(CMonoActor, SvScriptRMI)
 
 IMPLEMENT_RMI(CMonoActor, ClScriptRMI)
 {
-	IMonoClass *pActorClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("Actor");
+	IMonoClass *pActorClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("Entity");
 
 	IMonoArray *pNetworkArgs = CreateMonoArray(3);
 	pNetworkArgs->Insert(ToMonoString(params.methodName.c_str()));
