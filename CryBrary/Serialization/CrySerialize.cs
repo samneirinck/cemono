@@ -29,7 +29,7 @@ namespace CryEngine.Serialization
         private static extern void EnumValue(IntPtr handle, string name, ref Int32 obj, int first, int last);
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        private static extern bool IsReading(IntPtr handle);
+        private static extern bool _IsReading(IntPtr handle);
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         private static extern SerializationTarget GetSerializationTarget(IntPtr handle);
@@ -84,10 +84,8 @@ namespace CryEngine.Serialization
             EnumValue(Handle, name, ref obj, first, last);
         }
 
-        public bool IsReading()
-        {
-            return IsReading(Handle);
-        }
+        public bool IsReading { get { return _IsReading(Handle); } }
+        public bool IsWriting { get { return !IsReading; } }
 
         public SerializationTarget Target { get { return GetSerializationTarget(Handle); } }
 
