@@ -31,8 +31,6 @@ public:
 	static int GetTerrainSectorSize();
 	static int GetTerrainUnitSize();
 
-	static void Asplode(Vec3 pos, Vec3 dir, float minRadius, float maxRadius, float pressure);
-
 	static void SetTimeOfDay(float hour, bool forceUpdate);
 	static float GetTimeOfDay();
 
