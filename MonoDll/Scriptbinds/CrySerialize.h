@@ -31,7 +31,7 @@ protected:
 
 	static void EnumValue(ISerialize *ser, mono::string name, int &obj, int first, int last);
 
-	static bool IsReading(ISerialize *ser);
+	static bool _IsReading(ISerialize *ser);
 };
 
 #endif //__SCRIPTBIND_CRYSERIALIZE_H__

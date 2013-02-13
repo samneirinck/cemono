@@ -16,7 +16,7 @@ CScriptbind_CrySerialize::CScriptbind_CrySerialize()
 
 	REGISTER_METHOD(EnumValue);
 
-	REGISTER_METHOD(IsReading);
+	REGISTER_METHOD(_IsReading);
 }
 
 CScriptbind_CrySerialize::~CScriptbind_CrySerialize()
@@ -114,7 +114,7 @@ void CScriptbind_CrySerialize::EnumValue(ISerialize *ser, mono::string name, int
 	serialize.EnumValue(ToCryString(name), obj, first, last);
 }
 
-bool CScriptbind_CrySerialize::IsReading(ISerialize *ser)
+bool CScriptbind_CrySerialize::_IsReading(ISerialize *ser)
 {
 	return ser->IsReading();
 }
