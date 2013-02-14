@@ -63,6 +63,7 @@ public:
 
 	/// <summary>
 	/// Gets a managed function as a native function pointer. See example for use case.
+	/// Much faster than standard invoke!
 	/// </summary>
 	/// <example>
 	/// typedef int (*GetHashCode) (mono::object obj);
@@ -70,7 +71,7 @@ public:
 	/// GetHashCode func = pObjectClass->GetMethodThunk("GetHashCode", 0);
 	/// int hashCode = func(myObject);
 	/// </example>
-	virtual void *GetMethodThunk(const char *methodName, int numParams);
+	virtual void *GetMethodThunk(const char *methodName, int numParams) = 0;
 
 	/// <summary>
 	/// TODO
