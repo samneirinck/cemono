@@ -80,11 +80,16 @@ CScriptSystem::CScriptSystem()
 	// We should look into storing mono binaries, configuration as well as scripts via CryPak.
 	mono_set_dirs(PathUtils::GetMonoLibPath(), PathUtils::GetMonoConfigPath());
 
+#ifndef _RELEASE
+	// Enable Mono signal handling
+	// Makes sure that Mono sends back exceptions it tries to handle, for CE crash handling.
+	mono_set_signal_chaining(true);
+#endif
+
 	string monoCmdOptions = "";
 
 	if(auto *pArg = gEnv->pSystem->GetICmdLine()->FindArg(eCLAT_Pre, "monoArgs"))
 		monoCmdOptions.append(pArg->GetValue());
-
 	// Commandline switch -DEBUG makes the process connect to the debugging server. Warning: Failure to connect to a debugging server WILL result in a crash.
 	// This is currently a WIP feature which requires custom MonoDevelop extensions and other irritating things.
 	const ICmdLineArg* arg = gEnv->pSystem->GetICmdLine()->FindArg(eCLAT_Pre, "DEBUG");
