@@ -62,6 +62,17 @@ public:
 	virtual IMonoObject *Invoke(IMonoObject *pObject, const char *methodName, void **params = nullptr, int numParams = 0) = 0;
 
 	/// <summary>
+	/// Gets a managed function as a native function pointer. See example for use case.
+	/// </summary>
+	/// <example>
+	/// typedef int (*GetHashCode) (mono::object obj);
+	///
+	/// GetHashCode func = pObjectClass->GetMethodThunk("GetHashCode", 0);
+	/// int hashCode = func(myObject);
+	/// </example>
+	virtual void *GetMethodThunk(const char *methodName, int numParams);
+
+	/// <summary>
 	/// TODO
 	/// </summary>
 	virtual IMonoObject *GetPropertyValue(IMonoObject *pObject, const char *propertyName) = 0;

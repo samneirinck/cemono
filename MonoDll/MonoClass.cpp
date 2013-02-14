@@ -93,6 +93,15 @@ IMonoObject *CScriptClass::Invoke(IMonoObject *pObject, const char *methodName, 
 	return nullptr;
 }
 
+void *CScriptClass::GetMethodThunk(const char *methodName, int numParams)
+{
+	MonoMethod *pMethod = GetMonoMethod(methodName, numParams);
+	if(pMethod)
+		return mono_method_get_unmanaged_thunk(pMethod);
+
+	return nullptr;
+}
+
 MonoMethod *CScriptClass::GetMonoMethod(const char *methodName, IMonoArray *pArgs)
 {
 	MonoMethodSignature *pSignature = nullptr;
