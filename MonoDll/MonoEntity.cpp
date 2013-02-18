@@ -144,7 +144,7 @@ void CMonoEntityExtension::ProcessEvent(SEntityEvent &event)
 		m_pScript->CallMethod("OnLeaveNearArea", (EntityId)event.nParam[0], (int)event.nParam[1], event.fParam[0]);
 		break;
 	case ENTITY_EVENT_XFORM:
-		m_pScript->CallMethod("OnMove");
+		m_pScript->CallMethod("OnMove", (EEntityXFormFlags)event.nParam[0]);
 		break;
 	case ENTITY_EVENT_ATTACH:
 		m_pScript->CallMethod("OnAttach", (EntityId)event.nParam[0]);

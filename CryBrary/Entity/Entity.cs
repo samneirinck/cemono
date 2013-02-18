@@ -134,7 +134,7 @@ namespace CryEngine
         /// <summary>
         /// Called when the entities local or world transformation matrix changes. (Position / Rotation / Scale)
         /// </summary>
-        protected virtual void OnMove() { }
+        protected virtual void OnMove(EntityMoveFlags moveFlags) { }
 
         /// <summary>
         /// Called whenever another entity has been linked to this entity.

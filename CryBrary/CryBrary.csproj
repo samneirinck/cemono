@@ -167,6 +167,7 @@
     <Compile Include="Entity\Editor Properties\EditorPropertyFolder.cs" />
     <Compile Include="Entity\Editor Properties\EditorPropertyLimits.cs" />
     <Compile Include="Entity\Editor Properties\EditorPropertyType.cs" />
+    <Compile Include="Entity\EntityMoveFlags.cs" />
     <Compile Include="Entity\EntityNetworking.cs" />
     <Compile Include="FlowSystem\EntityFlowNode.cs" />
     <Compile Include="Entity\EntityLink.cs" />
