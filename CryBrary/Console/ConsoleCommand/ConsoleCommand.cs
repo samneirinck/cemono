@@ -36,6 +36,8 @@ namespace CryEngine
 
                 commands.Add(name, func);
             }
+            else
+                throw new DuplicateConsoleCommandException(string.Format("The console command {0} was already registered", name));
         }
 
         internal static void OnCommand(string fullCommandLine)
