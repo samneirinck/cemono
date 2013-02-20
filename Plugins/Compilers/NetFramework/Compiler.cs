@@ -31,7 +31,8 @@ namespace CryEngine.Compilers.NET
 
         IEnumerable<CryScript> ProcessAssembly(Assembly assembly)
         {
-            var scripts = new List<CryScript>();
+            if (assembly == null)
+                yield break;
 
             foreach (var type in assembly.GetTypes())
             {
@@ -69,7 +70,7 @@ namespace CryEngine.Compilers.NET
 
                     script.RegistrationParams = registrationParams;
 
-                    scripts.Add(script);
+                    yield return script;
                 }
 
                 if (type.ContainsAttribute<TestCollectionAttribute>())
@@ -90,8 +91,6 @@ namespace CryEngine.Compilers.NET
                     }
                 }
             }
-
-            return scripts;
         }
 
         Assembly CompileVisualBasicFromSource()
@@ -154,6 +153,12 @@ namespace CryEngine.Compilers.NET
             }
             else
                 Debug.LogAlways("Scripts directory could not be located");
+
+            if (scripts.Count == 0)
+            {
+                Debug.LogAlways("[CryMono .NET Compiler] No *.cs scripts were found in the Game/Scripts directory.");
+                return null;
+            }
 
             CompilerResults results;
             using (provider)
