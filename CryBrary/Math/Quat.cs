@@ -543,6 +543,25 @@ namespace CryEngine
             q.ExpSlerp(start, end, amount);
             return q;
         }
+
+        public static Quat Parse(string value)
+        {
+#if !(RELEASE && RELEASE_DISABLE_CHECKS)
+            if (value == null)
+                throw new ArgumentNullException("value");
+            if (value.Length < 1)
+                throw new ArgumentException("value string was empty");
+#endif
+
+            string[] split = value.Split(',');
+
+#if !(RELEASE && RELEASE_DISABLE_CHECKS)
+            if (split.Length != 4)
+                throw new ArgumentException("value string was invalid");
+#endif
+
+            return new Quat(System.Convert.ToSingle(split[0]), System.Convert.ToSingle(split[1]), System.Convert.ToSingle(split[2]), System.Convert.ToSingle(split[3]));
+        }
         #endregion
     }
 }
