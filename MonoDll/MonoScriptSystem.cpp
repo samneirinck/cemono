@@ -344,6 +344,11 @@ void CScriptSystem::OnSystemEvent(ESystemEvent event,UINT_PTR wParam,UINT_PTR lp
 			}
 		}
 		break;
+	case ESYSTEM_EVENT_SHUTDOWN:
+		{
+			Release();
+		}
+		break;
 	}
 }
 
