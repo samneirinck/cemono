@@ -94,7 +94,7 @@ namespace CryEngine.FlowSystem
                 var paramType = method.GetParameters().ElementAt(0).ParameterType;
                 var valueType = value.GetType();
 
-                if (paramType != valueType)
+                if (paramType != valueType && paramType != typeof(object))
                 {
                     var typeConverter = TypeDescriptor.GetConverter(paramType);
                     if (typeConverter == null || !typeConverter.CanConvertFrom(valueType))
@@ -106,7 +106,9 @@ namespace CryEngine.FlowSystem
                 var args = new[] { value };
                 method.Invoke(this, args);
             }
-            else if(parameterCount == 0)
+            else if (parameterCount == 1 && parameters.ElementAt(0).ParameterType == typeof(object))
+                method.Invoke(this, new object[] { null });
+            else if (parameterCount == 0)
                 method.Invoke(this, null);
         }
 

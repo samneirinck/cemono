@@ -132,6 +132,8 @@ struct SMonoInputPortConfig
 			return InputPortConfig<string>(sName, defaultValue ? ToCryString((mono::string)defaultValue) : "", _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
 		case eFDT_Bool:
 			return InputPortConfig<bool>(sName, pObject ? pObject->Unbox<bool>() : false, _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
+		case eFDT_Any:
+			return InputPortConfig_AnyType(sName, _HELP(sDesc), sHumanName, sUIConfig);
 		}
 
 		return *(SInputPortConfig *)0;
