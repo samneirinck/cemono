@@ -29,4 +29,18 @@ void SCVars::InitCVars(IConsole *pConsole)
 void SCVars::ReleaseCVars()
 {
 	IConsole *pConsole = gEnv->pConsole;
+
+	pConsole->UnregisterVariable("mono_exceptionsTriggerMessageBoxes", true);
+	pConsole->UnregisterVariable("mono_exceptionsTriggerFatalErrors", true);
+
+	pConsole->UnregisterVariable("mono_realtimeScripting", true);
+
+#ifndef RELEASE
+	pConsole->UnregisterVariable("mono_realtimeScriptingDebug", true);
+#endif
+
+	pConsole->UnregisterVariable("mono_realtimeScriptingDetectChanges", true);
+	pConsole->RemoveCommand("mono_reload");
+
+	pConsole->UnregisterVariable("mono_softBreakpoints", true);
 }

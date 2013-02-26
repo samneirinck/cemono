@@ -157,6 +157,8 @@ CScriptSystem::~CScriptSystem()
 	SAFE_DELETE(m_pConverter);
 
 	SAFE_DELETE(m_pCVars);
+
+	g_pScriptSystem = nullptr;
 }
 
 bool CScriptSystem::CompleteInit()

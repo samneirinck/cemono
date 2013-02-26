@@ -617,6 +617,8 @@ namespace CryEngine.Compilers.NET
                 return NodePortType.Bool;
             if (type == typeof(EntityId))
                 return NodePortType.EntityId;
+            if (type == typeof(object))
+                return NodePortType.Any;
 
             throw new ArgumentException("Invalid flownode port type specified!");
         }
