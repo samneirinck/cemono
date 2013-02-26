@@ -145,7 +145,9 @@ CScriptSystem::~CScriptSystem()
 
 	if(gEnv->pSystem)
 	{
-		gEnv->pSystem->GetISystemEventDispatcher()->RemoveListener(this);
+		// We destroy the script system from the shutdown event, so can't unregister while the system event listener list is iterating.
+		// Should be the last event sent, so not unregistering shouldn't be an issue.
+		//gEnv->pSystem->GetISystemEventDispatcher()->RemoveListener(this);
 		gEnv->pGameFramework->UnregisterListener(this);
 	}
 
