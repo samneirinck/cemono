@@ -44,7 +44,7 @@ CScriptDomain::CScriptDomain(ERuntimeVersion runtimeVersion)
 	// Crashing on this line is an indicator of mono being incorrectly configured, Make sure Bin(32/64)/mono.exe, Bin(32/64)/mono-2.0.dll & Engine/Mono are up-to-date.
 	m_pDomain = mono_jit_init_version("CryMono", version);
 	if(!m_pDomain)
-		CryFatalError("Failed to initialize root domain with runtime version %s!", runtimeVersion);
+		CryFatalError("Failed to initialize root domain with runtime version %s!", version);
 }
 
 CScriptDomain::CScriptDomain(const char *name, bool setActive)
