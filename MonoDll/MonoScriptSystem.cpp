@@ -11,7 +11,6 @@
 #include "CryScriptInstance.h"
 
 #include <mono/mini/jit.h>
-#include <mono/mini/mini.h>
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/mono-debug.h>
 #include <mono/metadata/debug-helpers.h>
