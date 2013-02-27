@@ -11,6 +11,7 @@
 #include "CryScriptInstance.h"
 
 #include <mono/mini/jit.h>
+#include <mono/mini/mini.h>
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/mono-debug.h>
 #include <mono/metadata/debug-helpers.h>
@@ -79,7 +80,7 @@ CScriptSystem::CScriptSystem()
 	
 	// We should look into storing mono binaries, configuration as well as scripts via CryPak.
 	mono_set_dirs(PathUtils::GetMonoLibPath(), PathUtils::GetMonoConfigPath());
-
+	
 #ifndef _RELEASE
 	// Enable Mono signal handling
 	// Makes sure that Mono sends back exceptions it tries to handle, for CE crash handling.
@@ -322,15 +323,17 @@ void CScriptSystem::OnFileChange(const char *fileName)
 	if(g_pMonoCVars->mono_realtimeScriptingDetectChanges == 0)
 		return;
 
-	if(!GetFocus())
-	{
-		m_bDetectedChanges = true;
-		return;
-	}
-
 	const char *fileExt = PathUtil::GetExt(fileName);
 	if(!strcmp(fileExt, "cs") || !strcmp(fileExt, "dll"))
+	{
+		if(!GetFocus())
+		{
+			m_bDetectedChanges = true;
+			return;
+		}
+
 		Reload();
+	}
 }
 
 void CScriptSystem::OnSystemEvent(ESystemEvent event,UINT_PTR wParam,UINT_PTR lparam)
