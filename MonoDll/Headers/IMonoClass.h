@@ -55,11 +55,11 @@ public:
 	/// <summary>
 	/// TODO
 	/// </summary>
-	virtual IMonoObject *InvokeArray(IMonoObject *pObject, const char *methodName, IMonoArray *params = nullptr) = 0;
+	virtual IMonoObject *InvokeArray(IMonoObject *pObject, const char *methodName, IMonoArray *params = nullptr, bool throwOnFail = true) = 0;
 	/// <summary>
 	/// TODO
 	/// </summary>
-	virtual IMonoObject *Invoke(IMonoObject *pObject, const char *methodName, void **params = nullptr, int numParams = 0) = 0;
+	virtual IMonoObject *Invoke(IMonoObject *pObject, const char *methodName, void **params = nullptr, int numParams = 0, bool throwOnFail = true) = 0;
 
 	/// <summary>
 	/// Gets a managed function as a native function pointer. See example for use case.
@@ -76,19 +76,19 @@ public:
 	/// <summary>
 	/// TODO
 	/// </summary>
-	virtual IMonoObject *GetPropertyValue(IMonoObject *pObject, const char *propertyName) = 0;
+	virtual IMonoObject *GetPropertyValue(IMonoObject *pObject, const char *propertyName, bool throwOnFail = true) = 0;
 	/// <summary>
 	/// TODO
 	/// </summary>
-	virtual void SetPropertyValue(IMonoObject *pObject, const char *propertyName, mono::object newValue) = 0;
+	virtual void SetPropertyValue(IMonoObject *pObject, const char *propertyName, mono::object newValue, bool throwOnFail = true) = 0;
 	/// <summary>
 	/// TODO
 	/// </summary>
-	virtual IMonoObject *GetFieldValue(IMonoObject *pObject, const char *fieldName) = 0;
+	virtual IMonoObject *GetFieldValue(IMonoObject *pObject, const char *fieldName, bool throwOnFail = true) = 0;
 	/// <summary>
 	/// TODO
 	/// </summary>
-	virtual void SetFieldValue(IMonoObject *pObject, const char *fieldName, mono::object newValue) = 0;
+	virtual void SetFieldValue(IMonoObject *pObject, const char *fieldName, mono::object newValue, bool throwOnFail = true) = 0;
 };
 
 #endif //__I_MONO_CLASS_H__

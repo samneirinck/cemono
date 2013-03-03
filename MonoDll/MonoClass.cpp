@@ -55,7 +55,7 @@ IMonoObject *CScriptClass::CreateInstance(IMonoArray *pConstructorParams)
 	return new CScriptObject(pInstance, pConstructorParams);
 }
 
-IMonoObject *CScriptClass::InvokeArray(IMonoObject *pObject, const char *methodName, IMonoArray *pParams)
+IMonoObject *CScriptClass::InvokeArray(IMonoObject *pObject, const char *methodName, IMonoArray *pParams, bool throwOnFail)
 {
 	MonoMethod *pMethod = GetMonoMethod(methodName, pParams);
 	if(pMethod)
@@ -68,13 +68,13 @@ IMonoObject *CScriptClass::InvokeArray(IMonoObject *pObject, const char *methodN
 		else if(pResult)
 			return *(mono::object)(pResult);
 	}
-	else
+	else if(throwOnFail)
 		g_pScriptSystem->GetCorlibAssembly()->GetException("System", "MissingMethodException", "Failed to locate method %s in class %s", methodName, GetName())->Throw();
 
 	return nullptr;
 }
 
-IMonoObject *CScriptClass::Invoke(IMonoObject *pObject, const char *methodName, void **pParams, int numParams)
+IMonoObject *CScriptClass::Invoke(IMonoObject *pObject, const char *methodName, void **pParams, int numParams, bool throwOnFail)
 {
 	MonoMethod *pMethod = GetMonoMethod(methodName, numParams);
 	if(pMethod)
@@ -87,7 +87,7 @@ IMonoObject *CScriptClass::Invoke(IMonoObject *pObject, const char *methodName, 
 		else if(pResult)
 			return *(mono::object)(pResult);
 	}
-	else
+	else if(throwOnFail)
 		g_pScriptSystem->GetCorlibAssembly()->GetException("System", "MissingMethodException", "Failed to locate method %s in class %s", methodName, GetName())->Throw();
 
 	return nullptr;
@@ -207,7 +207,7 @@ MonoMethod *CScriptClass::GetMonoMethod(const char *methodName, int numParams)
 	return nullptr;
 }
 
-IMonoObject *CScriptClass::GetPropertyValue(IMonoObject *pObject, const char *propertyName)
+IMonoObject *CScriptClass::GetPropertyValue(IMonoObject *pObject, const char *propertyName, bool throwOnFail)
 {
 	MonoProperty *pProperty = GetMonoProperty(propertyName);
 	if(pProperty)
@@ -221,13 +221,13 @@ IMonoObject *CScriptClass::GetPropertyValue(IMonoObject *pObject, const char *pr
 		else if(propertyValue)
 			return *(mono::object)propertyValue;
 	}
-	else
+	else if(throwOnFail)
 		g_pScriptSystem->GetCorlibAssembly()->GetException("System", "MissingMemberException", "Failed to locate property %s in class %s", propertyName, GetName())->Throw();
 
 	return nullptr;
 }
 
-void CScriptClass::SetPropertyValue(IMonoObject *pObject, const char *propertyName, mono::object newValue)
+void CScriptClass::SetPropertyValue(IMonoObject *pObject, const char *propertyName, mono::object newValue, bool throwOnFail)
 {
 	MonoProperty *pProperty = GetMonoProperty(propertyName);
 	if(pProperty)
@@ -237,11 +237,11 @@ void CScriptClass::SetPropertyValue(IMonoObject *pObject, const char *propertyNa
 
 		mono_property_set_value(pProperty, pObject ? pObject->GetManagedObject() : nullptr, args, nullptr);
 	}
-	else
+	else if(throwOnFail)
 		g_pScriptSystem->GetCorlibAssembly()->GetException("System", "MissingMemberException", "Failed to locate property %s in class %s", propertyName, GetName())->Throw();
 }
 
-IMonoObject *CScriptClass::GetFieldValue(IMonoObject *pObject, const char *fieldName)
+IMonoObject *CScriptClass::GetFieldValue(IMonoObject *pObject, const char *fieldName, bool throwOnFail)
 {
 	MonoClassField *pField = GetMonoField(fieldName);
 	if(pField)
@@ -253,18 +253,18 @@ IMonoObject *CScriptClass::GetFieldValue(IMonoObject *pObject, const char *field
 		if(fieldValue)
 			return *(mono::object)fieldValue;
 	}
-	else
+	else if(throwOnFail)
 		g_pScriptSystem->GetCorlibAssembly()->GetException("System", "MissingFieldException", "Failed to locate field %s in class %s", fieldName, GetName())->Throw();
 
 	return nullptr;
 }
 
-void CScriptClass::SetFieldValue(IMonoObject *pObject, const char *fieldName, mono::object newValue)
+void CScriptClass::SetFieldValue(IMonoObject *pObject, const char *fieldName, mono::object newValue, bool throwOnFail)
 {
 	MonoClassField *pField = GetMonoField(fieldName);
 	if(pField)
 		mono_field_set_value((MonoObject *)(pObject ? pObject->GetManagedObject() : nullptr), pField, newValue);
-	else
+	else if(throwOnFail)
 		g_pScriptSystem->GetCorlibAssembly()->GetException("System", "MissingFieldException", "Failed to locate field %s in class %s", fieldName, GetName())->Throw();
 }
 

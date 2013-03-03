@@ -39,15 +39,15 @@ public:
 
 	virtual void AddRef() override { ++m_refs; }
 
-	virtual IMonoObject *InvokeArray(IMonoObject *pObject, const char *methodName, IMonoArray *params = nullptr) override;
-	virtual IMonoObject *Invoke(IMonoObject *pObject, const char *methodName, void **params = nullptr, int numParams = 0) override;
+	virtual IMonoObject *InvokeArray(IMonoObject *pObject, const char *methodName, IMonoArray *params = nullptr, bool throwOnFail = true) override;
+	virtual IMonoObject *Invoke(IMonoObject *pObject, const char *methodName, void **params = nullptr, int numParams = 0, bool throwOnFail = true) override;
 
 	virtual void *GetMethodThunk(const char *methodName, int numParams) override;
 
-	virtual IMonoObject *GetPropertyValue(IMonoObject *pObject, const char *propertyName) override;
-	virtual void SetPropertyValue(IMonoObject *pObject, const char *propertyName, mono::object newValue) override;
-	virtual IMonoObject *GetFieldValue(IMonoObject *pObject, const char *fieldName) override;
-	virtual void SetFieldValue(IMonoObject *pObject, const char *fieldName, mono::object newValue) override;
+	virtual IMonoObject *GetPropertyValue(IMonoObject *pObject, const char *propertyName, bool throwOnFail = true) override;
+	virtual void SetPropertyValue(IMonoObject *pObject, const char *propertyName, mono::object newValue, bool throwOnFail = true) override;
+	virtual IMonoObject *GetFieldValue(IMonoObject *pObject, const char *fieldName, bool throwOnFail = true) override;
+	virtual void SetFieldValue(IMonoObject *pObject, const char *fieldName, mono::object newValue, bool throwOnFail = true) override;
 	// ~IMonoClass
 
 	// IMonoObject

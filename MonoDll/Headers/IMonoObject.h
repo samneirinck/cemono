@@ -42,10 +42,10 @@ public:
 	template<typename P1, typename P2, typename P3, typename P4, typename P5, typename P6>
 	inline IMonoObject *CallMethod(const char *funcName, const P1 &p1, const P2 &p2, const P3 &p3, const P4 &p4, const P5 &p5, const P6 &p6);
 
-	inline IMonoObject *GetPropertyValue(const char *fieldName);
-	inline void SetPropertyValue(const char *fieldName, IMonoObject *pNewValue);
-	inline IMonoObject *GetFieldValue(const char *fieldName);
-	inline void SetFieldValue(const char *fieldName, IMonoObject *pNewValue);
+	inline IMonoObject *GetPropertyValue(const char *fieldName, bool throwOnFail = true);
+	inline void SetPropertyValue(const char *fieldName, IMonoObject *pNewValue, bool throwOnFail = true);
+	inline IMonoObject *GetFieldValue(const char *fieldName, bool throwOnFail = true);
+	inline void SetFieldValue(const char *fieldName, IMonoObject *pNewValue, bool throwOnFail = true);
 
 	/// <summary>
 	/// Releases the object. Warning: also destructed in managed code!
@@ -94,6 +94,7 @@ inline IMonoObject *IMonoObject::CallMethod(const char *funcName, const P1 &p1)
 {
 	IMonoArray *pArgs = CreateMonoArray(1);
 	pArgs->Insert(p1);
+
 
 	IMonoObject *pResult = GetClass()->InvokeArray(this, funcName, pArgs);
 	SAFE_RELEASE(pArgs);
@@ -170,24 +171,24 @@ inline IMonoObject *IMonoObject::CallMethod(const char *funcName, const P1 &p1, 
 	return pResult;
 };
 
-inline IMonoObject *IMonoObject::GetPropertyValue(const char *propertyName)
+inline IMonoObject *IMonoObject::GetPropertyValue(const char *propertyName, bool throwOnFail)
 {
-	return GetClass()->GetPropertyValue(this, propertyName);
+	return GetClass()->GetPropertyValue(this, propertyName, throwOnFail);
 }
 
-inline void IMonoObject::SetPropertyValue(const char *propertyName, IMonoObject *pNewValue)
+inline void IMonoObject::SetPropertyValue(const char *propertyName, IMonoObject *pNewValue, bool throwOnFail)
 {
-	GetClass()->SetPropertyValue(this, propertyName, (pNewValue != nullptr ? pNewValue->GetManagedObject() : nullptr));
+	GetClass()->SetPropertyValue(this, propertyName, (pNewValue != nullptr ? pNewValue->GetManagedObject() : nullptr), throwOnFail);
 }
 
-inline IMonoObject *IMonoObject::GetFieldValue(const char *fieldName)
+inline IMonoObject *IMonoObject::GetFieldValue(const char *fieldName, bool throwOnFail)
 {
-	return GetClass()->GetFieldValue(this, fieldName);
+	return GetClass()->GetFieldValue(this, fieldName, throwOnFail);
 }
 
-inline void IMonoObject::SetFieldValue(const char *fieldName, IMonoObject *pNewValue)
+inline void IMonoObject::SetFieldValue(const char *fieldName, IMonoObject *pNewValue, bool throwOnFail)
 {
-	GetClass()->SetFieldValue(this, fieldName, (pNewValue != nullptr ? pNewValue->GetManagedObject() : nullptr));
+	GetClass()->SetFieldValue(this, fieldName, (pNewValue != nullptr ? pNewValue->GetManagedObject() : nullptr), throwOnFail);
 }
 
 #endif //__I_MONO_OBJECT_H__
