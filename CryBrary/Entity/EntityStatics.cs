@@ -54,7 +54,7 @@ namespace CryEngine
         /// <returns></returns>
         public static Entity Spawn(string entityName, string className, Vec3? pos = null, Quat? rot = null, Vec3? scale = null, bool autoInit = true, EntityFlags flags = EntityFlags.CastShadow)
         {
-            EntityInfo info;
+            EntityInitializationParams info;
 
             var ent = NativeEntityMethods.SpawnEntity(new EntitySpawnParams { Name = entityName, Class = className, Pos = pos ?? new Vec3(1, 1, 1), Rot = rot ?? Quat.Identity, Scale = scale ?? new Vec3(1, 1, 1), Flags = flags }, autoInit, out info) as Entity;
             if (ent != null)
@@ -148,6 +148,7 @@ namespace CryEngine
         internal static EntityBase Get(IntPtr entityPointer)
         {
             var entity = ScriptManager.Instance.Find<EntityBase>(ScriptType.Entity, x => x.EntityHandle == entityPointer);
+
             if (entity != null)
                 return entity;
 
@@ -252,20 +253,6 @@ namespace CryEngine
                     yield return ent;
             }
         }
-    }
-
-    internal struct EntityInfo
-    {
-        public EntityInfo(IntPtr ptr, EntityId id)
-        {
-            IEntityPtr = ptr;
-            Id = id;
-            IAnimatedCharacterPtr = IntPtr.Zero;
-        }
-
-        public IntPtr IEntityPtr;
-        public IntPtr IAnimatedCharacterPtr;
-        public uint Id;
     }
 
     /// <summary>

@@ -16,7 +16,7 @@ namespace CryEngine.Native
         extern internal static void StopAnimationsInAllLayers(IntPtr ptr, int slot);
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern internal static EntityBase SpawnEntity(EntitySpawnParams spawnParams, bool autoInit, out EntityInfo entityInfo);
+        extern internal static EntityBase SpawnEntity(EntitySpawnParams spawnParams, bool autoInit, out EntityInitializationParams entityInfo);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static void RemoveEntity(uint entityId, bool forceRemoveNow = false);
 
@@ -205,5 +205,8 @@ namespace CryEngine.Native
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern internal static void RemoteInvocation(uint entityId, uint targetId, string methodName, object[] args, NetworkTarget target, int channelId);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static void OnScriptInstanceInitialized(object instance);
     }
 }

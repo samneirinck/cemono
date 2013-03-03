@@ -21,6 +21,7 @@ class CMonoActor
 	: public CGameObjectExtensionHelper<CMonoActor, IActor, 2>
 	, public IGameObjectView
 	, public IGameObjectProfileManager
+	, public IMonoScriptEventListener
 {
 	friend class CSerializeWrapper<ISerialize>;
 
@@ -171,10 +172,16 @@ public:
 	virtual uint8 GetDefaultProfile(EEntityAspects aspect) { return aspect == eEA_Physics ? eAP_NotPhysicalized : 0; }
 	// ~IGameObjectProfileManager
 
+	// IMonoScriptEventListener
+	virtual void OnReloadStart() {}
+	virtual void OnReloadComplete() {}
+
+	virtual void OnScriptInstanceCreated(const char *scriptName, EMonoScriptFlags scriptType, IMonoObject *pScriptInstance) {}
+	virtual void OnScriptInstanceInitialized(IMonoObject *pScriptInstance);
+	// ~IMonoScriptEventListener
+
 	DECLARE_SERVER_RMI_NOATTACH(SvScriptRMI, CMonoEntityExtension::RMIParams, eNRT_ReliableUnordered);
 	DECLARE_CLIENT_RMI_NOATTACH(ClScriptRMI, CMonoEntityExtension::RMIParams, eNRT_ReliableUnordered);
-
-	void SetScript(IMonoObject *pObject);
 
 protected:
 	IMonoObject *m_pScript;

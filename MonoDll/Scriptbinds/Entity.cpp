@@ -143,6 +143,8 @@ CScriptbind_Entity::CScriptbind_Entity()
 
 	REGISTER_METHOD(RemoteInvocation);
 
+	REGISTER_METHOD(OnScriptInstanceInitialized);
+
 	//RegisterNativeEntityClass();
 
 	gEnv->pEntitySystem->AddSink(this, IEntitySystem::OnSpawn | IEntitySystem::OnRemove, 0);
@@ -1094,4 +1096,9 @@ void CScriptbind_Entity::RemoteInvocation(EntityId entityId, EntityId targetId, 
 		pGameObject->InvokeRMI(CMonoEntityExtension::SvScriptRMI(), params, target, channelId);
 	else
 		pGameObject->InvokeRMI(CMonoEntityExtension::ClScriptRMI(), params, target, channelId);
+}
+
+void CScriptbind_Entity::OnScriptInstanceInitialized(mono::object instance)
+{
+	g_pScriptSystem->OnScriptInstanceInitialized(*instance);
 }

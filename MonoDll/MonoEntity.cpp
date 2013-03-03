@@ -47,11 +47,11 @@ bool CMonoEntityExtension::Init(IGameObject *pGameObject)
 
 	m_pScript = g_pScriptSystem->InstantiateScript(pEntityClass->GetName(), eScriptFlag_Entity);
 
-	IMonoClass *pEntityInfoClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("EntityInfo");
+	IMonoClass *pEntityInfoClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("EntityInitializationParams");
 
 	SMonoEntityInfo entityInfo(pEntity);
 
-	m_pScript->CallMethod("InternalSpawn", pEntityInfoClass->BoxObject(&entityInfo));
+	m_pScript->CallMethod("InternalInitialize", pEntityInfoClass->BoxObject(&entityInfo));
 
 	int numProperties;
 	auto pProperties = static_cast<CEntityPropertyHandler *>(pEntityClass->GetPropertyHandler())->GetQueuedProperties(pEntity->GetId(), numProperties);

@@ -60,14 +60,11 @@ void CScriptbind_ActorSystem::OnSpawn(IEntity *pEntity,SEntitySpawnParams &param
 		{
 			IMonoObject *pScript  = g_pScriptSystem->InstantiateScript(pEntity->GetClass()->GetName(), eScriptFlag_Actor);
 
-			IMonoClass *pActorInfoClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("ActorInfo");
+			IMonoClass *pActorInfoClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("ActorInitializationParams");
 
 			SMonoActorInfo actorInfo(pActor);
 
-			pScript->CallMethod("InternalSpawn", pActorInfoClass->BoxObject(&actorInfo));
-
-			if(actorType == EMonoActorType_Managed)
-				static_cast<CMonoActor *>(pActor)->SetScript(pScript);
+			pScript->CallMethod("InternalInitialize", pActorInfoClass->BoxObject(&actorInfo));
 		}
 	}
 }

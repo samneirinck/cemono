@@ -5,9 +5,9 @@ using System.Text;
 
 namespace CryEngine.FlowSystem.Native
 {
-    struct NodeInfo
+    struct NodeInitializationParams : IScriptInitializationParams
     {
-        public NodeInfo(IntPtr Pointer, UInt16 NodeId, UInt32 GraphId)
+        public NodeInitializationParams(IntPtr Pointer, UInt16 NodeId, UInt32 GraphId)
         {
             nodePtr = Pointer;
             nodeId = NodeId;

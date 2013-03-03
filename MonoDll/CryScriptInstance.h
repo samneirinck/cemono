@@ -15,6 +15,9 @@ public:
 	// IMonoScriptEventListener
 	virtual void OnReloadStart() {}
 	virtual void OnReloadComplete();
+
+	virtual void OnScriptInstanceCreated(const char *scriptName, EMonoScriptFlags scriptType, IMonoObject *pScriptInstance) {}
+	virtual void OnScriptInstanceInitialized(IMonoObject *pScriptInstance) {}
 	// ~IMonoScriptEventListener
 
 	int GetScriptId() { return m_scriptId; }

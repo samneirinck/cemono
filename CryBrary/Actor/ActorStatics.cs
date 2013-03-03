@@ -70,7 +70,7 @@ namespace CryEngine
             return ScriptManager.Instance.Find<T>(ScriptType.Actor, x => x.Id == actorId);
         }
 
-        internal static ActorBase CreateNativeActor(ActorInfo actorInfo)
+        internal static ActorBase CreateNativeActor(ActorInitializationParams actorInfo)
         {
 #if !(RELEASE && RELEASE_DISABLE_CHECKS)
             if (actorInfo.Id == 0)

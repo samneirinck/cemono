@@ -157,6 +157,9 @@ struct IMonoScriptEventListener
 {
 	virtual void OnReloadStart() = 0;
 	virtual void OnReloadComplete() = 0;
+
+	virtual void OnScriptInstanceCreated(const char *scriptName, EMonoScriptFlags scriptType, IMonoObject *pScriptInstance) = 0;
+	virtual void OnScriptInstanceInitialized(IMonoObject *pScriptInstance) = 0;
 };
 
 #ifdef PLUGIN_SDK

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CryEngine
 {
-    internal struct ActorInfo
+    internal struct ActorInitializationParams : IScriptInitializationParams
     {
         public IntPtr EntityPtr;
         public IntPtr ActorPtr;

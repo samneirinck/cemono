@@ -105,6 +105,8 @@ public:
 
 	void EraseBinding(IMonoScriptBind *pScriptBind);
 
+	void OnScriptInstanceInitialized(IMonoObject *pScriptInstance); 
+
 protected:
 	bool CompleteInit();
 

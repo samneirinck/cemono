@@ -21,11 +21,13 @@ namespace CryEngine.FlowSystem
             NativeFlowNodeMethods.RegisterNode(typeName);
         }
 
-        internal bool InternalInitialize(NodeInfo nodeInfo)
+        internal override bool InternalInitialize(IScriptInitializationParams initParams)
         {
-            Handle = nodeInfo.nodePtr;
-            NodeId = nodeInfo.nodeId;
-            GraphId = nodeInfo.graphId;
+            var nodeInitParams = (NodeInitializationParams)initParams;
+
+            Handle = nodeInitParams.nodePtr;
+            NodeId = nodeInitParams.nodeId;
+            GraphId = nodeInitParams.graphId;
 
             var registrationParams = (FlowNodeBaseRegistrationParams)Script.RegistrationParams;
 
@@ -53,7 +55,7 @@ namespace CryEngine.FlowSystem
                     (outputMember as PropertyInfo).SetValue(this, outputPort, null);
             }
 
-            return true;
+            return base.InternalInitialize(initParams);
         }
 
         internal virtual NodeConfig GetNodeConfig()

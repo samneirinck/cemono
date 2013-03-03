@@ -168,6 +168,7 @@
     <Compile Include="Entity\Editor Properties\EditorPropertyFolder.cs" />
     <Compile Include="Entity\Editor Properties\EditorPropertyLimits.cs" />
     <Compile Include="Entity\Editor Properties\EditorPropertyType.cs" />
+    <Compile Include="Entity\EntityInitializationParams.cs" />
     <Compile Include="Entity\EntityMoveFlags.cs" />
     <Compile Include="Entity\EntityNetworking.cs" />
     <Compile Include="FlowSystem\EntityFlowNode.cs" />
@@ -179,10 +180,11 @@
     <Compile Include="FlowSystem\FlowNodeFlags.cs" />
     <Compile Include="FlowSystem\FlowNodeType.cs" />
     <Compile Include="FlowSystem\Native\NodeConfig.cs" />
-    <Compile Include="FlowSystem\Native\NodeInfo.cs" />
+    <Compile Include="FlowSystem\Native\NodeInitializationParams.cs" />
     <Compile Include="FlowSystem\OutputPort.cs" />
     <Compile Include="Attributes\PortAttribute.cs" />
     <Compile Include="FlowSystem\PortType.cs" />
+    <Compile Include="GameRules\GameRulesInitializationParams.cs" />
     <Compile Include="Input\ActionmapEventArgs.cs" />
     <Compile Include="Input\ActionmapHandler.cs" />
     <Compile Include="Input\KeyEvent.cs" />
@@ -203,6 +205,7 @@
     <Compile Include="Physics\Status\DynamicsStatus.cs" />
     <Compile Include="Physics\Status\LivingStatus.cs" />
     <Compile Include="Physics\Status\Status.cs" />
+    <Compile Include="Script Handling\IScriptInitializationParams.cs" />
     <Compile Include="Script Handling\Native\NativeScriptSystemMethods.cs" />
     <Compile Include="Physics\Explosion.cs" />
     <Compile Include="Script Handling\Registration\Actor.cs" />

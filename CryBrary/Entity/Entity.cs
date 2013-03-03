@@ -20,16 +20,21 @@ namespace CryEngine
         /// <summary>
         /// Initializes the entity, not recommended to set manually.
         /// </summary>
-        /// <param name="entInfo">Struct containing the IEntity pointer and EntityId.</param>
+        /// <param name="initParams">Struct containing the IEntity pointer and EntityId.</param>
         /// <returns>IsEntityFlowNode</returns>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        internal virtual void InternalSpawn(EntityInfo entInfo)
+        internal override bool InternalInitialize(IScriptInitializationParams initParams)
         {
-            this.SetIEntity(entInfo.IEntityPtr);
-            this.SetIAnimatedCharacter(entInfo.IAnimatedCharacterPtr);
-            Id = entInfo.Id;
+            var entityInitParams = (EntityInitializationParams)initParams;
+
+            this.SetIEntity(entityInitParams.IEntityPtr);
+            this.SetIAnimatedCharacter(entityInitParams.IAnimatedCharacterPtr);
+            Id = entityInitParams.Id;
+
+            var result = base.InternalInitialize(initParams);
 
             OnSpawn();
+
+            return result;
         }
 
         private void InternalFullSerialize(Serialization.CrySerialize serialize) 

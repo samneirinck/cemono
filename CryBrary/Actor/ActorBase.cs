@@ -75,23 +75,25 @@ namespace CryEngine
         }
         #endregion
 
-        /// <summary>
-        /// Initializes the player.
-        /// </summary>
-        /// <param name="actorInfo"></param>
-        internal virtual void InternalSpawn(ActorInfo actorInfo)
+        internal override bool InternalInitialize(IScriptInitializationParams initParams)
         {
-            System.Diagnostics.Contracts.Contract.Requires(actorInfo.ChannelId > 0);
-            Id = new EntityId(actorInfo.Id);
-            this.SetIActor(actorInfo.ActorPtr);
-            this.SetIEntity(actorInfo.EntityPtr);
+            var actorInitParams = (ActorInitializationParams)initParams;
 
-            ChannelId = actorInfo.ChannelId;
+            System.Diagnostics.Contracts.Contract.Requires(actorInitParams.ChannelId > 0);
+            Id = new EntityId(actorInitParams.Id);
+            this.SetIActor(actorInitParams.ActorPtr);
+            this.SetIEntity(actorInitParams.EntityPtr);
+
+            ChannelId = actorInitParams.ChannelId;
 
             // actor must have physics
             Physics.Type = PhysicalizationType.Rigid;
 
+            var result = base.InternalInitialize(initParams);
+
             OnSpawn();
+
+            return result;
         }
     }
 }

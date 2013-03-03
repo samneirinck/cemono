@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 
 using CryEngine.Initialization;
+using CryEngine.Native;
 
 namespace CryEngine
 {
@@ -45,6 +46,13 @@ namespace CryEngine
 
             if (OnDestroyed != null)
                 OnDestroyed(this);
+        }
+
+        internal virtual bool InternalInitialize(IScriptInitializationParams initParams) 
+        {
+            NativeEntityMethods.OnScriptInstanceInitialized(this);
+
+            return true; 
         }
 
         #region Callbacks

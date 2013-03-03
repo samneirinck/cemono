@@ -380,7 +380,12 @@ IMonoObject *CScriptSystem::InstantiateScript(const char *scriptName, EMonoScrip
 	mono::object instance = pResult->GetManagedObject();
 	pResult->Release(false);
 
-	return new CCryScriptInstance(instance);
+	IMonoObject *pInstance = new CCryScriptInstance(instance);
+
+	for each(auto listener in m_listeners)
+		listener->OnScriptInstanceCreated(scriptName, scriptType, pInstance);
+
+	return pInstance;
 }
 
 void CScriptSystem::RemoveScriptInstance(int id, EMonoScriptFlags scriptType)
@@ -391,6 +396,11 @@ void CScriptSystem::RemoveScriptInstance(int id, EMonoScriptFlags scriptType)
 	m_pScriptManager->CallMethod("RemoveInstance", id, scriptType);
 }
 
+void CScriptSystem::OnScriptInstanceInitialized(IMonoObject *pScriptInstance)
+{
+	for each(auto listener in m_listeners)
+		listener->OnScriptInstanceInitialized(pScriptInstance);
+}
 
 IMonoAssembly *CScriptSystem::GetCorlibAssembly()
 {

@@ -13,12 +13,14 @@ namespace CryEngine
     /// </summary>
     public abstract class GameRules : EntityBase
     {
-        internal void InternalInitialize()
+        internal override bool InternalInitialize(IScriptInitializationParams initParams)
         {
             Current = this;
 
             Id = 1;
             this.SetIEntity(NativeEntityMethods.GetEntity(Id));
+
+            return base.InternalInitialize(initParams);
         }
 
         /// <summary>

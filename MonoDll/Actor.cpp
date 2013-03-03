@@ -36,6 +36,9 @@ CMonoActor::~CMonoActor()
 
 	if(IActorSystem *pActorSystem = gEnv->pGameFramework->GetIActorSystem())
 		pActorSystem->RemoveActor(GetEntityId());
+
+	if(IMonoScriptSystem *pScriptSystem = GetMonoScriptSystem())
+		pScriptSystem->RemoveListener(this);
 }
 
 bool CMonoActor::Init(IGameObject *pGameObject)
@@ -67,6 +70,8 @@ bool CMonoActor::Init(IGameObject *pGameObject)
 		if(IRenderNode *pRenderNode = pProxy->GetRenderNode())
 			pRenderNode->SetRndFlags(ERF_REGISTER_BY_POSITION, true);
 	}
+
+	GetMonoScriptSystem()->AddListener(this);
 
 	return true; 
 }
@@ -193,9 +198,19 @@ void CMonoActor::ProcessEvent(SEntityEvent& event)
   }  
 }
 
-void CMonoActor::SetScript(IMonoObject *pObject)
+void CMonoActor::OnScriptInstanceInitialized(IMonoObject *pScriptInstance)
 {
-	m_pScript = pObject;
+	CryLogAlways("OnScriptInstanceInitialized");
+	IMonoObject *pId = pScriptInstance->GetPropertyValue("Id", false);
+	if(pId)
+	{
+		EntityId id = pId->Unbox<EntityId>();
+		if(id == GetEntityId())
+		{
+			CryLogAlways("success");
+			m_pScript = pScriptInstance;
+		}
+	}
 }
 
 void CMonoActor::UpdateView(SViewParams &viewParams)
