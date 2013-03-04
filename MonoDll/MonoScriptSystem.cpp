@@ -411,6 +411,8 @@ void CScriptSystem::RemoveScriptInstance(int id, EMonoScriptFlags scriptType)
 
 IMonoObject *CScriptSystem::InitializeScriptInstance(IMonoObject *pScriptInstance, IMonoArray *pParams)
 {
+	CRY_ASSERT(pScriptInstance);
+	
 	mono::object result = pScriptInstance->GetClass()->InvokeArray(pScriptInstance->GetManagedObject(), "InternalInitialize", pParams);
 
 	for each(auto listener in m_listeners)
