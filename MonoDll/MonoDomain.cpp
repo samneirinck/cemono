@@ -205,7 +205,7 @@ mono::object CScriptDomain::BoxAnyValue(MonoAnyValue &any)
 	case eMonoAnyType_EntityId:
 		{
 			IMonoClass *pEntityIdClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("EntityId");
-			return pEntityIdClass->BoxObject(&mono::entityId(any.u), this)->GetManagedObject();
+			return pEntityIdClass->BoxObject(&mono::entityId(any.u), this);
 		}
 	case eMonoAnyType_Short:
 		return (mono::object)mono_value_box(m_pDomain, mono_get_int16_class(), &any.i);
@@ -220,14 +220,14 @@ mono::object CScriptDomain::BoxAnyValue(MonoAnyValue &any)
 			IMonoClass *pVec3Class = g_pScriptSystem->GetCryBraryAssembly()->GetClass("Vec3");
 			
 			Vec3 vec3(any.vec4.x, any.vec4.y, any.vec4.z);
-			return pVec3Class->BoxObject(&vec3, this)->GetManagedObject();
+			return pVec3Class->BoxObject(&vec3, this);
 		}
 		break;
 	case eMonoAnyType_Quat:
 		{
 			IMonoClass *pQuatClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("Quat");
 			
-			return pQuatClass->BoxObject(&any.vec4, this)->GetManagedObject();
+			return pQuatClass->BoxObject(&any.vec4, this);
 		}
 		break;
 	}

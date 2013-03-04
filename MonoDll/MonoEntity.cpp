@@ -51,7 +51,10 @@ bool CMonoEntityExtension::Init(IGameObject *pGameObject)
 
 	SMonoEntityInfo entityInfo(pEntity);
 
-	m_pScript->CallMethod("InternalInitialize", pEntityInfoClass->BoxObject(&entityInfo));
+	IMonoArray *pArgs = CreateMonoArray(1);
+	pArgs->InsertMonoObject(pEntityInfoClass->BoxObject(&entityInfo));
+
+	m_pScript->GetClass()->InvokeArray(m_pScript->GetManagedObject(), "InternalInitialize", pArgs);
 
 	int numProperties;
 	auto pProperties = static_cast<CEntityPropertyHandler *>(pEntityClass->GetPropertyHandler())->GetQueuedProperties(pEntity->GetId(), numProperties);
@@ -195,7 +198,7 @@ void CMonoEntityExtension::FullSerialize(TSerialize ser)
 	IMonoArray *pArgs = CreateMonoArray(1);
 	pArgs->InsertNativePointer(&ser);
 
-	m_pScript->GetClass()->InvokeArray(m_pScript, "InternalFullSerialize", pArgs);
+	m_pScript->GetClass()->InvokeArray(m_pScript->GetManagedObject(), "InternalFullSerialize", pArgs);
 
 	ser.EndGroup();
 }
@@ -210,7 +213,7 @@ bool CMonoEntityExtension::NetSerialize(TSerialize ser, EEntityAspects aspect, u
 	pArgs->Insert(profile);
 	pArgs->Insert(flags);
 
-	m_pScript->GetClass()->InvokeArray(m_pScript, "InternalNetSerialize", pArgs);
+	m_pScript->GetClass()->InvokeArray(m_pScript->GetManagedObject(), "InternalNetSerialize", pArgs);
 
 	ser.EndGroup();
 

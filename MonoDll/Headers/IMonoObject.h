@@ -13,8 +13,6 @@
 
 struct IMonoClass;
 
-namespace mono { class _object; typedef _object* object; }
-
 /// <summary>
 /// The IMonoObject class is used to wrap native mono objects of any type, and to
 /// convert C++ types to the Mono equivalent.
@@ -86,7 +84,12 @@ private:
 
 inline IMonoObject *IMonoObject::CallMethod(const char *funcName)
 {
-	return GetClass()->Invoke(this, funcName);
+	mono::object result = GetClass()->Invoke(this->GetManagedObject(), funcName);
+
+	if(result)
+		return *result;
+
+	return nullptr;
 }
 
 template<typename P1> 
@@ -95,10 +98,13 @@ inline IMonoObject *IMonoObject::CallMethod(const char *funcName, const P1 &p1)
 	IMonoArray *pArgs = CreateMonoArray(1);
 	pArgs->Insert(p1);
 
-
-	IMonoObject *pResult = GetClass()->InvokeArray(this, funcName, pArgs);
+	mono::object result = GetClass()->InvokeArray(this->GetManagedObject(), funcName, pArgs);
 	SAFE_RELEASE(pArgs);
-	return pResult;
+
+	if(result)
+		return *result;
+
+	return nullptr;
 };
 
 template<typename P1, typename P2> 
@@ -108,9 +114,13 @@ inline IMonoObject *IMonoObject::CallMethod(const char *funcName, const P1 &p1, 
 	pArgs->Insert(p1);
 	pArgs->Insert(p2);
 
-	IMonoObject *pResult = GetClass()->InvokeArray(this, funcName, pArgs);
+	mono::object result = GetClass()->InvokeArray(this->GetManagedObject(), funcName, pArgs);
 	SAFE_RELEASE(pArgs);
-	return pResult;
+
+	if(result)
+		return *result;
+
+	return nullptr;
 };
 
 template<typename P1, typename P2, typename P3> 
@@ -121,9 +131,13 @@ inline IMonoObject *IMonoObject::CallMethod(const char *funcName, const P1 &p1, 
 	pArgs->Insert(p2);
 	pArgs->Insert(p3);
 	
-	IMonoObject *pResult = GetClass()->InvokeArray(this, funcName, pArgs);
+	mono::object result = GetClass()->InvokeArray(this->GetManagedObject(), funcName, pArgs);
 	SAFE_RELEASE(pArgs);
-	return pResult;
+
+	if(result)
+		return *result;
+
+	return nullptr;
 };
 
 template<typename P1, typename P2, typename P3, typename P4> 
@@ -135,9 +149,13 @@ inline IMonoObject *IMonoObject::CallMethod(const char *funcName, const P1 &p1, 
 	pArgs->Insert(p3);
 	pArgs->Insert(p4);
 	
-	IMonoObject *pResult = GetClass()->InvokeArray(this, funcName, pArgs);
+	mono::object result = GetClass()->InvokeArray(this->GetManagedObject(), funcName, pArgs);
 	SAFE_RELEASE(pArgs);
-	return pResult;
+
+	if(result)
+		return *result;
+
+	return nullptr;
 };
 
 template<typename P1, typename P2, typename P3, typename P4, typename P5> 
@@ -150,9 +168,13 @@ inline IMonoObject *IMonoObject::CallMethod(const char *funcName, const P1 &p1, 
 	pArgs->Insert(p4);
 	pArgs->Insert(p5);
 	
-	IMonoObject *pResult = GetClass()->InvokeArray(this, funcName, pArgs);
+	mono::object result = GetClass()->InvokeArray(this->GetManagedObject(), funcName, pArgs);
 	SAFE_RELEASE(pArgs);
-	return pResult;
+
+	if(result)
+		return *result;
+
+	return nullptr;
 };
 
 template<typename P1, typename P2, typename P3, typename P4, typename P5, typename P6>
@@ -166,29 +188,43 @@ inline IMonoObject *IMonoObject::CallMethod(const char *funcName, const P1 &p1, 
 	pArgs->Insert(p5);
 	pArgs->Insert(p6);
 	
-	IMonoObject *pResult = GetClass()->InvokeArray(this, funcName, pArgs);
+	mono::object result = GetClass()->InvokeArray(this->GetManagedObject(), funcName, pArgs);
 	SAFE_RELEASE(pArgs);
-	return pResult;
+
+	if(result)
+		return *result;
+
+	return nullptr;
 };
 
 inline IMonoObject *IMonoObject::GetPropertyValue(const char *propertyName, bool throwOnFail)
 {
-	return GetClass()->GetPropertyValue(this, propertyName, throwOnFail);
+	mono::object result = GetClass()->GetPropertyValue(this->GetManagedObject(), propertyName, throwOnFail);
+
+	if(result)
+		return *result;
+
+	return nullptr;
 }
 
 inline void IMonoObject::SetPropertyValue(const char *propertyName, IMonoObject *pNewValue, bool throwOnFail)
 {
-	GetClass()->SetPropertyValue(this, propertyName, (pNewValue != nullptr ? pNewValue->GetManagedObject() : nullptr), throwOnFail);
+	GetClass()->SetPropertyValue(this->GetManagedObject(), propertyName, (pNewValue != nullptr ? pNewValue->GetManagedObject() : nullptr), throwOnFail);
 }
 
 inline IMonoObject *IMonoObject::GetFieldValue(const char *fieldName, bool throwOnFail)
 {
-	return GetClass()->GetFieldValue(this, fieldName, throwOnFail);
+	mono::object result = GetClass()->GetFieldValue(this->GetManagedObject(), fieldName, throwOnFail);
+
+	if(result)
+		return *result;
+
+	return nullptr;
 }
 
 inline void IMonoObject::SetFieldValue(const char *fieldName, IMonoObject *pNewValue, bool throwOnFail)
 {
-	GetClass()->SetFieldValue(this, fieldName, (pNewValue != nullptr ? pNewValue->GetManagedObject() : nullptr), throwOnFail);
+	GetClass()->SetFieldValue(this->GetManagedObject(), fieldName, (pNewValue != nullptr ? pNewValue->GetManagedObject() : nullptr), throwOnFail);
 }
 
 #endif //__I_MONO_OBJECT_H__

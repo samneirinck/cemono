@@ -191,7 +191,9 @@ bool CScriptSystem::CompleteInit()
 	CryModuleGetMemoryInfo(&memInfo);
 
 	IMonoClass *pCryStats = m_pCryBraryAssembly->GetClass("CryStats", "CryEngine.Utilities");
-	CryLogAlways("		Initializing CryMono done, MemUsage=%iKb", (memInfo.allocated + pCryStats->GetPropertyValue(NULL, "MemoryUsage")->Unbox<long>()) / 1024);
+
+	IMonoObject *pMemoryUsage = *pCryStats->GetPropertyValue(NULL, "MemoryUsage");
+	CryLogAlways("		Initializing CryMono done, MemUsage=%iKb", (memInfo.allocated + pMemoryUsage->Unbox<long>()) / 1024);
 
 	return true;
 }
@@ -219,7 +221,7 @@ void CScriptSystem::Reload()
 	pCtorParams->InsertAny(m_bFirstReload);
 	pCtorParams->InsertMonoString(ToMonoString(PathUtils::GetConfigPath()));
 
-	IMonoObject *pScriptManager = pCryBraryAssembly->GetClass("ScriptManager", "CryEngine.Initialization")->CreateInstance(pCtorParams);
+	IMonoObject *pScriptManager = *pCryBraryAssembly->GetClass("ScriptManager", "CryEngine.Initialization")->CreateInstance(pCtorParams);
 
 	auto result = pScriptManager->CallMethod("Initialize", m_bFirstReload)->Unbox<EScriptReloadResult>();
 	switch(result)
@@ -380,7 +382,7 @@ IMonoObject *CScriptSystem::InstantiateScript(const char *scriptName, EMonoScrip
 	mono::object instance = pResult->GetManagedObject();
 	pResult->Release(false);
 
-	IMonoObject *pInstance = new CCryScriptInstance(instance);
+	auto *pInstance = new CCryScriptInstance(instance, scriptType);
 
 	for each(auto listener in m_listeners)
 		listener->OnScriptInstanceCreated(scriptName, scriptType, pInstance);

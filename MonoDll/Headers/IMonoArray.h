@@ -106,6 +106,11 @@ public:
 	virtual void InsertObject(IMonoObject *pObject, int index = -1) = 0;
 
 	/// <summary>
+	/// Inserts a managed object into the array at the specified index. (-1 = back)
+	/// </summary>
+	virtual void InsertMonoObject(mono::object object, int index = -1) = 0;
+
+	/// <summary>
 	/// Inserts an mono string into the array at the specified index. (-1 = back)
 	//// C# equivalent type: string
 	/// </summary>

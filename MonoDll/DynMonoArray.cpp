@@ -25,7 +25,7 @@ void CDynScriptArray::Clear()
 	SAFE_DELETE(m_pObject);
 }
 
-void CDynScriptArray::Insert(mono::object object, int index)
+void CDynScriptArray::InsertMonoObject(mono::object object, int index)
 {
 	int size = GetSize();
 
@@ -36,7 +36,7 @@ void CDynScriptArray::Insert(mono::object object, int index)
 		Resize(index + 1);
 
 
-	CScriptArray::Insert(object, index);
+	CScriptArray::InsertMonoObject(object, index);
 }
 
 void CDynScriptArray::Remove(int index)
@@ -51,12 +51,12 @@ void CDynScriptArray::InsertNativePointer(void *ptr, int index)
 {
 	CScriptDomain *pDomain = static_cast<CScriptDomain *>(GetClass()->GetAssembly()->GetDomain());
 
-	Insert((mono::object)mono_value_box(pDomain->GetMonoDomain(), mono_get_intptr_class(), ptr), index);
+	InsertMonoObject((mono::object)mono_value_box(pDomain->GetMonoDomain(), mono_get_intptr_class(), ptr), index);
 }
 
 void CDynScriptArray::InsertObject(IMonoObject *pObject, int index)
 {
-	Insert(pObject != nullptr ? pObject->GetManagedObject() : nullptr, index);
+	InsertMonoObject(pObject != nullptr ? pObject->GetManagedObject() : nullptr, index);
 }
 
 void CDynScriptArray::InsertAny(MonoAnyValue value, int index)
@@ -64,7 +64,7 @@ void CDynScriptArray::InsertAny(MonoAnyValue value, int index)
 	IMonoDomain *pDomain = GetClass()->GetAssembly()->GetDomain();
 
 	if(value.type==eMonoAnyType_String)
-		Insert((mono::object)pDomain->CreateMonoString(value.str), index);
+		InsertMonoString(pDomain->CreateMonoString(value.str), index);
 	else
-		Insert(pDomain->BoxAnyValue(value), index);
+		InsertMonoObject(pDomain->BoxAnyValue(value), index);
 }

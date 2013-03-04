@@ -46,27 +46,32 @@ void CScriptClass::Release(bool triggerGC)
 	}
 }
 
-IMonoObject *CScriptClass::CreateInstance(IMonoArray *pConstructorParams)
+mono::object CScriptClass::CreateInstance(IMonoArray *pConstructorParams)
 {
 	CScriptDomain *pDomain = static_cast<CScriptDomain *>(GetAssembly()->GetDomain());
 
 	MonoObject *pInstance = mono_object_new(pDomain->GetMonoDomain(), (MonoClass *)m_pObject);
 
-	return new CScriptObject(pInstance, pConstructorParams);
+	if(pConstructorParams)
+		InvokeArray((mono::object)pInstance, ".ctor", pConstructorParams);
+	else
+		mono_runtime_object_init(m_pObject);
+
+	return (mono::object)pInstance;
 }
 
-IMonoObject *CScriptClass::InvokeArray(IMonoObject *pObject, const char *methodName, IMonoArray *pParams, bool throwOnFail)
+mono::object CScriptClass::InvokeArray(mono::object object, const char *methodName, IMonoArray *pParams, bool throwOnFail)
 {
 	MonoMethod *pMethod = GetMonoMethod(methodName, pParams);
 	if(pMethod)
 	{
 		MonoObject *pException = nullptr;
-		MonoObject *pResult = mono_runtime_invoke_array(pMethod, pObject ? pObject->GetManagedObject() : nullptr, pParams ? (MonoArray *)pParams->GetManagedObject() : nullptr, &pException);
+		MonoObject *pResult = mono_runtime_invoke_array(pMethod, object, pParams ? (MonoArray *)pParams->GetManagedObject() : nullptr, &pException);
 
 		if(pException)
 			HandleException(pException);
 		else if(pResult)
-			return *(mono::object)(pResult);
+			return (mono::object)pResult;
 	}
 	else if(throwOnFail)
 		g_pScriptSystem->GetCorlibAssembly()->GetException("System", "MissingMethodException", "Failed to locate method %s in class %s", methodName, GetName())->Throw();
@@ -74,18 +79,18 @@ IMonoObject *CScriptClass::InvokeArray(IMonoObject *pObject, const char *methodN
 	return nullptr;
 }
 
-IMonoObject *CScriptClass::Invoke(IMonoObject *pObject, const char *methodName, void **pParams, int numParams, bool throwOnFail)
+mono::object CScriptClass::Invoke(mono::object object, const char *methodName, void **pParams, int numParams, bool throwOnFail)
 {
 	MonoMethod *pMethod = GetMonoMethod(methodName, numParams);
 	if(pMethod)
 	{
 		MonoObject *pException = nullptr;
-		MonoObject *pResult = mono_runtime_invoke(pMethod, pObject ? pObject->GetManagedObject() : nullptr, pParams, &pException);
+		MonoObject *pResult = mono_runtime_invoke(pMethod, object, pParams, &pException);
 
 		if(pException)
 			HandleException(pException);
 		else if(pResult)
-			return *(mono::object)(pResult);
+			return (mono::object)pResult;
 	}
 	else if(throwOnFail)
 		g_pScriptSystem->GetCorlibAssembly()->GetException("System", "MissingMethodException", "Failed to locate method %s in class %s", methodName, GetName())->Throw();
@@ -207,19 +212,19 @@ MonoMethod *CScriptClass::GetMonoMethod(const char *methodName, int numParams)
 	return nullptr;
 }
 
-IMonoObject *CScriptClass::GetPropertyValue(IMonoObject *pObject, const char *propertyName, bool throwOnFail)
+mono::object CScriptClass::GetPropertyValue(mono::object object, const char *propertyName, bool throwOnFail)
 {
 	MonoProperty *pProperty = GetMonoProperty(propertyName);
 	if(pProperty)
 	{
 		MonoObject *pException = nullptr;
 
-		MonoObject *propertyValue = mono_property_get_value(pProperty, pObject ? pObject->GetManagedObject() : nullptr, nullptr, &pException);
+		MonoObject *propertyValue = mono_property_get_value(pProperty, object, nullptr, &pException);
 
 		if(pException)
 			HandleException(pException);
 		else if(propertyValue)
-			return *(mono::object)propertyValue;
+			return (mono::object)propertyValue;
 	}
 	else if(throwOnFail)
 		g_pScriptSystem->GetCorlibAssembly()->GetException("System", "MissingMemberException", "Failed to locate property %s in class %s", propertyName, GetName())->Throw();
@@ -227,7 +232,7 @@ IMonoObject *CScriptClass::GetPropertyValue(IMonoObject *pObject, const char *pr
 	return nullptr;
 }
 
-void CScriptClass::SetPropertyValue(IMonoObject *pObject, const char *propertyName, mono::object newValue, bool throwOnFail)
+void CScriptClass::SetPropertyValue(mono::object object, const char *propertyName, mono::object newValue, bool throwOnFail)
 {
 	MonoProperty *pProperty = GetMonoProperty(propertyName);
 	if(pProperty)
@@ -235,23 +240,23 @@ void CScriptClass::SetPropertyValue(IMonoObject *pObject, const char *propertyNa
 		void *args[1];
 		args[0] = newValue;
 
-		mono_property_set_value(pProperty, pObject ? pObject->GetManagedObject() : nullptr, args, nullptr);
+		mono_property_set_value(pProperty, object, args, nullptr);
 	}
 	else if(throwOnFail)
 		g_pScriptSystem->GetCorlibAssembly()->GetException("System", "MissingMemberException", "Failed to locate property %s in class %s", propertyName, GetName())->Throw();
 }
 
-IMonoObject *CScriptClass::GetFieldValue(IMonoObject *pObject, const char *fieldName, bool throwOnFail)
+mono::object CScriptClass::GetFieldValue(mono::object object, const char *fieldName, bool throwOnFail)
 {
 	MonoClassField *pField = GetMonoField(fieldName);
 	if(pField)
 	{
 		CScriptDomain *pDomain = static_cast<CScriptDomain *>(GetAssembly()->GetDomain());
 
-		MonoObject *fieldValue = mono_field_get_value_object(pDomain->GetMonoDomain(), pField, (MonoObject *)(pObject ? pObject->GetManagedObject() : nullptr));
+		MonoObject *fieldValue = mono_field_get_value_object(pDomain->GetMonoDomain(), pField, (MonoObject *)object);
 
 		if(fieldValue)
-			return *(mono::object)fieldValue;
+			return (mono::object)fieldValue;
 	}
 	else if(throwOnFail)
 		g_pScriptSystem->GetCorlibAssembly()->GetException("System", "MissingFieldException", "Failed to locate field %s in class %s", fieldName, GetName())->Throw();
@@ -259,11 +264,11 @@ IMonoObject *CScriptClass::GetFieldValue(IMonoObject *pObject, const char *field
 	return nullptr;
 }
 
-void CScriptClass::SetFieldValue(IMonoObject *pObject, const char *fieldName, mono::object newValue, bool throwOnFail)
+void CScriptClass::SetFieldValue(mono::object object, const char *fieldName, mono::object newValue, bool throwOnFail)
 {
 	MonoClassField *pField = GetMonoField(fieldName);
 	if(pField)
-		mono_field_set_value((MonoObject *)(pObject ? pObject->GetManagedObject() : nullptr), pField, newValue);
+		mono_field_set_value((MonoObject *)(object), pField, newValue);
 	else if(throwOnFail)
 		g_pScriptSystem->GetCorlibAssembly()->GetException("System", "MissingFieldException", "Failed to locate field %s in class %s", fieldName, GetName())->Throw();
 }
@@ -322,10 +327,10 @@ MonoClassField *CScriptClass::GetMonoField(const char *name)
 	return nullptr;
 }
 
-IMonoObject *CScriptClass::BoxObject(void *object, IMonoDomain *pDomain)
+mono::object CScriptClass::BoxObject(void *object, IMonoDomain *pDomain)
 {
 	if(pDomain == nullptr)
 		pDomain = g_pScriptSystem->GetActiveDomain();
 
-	return *(mono::object)mono_value_box(static_cast<CScriptDomain *>(pDomain)->GetMonoDomain(), (MonoClass *)m_pObject, object);
+	return (mono::object)mono_value_box(static_cast<CScriptDomain *>(pDomain)->GetMonoDomain(), (MonoClass *)m_pObject, object);
 }

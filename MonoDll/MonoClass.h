@@ -33,21 +33,21 @@ public:
 
 	virtual IMonoAssembly *GetAssembly() { return m_pDeclaringAssembly; }
 
-	virtual IMonoObject *CreateInstance(IMonoArray *pConstructorParams = nullptr) override;
+	virtual mono::object CreateInstance(IMonoArray *pConstructorParams = nullptr) override;
 
-	IMonoObject *BoxObject(void *object, IMonoDomain *pDomain = nullptr) override;
+	mono::object BoxObject(void *object, IMonoDomain *pDomain = nullptr) override;
 
 	virtual void AddRef() override { ++m_refs; }
 
-	virtual IMonoObject *InvokeArray(IMonoObject *pObject, const char *methodName, IMonoArray *params = nullptr, bool throwOnFail = true) override;
-	virtual IMonoObject *Invoke(IMonoObject *pObject, const char *methodName, void **params = nullptr, int numParams = 0, bool throwOnFail = true) override;
+	virtual mono::object InvokeArray(mono::object pObject, const char *methodName, IMonoArray *params = nullptr, bool throwOnFail = true) override;
+	virtual mono::object Invoke(mono::object pObject, const char *methodName, void **params = nullptr, int numParams = 0, bool throwOnFail = true) override;
 
 	virtual void *GetMethodThunk(const char *methodName, int numParams) override;
 
-	virtual IMonoObject *GetPropertyValue(IMonoObject *pObject, const char *propertyName, bool throwOnFail = true) override;
-	virtual void SetPropertyValue(IMonoObject *pObject, const char *propertyName, mono::object newValue, bool throwOnFail = true) override;
-	virtual IMonoObject *GetFieldValue(IMonoObject *pObject, const char *fieldName, bool throwOnFail = true) override;
-	virtual void SetFieldValue(IMonoObject *pObject, const char *fieldName, mono::object newValue, bool throwOnFail = true) override;
+	virtual mono::object GetPropertyValue(mono::object pObject, const char *propertyName, bool throwOnFail = true) override;
+	virtual void SetPropertyValue(mono::object pObject, const char *propertyName, mono::object newValue, bool throwOnFail = true) override;
+	virtual mono::object GetFieldValue(mono::object pObject, const char *fieldName, bool throwOnFail = true) override;
+	virtual void SetFieldValue(mono::object pObject, const char *fieldName, mono::object newValue, bool throwOnFail = true) override;
 	// ~IMonoClass
 
 	// IMonoObject

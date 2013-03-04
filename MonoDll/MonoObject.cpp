@@ -16,17 +16,6 @@ CScriptObject::CScriptObject(MonoObject *pObject, bool allowGC)
 	SetManagedObject(pObject, allowGC);
 }
 
-CScriptObject::CScriptObject(MonoObject *object, IMonoArray *pConstructorParams)
-	: m_pObject(NULL)
-{
-	SetManagedObject(object, true);
-
-	if(pConstructorParams)
-		GetClass()->InvokeArray(this, ".ctor", pConstructorParams);
-	else
-		mono_runtime_object_init(m_pObject);
-}
-
 CScriptObject::~CScriptObject()
 {
 	// Decrement ref counter in the class, released if no longer used.

@@ -11,6 +11,9 @@
 #ifndef __MONO_COMMON_H__
 #define __MONO_COMMON_H__
 
+#include <IMonoScriptSystem.h>
+#include <IMonoConverter.h>
+
 namespace mono 
 {
 	class _string; typedef _string* string; 
@@ -33,11 +36,6 @@ namespace mono
 	};
 };
 
-#include <IMonoScriptSystem.h>
-#include <IMonoConverter.h>
-
-#include <IMonoObject.h>
-#include <IMonoDomain.h>
 
 /// <summary>
 /// Converts a C++ string to the C# equivalent.
@@ -95,5 +93,8 @@ namespace mono
 	typedef _string* string;
 	typedef _object* object;
 }; 
+
+#include <IMonoDomain.h>
+#include <IMonoObject.h>
 
 #endif //__MONO_COMMON_H__

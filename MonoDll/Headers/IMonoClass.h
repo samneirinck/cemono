@@ -45,21 +45,21 @@ public:
 	/// <summary>
 	/// Instantiates the class, if not already instantiated.
 	/// </summary>
-	virtual IMonoObject *CreateInstance(IMonoArray *pConstructorParams = nullptr) = 0;
+	virtual mono::object CreateInstance(IMonoArray *pConstructorParams = nullptr) = 0;
 
 	/// <summary>
 	/// Boxes a type to be received as a managed type.
 	/// </summary>
-	virtual IMonoObject *BoxObject(void *object, IMonoDomain *pDomain = nullptr) = 0;
+	virtual mono::object BoxObject(void *object, IMonoDomain *pDomain = nullptr) = 0;
 
 	/// <summary>
 	/// TODO
 	/// </summary>
-	virtual IMonoObject *InvokeArray(IMonoObject *pObject, const char *methodName, IMonoArray *params = nullptr, bool throwOnFail = true) = 0;
+	virtual mono::object InvokeArray(mono::object object, const char *methodName, IMonoArray *params = nullptr, bool throwOnFail = true) = 0;
 	/// <summary>
 	/// TODO
 	/// </summary>
-	virtual IMonoObject *Invoke(IMonoObject *pObject, const char *methodName, void **params = nullptr, int numParams = 0, bool throwOnFail = true) = 0;
+	virtual mono::object Invoke(mono::object object, const char *methodName, void **params = nullptr, int numParams = 0, bool throwOnFail = true) = 0;
 
 	/// <summary>
 	/// Gets a managed function as a native function pointer. See example for use case.
@@ -76,19 +76,19 @@ public:
 	/// <summary>
 	/// TODO
 	/// </summary>
-	virtual IMonoObject *GetPropertyValue(IMonoObject *pObject, const char *propertyName, bool throwOnFail = true) = 0;
+	virtual mono::object GetPropertyValue(mono::object object, const char *propertyName, bool throwOnFail = true) = 0;
 	/// <summary>
 	/// TODO
 	/// </summary>
-	virtual void SetPropertyValue(IMonoObject *pObject, const char *propertyName, mono::object newValue, bool throwOnFail = true) = 0;
+	virtual void SetPropertyValue(mono::object object, const char *propertyName, mono::object newValue, bool throwOnFail = true) = 0;
 	/// <summary>
 	/// TODO
 	/// </summary>
-	virtual IMonoObject *GetFieldValue(IMonoObject *pObject, const char *fieldName, bool throwOnFail = true) = 0;
+	virtual mono::object GetFieldValue(mono::object object, const char *fieldName, bool throwOnFail = true) = 0;
 	/// <summary>
 	/// TODO
 	/// </summary>
-	virtual void SetFieldValue(IMonoObject *pObject, const char *fieldName, mono::object newValue, bool throwOnFail = true) = 0;
+	virtual void SetFieldValue(mono::object object, const char *fieldName, mono::object newValue, bool throwOnFail = true) = 0;
 };
 
 #endif //__I_MONO_CLASS_H__

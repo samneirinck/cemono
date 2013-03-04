@@ -165,7 +165,7 @@ int CScriptbind_Physics::RayWorldIntersection(Vec3 origin, Vec3 dir, int objFlag
 
 		IMonoArray *pRayHits = CreateMonoArray(numHits);//, pRayHitClass);
 		for(int i = 0; i < numHits; i++)
-			pRayHits->InsertObject(pRayHitClass->BoxObject(&pHits[i]));
+			pRayHits->InsertMonoObject(pRayHitClass->BoxObject(&pHits[i]));
 
 		hits = pRayHits->GetManagedObject();
 	}

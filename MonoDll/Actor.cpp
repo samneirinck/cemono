@@ -200,14 +200,12 @@ void CMonoActor::ProcessEvent(SEntityEvent& event)
 
 void CMonoActor::OnScriptInstanceInitialized(IMonoObject *pScriptInstance)
 {
-	CryLogAlways("OnScriptInstanceInitialized");
 	IMonoObject *pId = pScriptInstance->GetPropertyValue("Id", false);
 	if(pId)
 	{
 		EntityId id = pId->Unbox<EntityId>();
 		if(id == GetEntityId())
 		{
-			CryLogAlways("success");
 			m_pScript = pScriptInstance;
 		}
 	}
@@ -218,7 +216,7 @@ void CMonoActor::UpdateView(SViewParams &viewParams)
 	void *args[1];
 	args[0] = &viewParams;
 
-	m_pScript->GetClass()->Invoke(m_pScript, "UpdateView", args, 1);
+	m_pScript->GetClass()->Invoke(m_pScript->GetManagedObject(), "UpdateView", args, 1);
 }
 
 bool CMonoActor::SetAspectProfile( EEntityAspects aspect, uint8 profile )
@@ -493,7 +491,7 @@ bool CMonoActor::NetSerialize( TSerialize ser, EEntityAspects aspect, uint8 prof
 	pArgs->Insert(profile);
 	pArgs->Insert(pflags);
 
-	m_pScript->GetClass()->InvokeArray(m_pScript, "InternalNetSerialize", pArgs);
+	m_pScript->GetClass()->InvokeArray(m_pScript->GetManagedObject(), "InternalNetSerialize", pArgs);
 
 	ser.EndGroup();
 
@@ -507,7 +505,7 @@ void CMonoActor::FullSerialize(TSerialize ser)
 	IMonoArray *pArgs = CreateMonoArray(1);
 	pArgs->InsertNativePointer(&ser);
 
-	m_pScript->GetClass()->InvokeArray(m_pScript, "InternalFullSerialize", pArgs);
+	m_pScript->GetClass()->InvokeArray(m_pScript->GetManagedObject(), "InternalFullSerialize", pArgs);
 
 	ser.EndGroup();
 }

@@ -40,11 +40,14 @@ bool CFlowNode::CreatedNode(TFlowNodeId id, const char *name, TFlowNodeTypeId ty
 
 		IMonoClass *pNodeInfo = g_pScriptSystem->GetCryBraryAssembly()->GetClass("NodeInitializationParams", "CryEngine.FlowSystem.Native");
 		
-		IMonoObject *pResult = pScript->CallMethod("InternalInitialize", pNodeInfo->BoxObject(&SMonoNodeInfo(this, id, m_pActInfo->pGraph->GetGraphId())));
+		IMonoArray *pArgs = CreateMonoArray(1);
+		pArgs->InsertMonoObject(pNodeInfo->BoxObject(&SMonoNodeInfo(this, id, m_pActInfo->pGraph->GetGraphId())));
+
+		mono::object result = pScript->GetClass()->InvokeArray(pScript->GetManagedObject(), "InternalInitialize", pArgs);
 		
 		m_pScript = pScript;
-		if(pResult)
-			return pResult->Unbox<bool>();
+		if(result)
+			return ((IMonoObject *)(*result))->Unbox<bool>();
 
 		CryLogAlways("Failed to create node %s", gEnv->pFlowSystem->GetTypeName(typeId));
 		return false;
@@ -141,7 +144,7 @@ void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 				pParams->InsertNativePointer(pActInfo->pEntity);
 				pParams->Insert(pActInfo->pEntity->GetId());
 
-				m_pScript->GetClass()->InvokeArray(m_pScript, "InternalSetTargetEntity", pParams);
+				m_pScript->GetClass()->InvokeArray(m_pScript->GetManagedObject(), "InternalSetTargetEntity", pParams);
 			}
 		}
 		break;

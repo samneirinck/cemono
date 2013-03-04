@@ -251,7 +251,8 @@ bool CScriptbind_Entity::OnRemove(IEntity *pIEntity)
 		IMonoArray *pArgs = CreateMonoArray(1);
 		pArgs->Insert(pIEntity->GetId());
 
-		auto result = pEntityClass->InvokeArray(NULL, "InternalRemove", pArgs)->Unbox<bool>();
+		IMonoObject *pResult = *pEntityClass->InvokeArray(NULL, "InternalRemove", pArgs);
+		auto result = pResult->Unbox<bool>();
 
 		SAFE_RELEASE(pArgs);
 
@@ -477,11 +478,11 @@ mono::object CScriptbind_Entity::GetEntitiesInBox(AABB bbox, int objTypes)
 	int numEnts = gEnv->pPhysicalWorld->GetEntitiesInBox(bbox.min, bbox.max, pEnts, objTypes);
 	
 	if(numEnts > 0)
-		{
+	{
 		IMonoArray *pEntities = CreateMonoArray(numEnts);
 
 		for(int i = 0; i < numEnts; i++)
-			pEntities->Insert(pEntityIdClass->BoxObject(&mono::entityId(gEnv->pPhysicalWorld->GetPhysicalEntityId(pEnts[i]))));
+			pEntities->InsertMonoObject(pEntityIdClass->BoxObject(&mono::entityId(gEnv->pPhysicalWorld->GetPhysicalEntityId(pEnts[i]))));
 
 		return pEntities->GetManagedObject();
 	}
@@ -506,7 +507,7 @@ mono::object CScriptbind_Entity::QueryProximity(AABB box, mono::string className
 	{
 		IMonoArray *pEntities = CreateMonoArray(query.nCount);
 		for(int i = 0; i < query.nCount; i++)
-			pEntities->Insert(pEntityIdClass->BoxObject(&mono::entityId(query.pEntities[i]->GetId())));
+			pEntities->InsertMonoObject(pEntityIdClass->BoxObject(&mono::entityId(query.pEntities[i]->GetId())));
 
 		return pEntities->GetManagedObject();
 	}
