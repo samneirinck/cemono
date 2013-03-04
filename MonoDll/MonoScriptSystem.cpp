@@ -200,7 +200,7 @@ bool CScriptSystem::CompleteInit()
 
 void CScriptSystem::Reload()
 {
-	if(g_pMonoCVars->mono_realtimeScripting == 0 || m_bReloading)
+	if((!m_bFirstReload && g_pMonoCVars->mono_realtimeScripting == 0) || m_bReloading)
 		return;
 
 	m_bReloading = true;
