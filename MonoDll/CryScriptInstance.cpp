@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "CryScriptInstance.h"
 
-CCryScriptInstance::CCryScriptInstance(mono::object scriptInstance)
+CCryScriptInstance::CCryScriptInstance(mono::object scriptInstance, EMonoScriptFlags flags)
+	: m_flags(flags)
 {
 	SetManagedObject((MonoObject *)scriptInstance);
 
@@ -19,7 +20,7 @@ CCryScriptInstance::~CCryScriptInstance()
 
 void CCryScriptInstance::OnReloadComplete()
 {
-	if(IMonoObject *pResult = g_pScriptSystem->GetScriptManager()->CallMethod("GetScriptInstanceById", m_scriptId, eScriptFlag_Any))
+	if(IMonoObject *pResult = g_pScriptSystem->GetScriptManager()->CallMethod("GetScriptInstanceById", m_scriptId, m_flags))
 	{
 		SetManagedObject((MonoObject *)pResult->GetManagedObject());
 		pResult->Release(false);

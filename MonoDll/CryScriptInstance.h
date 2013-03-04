@@ -9,7 +9,7 @@ class CCryScriptInstance
 	, public IMonoScriptEventListener
 {
 public:
-	CCryScriptInstance(mono::object scriptInstance);
+	CCryScriptInstance(mono::object scriptInstance, EMonoScriptFlags flags);
 	~CCryScriptInstance();
 
 	// IMonoScriptEventListener
@@ -24,6 +24,7 @@ public:
 
 private:
 	int m_scriptId;
+	EMonoScriptFlags m_flags;
 };
 
 #endif //__CRYSCRIPTINSTANCE_H__
