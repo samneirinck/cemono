@@ -3,14 +3,13 @@ using System.Collections;
 using System.Reflection;
 
 using CryEngine.Extensions;
+using CryEngine.Utilities;
 
 namespace CryEngine.Serialization
 {
-    class ObjectReference
+    public class ObjectReference
     {
-        public ObjectReference()
-        {
-        }
+        public ObjectReference() { }
 
         public ObjectReference(string name, object value)
         {
@@ -18,12 +17,21 @@ namespace CryEngine.Serialization
             Value = value;
 
             Type valueType = Value != null ? Value.GetType() : null;
-            if (valueType == null || valueType.IsPointer)
+            if (valueType == null)
                 SerializationType = SerializationType.Null;
             else if (valueType == typeof(IntPtr))
                 SerializationType = SerializationType.IntPtr;
             else if (valueType.IsPrimitive)
-                SerializationType = SerializationType.Any;
+            {
+                if (Value is int && UnusedMarker.IsUnused((int)Value))
+                    SerializationType = SerializationType.UnusedMarker;
+                else if (Value is uint && UnusedMarker.IsUnused((uint)Value))
+                    SerializationType = SerializationType.UnusedMarker;
+                else if (Value is float && UnusedMarker.IsUnused((float)Value))
+                    SerializationType = SerializationType.UnusedMarker;
+                else
+                    SerializationType = SerializationType.Any;
+            }
             else if (valueType == typeof(string))
                 SerializationType = SerializationType.String;
             else if (valueType.Implements<IEnumerable>())
@@ -44,7 +52,12 @@ namespace CryEngine.Serialization
                 else if (valueType.Implements<MemberInfo>())
                     SerializationType = SerializationType.MemberInfo;
                 else
-                    SerializationType = SerializationType.Object;
+                {
+                    if (Value is Vec3 && UnusedMarker.IsUnused((Vec3)Value))
+                        SerializationType = SerializationType.UnusedMarker;
+                    else
+                        SerializationType = SerializationType.Object;
+                }
             }
         }
 

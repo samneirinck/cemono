@@ -107,18 +107,6 @@ namespace CryEngine.Serialization
             if (TryWriteReference(objectReference))
                 return;
 
-            if (objectReference.SerializationType == SerializationType.Any)
-            {
-                if (objectReference.Value is int && UnusedMarker.IsUnused((int)objectReference.Value))
-                    objectReference.SerializationType = SerializationType.UnusedMarker;
-                else if (objectReference.Value is uint && UnusedMarker.IsUnused((uint)objectReference.Value))
-                    objectReference.SerializationType = SerializationType.UnusedMarker;
-                else if (objectReference.Value is float && UnusedMarker.IsUnused((float)objectReference.Value))
-                    objectReference.SerializationType = SerializationType.UnusedMarker;
-            }
-            else if (objectReference.SerializationType == SerializationType.Object && objectReference.Value is Vec3 && UnusedMarker.IsUnused((Vec3)objectReference.Value))
-                objectReference.SerializationType = SerializationType.UnusedMarker;
-
             WriteLine((int)objectReference.SerializationType);
 
             switch(objectReference.SerializationType)

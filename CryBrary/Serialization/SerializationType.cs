@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CryEngine.Serialization
 {
-    enum SerializationType
+    public enum SerializationType
     {
         Null,
         Reference,
