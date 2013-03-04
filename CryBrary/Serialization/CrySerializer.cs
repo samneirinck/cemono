@@ -376,7 +376,7 @@ namespace CryEngine.Serialization
                 objReference.AllowNull = true;
 
                 if (IsDebugModeEnabled)
-                    Debug.LogAlways("Could not create instance of type {0}, parameterless / default constructor could not be located.", type.Name);
+                    throw new SerializationException(string.Format("Could not create instance of type {0}, parameterless / default constructor could not be located.", type.Name));
             }
 
             while (type != null)
