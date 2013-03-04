@@ -16,7 +16,7 @@ void SCVars::InitCVars(IConsole *pConsole)
 	REGISTER_CVAR(mono_realtimeScripting, 1, VF_NULL, "Enables / Disables Realtime Scripting functionality. (Editor-only)");
 	
 #ifndef RELEASE
-	REGISTER_CVAR(mono_realtimeScriptingDebug, 1, VF_NULL, "Toggles on realtime scripting debug, useful for finding serialization bugs");
+	REGISTER_CVAR(mono_realtimeScriptingDebug, 0, VF_NULL, "Toggles on realtime scripting debug, useful for finding serialization bugs");
 #endif
 
 	REGISTER_CVAR(mono_realtimeScriptingDetectChanges, 1, VF_NULL, "Toggles whether realtime scripting should automatically reload scripts when any *.cs file is modified in the scripts directory.");
