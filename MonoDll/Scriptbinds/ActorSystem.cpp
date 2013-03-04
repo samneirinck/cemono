@@ -67,7 +67,7 @@ void CScriptbind_ActorSystem::OnSpawn(IEntity *pEntity,SEntitySpawnParams &param
 			IMonoArray *pArgs = CreateMonoArray(1);
 			pArgs->InsertMonoObject(pActorInfoClass->BoxObject(&actorInfo));
 
-			pScript->GetClass()->InvokeArray(pScript->GetManagedObject(), "InternalInitialize", pArgs);
+			g_pScriptSystem->InitializeScriptInstance(pScript, pArgs);
 		}
 	}
 }

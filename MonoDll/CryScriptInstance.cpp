@@ -18,14 +18,25 @@ CCryScriptInstance::~CCryScriptInstance()
 	m_scriptId = 0;
 }
 
+void CCryScriptInstance::OnReloadStart()
+{
+	m_pClass = nullptr;
+	m_pObject = nullptr;
+
+	m_objectHandle = -1;
+}
+
 void CCryScriptInstance::OnReloadComplete()
 {
-	if(IMonoObject *pResult = g_pScriptSystem->GetScriptManager()->CallMethod("GetScriptInstanceById", m_scriptId, m_flags))
-	{
-		SetManagedObject((MonoObject *)pResult->GetManagedObject());
-		pResult->Release(false);
+	IMonoObject *pScriptManager = g_pScriptSystem->GetScriptManager();
 
-		GetClass();
+	IMonoArray *pArgs = CreateMonoArray(2);
+	pArgs->Insert(m_scriptId);
+	pArgs->Insert(m_flags);
+
+	if(mono::object result = pScriptManager->GetClass()->InvokeArray(pScriptManager->GetManagedObject(), "GetScriptInstanceById", pArgs))
+	{
+		SetManagedObject((MonoObject *)result);
 	}
 	else
 		CryFatalError("[CryMono] Failed to locate script instance %i after reload!", m_scriptId);

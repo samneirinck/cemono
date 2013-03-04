@@ -17,6 +17,7 @@
 
 #include <IFileChangeMonitor.h>
 #include <IGameFramework.h>
+#include <IEntitySystem.h>
 
 struct IMonoScriptManager;
 struct IMonoEntityManager;
@@ -105,7 +106,7 @@ public:
 
 	void EraseBinding(IMonoScriptBind *pScriptBind);
 
-	void OnScriptInstanceInitialized(IMonoObject *pScriptInstance); 
+	IMonoObject *InitializeScriptInstance(IMonoObject *pScriptInstance, IMonoArray *pParams); 
 
 protected:
 	bool CompleteInit();
@@ -140,6 +141,18 @@ protected:
 	std::vector<IMonoScriptBind *> m_localScriptBinds;
 
 	std::vector<IMonoScriptEventListener *> m_listeners;
+};
+
+struct SGameRulesInitializationParams
+{
+	SGameRulesInitializationParams()
+		: id(1)
+	{
+		pEntity = gEnv->pEntitySystem->GetEntity(id);
+	}
+
+	EntityId id;
+	IEntity *pEntity;
 };
 
 extern CScriptSystem *g_pScriptSystem;

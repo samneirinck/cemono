@@ -50,8 +50,6 @@ namespace CryEngine
 
         internal virtual bool InternalInitialize(IScriptInitializationParams initParams) 
         {
-            NativeEntityMethods.OnScriptInstanceInitialized(this);
-
             return true; 
         }
 

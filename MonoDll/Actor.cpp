@@ -205,9 +205,7 @@ void CMonoActor::OnScriptInstanceInitialized(IMonoObject *pScriptInstance)
 	{
 		EntityId id = pId->Unbox<EntityId>();
 		if(id == GetEntityId())
-		{
 			m_pScript = pScriptInstance;
-		}
 	}
 }
 

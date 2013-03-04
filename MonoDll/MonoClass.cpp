@@ -27,7 +27,6 @@ CScriptClass::CScriptClass(MonoClass *pClass, CScriptAssembly *pDeclaringAssembl
 CScriptClass::~CScriptClass()
 {
 	m_name.clear();
-	
 	m_namespace.clear();
 }
 

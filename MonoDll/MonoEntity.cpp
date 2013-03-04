@@ -54,7 +54,7 @@ bool CMonoEntityExtension::Init(IGameObject *pGameObject)
 	IMonoArray *pArgs = CreateMonoArray(1);
 	pArgs->InsertMonoObject(pEntityInfoClass->BoxObject(&entityInfo));
 
-	m_pScript->GetClass()->InvokeArray(m_pScript->GetManagedObject(), "InternalInitialize", pArgs);
+	g_pScriptSystem->InitializeScriptInstance(m_pScript, pArgs);
 
 	int numProperties;
 	auto pProperties = static_cast<CEntityPropertyHandler *>(pEntityClass->GetPropertyHandler())->GetQueuedProperties(pEntity->GetId(), numProperties);

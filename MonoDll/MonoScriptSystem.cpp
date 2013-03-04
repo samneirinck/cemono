@@ -372,20 +372,31 @@ void CScriptSystem::RegisterMethodBinding(const void *method, const char *fullMe
 		mono_add_internal_call(fullMethodName, method);
 }
 
-IMonoObject *CScriptSystem::InstantiateScript(const char *scriptName, EMonoScriptFlags scriptType, IMonoArray *pConstructorParameters, bool throwOnFail)
+IMonoObject *CScriptSystem::InstantiateScript(const char *scriptName, EMonoScriptFlags scriptFlags, IMonoArray *pConstructorParameters, bool throwOnFail)
 {
-	IMonoObject *pResult = m_pScriptManager->CallMethod("CreateScriptInstance", scriptName, scriptType, pConstructorParameters, throwOnFail);
+	IMonoObject *pResult = m_pScriptManager->CallMethod("CreateScriptInstance", scriptName, scriptFlags, pConstructorParameters, throwOnFail);
 
 	if(!pResult)
 		return nullptr;
+	else if(scriptFlags & eScriptFlag_GameRules)
+	{
+		IMonoClass *pGameRulesInitParamsClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("GameRulesInitializationParams");
+
+		IMonoArray *pArgs = CreateMonoArray(1);
+
+		SGameRulesInitializationParams params;
+		pArgs->InsertMonoObject(pGameRulesInitParamsClass->BoxObject(&params));
+
+		InitializeScriptInstance(pResult, pArgs);
+	}
 
 	mono::object instance = pResult->GetManagedObject();
 	pResult->Release(false);
 
-	auto *pInstance = new CCryScriptInstance(instance, scriptType);
+	auto *pInstance = new CCryScriptInstance(instance, scriptFlags);
 
 	for each(auto listener in m_listeners)
-		listener->OnScriptInstanceCreated(scriptName, scriptType, pInstance);
+		listener->OnScriptInstanceCreated(scriptName, scriptFlags, pInstance);
 
 	return pInstance;
 }
@@ -398,10 +409,17 @@ void CScriptSystem::RemoveScriptInstance(int id, EMonoScriptFlags scriptType)
 	m_pScriptManager->CallMethod("RemoveInstance", id, scriptType);
 }
 
-void CScriptSystem::OnScriptInstanceInitialized(IMonoObject *pScriptInstance)
+IMonoObject *CScriptSystem::InitializeScriptInstance(IMonoObject *pScriptInstance, IMonoArray *pParams)
 {
+	mono::object result = pScriptInstance->GetClass()->InvokeArray(pScriptInstance->GetManagedObject(), "InternalInitialize", pParams);
+
 	for each(auto listener in m_listeners)
 		listener->OnScriptInstanceInitialized(pScriptInstance);
+
+	if(result)
+		return *result;
+
+	return nullptr;
 }
 
 IMonoAssembly *CScriptSystem::GetCorlibAssembly()

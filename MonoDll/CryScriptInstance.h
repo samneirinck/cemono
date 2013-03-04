@@ -13,7 +13,7 @@ public:
 	~CCryScriptInstance();
 
 	// IMonoScriptEventListener
-	virtual void OnReloadStart() {}
+	virtual void OnReloadStart();
 	virtual void OnReloadComplete();
 
 	virtual void OnScriptInstanceCreated(const char *scriptName, EMonoScriptFlags scriptType, IMonoObject *pScriptInstance) {}

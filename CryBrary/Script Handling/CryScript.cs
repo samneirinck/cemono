@@ -12,6 +12,8 @@ namespace CryEngine.Initialization
     /// </summary>
     public class CryScript
     {
+        private CryScript() { }
+
         private CryScript(Type type, ScriptType scriptType)
         {
             Type = type;
@@ -79,8 +81,8 @@ namespace CryEngine.Initialization
         #region Operators
         public static bool operator ==(CryScript script1, CryScript script2)
         {
-            if (object.ReferenceEquals(script1, null) || object.ReferenceEquals(script2, null))
-                return false;
+            if (object.ReferenceEquals(script2, null))
+                return object.ReferenceEquals(script1, null);
 
             return script1.Type == script2.Type;
         }

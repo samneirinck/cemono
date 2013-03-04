@@ -205,8 +205,5 @@ namespace CryEngine.Native
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern internal static void RemoteInvocation(uint entityId, uint targetId, string methodName, object[] args, NetworkTarget target, int channelId);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern internal static void OnScriptInstanceInitialized(object instance);
     }
 }

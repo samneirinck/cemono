@@ -469,9 +469,6 @@ namespace CryEngine.Initialization
             }
 #endif
 
-            if (script.ScriptType.ContainsFlag(ScriptType.GameRules))
-                (scriptInstance as GameRules).InternalInitialize(new GameRulesInitializationParams());
-
             AddScriptInstance(script, scriptInstance);
 
             scriptInstance.Script = script;

@@ -17,8 +17,10 @@ namespace CryEngine
         {
             Current = this;
 
-            Id = 1;
-            this.SetIEntity(NativeEntityMethods.GetEntity(Id));
+            var gameRulesInitParams = (GameRulesInitializationParams)initParams;
+
+            Id = gameRulesInitParams.id;
+            this.SetIEntity(gameRulesInitParams.entityPtr);
 
             return base.InternalInitialize(initParams);
         }

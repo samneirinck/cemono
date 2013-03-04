@@ -43,11 +43,11 @@ bool CFlowNode::CreatedNode(TFlowNodeId id, const char *name, TFlowNodeTypeId ty
 		IMonoArray *pArgs = CreateMonoArray(1);
 		pArgs->InsertMonoObject(pNodeInfo->BoxObject(&SMonoNodeInfo(this, id, m_pActInfo->pGraph->GetGraphId())));
 
-		mono::object result = pScript->GetClass()->InvokeArray(pScript->GetManagedObject(), "InternalInitialize", pArgs);
+		IMonoObject *pResult = g_pScriptSystem->InitializeScriptInstance(m_pScript, pArgs);
 		
 		m_pScript = pScript;
-		if(result)
-			return ((IMonoObject *)(*result))->Unbox<bool>();
+		if(pResult)
+			return pResult->Unbox<bool>();
 
 		CryLogAlways("Failed to create node %s", gEnv->pFlowSystem->GetTypeName(typeId));
 		return false;
