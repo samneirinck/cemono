@@ -74,7 +74,7 @@ CScriptDomain::~CScriptDomain()
 		if(IsActive())
 			mono_domain_set(mono_get_root_domain(), false);
 
-		mono_domain_finalize(m_pDomain, 2);
+		mono_domain_finalize(m_pDomain, 2000);
 
 		MonoObject *pException;
 		try
