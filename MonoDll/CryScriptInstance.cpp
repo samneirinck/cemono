@@ -27,4 +27,6 @@ void CCryScriptInstance::OnReloadComplete()
 
 		GetClass();
 	}
+	else
+		CryFatalError("[CryMono] Failed to locate script instance %i after reload!", m_scriptId);
 }
