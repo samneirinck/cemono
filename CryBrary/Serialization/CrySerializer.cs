@@ -399,10 +399,10 @@ namespace CryEngine.Serialization
                 {
                     var fieldReference = StartRead();
 
-                    var fieldInfo = type.GetField(fieldReference.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-
                     if (objReference.Value == null)
                         continue;
+
+                    var fieldInfo = type.GetField(fieldReference.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
                     if (fieldInfo != null)
                         fieldInfo.SetValue(objReference.Value, fieldReference.Value);
