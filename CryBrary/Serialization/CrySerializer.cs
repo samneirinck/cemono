@@ -434,13 +434,15 @@ namespace CryEngine.Serialization
                     dict.Add(key, value);
                 }
             }
-            else
+            else if (type.Implements<IList>())
             {
                 var list = objReference.Value as IList;
 
                 for (int i = 0; i < elements; i++)
                     list.Add(StartRead().Value);
             }
+            else if (IsDebugModeEnabled)
+                throw new SerializationException(string.Format("Failed to serialize generic enumerable of type {0}, not supported by implementation", type.Name));
         }
 
         void ReadAny(ObjectReference objReference)
