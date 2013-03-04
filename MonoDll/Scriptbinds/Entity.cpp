@@ -442,31 +442,22 @@ mono::object CScriptbind_Entity::GetEntitiesByClass(mono::string _class)
 {
 	IEntityClass *pDesiredClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass(ToCryString(_class));
 
-	std::vector<EntityId> classEntities;
-
 	IEntityItPtr pIt = gEnv->pEntitySystem->GetEntityIterator();
 	pIt->MoveFirst();
+
+	IMonoClass *pEntityIdClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("EntityId");
+	IMonoArray *pEntities = CreateDynamicMonoArray(pEntityIdClass);
 
 	while(!pIt->IsEnd())
 	{
 		if(IEntity *pEntity = pIt->Next())
 		{
 			if(pEntity->GetClass() == pDesiredClass)
-				classEntities.push_back(pEntity->GetId());
+				pEntities->InsertMonoObject(pEntityIdClass->BoxObject(&mono::entityId(pEntity->GetId())));
 		}
 	}
 
-	if(classEntities.size()<1)
-		return nullptr;
-
-	IMonoClass *pEntityIdClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("EntityId");
-
-	IMonoArray *pArray = CreateMonoArray(classEntities.size());
-
-	for(auto it = classEntities.begin(); it != classEntities.end(); ++it)
-		pArray->Insert(pEntityIdClass->BoxObject(&mono::entityId(*it)));
-
-	return pArray->GetManagedObject();
+	return pEntities->GetManagedObject();
 }
 
 mono::object CScriptbind_Entity::GetEntitiesInBox(AABB bbox, int objTypes)
@@ -666,7 +657,7 @@ void CScriptbind_Entity::SetHUDSilhouettesParams(IEntity *pEntity, float r, floa
 
 IEntityLink *CScriptbind_Entity::AddEntityLink(IEntity *pEntity, mono::string linkName, EntityId otherId, Quat relativeRot, Vec3 relativePos)
 {
-	return pEntity->AddEntityLink(ToCryString(linkName), otherId, 0, relativeRot, relativePos);
+	return pEntity->AddEntityLink(ToCryString(linkName), otherId, relativeRot, relativePos);
 }
 
 mono::object CScriptbind_Entity::GetEntityLinks(IEntity *pEntity)
