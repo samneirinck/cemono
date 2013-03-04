@@ -39,6 +39,8 @@ CMonoActor::~CMonoActor()
 
 	if(IMonoScriptSystem *pScriptSystem = GetMonoScriptSystem())
 		pScriptSystem->RemoveListener(this);
+
+	SAFE_RELEASE(m_pScript);
 }
 
 bool CMonoActor::Init(IGameObject *pGameObject)

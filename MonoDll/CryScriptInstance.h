@@ -18,6 +18,8 @@ public:
 
 	virtual void OnScriptInstanceCreated(const char *scriptName, EMonoScriptFlags scriptType, IMonoObject *pScriptInstance) {}
 	virtual void OnScriptInstanceInitialized(IMonoObject *pScriptInstance) {}
+
+	virtual void Release(bool triggerGC = true) override { delete this; }
 	// ~IMonoScriptEventListener
 
 	int GetScriptId() { return m_scriptId; }
