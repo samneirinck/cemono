@@ -43,7 +43,7 @@ bool CFlowNode::CreatedNode(TFlowNodeId id, const char *name, TFlowNodeTypeId ty
 		IMonoArray *pArgs = CreateMonoArray(1);
 		pArgs->InsertMonoObject(pNodeInfo->BoxObject(&SMonoNodeInfo(this, id, m_pActInfo->pGraph->GetGraphId())));
 
-		IMonoObject *pResult = g_pScriptSystem->InitializeScriptInstance(m_pScript, pArgs);
+		IMonoObject *pResult = g_pScriptSystem->InitializeScriptInstance(pScript, pArgs);
 		
 		m_pScript = pScript;
 		if(pResult)
