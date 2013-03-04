@@ -257,7 +257,7 @@ namespace CryEngine.Initialization
 
                         if (initialLoad)
                         {
-                            if (script.RegistrationParams == null)
+                            if (script == null || script.RegistrationParams == null)
                                 continue;
                             else if (script.RegistrationParams is ActorRegistrationParams)
                             {
@@ -439,8 +439,8 @@ namespace CryEngine.Initialization
                 throw new ArgumentException(string.Format("scriptType: value {0} was not defined in the enum", scriptType));
 #endif
 
-            var script = Scripts.FirstOrDefault(x => x.ScriptType.ContainsFlag(scriptType) && x.ScriptName.Equals(scriptName));
-            if (script == default(CryScript))
+            var script = Scripts.First(x => x.ScriptType.ContainsFlag(scriptType) && x.ScriptName.Equals(scriptName));
+            if (script == null)
             {
                 if (throwOnFail)
                     throw new ScriptNotFoundException(string.Format("Script {0} of ScriptType {1} could not be found.", scriptName, scriptType));
@@ -454,7 +454,7 @@ namespace CryEngine.Initialization
         public CryScriptInstance CreateScriptInstance(CryScript script, object[] constructorParams = null, bool throwOnFail = true)
         {
 #if !(RELEASE && RELEASE_DISABLE_CHECKS)
-            if (script == default(CryScript))
+            if (script == null)
                 throw new ArgumentNullException("script");
 #endif
 
@@ -489,7 +489,7 @@ namespace CryEngine.Initialization
 #endif
 
             var script = FindScript(scriptType, x => x.Type == instance.GetType());
-            if (script == default(CryScript))
+            if (script == null)
             {
                 if (CryScript.TryCreate(instance.GetType(), out script))
                     Scripts.Add(script);
@@ -503,15 +503,8 @@ namespace CryEngine.Initialization
         void AddScriptInstance(CryScript script, CryScriptInstance instance, int scriptId = -1)
         {
 #if !(RELEASE && RELEASE_DISABLE_CHECKS)
-            if (script == default(CryScript))
+            if (script == null)
                 throw new ArgumentException("script");
-#endif
-
-            var index = Scripts.IndexOf(script);
-
-#if !(RELEASE && RELEASE_DISABLE_CHECKS)
-            if (index == -1)
-                throw new ArgumentException("Provided CryScript object was not present in the script collection", "script");
 #endif
 
             instance.ScriptId = (scriptId != -1) ? scriptId : LastScriptId++;
@@ -520,8 +513,6 @@ namespace CryEngine.Initialization
                 script.ScriptInstances = new List<CryScriptInstance>();
 
             script.ScriptInstances.Add(instance);
-
-            Scripts[index] = script;
         }
 
         public void ReplaceScriptInstance(CryScriptInstance newInstance, int scriptId, ScriptType scriptType)
@@ -529,7 +520,7 @@ namespace CryEngine.Initialization
             RemoveInstance(scriptId, scriptType);
 
             var script = FindScript(scriptType, x => x.Type == newInstance.GetType());
-            if (script == default(CryScript))
+            if (script == null)
             {
                 if (CryScript.TryCreate(newInstance.GetType(), out script))
                     Scripts.Add(script);
@@ -556,10 +547,8 @@ namespace CryEngine.Initialization
 #endif
 
             int numRemoved = 0;
-            for (int i = 0; i < Scripts.Count; i++)
+            foreach(var script in Scripts)
             {
-                var script = Scripts[i];
-
                 if (script.ScriptType.ContainsFlag(scriptType))
                 {
                     if (script.ScriptInstances != null)
@@ -576,8 +565,6 @@ namespace CryEngine.Initialization
                         });
                     }
                 }
-
-                Scripts[i] = script;
             }
 
             return numRemoved;

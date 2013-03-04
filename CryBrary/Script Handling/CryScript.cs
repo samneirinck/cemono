@@ -10,10 +10,9 @@ namespace CryEngine.Initialization
     /// <summary>
     /// Represents a given class.
     /// </summary>
-    public struct CryScript
+    public class CryScript
     {
         private CryScript(Type type, ScriptType scriptType)
-            : this()
         {
             Type = type;
             ScriptName = type.Name;
@@ -25,7 +24,7 @@ namespace CryEngine.Initialization
         {
             if (type.IsAbstract || type.IsEnum)
             {
-                script = default(CryScript);
+                script = null;
                 return false;
             }
 
@@ -54,7 +53,7 @@ namespace CryEngine.Initialization
 
             if ((scriptType & (scriptType - 1)) == 0) // only had Any set.
             {
-                script = default(CryScript);
+                script = null;
                 return false;
             }
 
@@ -80,6 +79,9 @@ namespace CryEngine.Initialization
         #region Operators
         public static bool operator ==(CryScript script1, CryScript script2)
         {
+            if (object.ReferenceEquals(script1, null) || object.ReferenceEquals(script2, null))
+                return false;
+
             return script1.Type == script2.Type;
         }
 
@@ -93,10 +95,7 @@ namespace CryEngine.Initialization
             if (obj == null)
                 return false;
 
-            if (obj is CryScript)
-                return this == (CryScript)obj;
-
-            return false;
+            return GetHashCode() == obj.GetHashCode();
         }
 
         public override int GetHashCode()
@@ -108,11 +107,6 @@ namespace CryEngine.Initialization
                 hash = hash * 23 + ScriptType.GetHashCode();
                 hash = hash * 23 + Type.GetHashCode();
 
-                if (ScriptInstances != null)
-                    hash = hash * 23 + ScriptInstances.GetHashCode();
-
-                if (RegistrationParams != default(IScriptRegistrationParams))
-                    hash = hash * 23 + RegistrationParams.GetHashCode();
                 return hash;
             }
         }
