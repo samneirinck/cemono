@@ -367,11 +367,7 @@ namespace CryEngine.Initialization
 #endif
 
             var assembly =  Assembly.LoadFrom(newPath);
-            if (ProcessedAssemblies.Any(x =>
-                {
-                    Debug.LogAlways("Comparing {0} to {1}", x.FullName, assembly.FullName);
-                    return x.FullName == assembly.FullName;
-                }))
+            if (ProcessedAssemblies.Any(x => x.FullName == assembly.FullName))
                 return null;
 
             ProcessedAssemblies.Add(assembly);
