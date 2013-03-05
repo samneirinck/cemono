@@ -69,7 +69,16 @@ namespace CryEngine.Compilers.NET
                         {
                             ConsoleCommandAttribute attribute;
                             if (member.TryGetAttribute(out attribute))
-                                ConsoleCommand.Register(attribute.Name ?? member.Name, Delegate.CreateDelegate(typeof(ConsoleCommandDelegate), member as MethodInfo) as ConsoleCommandDelegate, attribute.Comment, attribute.Flags);
+                            {
+                                try
+                                {
+                                    ConsoleCommand.Register(attribute.Name ?? member.Name, Delegate.CreateDelegate(typeof(ConsoleCommandDelegate), member) as ConsoleCommandDelegate, attribute.Comment, attribute.Flags);
+                                }
+                                catch (DuplicateConsoleCommandException ex)
+                                {
+                                    Debug.LogException(ex);
+                                }
+                            }
                         }
                     }
 
