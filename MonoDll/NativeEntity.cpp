@@ -22,7 +22,6 @@ bool CNativeEntity::Init(IGameObject *pGameObject)
 {
 	SetGameObject(pGameObject);
 
-	pGameObject->EnablePrePhysicsUpdate( ePPU_Always );
 	pGameObject->EnablePhysicsEvent( true, eEPE_OnPostStepImmediate );
 
 	// InternalSpawn

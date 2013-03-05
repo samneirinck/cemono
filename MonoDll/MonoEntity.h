@@ -52,7 +52,7 @@ public:
 	virtual void SerializeSpawnInfo( TSerialize ser ) {}
 	virtual ISerializableInfoPtr GetSpawnInfo() { return 0; }
 	virtual void Update( SEntityUpdateContext& ctx, int updateSlot ) {}
-	virtual void PostUpdate( float frameTime ) {}
+	virtual void PostUpdate(float frameTime);
 	virtual void PostRemoteSpawn() {}
 	virtual void HandleEvent( const SGameObjectEvent& event ) {}
 	virtual void ProcessEvent( SEntityEvent& event );

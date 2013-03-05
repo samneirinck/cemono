@@ -36,7 +36,6 @@ bool CMonoEntityExtension::Init(IGameObject *pGameObject)
 {
 	SetGameObject(pGameObject);
 
-	pGameObject->EnablePrePhysicsUpdate( ePPU_Always );
 	pGameObject->EnablePhysicsEvent( true, eEPE_OnPostStepImmediate );
 
 	if (!GetGameObject()->BindToNetwork())
@@ -47,7 +46,7 @@ bool CMonoEntityExtension::Init(IGameObject *pGameObject)
 
 	m_pScript = g_pScriptSystem->InstantiateScript(pEntityClass->GetName(), eScriptFlag_Entity);
 
-	IMonoClass *pEntityInfoClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("EntityInitializationParams");
+	IMonoClass *pEntityInfoClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("EntityInitializationParams", "CryEngine.Native");
 
 	SMonoEntityInfo entityInfo(pEntity);
 
@@ -162,6 +161,11 @@ void CMonoEntityExtension::ProcessEvent(SEntityEvent &event)
 		m_pScript->CallMethod("OnPrePhysicsUpdate");
 		break;
 	}
+}
+
+void CMonoEntityExtension::PostUpdate(float frameTime)
+{
+	m_pScript->CallMethod("OnPostUpdate");
 }
 
 void CMonoEntityExtension::FullSerialize(TSerialize ser)

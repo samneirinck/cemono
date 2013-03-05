@@ -136,9 +136,6 @@ CScriptbind_Entity::CScriptbind_Entity()
 	REGISTER_METHOD(SetUpdatePolicy);
 	REGISTER_METHOD(GetUpdatePolicy);
 
-	REGISTER_METHOD(IsPrePhysicsUpdateActive);
-	REGISTER_METHOD(EnablePrePhysicsUpdate);
-
 	REGISTER_METHOD(LoadParticleEmitter);
 
 	REGISTER_METHOD(RemoteInvocation);
@@ -356,6 +353,11 @@ bool CScriptbind_Entity::RegisterEntityClass(SEntityRegistrationParams params)
 	gEnv->pGameFramework->GetIGameObjectSystem()->RegisterExtension(className, &creator, nullptr);
 
 	return result;
+}
+
+mono::string CScriptbind_Entity::GetClassName(IEntity *pEntity)
+{
+	return ToMonoString(pEntity->GetClass()->GetName());
 }
 
 struct SMonoNativeEntityCreator
@@ -1054,16 +1056,6 @@ void CScriptbind_Entity::SetUpdatePolicy(IEntity *pEntity, EEntityUpdatePolicy p
 EEntityUpdatePolicy CScriptbind_Entity::GetUpdatePolicy(IEntity *pEntity)
 {
 	return pEntity->GetUpdatePolicy();
-}
-
-bool CScriptbind_Entity::IsPrePhysicsUpdateActive(IEntity *pEntity)
-{
-	return pEntity->IsPrePhysicsActive();
-}
-
-void CScriptbind_Entity::EnablePrePhysicsUpdate(IEntity *pEntity, bool enable)
-{
-	pEntity->PrePhysicsActivate(enable);
 }
 
 IParticleEmitter *CScriptbind_Entity::LoadParticleEmitter(IEntity *pEntity, int slot, IParticleEffect *pEffect, SpawnParams &spawnParams)

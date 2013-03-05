@@ -58,8 +58,6 @@ bool CMonoActor::Init(IGameObject *pGameObject)
 	if (m_pAnimatedCharacter)
 		GetGameObject()->EnablePhysicsEvent( true, eEPE_OnPostStepImmediate );
 
-	GetGameObject()->EnablePrePhysicsUpdate(  ePPU_Always );
-
 	if(!GetGameObject()->BindToNetwork())
 		return false;
 
@@ -118,8 +116,6 @@ void CMonoActor::PostReloadExtension( IGameObject * pGameObject, const SEntitySp
 {
 	CRY_ASSERT(GetGameObject() == pGameObject);
 
-	GetGameObject()->EnablePrePhysicsUpdate( gEnv->bMultiplayer ? ePPU_Always : ePPU_WhenAIActivated );
-
 	GetEntity()->SetFlags(GetEntity()->GetFlags() |
 		(ENTITY_FLAG_ON_RADAR | ENTITY_FLAG_CUSTOM_VIEWDIST_RATIO | ENTITY_FLAG_TRIGGER_AREAS));
 }
@@ -147,8 +143,7 @@ void CMonoActor::HandleEvent(const SGameObjectEvent &event)
 		pEntity->InvalidateTM(ENTITY_XFORM_POS);
 
 		m_bClient = true;
-		GetGameObject()->EnablePrePhysicsUpdate( ePPU_Always );
-
+		
 		// always update client's character
 		if (ICharacterInstance * pCharacter = GetEntity()->GetCharacter(0))
 			pCharacter->SetFlags(pCharacter->GetFlags() | CS_FLAG_UPDATE_ALWAYS);
@@ -198,6 +193,11 @@ void CMonoActor::ProcessEvent(SEntityEvent& event)
 		}
 		break;
   }  
+}
+
+void CMonoActor::PostUpdate(float frameTime)
+{
+	m_pScript->CallMethod("OnPostUpdate");
 }
 
 void CMonoActor::OnScriptInstanceInitialized(IMonoObject *pScriptInstance)

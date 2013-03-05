@@ -53,14 +53,35 @@ namespace CryEngine
             NetSerialize(serialize, aspect, profile, flags);
         }
 
-        private bool HasEditorPropertyBeenSet(object value, Type type)
+        #region Properties
+        public PrePhysicsUpdateMode PrePhysicsUpdateMode
         {
-            object defaultVal = null;
-            if (type.IsValueType)
-                defaultVal = Activator.CreateInstance(type);
-
-            return value != defaultVal;
+            set { GameObject.PrePhysicsUpdateMode = value; }
         }
+
+        public bool ReceivePostUpdates
+        {
+            set { GameObject.QueryExtension(ClassName).ReceivePostUpdates = value; }
+        }
+
+        /// <summary>
+        /// Set to detect movement within an area. 
+        /// See OnEnterArea, OnMoveInsideArea, OnLeaveArea, OnEnterNearArea, OnLeaveNearArea and OnMoveNearArea
+        /// </summary>
+        public BoundingBox TriggerBounds
+        {
+            get { return NativeEntityMethods.GetTriggerBBox(this.GetIEntity()); }
+            set { NativeEntityMethods.SetTriggerBBox(this.GetIEntity(), value); }
+        }
+
+        /// <summary>
+        /// Invalidate the TriggerBounds, so it gets recalculated and catches things which are already inside when it gets enabled.
+        /// </summary>
+        public void InvalidateTrigger()
+        {
+            NativeEntityMethods.InvalidateTrigger(this.GetIEntity()); ;
+        }
+        #endregion
 
         #region Callbacks
         /// <summary>
@@ -167,6 +188,8 @@ namespace CryEngine
         
         protected virtual void OnPrePhysicsUpdate() {}
 
+        protected virtual void OnPostUpdate() {}
+
         protected virtual void FullSerialize(Serialization.CrySerialize serialize) { }
 
         protected virtual void NetSerialize(Serialization.CrySerialize serialize, int aspect, byte profile, int flags) { }
@@ -174,7 +197,7 @@ namespace CryEngine
         protected virtual void PostSerialize() { }
         #endregion
 
-        #region Base Logic
+        #region Editor Properties
         internal virtual string GetPropertyValue(string propertyName)
         {
 #if !((RELEASE && RELEASE_DISABLE_CHECKS))
@@ -265,24 +288,6 @@ namespace CryEngine
                 return EditorPropertyType.Vec3;
             
             throw new EntityException("Invalid property type specified.");
-        }
-
-        /// <summary>
-        /// Set to detect movement within an area. 
-        /// See OnEnterArea, OnMoveInsideArea, OnLeaveArea, OnEnterNearArea, OnLeaveNearArea and OnMoveNearArea
-        /// </summary>
-        public BoundingBox TriggerBounds
-        {
-            get { return NativeEntityMethods.GetTriggerBBox(this.GetIEntity()); }
-            set { NativeEntityMethods.SetTriggerBBox(this.GetIEntity(), value); }
-        }
-
-        /// <summary>
-        /// Invalidate the TriggerBounds, so it gets recalculated and catches things which are already inside when it gets enabled.
-        /// </summary>
-        public void InvalidateTrigger()
-        {
-            NativeEntityMethods.InvalidateTrigger(this.GetIEntity());;
         }
         #endregion
 

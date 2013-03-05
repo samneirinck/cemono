@@ -108,12 +108,6 @@
     <ClInclude Include="Scriptbinds\LevelSystem.h">
       <Filter>ScriptBinds</Filter>
     </ClInclude>
-    <ClInclude Include="Scriptbinds\Physics.h">
-      <Filter>ScriptBinds</Filter>
-    </ClInclude>
-    <ClInclude Include="Scriptbinds\Entity.h">
-      <Filter>ScriptBinds</Filter>
-    </ClInclude>
     <ClInclude Include="Headers\IMonoClass.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
@@ -152,6 +146,15 @@
     </ClInclude>
     <ClInclude Include="MonoException.h">
       <Filter>Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="Scriptbinds\GameObject.h">
+      <Filter>ScriptBinds\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Scriptbinds\Physics.h">
+      <Filter>ScriptBinds\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Scriptbinds\Entity.h">
+      <Filter>ScriptBinds\Entities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -222,12 +225,6 @@
     <ClCompile Include="Scriptbinds\LevelSystem.cpp">
       <Filter>ScriptBinds</Filter>
     </ClCompile>
-    <ClCompile Include="Scriptbinds\Physics.cpp">
-      <Filter>ScriptBinds</Filter>
-    </ClCompile>
-    <ClCompile Include="Scriptbinds\Entity.cpp">
-      <Filter>ScriptBinds</Filter>
-    </ClCompile>
     <ClCompile Include="Scriptbinds\ScriptTable.cpp">
       <Filter>ScriptBinds</Filter>
     </ClCompile>
@@ -260,6 +257,15 @@
     </ClCompile>
     <ClCompile Include="DynMonoArray.cpp">
       <Filter>Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="Scriptbinds\GameObject.cpp">
+      <Filter>ScriptBinds\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Scriptbinds\Physics.cpp">
+      <Filter>ScriptBinds\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Scriptbinds\Entity.cpp">
+      <Filter>ScriptBinds\Entities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -304,6 +310,9 @@
     </Filter>
     <Filter Include="Interfaces">
       <UniqueIdentifier>{2274758e-72ad-46e0-8409-df6cebf00772}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ScriptBinds\Entities">
+      <UniqueIdentifier>{b72986a0-1186-4c2d-9461-34d62b53b4fe}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

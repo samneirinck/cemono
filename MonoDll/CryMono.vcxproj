@@ -530,6 +530,7 @@
     <ClInclude Include="Scriptbinds\Physics.h" />
     <ClInclude Include="Scriptbinds\Renderer.h" />
     <ClInclude Include="ScriptBinds\MaterialManager.h" />
+    <ClInclude Include="Scriptbinds\GameObject.h" />
     <ClInclude Include="Scriptbinds\ScriptTable.h" />
     <ClInclude Include="Scriptbinds\Time.h" />
     <ClInclude Include="Scriptbinds\ViewSystem.h" />
@@ -569,6 +570,7 @@
     <ClCompile Include="Scriptbinds\Physics.cpp" />
     <ClCompile Include="Scriptbinds\Renderer.cpp" />
     <ClCompile Include="ScriptBinds\MaterialManager.cpp" />
+    <ClCompile Include="Scriptbinds\GameObject.cpp" />
     <ClCompile Include="Scriptbinds\ScriptTable.cpp" />
     <ClCompile Include="Scriptbinds\ViewSystem.cpp" />
     <ClCompile Include="stdafx.cpp">

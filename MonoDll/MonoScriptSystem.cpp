@@ -42,6 +42,7 @@
 #include "Scriptbinds\Time.h"
 #include "Scriptbinds\ScriptTable.h" 
 #include "Scriptbinds\CrySerialize.h"
+#include "Scriptbinds\GameObject.h"
 
 #include "FlowManager.h"
 #include "MonoInput.h"
@@ -296,6 +297,7 @@ void CScriptSystem::RegisterDefaultBindings()
 	RegisterBinding(CScriptbind_ScriptTable);
 	RegisterBinding(CScriptbind_CrySerialize);
 	RegisterBinding(CScriptbind_Input);
+	RegisterBinding(CScriptbind_GameObject);
 
 	m_pFlowManager = new CFlowManager();
 	m_pFlowManager->AddRef();

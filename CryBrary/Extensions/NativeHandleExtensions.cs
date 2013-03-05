@@ -37,6 +37,18 @@ namespace CryEngine.Native
         }
         #endregion
 
+        #region Game Object
+        public static IntPtr GetIGameObject(this Advanced.GameObject gameObject)
+        {
+            return gameObject.Handle;
+        }
+
+        public static void SetIGameObject(this Advanced.GameObject gameObject, IntPtr handle)
+        {
+            gameObject.Handle = handle;
+        }
+        #endregion
+
         #region Entity
         public static IntPtr GetIEntity(this EntityBase entity)
         {

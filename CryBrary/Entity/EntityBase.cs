@@ -75,6 +75,11 @@ namespace CryEngine
         public string Name { get { return NativeEntityMethods.GetName(this.GetIEntity()); } set { NativeEntityMethods.SetName(this.GetIEntity(), value); } }
 
         /// <summary>
+        /// Gets this entity's class name.
+        /// </summary>
+        public string ClassName { get { return NativeEntityMethods.GetClassName(this.GetIEntity()); } }
+
+        /// <summary>
         /// Gets or sets the entity flags.
         /// </summary>
         public EntityFlags Flags { get { return NativeEntityMethods.GetFlags(this.GetIEntity()); } set { NativeEntityMethods.SetFlags(this.GetIEntity(), value); } }
@@ -93,11 +98,7 @@ namespace CryEngine
 
         public EntityUpdatePolicy UpdatePolicy { get { return NativeEntityMethods.GetUpdatePolicy(this.GetIEntity()); } set { NativeEntityMethods.SetUpdatePolicy(this.GetIEntity(), value); } }
 
-        public bool ReceivePrePhysicsUpdates
-        {
-            get { return NativeEntityMethods.IsPrePhysicsUpdateActive(this.GetIEntity()); }
-            set { NativeEntityMethods.EnablePrePhysicsUpdate(this.GetIEntity(), value); }
-        }
+        public Advanced.GameObject GameObject { get { return Advanced.GameObject.Get(Id); } }
 
         /// <summary>
         /// Gets or sets entity velocity as set by the physics system.

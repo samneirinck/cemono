@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CryEngine
+namespace CryEngine.Native
 {
-    internal struct ActorInitializationParams : IScriptInitializationParams
+    public struct ActorInitializationParams : IScriptInitializationParams
     {
         public IntPtr EntityPtr;
         public IntPtr ActorPtr;
-        public uint Id;
+        public EntityId Id;
         public int ChannelId;
     }
 }

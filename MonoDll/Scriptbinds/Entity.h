@@ -195,6 +195,7 @@ protected:
 	static EntityId GetEntityId(IEntity *pEntity);
 
 	static bool RegisterEntityClass(SEntityRegistrationParams);
+	static mono::string GetClassName(IEntity *pEntity);
 
 	static EntityId FindEntity(mono::string);
 	static mono::object GetEntitiesByClass(mono::string);
@@ -297,8 +298,6 @@ protected:
 	static void SetUpdatePolicy(IEntity *pEntity, EEntityUpdatePolicy policy);
 	static EEntityUpdatePolicy GetUpdatePolicy(IEntity *pEntity);
 
-	static bool IsPrePhysicsUpdateActive(IEntity *pEntity);
-	static void EnablePrePhysicsUpdate(IEntity *pEntity, bool enable);
 
 	static IParticleEmitter *LoadParticleEmitter(IEntity *pEntity, int slot, IParticleEffect *pEffect, SpawnParams &spawnParams);
 	

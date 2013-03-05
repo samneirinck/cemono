@@ -59,6 +59,8 @@ namespace CryEngine
         /// </summary>
         protected virtual void OnPrePhysicsUpdate() { }
 
+        protected virtual void OnPostUpdate() { }
+
         protected virtual void FullSerialize(Serialization.CrySerialize serialize) { }
 
         protected virtual void NetSerialize(Serialization.CrySerialize serialize, int aspect, byte profile, int flags) { }

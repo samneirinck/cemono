@@ -127,7 +127,7 @@
   <ItemGroup>
     <Compile Include="Actor\Actor.cs" />
     <Compile Include="Actor\ActorBase.cs" />
-    <Compile Include="Actor\ActorInfo.cs" />
+    <Compile Include="Actor\Native\ActorInitializationParams.cs" />
     <Compile Include="Actor\ActorNetworking.cs" />
     <Compile Include="Actor\ActorStatics.cs" />
     <Compile Include="Actor\ViewParams.cs" />
@@ -168,9 +168,12 @@
     <Compile Include="Entity\Editor Properties\EditorPropertyFolder.cs" />
     <Compile Include="Entity\Editor Properties\EditorPropertyLimits.cs" />
     <Compile Include="Entity\Editor Properties\EditorPropertyType.cs" />
-    <Compile Include="Entity\EntityInitializationParams.cs" />
+    <Compile Include="Entity\Game Object\GameObject.cs" />
+    <Compile Include="Entity\Game Object\GameObjectExtension.cs" />
+    <Compile Include="Entity\Native\EntityInitializationParams.cs" />
     <Compile Include="Entity\EntityMoveFlags.cs" />
     <Compile Include="Entity\EntityNetworking.cs" />
+    <Compile Include="Entity\Native\NativeGameObjectMethods.cs" />
     <Compile Include="FlowSystem\EntityFlowNode.cs" />
     <Compile Include="Entity\EntityLink.cs" />
     <Compile Include="Entity\EntityUpdatePolicy.cs" />
@@ -202,6 +205,7 @@
     <Compile Include="Physics\PhysicalizationFlags.cs" />
     <Compile Include="Physics\PhysicalizationParams.cs" />
     <Compile Include="Physics\PhysicalizationType.cs" />
+    <Compile Include="Physics\PrePhysicsUpdateMode.cs" />
     <Compile Include="Physics\Status\DynamicsStatus.cs" />
     <Compile Include="Physics\Status\LivingStatus.cs" />
     <Compile Include="Physics\Status\Status.cs" />

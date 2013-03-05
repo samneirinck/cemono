@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CryEngine
+namespace CryEngine.Native
 {
-    internal struct EntityInitializationParams : IScriptInitializationParams
+    public struct EntityInitializationParams : IScriptInitializationParams
     {
         public EntityInitializationParams(IntPtr ptr, EntityId id)
         {
@@ -16,6 +16,6 @@ namespace CryEngine
 
         public IntPtr IEntityPtr;
         public IntPtr IAnimatedCharacterPtr;
-        public uint Id;
+        public EntityId Id;
     }
 }
