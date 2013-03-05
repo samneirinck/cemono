@@ -219,6 +219,14 @@ void CMonoActor::UpdateView(SViewParams &viewParams)
 	m_pScript->GetClass()->Invoke(m_pScript->GetManagedObject(), "UpdateView", args, 1);
 }
 
+void CMonoActor::PostUpdateView(SViewParams &viewParams)
+{
+	void *args[1];
+	args[0] = &viewParams;
+
+	m_pScript->GetClass()->Invoke(m_pScript->GetManagedObject(), "PostUpdateView", args, 1);
+}
+
 bool CMonoActor::SetAspectProfile( EEntityAspects aspect, uint8 profile )
 {
 	bool res(false);

@@ -49,6 +49,12 @@ namespace CryEngine
         protected virtual void UpdateView(ref ViewParams viewParams) { }
 
         /// <summary>
+        /// Called after updating the view associated to this actor.
+        /// </summary>
+        /// <param name="viewParams"></param>
+        protected virtual void PostUpdateView(ref ViewParams viewParams) { }
+
+        /// <summary>
         /// Called prior to updating physics, useful for requesting movement.
         /// </summary>
         protected virtual void OnPrePhysicsUpdate() { }
