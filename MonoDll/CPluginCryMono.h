@@ -9,7 +9,7 @@
 #include <CPluginBaseMinimal.hpp>
 
 #define PLUGIN_NAME "CryMono"
-#define CRYMONO_VERSION "0.6-dev"
+#define CRYMONO_VERSION "0.7-dev"
 
 namespace CryMonoPlugin
 {
