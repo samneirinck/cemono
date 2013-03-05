@@ -7,9 +7,9 @@ namespace CryEngine.Initialization
 {
     public enum ScriptReloadResult
     {
+        Abort,
         Success,
         Retry,
-        Revert,
-        Abort
+        Revert
     }
 }

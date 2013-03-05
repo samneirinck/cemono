@@ -32,10 +32,10 @@ class CScriptObject;
 
 enum EScriptReloadResult
 {
-	EScriptReloadResult_Success = 0,
+	EScriptReloadResult_Abort = 0,
+	EScriptReloadResult_Success,
 	EScriptReloadResult_Retry,
-	EScriptReloadResult_Revert,
-	EScriptReloadResult_Abort
+	EScriptReloadResult_Revert
 };
 
 class CScriptSystem
