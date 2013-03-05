@@ -25,5 +25,8 @@ namespace CryEngine.Native
         extern public static bool ActivateExtension(IntPtr gameObjectPtr, string name);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern public static void DeactivateExtension(IntPtr gameObjectPtr, string name);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        extern public static void ChangedNetworkState(IntPtr gameObjectPtr, int aspect);
     }
 }

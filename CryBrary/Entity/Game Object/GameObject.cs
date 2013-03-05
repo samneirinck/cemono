@@ -102,6 +102,11 @@ namespace CryEngine.Advanced
             return extension;
         }
 
+        public void NotifyNetworkStateChange(int aspect)
+        {
+            NativeGameObjectMethods.ChangedNetworkState(Handle, aspect);
+        }
+
         public PrePhysicsUpdateMode PrePhysicsUpdateMode
         {
             set { NativeGameObjectMethods.EnablePrePhysicsUpdates(Handle, value); }

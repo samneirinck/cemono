@@ -41,6 +41,8 @@ protected:
 
 	static bool ActivateExtension(IGameObject *pGameObject, mono::string name);
 	static void DeactivateExtension(IGameObject *pGameObject, mono::string name);
+
+	static void ChangedNetworkState(IGameObject *pGameObject, int aspect);
 	// ~Externals
 };
 

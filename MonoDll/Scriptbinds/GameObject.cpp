@@ -17,6 +17,8 @@ CScriptbind_GameObject::CScriptbind_GameObject()
 
 	REGISTER_METHOD(ActivateExtension);
 	REGISTER_METHOD(DeactivateExtension);
+
+	REGISTER_METHOD(ChangedNetworkState);
 }
 
 IGameObject *CScriptbind_GameObject::GetGameObject(EntityId id)
@@ -60,4 +62,9 @@ bool CScriptbind_GameObject::ActivateExtension(IGameObject *pGameObject, mono::s
 void CScriptbind_GameObject::DeactivateExtension(IGameObject *pGameObject, mono::string name)
 {
 	pGameObject->DeactivateExtension(ToCryString(name));
+}
+
+void CScriptbind_GameObject::ChangedNetworkState(IGameObject *pGameObject, int aspect)
+{
+	pGameObject->ChangedNetworkState((NetworkAspectType)aspect);
 }
