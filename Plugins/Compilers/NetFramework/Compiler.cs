@@ -43,8 +43,10 @@ namespace CryEngine.Compilers.NET
 
         IEnumerable<CryScript> ProcessAssembly(Assembly assembly)
         {
+            var scripts = new List<CryScript>();
+
             if (assembly == null)
-                yield break;
+                return scripts;
 
             foreach (var type in assembly.GetTypes())
             {
@@ -89,7 +91,7 @@ namespace CryEngine.Compilers.NET
 
                     script.RegistrationParams = registrationParams;
 
-                    yield return script;
+                    scripts.Add(script);
                 }
 
                 if (type.ContainsAttribute<TestCollectionAttribute>())
@@ -110,6 +112,8 @@ namespace CryEngine.Compilers.NET
                     }
                 }
             }
+
+            return scripts;
         }
 
         Assembly CompileVisualBasicFromSource()
