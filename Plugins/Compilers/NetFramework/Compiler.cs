@@ -27,19 +27,35 @@ namespace CryEngine.Compilers.NET
                     scripts.AddRange(assemblyScripts);
             }
 
+            if (!CompileAndProcess("CSharp", "*.cs", ref scripts)
+                && !CompileAndProcess("VisualBasic", "*.vb", ref scripts)
+                && !CompileAndProcess("JScript", "*.js", ref scripts))
+            {
+                Debug.DisplayException(new ScriptCompilationException("No scripts to compile were found in the Game/Scripts directory.\n This is not a fatal error, and can be ignored."));
+            }
+            
+            return scripts;
+		}
+
+        bool CompileAndProcess(string provider, string searchPattern, ref List<CryScript> scripts)
+        {
             try
             {
-                var csharpScripts = ProcessAssembly(CompileCSharpFromSource());
-                if (csharpScripts.Count() > 0)
-                    scripts.AddRange(csharpScripts);
+                var foundScripts = ProcessAssembly(CompileFromSource(CodeDomProvider.CreateProvider(provider), searchPattern));
+                if (foundScripts.Count() > 0)
+                {
+                    scripts.AddRange(foundScripts);
+
+                    return true;
+                }
             }
             catch (Exception ex)
             {
                 Debug.DisplayException(ex);
             }
 
-            return scripts;
-		}
+            return false;
+        }
 
         IEnumerable<CryScript> ProcessAssembly(Assembly assembly)
         {
@@ -116,16 +132,6 @@ namespace CryEngine.Compilers.NET
             return scripts;
         }
 
-        Assembly CompileVisualBasicFromSource()
-        {
-            return CompileFromSource(CodeDomProvider.CreateProvider("VisualBasic"), "*.vb");
-        }
-
-        Assembly CompileCSharpFromSource()
-        {
-            return CompileFromSource(CodeDomProvider.CreateProvider("CSharp"), "*.cs");
-        }
-
         Assembly CompileFromSource(CodeDomProvider provider, string searchPattern)
         {
             var compilerParameters = new CompilerParameters();
@@ -178,7 +184,7 @@ namespace CryEngine.Compilers.NET
                 Debug.LogAlways("Scripts directory could not be located");
 
             if (scripts.Count == 0)
-                throw new ScriptCompilationException(string.Format("No {0} scripts to compile were found in the Game/Scripts directory.\n This is not a fatal error, and can be ignored.", searchPattern));
+                return null;
 
             CompilerResults results;
             using (provider)
