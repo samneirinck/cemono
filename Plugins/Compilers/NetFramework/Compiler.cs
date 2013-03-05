@@ -178,10 +178,7 @@ namespace CryEngine.Compilers.NET
                 Debug.LogAlways("Scripts directory could not be located");
 
             if (scripts.Count == 0)
-            {
-                Debug.LogAlways("[CryMono .NET Compiler] No *.cs scripts were found in the Game/Scripts directory.");
-                return null;
-            }
+                throw new ScriptCompilationException(string.Format("No {0} scripts to compile were found in the Game/Scripts directory.\n This is not a fatal error, and can be ignored.", searchPattern));
 
             CompilerResults results;
             using (provider)
