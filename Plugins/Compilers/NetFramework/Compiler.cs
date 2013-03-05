@@ -27,9 +27,16 @@ namespace CryEngine.Compilers.NET
                     scripts.AddRange(assemblyScripts);
             }
 
-            var csharpScripts = ProcessAssembly(CompileCSharpFromSource());
-            if(csharpScripts.Count() > 0)
-                scripts.AddRange(csharpScripts);
+            try
+            {
+                var csharpScripts = ProcessAssembly(CompileCSharpFromSource());
+                if (csharpScripts.Count() > 0)
+                    scripts.AddRange(csharpScripts);
+            }
+            catch (Exception ex)
+            {
+                Debug.DisplayException(ex);
+            }
 
             return scripts;
 		}
@@ -46,40 +53,38 @@ namespace CryEngine.Compilers.NET
                 CryScript script;
                 if (!type.ContainsAttribute<ExcludeFromCompilationAttribute>() && CryScript.TryCreate(type, out script))
                 {
-                    if (script.ScriptType.ContainsFlag(ScriptType.Actor))
-                        TryGetActorParams(ref registrationParams, script.Type);
-                    else if (script.ScriptType.ContainsFlag(ScriptType.GameRules))
-                        TryGetGamemodeParams(ref registrationParams, script.Type);
-                    else if (script.ScriptType.ContainsFlag(ScriptType.Entity))
-                        TryGetEntityParams(ref registrationParams, script.Type);
-                    else if (script.ScriptType.ContainsFlag(ScriptType.EntityFlowNode))
+                    try
                     {
-                        if (!TryGetEntityFlowNodeParams(ref registrationParams, script.Type))
-                            continue;
-                    }
-                    else if (script.ScriptType.ContainsFlag(ScriptType.FlowNode))
-                    {
-                        if (!TryGetFlowNodeParams(ref registrationParams, script.Type))
-                            continue;
-                    }
-
-                    if (script.ScriptType.ContainsFlag(ScriptType.CryScriptInstance))
-                    {
-                        foreach (var member in type.GetMethods(BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public))
+                        if (script.ScriptType.ContainsFlag(ScriptType.Actor))
+                            TryGetActorParams(ref registrationParams, script.Type);
+                        else if (script.ScriptType.ContainsFlag(ScriptType.GameRules))
+                            TryGetGamemodeParams(ref registrationParams, script.Type);
+                        else if (script.ScriptType.ContainsFlag(ScriptType.Entity))
+                            TryGetEntityParams(ref registrationParams, script.Type);
+                        else if (script.ScriptType.ContainsFlag(ScriptType.EntityFlowNode))
                         {
-                            ConsoleCommandAttribute attribute;
-                            if (member.TryGetAttribute(out attribute))
+                            if (!TryGetEntityFlowNodeParams(ref registrationParams, script.Type))
+                                continue;
+                        }
+                        else if (script.ScriptType.ContainsFlag(ScriptType.FlowNode))
+                        {
+                            if (!TryGetFlowNodeParams(ref registrationParams, script.Type))
+                                continue;
+                        }
+
+                        if (script.ScriptType.ContainsFlag(ScriptType.CryScriptInstance))
+                        {
+                            foreach (var member in type.GetMethods(BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public))
                             {
-                                try
-                                {
+                                ConsoleCommandAttribute attribute;
+                                if (member.TryGetAttribute(out attribute))
                                     ConsoleCommand.Register(attribute.Name ?? member.Name, Delegate.CreateDelegate(typeof(ConsoleCommandDelegate), member) as ConsoleCommandDelegate, attribute.Comment, attribute.Flags);
-                                }
-                                catch (DuplicateConsoleCommandException ex)
-                                {
-                                    Debug.LogException(ex);
-                                }
                             }
                         }
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.DisplayException(ex);
                     }
 
                     script.RegistrationParams = registrationParams;
