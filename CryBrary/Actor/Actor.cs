@@ -35,6 +35,16 @@ namespace CryEngine
         /// </summary>
         public override float MaxHealth { get; set; }
 
+        public PrePhysicsUpdateMode PrePhysicsUpdateMode
+        {
+            set { GameObject.PrePhysicsUpdateMode = value; }
+        }
+
+        public bool ReceivePostUpdates
+        {
+            set { GameObject.QueryExtension(ClassName).ReceivePostUpdates = value; }
+        }
+
         #region Callbacks
         /// <summary>
         /// Called when resetting the state of the entity in Editor.
