@@ -30,8 +30,8 @@ namespace CryEngine.Initialization
 
             Instance = this;
 
-            if (Scripts == null)
-                Scripts = new List<CryScript>();
+            Scripts = new List<CryScript>();
+            ProcessedAssemblies = new List<Assembly>();
 
             if (!Directory.Exists(PathUtils.TempFolder))
                 Directory.CreateDirectory(PathUtils.TempFolder);
@@ -234,6 +234,8 @@ namespace CryEngine.Initialization
                 if (File.Exists(compilerDll))
                 {
                     var assembly = LoadAssembly(compilerDll);
+                    if (assembly == null)
+                        continue;
 
                     var compilerType = assembly.GetTypes().First(x => x.Implements<ScriptCompiler>());
                     Debug.LogAlways("        Initializing {0}...", compilerType.Name);
@@ -246,7 +248,11 @@ namespace CryEngine.Initialization
                     foreach (var assemblyPath in assemblyPaths)
                     {
                         if (assemblyPath != compilerDll)
-                            assemblies.Add(LoadAssembly(assemblyPath));
+                        {
+                            var foundAssembly = LoadAssembly(assemblyPath);
+                            if(foundAssembly != null)
+                                assemblies.Add(foundAssembly);
+                        }
                     }
 
                     try
@@ -360,7 +366,16 @@ namespace CryEngine.Initialization
             }
 #endif
 
-            return Assembly.LoadFrom(newPath);
+            var assembly =  Assembly.LoadFrom(newPath);
+            if (ProcessedAssemblies.Any(x =>
+                {
+                    Debug.LogAlways("Comparing {0} to {1}", x.FullName, assembly.FullName);
+                    return x.FullName == assembly.FullName;
+                }))
+                return null;
+
+            ProcessedAssemblies.Add(assembly);
+            return assembly;
         }
 
         void TryCopyFile(string currentPath, ref string newPath, bool overwrite = true)
@@ -662,6 +677,8 @@ namespace CryEngine.Initialization
         public bool IgnoreExternalCalls { get; set; }
 
         internal List<CryScript> Scripts { get; set; }
+
+        List<Assembly> ProcessedAssemblies { get; set; }
 
         AppDomain ScriptDomain { get; set; }
         IFormatter Formatter { get; set; }
