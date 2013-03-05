@@ -336,6 +336,8 @@ void CScriptSystem::OnFileChange(const char *fileName)
 	const char *fileExt = PathUtil::GetExt(fileName);
 	if(!strcmp(fileExt, "cs") || !strcmp(fileExt, "dll"))
 	{
+		CryLogAlways("[CryMono] Detected change in file %s, preparing for reload..", fileName);
+
 		if(!GetFocus())
 		{
 			m_bDetectedChanges = true;
