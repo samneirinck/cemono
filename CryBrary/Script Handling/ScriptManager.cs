@@ -249,77 +249,84 @@ namespace CryEngine.Initialization
                             assemblies.Add(LoadAssembly(assemblyPath));
                     }
 
-                    var scripts = compiler.Process(assemblies);
-
-                    foreach (var unprocessedScript in scripts)
+                    try
                     {
-                        var script = unprocessedScript;
+                        var scripts = compiler.Process(assemblies);
 
-                        if (initialLoad)
+                        foreach (var unprocessedScript in scripts)
                         {
-                            if (script == null || script.RegistrationParams == null)
-                                continue;
-                            else if (script.RegistrationParams is ActorRegistrationParams)
+                            var script = unprocessedScript;
+
+                            if (initialLoad)
                             {
-                                var registrationParams = (ActorRegistrationParams)script.RegistrationParams;
-
-                                NativeActorMethods.RegisterActorClass(script.ScriptName, script.Type.Implements(typeof(NativeActor)));
-                            }
-                            else if (script.RegistrationParams is EntityRegistrationParams)
-                            {
-                                var registrationParams = (EntityRegistrationParams)script.RegistrationParams;
-
-                                if (registrationParams.name == null)
-                                    registrationParams.name = script.ScriptName;
-                                if (registrationParams.category == null)
-                                    registrationParams.category = "Default";
-
-                                NativeEntityMethods.RegisterEntityClass(registrationParams);
-
-                                script.RegistrationParams = registrationParams;
-                            }
-                            else if (script.RegistrationParams is GameRulesRegistrationParams)
-                            {
-                                var registrationParams = (GameRulesRegistrationParams)script.RegistrationParams;
-
-                                if (registrationParams.name == null)
-                                    registrationParams.name = script.ScriptName;
-
-                                NativeGameRulesMethods.RegisterGameMode(registrationParams.name);
-
-                                if (registrationParams.defaultGamemode || !hasDefaultGameRules)
+                                if (script == null || script.RegistrationParams == null)
+                                    continue;
+                                else if (script.RegistrationParams is ActorRegistrationParams)
                                 {
-                                    NativeGameRulesMethods.SetDefaultGameMode(registrationParams.name);
+                                    var registrationParams = (ActorRegistrationParams)script.RegistrationParams;
 
-                                    hasDefaultGameRules = true;
+                                    NativeActorMethods.RegisterActorClass(script.ScriptName, script.Type.Implements(typeof(NativeActor)));
                                 }
+                                else if (script.RegistrationParams is EntityRegistrationParams)
+                                {
+                                    var registrationParams = (EntityRegistrationParams)script.RegistrationParams;
 
-                                script.RegistrationParams = registrationParams;
+                                    if (registrationParams.name == null)
+                                        registrationParams.name = script.ScriptName;
+                                    if (registrationParams.category == null)
+                                        registrationParams.category = "Default";
+
+                                    NativeEntityMethods.RegisterEntityClass(registrationParams);
+
+                                    script.RegistrationParams = registrationParams;
+                                }
+                                else if (script.RegistrationParams is GameRulesRegistrationParams)
+                                {
+                                    var registrationParams = (GameRulesRegistrationParams)script.RegistrationParams;
+
+                                    if (registrationParams.name == null)
+                                        registrationParams.name = script.ScriptName;
+
+                                    NativeGameRulesMethods.RegisterGameMode(registrationParams.name);
+
+                                    if (registrationParams.defaultGamemode || !hasDefaultGameRules)
+                                    {
+                                        NativeGameRulesMethods.SetDefaultGameMode(registrationParams.name);
+
+                                        hasDefaultGameRules = true;
+                                    }
+
+                                    script.RegistrationParams = registrationParams;
+                                }
+                                else if (script.RegistrationParams is FlowNodeRegistrationParams)
+                                {
+                                    var registrationParams = (FlowNodeRegistrationParams)script.RegistrationParams;
+
+                                    if (registrationParams.name == null)
+                                        registrationParams.name = script.ScriptName;
+                                    if (registrationParams.category == null)
+                                        registrationParams.category = script.Type.Namespace;
+                                    if (registrationParams.filter == 0)
+                                        registrationParams.filter = FlowNodeFilter.Approved;
+
+                                    script.RegistrationParams = registrationParams;
+
+                                    script.ScriptName = registrationParams.category + ":" + registrationParams.name;
+                                }
+                                else if (script.RegistrationParams is EntityFlowNodeRegistrationParams)
+                                {
+                                    var registrationParams = (EntityFlowNodeRegistrationParams)script.RegistrationParams;
+
+                                    script.ScriptName = "entity" + ":" + registrationParams.entityName;
+                                }
                             }
-                            else if (script.RegistrationParams is FlowNodeRegistrationParams)
-                            {
-                                var registrationParams = (FlowNodeRegistrationParams)script.RegistrationParams;
 
-                                if (registrationParams.name == null)
-                                    registrationParams.name = script.ScriptName;
-                                if (registrationParams.category == null)
-                                    registrationParams.category = script.Type.Namespace;
-                                if (registrationParams.filter == 0)
-                                    registrationParams.filter = FlowNodeFilter.Approved;
-
-                                script.RegistrationParams = registrationParams;
-
-                                script.ScriptName = registrationParams.category + ":" + registrationParams.name;
-                            }
-                            else if (script.RegistrationParams is EntityFlowNodeRegistrationParams)
-                            {
-                                var registrationParams = (EntityFlowNodeRegistrationParams)script.RegistrationParams;
-
-                                script.ScriptName = "entity" + ":" + registrationParams.entityName;
-                            }
+                            Scripts.Add(script);
                         }
-
-                        Scripts.Add(script);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.DisplayException(ex);
                     }
                 }
             }

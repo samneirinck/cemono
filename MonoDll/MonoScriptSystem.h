@@ -54,7 +54,7 @@ public:
 	// IMonoScriptSystem
 	virtual bool IsInitialized() override { return m_pRootDomain != nullptr; }
 
-	virtual void Reload() override;
+	virtual bool Reload() override;
 
 	virtual void AddListener(IMonoScriptEventListener *pListener) override { m_listeners.push_back(pListener); }
 	virtual void RemoveListener(IMonoScriptEventListener *pListener) override { stl::find_and_erase(m_listeners, pListener); }
@@ -111,7 +111,8 @@ public:
 protected:
 	bool CompleteInit();
 
-	void RegisterDefaultBindings();
+	void RegisterPriorityBindings();
+	void RegisterSecondaryBindings();
 
 	// The primary app domain, not really used for anything besides holding the script domain. Do *not* unload this at runtime, we cannot execute another root domain again without restarting.
 	CScriptDomain *m_pRootDomain;

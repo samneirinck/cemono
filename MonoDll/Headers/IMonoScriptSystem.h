@@ -76,7 +76,8 @@ struct IMonoScriptSystem
 	/// <summary>
 	/// Used to start script recompilation / serialization.
 	/// </summary>
-	virtual void Reload() = 0;
+	/// <returns>True if successful, False if aborted.</returns>
+	virtual bool Reload() = 0;
 
 	virtual void AddListener(IMonoScriptEventListener *pListener) = 0;
 	virtual void RemoveListener(IMonoScriptEventListener *pListener) = 0;

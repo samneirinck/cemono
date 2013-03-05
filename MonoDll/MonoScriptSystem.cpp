@@ -175,31 +175,37 @@ bool CScriptSystem::CompleteInit()
 	m_pPdb2MdbAssembly = m_pRootDomain->LoadAssembly(PathUtils::GetMonoPath() + "bin\\pdb2mdb.dll");
 #endif
 
-	RegisterDefaultBindings();
+	RegisterPriorityBindings();
 
 	m_bFirstReload = true;
-	Reload();
-	m_bFirstReload = false;
+	if(Reload())
+	{
+		m_bFirstReload = false;
 
-	gEnv->pGameFramework->RegisterListener(this, "CryMono", eFLPriority_Game);
+		RegisterSecondaryBindings();
 
-	gEnv->pSystem->GetISystemEventDispatcher()->RegisterListener(this);
+		gEnv->pGameFramework->RegisterListener(this, "CryMono", eFLPriority_Game);
 
-	CryModuleMemoryInfo memInfo;
-	CryModuleGetMemoryInfo(&memInfo);
+		gEnv->pSystem->GetISystemEventDispatcher()->RegisterListener(this);
 
-	IMonoClass *pCryStats = m_pCryBraryAssembly->GetClass("CryStats", "CryEngine.Utilities");
+		CryModuleMemoryInfo memInfo;
+		CryModuleGetMemoryInfo(&memInfo);
 
-	IMonoObject *pMemoryUsage = *pCryStats->GetPropertyValue(NULL, "MemoryUsage");
-	CryLogAlways("		Initializing CryMono done, MemUsage=%iKb", (memInfo.allocated + pMemoryUsage->Unbox<long>()) / 1024);
+		IMonoClass *pCryStats = m_pCryBraryAssembly->GetClass("CryStats", "CryEngine.Utilities");
+
+		IMonoObject *pMemoryUsage = *pCryStats->GetPropertyValue(NULL, "MemoryUsage");
+		CryLogAlways("		Initializing CryMono done, MemUsage=%iKb", (memInfo.allocated + pMemoryUsage->Unbox<long>()) / 1024);
+	}
+	else
+		CryLogAlways("		Initializing CryMono failed!");
 
 	return true;
 }
 
-void CScriptSystem::Reload()
+bool CScriptSystem::Reload()
 {
 	if((!m_bFirstReload && g_pMonoCVars->mono_realtimeScripting == 0) || m_bReloading)
-		return;
+		return false;
 
 	m_bReloading = true;
 
@@ -255,7 +261,7 @@ void CScriptSystem::Reload()
 		break;
 	case EScriptReloadResult_Retry:
 		Reload();
-		return;
+		return false;
 	case EScriptReloadResult_Revert:
 		{
 			pScriptDomain->Release();
@@ -268,18 +274,13 @@ void CScriptSystem::Reload()
 	}
 
 	m_bReloading = false;
+
+	return result == EScriptReloadResult_Success;
 }
 
-void CScriptSystem::RegisterDefaultBindings()
-{
-	// Register what couldn't be registered earlier.
-	if(m_methodBindings.size()>0)
-	{
-		for(TMethodBindings::iterator it = m_methodBindings.begin(); it != m_methodBindings.end(); ++it)
-			RegisterMethodBinding((*it).first, (*it).second);
-	}
-
 #define RegisterBinding(T) m_localScriptBinds.push_back(new T());
+void CScriptSystem::RegisterPriorityBindings()
+{
 	RegisterBinding(CScriptbind_ActorSystem);
 	RegisterBinding(CScriptbind_3DEngine);
 	RegisterBinding(CScriptbind_Physics);
@@ -296,15 +297,24 @@ void CScriptSystem::RegisterDefaultBindings()
 	RegisterBinding(CScriptbind_Network);
 	RegisterBinding(CScriptbind_ScriptTable);
 	RegisterBinding(CScriptbind_CrySerialize);
-	RegisterBinding(CScriptbind_Input);
 	RegisterBinding(CScriptbind_GameObject);
 
 	m_pFlowManager = new CFlowManager();
 	m_pFlowManager->AddRef();
-
-#undef RegisterBindingAndSet
-#undef RegisterBinding
 }
+
+void CScriptSystem::RegisterSecondaryBindings()
+{
+	// Register what couldn't be registered earlier.
+	if(m_methodBindings.size()>0)
+	{
+		for(TMethodBindings::iterator it = m_methodBindings.begin(); it != m_methodBindings.end(); ++it)
+			RegisterMethodBinding((*it).first, (*it).second);
+	}
+
+	RegisterBinding(CScriptbind_Input);
+}
+#undef RegisterBinding
 
 void CScriptSystem::EraseBinding(IMonoScriptBind *pScriptBind)
 {
