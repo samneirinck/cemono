@@ -21,10 +21,15 @@ namespace CryEngine.Compilers.NET
             var scripts = new List<CryScript>();
 
             foreach (var assembly in assemblies)
-                scripts.AddRange(ProcessAssembly(assembly));
+            {
+                var assemblyScripts = ProcessAssembly(assembly);
+                if(assemblyScripts.Count() > 0)
+                    scripts.AddRange(assemblyScripts);
+            }
 
-            scripts.AddRange(ProcessAssembly(CompileCSharpFromSource()));
-          //  scripts.AddRange(ProcessAssembly(CompileVisualBasicFromSource()));
+            var csharpScripts = ProcessAssembly(CompileCSharpFromSource());
+            if(csharpScripts.Count() > 0)
+                scripts.AddRange(csharpScripts);
 
             return scripts;
 		}
