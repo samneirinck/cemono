@@ -67,6 +67,8 @@ CScriptbind_Entity::CScriptbind_Entity()
 	REGISTER_METHOD(GetName);
 	REGISTER_METHOD(SetName);
 
+	REGISTER_METHOD(GetEntityClassName);
+
 	REGISTER_METHOD(GetFlags);
 	REGISTER_METHOD(SetFlags);
 
@@ -355,7 +357,7 @@ bool CScriptbind_Entity::RegisterEntityClass(SEntityRegistrationParams params)
 	return result;
 }
 
-mono::string CScriptbind_Entity::GetClassName(IEntity *pEntity)
+mono::string CScriptbind_Entity::GetEntityClassName(IEntity *pEntity)
 {
 	return ToMonoString(pEntity->GetClass()->GetName());
 }

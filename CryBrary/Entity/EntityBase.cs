@@ -77,7 +77,7 @@ namespace CryEngine
         /// <summary>
         /// Gets this entity's class name.
         /// </summary>
-        public string ClassName { get { return NativeEntityMethods.GetClassName(this.GetIEntity()); } }
+        public string ClassName { get { return NativeEntityMethods.GetEntityClassName(this.GetIEntity()); } }
 
         /// <summary>
         /// Gets or sets the entity flags.

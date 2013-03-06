@@ -195,7 +195,7 @@ protected:
 	static EntityId GetEntityId(IEntity *pEntity);
 
 	static bool RegisterEntityClass(SEntityRegistrationParams);
-	static mono::string GetClassName(IEntity *pEntity);
+	static mono::string GetEntityClassName(IEntity *pEntity);
 
 	static EntityId FindEntity(mono::string);
 	static mono::object GetEntitiesByClass(mono::string);

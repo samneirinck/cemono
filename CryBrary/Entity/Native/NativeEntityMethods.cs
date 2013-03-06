@@ -37,7 +37,7 @@ namespace CryEngine.Native
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern public static bool RegisterEntityClass(EntityRegistrationParams registerParams);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        extern public static string GetClassName(IntPtr entPtr);
+        extern public static string GetEntityClassName(IntPtr entPtr);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern public static void BreakIntoPieces(IntPtr ptr, int slot, int piecesSlot, BreakageParameters breakageParams);
