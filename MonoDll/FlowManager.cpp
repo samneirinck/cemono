@@ -62,53 +62,53 @@ void CFlowManager::RegisterNode(mono::string monoTypeName)
 
 IFlowNodePtr CFlowManager::Create(IFlowNode::SActivationInfo *pActInfo)
 {
-	return new CFlowNode(pActInfo);
+	return new CMonoFlowNode(pActInfo);
 }
 
-void CFlowManager::ActivateOutput(CFlowNode *pNode, int index) { pNode->ActivateOutput(index, 0); }
-void CFlowManager::ActivateOutputInt(CFlowNode *pNode, int index, int value) { pNode->ActivateOutput(index, value); }
-void CFlowManager::ActivateOutputFloat(CFlowNode *pNode, int index, float value) { pNode->ActivateOutput(index, value); }
-void CFlowManager::ActivateOutputEntityId(CFlowNode *pNode, int index, EntityId value) { pNode->ActivateOutput(index, value); }
-void CFlowManager::ActivateOutputString(CFlowNode *pNode, int index, mono::string value) { pNode->ActivateOutput(index, string(ToCryString(value))); }
-void CFlowManager::ActivateOutputBool(CFlowNode *pNode, int index, bool value) { pNode->ActivateOutput(index, value); }
-void CFlowManager::ActivateOutputVec3(CFlowNode *pNode, int index, Vec3 value) { pNode->ActivateOutput(index, value); }
+void CFlowManager::ActivateOutput(CMonoFlowNode *pNode, int index) { pNode->ActivateOutput(index, 0); }
+void CFlowManager::ActivateOutputInt(CMonoFlowNode *pNode, int index, int value) { pNode->ActivateOutput(index, value); }
+void CFlowManager::ActivateOutputFloat(CMonoFlowNode *pNode, int index, float value) { pNode->ActivateOutput(index, value); }
+void CFlowManager::ActivateOutputEntityId(CMonoFlowNode *pNode, int index, EntityId value) { pNode->ActivateOutput(index, value); }
+void CFlowManager::ActivateOutputString(CMonoFlowNode *pNode, int index, mono::string value) { pNode->ActivateOutput(index, string(ToCryString(value))); }
+void CFlowManager::ActivateOutputBool(CMonoFlowNode *pNode, int index, bool value) { pNode->ActivateOutput(index, value); }
+void CFlowManager::ActivateOutputVec3(CMonoFlowNode *pNode, int index, Vec3 value) { pNode->ActivateOutput(index, value); }
 
-bool CFlowManager::IsPortActive(CFlowNode *pFlowNode, int port)
+bool CFlowManager::IsPortActive(CMonoFlowNode *pFlowNode, int port)
 {
 	return pFlowNode->IsPortActive(port);
 }
 
-int CFlowManager::GetPortValueInt(CFlowNode *pFlowNode, int index)
+int CFlowManager::GetPortValueInt(CMonoFlowNode *pFlowNode, int index)
 {
 	return pFlowNode->GetPortInt(index);
 }
 
-float CFlowManager::GetPortValueFloat(CFlowNode *pFlowNode, int index)
+float CFlowManager::GetPortValueFloat(CMonoFlowNode *pFlowNode, int index)
 {
 	return pFlowNode->GetPortFloat(index);
 }
 
-EntityId CFlowManager::GetPortValueEntityId(CFlowNode *pFlowNode, int index)
+EntityId CFlowManager::GetPortValueEntityId(CMonoFlowNode *pFlowNode, int index)
 {
 	return pFlowNode->GetPortEntityId(index);
 }
 
-mono::string CFlowManager::GetPortValueString(CFlowNode *pFlowNode, int index)
+mono::string CFlowManager::GetPortValueString(CMonoFlowNode *pFlowNode, int index)
 {
 	return (mono::string)ToMonoString(pFlowNode->GetPortString(index));
 }
 
-bool CFlowManager::GetPortValueBool(CFlowNode *pFlowNode, int index)
+bool CFlowManager::GetPortValueBool(CMonoFlowNode *pFlowNode, int index)
 {
 	return pFlowNode->GetPortBool(index);
 }
 
-Vec3 CFlowManager::GetPortValueVec3(CFlowNode *pFlowNode, int index)
+Vec3 CFlowManager::GetPortValueVec3(CMonoFlowNode *pFlowNode, int index)
 {
 	return pFlowNode->GetPortVec3(index);
 }
 
-IEntity *CFlowManager::GetTargetEntity(CFlowNode *pNode, EntityId &id)
+IEntity *CFlowManager::GetTargetEntity(CMonoFlowNode *pNode, EntityId &id)
 {
 	if(IEntity *pEntity = pNode->GetTargetEntity())
 	{
@@ -121,7 +121,7 @@ IEntity *CFlowManager::GetTargetEntity(CFlowNode *pNode, EntityId &id)
 	return nullptr;
 }
 
-void CFlowManager::SetRegularlyUpdated(CFlowNode *pNode, bool update)
+void CFlowManager::SetRegularlyUpdated(CMonoFlowNode *pNode, bool update)
 {
 	pNode->SetRegularlyUpdated(update);
 }

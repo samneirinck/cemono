@@ -32,11 +32,11 @@ enum ENodeCloneType
 //////////////////////////////////////////////////////////////////////////
 class CFlowBaseNodeInternal : public IFlowNode
 {
-	friend class CFlowNode;
+	friend class CMonoFlowNode;
 
 private:
 	// private ctor/dtor to prevent classes directly derived from this;
-	//	the exception is CFlowNode (friended above)
+	//	the exception is CMonoFlowNode (friended above)
 	CFlowBaseNodeInternal() { m_refs = 0; };
 	virtual ~CFlowBaseNodeInternal() {}
 

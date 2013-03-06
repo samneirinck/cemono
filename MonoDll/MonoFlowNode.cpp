@@ -13,7 +13,7 @@
 #include <IMonoArray.h>
 #include <IMonoClass.h>
 
-CFlowNode::CFlowNode(SActivationInfo *pActInfo)
+CMonoFlowNode::CMonoFlowNode(SActivationInfo *pActInfo)
 	: m_pScript(nullptr)
 	, m_pActInfo(pActInfo)
 	, m_cloneType(eNCT_Instanced)
@@ -25,12 +25,12 @@ CFlowNode::CFlowNode(SActivationInfo *pActInfo)
 	m_pHookedGraph = pActInfo->pGraph;
 }
 
-CFlowNode::~CFlowNode()
+CMonoFlowNode::~CMonoFlowNode()
 {
 	SAFE_RELEASE(m_pScript);
 }
 
-bool CFlowNode::CreatedNode(TFlowNodeId id, const char *name, TFlowNodeTypeId typeId, IFlowNodePtr pNode) 
+bool CMonoFlowNode::CreatedNode(TFlowNodeId id, const char *name, TFlowNodeTypeId typeId, IFlowNodePtr pNode) 
 { 
 	if(pNode==this)
 	{
@@ -56,14 +56,14 @@ bool CFlowNode::CreatedNode(TFlowNodeId id, const char *name, TFlowNodeTypeId ty
 	return true; 
 }
 
-IFlowNodePtr CFlowNode::Clone(SActivationInfo *pActInfo)
+IFlowNodePtr CMonoFlowNode::Clone(SActivationInfo *pActInfo)
 {
 	switch(m_cloneType)
 	{
 	case eNCT_Singleton:
 		return this;
 	case eNCT_Instanced:
-		return new CFlowNode(pActInfo);
+		return new CMonoFlowNode(pActInfo);
 	default:
 		break;
 	}
@@ -71,12 +71,12 @@ IFlowNodePtr CFlowNode::Clone(SActivationInfo *pActInfo)
 	return nullptr;
 }
 
-IEntity *CFlowNode::GetTargetEntity()
+IEntity *CMonoFlowNode::GetTargetEntity()
 {
 	return m_pActInfo->pEntity;
 }
 
-void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
+void CMonoFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 {	
 	m_pActInfo = pActInfo;
 
@@ -154,7 +154,7 @@ void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 	}
 }
 
-void CFlowNode::GetConfiguration(SFlowNodeConfig &config)
+void CMonoFlowNode::GetConfiguration(SFlowNodeConfig &config)
 {
 	CRY_ASSERT(m_pScript);
 

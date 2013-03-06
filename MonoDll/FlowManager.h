@@ -17,19 +17,19 @@
 struct IMonoArray;
 struct IMonoScript;
 
-class CFlowNode;
+class CMonoFlowNode;
 
 // Passed down to node script when initializing
 struct SMonoNodeInfo
 {
-	SMonoNodeInfo(CFlowNode *node, TFlowNodeId _id, TFlowGraphId _graphId)
+	SMonoNodeInfo(CMonoFlowNode *node, TFlowNodeId _id, TFlowGraphId _graphId)
 		: pNode(node)
 		, id(_id)
 		, graphId(_graphId)
 	{
 	}
 
-	CFlowNode *pNode;
+	CMonoFlowNode *pNode;
 	TFlowNodeId id;
 	TFlowGraphId graphId;
 };
@@ -72,26 +72,26 @@ protected:
 
 	static void RegisterNode(mono::string typeName);
 
-	static bool IsPortActive(CFlowNode *pNode, int);
+	static bool IsPortActive(CMonoFlowNode *pNode, int);
 
-	static int GetPortValueInt(CFlowNode *pNode, int);
-	static float GetPortValueFloat(CFlowNode *pNode, int);
-	static EntityId GetPortValueEntityId(CFlowNode *pNode, int);
-	static mono::string GetPortValueString(CFlowNode *pNode, int);
-	static bool GetPortValueBool(CFlowNode *pNode, int);
-	static Vec3 GetPortValueVec3(CFlowNode *pNode, int);
+	static int GetPortValueInt(CMonoFlowNode *pNode, int);
+	static float GetPortValueFloat(CMonoFlowNode *pNode, int);
+	static EntityId GetPortValueEntityId(CMonoFlowNode *pNode, int);
+	static mono::string GetPortValueString(CMonoFlowNode *pNode, int);
+	static bool GetPortValueBool(CMonoFlowNode *pNode, int);
+	static Vec3 GetPortValueVec3(CMonoFlowNode *pNode, int);
 
-	static void ActivateOutput(CFlowNode *pNode, int);
-	static void ActivateOutputInt(CFlowNode *pNode, int, int);
-	static void ActivateOutputFloat(CFlowNode *pNode, int, float);
-	static void ActivateOutputEntityId(CFlowNode *pNode, int, EntityId);
-	static void ActivateOutputString(CFlowNode *pNode, int, mono::string);
-	static void ActivateOutputBool(CFlowNode *pNode, int, bool);
-	static void ActivateOutputVec3(CFlowNode *pNode, int, Vec3);
+	static void ActivateOutput(CMonoFlowNode *pNode, int);
+	static void ActivateOutputInt(CMonoFlowNode *pNode, int, int);
+	static void ActivateOutputFloat(CMonoFlowNode *pNode, int, float);
+	static void ActivateOutputEntityId(CMonoFlowNode *pNode, int, EntityId);
+	static void ActivateOutputString(CMonoFlowNode *pNode, int, mono::string);
+	static void ActivateOutputBool(CMonoFlowNode *pNode, int, bool);
+	static void ActivateOutputVec3(CMonoFlowNode *pNode, int, Vec3);
 
-	static IEntity *GetTargetEntity(CFlowNode *pNode, EntityId &id);
+	static IEntity *GetTargetEntity(CMonoFlowNode *pNode, EntityId &id);
 
-	static void SetRegularlyUpdated(CFlowNode *pNode, bool update);
+	static void SetRegularlyUpdated(CMonoFlowNode *pNode, bool update);
 
 	int m_refs;
 };

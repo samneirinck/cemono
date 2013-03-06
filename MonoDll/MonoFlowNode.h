@@ -22,7 +22,7 @@
 
 struct IMonoArray;
 
-class CFlowNode 
+class CMonoFlowNode 
 	: public CFlowBaseNodeInternal
 	, public IFlowGraphHook
 {
@@ -39,8 +39,8 @@ public:
 		EOP_Cancelled
 	};
 
-	CFlowNode(SActivationInfo *pActInfo);
-	virtual ~CFlowNode();
+	CMonoFlowNode(SActivationInfo *pActInfo);
+	virtual ~CMonoFlowNode();
 
 	// IFlowNode
 	virtual IFlowNodePtr Clone(SActivationInfo *pActInfo) override;
