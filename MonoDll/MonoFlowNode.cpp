@@ -148,6 +148,9 @@ void CFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 			}
 		}
 		break;
+	case eFE_Update:
+		m_pScript->CallMethod("OnNodeUpdate");
+		break;
 	}
 }
 

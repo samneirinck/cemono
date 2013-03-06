@@ -91,6 +91,8 @@ protected:
 
 	static IEntity *GetTargetEntity(CFlowNode *pNode, EntityId &id);
 
+	static void SetRegularlyUpdated(CFlowNode *pNode, bool update);
+
 	int m_refs;
 };
 

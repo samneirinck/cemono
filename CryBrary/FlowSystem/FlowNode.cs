@@ -119,6 +119,12 @@ namespace CryEngine.FlowSystem
         /// Note that this is called prior to GameRules.OnClientConnect and OnClientEnteredGame!
         /// </summary>
         protected virtual void OnInit() { }
+
+        /// <summary>
+        /// Called each frame if node has been set to be regularly updated (See <see cref="ReceiveNodeUpdates"/>)
+        /// Preferred over <see cref="OnUpdate"/> due to supporting <see cref="GetPortValue"/> within the update loop.
+        /// </summary>
+        protected virtual void OnNodeUpdate() { }
         #endregion
 
         #region External methods
@@ -158,6 +164,15 @@ namespace CryEngine.FlowSystem
         public EntityBase TargetEntity { get; private set; }
 
         #region Overrides
+        /// <summary>
+        /// Called each frame if script has been set to be regularly updated. (See <see cref="CryScriptInstance.ReceiveUpdates"/>)
+        /// Warning: FlowNode logic such as <see cref="GetPortValue"/> is not supported within this update loop, see <see cref="OnNodeUpdate"/>.
+        /// </summary>
+        public override void OnUpdate()
+        {
+            base.OnUpdate();
+        }
+
         public override int GetHashCode()
         {
             unchecked // Overflow is fine, just wrap
@@ -178,5 +193,7 @@ namespace CryEngine.FlowSystem
 
         public Int32 NodeId { get; set; }
         public Int64 GraphId { get; set; }
+
+        public bool ReceiveNodeUpdates { set { NativeFlowNodeMethods.SetRegularlyUpdated(Handle, value); } }
     }
 }

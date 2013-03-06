@@ -33,6 +33,8 @@ CFlowManager::CFlowManager()
 	REGISTER_METHOD(GetPortValueVec3);
 
 	REGISTER_METHOD(GetTargetEntity);
+
+	REGISTER_METHOD(SetRegularlyUpdated);
 }
 
 CFlowManager::~CFlowManager()
@@ -117,4 +119,9 @@ IEntity *CFlowManager::GetTargetEntity(CFlowNode *pNode, EntityId &id)
 
 	MonoWarning("CFlowManager::GetTargetEntity returning nullptr target entity!");
 	return nullptr;
+}
+
+void CFlowManager::SetRegularlyUpdated(CFlowNode *pNode, bool update)
+{
+	pNode->SetRegularlyUpdated(update);
 }
