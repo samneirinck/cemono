@@ -17,6 +17,16 @@ CScriptbind_Renderer::CScriptbind_Renderer()
 	REGISTER_METHOD(CreateRenderTarget);
 	REGISTER_METHOD(DestroyRenderTarget);
 	REGISTER_METHOD(SetRenderTarget);
+
+	REGISTER_METHOD(GetViewCamera);
+
+	REGISTER_METHOD(SetCameraMatrix);
+	REGISTER_METHOD(GetCameraMatrix);
+
+	REGISTER_METHOD(SetCameraPosition);
+	REGISTER_METHOD(GetCameraPosition);
+
+	REGISTER_METHOD(GetCameraFieldOfView);
 }
 
 void CScriptbind_Renderer::DrawTextToScreen(float xpos, float ypos, float fontSize, ColorF color, bool center, mono::string text)
@@ -88,4 +98,34 @@ void CScriptbind_Renderer::DestroyRenderTarget(int textureId)
 void CScriptbind_Renderer::SetRenderTarget(int textureId)
 {
 	gEnv->pRenderer->SetRenderTarget(textureId);
+}
+
+const CCamera *CScriptbind_Renderer::GetViewCamera()
+{
+	return &gEnv->pRenderer->GetCamera();
+}
+
+void CScriptbind_Renderer::SetCameraMatrix(CCamera *pCamera, Matrix34 matrix)
+{
+	pCamera->SetMatrix(matrix);
+}
+
+Matrix34 CScriptbind_Renderer::GetCameraMatrix(CCamera *pCamera)
+{
+	return pCamera->GetMatrix();
+}
+
+void CScriptbind_Renderer::SetCameraPosition(CCamera *pCamera, Vec3 pos)
+{
+	pCamera->SetPosition(pos);
+}
+
+Vec3 CScriptbind_Renderer::GetCameraPosition(CCamera *pCamera)
+{
+	return pCamera->GetPosition();
+}
+
+float CScriptbind_Renderer::GetCameraFieldOfView(CCamera *pCamera)
+{
+	return pCamera->GetFov();
 }

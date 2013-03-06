@@ -142,6 +142,8 @@ CScriptbind_Entity::CScriptbind_Entity()
 
 	REGISTER_METHOD(RemoteInvocation);
 
+	REGISTER_METHOD(GetCameraProxy);
+
 	//RegisterNativeEntityClass();
 
 	gEnv->pEntitySystem->AddSink(this, IEntitySystem::OnSpawn | IEntitySystem::OnRemove, 0);
@@ -1080,4 +1082,13 @@ void CScriptbind_Entity::RemoteInvocation(EntityId entityId, EntityId targetId, 
 		pGameObject->InvokeRMI(CMonoEntityExtension::SvScriptRMI(), params, target, channelId);
 	else
 		pGameObject->InvokeRMI(CMonoEntityExtension::ClScriptRMI(), params, target, channelId);
+}
+
+const CCamera *CScriptbind_Entity::GetCameraProxy(IEntity *pEntity)
+{
+	IEntityCameraProxy *pCamProxy = (IEntityCameraProxy *)pEntity->GetProxy(ENTITY_PROXY_CAMERA);
+	if(!pCamProxy)
+		return nullptr;
+
+	return &pCamProxy->GetCamera();
 }

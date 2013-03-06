@@ -302,6 +302,8 @@ protected:
 	static IParticleEmitter *LoadParticleEmitter(IEntity *pEntity, int slot, IParticleEffect *pEffect, SpawnParams &spawnParams);
 	
 	static void RemoteInvocation(EntityId entityId, EntityId targetId, mono::string methodName, mono::object args, ERMInvocation target, int channelId);
+	
+	static const CCamera *GetCameraProxy(IEntity *pEntity);
 	// ~Scriptbinds
 
 	static std::vector<const char *> m_monoEntityClasses;

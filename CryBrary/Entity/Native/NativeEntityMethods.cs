@@ -202,5 +202,8 @@ namespace CryEngine.Native
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern public static void RemoteInvocation(EntityId entityId, EntityId targetId, string methodName, object[] args, NetworkTarget target, int channelId);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern public static IntPtr GetCameraProxy(IntPtr entPtr);
     }
 }

@@ -73,6 +73,4 @@ namespace CryEngine
             NativeRendererMethods.DestroyRenderTarget(id);
         }
     }
-
-    
 }

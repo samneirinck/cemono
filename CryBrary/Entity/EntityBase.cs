@@ -20,6 +20,12 @@ namespace CryEngine
         internal PhysicalEntity _physics;
 
         /// <summary>
+        /// Attempts to retrieve the camera linked to this entity.
+        /// </summary>
+        /// <returns>The camera, otherwise null if not found.</returns>
+        public Camera Camera { get { return Camera.TryGet(NativeEntityMethods.GetCameraProxy(this.GetIEntity())); } }
+
+        /// <summary>
         /// Gets this entity's Lua script table, providing it exists.
         /// </summary>
         public Lua.ScriptTable ScriptTable { get { return Lua.ScriptTable.Get(this.GetIEntity()); } }

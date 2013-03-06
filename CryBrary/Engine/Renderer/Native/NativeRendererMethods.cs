@@ -1,8 +1,9 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace CryEngine.Native
 {
-    internal static class NativeRendererMethods
+    public static class NativeRendererMethods
     {
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern internal static int GetWidth();
@@ -28,5 +29,21 @@ namespace CryEngine.Native
         extern internal static void DestroyRenderTarget(int id);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static void SetRenderTarget(int id);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        extern internal static IntPtr GetViewCamera();
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        extern internal static void SetCameraMatrix(IntPtr cameraPtr, Matrix34 matrix);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        extern internal static Matrix34 GetCameraMatrix(IntPtr cameraPtr);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        extern internal static void SetCameraPosition(IntPtr cameraPtr, Vec3 pos);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        extern internal static Vec3 GetCameraPosition(IntPtr cameraPtr);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        extern internal static float GetCameraFieldOfView(IntPtr cameraPtr);
     }
 }

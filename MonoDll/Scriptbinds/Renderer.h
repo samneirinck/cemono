@@ -39,6 +39,16 @@ protected:
 	static void DestroyRenderTarget(int textureId);
 	static void SetRenderTarget(int textureId);
 	// ~External methods
+
+	static const CCamera *GetViewCamera();
+
+	static void SetCameraMatrix(CCamera *pCamera, Matrix34 matrix);
+	static Matrix34 GetCameraMatrix(CCamera *pCamera);
+
+	static void SetCameraPosition(CCamera *pCamera, Vec3 pos);
+	static Vec3 GetCameraPosition(CCamera *pCamera);
+
+	static float GetCameraFieldOfView(CCamera *pCamera);
 };
 
 #endif //__SCRIPTBIND_RENDERER__

@@ -154,6 +154,7 @@
     <Compile Include="Engine\Material\SurfaceType\SurfaceTypeParams.cs" />
     <Compile Include="Engine\Particles\ParticleEmitter.cs" />
     <Compile Include="Engine\Particles\ParticleSpawnParams.cs" />
+    <Compile Include="Engine\Renderer\Camera.cs" />
     <Compile Include="Engine\TimeOfDay\CloudShadingParams.cs" />
     <Compile Include="Engine\TimeOfDay\ColorGradingParams.cs" />
     <Compile Include="Engine\TimeOfDay\FogParams.cs" />
@@ -286,7 +287,7 @@
     <Compile Include="Engine\Particles\ParticleEffect.cs" />
     <Compile Include="Engine\Terrain.cs" />
     <Compile Include="Entity\EntityId.cs" />
-    <Compile Include="Entity\NativeEntity.cs" />
+    <Compile Include="Entity\Entities\NativeEntity.cs" />
     <Compile Include="Physics\PhysicalEntity.cs" />
     <Compile Include="Engine\Lua\ScriptTable.cs" />
     <Compile Include="Script Handling\ScriptReloadMessage.cs">
