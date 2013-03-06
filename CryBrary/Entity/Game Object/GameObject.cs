@@ -24,8 +24,7 @@ namespace CryEngine.Advanced
             var gameObject = GameObjects.FirstOrDefault(x => x.Handle == handle);
             if (gameObject == null)
             {
-                gameObject = new GameObject();
-                gameObject.SetIGameObject(handle);
+                gameObject = new GameObject(handle);
 
                 GameObjects.Add(gameObject);
             }
@@ -35,6 +34,13 @@ namespace CryEngine.Advanced
 
         private static List<GameObject> GameObjects { get; set; }
         #endregion
+
+        GameObject(IntPtr handle)
+        {
+            this.SetIGameObject(handle);
+
+            Extensions = new List<GameObjectExtension>();
+        }
 
         /// <summary>
         /// Query extension. returns 0 if extension is not there.
