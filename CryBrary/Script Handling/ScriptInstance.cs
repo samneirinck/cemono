@@ -55,7 +55,7 @@ namespace CryEngine
 
         #region Callbacks
         /// <summary>
-        /// Called each frame if script has been set to be regularly updated (See Updated property)
+        /// Called each frame if script has been set to be regularly updated (See <see cref="ReceiveUpdates"/>)
         /// </summary>
         public virtual void OnUpdate() { }
         #endregion
@@ -67,7 +67,7 @@ namespace CryEngine
         public int ScriptId { get; internal set; }
 
         /// <summary>
-        /// Controls whether the entity receives an update per frame.
+        /// Controls whether the entity receives an update per frame. (See <see cref="OnUpdate"/>
         /// </summary>
         public bool ReceiveUpdates { get; set; }
 
