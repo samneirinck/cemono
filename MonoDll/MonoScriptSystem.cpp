@@ -50,10 +50,6 @@
 #include "MonoCVars.h"
 #include "PathUtils.h"
 
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#undef GetClassName
-
 SCVars *g_pMonoCVars = 0;
 CScriptSystem *g_pScriptSystem = 0;
 

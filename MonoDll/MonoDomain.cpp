@@ -13,9 +13,6 @@
 #include <mono/metadata/debug-helpers.h>
 #include <mono/metadata/assembly.h>
 
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-
 CScriptDomain::CScriptDomain(ERuntimeVersion runtimeVersion)
 	: m_bRootDomain(true)
 	, m_bDestroying(false)
