@@ -28,8 +28,7 @@ namespace CryEngine.Compilers.NET
             }
 
             if (!CompileAndProcess("CSharp", "*.cs", ref scripts)
-                && !CompileAndProcess("VisualBasic", "*.vb", ref scripts)
-                && !CompileAndProcess("JScript", "*.js", ref scripts))
+                && !CompileAndProcess("VisualBasic", "*.vb", ref scripts))
             {
                 Debug.DisplayException(new ScriptCompilationException("No scripts to compile were found in the Game/Scripts directory.\n This is not a fatal error, and can be ignored."));
             }
