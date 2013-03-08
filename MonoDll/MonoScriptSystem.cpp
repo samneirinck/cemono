@@ -62,6 +62,7 @@ CScriptSystem::CScriptSystem()
 	, m_bReloading(false)
 	, m_bDetectedChanges(false)
 	, m_bQuitting(false)
+	, m_pConverter(nullptr)
 {
 	CryLogAlways("Initializing Mono Script System");
 
