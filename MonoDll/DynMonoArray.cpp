@@ -32,9 +32,11 @@ void CDynScriptArray::InsertMonoObject(mono::object object, int index)
 	if(index == -1)
 		index = m_lastIndex + 1;
 
-	if(size < index || size == 0)
+	if(index >= size || size == 0)
+	{
 		Resize(index + 1);
-
+		m_lastIndex = index;
+	}
 
 	CScriptArray::InsertMonoObject(object, index);
 }
