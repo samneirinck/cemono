@@ -22,13 +22,10 @@ namespace CryEngine.Initialization
             ScriptType = scriptType;
         }
 
-        public static bool TryCreate(Type type, out CryScript script)
+        static ScriptType GetScriptType(Type type)
         {
             if (type.IsAbstract || type.IsEnum)
-            {
-                script = null;
-                return false;
-            }
+                return ScriptType.Any;
 
             var scriptType = ScriptType.Any;
             if (type.Implements<CryScriptInstance>())
@@ -53,6 +50,18 @@ namespace CryEngine.Initialization
                 }
             }
 
+            return scriptType;
+        }
+
+        public static bool TryCreate(Type type, out CryScript script)
+        {
+            if (type.IsAbstract || type.IsEnum)
+            {
+                script = null;
+                return false;
+            }
+
+            var scriptType = GetScriptType(type);
             if ((scriptType & (scriptType - 1)) == 0) // only had Any set.
             {
                 script = null;
@@ -77,6 +86,11 @@ namespace CryEngine.Initialization
         public List<CryScriptInstance> ScriptInstances { get; internal set; }
 
         public IScriptRegistrationParams RegistrationParams { get; set; }
+
+        /// <summary>
+        /// True when the script has been registered in native code, e.g. entity system registration.
+        /// </summary>
+        public bool Registered { get; set; }
 
         #region Operators
         public static bool operator ==(CryScript script1, CryScript script2)

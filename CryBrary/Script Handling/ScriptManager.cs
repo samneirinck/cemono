@@ -31,6 +31,9 @@ namespace CryEngine.Initialization
             Instance = this;
 
             Scripts = new List<CryScript>();
+
+            PluginTypes = new Dictionary<ICryMonoPlugin, IEnumerable<Type>>();
+
             ProcessedAssemblies = new List<Assembly>();
 
             if (!Directory.Exists(PathUtils.TempFolder))
@@ -218,13 +221,106 @@ namespace CryEngine.Initialization
             }
         }
 
+        void ProcessWaitingScripts(bool initialLoad)
+        {
+            bool hasDefaultGameRules = false;
+            foreach (var pluginPair in PluginTypes)
+            {
+                ICryMonoPlugin plugin = pluginPair.Key;
+
+                foreach (Type type in pluginPair.Value)
+                {
+                    var script = FindScript(ScriptType.Any, x => x.Type == type);
+                    if (script == null)
+                    {
+                        if (!CryScript.TryCreate(type, out script))
+                            continue;
+                    }
+
+                    script.RegistrationParams = plugin.GetRegistrationParams(script.ScriptType, type);
+
+                    if (!script.Registered)
+                    {
+                        if (script == null || script.RegistrationParams == null)
+                            continue;
+
+                        // Contain types that can only be registered at startup here.
+                        if (initialLoad)
+                        {
+                            if (script.RegistrationParams is ActorRegistrationParams)
+                            {
+                                var registrationParams = (ActorRegistrationParams)script.RegistrationParams;
+
+                                NativeActorMethods.RegisterActorClass(script.ScriptName, script.Type.Implements(typeof(NativeActor)));
+                            }
+                            else if (script.RegistrationParams is EntityRegistrationParams)
+                            {
+                                var registrationParams = (EntityRegistrationParams)script.RegistrationParams;
+
+                                if (registrationParams.name == null)
+                                    registrationParams.name = script.ScriptName;
+                                if (registrationParams.category == null)
+                                    registrationParams.category = "Default";
+
+                                NativeEntityMethods.RegisterEntityClass(registrationParams);
+
+                                script.RegistrationParams = registrationParams;
+                            }
+                        }
+
+                        if (script.RegistrationParams is GameRulesRegistrationParams)
+                        {
+                            var registrationParams = (GameRulesRegistrationParams)script.RegistrationParams;
+
+                            if (registrationParams.name == null)
+                                registrationParams.name = script.ScriptName;
+
+                            NativeGameRulesMethods.RegisterGameMode(registrationParams.name);
+
+                            if (registrationParams.defaultGamemode || !hasDefaultGameRules)
+                            {
+                                NativeGameRulesMethods.SetDefaultGameMode(registrationParams.name);
+
+                                hasDefaultGameRules = true;
+                            }
+
+                            script.RegistrationParams = registrationParams;
+                        }
+                        else if (script.RegistrationParams is FlowNodeRegistrationParams)
+                        {
+                            var registrationParams = (FlowNodeRegistrationParams)script.RegistrationParams;
+
+                            if (registrationParams.name == null)
+                                registrationParams.name = script.ScriptName;
+                            if (registrationParams.category == null)
+                                registrationParams.category = script.Type.Namespace;
+                            if (registrationParams.filter == 0)
+                                registrationParams.filter = FlowNodeFilter.Approved;
+
+                            script.RegistrationParams = registrationParams;
+
+                            script.ScriptName = registrationParams.category + ":" + registrationParams.name;
+                        }
+                        else if (script.RegistrationParams is EntityFlowNodeRegistrationParams)
+                        {
+                            var registrationParams = (EntityFlowNodeRegistrationParams)script.RegistrationParams;
+
+                            script.ScriptName = "entity" + ":" + registrationParams.entityName;
+                        }
+
+                        script.Registered = true;
+                        Scripts.Add(script);
+                    }
+                }
+            }
+        }
+
         Exception LoadPlugins(bool initialLoad)
         {
             var pluginsDirectory = PathUtils.PluginsFolder;
             if (!Directory.Exists(pluginsDirectory))
                 return null;
 
-            bool hasDefaultGameRules = false;
             foreach (var directory in Directory.GetDirectories(pluginsDirectory))
             {
                 var compilerDll = Path.Combine(directory, "Compiler.dll");
@@ -234,10 +330,12 @@ namespace CryEngine.Initialization
                     if (assembly == null)
                         continue;
 
-                    var compilerType = assembly.GetTypes().First(x => x.Implements<ScriptCompiler>());
-                    Debug.LogAlways("        Initializing {0}...", compilerType.Name);
+                    var compilerType = assembly.GetTypes().First(x => x.Implements<ICryMonoPlugin>());
+                    Debug.LogAlways("        Initializing CryMono plugin: {0}...", compilerType.Name);
 
-                    var compiler = Activator.CreateInstance(compilerType) as ScriptCompiler;
+                    var compiler = Activator.CreateInstance(compilerType) as ICryMonoPlugin;
+
+                    PluginTypes.Add(compiler, null);
 
                     var assemblyPaths = Directory.GetFiles(directory, "*.dll", SearchOption.AllDirectories);
                     var assemblies = new List<Assembly>();
@@ -254,78 +352,7 @@ namespace CryEngine.Initialization
 
                     try
                     {
-                        var scripts = compiler.Process(assemblies);
-
-                        foreach (var unprocessedScript in scripts)
-                        {
-                            var script = unprocessedScript;
-
-                            if (initialLoad)
-                            {
-                                if (script == null || script.RegistrationParams == null)
-                                    continue;
-                                else if (script.RegistrationParams is ActorRegistrationParams)
-                                {
-                                    var registrationParams = (ActorRegistrationParams)script.RegistrationParams;
-
-                                    NativeActorMethods.RegisterActorClass(script.ScriptName, script.Type.Implements(typeof(NativeActor)));
-                                }
-                                else if (script.RegistrationParams is EntityRegistrationParams)
-                                {
-                                    var registrationParams = (EntityRegistrationParams)script.RegistrationParams;
-
-                                    if (registrationParams.name == null)
-                                        registrationParams.name = script.ScriptName;
-                                    if (registrationParams.category == null)
-                                        registrationParams.category = "Default";
-
-                                    NativeEntityMethods.RegisterEntityClass(registrationParams);
-
-                                    script.RegistrationParams = registrationParams;
-                                }
-                                else if (script.RegistrationParams is GameRulesRegistrationParams)
-                                {
-                                    var registrationParams = (GameRulesRegistrationParams)script.RegistrationParams;
-
-                                    if (registrationParams.name == null)
-                                        registrationParams.name = script.ScriptName;
-
-                                    NativeGameRulesMethods.RegisterGameMode(registrationParams.name);
-
-                                    if (registrationParams.defaultGamemode || !hasDefaultGameRules)
-                                    {
-                                        NativeGameRulesMethods.SetDefaultGameMode(registrationParams.name);
-
-                                        hasDefaultGameRules = true;
-                                    }
-
-                                    script.RegistrationParams = registrationParams;
-                                }
-                                else if (script.RegistrationParams is FlowNodeRegistrationParams)
-                                {
-                                    var registrationParams = (FlowNodeRegistrationParams)script.RegistrationParams;
-
-                                    if (registrationParams.name == null)
-                                        registrationParams.name = script.ScriptName;
-                                    if (registrationParams.category == null)
-                                        registrationParams.category = script.Type.Namespace;
-                                    if (registrationParams.filter == 0)
-                                        registrationParams.filter = FlowNodeFilter.Approved;
-
-                                    script.RegistrationParams = registrationParams;
-
-                                    script.ScriptName = registrationParams.category + ":" + registrationParams.name;
-                                }
-                                else if (script.RegistrationParams is EntityFlowNodeRegistrationParams)
-                                {
-                                    var registrationParams = (EntityFlowNodeRegistrationParams)script.RegistrationParams;
-
-                                    script.ScriptName = "entity" + ":" + registrationParams.entityName;
-                                }
-                            }
-
-                            Scripts.Add(script);
-                        }
+                        PluginTypes[compiler] = compiler.GetTypes(assemblies);
                     }
                     catch (Exception ex)
                     {
@@ -485,7 +512,6 @@ namespace CryEngine.Initialization
                     return null;
             }
 #endif
-
             AddScriptInstance(script, scriptInstance);
 
             scriptInstance.Script = script;
@@ -672,6 +698,11 @@ namespace CryEngine.Initialization
         public bool IgnoreExternalCalls { get; set; }
 
         internal List<CryScript> Scripts { get; set; }
+
+        /// <summary>
+        /// Temporary storage for scripts before they are registered.
+        /// </summary>
+        Dictionary<ICryMonoPlugin, IEnumerable<Type>> PluginTypes { get; set; }
 
         List<Assembly> ProcessedAssemblies { get; set; }
 

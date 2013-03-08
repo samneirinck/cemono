@@ -282,7 +282,7 @@
       <DependentUpon>ExceptionMessage.cs</DependentUpon>
     </Compile>
     <Compile Include="Script Handling\Registration\IScriptRegistrationParams.cs" />
-    <Compile Include="Script Handling\ScriptCompiler.cs" />
+    <Compile Include="Script Handling\Plugin.cs" />
     <Compile Include="Engine\Material\Material.cs" />
     <Compile Include="Engine\Particles\ParticleEffect.cs" />
     <Compile Include="Engine\Terrain.cs" />

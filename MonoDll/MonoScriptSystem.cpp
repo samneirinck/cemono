@@ -248,6 +248,8 @@ bool CScriptSystem::Reload()
 			pClass->InvokeArray(NULL, "InitializeNetworkStatics", pArgs);
 			SAFE_RELEASE(pArgs);
 
+			m_pScriptManager->CallMethod("ProcessWaitingScripts", m_bFirstReload);
+
 			for each(auto listener in m_listeners)
 				listener->OnReloadComplete();
 
