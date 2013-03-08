@@ -62,13 +62,10 @@ namespace CryEngine.Initialization
         {
             var result = ScriptReloadResult.Success;
 
-            try
+            var exception = LoadPlugins(initialLoad);
+            if(exception != null)
             {
-                LoadPlugins(initialLoad);
-            }
-            catch (Exception ex)
-            {
-                var scriptReloadMessage = new ScriptReloadMessage(ex, !initialLoad);
+                var scriptReloadMessage = new ScriptReloadMessage(exception, !initialLoad);
                 scriptReloadMessage.ShowDialog();
 
                 result = scriptReloadMessage.Result;
@@ -221,11 +218,11 @@ namespace CryEngine.Initialization
             }
         }
 
-        void LoadPlugins(bool initialLoad)
+        Exception LoadPlugins(bool initialLoad)
         {
             var pluginsDirectory = PathUtils.PluginsFolder;
             if (!Directory.Exists(pluginsDirectory))
-                return;
+                return null;
 
             bool hasDefaultGameRules = false;
             foreach (var directory in Directory.GetDirectories(pluginsDirectory))
@@ -332,10 +329,12 @@ namespace CryEngine.Initialization
                     }
                     catch (Exception ex)
                     {
-                        Debug.DisplayException(ex);
+                        return ex;
                     }
                 }
             }
+
+            return null;
         }
 
         /// <summary>

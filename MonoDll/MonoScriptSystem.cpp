@@ -253,25 +253,35 @@ bool CScriptSystem::Reload()
 
 			if(!m_bFirstReload && gEnv->IsEditor())
 				gEnv->pFlowSystem->ReloadAllNodeTypes();
+
+			m_bReloading = false;
+			return true;
 		}
 		break;
 	case EScriptReloadResult_Retry:
-		Reload();
-		return false;
+		{
+			m_bReloading = false;
+			return Reload();
+		}
 	case EScriptReloadResult_Revert:
 		{
 			pScriptDomain->Release();
 			m_pScriptDomain->SetActive();
+
+			m_bReloading = false;
+			return false;
 		}
 		break;
 	case EScriptReloadResult_Abort:
-		gEnv->pSystem->Quit();
+		{
+			gEnv->pSystem->Quit();
+
+			m_bReloading = false;
+		}
 		break;
 	}
 
-	m_bReloading = false;
-
-	return result == EScriptReloadResult_Success;
+	return false;
 }
 
 #define RegisterBinding(T) m_localScriptBinds.push_back(new T());

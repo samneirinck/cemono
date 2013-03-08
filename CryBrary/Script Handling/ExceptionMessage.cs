@@ -18,15 +18,16 @@ namespace CryEngine
             uxReportBtn.Click += (s, a) => Process.Start(ProjectSettings.BugReportLink);
             uxCancelBtn.Click += (s, a) => Process.GetCurrentProcess().Kill();
 
+            var text = "";
+
             if (fatal)
             {
-                uxStackTextbox.Append("Exceptions are currently treated as fatal errors (mono_exceptionsTriggerFatalErrors is true).");
-                uxStackTextbox.NewLine();
-                uxStackTextbox.Append("The application cannot continue.");
-                uxStackTextbox.NewLine(2);
+                text += "Exceptions are currently treated as fatal errors (mono_exceptionsTriggerFatalErrors is true)." + Environment.NewLine;
+                text += "The application cannot continue." + Environment.NewLine + Environment.NewLine;
             }
 
-            uxStackTextbox.Append(ex.ToString());
+            text += ex.ToString();
+            uxStackTextbox.Text = text;
 
             var selected = ActiveControl;
             ActiveControl = uxStackTextbox;

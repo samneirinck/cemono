@@ -38,19 +38,12 @@ namespace CryEngine.Compilers.NET
 
         bool CompileAndProcess(string provider, string searchPattern, ref List<CryScript> scripts)
         {
-            try
+            var foundScripts = ProcessAssembly(CompileFromSource(CodeDomProvider.CreateProvider(provider), searchPattern));
+            if (foundScripts.Count() > 0)
             {
-                var foundScripts = ProcessAssembly(CompileFromSource(CodeDomProvider.CreateProvider(provider), searchPattern));
-                if (foundScripts.Count() > 0)
-                {
-                    scripts.AddRange(foundScripts);
+                scripts.AddRange(foundScripts);
 
-                    return true;
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.DisplayException(ex);
+                return true;
             }
 
             return false;
