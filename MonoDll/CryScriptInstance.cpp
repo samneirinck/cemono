@@ -13,7 +13,8 @@ CCryScriptInstance::CCryScriptInstance(mono::object scriptInstance, EMonoScriptF
 
 CCryScriptInstance::~CCryScriptInstance()
 {
-	g_pScriptSystem->RemoveListener(this);
+	if(g_pScriptSystem)
+		g_pScriptSystem->RemoveListener(this);
 
 	m_scriptId = 0;
 }
