@@ -77,7 +77,7 @@ CScriptSystem::CScriptSystem()
 	
 	// We should look into storing mono binaries, configuration as well as scripts via CryPak.
 	mono_set_dirs(PathUtils::GetMonoLibPath(), PathUtils::GetMonoConfigPath());
-	
+
 #ifndef _RELEASE
 	// Enable Mono signal handling
 	// Makes sure that Mono sends back exceptions it tries to handle, for CE crash handling.
@@ -127,6 +127,8 @@ CScriptSystem::CScriptSystem()
 CScriptSystem::~CScriptSystem()
 {
 	m_bQuitting = true;
+
+	m_listeners.clear();
 
 	for(auto it = m_localScriptBinds.begin(); it != m_localScriptBinds.end(); ++it)
 		delete (*it);
@@ -223,7 +225,7 @@ bool CScriptSystem::Reload()
 	pCtorParams->InsertMonoString(ToMonoString(PathUtils::GetConfigPath()));
 
 	IMonoObject *pScriptManager = *pCryBraryAssembly->GetClass("ScriptManager", "CryEngine.Initialization")->CreateInstance(pCtorParams);
-
+	
 	auto result = pScriptManager->CallMethod("Initialize", m_bFirstReload)->Unbox<EScriptReloadResult>();
 	switch(result)
 	{
