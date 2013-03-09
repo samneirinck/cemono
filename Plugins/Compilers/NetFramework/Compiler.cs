@@ -168,10 +168,19 @@ namespace CryEngine.Compilers.NET
                     }
                     catch (Exception ex)
                     {
-                        if (ex is UnauthorizedAccessException || ex is IOException)
-                            assemblyPath = Path.ChangeExtension(assemblyPath, "_" + Path.GetExtension(assemblyPath));
-                        else
-                            throw;
+						if (ex is UnauthorizedAccessException || ex is IOException)
+						{
+							int num = 1;
+							var split = assemblyPath.Split(new string[] { ".dll" }, StringSplitOptions.None);
+
+							while (File.Exists(assemblyPath))
+							{
+								assemblyPath = split.First() + num.ToString() + ".dll";
+								num++;
+							}
+						}
+						else
+							throw;
                     }
                 }
 
