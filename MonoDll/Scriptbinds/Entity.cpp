@@ -102,11 +102,12 @@ CScriptbind_Entity::CScriptbind_Entity()
 	REGISTER_METHOD(GetAttachmentByIndex);
 	REGISTER_METHOD(GetAttachmentByName);
 
-	REGISTER_METHOD(AttachmentUseEntityPosition);
-	REGISTER_METHOD(AttachmentUseEntityRotation);
-
-	REGISTER_METHOD(LinkEntityToAttachment);
-	REGISTER_METHOD(GetAttachmentObject);
+	REGISTER_METHOD(BindAttachmentToCGF);
+	REGISTER_METHOD(BindAttachmentToCHR);
+	REGISTER_METHOD(BindAttachmentToEntity);
+	REGISTER_METHOD(BindAttachmentToLight);
+	REGISTER_METHOD(BindAttachmentToParticleEffect);
+	REGISTER_METHOD(ClearAttachmentBinding);
 
 	REGISTER_METHOD(GetAttachmentAbsolute);
 	REGISTER_METHOD(GetAttachmentRelative);
@@ -115,6 +116,12 @@ CScriptbind_Entity::CScriptbind_Entity()
 
 	REGISTER_METHOD(GetAttachmentMaterial);
 	REGISTER_METHOD(SetAttachmentMaterial);
+
+	REGISTER_METHOD(GetAttachmentName);
+	REGISTER_METHOD(GetAttachmentType);
+
+	REGISTER_METHOD(GetAttachmentObjectType);
+	REGISTER_METHOD(GetAttachmentObjectBBox);
 	// ~Attachment
 
 	REGISTER_METHOD(GetJointAbsolute);
@@ -826,17 +833,36 @@ IAttachment *CScriptbind_Entity::GetAttachmentByName(IEntity *pEnt, mono::string
 	return nullptr;
 }
 
+CCGFAttachment *CScriptbind_Entity::BindAttachmentToCGF(IAttachment *pAttachment, mono::string cgf, IMaterial *pMaterial)
+{
+	pAttachment->ClearBinding();
+
+	CCGFAttachment *pCGFAttachment = new CCGFAttachment();
+	pCGFAttachment->pObj = gEnv->p3DEngine->LoadStatObj(ToCryString(cgf));
+	pCGFAttachment->pMaterial = pMaterial;
+
+	pAttachment->AddBinding(pCGFAttachment);
+
+	return pCGFAttachment;
+}
+
+CCHRAttachment *CScriptbind_Entity::BindAttachmentToCHR(IAttachment *pAttachment, mono::string chr, IMaterial *pMaterial)
+{
+	pAttachment->ClearBinding();
+
+	CCHRAttachment *pCHRAttachment = new CCHRAttachment();
+	pCHRAttachment->m_pCharInstance = gEnv->pCharacterManager->CreateInstance(ToCryString(chr));
+	pCHRAttachment->m_pMaterial = pMaterial;
+
+	pAttachment->AddBinding(pCHRAttachment);
+
+	return pCHRAttachment;
+}
+
 class CMonoEntityAttachment : public CEntityAttachment
 {
 public:
-	CMonoEntityAttachment()
-		: m_bUseEntityPosition(false)
-		, m_bUseEntityRotation(false)
-	{
-	}
-
-	void UseEntityPosition(bool use) { m_bUseEntityPosition = use; }
-	void UseEntityRotation(bool use) { m_bUseEntityRotation = use; }
+	CMonoEntityAttachment() {}
 
 	virtual void UpdateAttachment(IAttachment *pIAttachment,const QuatT &m, float fZoomAdjustedDistanceFromCamera, uint32 OnRender ) override
 	{
@@ -844,25 +870,11 @@ public:
 
 		IEntity *pEntity = gEnv->pEntitySystem->GetEntity(GetEntityId());
 		if(pEntity)
-			pEntity->SetPosRotScale((m_bUseEntityPosition ? pEntity->GetPos() : quatT.t), (m_bUseEntityRotation ? pEntity->GetRotation() : quatT.q), pEntity->GetScale(), ENTITY_XFORM_NO_PROPOGATE);
+			pEntity->SetPosRotScale(pEntity->GetPos(), pEntity->GetRotation(), pEntity->GetScale(), ENTITY_XFORM_NO_PROPOGATE);
 	}
-
-private:
-	bool m_bUseEntityPosition;
-	bool m_bUseEntityRotation;
 };
 
-void CScriptbind_Entity::AttachmentUseEntityPosition(CMonoEntityAttachment *pEntityAttachment, bool use)
-{
-	pEntityAttachment->UseEntityPosition(use);
-}
-
-void CScriptbind_Entity::AttachmentUseEntityRotation(CMonoEntityAttachment *pEntityAttachment, bool use)
-{
-	pEntityAttachment->UseEntityRotation(use);
-}
-
-CMonoEntityAttachment *CScriptbind_Entity::LinkEntityToAttachment(IAttachment *pAttachment, EntityId id)
+CMonoEntityAttachment *CScriptbind_Entity::BindAttachmentToEntity(IAttachment *pAttachment, EntityId id)
 {
 	pAttachment->ClearBinding();
 
@@ -874,17 +886,32 @@ CMonoEntityAttachment *CScriptbind_Entity::LinkEntityToAttachment(IAttachment *p
 	return pEntityAttachment;
 }
 
-mono::string CScriptbind_Entity::GetAttachmentObject(IAttachment *pAttachment)
+CLightAttachment *CScriptbind_Entity::BindAttachmentToLight(IAttachment *pAttachment, CDLight &light)
 {
-	if(IAttachmentObject *pObject = pAttachment->GetIAttachmentObject())
-	{
-		if(ICharacterInstance *pCharacterInstance = pObject->GetICharacterInstance())
-			return ToMonoString(pCharacterInstance->GetFilePath());
-		else if(IStatObj *pStatObj = pObject->GetIStatObj())
-			return ToMonoString(pStatObj->GetFilePath());
-	}
+	pAttachment->ClearBinding();
 
-	return nullptr;
+	CLightAttachment *pLightAttachment = new CLightAttachment();
+	pLightAttachment->LoadLight(light);
+
+	pAttachment->AddBinding(pLightAttachment);
+
+	return pLightAttachment;
+}
+
+CEffectAttachment *CScriptbind_Entity::BindAttachmentToParticleEffect(IAttachment *pAttachment, IParticleEffect *pParticleEffect, Vec3 offset, Vec3 dir, float scale)
+{
+	pAttachment->ClearBinding();
+
+	CEffectAttachment *pEffectAttachment = new CEffectAttachment(pParticleEffect, offset, dir, scale);
+
+	pAttachment->AddBinding(pEffectAttachment);
+
+	return pEffectAttachment;
+}
+
+void CScriptbind_Entity::ClearAttachmentBinding(IAttachment *pAttachment)
+{
+	pAttachment->ClearBinding();
 }
 
 QuatT CScriptbind_Entity::GetAttachmentAbsolute(IAttachment *pAttachment)
@@ -919,6 +946,34 @@ void CScriptbind_Entity::SetAttachmentMaterial(IAttachment *pAttachment, IMateri
 {
 	if(IAttachmentObject *pObject = pAttachment->GetIAttachmentObject())
 		pObject->SetMaterial(pMaterial);
+}
+
+mono::string CScriptbind_Entity::GetAttachmentName(IAttachment *pAttachment)
+{
+	return ToMonoString(pAttachment->GetName());
+}
+
+AttachmentTypes CScriptbind_Entity::GetAttachmentType(IAttachment *pAttachment)
+{
+	return (AttachmentTypes)pAttachment->GetType();
+}
+
+IAttachmentObject::EType CScriptbind_Entity::GetAttachmentObjectType(IAttachment *pAttachment)
+{
+	if(IAttachmentObject *pAttachmentObject = pAttachment->GetIAttachmentObject())
+	{
+		return pAttachmentObject->GetAttachmentType();
+	}
+
+	return IAttachmentObject::eAttachment_Unknown;
+}
+
+AABB CScriptbind_Entity::GetAttachmentObjectBBox(IAttachment *pAttachment)
+{
+	if(IAttachmentObject *pAttachmentObject = pAttachment->GetIAttachmentObject())
+		return pAttachmentObject->GetAABB();
+
+	return AABB(ZERO);
 }
 
 QuatT CScriptbind_Entity::GetJointAbsolute(IEntity *pEntity, mono::string jointName, int characterSlot)

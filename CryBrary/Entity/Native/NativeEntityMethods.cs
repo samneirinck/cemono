@@ -138,14 +138,17 @@ namespace CryEngine.Native
         extern public static IntPtr GetAttachmentByName(IntPtr entPtr, string name, int slot);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern public static void AttachmentUseEntityPosition(IntPtr entityAttachmentPtr, bool use);
+        extern public static IntPtr BindAttachmentToCGF(IntPtr attachmentPtr, string cgf, IntPtr materialPtr);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern public static void AttachmentUseEntityRotation(IntPtr entityAttachmentPtr, bool use);
-
+        extern public static IntPtr BindAttachmentToCHR(IntPtr attachmentPtr, string chr, IntPtr materialPtr);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern public static IntPtr LinkEntityToAttachment(IntPtr attachmentPtr, EntityId entityId);
+        extern public static IntPtr BindAttachmentToEntity(IntPtr attachmentPtr, EntityId id);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern public static string GetAttachmentObject(IntPtr attachmentPtr);
+        extern public static IntPtr BindAttachmentToLight(IntPtr attachmentPtr, ref LightParams lightParams);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern public static IntPtr BindAttachmentToParticleEffect(IntPtr attachmentPtr, IntPtr particleEffectPtr, Vec3 offset, Vec3 dir, float scale);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern public static void ClearAttachmentBinding(IntPtr attachmentPtr);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern public static QuatT GetAttachmentAbsolute(IntPtr attachmentPtr);
@@ -161,6 +164,16 @@ namespace CryEngine.Native
         extern public static IntPtr GetAttachmentMaterial(IntPtr attachmentPtr);
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern public static void SetAttachmentMaterial(IntPtr attachmentPtr, IntPtr materialPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern public static string GetAttachmentName(IntPtr attachmentPtr);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern public static AttachmentType GetAttachmentType(IntPtr attachmentPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern public static AttachmentObjectType GetAttachmentObjectType(IntPtr attachmentPtr);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern public static BoundingBox GetAttachmentObjectBBox(IntPtr attachmentPtr);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern public static QuatT GetJointAbsolute(IntPtr entPtr, string jointName, int characterSlot);

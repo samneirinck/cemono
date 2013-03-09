@@ -84,21 +84,21 @@ namespace CryEngine
         {
             var ptr = NativeMaterialMethods.FindMaterial(name);
 
-            return TryAdd(ptr);
+            return TryGet(ptr);
         }
 
         public static Material Create(string name, bool makeIfNotFound = true, bool nonRemovable = false)
         {
             var ptr = NativeMaterialMethods.CreateMaterial(name);
 
-            return TryAdd(ptr);
+            return TryGet(ptr);
         }
 
         public static Material Load(string name, bool makeIfNotFound = true, bool nonRemovable = false)
         {
             var ptr = NativeMaterialMethods.LoadMaterial(name, makeIfNotFound, nonRemovable);
 
-            return TryAdd(ptr);
+            return TryGet(ptr);
         }
 
         public static Material Get(EntityBase entity, int slot = 0)
@@ -109,7 +109,7 @@ namespace CryEngine
 #endif
 
             var ptr = NativeMaterialMethods.GetMaterial(entity.GetIEntity(), slot);
-            return TryAdd(ptr);
+            return TryGet(ptr);
         }
 
         public static void Set(EntityBase entity, Material mat, int slot = 0)
@@ -134,7 +134,7 @@ namespace CryEngine
         {
             var ptr = NativeMaterialMethods.GetSubMaterial(Handle, slot);
 
-            return TryAdd(ptr);
+            return TryGet(ptr);
         }
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace CryEngine
         {
             var ptr = NativeMaterialMethods.CloneMaterial(Handle, subMaterial);
 
-            return TryAdd(ptr);
+            return TryGet(ptr);
         }
 
         /// <summary>
@@ -318,13 +318,13 @@ namespace CryEngine
         }
         #endregion
 
-        private static Material TryAdd(IntPtr ptr)
+        internal static Material TryGet(IntPtr ptr)
         {
             if (ptr == IntPtr.Zero)
                 return null;
 
             var mat = materials.FirstOrDefault(x => x.Handle == ptr);
-            if (mat != default(Material))
+            if (mat != null)
                 return mat;
 
             mat = new Material(ptr);

@@ -52,7 +52,7 @@ namespace CryEngine
         /// <param name="autoInit"></param>
         /// <param name="flags"></param>
         /// <returns></returns>
-        public static Entity Spawn(string entityName, string className, Vec3? pos = null, Quat? rot = null, Vec3? scale = null, bool autoInit = true, EntityFlags flags = EntityFlags.CastShadow)
+        public static Entity Spawn(string entityName, string className = "Default", Vec3? pos = null, Quat? rot = null, Vec3? scale = null, bool autoInit = true, EntityFlags flags = EntityFlags.CastShadow)
         {
             EntityInitializationParams info;
 

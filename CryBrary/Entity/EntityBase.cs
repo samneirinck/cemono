@@ -177,7 +177,7 @@ namespace CryEngine
             if (ptr == IntPtr.Zero)
                 return null;
 
-            return Attachment.TryAdd(ptr, this);
+            return Attachment.TryAdd(ptr);
         }
 
         /// <summary>
@@ -195,7 +195,7 @@ namespace CryEngine
 
             var ptr = NativeEntityMethods.GetAttachmentByName(this.GetIEntity(), name, characterSlot);
 
-            return Attachment.TryAdd(ptr, this);
+            return Attachment.TryAdd(ptr);
         }
 
         /// <summary>

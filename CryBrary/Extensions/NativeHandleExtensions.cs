@@ -22,21 +22,6 @@ namespace CryEngine.Native
         }
         #endregion
 
-        #region Attachment
-        public static IntPtr GetIAttachment(this Attachment attachment)
-        {
-            if (attachment.IsDestroyed)
-                throw new ScriptInstanceDestroyedException("Attempted to access native attachment handle on a destroyed script");
-
-            return attachment.AttachmentHandle;
-        }
-
-        public static void SetIAttachment(this Attachment attachment, IntPtr newHandle)
-        {
-            attachment.AttachmentHandle = newHandle;
-        }
-        #endregion
-
         #region Game Object
         public static IntPtr GetIGameObject(this Advanced.GameObject gameObject)
         {

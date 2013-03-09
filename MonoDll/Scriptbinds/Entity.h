@@ -262,11 +262,12 @@ protected:
 	static IAttachment *GetAttachmentByIndex(IEntity *pEnt, int index, int slot);
 	static IAttachment *GetAttachmentByName(IEntity *pEnt, mono::string name, int slot);
 
-	static void AttachmentUseEntityPosition(CMonoEntityAttachment *pEntityAttachment, bool use);
-	static void AttachmentUseEntityRotation(CMonoEntityAttachment *pEntityAttachment, bool use);
-
-	static CMonoEntityAttachment *LinkEntityToAttachment(IAttachment *pAttachment, EntityId id);
-	static mono::string GetAttachmentObject(IAttachment *pAttachment);
+	static CCGFAttachment *BindAttachmentToCGF(IAttachment *pAttachment, mono::string cgf, IMaterial *pMaterial);
+	static CCHRAttachment *BindAttachmentToCHR(IAttachment *pAttachment, mono::string chr, IMaterial *pMaterial);
+	static CMonoEntityAttachment *BindAttachmentToEntity(IAttachment *pAttachment, EntityId id);
+	static CLightAttachment *BindAttachmentToLight(IAttachment *pAttachment, CDLight &light);
+	static CEffectAttachment *BindAttachmentToParticleEffect(IAttachment *pAttachment, IParticleEffect *pParticleEffect, Vec3 offset, Vec3 dir, float scale);
+	static void ClearAttachmentBinding(IAttachment *pAttachment);
 
 	static QuatT GetAttachmentAbsolute(IAttachment *pAttachment);
 	static QuatT GetAttachmentRelative(IAttachment *pAttachment);
@@ -276,6 +277,12 @@ protected:
 
 	static IMaterial *GetAttachmentMaterial(IAttachment *pAttachment);
 	static void SetAttachmentMaterial(IAttachment *pAttachment, IMaterial *pMaterial);
+
+	static mono::string GetAttachmentName(IAttachment *pAttachment);
+	static AttachmentTypes GetAttachmentType(IAttachment *pAttachment);
+
+	static IAttachmentObject::EType GetAttachmentObjectType(IAttachment *pAttachment);
+	static AABB GetAttachmentObjectBBox(IAttachment *pAttachment);
 
 	static QuatT GetJointAbsolute(IEntity *pEntity, mono::string jointName, int characterSlot);
 	static QuatT GetJointAbsoluteDefault(IEntity *pEntity, mono::string jointName, int characterSlot);
