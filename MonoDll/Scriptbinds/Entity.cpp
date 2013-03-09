@@ -155,6 +155,8 @@ CScriptbind_Entity::~CScriptbind_Entity()
 		gEnv->pEntitySystem->RemoveSink(this);
 	else
 		MonoWarning("Failed to unregister CScriptbind_Entity entity sink!");
+
+	m_monoEntityClasses.clear();
 }
 
 void CScriptbind_Entity::PlayAnimation(IEntity *pEntity, mono::string animationName, int slot, int layer, float blend, float speed, EAnimationFlags flags)

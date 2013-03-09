@@ -37,6 +37,8 @@ CScriptbind_ActorSystem::~CScriptbind_ActorSystem()
 		gEnv->pEntitySystem->RemoveSink(this);
 	else
 		MonoWarning("Failed to unregister CActorSystem entity sink!");
+
+	m_monoActorClasses.clear();
 }
 
 EMonoActorType CScriptbind_ActorSystem::GetMonoActorType(const char *actorClassName)
