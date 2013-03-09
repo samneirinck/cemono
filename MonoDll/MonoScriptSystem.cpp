@@ -196,7 +196,10 @@ bool CScriptSystem::CompleteInit()
 		CryLogAlways("		Initializing CryMono done, MemUsage=%iKb", (memInfo.allocated + pMemoryUsage->Unbox<long>()) / 1024);
 	}
 	else
+	{
 		CryLogAlways("		Initializing CryMono failed!");
+		return false;
+	}
 
 	return true;
 }
