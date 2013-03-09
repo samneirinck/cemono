@@ -32,8 +32,15 @@ namespace CryEngine.Serialization
         private static extern bool _IsReading(IntPtr handle);
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        private static extern void FlagPartialRead(IntPtr handle);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
         private static extern SerializationTarget GetSerializationTarget(IntPtr handle);
 
+        /// <summary>
+        /// Begins a serialization group - must be matched by an <see cref="EndGroup()"/> call.
+        /// </summary>
+        /// <param name="name">Preferably as short as possible for performance reasons, cannot contain spaces.</param>
         public void BeginGroup(string name)
         {
             BeginGroup(Handle, name);
@@ -82,6 +89,14 @@ namespace CryEngine.Serialization
         public void EnumValue(string name, ref Int32 obj, int first, int last)
         {
             EnumValue(Handle, name, ref obj, first, last);
+        }
+
+        /// <summary>
+        /// For network updates: Notify the network engine that this value was only partially read and we should re-request an update from the server soon.
+        /// </summary>
+        public void FlagPartialRead()
+        {
+            FlagPartialRead(Handle);
         }
 
         public bool IsReading { get { return _IsReading(Handle); } }

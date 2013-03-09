@@ -17,6 +17,8 @@ CScriptbind_CrySerialize::CScriptbind_CrySerialize()
 	REGISTER_METHOD(EnumValue);
 
 	REGISTER_METHOD(_IsReading);
+
+	REGISTER_METHOD(FlagPartialRead);
 }
 
 CScriptbind_CrySerialize::~CScriptbind_CrySerialize()
@@ -117,4 +119,9 @@ void CScriptbind_CrySerialize::EnumValue(ISerialize *ser, mono::string name, int
 bool CScriptbind_CrySerialize::_IsReading(ISerialize *ser)
 {
 	return ser->IsReading();
+}
+
+void CScriptbind_CrySerialize::FlagPartialRead(ISerialize *ser)
+{
+	ser->FlagPartialRead();
 }
