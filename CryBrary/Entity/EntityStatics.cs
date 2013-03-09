@@ -20,9 +20,9 @@ namespace CryEngine
         /// <param name="autoInit"></param>
         /// <param name="flags"></param>
         /// <returns></returns>
-        public static Entity Spawn(string entityName, Type type, Vec3? pos = null, Quat? rot = null, Vec3? scale = null, bool autoInit = true, EntityFlags flags = EntityFlags.CastShadow)
+        public static EntityBase Spawn(string entityName, Type type, Vec3? pos = null, Quat? rot = null, Vec3? scale = null, bool autoInit = true, EntityFlags flags = EntityFlags.CastShadow, params object[] args)
         {
-            return Spawn(entityName, type.Name, pos, rot, scale, autoInit, flags);
+            return Spawn(entityName, type.Name, pos, rot, scale, autoInit, flags, args);
         }
 
         /// <summary>
@@ -36,9 +36,9 @@ namespace CryEngine
         /// <param name="autoInit"></param>
         /// <param name="flags"></param>
         /// <returns></returns>
-        public static T Spawn<T>(string entityName, Vec3? pos = null, Quat? rot = null, Vec3? scale = null, bool autoInit = true, EntityFlags flags = EntityFlags.CastShadow) where T : Entity, new()
+        public static T Spawn<T>(string entityName, Vec3? pos = null, Quat? rot = null, Vec3? scale = null, bool autoInit = true, EntityFlags flags = EntityFlags.CastShadow, params object[] args) where T : Entity, new()
         {
-            return Spawn(entityName, typeof(T).Name, pos, rot, scale, autoInit, flags) as T;
+            return Spawn(entityName, typeof(T).Name, pos, rot, scale, autoInit, flags, args) as T;
         }
 
         /// <summary>
@@ -52,13 +52,17 @@ namespace CryEngine
         /// <param name="autoInit"></param>
         /// <param name="flags"></param>
         /// <returns></returns>
-        public static Entity Spawn(string entityName, string className = "Default", Vec3? pos = null, Quat? rot = null, Vec3? scale = null, bool autoInit = true, EntityFlags flags = EntityFlags.CastShadow)
+        public static EntityBase Spawn(string entityName, string className = "Default", Vec3? pos = null, Quat? rot = null, Vec3? scale = null, bool autoInit = true, EntityFlags flags = EntityFlags.CastShadow, params object[] args)
         {
             EntityInitializationParams info;
 
             var ent = NativeEntityMethods.SpawnEntity(new EntitySpawnParams { Name = entityName, Class = className, Pos = pos ?? new Vec3(1, 1, 1), Rot = rot ?? Quat.Identity, Scale = scale ?? new Vec3(1, 1, 1), Flags = flags }, autoInit, out info) as Entity;
             if (ent != null)
+            {
+                ent.OnPostSpawn(args);
+
                 return ent;
+            }
             else if (info.Id != 0)
                 return CreateNativeEntity(info.Id, info.IEntityPtr) as Entity;
 
@@ -281,18 +285,6 @@ namespace CryEngine
         /// Entity was spawned dynamically without a class.
         /// </summary>
         Spawned = (1 << 24),
-    }
-
-    public struct EntitySpawnParams
-    {
-        public string Name;
-        public string Class;
-
-        public Vec3 Pos;
-        public Quat Rot;
-        public Vec3 Scale;
-
-        public EntityFlags Flags;
     }
 
     /// <summary>

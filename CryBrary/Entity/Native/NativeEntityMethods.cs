@@ -6,6 +6,18 @@ using CryEngine.Physics;
 
 namespace CryEngine.Native
 {
+    public struct EntitySpawnParams
+    {
+        public string Name;
+        public string Class;
+
+        public Vec3 Pos;
+        public Quat Rot;
+        public Vec3 Scale;
+
+        public EntityFlags Flags;
+    }
+
     public static class NativeEntityMethods
     {
         [MethodImplAttribute(MethodImplOptions.InternalCall)]

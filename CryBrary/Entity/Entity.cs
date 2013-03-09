@@ -90,6 +90,11 @@ namespace CryEngine
         public virtual void OnSpawn() { }
 
         /// <summary>
+        /// Called after spawning, with the parameters supplied to Entity.Spawn.
+        /// </summary>
+        public virtual void OnPostSpawn(object[] args) { }
+
+        /// <summary>
         /// Called when the entity is being removed.
         /// </summary>
         /// <returns>True to allow removal, false to deny.</returns>
