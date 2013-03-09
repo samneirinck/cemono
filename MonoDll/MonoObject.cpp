@@ -171,7 +171,7 @@ void CScriptObject::SetManagedObject(MonoObject *newObject, bool allowGC)
 
 	// We need this to allow the GC to collect the class object later on.
 	if(allowGC)
-		m_objectHandle = mono_gchandle_new(m_pObject, false);
+		m_objectHandle = mono_gchandle_new(m_pObject, allowGC);
 	else
 		m_objectHandle = -1;
 }

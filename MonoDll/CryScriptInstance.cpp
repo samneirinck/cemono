@@ -4,7 +4,7 @@
 CCryScriptInstance::CCryScriptInstance(mono::object scriptInstance, EMonoScriptFlags flags)
 	: m_flags(flags)
 {
-	SetManagedObject((MonoObject *)scriptInstance);
+	SetManagedObject((MonoObject *)scriptInstance, true);
 
 	m_scriptId = GetPropertyValue("ScriptId")->Unbox<int>();
 
@@ -37,7 +37,7 @@ void CCryScriptInstance::OnReloadComplete()
 
 	if(mono::object result = pScriptManager->GetClass()->InvokeArray(pScriptManager->GetManagedObject(), "GetScriptInstanceById", pArgs))
 	{
-		SetManagedObject((MonoObject *)result);
+		SetManagedObject((MonoObject *)result, true);
 	}
 	else
 		CryFatalError("[CryMono] Failed to locate script instance %i after reload!", m_scriptId);
