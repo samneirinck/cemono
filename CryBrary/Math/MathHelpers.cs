@@ -189,6 +189,11 @@ namespace CryEngine
             return val2;
         }
 
+		public static bool IsPowerOfTwo(int value)
+		{
+			return (value & (value - 1)) == 0;
+		}
+
         /// <summary>
         /// The value for which all absolute numbers smaller than are considered equal to zero.
         /// </summary>

@@ -321,7 +321,7 @@
     <Compile Include="Testing\Results.cs" />
     <Compile Include="Testing\Manager.cs" />
     <Compile Include="Misc\Convert.cs" />
-    <Compile Include="Math\Math.cs" />
+    <Compile Include="Math\MathHelpers.cs" />
     <Compile Include="Physics\RaycastHit.cs" />
     <Compile Include="Engine\Renderer\Renderer.cs" />
     <Compile Include="Entity\Extensions\EntityMovement.cs" />
