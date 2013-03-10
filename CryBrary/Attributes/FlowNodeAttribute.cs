@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CryEngine.FlowSystem
+namespace CryEngine.Flowgraph
 {
     [AttributeUsage(AttributeTargets.Class)]
     public sealed class FlowNodeAttribute : Attribute
@@ -31,7 +31,7 @@ namespace CryEngine.FlowSystem
         public string Description { get; set; }
 
         /// <summary>
-        /// Gets or sets whether this node targets an entity. See <see cref="CryEngine.FlowSystem.FlowNode.TargetEntity"/>
+        /// Gets or sets whether this node targets an entity. See <see cref="CryEngine.Flowgraph.FlowNode.TargetEntity"/>
         /// </summary>
         public bool TargetsEntity { get; set; }
     }

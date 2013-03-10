@@ -123,12 +123,12 @@ namespace CryEngine.Native
         #endregion
 
         #region FlowNode
-        public static IntPtr GetIFlowNode(this FlowSystem.FlowNode node)
+        public static IntPtr GetIFlowNode(this Flowgraph.FlowNode node)
         {
             return node.Handle;
         }
 
-        public static void SetIFlowNode(this FlowSystem.FlowNode node, IntPtr handle)
+		public static void SetIFlowNode(this Flowgraph.FlowNode node, IntPtr handle)
         {
             node.Handle = handle;
         }

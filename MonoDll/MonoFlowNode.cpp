@@ -37,7 +37,7 @@ bool CMonoFlowNode::CreatedNode(TFlowNodeId id, const char *name, TFlowNodeTypeI
 
 		IMonoObject *pScript = g_pScriptSystem->InstantiateScript(gEnv->pFlowSystem->GetTypeName(typeId), eScriptFlag_FlowNode);
 
-		IMonoClass *pNodeInfo = g_pScriptSystem->GetCryBraryAssembly()->GetClass("NodeInitializationParams", "CryEngine.FlowSystem.Native");
+		IMonoClass *pNodeInfo = g_pScriptSystem->GetCryBraryAssembly()->GetClass("NodeInitializationParams", "CryEngine.Flowgraph.Native");
 		
 		IMonoArray *pArgs = CreateMonoArray(1);
 		pArgs->InsertMonoObject(pNodeInfo->BoxObject(&SMonoNodeInfo(this, id, m_pActInfo->pGraph->GetGraphId())));

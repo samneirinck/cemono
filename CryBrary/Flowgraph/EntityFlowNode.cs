@@ -5,9 +5,9 @@ using System.Text;
 
 using CryEngine;
 using CryEngine.Initialization;
-using CryEngine.FlowSystem.Native;
+using CryEngine.Flowgraph.Native;
 
-namespace CryEngine.FlowSystem
+namespace CryEngine.Flowgraph
 {
     public abstract class EntityFlowNode<T> : FlowNode where T : EntityBase
     {

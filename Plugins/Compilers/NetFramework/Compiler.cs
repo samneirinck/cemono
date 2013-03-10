@@ -10,7 +10,7 @@ using CryEngine.Initialization;
 using CryEngine.Testing;
 using CryEngine.Utilities;
 
-using CryEngine.FlowSystem;
+using CryEngine.Flowgraph;
 
 namespace CryEngine.Compilers.NET
 {

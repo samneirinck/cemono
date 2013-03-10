@@ -5,7 +5,7 @@ using System.Text;
 
 using System.Reflection;
 
-using CryEngine.FlowSystem;
+using CryEngine.Flowgraph;
 
 namespace CryEngine.Initialization
 {

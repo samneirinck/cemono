@@ -18,7 +18,7 @@ using CryEngine.Testing.Internals;
 using CryEngine.Serialization;
 using CryEngine.Utilities;
 
-using CryEngine.FlowSystem;
+using CryEngine.Flowgraph;
 
 namespace CryEngine.Initialization
 {

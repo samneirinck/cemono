@@ -2,7 +2,7 @@
 
 using CryEngine.Initialization;
 
-namespace CryEngine.FlowSystem.Native
+namespace CryEngine.Flowgraph.Native
 {
     internal struct NodeConfig
     {

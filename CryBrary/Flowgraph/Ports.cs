@@ -3,7 +3,7 @@ using System.Linq;
 
 using CryEngine.Native;
 
-namespace CryEngine.FlowSystem
+namespace CryEngine.Flowgraph
 {
     public enum NodePortType
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 using CryEngine.Extensions;
 
-using CryEngine.FlowSystem;
+using CryEngine.Flowgraph;
 
 namespace CryEngine.Initialization
 {

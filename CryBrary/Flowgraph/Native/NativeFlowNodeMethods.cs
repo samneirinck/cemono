@@ -4,7 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace CryEngine.FlowSystem.Native
+namespace CryEngine.Flowgraph.Native
 {
     internal static class NativeFlowNodeMethods
     {

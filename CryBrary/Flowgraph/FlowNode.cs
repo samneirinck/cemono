@@ -10,9 +10,9 @@ using CryEngine.Extensions;
 using CryEngine.Initialization;
 using CryEngine.Native;
 
-using CryEngine.FlowSystem.Native;
+using CryEngine.Flowgraph.Native;
 
-namespace CryEngine.FlowSystem
+namespace CryEngine.Flowgraph
 {
     public abstract class FlowNode : CryScriptInstance
     {
