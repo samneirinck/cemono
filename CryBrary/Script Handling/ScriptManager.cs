@@ -473,7 +473,6 @@ namespace CryEngine.Initialization
         /// <returns>New instance scriptId or -1 if instantiation failed.</returns>
         public CryScriptInstance CreateScriptInstance(string scriptName, ScriptType scriptType, IntPtr cryScriptInstanceHandle, object[] constructorParams = null, bool throwOnFail = true)
         {
-			Debug.LogAlways("CreateScriptInstance");
 #if !(RELEASE && RELEASE_DISABLE_CHECKS)
             if (scriptName == null)
                 throw new ArgumentNullException("scriptName");
