@@ -19,6 +19,16 @@ namespace CryEngine
     {
         internal PhysicalEntity _physics;
 
+		/// <summary>
+		/// Gets or sets the entity view distance ratio.
+		/// </summary>
+		public int ViewDistanceRatio { get { return NativeEntityMethods.GetViewDistRatio(this.GetIEntity()); } set { NativeEntityMethods.SetViewDistRatio(this.GetIEntity(), value); } }
+
+		/// <summary>
+		/// Gets or sets the entity lod ratio.
+		/// </summary>
+		public int LodRatio { get { return NativeEntityMethods.GetLodRatio(this.GetIEntity()); } set { NativeEntityMethods.SetLodRatio(this.GetIEntity(), value); } }
+
         /// <summary>
         /// Attempts to retrieve the camera linked to this entity.
         /// </summary>

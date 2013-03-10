@@ -232,6 +232,17 @@ namespace CryEngine.Native
 		extern public static IntPtr GetCameraProxy(IntPtr entPtr);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern public static bool SetViewDistRatio(IntPtr entPtr, int viewDist);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern public static int GetViewDistRatio(IntPtr entPtr);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern public static bool SetViewDistUnlimited(IntPtr entPtr);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern public static bool SetLodRatio(IntPtr entPtr, int lodRatio);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern public static int GetLodRatio(IntPtr entPtr);
+
+		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static void OnScriptInstanceDestroyed(IntPtr entPtr);
     }
 }

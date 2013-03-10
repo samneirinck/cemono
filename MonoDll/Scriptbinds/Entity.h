@@ -307,6 +307,12 @@ protected:
 	
 	static const CCamera *GetCameraProxy(IEntity *pEntity);
 
+	static bool SetViewDistRatio(IEntity *pEntity, int viewDist);
+	static int GetViewDistRatio(IEntity *pEntity);
+	static bool SetViewDistUnlimited(IEntity *pEntity);
+	static bool SetLodRatio(IEntity *pEntity, int lodRatio);
+	static int GetLodRatio(IEntity *pEntity);
+
 	static void OnScriptInstanceDestroyed(CCryScriptInstance *pScriptInstance);
 	// ~Scriptbinds
 

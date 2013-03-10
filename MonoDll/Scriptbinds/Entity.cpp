@@ -152,6 +152,12 @@ CScriptbind_Entity::CScriptbind_Entity()
 
 	REGISTER_METHOD(GetCameraProxy);
 
+	REGISTER_METHOD(SetViewDistRatio);
+	REGISTER_METHOD(GetViewDistRatio);
+	REGISTER_METHOD(SetViewDistUnlimited);
+	REGISTER_METHOD(SetLodRatio);
+	REGISTER_METHOD(GetLodRatio);
+
 	REGISTER_METHOD(OnScriptInstanceDestroyed);
 
 	//RegisterNativeEntityClass();
@@ -1142,6 +1148,73 @@ const CCamera *CScriptbind_Entity::GetCameraProxy(IEntity *pEntity)
 		return nullptr;
 
 	return &pCamProxy->GetCamera();
+}
+
+bool CScriptbind_Entity::SetViewDistRatio(IEntity *pEntity, int viewDist)
+{
+	if (IEntityRenderProxy *pRenderProxy = static_cast<IEntityRenderProxy *>(pEntity->GetProxy(ENTITY_PROXY_RENDER)))
+	{
+		if(IRenderNode *pRenderNode = pRenderProxy->GetRenderNode())
+		{
+			pRenderNode->SetViewDistRatio(viewDist);
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
+int CScriptbind_Entity::GetViewDistRatio(IEntity *pEntity)
+{
+	if (IEntityRenderProxy *pRenderProxy = static_cast<IEntityRenderProxy *>(pEntity->GetProxy(ENTITY_PROXY_RENDER)))
+	{
+		if(IRenderNode *pRenderNode = pRenderProxy->GetRenderNode())
+			return pRenderNode->GetViewDistRatio();
+	}
+
+	return 0;
+}
+
+bool CScriptbind_Entity::SetViewDistUnlimited(IEntity *pEntity)
+{
+	if (IEntityRenderProxy *pRenderProxy = static_cast<IEntityRenderProxy *>(pEntity->GetProxy(ENTITY_PROXY_RENDER)))
+	{
+		if(IRenderNode *pRenderNode = pRenderProxy->GetRenderNode())
+		{
+			pRenderNode->SetViewDistUnlimited();
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool CScriptbind_Entity::SetLodRatio(IEntity *pEntity, int lodRatio)
+{
+	if (IEntityRenderProxy *pRenderProxy = static_cast<IEntityRenderProxy *>(pEntity->GetProxy(ENTITY_PROXY_RENDER)))
+	{
+		if(IRenderNode *pRenderNode = pRenderProxy->GetRenderNode())
+		{
+			pRenderNode->SetLodRatio(lodRatio);
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
+int CScriptbind_Entity::GetLodRatio(IEntity *pEntity)
+{
+	if (IEntityRenderProxy *pRenderProxy = static_cast<IEntityRenderProxy *>(pEntity->GetProxy(ENTITY_PROXY_RENDER)))
+	{
+		if(IRenderNode *pRenderNode = pRenderProxy->GetRenderNode())
+			return pRenderNode->GetLodRatio();
+	}
+
+	return 0;
 }
 
 void CScriptbind_Entity::OnScriptInstanceDestroyed(CCryScriptInstance *pScriptInstance)
