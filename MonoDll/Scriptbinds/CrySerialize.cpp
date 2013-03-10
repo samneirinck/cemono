@@ -8,6 +8,7 @@ CScriptbind_CrySerialize::CScriptbind_CrySerialize()
 
 	REGISTER_METHOD(ValueString);
 	REGISTER_METHOD(ValueInt);
+	REGISTER_METHOD(ValueUInt);
 	REGISTER_METHOD(ValueBool);
 	REGISTER_METHOD(ValueEntityId);
 	REGISTER_METHOD(ValueFloat);
@@ -15,6 +16,7 @@ CScriptbind_CrySerialize::CScriptbind_CrySerialize()
 	REGISTER_METHOD(ValueQuat);
 
 	REGISTER_METHOD(EnumValue);
+	REGISTER_METHOD(UnsignedEnumValue);
 
 	REGISTER_METHOD(_IsReading);
 
@@ -74,6 +76,14 @@ void CScriptbind_CrySerialize::ValueInt(ISerialize *ser, mono::string name, int 
 	serialize.Value(ToCryString(name), obj, iPolicy);
 }
 
+void CScriptbind_CrySerialize::ValueUInt(ISerialize *ser, mono::string name, unsigned int &obj, mono::string policy)
+{
+	int iPolicy = ConvertPolicy(policy);
+
+	TSerialize serialize = TSerialize(ser);
+	serialize.Value(ToCryString(name), obj, iPolicy);
+}
+
 void CScriptbind_CrySerialize::ValueBool(ISerialize *ser, mono::string name, bool &obj)
 {
 	TSerialize serialize = TSerialize(ser);
@@ -111,6 +121,12 @@ void CScriptbind_CrySerialize::ValueQuat(ISerialize *ser, mono::string name, Qua
 }
 
 void CScriptbind_CrySerialize::EnumValue(ISerialize *ser, mono::string name, int &obj, int first, int last)
+{
+	TSerialize serialize = TSerialize(ser);
+	serialize.EnumValue(ToCryString(name), obj, first, last);
+}
+
+void CScriptbind_CrySerialize::UnsignedEnumValue(ISerialize *ser, mono::string name, unsigned int &obj, unsigned int first, unsigned int last)
 {
 	TSerialize serialize = TSerialize(ser);
 	serialize.EnumValue(ToCryString(name), obj, first, last);

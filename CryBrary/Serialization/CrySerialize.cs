@@ -12,8 +12,10 @@ namespace CryEngine.Serialization
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         private static extern void ValueString(IntPtr handle, string name, ref string obj, string policy);
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        private static extern void ValueInt(IntPtr handle, string name, ref int obj, string policy);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		private static extern void ValueInt(IntPtr handle, string name, ref int obj, string policy);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		private static extern void ValueUInt(IntPtr handle, string name, ref uint obj, string policy);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         private static extern void ValueBool(IntPtr handle, string name, ref bool obj, string policy);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
@@ -25,8 +27,10 @@ namespace CryEngine.Serialization
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         private static extern void ValueQuat(IntPtr handle, string name, ref Quat obj, string policy);
 
-        [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        private static extern void EnumValue(IntPtr handle, string name, ref Int32 obj, int first, int last);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		private static extern void EnumValue(IntPtr handle, string name, ref int obj, int first, int last);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		private static extern void UnsignedEnumValue(IntPtr handle, string name, ref uint obj, uint first, uint last);
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         private static extern bool _IsReading(IntPtr handle);
@@ -56,10 +60,16 @@ namespace CryEngine.Serialization
             ValueString(Handle, name, ref obj, policy);
         }
 
-        public void Value(string name, ref int obj, string policy = null)
-        {
-            ValueInt(Handle, name, ref obj, policy);
-        }
+		public void Value(string name, ref int obj, string policy = null)
+		{
+			ValueInt(Handle, name, ref obj, policy);
+		}
+
+		[CLSCompliant(false)]
+		public void Value(string name, ref uint obj, string policy = null)
+		{
+			ValueUInt(Handle, name, ref obj, policy);
+		}
 
         public void Value(string name, ref bool obj, string policy = null)
         {
@@ -86,10 +96,16 @@ namespace CryEngine.Serialization
             ValueQuat(Handle, name, ref obj, policy);
         }
 
-        public void EnumValue(string name, ref Int32 obj, int first, int last)
-        {
-            EnumValue(Handle, name, ref obj, first, last);
-        }
+		public void EnumValue(string name, ref int obj, int first, int last)
+		{
+			EnumValue(Handle, name, ref obj, first, last);
+		}
+
+		[CLSCompliant(false)]
+		public void EnumValue(string name, ref uint obj, uint first, uint last)
+		{
+			UnsignedEnumValue(Handle, name, ref obj, first, last);
+		}
 
         /// <summary>
         /// For network updates: Notify the network engine that this value was only partially read and we should re-request an update from the server soon.

@@ -23,6 +23,7 @@ protected:
 
 	static void ValueString(ISerialize *ser, mono::string name, mono::string &str, mono::string policy);
 	static void ValueInt(ISerialize *ser, mono::string name, int &obj, mono::string policy);
+	static void ValueUInt(ISerialize *ser, mono::string name, unsigned int &obj, mono::string policy);
 	static void ValueBool(ISerialize *ser, mono::string name, bool &obj);
 	static void ValueEntityId(ISerialize *ser, mono::string name, EntityId &obj);
 	static void ValueFloat(ISerialize *ser, mono::string name, float &obj, mono::string policy);
@@ -30,6 +31,7 @@ protected:
 	static void ValueQuat(ISerialize *ser, mono::string name, Quat &obj, mono::string policy);
 
 	static void EnumValue(ISerialize *ser, mono::string name, int &obj, int first, int last);
+	static void UnsignedEnumValue(ISerialize *ser, mono::string name, unsigned int &obj, unsigned int first, unsigned int last);
 
 	static bool _IsReading(ISerialize *ser);
 
