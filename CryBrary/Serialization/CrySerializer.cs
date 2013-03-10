@@ -69,7 +69,6 @@ namespace CryEngine.Serialization
                 type == SerializationType.GenericEnumerable ||
                 type == SerializationType.Object ||
                 type == SerializationType.MemberInfo ||
-                type == SerializationType.MemberInfo ||
                 type == SerializationType.Delegate ||
                 type == SerializationType.Type;
         }
@@ -227,15 +226,36 @@ namespace CryEngine.Serialization
                 foreach (var field in fields)
                     StartWrite(new ObjectReference(field.Name, field.GetValue(objectReference.Value)));
 
+				var events = type.GetEvents(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+				WriteLine(events.Length);
+				foreach (var eventInfo in events)
+				{
+					WriteLine(eventInfo.Name);
+					WriteType(eventInfo.EventHandlerType);
+
+					var eventFieldInfo = type.GetField(eventInfo.Name, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetField);
+					var eventFieldValue = (Delegate)eventFieldInfo.GetValue(objectReference.Value);
+					if (eventFieldValue != null)
+					{
+						var delegates = eventFieldValue.GetInvocationList();
+
+						WriteLine(delegates.Length);
+						foreach (var eventDelegate in delegates)
+							WriteDelegate(eventDelegate);
+					}
+					else
+						WriteLine(0);
+				}
+
                 type = type.BaseType;
             }
         }
 
-        void WriteMemberInfo(ObjectReference objectReference)
-        {
-            var memberInfo = objectReference.Value as MemberInfo;
-            WriteMemberInfo(memberInfo);
-        }
+		void WriteMemberInfo(ObjectReference objectReference)
+		{
+			var memberInfo = objectReference.Value as MemberInfo;
+			WriteMemberInfo(memberInfo);
+		}
 
         void WriteMemberInfo(MemberInfo memberInfo)
         {
@@ -246,17 +266,21 @@ namespace CryEngine.Serialization
 
         void WriteDelegate(ObjectReference objectReference)
         {
-            var _delegate = objectReference.Value as Delegate;
-            WriteType(_delegate.GetType());
-            WriteMemberInfo(_delegate.Method);
-            if (_delegate.Target != null)
-            {
-                WriteLine("target");
-                StartWrite(new ObjectReference("delegateTarget", _delegate.Target));
-            }
-            else
-                WriteLine("null_target");
+			WriteDelegate(objectReference.Value as Delegate);
         }
+
+		void WriteDelegate(Delegate _delegate)
+		{
+			WriteType(_delegate.GetType());
+			WriteMemberInfo(_delegate.Method);
+			if (_delegate.Target != null)
+			{
+				WriteLine("target");
+				StartWrite(new ObjectReference("delegateTarget", _delegate.Target));
+			}
+			else
+				WriteLine("null_target");
+		}
 
         void WriteUnusedMarker(ObjectReference objectReference)
         {
@@ -382,7 +406,6 @@ namespace CryEngine.Serialization
             while (type != null)
             {
                 var numFields = int.Parse(ReadLine());
-
                 for (int i = 0; i < numFields; i++)
                 {
                     var fieldReference = StartRead();
@@ -397,6 +420,24 @@ namespace CryEngine.Serialization
                     else if(IsDebugModeEnabled)
                         throw new MissingFieldException(string.Format("Failed to find field {0} in type {1}", fieldReference.Name, type.Name));
                 }
+
+				var numEvents = int.Parse(ReadLine());
+
+				for (int i = 0; i < numEvents; i++)
+				{
+					var eventName = ReadLine();
+
+					var eventInfo = type.GetEvent(eventName);
+					var eventHandlerType = ReadType();
+
+					var numDelegates = Int32.Parse(ReadLine());
+					for (int iDelegate = 0; iDelegate < numDelegates; iDelegate++)
+					{
+						var foundDelegate = ReadDelegate();
+
+						eventInfo.AddEventHandler(objReference.Value, foundDelegate);
+					}
+				}
 
                 type = type.BaseType;
             }
@@ -494,14 +535,19 @@ namespace CryEngine.Serialization
 
         void ReadDelegate(ObjectReference objReference)
         {
-            var delegateType = ReadType();
-            var methodInfo = ReadMemberInfo() as MethodInfo;
-
-            if (ReadLine() == "target")
-                objReference.Value = Delegate.CreateDelegate(delegateType, StartRead().Value, methodInfo);
-            else
-                objReference.Value = Delegate.CreateDelegate(delegateType, methodInfo);
+			objReference.Value = ReadDelegate();
         }
+
+		Delegate ReadDelegate()
+		{
+			var delegateType = ReadType();
+			var methodInfo = ReadMemberInfo() as MethodInfo;
+
+			if (ReadLine() == "target")
+				return Delegate.CreateDelegate(delegateType, StartRead().Value, methodInfo);
+			else
+				return Delegate.CreateDelegate(delegateType, methodInfo);
+		}
 
         void ReadUnusedMarker(ObjectReference objReference)
         {
