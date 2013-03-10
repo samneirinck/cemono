@@ -49,7 +49,7 @@ public:
 	virtual IMonoClass *GetClass() override;
 	// ~IMonoObject
 
-	void SetManagedObject(MonoObject *newObject, bool allowGC);
+	virtual void SetManagedObject(MonoObject *newObject, bool allowGC);
 	static void HandleException(MonoObject *pException);
 
 protected:

@@ -23,8 +23,6 @@ CMonoEntityExtension::CMonoEntityExtension()
 
 CMonoEntityExtension::~CMonoEntityExtension()
 {
-	SAFE_RELEASE(m_pScript);
-
 	if (m_pAnimatedCharacter)
 	{
 		IGameObject *pGameObject = GetGameObject();
@@ -211,13 +209,13 @@ bool CMonoEntityExtension::NetSerialize(TSerialize ser, EEntityAspects aspect, u
 {
 	ser.BeginGroup("ManagedEntity");
 
-	IMonoArray *pArgs = CreateMonoArray(4);
-	pArgs->InsertNativePointer(&ser);
-	pArgs->Insert(aspect);
-	pArgs->Insert(profile);
-	pArgs->Insert(flags);
+	void *params[4];
+	params[0] = &ser;
+	params[1] = &aspect;
+	params[2] = &profile;
+	params[3] = &flags;
 
-	m_pScript->GetClass()->InvokeArray(m_pScript->GetManagedObject(), "InternalNetSerialize", pArgs);
+	m_pScript->GetClass()->Invoke(m_pScript->GetManagedObject(), "InternalNetSerialize", params, 4);
 
 	ser.EndGroup();
 

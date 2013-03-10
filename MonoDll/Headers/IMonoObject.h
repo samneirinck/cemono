@@ -19,7 +19,6 @@ struct IMonoClass;
 /// </summary>
 struct IMonoObject
 {
-public:
 	inline IMonoObject *CallMethod(const char *funcName);
 
 	template<typename P1> 

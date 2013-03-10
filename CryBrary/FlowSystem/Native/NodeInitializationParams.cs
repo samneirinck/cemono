@@ -7,13 +7,6 @@ namespace CryEngine.FlowSystem.Native
 {
     struct NodeInitializationParams : IScriptInitializationParams
     {
-        public NodeInitializationParams(IntPtr Pointer, UInt16 NodeId, UInt32 GraphId)
-        {
-            nodePtr = Pointer;
-            nodeId = NodeId;
-            graphId = GraphId;
-        }
-
         public IntPtr nodePtr;
 
         public UInt16 nodeId;

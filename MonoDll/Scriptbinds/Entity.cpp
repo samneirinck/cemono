@@ -6,6 +6,7 @@
 #include "MonoEntityClass.h"
 
 #include "MonoScriptSystem.h"
+#include "CryScriptInstance.h"
 
 #include "MonoObject.h"
 #include "MonoArray.h"
@@ -150,6 +151,8 @@ CScriptbind_Entity::CScriptbind_Entity()
 	REGISTER_METHOD(RemoteInvocation);
 
 	REGISTER_METHOD(GetCameraProxy);
+
+	REGISTER_METHOD(OnScriptInstanceDestroyed);
 
 	//RegisterNativeEntityClass();
 
@@ -1139,4 +1142,9 @@ const CCamera *CScriptbind_Entity::GetCameraProxy(IEntity *pEntity)
 		return nullptr;
 
 	return &pCamProxy->GetCamera();
+}
+
+void CScriptbind_Entity::OnScriptInstanceDestroyed(CCryScriptInstance *pScriptInstance)
+{
+	pScriptInstance->Release(false);
 }

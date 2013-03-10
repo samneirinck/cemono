@@ -399,11 +399,23 @@ void CScriptSystem::RegisterMethodBinding(const void *method, const char *fullMe
 
 IMonoObject *CScriptSystem::InstantiateScript(const char *scriptName, EMonoScriptFlags scriptFlags, IMonoArray *pConstructorParameters, bool throwOnFail)
 {
-	IMonoObject *pResult = m_pScriptManager->CallMethod("CreateScriptInstance", scriptName, scriptFlags, pConstructorParameters, throwOnFail);
+	auto *pInstance = new CCryScriptInstance(scriptFlags);
 
-	if(!pResult)
+	IMonoArray *pScriptCreationArgs = CreateMonoArray(5);
+	pScriptCreationArgs->Insert(scriptName);
+	pScriptCreationArgs->Insert(scriptFlags);
+	pScriptCreationArgs->InsertNativePointer(pInstance);
+	pScriptCreationArgs->Insert(pConstructorParameters);
+	pScriptCreationArgs->Insert(throwOnFail);
+
+	mono::object result = m_pScriptManager->GetClass()->InvokeArray(m_pScriptManager->GetManagedObject(), "CreateScriptInstance", pScriptCreationArgs);
+
+	if(!result)
 		return nullptr;
-	else if(scriptFlags & eScriptFlag_GameRules)
+	
+	pInstance->SetManagedObject((MonoObject *)result, true);
+
+	if(scriptFlags & eScriptFlag_GameRules)
 	{
 		IMonoClass *pGameRulesInitParamsClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("GameRulesInitializationParams");
 
@@ -412,13 +424,8 @@ IMonoObject *CScriptSystem::InstantiateScript(const char *scriptName, EMonoScrip
 		SGameRulesInitializationParams params;
 		pArgs->InsertMonoObject(pGameRulesInitParamsClass->BoxObject(&params));
 
-		InitializeScriptInstance(pResult, pArgs);
+		InitializeScriptInstance(pInstance, pArgs);
 	}
-
-	mono::object instance = pResult->GetManagedObject();
-	pResult->Release(false);
-
-	auto *pInstance = new CCryScriptInstance(instance, scriptFlags);
 
 	for each(auto listener in m_listeners)
 		listener->OnScriptInstanceCreated(scriptName, scriptFlags, pInstance);

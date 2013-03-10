@@ -1,13 +1,10 @@
 #include "stdafx.h"
 #include "CryScriptInstance.h"
 
-CCryScriptInstance::CCryScriptInstance(mono::object scriptInstance, EMonoScriptFlags flags)
+CCryScriptInstance::CCryScriptInstance(EMonoScriptFlags flags)
 	: m_flags(flags)
+	, m_scriptId(0)
 {
-	SetManagedObject((MonoObject *)scriptInstance, true);
-
-	m_scriptId = GetPropertyValue("ScriptId")->Unbox<int>();
-
 	g_pScriptSystem->AddListener(this);
 }
 
@@ -15,8 +12,18 @@ CCryScriptInstance::~CCryScriptInstance()
 {
 	if(g_pScriptSystem)
 		g_pScriptSystem->RemoveListener(this);
+}
 
-	m_scriptId = 0;
+void CCryScriptInstance::Release(bool triggerGC)
+{
+	delete this;
+}
+
+void CCryScriptInstance::SetManagedObject(MonoObject *newObject, bool allowGC)
+{
+	CScriptObject::SetManagedObject(newObject, allowGC);
+
+	m_scriptId = GetPropertyValue("ScriptId")->Unbox<int>();
 }
 
 void CCryScriptInstance::OnReloadStart()
@@ -29,6 +36,9 @@ void CCryScriptInstance::OnReloadStart()
 
 void CCryScriptInstance::OnReloadComplete()
 {
+	if(m_scriptId == 0)
+		return;
+
 	IMonoObject *pScriptManager = g_pScriptSystem->GetScriptManager();
 
 	IMonoArray *pArgs = CreateMonoArray(2);
@@ -40,5 +50,5 @@ void CCryScriptInstance::OnReloadComplete()
 		SetManagedObject((MonoObject *)result, true);
 	}
 	else
-		CryFatalError("[CryMono] Failed to locate script instance %i after reload!", m_scriptId);
+		MonoWarning("Failed to locate script instance %i after reload!", m_scriptId);
 }

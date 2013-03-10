@@ -44,6 +44,10 @@ namespace CryEngine
             IsDestroyed = true;
             ReceiveUpdates = false;
 
+			// destroy native handle
+			if (InstanceHandle != IntPtr.Zero)
+				NativeEntityMethods.OnScriptInstanceDestroyed(InstanceHandle);
+
             if (OnDestroyed != null)
                 OnDestroyed(this);
         }
@@ -80,6 +84,11 @@ namespace CryEngine
         /// Gets the instance script, set in <see cref="CryEngine.Initialization.ScriptManager.CreateScriptInstance(CryEngine.Initialization.CryScript, object[], bool)"/>.
         /// </summary>
         public CryScript Script { get; internal set; }
+
+		/// <summary>
+		/// CCryScriptInstance handle.
+		/// </summary>
+		internal IntPtr InstanceHandle { get; set; }
         #endregion
 
         #region Events

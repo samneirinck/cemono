@@ -98,7 +98,7 @@ void CScriptArray::InsertNativePointer(void *ptr, int index)
 {
 	CScriptDomain *pDomain = static_cast<CScriptDomain *>(GetClass()->GetAssembly()->GetDomain());
 
-	InsertMonoObject((mono::object)mono_value_box(pDomain->GetMonoDomain(), mono_get_intptr_class(), ptr), index);
+	InsertMonoObject((mono::object)mono_value_box(pDomain->GetMonoDomain(), mono_get_intptr_class(), (long *)&ptr), index);
 }
 
 void CScriptArray::InsertObject(IMonoObject *pObject, int index)

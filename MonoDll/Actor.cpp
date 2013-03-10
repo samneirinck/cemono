@@ -39,8 +39,6 @@ CMonoActor::~CMonoActor()
 
 	if(IMonoScriptSystem *pScriptSystem = GetMonoScriptSystem())
 		pScriptSystem->RemoveListener(this);
-
-	SAFE_RELEASE(m_pScript);
 }
 
 bool CMonoActor::Init(IGameObject *pGameObject)
@@ -493,13 +491,13 @@ bool CMonoActor::NetSerialize( TSerialize ser, EEntityAspects aspect, uint8 prof
 
 	ser.BeginGroup("ManagedActor");
 
-	IMonoArray *pArgs = CreateMonoArray(4);
-	pArgs->InsertNativePointer(&ser);
-	pArgs->Insert(aspect);
-	pArgs->Insert(profile);
-	pArgs->Insert(pflags);
+	void *params[4];
+	params[0] = &ser;
+	params[1] = &aspect;
+	params[2] = &profile;
+	params[3] = &pflags;
 
-	m_pScript->GetClass()->InvokeArray(m_pScript->GetManagedObject(), "InternalNetSerialize", pArgs);
+	m_pScript->GetClass()->Invoke(m_pScript->GetManagedObject(), "InternalNetSerialize", params, 4);
 
 	ser.EndGroup();
 

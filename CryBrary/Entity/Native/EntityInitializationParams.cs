@@ -7,13 +7,6 @@ namespace CryEngine.Native
 {
     public struct EntityInitializationParams : IScriptInitializationParams
     {
-        public EntityInitializationParams(IntPtr ptr, EntityId id)
-        {
-            IEntityPtr = ptr;
-            Id = id;
-            IAnimatedCharacterPtr = IntPtr.Zero;
-        }
-
         public IntPtr IEntityPtr;
         public IntPtr IAnimatedCharacterPtr;
         public EntityId Id;

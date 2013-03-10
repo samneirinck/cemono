@@ -9,7 +9,7 @@ class CCryScriptInstance
 	, public IMonoScriptEventListener
 {
 public:
-	CCryScriptInstance(mono::object scriptInstance, EMonoScriptFlags flags);
+	CCryScriptInstance(EMonoScriptFlags flags);
 	~CCryScriptInstance();
 
 	// IMonoScriptEventListener
@@ -19,8 +19,12 @@ public:
 	virtual void OnScriptInstanceCreated(const char *scriptName, EMonoScriptFlags scriptType, IMonoObject *pScriptInstance) {}
 	virtual void OnScriptInstanceInitialized(IMonoObject *pScriptInstance) {}
 
-	virtual void Release(bool triggerGC = true) override { delete this; }
+	virtual void Release(bool triggerGC = true) override;
 	// ~IMonoScriptEventListener
+
+	// CScriptObject
+	virtual void SetManagedObject(MonoObject *newObject, bool allowGC) override;
+	// ~CScriptObject
 
 	int GetScriptId() { return m_scriptId; }
 

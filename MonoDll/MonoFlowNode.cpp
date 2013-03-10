@@ -27,7 +27,6 @@ CMonoFlowNode::CMonoFlowNode(SActivationInfo *pActInfo)
 
 CMonoFlowNode::~CMonoFlowNode()
 {
-	SAFE_RELEASE(m_pScript);
 }
 
 bool CMonoFlowNode::CreatedNode(TFlowNodeId id, const char *name, TFlowNodeTypeId typeId, IFlowNodePtr pNode) 

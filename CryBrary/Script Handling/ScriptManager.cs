@@ -117,7 +117,6 @@ namespace CryEngine.Initialization
                 Scripts = Formatter.Deserialize(stream) as List<CryScript>;
 
             File.Delete(SerializedScriptsFile);
-            File.Delete(SerializedScriptManagerDataFile);
 
             var data = Find<ScriptManagerData>(ScriptType.CryScriptInstance, x => { return true; });
 
@@ -472,8 +471,9 @@ namespace CryEngine.Initialization
         /// <param name="scriptType"></param>
         /// <param name="constructorParams"></param>
         /// <returns>New instance scriptId or -1 if instantiation failed.</returns>
-        public CryScriptInstance CreateScriptInstance(string scriptName, ScriptType scriptType, object[] constructorParams = null, bool throwOnFail = true)
+        public CryScriptInstance CreateScriptInstance(string scriptName, ScriptType scriptType, IntPtr cryScriptInstanceHandle, object[] constructorParams = null, bool throwOnFail = true)
         {
+			Debug.LogAlways("CreateScriptInstance");
 #if !(RELEASE && RELEASE_DISABLE_CHECKS)
             if (scriptName == null)
                 throw new ArgumentNullException("scriptName");
@@ -492,7 +492,10 @@ namespace CryEngine.Initialization
                     return null;
             }
 
-            return CreateScriptInstance(script, constructorParams, throwOnFail);
+            var instance = CreateScriptInstance(script, constructorParams, throwOnFail);
+			instance.InstanceHandle = cryScriptInstanceHandle;
+
+			return instance;
         }
 
         public CryScriptInstance CreateScriptInstance(CryScript script, object[] constructorParams = null, bool throwOnFail = true)
@@ -710,7 +713,6 @@ namespace CryEngine.Initialization
         IFormatter Formatter { get; set; }
 
         string SerializedScriptsFile { get { return Path.Combine(PathUtils.TempFolder, "CompiledScripts.scriptdump"); } }
-        string SerializedScriptManagerDataFile { get { return Path.Combine(PathUtils.TempFolder, "ScriptManagerData.scriptdump"); } }
 
         public static ScriptManager Instance;
     }

@@ -21,12 +21,7 @@
 #include <IBreakableManager.h>
 #include <IAnimatedCharacter.h>
 
-struct IMonoScript;
-class CEntity;
-
-struct MovementRequest;
-struct MonoPhysicalizationParams;
-struct ActionImpulse;
+class CCryScriptInstance;
 
 struct MovementRequest
 {
@@ -311,6 +306,8 @@ protected:
 	static void RemoteInvocation(EntityId entityId, EntityId targetId, mono::string methodName, mono::object args, ERMInvocation target, int channelId);
 	
 	static const CCamera *GetCameraProxy(IEntity *pEntity);
+
+	static void OnScriptInstanceDestroyed(CCryScriptInstance *pScriptInstance);
 	// ~Scriptbinds
 
 	static std::vector<const char *> m_monoEntityClasses;
