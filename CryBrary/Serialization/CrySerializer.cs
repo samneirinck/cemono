@@ -174,7 +174,7 @@ namespace CryEngine.Serialization
         void WriteEnum(ObjectReference objectReference)
         {
             WriteType(objectReference.Value.GetType());
-            WriteLine((int)objectReference.Value);
+            WriteLine(objectReference.Value);
         }
 
         void WriteEnumerable(ObjectReference objectReference)
