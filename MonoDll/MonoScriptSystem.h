@@ -57,7 +57,7 @@ public:
 	virtual bool Reload() override;
 
 	virtual void AddListener(IMonoScriptEventListener *pListener) override { m_listeners.push_back(pListener); }
-	virtual void RemoveListener(IMonoScriptEventListener *pListener) override { stl::find_and_erase(m_listeners, pListener); }
+	virtual void RemoveListener(IMonoScriptEventListener *pListener) override { if(!m_bQuitting) stl::find_and_erase(m_listeners, pListener); }
 
 	virtual void Release() override { delete this; }
 

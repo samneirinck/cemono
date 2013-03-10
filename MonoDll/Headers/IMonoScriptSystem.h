@@ -161,6 +161,11 @@ struct IMonoScriptEventListener
 
 	virtual void OnScriptInstanceCreated(const char *scriptName, EMonoScriptFlags scriptType, IMonoObject *pScriptInstance) = 0;
 	virtual void OnScriptInstanceInitialized(IMonoObject *pScriptInstance) = 0;
+
+	/// <summary>
+	/// Called when the script system commences shutting down
+	/// </summary>
+	virtual void OnShutdown() = 0;
 };
 
 #ifdef PLUGIN_SDK

@@ -176,6 +176,8 @@ public:
 	virtual void OnReloadStart() {}
 	virtual void OnReloadComplete() {}
 
+	virtual void OnShutdown() {}
+
 	virtual void OnScriptInstanceCreated(const char *scriptName, EMonoScriptFlags scriptType, IMonoObject *pScriptInstance) {}
 	virtual void OnScriptInstanceInitialized(IMonoObject *pScriptInstance);
 	// ~IMonoScriptEventListener

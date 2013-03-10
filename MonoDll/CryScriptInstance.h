@@ -19,6 +19,8 @@ public:
 	virtual void OnScriptInstanceCreated(const char *scriptName, EMonoScriptFlags scriptType, IMonoObject *pScriptInstance) {}
 	virtual void OnScriptInstanceInitialized(IMonoObject *pScriptInstance) {}
 
+	virtual void OnShutdown() { Release(false); }
+
 	virtual void Release(bool triggerGC = true) override;
 	// ~IMonoScriptEventListener
 

@@ -128,6 +128,8 @@ CScriptSystem::~CScriptSystem()
 {
 	m_bQuitting = true;
 
+	for each(auto listener in m_listeners)
+		listener->OnShutdown();
 	m_listeners.clear();
 
 	for(auto it = m_localScriptBinds.begin(); it != m_localScriptBinds.end(); ++it)
