@@ -10,6 +10,13 @@
 #ifndef __MONO_ANY_VALUE__
 #define __MONO_ANY_VALUE__
 
+#include <IMonoScriptSystem.h>
+#include <IMonoConverter.h>
+#include <IMonoDomain.h>
+#include <IMonoArray.h>
+
+namespace mono { class _object; typedef _object *object; }
+
 /// <summary>
 /// Used within MonoAnyValue and IMonoObject to easily get the object type contained within.
 /// </summary>
@@ -40,7 +47,7 @@ enum EMonoAnyType
 /// </summary>
 struct MonoAnyValue : public ISerializable
 {
-	MonoAnyValue() : type(eMonoAnyType_Unknown) { };
+	MonoAnyValue() : type(eMonoAnyType_Unknown), monoObject(nullptr) { };
 	MonoAnyValue(bool value) : type(eMonoAnyType_Boolean) { b = value; }
 	MonoAnyValue(int value) : type(eMonoAnyType_Integer) { i = value; }
 	MonoAnyValue(unsigned int value) : type(eMonoAnyType_UnsignedInteger) { u = value; }
@@ -52,6 +59,7 @@ struct MonoAnyValue : public ISerializable
 	MonoAnyValue(Vec3 value) : type(eMonoAnyType_Vec3) { vec4.x = value.x; vec4.y = value.y; vec4.z = value.z; }
 	MonoAnyValue(Ang3 value) : type(eMonoAnyType_Vec3) { vec4.x = value.x; vec4.y = value.y; vec4.z = value.z; }
 	MonoAnyValue(Quat value) : type(eMonoAnyType_Quat) { vec4.x = value.v.x; vec4.y = value.v.y; vec4.z = value.v.z; vec4.w = value.w; }
+	MonoAnyValue(mono::object value) : type(eMonoAnyType_Unknown), monoObject(value) { };
 #ifdef WIN64
 	MonoAnyValue(intptr_t value) : type(eMonoAnyType_IntPtr) { i = value; }
 #endif
@@ -125,6 +133,39 @@ struct MonoAnyValue : public ISerializable
 				}
 			}
 			break;
+		case eMonoAnyType_Unknown:
+			{
+				if(monoObject != nullptr)
+				{
+					IMonoScriptSystem *pScriptSystem = GetMonoScriptSystem();
+
+					IMonoDomain *pActiveDomain = pScriptSystem->GetActiveDomain();
+
+					IMonoClass *pCrySerializerClass = pScriptSystem->GetCrySerializerClass();
+					IMonoArray *pArgs = pActiveDomain->CreateArray(1);
+
+					if(ser.IsWriting())
+					{
+						pArgs->InsertMonoObject(monoObject);
+
+						auto result = pCrySerializerClass->InvokeArray(nullptr, "SerializeToString", pArgs);
+						if(result != nullptr)
+						{
+							string data = pScriptSystem->GetConverter()->ToString((mono::string)result);
+							ser.Value("serializedData", data);
+						}
+					}
+					else
+					{
+						string data;
+						ser.Value("serializedData", data);
+						pArgs->InsertMonoString(pActiveDomain->CreateMonoString(data));
+
+						monoObject = pCrySerializerClass->InvokeArray(nullptr, "DeserializeFromString", pArgs);
+					}
+				}
+			}
+			break;
 		}
 	}
 
@@ -159,6 +200,7 @@ struct MonoAnyValue : public ISerializable
 		unsigned int	u;
 		const char*		str;
 		struct { float x,y,z,w; } vec4;
+		mono::object monoObject;
 	};
 };
 

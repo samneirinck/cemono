@@ -17,10 +17,6 @@ namespace mono
 
 struct IMonoArray;
 struct IMonoObject;
-struct IMonoAssembly;
-struct IMonoClass;
-
-struct MonoAnyValue;
 
 /// <summary>
 /// Used to create and convert C++ / C# values.

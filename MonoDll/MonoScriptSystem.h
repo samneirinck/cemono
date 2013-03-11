@@ -66,14 +66,16 @@ public:
 	virtual IMonoObject *InstantiateScript(const char *scriptName, EMonoScriptFlags scriptType = eScriptFlag_Any, IMonoArray *pConstructorParameters = nullptr, bool throwOnFail = true) override;
 	virtual void RemoveScriptInstance(int id, EMonoScriptFlags scriptType = eScriptFlag_Any) override;
 	
-	virtual IMonoObject *GetScriptManager() { return m_pScriptManager; }
+	virtual IMonoObject *GetScriptManager() override { return m_pScriptManager; }
+
+	virtual IMonoClass *GetCrySerializerClass() override;
 
 	virtual IMonoAssembly *GetCryBraryAssembly() override { return m_pCryBraryAssembly; }
 	virtual IMonoAssembly *GetCorlibAssembly() override;
 
 	virtual IMonoDomain *GetRootDomain() override { return (IMonoDomain *)m_pRootDomain; }
 	virtual IMonoDomain *CreateDomain(const char *name, bool setActive = false);
-	virtual IMonoDomain *GetActiveDomain();
+	virtual IMonoDomain *GetActiveDomain() override;
 	virtual IMonoDomain *GetScriptDomain() { return m_pScriptDomain; }
 
 	virtual IMonoConverter *GetConverter() override { return m_pConverter; }

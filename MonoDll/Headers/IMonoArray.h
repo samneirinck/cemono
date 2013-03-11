@@ -18,8 +18,6 @@ namespace mono
 
 struct IMonoObject;
 
-struct MonoAnyValue;
-
 /// <summary>
 /// Used to wrap arrays sent from C#, and also used when passing arrays of elements from C++.
 /// 
@@ -79,16 +77,16 @@ public:
 	virtual const char *GetItemString(int index) = 0;
 
 	template <typename T>
-	void Insert(T value, int index = -1) { InsertAny(MonoAnyValue((T)value), index); }
+	inline void Insert(T value, int index = -1);
 
 	template <>
-	void Insert(IMonoObject *pObject, int index) { InsertObject(pObject, index); }
+	inline void Insert(IMonoObject *pObject, int index);
 
 	template <>
-	void Insert(IMonoArray *pArray, int index) { InsertObject(pArray, index); }
+	inline void Insert(IMonoArray *pArray, int index);
 
 	template<>
-	void Insert(mono::string monoString, int index) { InsertMonoString(monoString, index); }
+	inline void Insert(mono::string monoString, int index);
 
 	/// <summary>
 	/// Inserts a native pointer into the array at the specified index. (-1 = back)
@@ -116,5 +114,19 @@ public:
 	/// </summary>
 	virtual void InsertMonoString(mono::string string, int index = -1) = 0;
 };
+
+#include <MonoAnyValue.h>
+
+template <typename T>
+inline void IMonoArray::Insert(T value, int index) { InsertAny(MonoAnyValue((T)value), index); }
+
+template <>
+inline void IMonoArray::Insert(IMonoObject *pObject, int index) { InsertObject(pObject, index); }
+
+template <>
+inline void IMonoArray::Insert(IMonoArray *pArray, int index) { InsertObject(pArray, index); }
+
+template<>
+inline void IMonoArray::Insert(mono::string monoString, int index) { InsertMonoString(monoString, index); }
 
 #endif //__I_MONO_ARRAY_H__

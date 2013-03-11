@@ -10,6 +10,7 @@
 
 #include <IMonoAssembly.h>
 #include <IMonoClass.h>
+#include <MonoAnyValue.h>
 
 CMonoActor::CMonoActor()
 	: m_pAnimatedCharacter(NULL)

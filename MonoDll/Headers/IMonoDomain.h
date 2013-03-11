@@ -13,7 +13,9 @@ struct IMonoAssembly;
 struct IMonoClass;
 struct IMonoArray;
 
-#include <MonoCommon.h>
+struct MonoAnyValue;
+
+namespace mono { class _object; typedef _object* object; class _string; typedef _string* string; }
 
 struct IMonoDomain
 {
@@ -91,6 +93,7 @@ enum ERuntimeVersion
 	eRV_4_30319
 };
 
+#include <IMonoScriptSystem.h>
 
 /// <summary>
 /// Creates an IMonoArray with the specified size.

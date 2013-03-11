@@ -9,9 +9,13 @@
 #ifndef __I_MONO_OBJECT_H__
 #define __I_MONO_OBJECT_H__
 
-#include <MonoCommon.h>
-
+struct IMonoObject;
+struct MonoAnyValue;
 struct IMonoClass;
+
+enum EMonoAnyType;
+
+namespace mono { class _object; typedef _object *object; }
 
 /// <summary>
 /// The IMonoObject class is used to wrap native mono objects of any type, and to
@@ -80,6 +84,8 @@ private:
 
 #include <IMonoClass.h>
 #include <IMonoArray.h>
+
+#include <MonoCommon.h>
 
 inline IMonoObject *IMonoObject::CallMethod(const char *funcName)
 {

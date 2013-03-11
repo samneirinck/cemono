@@ -9,8 +9,6 @@
 #ifndef __I_MONO_SCRIPT_SYSTEM_H__
 #define __I_MONO_SCRIPT_SYSTEM_H__
 
-#include <MonoAnyValue.h>
-
 // Undefine if Plugin SDK shouldn't be used
 #define PLUGIN_SDK
 #ifdef PLUGIN_SDK
@@ -21,6 +19,7 @@ struct IMonoScriptManager;
 
 struct IMonoObject;
 struct IMonoArray;
+struct IMonoClass;
 struct IMonoAssembly;
 struct IMonoDomain;
 
@@ -105,6 +104,11 @@ struct IMonoScriptSystem
 	virtual void RemoveScriptInstance(int id, EMonoScriptFlags scriptType = eScriptFlag_Any) = 0;
 
 	virtual IMonoObject *GetScriptManager() = 0;
+
+	/// <summary>
+	/// Gets the CryEngine.Initialization.CrySerializer class and returns it.
+	/// </summary>
+	virtual IMonoClass *GetCrySerializerClass()= 0;
 
 	/// <summary>
 	/// Gets a pointer to the CryBrary assembly containing all default managed CryMono types.

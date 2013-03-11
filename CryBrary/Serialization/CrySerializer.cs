@@ -12,6 +12,28 @@ namespace CryEngine.Serialization
 {
     public class CrySerializer : IFormatter
     {
+		public static string SerializeToString(object graph)
+		{
+			using (var stream = new MemoryStream())
+			{
+				var serializer = new CrySerializer();
+				serializer.Serialize(stream, graph);
+
+				var streamReader = new StreamReader(stream);
+				return streamReader.ReadToEnd();
+			}
+		}
+
+		public static object DeserializeFromString(string data)
+		{
+			var byteArray = System.Text.Encoding.ASCII.GetBytes(data);
+			using (var stream = new MemoryStream(byteArray))
+			{
+				var serializer = new CrySerializer();
+				return serializer.Deserialize(stream);
+			}
+		}
+
         StreamWriter Writer { get; set; }
         StreamReader Reader { get; set; }
         FormatterConverter Converter { get; set; }

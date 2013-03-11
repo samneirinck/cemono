@@ -9,12 +9,12 @@
 #ifndef __I_MONO_ASSEMBLY__
 #define __I_MONO_ASSEMBLY__
 
-#include <IMonoObject.h>
-#include <IMonoException.h>
-
 struct IMonoClass;
+struct IMonoException;
 
 namespace mono { class _object; typedef _object* object; }
+
+#include <IMonoObject.h>
 
 /// <summary>
 /// Reference to a Mono assembly; used to for example instantiate classes contained within a C# dll.

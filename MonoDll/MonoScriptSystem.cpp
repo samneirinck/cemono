@@ -458,6 +458,11 @@ IMonoObject *CScriptSystem::InitializeScriptInstance(IMonoObject *pScriptInstanc
 	return nullptr;
 }
 
+IMonoClass *CScriptSystem::GetCrySerializerClass()
+{
+	return m_pCryBraryAssembly->GetClass("CrySerializer", "CryEngine.Serialization");
+}
+
 IMonoAssembly *CScriptSystem::GetCorlibAssembly()
 {
 	return m_pRootDomain->TryGetAssembly(mono_get_corlib());
