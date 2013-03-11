@@ -59,9 +59,9 @@ namespace CryEngine
         public bool JustActivated;
 
         private ushort ViewIDLast;
-        private Vec3 PositionLast;//last view position
-        private Quat RotationLast;//last view orientation
-        private float FOVLast;
+        public Vec3 PositionLast;//last view position
+		public Quat RotationLast;//last view orientation
+        public float FOVLast;
 
         public void SaveLast()
         {
