@@ -257,12 +257,12 @@ bool CScriptSystem::Reload()
 				m_pScriptManager->CallMethod("Deserialize");
 
 			// Set Network.Editor etc.
-			IMonoClass *pClass = m_pCryBraryAssembly->GetClass("Network");
+			IMonoClass *pClass = m_pCryBraryAssembly->GetClass("Game");
 
 			IMonoArray *pArgs = CreateMonoArray(2);
 			pArgs->Insert(gEnv->IsEditor());
 			pArgs->Insert(gEnv->IsDedicated());
-			pClass->InvokeArray(NULL, "InitializeNetworkStatics", pArgs);
+			pClass->InvokeArray(NULL, "InitializeGameStatics", pArgs);
 			SAFE_RELEASE(pArgs);
 
 			m_pScriptManager->CallMethod("ProcessWaitingScripts", m_bFirstReload);

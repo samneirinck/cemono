@@ -325,7 +325,7 @@
     <Compile Include="Physics\RaycastHit.cs" />
     <Compile Include="Engine\Renderer\Renderer.cs" />
     <Compile Include="Entity\Extensions\EntityMovement.cs" />
-    <Compile Include="Network\Network.cs" />
+    <Compile Include="Misc\Game.cs" />
     <Compile Include="Input\Input.cs" />
     <Compile Include="Math\Quat.cs" />
     <Compile Include="Entity\Interface.cs" />
