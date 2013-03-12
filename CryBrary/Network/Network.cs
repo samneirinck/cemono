@@ -25,6 +25,7 @@ namespace CryEngine
         public static bool IsMultiplayer { get { return NativeNetworkMethods.IsMultiplayer(); } }
         public static bool IsServer { get { return NativeNetworkMethods.IsServer(); } }
         public static bool IsClient { get { return NativeNetworkMethods.IsClient(); } }
+		public static bool IsPureClient { get { return NativeNetworkMethods.IsClient() && !NativeNetworkMethods.IsServer(); } }
 
         // TODO: Find another place for this? - not quite so networky.
         public static bool IsEditor { private set; get; }
