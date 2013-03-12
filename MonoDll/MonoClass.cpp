@@ -165,8 +165,10 @@ MonoMethod *CScriptClass::GetMonoMethod(const char *methodName, IMonoArray *pArg
 					if(itemMonoType != monoType)
 					{
 						// exceptions:
-						// The runtime confuses things with value types a lot, so ignore parameters that appear with that type.6
-						if(itemMonoType == MONO_TYPE_VALUETYPE || monoType == MONO_TYPE_VALUETYPE) {}
+						// Anything can be treated as object.
+						if(monoType == MONO_TYPE_OBJECT) {}
+						// The runtime confuses things with value types a lot, so ignore parameters that appear with that type.
+						else if(itemMonoType == MONO_TYPE_VALUETYPE || monoType == MONO_TYPE_VALUETYPE) {}
 						else
 						{
 							CryLogAlways("Item type %i at args index %i did not match method type %i", itemMonoType, i, monoType);
