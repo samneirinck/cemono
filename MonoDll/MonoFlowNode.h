@@ -116,7 +116,7 @@ struct SMonoInputPortConfig
 		if(defaultValue != 0)
 			pObject = *defaultValue;
 			
-		SInputPortConfig inputPortConfig = *(SInputPortConfig *)0;
+		SInputPortConfig inputPortConfig;
 		switch(type)
 		{
 		case eFDT_Void:
