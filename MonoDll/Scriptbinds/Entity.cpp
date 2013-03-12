@@ -354,6 +354,8 @@ bool CScriptbind_Entity::RegisterEntityClass(SEntityRegistrationParams params)
 				properties.push_back(propertyInfo);
 			}
 
+			SAFE_RELEASE(pPropertyArray);
+
 			if(!bDefaultFolder)
 			{
 				IEntityPropertyHandler::SPropertyInfo folderInfo;
@@ -363,6 +365,8 @@ bool CScriptbind_Entity::RegisterEntityClass(SEntityRegistrationParams params)
 				properties.push_back(folderInfo);
 			}
 		}
+
+		SAFE_RELEASE(pFolderArray);
 	}
 
 	IEntityClassRegistry::SEntityClassDesc entityClassDesc;	
@@ -487,7 +491,10 @@ mono::object CScriptbind_Entity::GetEntitiesByClass(mono::string _class)
 		}
 	}
 
-	return pEntities->GetManagedObject();
+	auto result = pEntities->GetManagedObject();
+	pEntities->Release();
+
+	return result;
 }
 
 mono::object CScriptbind_Entity::GetEntitiesInBox(AABB bbox, int objTypes)
@@ -503,7 +510,10 @@ mono::object CScriptbind_Entity::GetEntitiesInBox(AABB bbox, int objTypes)
 	for(int i = 0; i < numEnts; i++)
 		pEntities->InsertMonoObject(pEntityIdClass->BoxObject(&mono::entityId(gEnv->pPhysicalWorld->GetPhysicalEntityId(pEnts[i]))));
 
-	return pEntities->GetManagedObject();
+	auto result = pEntities->GetManagedObject();
+	pEntities->Release();
+
+	return result;
 }
 
 mono::object CScriptbind_Entity::QueryProximity(AABB box, mono::string className, uint32 nEntityFlags)
@@ -524,7 +534,10 @@ mono::object CScriptbind_Entity::QueryProximity(AABB box, mono::string className
 	for(int i = 0; i < query.nCount; i++)
 		pEntities->InsertMonoObject(pEntityIdClass->BoxObject(&mono::entityId(query.pEntities[i]->GetId())));
 
-	return pEntities->GetManagedObject();
+	auto result = pEntities->GetManagedObject();
+	pEntities->Release();
+
+	return result;
 }
 
 void CScriptbind_Entity::SetWorldTM(IEntity *pEntity, Matrix34 tm)

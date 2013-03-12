@@ -70,6 +70,7 @@ void CScriptbind_ActorSystem::OnSpawn(IEntity *pEntity,SEntitySpawnParams &param
 			pArgs->InsertMonoObject(pActorInfoClass->BoxObject(&actorInfo));
 
 			g_pScriptSystem->InitializeScriptInstance(pScript, pArgs);
+			SAFE_RELEASE(pArgs);
 		}
 	}
 }

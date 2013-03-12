@@ -231,7 +231,8 @@ bool CScriptSystem::Reload()
 	pCtorParams->InsertMonoString(ToMonoString(PathUtils::GetConfigPath()));
 
 	IMonoObject *pScriptManager = *pCryBraryAssembly->GetClass("ScriptManager", "CryEngine.Initialization")->CreateInstance(pCtorParams);
-	
+	SAFE_RELEASE(pCtorParams);
+
 	auto result = pScriptManager->CallMethod("Initialize", m_bFirstReload);
 	if(result == nullptr)
 		return false;
@@ -419,6 +420,7 @@ IMonoObject *CScriptSystem::InstantiateScript(const char *scriptName, EMonoScrip
 	pScriptCreationArgs->Insert(throwOnFail);
 
 	mono::object result = m_pScriptManager->GetClass()->InvokeArray(m_pScriptManager->GetManagedObject(), "CreateScriptInstance", pScriptCreationArgs);
+	SAFE_RELEASE(pScriptCreationArgs);
 
 	if(!result)
 		return nullptr;
@@ -435,6 +437,7 @@ IMonoObject *CScriptSystem::InstantiateScript(const char *scriptName, EMonoScrip
 		pArgs->InsertMonoObject(pGameRulesInitParamsClass->BoxObject(&params));
 
 		InitializeScriptInstance(pInstance, pArgs);
+		SAFE_RELEASE(pArgs);
 	}
 
 	for each(auto listener in m_listeners)

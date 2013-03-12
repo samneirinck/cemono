@@ -50,6 +50,8 @@ public:
 	// ~IMonoObject
 
 	virtual void SetManagedObject(MonoObject *newObject, bool allowGC);
+	virtual void FreeGCHandle();
+
 	static void HandleException(MonoObject *pException);
 
 protected:

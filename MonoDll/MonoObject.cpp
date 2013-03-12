@@ -21,8 +21,7 @@ CScriptObject::~CScriptObject()
 	// Decrement ref counter in the class, released if no longer used.
 	SAFE_RELEASE(m_pClass);
 
-	if(m_objectHandle != -1)
-		mono_gchandle_free(m_objectHandle);
+	FreeGCHandle();
 	 
 	m_pObject = 0;
 }
@@ -178,4 +177,10 @@ void CScriptObject::SetManagedObject(MonoObject *newObject, bool allowGC)
 		m_objectHandle = mono_gchandle_new(m_pObject, allowGC);
 	else
 		m_objectHandle = -1;
+}
+
+void CScriptObject::FreeGCHandle()
+{
+	if(m_objectHandle != -1)
+		mono_gchandle_free(m_objectHandle);
 }
