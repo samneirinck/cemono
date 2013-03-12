@@ -3,6 +3,8 @@
 
 #include "MonoScriptSystem.h"
 
+#include "MonoException.h"
+
 #include <IEntitySystem.h>
 
 #include <IMonoArray.h>

@@ -10,6 +10,8 @@
 
 #include "MonoCVars.h"
 
+#include "MonoException.h"
+
 CScriptClass::CScriptClass(MonoClass *pClass, CScriptAssembly *pDeclaringAssembly)
 	: m_pDeclaringAssembly(pDeclaringAssembly)
 	, m_refs(0)
