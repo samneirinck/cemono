@@ -117,6 +117,10 @@ MonoAnyValue CScriptObject::GetAnyValue()
 		return Unbox<Quat>();
 	case eMonoAnyType_String:
 		return ToCryString((mono::string)GetManagedObject());
+	case eMonoAnyType_Unknown:
+	case eMonoAnyType_Array:
+	case eMonoAnyType_IntPtr:
+		return MonoAnyValue((mono::object)m_pObject);
 	}
 
 	return MonoAnyValue();

@@ -133,6 +133,39 @@ struct MonoAnyValue : public ISerializable
 				}
 			}
 			break;
+		case eMonoAnyType_Array:
+			{
+				IMonoScriptSystem *pScriptSystem = GetMonoScriptSystem();
+
+				IMonoArray *pArray = nullptr;
+				int arrayLength;
+
+				if(ser.IsWriting())
+				{
+					pArray = pScriptSystem->GetConverter()->ToArray(monoObject);
+					arrayLength = pArray->GetSize();
+				}
+
+				ser.Value("arrayLength", arrayLength);
+
+				if(ser.IsWriting())
+				{
+					for(int i = 0; i < arrayLength; i++)
+						pArray->GetItem(i)->GetAnyValue().SerializeWith(ser);
+				}
+				else
+				{
+					pArray = pScriptSystem->GetScriptDomain()->CreateArray(arrayLength);
+
+					for(int i = 0; i < arrayLength; i++)
+					{
+						MonoAnyValue value;
+						value.SerializeWith(ser);
+						pArray->InsertAny(value);
+					}
+				}
+			}
+			break;
 		case eMonoAnyType_Unknown:
 			{
 				if(monoObject != nullptr)
