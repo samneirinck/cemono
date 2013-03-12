@@ -236,16 +236,24 @@ void CMonoEntityExtension::SetPropertyValue(IEntityPropertyHandler::SPropertyInf
 ///////////////////////////////////////////////////
 // Entity RMI's
 ///////////////////////////////////////////////////
-CMonoEntityExtension::RMIParams::RMIParams(IMonoArray *pArray, const char *funcName, EntityId target)
+CMonoEntityExtension::RMIParams::RMIParams(mono::object _args, const char *funcName, EntityId target)
 	: methodName(funcName)
 	, targetId(target)
-	, pArgs(pArray)
+	, args(_args)
 {
 }
 
 void CMonoEntityExtension::RMIParams::SerializeWith(TSerialize ser)
 {
-	int length = pArgs ? pArgs->GetSize() : 0;
+	IMonoArray *pArgs;
+	int length;
+
+	if(args != nullptr)
+	{
+		pArgs = *args;
+		length = pArgs->GetSize();
+	}
+
 	ser.Value("length", length);
 
 	ser.Value("methodName", methodName);
@@ -256,7 +264,11 @@ void CMonoEntityExtension::RMIParams::SerializeWith(TSerialize ser)
 		if(ser.IsWriting())
 		{
 			for(int i = 0; i < length; i++)
-				pArgs->GetItem(i)->GetAnyValue().SerializeWith(ser);
+			{
+				IMonoObject *pItem = *pArgs->GetItem(i);
+				pItem->GetAnyValue().SerializeWith(ser);
+				SAFE_RELEASE(pItem);
+			}
 		}
 		else
 		{
@@ -268,6 +280,8 @@ void CMonoEntityExtension::RMIParams::SerializeWith(TSerialize ser)
 				value.SerializeWith(ser);
 				pArgs->InsertAny(value);
 			}
+
+			args = pArgs->GetManagedObject();
 		}
 	}
 }
@@ -278,7 +292,7 @@ IMPLEMENT_RMI(CMonoEntityExtension, SvScriptRMI)
 
 	IMonoArray *pNetworkArgs = CreateMonoArray(3);
 	pNetworkArgs->Insert(ToMonoString(params.methodName.c_str()));
-	pNetworkArgs->Insert(params.pArgs);
+	pNetworkArgs->InsertMonoObject(params.args);
 	pNetworkArgs->Insert(params.targetId);
 
 	pEntityClass->InvokeArray(nullptr, "OnRemoteInvocation", pNetworkArgs);
@@ -292,7 +306,7 @@ IMPLEMENT_RMI(CMonoEntityExtension, ClScriptRMI)
 
 	IMonoArray *pNetworkArgs = CreateMonoArray(3);
 	pNetworkArgs->Insert(ToMonoString(params.methodName.c_str()));
-	pNetworkArgs->Insert(params.pArgs);
+	pNetworkArgs->InsertMonoObject(params.args);
 	pNetworkArgs->Insert(params.targetId);
 
 	pEntityClass->InvokeArray(nullptr, "OnRemoteInvocation", pNetworkArgs);

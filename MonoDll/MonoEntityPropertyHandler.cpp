@@ -123,8 +123,8 @@ const char *CEntityPropertyHandler::GetProperty(IEntity *pIEntity, int index) co
 	{
 		if(CMonoEntityExtension *pEntity = static_cast<CMonoEntityExtension *>(pGameObject->QueryExtension(pIEntity->GetClass()->GetName())))
 		{
-			if(IMonoObject *pResult = pEntity->GetScript()->CallMethod("GetPropertyValue", m_properties.at(index).name))
-				return ToCryString((mono::string)pResult->GetManagedObject());
+			if(mono::object result = pEntity->GetScript()->CallMethod("GetPropertyValue", m_properties.at(index).name))
+				return ToCryString((mono::string)result);
 		}
 	}
 

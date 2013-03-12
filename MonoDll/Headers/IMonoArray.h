@@ -65,12 +65,25 @@ public:
 	/// <summary>
 	/// Retrieves an IMonoObject at the selected index of the array.
 	/// </summary>
-	virtual IMonoObject *GetItem(int index) = 0;
+	virtual mono::object GetItem(int index) = 0;
 	/// <summary>
 	/// Retrieves an unboxed IMonoObject at the selected index of the array.
 	/// </summary>
 	template <class T>
-	T GetItemUnboxed(int index) { return GetItem(index)->Unbox<T>(); }
+	T GetItemUnboxed(int index)
+	{
+		mono::object result = GetItem(index);
+		if(result)
+		{
+			IMonoObject *pResult = *result;
+			T tResult = pResult->Unbox<T>();
+			SAFE_RELEASE(pResult);
+
+			return tResult;
+		}
+
+		return nullptr;
+	}
 	/// <summary>
 	/// Retrieves a string at the selected index of the array.
 	/// </summary>
@@ -78,12 +91,6 @@ public:
 
 	template <typename T>
 	inline void Insert(T value, int index = -1);
-
-	template <>
-	inline void Insert(IMonoObject *pObject, int index);
-
-	template <>
-	inline void Insert(IMonoArray *pArray, int index);
 
 	template<>
 	inline void Insert(mono::string monoString, int index);
@@ -98,10 +105,6 @@ public:
 	/// Inserts an MonoAnyValue object into the array at the specified index. (-1 = back)
 	/// </summary>
 	virtual void InsertAny(MonoAnyValue value, int index = -1) = 0;
-	/// <summary>
-	/// Inserts an IMonoObject into the array at the specified index. (-1 = back)
-	/// </summary>
-	virtual void InsertObject(IMonoObject *pObject, int index = -1) = 0;
 
 	/// <summary>
 	/// Inserts a managed object into the array at the specified index. (-1 = back)
@@ -115,16 +118,8 @@ public:
 	virtual void InsertMonoString(mono::string string, int index = -1) = 0;
 };
 
-#include <MonoAnyValue.h>
-
 template <typename T>
 inline void IMonoArray::Insert(T value, int index) { InsertAny(MonoAnyValue((T)value), index); }
-
-template <>
-inline void IMonoArray::Insert(IMonoObject *pObject, int index) { InsertObject(pObject, index); }
-
-template <>
-inline void IMonoArray::Insert(IMonoArray *pArray, int index) { InsertObject(pArray, index); }
 
 template<>
 inline void IMonoArray::Insert(mono::string monoString, int index) { InsertMonoString(monoString, index); }

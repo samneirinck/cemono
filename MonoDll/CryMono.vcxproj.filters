@@ -54,9 +54,6 @@
     <ClInclude Include="Headers\IMonoConverter.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\MonoAnyValue.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
     <ClInclude Include="MonoEntity.h">
       <Filter>EntitySystem</Filter>
     </ClInclude>

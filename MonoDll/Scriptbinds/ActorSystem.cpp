@@ -147,7 +147,7 @@ void CScriptbind_ActorSystem::RemoteInvocation(EntityId entityId, EntityId targe
 	IGameObject *pGameObject = gEnv->pGameFramework->GetGameObject(entityId);
 	CRY_ASSERT(pGameObject);
 
-	CMonoEntityExtension::RMIParams params(*args, ToCryString(methodName), targetId);
+	CMonoEntityExtension::RMIParams params(args, ToCryString(methodName), targetId);
 
 	if(target & eRMI_ToServer)
 		pGameObject->InvokeRMI(CMonoActor::SvScriptRMI(), params, target, channelId);

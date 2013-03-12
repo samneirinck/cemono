@@ -82,8 +82,12 @@ mono::object CScriptbind_ScriptTable::CallMethod(IScriptTable *pScriptTable, mon
 
 		for(int i = 0; i < pArgs->GetSize(); i++)
 		{
-			auto anyValue = GetAnyValue(pArgs->GetItem(i));
+			IMonoObject *pItem = *pArgs->GetItem(i);
+
+			auto anyValue = GetAnyValue(pItem);
 			gEnv->pScriptSystem->PushFuncParamAny(anyValue);
+
+			SAFE_RELEASE(pItem);
 		}
 
 		ScriptAnyValue ret;

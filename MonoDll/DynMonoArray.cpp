@@ -53,11 +53,6 @@ void CDynScriptArray::InsertNativePointer(void *ptr, int index)
 	InsertMonoObject((mono::object)mono_value_box(pDomain->GetMonoDomain(), mono_get_intptr_class(), ptr), index);
 }
 
-void CDynScriptArray::InsertObject(IMonoObject *pObject, int index)
-{
-	InsertMonoObject(pObject != nullptr ? pObject->GetManagedObject() : nullptr, index);
-}
-
 void CDynScriptArray::InsertAny(MonoAnyValue value, int index)
 { 
 	IMonoDomain *pDomain = GetClass()->GetAssembly()->GetDomain();

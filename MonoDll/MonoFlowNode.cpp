@@ -42,11 +42,17 @@ bool CMonoFlowNode::CreatedNode(TFlowNodeId id, const char *name, TFlowNodeTypeI
 		IMonoArray *pArgs = CreateMonoArray(1);
 		pArgs->InsertMonoObject(pNodeInfo->BoxObject(&SMonoNodeInfo(this, id, m_pActInfo->pGraph->GetGraphId())));
 
-		IMonoObject *pResult = g_pScriptSystem->InitializeScriptInstance(pScript, pArgs);
+		mono::object result = g_pScriptSystem->InitializeScriptInstance(pScript, pArgs);
 		
 		m_pScript = pScript;
-		if(pResult)
-			return pResult->Unbox<bool>();
+		if(result)
+		{
+			IMonoObject *pResult = *result;
+			bool bResult = pResult->Unbox<bool>();
+			SAFE_RELEASE(pResult);
+
+			return bResult;
+		}
 
 		CryLogAlways("Failed to create node %s", gEnv->pFlowSystem->GetTypeName(typeId));
 		return false;
@@ -157,8 +163,10 @@ void CMonoFlowNode::GetConfiguration(SFlowNodeConfig &config)
 {
 	CRY_ASSERT(m_pScript);
 
-	if(IMonoObject *pResult = m_pScript->CallMethod("GetNodeConfig"))
+	if(mono::object result = m_pScript->CallMethod("GetNodeConfig"))
 	{
+		IMonoObject *pResult = *result;
+
 		SMonoNodeConfig monoConfig = pResult->Unbox<SMonoNodeConfig>();
 
 		config.nFlags |= monoConfig.flags;
@@ -176,7 +184,11 @@ void CMonoFlowNode::GetConfiguration(SFlowNodeConfig &config)
 		auto pInputs = new SInputPortConfig[numInputs + 1];
 
 		for(int i = 0; i < numInputs; i++)
-			pInputs[i] = pInputPorts->GetItem(i)->Unbox<SMonoInputPortConfig>().Convert();
+		{
+			IMonoObject *pInputObject = *pInputPorts->GetItem(i);
+			pInputs[i] = pInputObject->Unbox<SMonoInputPortConfig>().Convert();
+			SAFE_RELEASE(pInputObject);
+		}
 
 		pInputs[numInputs] = InputPortConfig_Null();
 
@@ -190,12 +202,17 @@ void CMonoFlowNode::GetConfiguration(SFlowNodeConfig &config)
 		auto pOutputs = new SOutputPortConfig[numOutputs + 1];
 
 		for(int i = 0; i < numOutputs; i++)
-			pOutputs[i] = pOutputPorts->GetItem(i)->Unbox<SMonoOutputPortConfig>().Convert();
+		{
+			IMonoObject *pOutputObject = *pOutputPorts->GetItem(i);
+			pOutputs[i] = pOutputObject->Unbox<SMonoOutputPortConfig>().Convert();
+			SAFE_RELEASE(pOutputObject);
+		}
 
 		pOutputs[numOutputs] = OutputPortConfig_Null();
 
 		config.pOutputPorts = pOutputs;
 
 		SAFE_RELEASE(pOutputPorts);
+		SAFE_RELEASE(pResult);
 	}
 }

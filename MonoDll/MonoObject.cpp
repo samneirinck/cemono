@@ -151,7 +151,7 @@ void CScriptObject::HandleException(MonoObject *pException)
 	if((g_pMonoCVars->mono_exceptionsTriggerMessageBoxes || isFatal) && pCryBraryAssembly)
 	{
 		auto args = CreateMonoArray(2);
-		args->InsertObject(*(mono::object)pException);
+		args->InsertMonoObject((mono::object)pException);
 		args->Insert(isFatal);
 
 		IMonoClass *pDebugClass = pCryBraryAssembly->GetClass("Debug");

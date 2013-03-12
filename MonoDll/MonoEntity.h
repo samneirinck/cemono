@@ -63,12 +63,12 @@ public:
 
 	struct RMIParams
 	{
-		RMIParams() : pArgs(NULL) {}
-		RMIParams(IMonoArray *pArray, const char *funcName, EntityId target);
+		RMIParams() : args(NULL) {}
+		RMIParams(mono::object _args, const char *funcName, EntityId target);
 
 		void SerializeWith(TSerialize ser);
 
-		IMonoArray *pArgs;
+		mono::object args;
 		string methodName;
 		EntityId targetId;
 	};

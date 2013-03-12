@@ -10,7 +10,6 @@
 
 #include <IMonoAssembly.h>
 #include <IMonoClass.h>
-#include <MonoAnyValue.h>
 
 CMonoActor::CMonoActor()
 	: m_pAnimatedCharacter(NULL)
@@ -201,10 +200,13 @@ void CMonoActor::PostUpdate(float frameTime)
 
 void CMonoActor::OnScriptInstanceInitialized(IMonoObject *pScriptInstance)
 {
-	IMonoObject *pId = pScriptInstance->GetPropertyValue("Id", false);
-	if(pId)
+	mono::object pIdResult = pScriptInstance->GetPropertyValue("Id", false);
+	if(pIdResult)
 	{
-		EntityId id = pId->Unbox<EntityId>();
+		IMonoObject *pObject = *pIdResult;
+		EntityId id = pObject->Unbox<EntityId>();
+		pObject->Release();
+
 		if(id == GetEntityId())
 			m_pScript = pScriptInstance;
 	}
@@ -398,26 +400,34 @@ void CMonoActor::InitLocalPlayer()
 
 float CMonoActor::GetHealth() const
 {
-	return m_pScript->GetPropertyValue("Health")->Unbox<float>();
+	IMonoObject *pResult = *m_pScript->GetPropertyValue("Health");
+	float health = pResult->Unbox<float>();
+	pResult->Release();
+
+	return health;
 }
 
 void CMonoActor::SetHealth(float health)
 {
 	IMonoDomain *pDomain = m_pScript->GetClass()->GetAssembly()->GetDomain();
 
-	m_pScript->SetPropertyValue("Health", *pDomain->BoxAnyValue(MonoAnyValue(health)));
+	m_pScript->SetPropertyValue("Health", pDomain->BoxAnyValue(MonoAnyValue(health)));
 }
 
 float CMonoActor::GetMaxHealth() const
 {
-	return m_pScript->GetPropertyValue("MaxHealth")->Unbox<float>();
+	IMonoObject *pResult = *m_pScript->GetPropertyValue("MaxHealth");
+	float health = pResult->Unbox<float>();
+	pResult->Release();
+
+	return health;
 }
 
 void CMonoActor::SetMaxHealth(float health)
 {
 	IMonoDomain *pDomain = m_pScript->GetClass()->GetAssembly()->GetDomain();
 
-	m_pScript->SetPropertyValue("MaxHealth", *pDomain->BoxAnyValue(MonoAnyValue(health)));
+	m_pScript->SetPropertyValue("MaxHealth", pDomain->BoxAnyValue(MonoAnyValue(health)));
 }
 
 bool CMonoActor::NetSerialize( TSerialize ser, EEntityAspects aspect, uint8 profile, int pflags )
@@ -528,7 +538,7 @@ IMPLEMENT_RMI(CMonoActor, SvScriptRMI)
 
 	IMonoArray *pNetworkArgs = CreateMonoArray(3);
 	pNetworkArgs->Insert(ToMonoString(params.methodName.c_str()));
-	pNetworkArgs->Insert(params.pArgs);
+	pNetworkArgs->InsertMonoObject(params.args);
 	pNetworkArgs->Insert(params.targetId);
 
 	pActorClass->InvokeArray(nullptr, "OnRemoteInvocation", pNetworkArgs);
@@ -542,7 +552,7 @@ IMPLEMENT_RMI(CMonoActor, ClScriptRMI)
 
 	IMonoArray *pNetworkArgs = CreateMonoArray(3);
 	pNetworkArgs->Insert(ToMonoString(params.methodName.c_str()));
-	pNetworkArgs->Insert(params.pArgs);
+	pNetworkArgs->InsertMonoObject(params.args);
 	pNetworkArgs->Insert(params.targetId);
 
 	pActorClass->InvokeArray(nullptr, "OnRemoteInvocation", pNetworkArgs);

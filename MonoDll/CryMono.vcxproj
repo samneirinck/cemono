@@ -495,7 +495,6 @@
     <ClInclude Include="Headers\IMonoDomain.h" />
     <ClInclude Include="Headers\IMonoException.h" />
     <ClInclude Include="Headers\IMonoObject.h" />
-    <ClInclude Include="Headers\MonoAnyValue.h" />
     <ClInclude Include="Headers\MonoCommon.h" />
     <ClInclude Include="MonoArray.h" />
     <ClInclude Include="MonoConverter.h" />

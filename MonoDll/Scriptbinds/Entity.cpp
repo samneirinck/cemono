@@ -305,11 +305,15 @@ bool CScriptbind_Entity::RegisterEntityClass(SEntityRegistrationParams params)
 	
 		for	(int iFolder = 0; iFolder < numFolders; ++iFolder)
 		{
-			IMonoObject *pFolderObject = pFolderArray->GetItem(iFolder);
-			if(!pFolderObject)
+			mono::object folderObject = pFolderArray->GetItem(iFolder);
+			if(folderObject == nullptr)
 				continue;
 
+			IMonoObject *pFolderObject = *folderObject;
+
 			auto folder = pFolderObject->Unbox<SMonoEntityPropertyFolder>();
+			SAFE_RELEASE(pFolderObject);
+
 			if(folder.properties == nullptr)
 				continue;
 
@@ -328,11 +332,14 @@ bool CScriptbind_Entity::RegisterEntityClass(SEntityRegistrationParams params)
 
 			for(int iProperty = 0; iProperty < pPropertyArray->GetSize(); iProperty++)
 			{
-				IMonoObject *pPropertyObject = pPropertyArray->GetItem(iProperty);
-				if(pPropertyObject == nullptr)
+				mono::object propertyObject = pPropertyArray->GetItem(iProperty);
+				if(propertyObject == nullptr)
 					continue;
 
+				IMonoObject *pPropertyObject = *propertyObject;
+
 				auto property = pPropertyObject->Unbox<SMonoEntityProperty>();
+				SAFE_RELEASE(pPropertyObject);
 
 				IEntityPropertyHandler::SPropertyInfo propertyInfo;
 
@@ -1133,7 +1140,7 @@ void CScriptbind_Entity::RemoteInvocation(EntityId entityId, EntityId targetId, 
 	IGameObject *pGameObject = gEnv->pGameFramework->GetGameObject(entityId);
 	CRY_ASSERT(pGameObject);
 
-	CMonoEntityExtension::RMIParams params(*args, ToCryString(methodName), targetId);
+	CMonoEntityExtension::RMIParams params(args, ToCryString(methodName), targetId);
 
 	if(target & eRMI_ToServer)
 		pGameObject->InvokeRMI(CMonoEntityExtension::SvScriptRMI(), params, target, channelId);

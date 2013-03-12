@@ -108,7 +108,7 @@ public:
 
 	void EraseBinding(IMonoScriptBind *pScriptBind);
 
-	IMonoObject *InitializeScriptInstance(IMonoObject *pScriptInstance, IMonoArray *pParams); 
+	mono::object InitializeScriptInstance(IMonoObject *pScriptInstance, IMonoArray *pParams); 
 
 protected:
 	bool CompleteInit();

@@ -43,11 +43,10 @@ public:
 	virtual IMonoClass *GetElementClass() override { return GetClass(m_pElementClass); }
 	virtual IMonoClass *GetDefaultElementClass() { return GetClass(m_pDefaultElementClass); }
 
-	virtual IMonoObject *GetItem(int index) override;
+	virtual mono::object GetItem(int index) override;
 	virtual const char *GetItemString(int index) override { return ToCryString(mono_array_get((MonoArray *)m_pObject, mono::string , index)); }
 
 	virtual void InsertNativePointer(void *ptr, int index = -1) override;
-	virtual void InsertObject(IMonoObject *pObject, int index = -1) override;
 	virtual void InsertAny(MonoAnyValue value, int index = -1) override;
 	virtual void InsertMonoString(mono::string string, int index = -1) override { InsertMonoObject((mono::object)string, index); }
 	virtual void InsertMonoObject(mono::object object, int index = -1) override;

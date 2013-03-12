@@ -231,8 +231,15 @@ bool CScriptSystem::Reload()
 
 	IMonoObject *pScriptManager = *pCryBraryAssembly->GetClass("ScriptManager", "CryEngine.Initialization")->CreateInstance(pCtorParams);
 	
-	auto result = pScriptManager->CallMethod("Initialize", m_bFirstReload)->Unbox<EScriptReloadResult>();
-	switch(result)
+	auto result = pScriptManager->CallMethod("Initialize", m_bFirstReload);
+	if(result == nullptr)
+		return false;
+
+	IMonoObject *pResult = *result;
+	auto reloadResult = pResult->Unbox<EScriptReloadResult>();
+	SAFE_RELEASE(pResult);
+
+	switch(reloadResult)
 	{
 	case EScriptReloadResult_Success:
 		{
@@ -407,7 +414,7 @@ IMonoObject *CScriptSystem::InstantiateScript(const char *scriptName, EMonoScrip
 	pScriptCreationArgs->Insert(scriptName);
 	pScriptCreationArgs->Insert(scriptFlags);
 	pScriptCreationArgs->InsertNativePointer(pInstance);
-	pScriptCreationArgs->Insert(pConstructorParameters);
+	pScriptCreationArgs->InsertMonoObject((pConstructorParameters != nullptr ? pConstructorParameters->GetManagedObject() : nullptr));
 	pScriptCreationArgs->Insert(throwOnFail);
 
 	mono::object result = m_pScriptManager->GetClass()->InvokeArray(m_pScriptManager->GetManagedObject(), "CreateScriptInstance", pScriptCreationArgs);
@@ -443,7 +450,7 @@ void CScriptSystem::RemoveScriptInstance(int id, EMonoScriptFlags scriptType)
 	m_pScriptManager->CallMethod("RemoveInstance", id, scriptType);
 }
 
-IMonoObject *CScriptSystem::InitializeScriptInstance(IMonoObject *pScriptInstance, IMonoArray *pParams)
+mono::object CScriptSystem::InitializeScriptInstance(IMonoObject *pScriptInstance, IMonoArray *pParams)
 {
 	CRY_ASSERT(pScriptInstance);
 	
@@ -452,10 +459,7 @@ IMonoObject *CScriptSystem::InitializeScriptInstance(IMonoObject *pScriptInstanc
 	for each(auto listener in m_listeners)
 		listener->OnScriptInstanceInitialized(pScriptInstance);
 
-	if(result)
-		return *result;
-
-	return nullptr;
+	return result;
 }
 
 IMonoClass *CScriptSystem::GetCrySerializerClass()

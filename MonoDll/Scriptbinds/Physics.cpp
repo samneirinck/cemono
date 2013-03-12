@@ -145,7 +145,7 @@ int CScriptbind_Physics::RayWorldIntersection(Vec3 origin, Vec3 dir, int objFlag
 
 		for(int i = 0; i < numSkipEnts; i++)
 		{
-			IMonoObject *pItem = pSkipEntities->GetItem(i);
+			IMonoObject *pItem = *pSkipEntities->GetItem(i);
 
 #ifndef RELEASE
 			if(!pItem)
@@ -153,6 +153,7 @@ int CScriptbind_Physics::RayWorldIntersection(Vec3 origin, Vec3 dir, int objFlag
 #endif
 
 			pSkipEnts[i] = pItem->Unbox<IPhysicalEntity *>();
+			SAFE_RELEASE(pItem);
 		}
 	}
 

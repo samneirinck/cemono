@@ -151,23 +151,26 @@ MonoMethod *CScriptClass::GetMonoMethod(const char *methodName, IMonoArray *pArg
 			{
 				pType = mono_signature_get_params(pSignature, &pIter);
 
-				if(IMonoObject *pItem = pArgs->GetItem(i))
+				if(mono::object item = pArgs->GetItem(i))
 				{
-					EMonoAnyType anyType = pItem->GetType();
+					MonoClass *pItemClass = mono_object_get_class((MonoObject *)item);
+					MonoType *pItemType = mono_class_get_type(pItemClass);
+
+					MonoTypeEnum itemMonoType = (MonoTypeEnum)mono_type_get_type(pItemType);
+
 					MonoTypeEnum monoType = (MonoTypeEnum)mono_type_get_type(pType);
 
-					if(monoType == MONO_TYPE_BOOLEAN && anyType != eMonoAnyType_Boolean)
-						break;
-					else if(monoType == MONO_TYPE_I4 && anyType != eMonoAnyType_Integer)
-						break;
-					else if(monoType == MONO_TYPE_U4 && (anyType != eMonoAnyType_UnsignedInteger && anyType != eMonoAnyType_EntityId))
-						break;
-					else if(monoType == MONO_TYPE_I2 && anyType != eMonoAnyType_Short)
-						break;
-					else if(monoType == MONO_TYPE_U2 && anyType != eMonoAnyType_UnsignedShort)
-						break;
-					else if(monoType == MONO_TYPE_STRING && anyType != eMonoAnyType_String)
-						break;
+					if(itemMonoType != monoType)
+					{
+						// exceptions:
+						// The runtime confuses things with value types a lot, so ignore parameters that appear with that type.6
+						if(itemMonoType == MONO_TYPE_VALUETYPE || monoType == MONO_TYPE_VALUETYPE) {}
+						else
+						{
+							CryLogAlways("Item type %i at args index %i did not match method type %i", itemMonoType, i, monoType);
+							break;
+						}
+					}
 				}
 
 				if(i + 1 == suppliedArgsCount)
