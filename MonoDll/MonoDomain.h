@@ -34,8 +34,8 @@ public:
 
 	virtual const char *GetName() override { return m_name; }
 
-	virtual IMonoArray *CreateArray(int size, IMonoClass *pElementClass = nullptr) override;
-	virtual IMonoArray *CreateDynamicArray(IMonoClass *pElementClass = nullptr, int size = 0) override;
+	virtual IMonoArray *CreateArray(int size, IMonoClass *pElementClass = nullptr, bool allowGC = true) override;
+	virtual IMonoArray *CreateDynamicArray(IMonoClass *pElementClass = nullptr, int size = 0, bool allowGC = true) override;
 	
 	virtual mono::object BoxAnyValue(MonoAnyValue &any) override;
 

@@ -60,13 +60,13 @@ struct IMonoDomain
 	/// [Managed]
 	/// Vec3[] myElements;
 	/// </example>
-	virtual IMonoArray *CreateArray(int size, IMonoClass *pElementClass = nullptr) = 0;
+	virtual IMonoArray *CreateArray(int size, IMonoClass *pElementClass = nullptr, bool allowGC = true) = 0;
 
 	/// <summary>
 	/// Creates a dynamically resizing mono array.
 	/// if element is null, uses object class.
 	/// </summary>
-	virtual IMonoArray *CreateDynamicArray(IMonoClass *pElementClass = nullptr, int size = 0) = 0;
+	virtual IMonoArray *CreateDynamicArray(IMonoClass *pElementClass = nullptr, int size = 0, bool allowGC = true) = 0;
 
 	virtual mono::object BoxAnyValue(MonoAnyValue &value) = 0;
 

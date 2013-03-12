@@ -22,9 +22,9 @@ class CScriptArray
 {
 public:
 	// Used on MonoArray's returned from C#.
-	CScriptArray(mono::object monoArray);
+	CScriptArray(mono::object monoArray, bool allowGC = true);
 	// Used to send arrays to C#.
-	CScriptArray(MonoDomain *pDomain, int size, IMonoClass *pContainingType = nullptr);
+	CScriptArray(MonoDomain *pDomain, int size, IMonoClass *pContainingType = nullptr, bool allowGC = true);
 
 	CScriptArray() {}
 

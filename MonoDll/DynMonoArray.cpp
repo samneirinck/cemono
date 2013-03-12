@@ -4,7 +4,7 @@
 #include "MonoScriptSystem.h"
 #include "MonoDomain.h"
 
-CDynScriptArray::CDynScriptArray(MonoDomain *pDomain, IMonoClass *pContainingType, int size)
+CDynScriptArray::CDynScriptArray(MonoDomain *pDomain, IMonoClass *pContainingType, int size, bool allowGC)
 {
 	CRY_ASSERT(size >= 0);
 	CRY_ASSERT(pDomain);
@@ -14,7 +14,7 @@ CDynScriptArray::CDynScriptArray(MonoDomain *pDomain, IMonoClass *pContainingTyp
 	m_pElementClass = (pContainingType ? (MonoClass *)(pContainingType)->GetManagedObject() : m_pDefaultElementClass);
 	CRY_ASSERT(m_pElementClass);
 
-	SetManagedObject((MonoObject *)mono_array_new(pDomain, m_pElementClass, size), true);
+	SetManagedObject((MonoObject *)mono_array_new(pDomain, m_pElementClass, size), allowGC);
 }
 
 void CDynScriptArray::Clear()

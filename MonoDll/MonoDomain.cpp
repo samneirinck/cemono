@@ -179,14 +179,14 @@ CScriptAssembly *CScriptDomain::TryGetAssembly(MonoImage *pImage)
 	return pAssembly;
 }
 
-IMonoArray *CScriptDomain::CreateArray(int numArgs, IMonoClass *pElementClass)
+IMonoArray *CScriptDomain::CreateArray(int numArgs, IMonoClass *pElementClass, bool allowGC)
 {
-	return new CScriptArray(m_pDomain, numArgs, pElementClass); 
+	return new CScriptArray(m_pDomain, numArgs, pElementClass, allowGC); 
 }
 
-IMonoArray *CScriptDomain::CreateDynamicArray(IMonoClass *pElementClass, int size)
+IMonoArray *CScriptDomain::CreateDynamicArray(IMonoClass *pElementClass, int size, bool allowGC)
 {
-	return new CDynScriptArray(m_pDomain, pElementClass, size);
+	return new CDynScriptArray(m_pDomain, pElementClass, size, allowGC);
 }
 
 mono::object CScriptDomain::BoxAnyValue(MonoAnyValue &any)
