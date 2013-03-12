@@ -104,6 +104,8 @@ void *CScriptClass::GetMethodThunk(const char *methodName, int numParams)
 	MonoMethod *pMethod = GetMonoMethod(methodName, numParams);
 	if(pMethod)
 		return mono_method_get_unmanaged_thunk(pMethod);
+	else
+		g_pScriptSystem->GetCorlibAssembly()->GetException("System", "MissingMethodException", "Failed to locate method %s in class %s", methodName, GetName())->Throw();
 
 	return nullptr;
 }
