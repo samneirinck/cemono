@@ -196,6 +196,7 @@ bool CScriptSystem::CompleteInit()
 
 		IMonoObject *pMemoryUsage = *pCryStats->GetPropertyValue(NULL, "MemoryUsage");
 		CryLogAlways("		Initializing CryMono done, MemUsage=%iKb", (memInfo.allocated + pMemoryUsage->Unbox<long>()) / 1024);
+		pMemoryUsage->Release();
 	}
 	else
 	{
