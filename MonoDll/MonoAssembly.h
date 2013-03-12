@@ -21,8 +21,7 @@ class CScriptClass;
 class CScriptDomain;
 
 class CScriptAssembly 
-	: public CScriptObject
-	, public IMonoAssembly
+	: public IMonoAssembly
 {
 public:
 	CScriptAssembly(CScriptDomain *pDomain, MonoImage *pImage, const char *path, bool nativeAssembly = true);
@@ -33,7 +32,7 @@ public:
 	// IMonoAssembly
 	virtual IMonoClass *GetClass(const char *className, const char *nameSpace = "CryEngine") override;
 
-	virtual const char *GetName() override { return mono_image_get_name((MonoImage *)m_pObject); }
+	virtual const char *GetName() override { return mono_image_get_name((MonoImage *)m_pImage); }
 	virtual const char *GetPath() override { return m_path.c_str(); }
 
 	virtual bool IsNative() override { return m_bNative; }
@@ -51,11 +50,11 @@ public:
 
 	virtual mono::object GetManagedObject() override;
 
-	virtual IMonoClass *GetClass() override { return CScriptObject::GetClass(); }
+	virtual IMonoClass *GetClass() override;
 
-	virtual void *UnboxObject() override { return CScriptObject::UnboxObject(); }
+	virtual void *UnboxObject() override { return nullptr; }
 
-	virtual const char *ToString() override { return CScriptObject::ToString(); }
+	virtual const char *ToString() override { return GetName(); }
 	// ~IMonoObject
 
 	/// <summary>
@@ -63,8 +62,8 @@ public:
 	/// </summary>
 	void OnClassReleased(CScriptClass *pClass);
 
-	void SetImage(MonoImage *pImage) { m_pObject = (MonoObject *)pImage; }
-	MonoImage *GetImage() const { return (MonoImage *)m_pObject; }
+	void SetImage(MonoImage *pImage) { m_pImage = pImage; }
+	MonoImage *GetImage() const { return m_pImage; }
 
 	void SetPath(const char *path) { m_path = string(path); }
 
@@ -76,6 +75,9 @@ private:
 
 	std::vector<CScriptClass *> m_classes;
 	CScriptDomain *m_pDomain;
+
+	IMonoClass *m_pClass;
+	MonoImage *m_pImage;
 };
 
 #endif //__MONO_ASSEMBLY_H__
