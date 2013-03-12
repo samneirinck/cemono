@@ -272,6 +272,7 @@ bool CScriptbind_Entity::OnRemove(IEntity *pIEntity)
 		auto result = pResult->Unbox<bool>();
 
 		SAFE_RELEASE(pArgs);
+		SAFE_RELEASE(pResult);
 
 		if(!result)
 			return false;
