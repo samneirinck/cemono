@@ -115,28 +115,39 @@ struct SMonoInputPortConfig
 		IMonoObject *pObject = nullptr;
 		if(defaultValue != 0)
 			pObject = *defaultValue;
-
+			
+		SInputPortConfig inputPortConfig = *(SInputPortConfig *)0;
 		switch(type)
 		{
 		case eFDT_Void:
-			return InputPortConfig_Void(sName, _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
+			inputPortConfig = InputPortConfig_Void(sName, _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
+			break;
 		case eFDT_Int:
-			return InputPortConfig<int>(sName, pObject ? pObject->Unbox<int>() : 0, _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
+			inputPortConfig = InputPortConfig<int>(sName, pObject ? pObject->Unbox<int>() : 0, _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
+			break;
 		case eFDT_Float:
-			return InputPortConfig<float>(sName, pObject ? pObject->Unbox<float>() : 0, _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
+			inputPortConfig = InputPortConfig<float>(sName, pObject ? pObject->Unbox<float>() : 0, _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
+			break;
 		case eFDT_EntityId: 
-			return InputPortConfig<EntityId>(sName, pObject ? pObject->Unbox<EntityId>() : 0, _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
+			inputPortConfig = InputPortConfig<EntityId>(sName, pObject ? pObject->Unbox<EntityId>() : 0, _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
+			break;
 		case eFDT_Vec3:
-			return InputPortConfig<Vec3>(sName, pObject ? pObject->Unbox<Vec3>() : Vec3(0,0,0), _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
+			inputPortConfig = InputPortConfig<Vec3>(sName, pObject ? pObject->Unbox<Vec3>() : Vec3(0,0,0), _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
+			break;
 		case eFDT_String:
-			return InputPortConfig<string>(sName, defaultValue ? ToCryString((mono::string)defaultValue) : "", _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
+			inputPortConfig = InputPortConfig<string>(sName, defaultValue ? ToCryString((mono::string)defaultValue) : "", _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
+			break;
 		case eFDT_Bool:
-			return InputPortConfig<bool>(sName, pObject ? pObject->Unbox<bool>() : false, _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
+			inputPortConfig = InputPortConfig<bool>(sName, pObject ? pObject->Unbox<bool>() : false, _HELP(sDesc), sHumanName, _UICONFIG(sUIConfig));
+			break;
 		case eFDT_Any:
-			return InputPortConfig_AnyType(sName, _HELP(sDesc), sHumanName, sUIConfig);
+			inputPortConfig = InputPortConfig_AnyType(sName, _HELP(sDesc), sHumanName, sUIConfig);
+			break;
 		}
 
-		return *(SInputPortConfig *)0;
+		SAFE_RELEASE(pObject);
+
+		return inputPortConfig;
 	}
 };
 
