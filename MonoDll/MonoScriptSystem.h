@@ -45,7 +45,6 @@ class CScriptSystem
 	, public ISystemEventListener
 {
 	typedef std::map<const void *, const char *> TMethodBindings;
-	typedef std::map<IMonoObject *, int> TScripts;
 
 public:
 	CScriptSystem();
