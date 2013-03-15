@@ -87,21 +87,25 @@ namespace CryEngine
 
         internal static bool InternalRemove(EntityId id)
         {
-            int numRemoved = ScriptManager.Instance.RemoveInstances(ScriptType.Entity, instance =>
+			// The result from OnRemove returns whether the entity should be allowed to be removed.
+			// If we return false, the entity won't be removed.
+			var result = true;
+
+            ScriptManager.Instance.RemoveInstances(ScriptType.Entity, instance =>
                 {
                     var entity = instance as EntityBase;
                     if (entity != null && entity.Id == id)
                     {
-                        if (entity is Entity)
-                            return (entity as Entity).OnRemove();
-                        else
-                            return true;
+						if (entity is Entity)
+							result = (entity as Entity).OnRemove();
+
+						return true;
                     }
 
                     return false;
                 });
 
-            return numRemoved > 0;
+			return result;
         }
 
         /// <summary>
