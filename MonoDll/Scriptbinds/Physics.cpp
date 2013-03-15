@@ -155,6 +155,8 @@ int CScriptbind_Physics::RayWorldIntersection(Vec3 origin, Vec3 dir, int objFlag
 			pSkipEnts[i] = pItem->Unbox<IPhysicalEntity *>();
 			SAFE_RELEASE(pItem);
 		}
+
+		pSkipEntities->Release();
 	}
 
 	ray_hit *pHits = new ray_hit[maxHits];
