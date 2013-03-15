@@ -272,7 +272,7 @@ void CMonoEntityExtension::RMIParams::SerializeWith(TSerialize ser)
 				SAFE_RELEASE(pItem);
 			}
 
-			pArgs->Release(false);
+			pArgs->Release();
 		}
 		else
 		{
@@ -286,7 +286,7 @@ void CMonoEntityExtension::RMIParams::SerializeWith(TSerialize ser)
 			}
 
 			args = pArgs->GetManagedObject();
-			pArgs->Release(false);
+			pArgs->Release();
 		}
 	}
 }
@@ -301,6 +301,7 @@ IMPLEMENT_RMI(CMonoEntityExtension, SvScriptRMI)
 	pNetworkArgs->Insert(params.targetId);
 
 	pEntityClass->InvokeArray(nullptr, "OnRemoteInvocation", pNetworkArgs);
+	pNetworkArgs->Release();
 
 	return true;
 }
@@ -315,6 +316,7 @@ IMPLEMENT_RMI(CMonoEntityExtension, ClScriptRMI)
 	pNetworkArgs->Insert(params.targetId);
 
 	pEntityClass->InvokeArray(nullptr, "OnRemoteInvocation", pNetworkArgs);
+	pNetworkArgs->Release();
 
 	return true;
 }

@@ -542,6 +542,7 @@ IMPLEMENT_RMI(CMonoActor, SvScriptRMI)
 	pNetworkArgs->Insert(params.targetId);
 
 	pActorClass->InvokeArray(nullptr, "OnRemoteInvocation", pNetworkArgs);
+	pNetworkArgs->Release();
 
 	return true;
 }
@@ -556,6 +557,7 @@ IMPLEMENT_RMI(CMonoActor, ClScriptRMI)
 	pNetworkArgs->Insert(params.targetId);
 
 	pActorClass->InvokeArray(nullptr, "OnRemoteInvocation", pNetworkArgs);
+	pNetworkArgs->Release();
 
 	return true;
 }
