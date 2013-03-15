@@ -18,27 +18,29 @@ void CScriptbind_GameRules::RegisterGameMode(mono::string gamemode)
 	// gEnv->pGameFramework is set too late, so we'll have to set it earlier in CGameStartup::InitFramework. (gEnv->pGameFramework = m_pFramework after the ModuleInitISystem call)
 	if(IGameRulesSystem *pGameRulesSystem = gEnv->pGameFramework ? gEnv->pGameFramework->GetIGameRulesSystem() : nullptr)
 	{
-		if(!pGameRulesSystem->HaveGameRules(*gamemode))
-			pGameRulesSystem->RegisterGameRules(*gamemode, "GameRules");
+		const char *gameModeStr = ToCryString(gamemode);
+
+		if(!pGameRulesSystem->HaveGameRules(gameModeStr))
+			pGameRulesSystem->RegisterGameRules(gameModeStr, "GameRules");
 	}
 }
 
 //-----------------------------------------------------------------------------
 void CScriptbind_GameRules::AddGameModeAlias(mono::string gamemode, mono::string alias)
 {
-	gEnv->pGameFramework->GetIGameRulesSystem()->AddGameRulesAlias(*gamemode, *alias);
+	gEnv->pGameFramework->GetIGameRulesSystem()->AddGameRulesAlias(ToCryString(gamemode), ToCryString(alias));
 }
 
 //-----------------------------------------------------------------------------
 void CScriptbind_GameRules::AddGameModeLevelLocation(mono::string gamemode, mono::string location)
 {
-	gEnv->pGameFramework->GetIGameRulesSystem()->AddGameRulesLevelLocation(*gamemode, *location);
+	gEnv->pGameFramework->GetIGameRulesSystem()->AddGameRulesLevelLocation(ToCryString(gamemode), ToCryString(location));
 }
 
 //-----------------------------------------------------------------------------
 void CScriptbind_GameRules::SetDefaultGameMode(mono::string gamemode)
 {
-	gEnv->pConsole->GetCVar("sv_gamerulesdefault")->Set(*gamemode);
+	gEnv->pConsole->GetCVar("sv_gamerulesdefault")->Set(ToCryString(gamemode));
 }
 
 //-----------------------------------------------------------------------------
