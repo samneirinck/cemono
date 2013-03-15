@@ -253,6 +253,8 @@ void CMonoEntityExtension::RMIParams::SerializeWith(TSerialize ser)
 		pArgs = *args;
 		length = pArgs->GetSize();
 	}
+	else
+		length = 0;
 
 	ser.Value("length", length);
 
