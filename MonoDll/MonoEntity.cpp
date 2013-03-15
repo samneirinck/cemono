@@ -273,8 +273,6 @@ void CMonoEntityExtension::RMIParams::SerializeWith(TSerialize ser)
 				pItem->GetAnyValue().SerializeWith(ser);
 				SAFE_RELEASE(pItem);
 			}
-
-			pArgs->Release();
 		}
 		else
 		{
@@ -288,8 +286,9 @@ void CMonoEntityExtension::RMIParams::SerializeWith(TSerialize ser)
 			}
 
 			args = pArgs->GetManagedObject();
-			pArgs->Release();
 		}
+
+		pArgs->Release();
 	}
 }
 
