@@ -90,6 +90,8 @@ mono::object CScriptbind_ScriptTable::CallMethod(IScriptTable *pScriptTable, mon
 			SAFE_RELEASE(pItem);
 		}
 
+		pArgs->Release();
+
 		ScriptAnyValue ret;
 		gEnv->pScriptSystem->EndCallAny(ret);
 		auto result = ToMonoObject(ret);
