@@ -53,4 +53,6 @@ void CCryScriptInstance::OnReloadComplete()
 	}
 	else
 		MonoWarning("Failed to locate script instance %i after reload!", m_scriptId);
+
+	pArgs->Release();
 }

@@ -523,6 +523,7 @@ void CMonoActor::FullSerialize(TSerialize ser)
 	pArgs->InsertNativePointer(&ser);
 
 	m_pScript->GetClass()->InvokeArray(m_pScript->GetManagedObject(), "InternalFullSerialize", pArgs);
+	pArgs->Release();
 
 	ser.EndGroup();
 }

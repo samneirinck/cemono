@@ -52,6 +52,7 @@ bool CMonoEntityExtension::Init(IGameObject *pGameObject)
 	pArgs->InsertMonoObject(pEntityInfoClass->BoxObject(&entityInfo));
 
 	g_pScriptSystem->InitializeScriptInstance(m_pScript, pArgs);
+	pArgs->Release();
 
 	int numProperties;
 	auto pProperties = static_cast<CEntityPropertyHandler *>(pEntityClass->GetPropertyHandler())->GetQueuedProperties(pEntity->GetId(), numProperties);
@@ -201,6 +202,7 @@ void CMonoEntityExtension::FullSerialize(TSerialize ser)
 	pArgs->InsertNativePointer(&ser);
 
 	m_pScript->GetClass()->InvokeArray(m_pScript->GetManagedObject(), "InternalFullSerialize", pArgs);
+	pArgs->Release();
 
 	ser.EndGroup();
 }

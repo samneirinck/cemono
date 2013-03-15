@@ -171,6 +171,7 @@ int CScriptbind_Physics::RayWorldIntersection(Vec3 origin, Vec3 dir, int objFlag
 			pRayHits->InsertMonoObject(pRayHitClass->BoxObject(&pHits[i]));
 
 		hits = pRayHits->GetManagedObject();
+		pRayHits->Release();
 	}
 
 	delete[] pHits;
@@ -189,6 +190,7 @@ mono::object CScriptbind_Physics::SimulateExplosion(pe_explosion explosion)
 		for(int i = 0; i < explosion.nAffectedEnts; i++)
 			pAffectedEnts->InsertNativePointer(explosion.pAffectedEnts[i]);
 
+		pAffectedEnts->Release();
 		return pAffectedEnts->GetManagedObject();
 	}
 

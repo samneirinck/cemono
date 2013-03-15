@@ -43,6 +43,7 @@ bool CMonoFlowNode::CreatedNode(TFlowNodeId id, const char *name, TFlowNodeTypeI
 		pArgs->InsertMonoObject(pNodeInfo->BoxObject(&SMonoNodeInfo(this, id, m_pActInfo->pGraph->GetGraphId())));
 
 		mono::object result = g_pScriptSystem->InitializeScriptInstance(pScript, pArgs);
+		pArgs->Release();
 		
 		m_pScript = pScript;
 		if(result)
@@ -150,6 +151,7 @@ void CMonoFlowNode::ProcessEvent(EFlowEvent event, SActivationInfo *pActInfo)
 				pParams->Insert(pActInfo->pEntity->GetId());
 
 				m_pScript->GetClass()->InvokeArray(m_pScript->GetManagedObject(), "InternalSetTargetEntity", pParams);
+				pParams->Release();
 			}
 		}
 		break;
