@@ -239,6 +239,8 @@ struct MonoAnyValue : public ISerializable
 						pArray->InsertAny(value);
 					}
 				}
+
+				SAFE_RELEASE(pArray);
 			}
 			break;
 		case eMonoAnyType_Unknown:
