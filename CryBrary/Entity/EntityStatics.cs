@@ -81,8 +81,6 @@ namespace CryEngine
             if (id == 0)
                 throw new ArgumentException("entityId cannot be 0!");
 #endif
-            if (!NativeEntityMethods.GetFlags(NativeEntityMethods.GetEntity(id)).HasFlag(EntityFlags.NoSave))
-                throw new EntityRemovalException("Attempted to remove an entity placed via Editor");
 
             NativeEntityMethods.RemoveEntity(id, forceRemoveNow);
         }

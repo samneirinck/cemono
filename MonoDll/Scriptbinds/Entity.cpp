@@ -11,6 +11,7 @@
 #include "MonoObject.h"
 #include "MonoArray.h"
 #include "MonoClass.h"
+#include "MonoException.h"
 
 #include "MonoCVars.h"
 
@@ -451,7 +452,17 @@ mono::object CScriptbind_Entity::SpawnEntity(EntitySpawnParams monoParams, bool 
 
 void CScriptbind_Entity::RemoveEntity(EntityId id, bool removeNow)
 {
-	gEnv->pEntitySystem->RemoveEntity(id, removeNow);
+	IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id);
+	if(pEntity)
+	{
+		if(pEntity->GetFlags() & ENTITY_FLAG_NO_SAVE)
+		{
+			g_pScriptSystem->GetCryBraryAssembly()->GetException("CryEngine", "EntityRemovalException", "Attempted to remove an entity placed via Editor")->Throw();
+			return;
+		}
+
+		gEnv->pEntitySystem->RemoveEntity(id, removeNow);
+	}
 }
 
 IEntity *CScriptbind_Entity::GetEntity(EntityId id)
