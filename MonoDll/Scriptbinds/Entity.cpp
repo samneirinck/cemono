@@ -455,7 +455,7 @@ void CScriptbind_Entity::RemoveEntity(EntityId id, bool removeNow)
 	IEntity *pEntity = gEnv->pEntitySystem->GetEntity(id);
 	if(pEntity)
 	{
-		if(pEntity->GetFlags() & ENTITY_FLAG_NO_SAVE)
+		if(!(pEntity->GetFlags() & ENTITY_FLAG_NO_SAVE))
 		{
 			g_pScriptSystem->GetCryBraryAssembly()->GetException("CryEngine", "EntityRemovalException", "Attempted to remove an entity placed via Editor")->Throw();
 			return;
