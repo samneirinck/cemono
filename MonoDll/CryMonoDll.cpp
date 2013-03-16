@@ -19,6 +19,8 @@ extern "C"
     }
 }
 #else
+#include <Windows.h>
+
 extern "C"
 {
 	MONO_API IMonoScriptSystem *InitCryMono(ISystem *pSystem)

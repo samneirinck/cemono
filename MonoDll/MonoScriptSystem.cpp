@@ -50,6 +50,8 @@
 #include "MonoCVars.h"
 #include "PathUtils.h"
 
+#include <Windows.h>
+
 SCVars *g_pMonoCVars = 0;
 CScriptSystem *g_pScriptSystem = 0;
 

@@ -13,6 +13,8 @@
 #include <mono/metadata/debug-helpers.h>
 #include <mono/metadata/assembly.h>
 
+#include <Windows.h>
+
 CScriptDomain::CScriptDomain(ERuntimeVersion runtimeVersion)
 	: m_bRootDomain(true)
 	, m_bDestroying(false)
