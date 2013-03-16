@@ -497,13 +497,34 @@ namespace CryEngine.Serialization
                     dict.Add(key, value);
                 }
             }
-            else if (type.Implements<IList>())
-            {
-                var list = objReference.Value as IList;
+			else if (type.Implements<IList>())
+			{
+				var list = objReference.Value as IList;
 
-                for (int i = 0; i < elements; i++)
-                    list.Add(StartRead().Value);
-            }
+				for (int i = 0; i < elements; i++)
+					list.Add(StartRead().Value);
+			}
+			else if (type.ImplementsGeneric(typeof(ISet<>)) || type.ImplementsGeneric(typeof(ICollection<>)))
+			{
+				var set = objReference.Value;
+
+				MethodInfo addMethod = null;
+				var baseType = type;
+
+				while (baseType != null)
+				{
+					addMethod = type.GetMethod("Add", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+					if (addMethod != null)
+						break;
+
+					baseType = baseType.BaseType;
+				}
+
+				for (int i = 0; i < elements; i++)
+				{
+					addMethod.Invoke(objReference.Value, new object[] { StartRead().Value });
+				}
+			}
             else if (IsDebugModeEnabled)
                 throw new SerializationException(string.Format("Failed to serialize generic enumerable of type {0}, not supported by implementation", type.Name));
         }
