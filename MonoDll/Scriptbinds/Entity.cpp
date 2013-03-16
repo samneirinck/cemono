@@ -275,8 +275,7 @@ bool CScriptbind_Entity::OnRemove(IEntity *pIEntity)
 		SAFE_RELEASE(pArgs);
 		SAFE_RELEASE(pResult);
 
-		if(!result)
-			return false;
+		return result;
 	}
 
 	return true;
@@ -1251,5 +1250,5 @@ int CScriptbind_Entity::GetLodRatio(IEntity *pEntity)
 
 void CScriptbind_Entity::OnScriptInstanceDestroyed(CCryScriptInstance *pScriptInstance)
 {
-	pScriptInstance->Release(false);
+	pScriptInstance->Release();
 }
