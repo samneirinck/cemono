@@ -37,8 +37,8 @@ CMonoActor::~CMonoActor()
 	if(IActorSystem *pActorSystem = gEnv->pGameFramework->GetIActorSystem())
 		pActorSystem->RemoveActor(GetEntityId());
 
-	if(IMonoScriptSystem *pScriptSystem = GetMonoScriptSystem())
-		pScriptSystem->RemoveListener(this);
+	if(g_pScriptSystem)
+		g_pScriptSystem->RemoveListener(this);
 }
 
 bool CMonoActor::Init(IGameObject *pGameObject)
