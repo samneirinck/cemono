@@ -182,7 +182,10 @@ void CMonoActor::ProcessEvent(SEntityEvent& event)
 		}
 		break;
 	case ENTITY_EVENT_PREPHYSICSUPDATE:
-		m_pScript->CallMethod("OnPrePhysicsUpdate");
+		{
+			if(m_pScript)
+				m_pScript->CallMethod("OnPrePhysicsUpdate");
+		}
 		break;
 	case ENTITY_EVENT_INIT:
 		{
@@ -195,7 +198,8 @@ void CMonoActor::ProcessEvent(SEntityEvent& event)
 
 void CMonoActor::PostUpdate(float frameTime)
 {
-	m_pScript->CallMethod("OnPostUpdate");
+	if(m_pScript)
+		m_pScript->CallMethod("OnPostUpdate");
 }
 
 void CMonoActor::OnScriptInstanceInitialized(IMonoObject *pScriptInstance)

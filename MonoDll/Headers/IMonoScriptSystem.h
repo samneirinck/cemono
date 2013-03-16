@@ -165,6 +165,7 @@ struct IMonoScriptEventListener
 
 	virtual void OnScriptInstanceCreated(const char *scriptName, EMonoScriptFlags scriptType, IMonoObject *pScriptInstance) = 0;
 	virtual void OnScriptInstanceInitialized(IMonoObject *pScriptInstance) = 0;
+	virtual void OnScriptInstanceReleased(IMonoObject *pScriptInstance, int scriptId) = 0;
 
 	/// <summary>
 	/// Called when the script system commences shutting down

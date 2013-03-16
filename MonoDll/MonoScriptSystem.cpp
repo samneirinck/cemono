@@ -86,6 +86,7 @@ CScriptSystem::CScriptSystem()
 	mono_set_signal_chaining(true);
 #endif
 
+
 	string monoCmdOptions = "";
 
 	if(auto *pArg = gEnv->pSystem->GetICmdLine()->FindArg(eCLAT_Pre, "monoArgs"))
@@ -466,6 +467,12 @@ mono::object CScriptSystem::InitializeScriptInstance(IMonoObject *pScriptInstanc
 		listener->OnScriptInstanceInitialized(pScriptInstance);
 
 	return result;
+}
+
+void CScriptSystem::ReportScriptInstanceDestroyed(IMonoObject *pScriptInstance, int scriptId)
+{
+	for each(auto listener in m_listeners)
+		listener->OnScriptInstanceReleased(pScriptInstance, scriptId);
 }
 
 IMonoClass *CScriptSystem::GetCrySerializerClass()

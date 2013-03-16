@@ -11,7 +11,10 @@ CCryScriptInstance::CCryScriptInstance(EMonoScriptFlags flags)
 CCryScriptInstance::~CCryScriptInstance()
 {
 	if(g_pScriptSystem)
+	{
+		g_pScriptSystem->ReportScriptInstanceDestroyed(this, m_scriptId);
 		g_pScriptSystem->RemoveListener(this);
+	}
 }
 
 void CCryScriptInstance::Release(bool triggerGC)

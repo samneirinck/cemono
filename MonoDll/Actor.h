@@ -180,6 +180,7 @@ public:
 
 	virtual void OnScriptInstanceCreated(const char *scriptName, EMonoScriptFlags scriptType, IMonoObject *pScriptInstance) {}
 	virtual void OnScriptInstanceInitialized(IMonoObject *pScriptInstance);
+	virtual void OnScriptInstanceReleased(IMonoObject *pScriptInstance, int scriptId) { if(pScriptInstance == m_pScript) m_pScript = nullptr; }
 	// ~IMonoScriptEventListener
 
 	DECLARE_SERVER_RMI_NOATTACH(SvScriptRMI, CMonoEntityExtension::RMIParams, eNRT_ReliableUnordered);

@@ -23,6 +23,8 @@
 
 std::vector<const char *> CScriptbind_Entity::m_monoEntityClasses = std::vector<const char *>();
 
+IMonoClass *CScriptbind_Entity::m_pEntityClass = nullptr;
+
 CScriptbind_Entity::CScriptbind_Entity()
 {
 	REGISTER_METHOD(SpawnEntity);
@@ -163,6 +165,8 @@ CScriptbind_Entity::CScriptbind_Entity()
 
 	//RegisterNativeEntityClass();
 
+	g_pScriptSystem->AddListener(this);
+
 	gEnv->pEntitySystem->AddSink(this, IEntitySystem::OnSpawn | IEntitySystem::OnRemove, 0);
 }
 
@@ -174,6 +178,11 @@ CScriptbind_Entity::~CScriptbind_Entity()
 		MonoWarning("Failed to unregister CScriptbind_Entity entity sink!");
 
 	m_monoEntityClasses.clear();
+}
+
+void CScriptbind_Entity::OnReloadComplete()
+{
+	m_pEntityClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("Entity");
 }
 
 void CScriptbind_Entity::PlayAnimation(IEntity *pEntity, mono::string animationName, int slot, int layer, float blend, float speed, EAnimationFlags flags)
@@ -264,19 +273,16 @@ void CScriptbind_Entity::OnSpawn(IEntity *pEntity,SEntitySpawnParams &params)
 
 bool CScriptbind_Entity::OnRemove(IEntity *pIEntity)
 {
-	if(IMonoClass *pEntityClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("Entity"))
-	{
-		IMonoArray *pArgs = CreateMonoArray(1);
-		pArgs->Insert(pIEntity->GetId());
+	IMonoArray *pArgs = CreateMonoArray(1);
+	pArgs->Insert(pIEntity->GetId());
 
-		IMonoObject *pResult = *pEntityClass->InvokeArray(NULL, "InternalRemove", pArgs);
-		auto result = pResult->Unbox<bool>();
+	IMonoObject *pResult = *m_pEntityClass->InvokeArray(NULL, "InternalRemove", pArgs);
+	auto result = pResult->Unbox<bool>();
 
-		SAFE_RELEASE(pArgs);
-		SAFE_RELEASE(pResult);
+	SAFE_RELEASE(pArgs);
+	SAFE_RELEASE(pResult);
 
-		return result;
-	}
+	return result;
 
 	return true;
 }

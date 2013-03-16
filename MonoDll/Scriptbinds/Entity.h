@@ -155,6 +155,7 @@ class CMonoEntityAttachment;
 class CScriptbind_Entity 
 	: public IMonoScriptBind
 	, public IEntitySystemSink
+	, public IMonoScriptEventListener
 {
 
 public:
@@ -168,6 +169,17 @@ public:
 	virtual void OnReused( IEntity *pEntity, SEntitySpawnParams &params) {}
 	virtual void OnEvent(IEntity *pEntity, SEntityEvent &event) {}
 	// ~IEntitySystemSink
+
+	// IMonoScriptEventListener
+	virtual void OnReloadStart() {}
+	virtual void OnReloadComplete();
+
+	virtual void OnScriptInstanceCreated(const char *scriptName, EMonoScriptFlags scriptType, IMonoObject *pScriptInstance) {}
+	virtual void OnScriptInstanceInitialized(IMonoObject *pScriptInstance) {}
+	virtual void OnScriptInstanceReleased(IMonoObject *pScriptInstance, int scriptId) {}
+
+	virtual void OnShutdown() {}
+	// ~IMonoScriptEventListener
 
 protected:
 	// IMonoScriptBind
@@ -317,6 +329,7 @@ protected:
 	// ~Scriptbinds
 
 	static std::vector<const char *> m_monoEntityClasses;
+	static IMonoClass *m_pEntityClass;
 };
 
 #endif //__SCRIPTBIND_ENTITY_H__

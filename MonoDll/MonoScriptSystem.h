@@ -108,6 +108,7 @@ public:
 	void EraseBinding(IMonoScriptBind *pScriptBind);
 
 	mono::object InitializeScriptInstance(IMonoObject *pScriptInstance, IMonoArray *pParams); 
+	void ReportScriptInstanceDestroyed(IMonoObject *pScriptInstance, int scriptId);
 
 protected:
 	bool CompleteInit();

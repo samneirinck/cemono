@@ -18,14 +18,15 @@ public:
 
 	virtual void OnScriptInstanceCreated(const char *scriptName, EMonoScriptFlags scriptType, IMonoObject *pScriptInstance) {}
 	virtual void OnScriptInstanceInitialized(IMonoObject *pScriptInstance) {}
+	virtual void OnScriptInstanceReleased(IMonoObject *pScriptInstance, int scriptId) {}
 
 	virtual void OnShutdown() { Release(); }
-
-	virtual void Release(bool triggerGC = true) override;
 	// ~IMonoScriptEventListener
 
 	// CScriptObject
 	virtual void SetManagedObject(MonoObject *newObject, bool allowGC) override;
+
+	virtual void Release(bool triggerGC = true) override;
 	// ~CScriptObject
 
 	int GetScriptId() { return m_scriptId; }
