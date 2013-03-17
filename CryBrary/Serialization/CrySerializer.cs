@@ -284,6 +284,16 @@ namespace CryEngine.Serialization
             WriteLine(memberInfo.Name);
             WriteType(memberInfo.ReflectedType);
             WriteLine(memberInfo.MemberType);
+
+			if (memberInfo.MemberType == MemberTypes.Method)
+			{
+				var methodInfo = memberInfo as MethodInfo;
+
+				var parameters = methodInfo.GetParameters();
+				WriteLine(parameters.Length);
+				foreach (var parameter in parameters)
+					WriteType(parameter.ParameterType);
+			}
         }
 
         void WriteDelegate(ObjectReference objectReference)
@@ -565,12 +575,20 @@ namespace CryEngine.Serialization
             var bindingFlags = BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance;
             switch (memberType)
             {
-                case MemberTypes.Method:
-                    return reflectedType.GetMethod(memberName, bindingFlags);
+				case MemberTypes.Method:
+					{
+						var parameterCount = Int32.Parse(ReadLine());
+						var parameters = new Type[parameterCount];
+
+						for (int i = 0; i < parameterCount; i++)
+							parameters[i] = ReadType();
+
+						return reflectedType.GetMethod(memberName, bindingFlags, null, parameters, null);
+					}
                 case MemberTypes.Field:
-                    return reflectedType.GetField(memberName, bindingFlags);
+					return reflectedType.GetField(memberName, bindingFlags);
                 case MemberTypes.Property:
-                    return reflectedType.GetProperty(memberName, bindingFlags);
+					return reflectedType.GetProperty(memberName, bindingFlags);
             }
 
             return null;
