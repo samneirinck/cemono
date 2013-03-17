@@ -7,8 +7,6 @@ namespace CryEngine
 {
     public abstract class CVar
     {
-        private static readonly List<CVar> CVars = new List<CVar>();
-
         public string Name { get; protected set; }
 
         public string Help { get; protected set; }
@@ -73,7 +71,7 @@ namespace CryEngine
         {
             NativeCVarMethods.RegisterCVarInt(name, ref value, value, flags, help);
 
-            CVars.Add(new ExternalCVar(name));
+			CVars.Add(new ByRefCVar(name));
 
             return CVars.Last();
         }
@@ -90,7 +88,7 @@ namespace CryEngine
         {
             NativeCVarMethods.RegisterCVarFloat(name, ref value, value, flags, help);
 
-            CVars.Add(new ExternalCVar(name));
+			CVars.Add(new ByRefCVar(name));
 
             return CVars.Last();
         }
@@ -193,6 +191,8 @@ namespace CryEngine
 
             return CVars.Last();
         }
+
+		internal static List<CVar> CVars = new List<CVar>();
         #endregion
     }
 }

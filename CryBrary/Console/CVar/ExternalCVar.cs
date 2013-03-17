@@ -7,7 +7,9 @@ namespace CryEngine
     /// </summary>
     internal class ExternalCVar : CVar
     {
-        internal ExternalCVar(string name)
+		public ExternalCVar() { }
+
+		public ExternalCVar(string name)
         {
             Name = name;
         }

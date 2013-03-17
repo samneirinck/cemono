@@ -85,6 +85,10 @@ namespace CryEngine.Initialization
             }
 
             public SerializableInput Input { get; set; }
+
+			public Dictionary<string, ConsoleCommandDelegate> ConsoleCommands { get; set; }
+			public List<CVar> ConsoleVariables { get; set; }
+
             public EntityId GameRulesId { get; set; }
 
             public int LastScriptId { get; set; }
@@ -104,6 +108,21 @@ namespace CryEngine.Initialization
                 data.GameRulesId = GameRules.Current.Id;
             else
                 data.GameRulesId = -1;
+
+			data.ConsoleCommands = ConsoleCommand.Commands;
+			data.ConsoleVariables = CVar.CVars;
+
+			data.ConsoleVariables.RemoveAll(cvar =>
+				{
+					if (cvar is ByRefCVar)
+					{
+						NativeCVarMethods.UnregisterCVar(cvar.Name, true);
+
+						return true;
+					}
+
+					return false;
+				});
 
             AddScriptInstance(data, ScriptType.CryScriptInstance);
 
@@ -138,6 +157,9 @@ namespace CryEngine.Initialization
 
             if (data.GameRulesId != -1)
                 GameRules.Current = Entity.Get(data.GameRulesId) as GameRules;
+
+			ConsoleCommand.Commands = data.ConsoleCommands;
+			CVar.CVars = data.ConsoleVariables;
 
             RemoveInstance(data.ScriptId, ScriptType.CryScriptInstance);
         }

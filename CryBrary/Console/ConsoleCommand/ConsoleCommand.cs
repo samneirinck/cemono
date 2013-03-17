@@ -10,7 +10,7 @@ namespace CryEngine
 
     public static class ConsoleCommand
     {
-        static Dictionary<string, ConsoleCommandDelegate> commands = new Dictionary<string, ConsoleCommandDelegate>();
+        internal static Dictionary<string, ConsoleCommandDelegate> Commands = new Dictionary<string, ConsoleCommandDelegate>();
 
         /// <summary>
         /// Executes a string in the console
@@ -31,11 +31,11 @@ namespace CryEngine
         /// <param name="flags">Bitfield consist of VF_ flags (e.g. VF_CHEAT)</param>
         public static void Register(string name, ConsoleCommandDelegate func, string comment = "", CVarFlags flags = CVarFlags.None)
         {
-            if (!commands.ContainsKey(name))
+            if (!Commands.ContainsKey(name))
             {
                 NativeCVarMethods.RegisterCommand(name, comment, flags);
 
-                commands.Add(name, func);
+                Commands.Add(name, func);
             }
             else
                 throw new DuplicateConsoleCommandException(string.Format("The console command {0} was already registered", name));
@@ -45,8 +45,8 @@ namespace CryEngine
 		{
 			NativeCVarMethods.UnregisterCCommand(name);
 
-			if(commands.ContainsKey(name))
-				commands.Remove(name);
+			if(Commands.ContainsKey(name))
+				Commands.Remove(name);
 		}
 
         internal static void OnCommand(string fullCommandLine)
@@ -58,7 +58,7 @@ namespace CryEngine
             for (int i = 1; i < argsWithName.Length; i++)
                 args[i - 1] = argsWithName[i];
 
-            commands[name](new ConsoleCommandArgs(name, args, fullCommandLine));
+            Commands[name](new ConsoleCommandArgs(name, args, fullCommandLine));
         }
     }
 }
