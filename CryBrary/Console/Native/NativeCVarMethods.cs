@@ -25,6 +25,12 @@ namespace CryEngine.Native
         internal static extern void RegisterCVarString(string name, [MarshalAs(UnmanagedType.LPStr)] string val,
                                                         string defaultVal, CVarFlags flags, string description);
 
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		internal static extern void UnregisterCVar(string name, bool delete = false);
+
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		internal static extern void UnregisterCCommand(string name);
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern float GetCVarFloat(string name);
 

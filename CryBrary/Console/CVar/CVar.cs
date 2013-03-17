@@ -95,6 +95,18 @@ namespace CryEngine
             return CVars.Last();
         }
 
+		/// <summary>
+		/// Unregisters an existing console variable
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="delete"></param>
+		public static void Unregister(string name, bool delete = false)
+		{
+			NativeCVarMethods.UnregisterCVar(name, delete);
+
+			CVars.RemoveAll(x => x.Name == name);
+		}
+
         /// <summary>
         /// Retrieve a console variable by name - not case sensitive
         /// </summary>

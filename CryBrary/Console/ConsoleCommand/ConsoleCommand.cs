@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 using CryEngine.Native;
@@ -39,6 +40,14 @@ namespace CryEngine
             else
                 throw new DuplicateConsoleCommandException(string.Format("The console command {0} was already registered", name));
         }
+
+		public static void Unregister(string name)
+		{
+			NativeCVarMethods.UnregisterCCommand(name);
+
+			if(commands.ContainsKey(name))
+				commands.Remove(name);
+		}
 
         internal static void OnCommand(string fullCommandLine)
         {

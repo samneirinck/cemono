@@ -20,6 +20,9 @@ CScriptbind_Console::CScriptbind_Console()
 	REGISTER_METHOD(RegisterCVarInt);
 	REGISTER_METHOD(RegisterCVarString);
 
+	REGISTER_METHOD(UnregisterCVar);
+	REGISTER_METHOD(UnregisterCCommand);
+
 	REGISTER_METHOD(HasCVar);
 
 	REGISTER_METHOD(GetCVarFloat);
@@ -71,6 +74,16 @@ void CScriptbind_Console::RegisterCVarInt(mono::string name, int &val, int defau
 void CScriptbind_Console::RegisterCVarString(mono::string name, mono::string &val, mono::string defaultVal, EVarFlags flags, mono::string description)
 {
 	//gEnv->pConsole->Register(ToCryString(name), &val, ToCryString(defaultVal), flags, ToCryString(description));
+}
+
+void CScriptbind_Console::UnregisterCVar(mono::string name, bool bDelete)
+{
+	gEnv->pConsole->UnregisterVariable(ToCryString(name), bDelete); 
+}
+
+void CScriptbind_Console::UnregisterCCommand(mono::string name)
+{
+	gEnv->pConsole->RemoveCommand(ToCryString(name));
 }
 
 bool CScriptbind_Console::HasCVar(mono::string name)
