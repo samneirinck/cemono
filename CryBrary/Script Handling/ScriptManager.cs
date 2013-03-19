@@ -475,7 +475,7 @@ namespace CryEngine.Initialization
 
             Scripts.ForEach(x =>
             {
-                if (x.ScriptType.ContainsFlag(ScriptType.CryScriptInstance) && x.ScriptInstances != null)
+                if ((x.ScriptType & ScriptType.CryScriptInstance) == ScriptType.CryScriptInstance && x.ScriptInstances != null)
                 {
                     x.ScriptInstances.ForEach(instance =>
                     {
@@ -504,7 +504,7 @@ namespace CryEngine.Initialization
                 throw new ArgumentException(string.Format("scriptType: value {0} was not defined in the enum", scriptType));
 #endif
 
-            var script = Scripts.First(x => x.ScriptType.ContainsFlag(scriptType) && x.ScriptName.Equals(scriptName));
+            var script = Scripts.First(x => (x.ScriptType & scriptType) == scriptType && x.ScriptName.Equals(scriptName));
             if (script == null)
             {
                 if (throwOnFail)
@@ -613,7 +613,7 @@ namespace CryEngine.Initialization
             int numRemoved = 0;
             foreach(var script in Scripts)
             {
-                if (script.ScriptType.ContainsFlag(scriptType))
+                if ((script.ScriptType & scriptType) == scriptType)
                 {
                     if (script.ScriptInstances != null)
                     {
@@ -657,7 +657,7 @@ namespace CryEngine.Initialization
                 throw new ArgumentException(string.Format("scriptType: value {0} was not defined in the enum", scriptType));
 #endif
 
-            return Scripts.FirstOrDefault(x => x.ScriptType.ContainsFlag(scriptType) && predicate(x));
+            return Scripts.FirstOrDefault(x => (x.ScriptType & scriptType) == scriptType && predicate(x));
         }
 
         public void ForEachScript(ScriptType scriptType, Action<CryScript> action)
@@ -669,7 +669,7 @@ namespace CryEngine.Initialization
 
             Scripts.ForEach(x =>
             {
-                if (x.ScriptType.ContainsFlag(scriptType))
+                if ((x.ScriptType & scriptType) == scriptType)
                     action(x);
             });
         }

@@ -41,18 +41,18 @@ namespace CryEngine.Compilers.NET
         {
             IScriptRegistrationParams registrationParams = null;
 
-            if (scriptType.ContainsFlag(ScriptType.Actor))
+            if ((scriptType & ScriptType.Actor) == ScriptType.Actor)
                 registrationParams = TryGetActorParams(type);
-            else if (scriptType.ContainsFlag(ScriptType.GameRules))
+            else if ((scriptType & ScriptType.GameRules) == ScriptType.GameRules)
                 registrationParams = TryGetGamemodeParams(type);
-            else if (scriptType.ContainsFlag(ScriptType.Entity))
+            else if ((scriptType & ScriptType.Entity) == ScriptType.Entity)
                 registrationParams = TryGetEntityParams(type);
-            else if (scriptType.ContainsFlag(ScriptType.EntityFlowNode))
+            else if ((scriptType & ScriptType.EntityFlowNode) == ScriptType.EntityFlowNode)
                 registrationParams = TryGetEntityFlowNodeParams(type);
-            else if (scriptType.ContainsFlag(ScriptType.FlowNode))
+            else if ((scriptType & ScriptType.FlowNode) == ScriptType.FlowNode)
                 registrationParams = TryGetFlowNodeParams(type);
 
-            if (scriptType.ContainsFlag(ScriptType.CryScriptInstance))
+            if ((scriptType & ScriptType.CryScriptInstance) == ScriptType.CryScriptInstance)
             {
                 foreach (var member in type.GetMethods(BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public))
                 {
