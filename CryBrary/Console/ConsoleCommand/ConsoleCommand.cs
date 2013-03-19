@@ -29,9 +29,16 @@ namespace CryEngine
         /// <param name="func">Delegate to the console command function to be called when command is invoked.</param>
         /// <param name="comment">Help string, will be displayed when typing in console "command ?".</param>
         /// <param name="flags">Bitfield consist of VF_ flags (e.g. VF_CHEAT)</param>
-        public static void Register(string name, ConsoleCommandDelegate func, string comment = "", CVarFlags flags = CVarFlags.None)
+        public static void Register(string name, ConsoleCommandDelegate func, string comment = "", CVarFlags flags = CVarFlags.None, bool overwrite = false)
         {
-            if (!Commands.ContainsKey(name))
+            bool containsKey = Commands.ContainsKey(name);
+            if (containsKey && overwrite)
+            {
+                Unregister(name);
+                containsKey = false;
+            }
+
+            if (!containsKey)
             {
                 NativeCVarMethods.RegisterCommand(name, comment, flags);
 
