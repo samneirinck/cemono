@@ -9,8 +9,8 @@
 #ifndef __I_MONO_SCRIPT_SYSTEM_H__
 #define __I_MONO_SCRIPT_SYSTEM_H__
 
-// Undefine if Plugin SDK shouldn't be used
-#define PLUGIN_SDK
+// define if Plugin SDK should be used
+//#define PLUGIN_SDK
 #ifdef PLUGIN_SDK
 #include <IPluginManager.h>
 #endif
