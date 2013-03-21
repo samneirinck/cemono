@@ -35,7 +35,7 @@ namespace CryEngine
             if (containsKey && overwrite)
             {
                 Unregister(name);
-                containsKey = true;
+                containsKey = false;
             }
 
             if (!containsKey)
