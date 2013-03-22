@@ -73,7 +73,7 @@ namespace CryEngine.Serialization
             Writer = new StreamWriter(stream) { AutoFlush = true };
 
             ObjectReferences.Clear();
-            CurrentLine = 0;
+            m_currentLine = 0;
 
             StartWrite(new ObjectReference("root", graph));
             stream.Seek(0, SeekOrigin.Begin);
@@ -81,7 +81,7 @@ namespace CryEngine.Serialization
 
         void WriteLine(object value)
         {
-            CurrentLine++;
+            m_currentLine++;
             Writer.WriteLine(value);
         }
 
@@ -103,7 +103,7 @@ namespace CryEngine.Serialization
                     }
                 }
 
-                ObjectReferences.Add(CurrentLine, objectReference);
+                ObjectReferences.Add(m_currentLine, objectReference);
             }
 
             return false;
@@ -339,30 +339,31 @@ namespace CryEngine.Serialization
             Reader = new StreamReader(stream);
 
             ObjectReferences.Clear();
-            CurrentLine = 0;
+            m_currentLine = 0;
 
             return StartRead().Value;
         }
 
         string ReadLine()
         {
-            CurrentLine++;
+            m_currentLine++;
 
             return Reader.ReadLine();
         }
 
         ObjectReference StartRead()
         {
-            var objReference = new ObjectReference();
+            var name = ReadLine();
 
-            objReference.Name = ReadLine();
-            int line = CurrentLine;
+            int line = m_currentLine;
 
-            objReference.SerializationType = (SerializationType)Enum.Parse(typeof(SerializationType), ReadLine());
-            if (objReference.SerializationType > SerializationType.ReferenceTypes)
+            var serializationType = (SerializationType)Enum.Parse(typeof(SerializationType), ReadLine());
+            var objReference = new ObjectReference(name, serializationType);
+
+            if (serializationType > SerializationType.ReferenceTypes)
                 ObjectReferences.Add(line, objReference);
 
-            switch (objReference.SerializationType)
+            switch (serializationType)
             {
                 case SerializationType.Null: break;
                 case SerializationType.Reference: ReadReference(objReference); break;
@@ -380,7 +381,7 @@ namespace CryEngine.Serialization
             }
 
 #if !(RELEASE && RELEASE_DISABLE_CHECKS)
-            if (!objReference.AllowNull && objReference.Value == null && objReference.SerializationType != SerializationType.Null)
+            if (!objReference.AllowNull && objReference.Value == null && serializationType != SerializationType.Null)
                 throw new SerializationException(string.Format("Failed to deserialize object of type {0} {1} at line {2}!", objReference.SerializationType, objReference.Name, line));
 #endif
 
@@ -398,7 +399,7 @@ namespace CryEngine.Serialization
 
             ObjectReference originalReference;
             if (!ObjectReferences.TryGetValue(referenceLine, out originalReference))
-                throw new SerializationException(string.Format("Failed to obtain reference {0} at line {1}! Last line was {2})", objReference.Name, referenceLine, CurrentLine));
+                throw new SerializationException(string.Format("Failed to obtain reference {0} at line {1}! Last line was {2})", objReference.Name, referenceLine, m_currentLine));
 
             objReference.Value = originalReference.Value;
             objReference.AllowNull = originalReference.AllowNull;
@@ -673,7 +674,7 @@ namespace CryEngine.Serialization
             return type;
         }
 
-        int CurrentLine { get; set; }
+        int m_currentLine;
 
         public SerializationBinder Binder { get { return null; } set { } }
         public ISurrogateSelector SurrogateSelector { get { return null; } set { } }
