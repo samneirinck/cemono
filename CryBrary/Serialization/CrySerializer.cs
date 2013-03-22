@@ -420,20 +420,7 @@ namespace CryEngine.Serialization
         {
             var type = ReadType();
 
-            try
-            {
-                objReference.Value = Activator.CreateInstance(type, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, null, null);
-
-                if (objReference.Value == null)
-                    throw new SerializationException(string.Format("Failed to create instance of type {0}", type.Name));
-            }
-            catch (MissingMethodException) // types lacking default constructors can't be serialized.
-            { 
-                objReference.AllowNull = true;
-
-                if (IsDebugModeEnabled)
-                    throw new SerializationException(string.Format("Could not create instance of type {0}, parameterless / default constructor could not be located.", type.Name));
-            }
+			objReference.Value = FormatterServices.GetUninitializedObject(type);
 
             while (type != null)
             {
