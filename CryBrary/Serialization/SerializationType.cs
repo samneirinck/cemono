@@ -7,18 +7,24 @@ namespace CryEngine.Serialization
 {
     public enum SerializationType
     {
-        Null,
+        Null = 0,
         Reference,
-        Object,
-        GenericEnumerable,
-        Enumerable,
         Enum,
         Any,
         String,
-        MemberInfo,
-        Type,
-        Delegate,
         IntPtr,
-        UnusedMarker
+        UnusedMarker,
+        
+        /// <summary>
+        /// Not actually used, but signifies that any SerializationType higher than this value is a reference type.
+        /// </summary>
+        ReferenceTypes,
+
+        GenericEnumerable,
+        Enumerable,
+        Object,
+        MemberInfo,
+        Delegate,
+        Type,
     }
 }

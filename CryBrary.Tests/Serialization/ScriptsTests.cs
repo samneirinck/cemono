@@ -1,10 +1,13 @@
-﻿using CryEngine;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Diagnostics;
+using System.Collections.Generic;
+
+using CryEngine;
 using CryEngine.Serialization;
 using CryEngine.Initialization;
-using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Linq;
+
 using Xunit;
 
 namespace CryBrary.Tests.Serialization

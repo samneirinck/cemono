@@ -85,16 +85,6 @@ namespace CryEngine.Serialization
             Writer.WriteLine(value);
         }
 
-        bool IsReferenceType(SerializationType type)
-        {
-            return type == SerializationType.Enumerable ||
-                type == SerializationType.GenericEnumerable ||
-                type == SerializationType.Object ||
-                type == SerializationType.MemberInfo ||
-                type == SerializationType.Delegate ||
-                type == SerializationType.Type;
-        }
-
         /// <summary>
         /// Checks if this object has already been serialized.
         /// </summary>
@@ -102,7 +92,7 @@ namespace CryEngine.Serialization
         /// <returns>true if object had already been serialized.</returns>
         bool TryWriteReference(ObjectReference objectReference)
         {
-            if (IsReferenceType(objectReference.SerializationType))
+            if(objectReference.SerializationType > SerializationType.ReferenceTypes)
             {
                 foreach (var pair in ObjectReferences)
                 {
@@ -369,7 +359,7 @@ namespace CryEngine.Serialization
             int line = CurrentLine;
 
             objReference.SerializationType = (SerializationType)Enum.Parse(typeof(SerializationType), ReadLine());
-            if (IsReferenceType(objReference.SerializationType))
+            if (objReference.SerializationType > SerializationType.ReferenceTypes)
                 ObjectReferences.Add(line, objReference);
 
             switch (objReference.SerializationType)
