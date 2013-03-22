@@ -121,8 +121,6 @@ namespace CryEngine.Serialization
 
         void StartWrite(ObjectReference objectReference)
         {
-            Type valueType = objectReference.Value != null ? objectReference.Value.GetType() : null;
-
             WriteLine(objectReference.Name);
 
             if (TryWriteReference(objectReference))
