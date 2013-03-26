@@ -192,7 +192,12 @@ void CMonoFlowNode::GetConfiguration(SFlowNodeConfig &config)
 			SAFE_RELEASE(pInputObject);
 		}
 
+#ifdef CRYENGINE_3_4_3
+		SInputPortConfig nullInputPortConfig = {0};
+		pInputs[numInputs] = nullInputPortConfig;
+#else
 		pInputs[numInputs] = InputPortConfig_Null();
+#endif
 
 		config.pInputPorts = pInputs;
 
@@ -210,7 +215,12 @@ void CMonoFlowNode::GetConfiguration(SFlowNodeConfig &config)
 			SAFE_RELEASE(pOutputObject);
 		}
 
+#ifdef CRYENGINE_3_4_3
+		SOutputPortConfig nullOutputPortConfig = {0};
+		pOutputs[numOutputs] = nullOutputPortConfig;
+#else
 		pOutputs[numOutputs] = OutputPortConfig_Null();
+#endif
 
 		config.pOutputPorts = pOutputs;
 
