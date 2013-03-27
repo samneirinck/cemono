@@ -2,10 +2,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CryMono", "..\MonoDll\CryMono.vcxproj", "{B41C810B-A08F-4AFD-8E68-D4D7ABA39044}"
 	ProjectSection(ProjectDependencies) = postProject
+		{A0504507-678E-44B5-9517-F89EB8575D3F} = {A0504507-678E-44B5-9517-F89EB8575D3F}
 		{4A7993B3-6611-4D9D-B8AB-836D6C27B12B} = {4A7993B3-6611-4D9D-B8AB-836D6C27B12B}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryBrary", "..\CryBrary\CryBrary.csproj", "{4A7993B3-6611-4D9D-B8AB-836D6C27B12B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EFA030F1-B5C6-410D-B217-6F40887CC8A5} = {EFA030F1-B5C6-410D-B217-6F40887CC8A5}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CryENGINE Interfaces", "CryENGINE Interfaces", "{B7E82CAA-B45D-4CF5-A700-57B7B3FE4033}"
 EndProject

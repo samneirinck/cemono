@@ -125,41 +125,42 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)..\..\..\Bin32</OutDir>
+    <OutDir>$(SolutionDir)..\Build\Bin32</OutDir>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)..\..\..\Bin64</OutDir>
+    <OutDir>$(SolutionDir)..\Build\Bin64</OutDir>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)..\..\..\Bin32</OutDir>
+    <OutDir>$(SolutionDir)..\Build\Bin32</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)..\..\..\Bin32</OutDir>
+    <OutDir>$(SolutionDir)..\Build\Bin32</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UnitTests|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)..\..\..\Bin32</OutDir>
+    <OutDir>$(SolutionDir)..\Build\Bin32</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)..\..\..\Bin64</OutDir>
+    <OutDir>$(SolutionDir)..\Build\Bin64</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)..\..\..\Bin64</OutDir>
+    <OutDir>$(SolutionDir)..\Build\Bin64</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UnitTests|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)..\..\..\Bin64</OutDir>
+    <OutDir>$(SolutionDir)..\Build\Bin64</OutDir>
   </PropertyGroup>
   <PropertyGroup>
-	<DefaultConstant></DefaultConstant>
-	</PropertyGroup>
+    <DefaultConstant>
+    </DefaultConstant>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -208,6 +209,9 @@
     <PreLinkEvent>
       <Command>lib /nologo /def:"$(SolutionDir)../mono/msvc/mono.def" /out:"$(SolutionDir)../MonoDll/Libraries/x86/mono.lib" /machine:x86</Command>
     </PreLinkEvent>
+    <PostBuildEvent>
+      <Command>Xcopy $(SolutionDir)..\Build\Bin32\* $(SolutionDir)..\..\..\Bin32\* /E /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -251,6 +255,9 @@
     <PreBuildEvent>
       <Command>lib /nologo /def:"$(SolutionDir)../mono/msvc/mono.def" /out:"$(SolutionDir)../MonoDll/Libraries/x64/mono.lib" /machine:x64</Command>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>Xcopy $(SolutionDir)..\Build\Bin64\* $(SolutionDir)..\..\..\Bin64\* /E /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -290,6 +297,9 @@
     <PreBuildEvent>
       <Command>lib /nologo /def:"$(SolutionDir)../mono/msvc/mono.def" /out:"$(SolutionDir)../MonoDll/Libraries/x86/mono.lib" /machine:x86</Command>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>Xcopy $(SolutionDir)..\Build\Bin32\* $(SolutionDir)..\..\..\Bin32\* /E /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
     <ClCompile>
@@ -328,6 +338,9 @@
     <PreBuildEvent>
       <Command>lib /nologo /def:"$(SolutionDir)../mono/msvc/mono.def" /out:"$(SolutionDir)../MonoDll/Libraries/x86/mono.lib" /machine:x86</Command>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>Xcopy $(SolutionDir)..\Build\Bin32\* $(SolutionDir)..\..\..\Bin32\* /E /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='UnitTests|Win32'">
     <ClCompile>
@@ -366,6 +379,9 @@
     <PreBuildEvent>
       <Command>lib /nologo /def:"$(SolutionDir)../mono/msvc/mono.def" /out:"$(SolutionDir)../MonoDll/Libraries/x86/mono.lib" /machine:x86</Command>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>Xcopy $(SolutionDir)..\Build\Bin32\* $(SolutionDir)..\..\..\Bin32\* /E /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -405,6 +421,9 @@
     <PreBuildEvent>
       <Command>lib /nologo /def:"$(SolutionDir)../mono/msvc/mono.def" /out:"$(SolutionDir)../MonoDll/Libraries/x64/mono.lib" /machine:x64</Command>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>Xcopy $(SolutionDir)..\Build\Bin64\* $(SolutionDir)..\..\..\Bin64\* /E /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <ClCompile>
@@ -444,6 +463,9 @@
     <PreBuildEvent>
       <Command>lib /nologo /def:"$(SolutionDir)../mono/msvc/mono.def" /out:"$(SolutionDir)../MonoDll/Libraries/x64/mono.lib" /machine:x64</Command>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>Xcopy $(SolutionDir)..\Build\Bin64\* $(SolutionDir)..\..\..\Bin64\* /E /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='UnitTests|x64'">
     <ClCompile>
@@ -483,6 +505,9 @@
     <PreBuildEvent>
       <Command>lib /nologo /def:"$(SolutionDir)../mono/msvc/mono.def" /out:"$(SolutionDir)../MonoDll/Libraries/x64/mono.lib" /machine:x64</Command>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>Xcopy $(SolutionDir)..\Build\Bin64\* $(SolutionDir)..\..\..\Bin64\* /E /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Actor.h" />

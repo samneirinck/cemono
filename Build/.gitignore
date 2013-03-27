@@ -1,0 +1,6 @@
+# Exclude files that can be compiled
+CryMono.dll
+CryBrary.dll
+CryBrary.xml
+
+Bin32/Plugins/CryMono/Plugins/*
