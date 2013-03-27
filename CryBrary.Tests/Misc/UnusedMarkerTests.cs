@@ -2,13 +2,13 @@
 
 using CryEngine;
 using CryEngine.Utilities;
-using Xunit;
+using NUnit.Framework;
 
 namespace CryBrary.Tests.Misc
 {
 	public class UnusedMarkerTests
 	{
-		[Fact]
+		[Test]
 		public void Float()
 		{
 			float myFloat = UnusedMarker.Float;
@@ -18,7 +18,7 @@ namespace CryBrary.Tests.Misc
 			Assert.False(UnusedMarker.IsUnused(myFloat));
 		}
 
-		[Fact]
+		[Test]
 		public void Integer()
 		{
 			int myInt = UnusedMarker.Integer;
@@ -28,7 +28,7 @@ namespace CryBrary.Tests.Misc
 			Assert.False(UnusedMarker.IsUnused(myInt));
 		}
 
-		[Fact]
+		[Test]
 		public void UnsignedInteger()
 		{
 			uint myUint = UnusedMarker.UnsignedInteger;
@@ -38,7 +38,7 @@ namespace CryBrary.Tests.Misc
 			Assert.False(UnusedMarker.IsUnused(myUint));
 		}
 
-		[Fact]
+		[Test]
 		public void Vec3()
 		{
 			Vec3 vec3 = UnusedMarker.Vec3;

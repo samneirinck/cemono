@@ -8,13 +8,13 @@ using CryEngine;
 using CryEngine.Serialization;
 using CryEngine.Initialization;
 
-using Xunit;
+using NUnit.Framework;
 
 namespace CryBrary.Tests.Serialization
 {
 	public class ScriptsTests
 	{
-		[Fact]
+		[Test]
 		public void Serialize_Native_Scripts()
 		{
 			var serializer = new CrySerializer();
@@ -31,24 +31,24 @@ namespace CryBrary.Tests.Serialization
 
 				scriptManager.Scripts = serializer.Deserialize(stream) as List<CryScript>;
 				Assert.NotNull(scriptManager.Scripts);
-				Assert.Equal(2, scriptManager.Scripts.Count);
+				Assert.AreEqual(2, scriptManager.Scripts.Count);
 
 				var entityScript = scriptManager.FindScript(ScriptType.Entity, x => x.Type == typeof(NativeEntity));
-				Assert.NotSame(default(CryScript), entityScript);
+				Assert.AreNotSame(default(CryScript), entityScript);
 				Assert.NotNull(entityScript.ScriptInstances);
 
-				Assert.Equal<int>(1, (entityScript.ScriptInstances[0] as NativeEntity).Id);
-				Assert.Equal<int>(2, (entityScript.ScriptInstances[1] as NativeEntity).Id);
+				Assert.AreEqual(1, (entityScript.ScriptInstances[0] as NativeEntity).Id);
+				Assert.AreEqual(2, (entityScript.ScriptInstances[1] as NativeEntity).Id);
 
 				var actorScript = scriptManager.FindScript(ScriptType.Entity, x => x.Type == typeof(NativeActor));
-				Assert.NotSame(default(CryScript), actorScript);
+				Assert.AreNotSame(default(CryScript), actorScript);
 				Assert.NotNull(actorScript.ScriptInstances);
 
-				Assert.Equal<int>(3, (actorScript.ScriptInstances[0] as NativeActor).Id);
+				Assert.AreEqual(3, (actorScript.ScriptInstances[0] as NativeActor).Id);
 			}
 		}
         
-        [Fact]
+        [Test]
         public void Serialize_CryScript_List()
         {
             var serializer = new CrySerializer();
@@ -83,30 +83,30 @@ namespace CryBrary.Tests.Serialization
                 list = serializer.Deserialize(stream) as List<CryScript>;
 
                 Assert.NotNull(list);
-                Assert.NotEmpty(list);
+                Assert.IsNotEmpty(list);
 
-                Assert.Equal(2, list.Count);
+                Assert.AreEqual(2, list.Count);
 
                 var nativeActorScript = list.ElementAt(0);
                 Assert.NotNull(nativeActorScript.ScriptInstances);
-                Assert.Equal(2, nativeActorScript.ScriptInstances.Count);
+                Assert.AreEqual(2, nativeActorScript.ScriptInstances.Count);
 
                 Assert.NotNull(nativeActorScript.ScriptInstances.ElementAt(0));
-                Assert.Equal<int>(759, (nativeActorScript.ScriptInstances.ElementAt(0) as EntityBase).Id);
+                Assert.AreEqual(759, (nativeActorScript.ScriptInstances.ElementAt(0) as EntityBase).Id);
 
                 Assert.NotNull(nativeActorScript.ScriptInstances.ElementAt(1));
-                Assert.Equal<int>(5, (nativeActorScript.ScriptInstances.ElementAt(1) as EntityBase).Id);
+                Assert.AreEqual(5, (nativeActorScript.ScriptInstances.ElementAt(1) as EntityBase).Id);
 
                var  nativeEntityScript = list.ElementAt(1);
 
                 Assert.NotNull(nativeEntityScript.ScriptInstances);
-                Assert.Equal(3, nativeEntityScript.ScriptInstances.Count);
+                Assert.AreEqual(3, nativeEntityScript.ScriptInstances.Count);
 
                 Assert.NotNull(nativeEntityScript.ScriptInstances.ElementAt(0));
-                Assert.Equal<int>(987, (nativeEntityScript.ScriptInstances.ElementAt(0) as EntityBase).Id);
+                Assert.AreEqual(987, (nativeEntityScript.ScriptInstances.ElementAt(0) as EntityBase).Id);
 
                 Assert.NotNull(nativeEntityScript.ScriptInstances.ElementAt(1));
-                Assert.Equal<int>(8, (nativeEntityScript.ScriptInstances.ElementAt(1) as EntityBase).Id);
+                Assert.AreEqual(8, (nativeEntityScript.ScriptInstances.ElementAt(1) as EntityBase).Id);
 
                 Assert.Null(nativeEntityScript.ScriptInstances.ElementAt(2));
             }
@@ -122,7 +122,7 @@ namespace CryBrary.Tests.Serialization
             DelayedFunc delayedFunc;
         }
 
-        [Fact]
+        [Test]
         public void Entity_With_DelayedFunc()
         {
             var serializer = new CrySerializer();

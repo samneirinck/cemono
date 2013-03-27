@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 using CryEngine.Serialization;
-using Xunit;
+using NUnit.Framework;
 
 namespace CryBrary.Tests.Serialization
 {
@@ -44,7 +44,7 @@ namespace CryBrary.Tests.Serialization
 			return testClass;
 		}
 
-		[Fact]
+		[Test]
 		public void TestClass_With_MemoryStream()
 		{
 			using(var stream = new MemoryStream())
@@ -58,16 +58,16 @@ namespace CryBrary.Tests.Serialization
 				Assert.NotNull(testClass);
 
 				Assert.True(testClass.Boolean);
-				Assert.Equal(3, testClass.Integer);
-				Assert.Equal("testString", testClass.String);
+				Assert.AreEqual(3, testClass.Integer);
+				Assert.AreEqual("testString", testClass.String);
 
 				Assert.NotNull(testClass.nestedClass);
 
-				Assert.Equal(testClass.nestedClass.NestedEnum, TestClass.NestedEnum.Nested_NotQuite);
+				Assert.AreEqual(testClass.nestedClass.NestedEnum, TestClass.NestedEnum.Nested_NotQuite);
 			}
 		}
 
-		[Fact]
+		[Test]
 		public void String_With_MemoryStream()
 		{
 			using(var stream = new MemoryStream())
@@ -79,11 +79,11 @@ namespace CryBrary.Tests.Serialization
 
 				var testString = serializer.Deserialize(stream) as string;
 
-				Assert.Equal("Test str1ng_I5 V37y tEsTy%‹Œm´ð!", testString);
+				Assert.AreEqual("Test str1ng_I5 V37y tEsTy%‹Œm´ð!", testString);
 			}
 		}
 
-		[Fact]
+		[Test]
 		public void List_With_MemoryStream()
 		{
 			using(var stream = new MemoryStream())
@@ -98,14 +98,14 @@ namespace CryBrary.Tests.Serialization
 				var deserialized = serializer.Deserialize(stream) as List<string>;
 
 				Assert.NotNull(deserialized);
-				Assert.Equal(2, deserialized.Count());
+				Assert.AreEqual(2, deserialized.Count());
 
-				Assert.Equal("test1", deserialized.ElementAt(0));
-				Assert.Equal("test2", deserialized.ElementAt(1));
+				Assert.AreEqual("test1", deserialized.ElementAt(0));
+				Assert.AreEqual("test2", deserialized.ElementAt(1));
 			}
 		}
 
-		[Fact]
+		[Test]
 		public void Dictionary_With_MemoryStream()
 		{
 			using(var stream = new MemoryStream())
@@ -120,21 +120,21 @@ namespace CryBrary.Tests.Serialization
 				var deserializedDictionary = serializer.Deserialize(stream) as Dictionary<string, int>;
 				Assert.NotNull(deserializedDictionary);
 
-				Assert.Equal(2, deserializedDictionary.Count);
+				Assert.AreEqual(2, deserializedDictionary.Count);
 
-				Assert.Equal(2, deserializedDictionary.Count);
+				Assert.AreEqual(2, deserializedDictionary.Count);
 
 				var firstKey = deserializedDictionary.First().Key;
-				Assert.Equal("test1", firstKey);
-				Assert.Equal(1, deserializedDictionary[firstKey]);
+				Assert.AreEqual("test1", firstKey);
+				Assert.AreEqual(1, deserializedDictionary[firstKey]);
 
 				var secondKey = deserializedDictionary.ElementAt(1).Key;
-				Assert.Equal("test2", secondKey);
-				Assert.Equal(2, deserializedDictionary[secondKey]);
+				Assert.AreEqual("test2", secondKey);
+				Assert.AreEqual(2, deserializedDictionary[secondKey]);
 			}
 		}
 
-		[Fact]
+		[Test]
 		public void Object_Array_With_MemoryStream()
 		{
 			using(var stream = new MemoryStream())
@@ -148,15 +148,15 @@ namespace CryBrary.Tests.Serialization
 
 				var array = serializer.Deserialize(stream) as object[];
 				Assert.NotNull(array);
-				Assert.NotEmpty(array);
+				Assert.IsNotEmpty(array);
 
-				Assert.Equal("testString", array.ElementAt(0));
-				Assert.Equal(1337, array.ElementAt(1));
-				Assert.Equal(true, array.ElementAt(2));
+				Assert.AreEqual("testString", array.ElementAt(0));
+				Assert.AreEqual(1337, array.ElementAt(1));
+				Assert.AreEqual(true, array.ElementAt(2));
 			}
 		}
 
-		[Fact]
+		[Test]
 		public void String_Array_With_MemoryStream()
 		{
 			using(var stream = new MemoryStream())
@@ -170,11 +170,11 @@ namespace CryBrary.Tests.Serialization
 
 				var array = serializer.Deserialize(stream) as object[];
 				Assert.NotNull(array);
-				Assert.NotEmpty(array);
+				Assert.IsNotEmpty(array);
 
-				Assert.Equal("first_string", array.ElementAt(0));
-				Assert.Equal("second_string", array.ElementAt(1));
-				Assert.Equal("third_string", array.ElementAt(2));
+				Assert.AreEqual("first_string", array.ElementAt(0));
+				Assert.AreEqual("second_string", array.ElementAt(1));
+				Assert.AreEqual("third_string", array.ElementAt(2));
 			}
 		}
 
@@ -204,7 +204,7 @@ namespace CryBrary.Tests.Serialization
 			public TestClass TestClassSeperate { get; private set; }
 		}
 
-		[Fact]
+		[Test]
 		public void Reference_Object_Serialization()
 		{
 			using(var stream = new MemoryStream())
@@ -218,9 +218,9 @@ namespace CryBrary.Tests.Serialization
 
 				referenceTestClass = serializer.Deserialize(stream) as Multiple_Reference_Test_Class;
 
-				Assert.NotSame(referenceTestClass.ClassWithTestClassReference, referenceTestClass.TestClassSeperate);
-                Assert.Equal(referenceTestClass.ClassWithTestClassReference.TestClass, referenceTestClass.TestClassReference);
-				/*Assert.Equal(referenceTestClass.ClassWithTestClassReference.TestClass, referenceTestClass.TestClassReference, "Objects were not the same; expected hash code: {0} but was: {1}",
+				Assert.AreNotSame(referenceTestClass.ClassWithTestClassReference, referenceTestClass.TestClassSeperate);
+                Assert.AreEqual(referenceTestClass.ClassWithTestClassReference.TestClass, referenceTestClass.TestClassReference);
+				/*Assert.AreEqual(referenceTestClass.ClassWithTestClassReference.TestClass, referenceTestClass.TestClassReference, "Objects were not the same; expected hash code: {0} but was: {1}",
 					referenceTestClass.ClassWithTestClassReference.GetHashCode(), referenceTestClass.TestClassReference.GetHashCode());*/
 			}
 		}
@@ -243,7 +243,7 @@ namespace CryBrary.Tests.Serialization
 			public bool booleanField;
 		}
 
-		[Fact]
+		[Test]
 		public void Class_With_MemberInfo_Members()
 		{
 			using(var stream = new MemoryStream())
@@ -258,8 +258,8 @@ namespace CryBrary.Tests.Serialization
 
 				Assert.NotNull(memberInfoClass);
 
-				Assert.Same(memberInfoClass.GetType().GetMethod("Method"), memberInfoClass.MethodInfo);
-				Assert.Same(memberInfoClass.GetType().GetField("booleanField"), memberInfoClass.FieldInfo);
+				Assert.AreSame(memberInfoClass.GetType().GetMethod("Method"), memberInfoClass.MethodInfo);
+				Assert.AreSame(memberInfoClass.GetType().GetField("booleanField"), memberInfoClass.FieldInfo);
 
 				Assert.True(memberInfoClass.booleanField);
 			}
@@ -311,7 +311,7 @@ namespace CryBrary.Tests.Serialization
 			public CryEngine.Vec3 Vec3Property { get; set; }
 		}
 
-		[Fact]
+		[Test]
 		public void Derivation()
 		{
 			using(var stream = new MemoryStream())
@@ -326,13 +326,13 @@ namespace CryBrary.Tests.Serialization
 
 				Assert.NotNull(inheritClass);
 				Assert.True(inheritClass.BooleanProperty);
-				Assert.Equal(13, inheritClass.IntegerProperty);
-				Assert.Equal("TestString", inheritClass.StringProperty);
-				Assert.Equal(new CryEngine.Vec3(1, 2, 3), inheritClass.Vec3Property);
+				Assert.AreEqual(13, inheritClass.IntegerProperty);
+				Assert.AreEqual("TestString", inheritClass.StringProperty);
+				Assert.AreEqual(new CryEngine.Vec3(1, 2, 3), inheritClass.Vec3Property);
 			}
 		}
 
-		[Fact]
+		[Test]
 		public void GenericEnumerableception()
 		{
 			var dictionary = new Dictionary<int, List<TestClass>>();

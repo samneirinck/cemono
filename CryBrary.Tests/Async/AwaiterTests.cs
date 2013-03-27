@@ -7,7 +7,7 @@ using CryEngine;
 using CryEngine.Async;
 using CryEngine.Async.Jobs;
 using Moq;
-using Xunit;
+using NUnit.Framework;
 
 namespace CryBrary.Tests.Async
 {
@@ -18,7 +18,7 @@ namespace CryBrary.Tests.Async
             Awaiter.Instance.Jobs.Clear();
         }
 
-        [Fact]
+        [Test]
         public void OnUpdate_FrameDelayJob_ExpiredJobRemovedCorrectly()
         {
             // Arrange
@@ -28,10 +28,10 @@ namespace CryBrary.Tests.Async
             Awaiter.Instance.OnUpdate(1);
 
             // Assert
-            Assert.Equal(0,Awaiter.Instance.Jobs.Count);
+            Assert.AreEqual(0,Awaiter.Instance.Jobs.Count);
         }
 
-        [Fact]
+        [Test]
         public void OnUpdate_FrameDelayJob_DoNotRemoveJobsTooEarly()
         {
             // Arrange
@@ -49,10 +49,10 @@ namespace CryBrary.Tests.Async
 
 
             // Assert
-            Assert.Equal(3, Awaiter.Instance.Jobs.Count);
+            Assert.AreEqual(3, Awaiter.Instance.Jobs.Count);
         }
 
-        [Fact]
+        [Test]
         public  void OnUpdate_MockJob_IsUpdated()
         {
             // Arrange

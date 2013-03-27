@@ -5,7 +5,7 @@ namespace CryBrary.Tests.UnitTester
 {
 	public class Exceptions
 	{
-		[Xunit.Fact]
+        [Test]
 		public void Throw_Valid()
 		{
 			var obj = new object();
@@ -16,12 +16,12 @@ namespace CryBrary.Tests.UnitTester
 			});
 		}
 
-		[Xunit.Fact]
+        [Test]
 		public void Throw_Invalid()
 		{
 			object obj = 1;
 
-            Xunit.Assert.Throws<AssertionFailedException>(() =>
+            Assert.Throws<AssertionFailedException>(() =>
             {
                 Assert.Throws<InvalidCastException>(() =>
                 {

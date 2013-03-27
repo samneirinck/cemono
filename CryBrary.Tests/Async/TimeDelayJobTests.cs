@@ -5,13 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using CryEngine.Async;
 using CryEngine.Async.Jobs;
-using Xunit;
+using NUnit.Framework;
 
 namespace CryBrary.Tests.Async
 {
     public class TimeDelayJobTests
     {
-        [Fact]
+        [Test]
         public void TimeDelayJobTests_NegativeTime_InstantExecution()
         {
             // Arrange
@@ -27,7 +27,7 @@ namespace CryBrary.Tests.Async
             Assert.True(job.Task.Status == TaskStatus.RanToCompletion);
         }
 
-        [Fact]
+        [Test]
         public void TimeDelayJobTests_2000ms_UpdatedAtTheCorrectTime()
         {
             // Arrange

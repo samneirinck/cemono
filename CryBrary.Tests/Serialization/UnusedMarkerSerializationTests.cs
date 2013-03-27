@@ -5,13 +5,13 @@ using System.Linq;
 using CryEngine;
 using CryEngine.Utilities;
 using CryEngine.Serialization;
-using Xunit;
+using NUnit.Framework;
 
 namespace CryBrary.Tests.Serialization
 {
     public class UnusedMarkerSerializationTests
     {
-        [Fact]
+        [Test]
         public void Unused_Integer()
         {
             using (var stream = new MemoryStream())
@@ -26,7 +26,7 @@ namespace CryBrary.Tests.Serialization
             }
         }
 
-        [Fact]
+        [Test]
         public void Unused_UnsignedInteger()
         {
             using (var stream = new MemoryStream())
@@ -41,7 +41,7 @@ namespace CryBrary.Tests.Serialization
             }
         }
 
-        [Fact]
+        [Test]
         public void Unused_Float()
         {
             using (var stream = new MemoryStream())
@@ -56,7 +56,7 @@ namespace CryBrary.Tests.Serialization
             }
         }
 
-        [Fact]
+        [Test]
         public void Unused_Vec3()
         {
             using (var stream = new MemoryStream())

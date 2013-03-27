@@ -1,11 +1,11 @@
 ﻿using System;
-using Xunit;
+using NUnit.Framework;
 
 namespace CryBrary.Tests.Misc
 {
     public class ConvertTests
     {
-        [Fact]
+        [Test]
         public void FromString_ValidBool_BoolResult()
         {
             // Arrange
@@ -29,7 +29,7 @@ namespace CryBrary.Tests.Misc
             Assert.True((bool)allUppercaseBoolResult);
         }
 
-        [Fact]
+        [Test]
         public void FromString_NullBool_ArgumentNullException()
 		{
 			// Arrange
