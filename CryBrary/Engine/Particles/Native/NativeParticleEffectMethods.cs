@@ -20,5 +20,23 @@ namespace CryEngine.Engine.Particles.Native
         extern internal static void SetParticleEmitterSpawnParams(IntPtr ptr, ref ParticleSpawnParameters spawnParams);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static IntPtr GetParticleEmitterEffect(IntPtr ptr);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        extern internal static string GetName(IntPtr ptr);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        extern internal static string GetFullName(IntPtr ptr);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        extern internal static void Enable(IntPtr ptr, bool enable);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        extern internal static bool IsEnabled(IntPtr ptr);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        extern internal static int GetChildCount(IntPtr ptr);
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        extern internal static IntPtr GetChild(IntPtr ptr, int i);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        extern internal static IntPtr GetParent(IntPtr ptr);
     }
 }

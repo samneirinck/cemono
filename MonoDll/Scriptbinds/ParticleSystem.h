@@ -38,6 +38,17 @@ protected:
 	static SpawnParams GetParticleEmitterSpawnParams(IParticleEmitter *pEmitter);
 	static void SetParticleEmitterSpawnParams(IParticleEmitter *pEmitter, SpawnParams &spawnParams);
 	static IParticleEffect *GetParticleEmitterEffect(IParticleEmitter *pEmitter);
+
+	static mono::string GetName(IParticleEffect *pEffect);
+	static mono::string GetFullName(IParticleEffect *pEffect);
+
+	static void Enable(IParticleEffect *pEffect, bool enable);
+	static bool IsEnabled(IParticleEffect *pEffect);
+
+	static int GetChildCount(IParticleEffect *pEffect);
+	static IParticleEffect *GetChild(IParticleEffect *pEffect, int i);
+
+	static IParticleEffect *GetParent(IParticleEffect *pEffect);
 	// ~Externals
 
 	static IParticleManager *m_pParticleManager;

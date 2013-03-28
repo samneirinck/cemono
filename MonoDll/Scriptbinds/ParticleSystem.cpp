@@ -17,6 +17,17 @@ CScriptbind_ParticleSystem::CScriptbind_ParticleSystem()
 	REGISTER_METHOD(GetParticleEmitterSpawnParams);
 	REGISTER_METHOD(SetParticleEmitterSpawnParams);
 	REGISTER_METHOD(GetParticleEmitterEffect);
+
+	REGISTER_METHOD(GetName);
+	REGISTER_METHOD(GetFullName);
+
+	REGISTER_METHOD(Enable);
+	REGISTER_METHOD(IsEnabled);
+
+	REGISTER_METHOD(GetChildCount);
+	REGISTER_METHOD(GetChild);
+
+	REGISTER_METHOD(GetParent);
 }
 
 IParticleEffect *CScriptbind_ParticleSystem::FindEffect(mono::string effectName, bool bLoadResources)
@@ -55,4 +66,39 @@ void CScriptbind_ParticleSystem::SetParticleEmitterSpawnParams(IParticleEmitter 
 IParticleEffect *CScriptbind_ParticleSystem::GetParticleEmitterEffect(IParticleEmitter *pEmitter)
 {
 	return const_cast<IParticleEffect *>(pEmitter->GetEffect());
+}
+
+mono::string CScriptbind_ParticleSystem::GetName(IParticleEffect *pEffect)
+{
+	return ToMonoString(pEffect->GetName());
+}
+
+mono::string CScriptbind_ParticleSystem::GetFullName(IParticleEffect *pEffect)
+{
+	return ToMonoString(pEffect->GetFullName());
+}
+
+void CScriptbind_ParticleSystem::Enable(IParticleEffect *pEffect, bool enable)
+{
+	pEffect->SetEnabled(enable);
+}
+
+bool CScriptbind_ParticleSystem::IsEnabled(IParticleEffect *pEffect)
+{
+	return pEffect->IsEnabled();
+}
+
+int CScriptbind_ParticleSystem::GetChildCount(IParticleEffect *pEffect)
+{
+	return pEffect->GetChildCount();
+}
+
+IParticleEffect *CScriptbind_ParticleSystem::GetChild(IParticleEffect *pEffect, int i)
+{
+	return pEffect->GetChild(i);
+}
+
+IParticleEffect *CScriptbind_ParticleSystem::GetParent(IParticleEffect *pEffect)
+{
+	return pEffect->GetParent();
 }
