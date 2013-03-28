@@ -287,6 +287,12 @@ namespace CryEngine
 
         public Vec3 Row2 { get { return new Vec3(2 * (V.Z * V.X - V.Y * W), 2 * (V.Z * V.Y + V.X * W), 2 * (V.Z * V.Z + W * W) - 1); } }
 
+        public float ForwardX { get { return 2 * (V.X * V.Y - V.Z * W); } }
+        public float ForwardY { get { return 2 * (V.Y * V.Y + W * W) - 1; } }
+        public float ForwardZ { get { return 2 * (V.Z * V.Y + V.X * W); } }
+
+        public float RotationZ { get { return (float)Math.Atan2(-ForwardX, ForwardY); } }
+
         #region Operators
         public static Quat operator *(Quat value, float scale)
         {
