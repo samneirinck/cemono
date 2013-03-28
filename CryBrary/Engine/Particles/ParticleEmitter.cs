@@ -26,7 +26,7 @@ namespace CryEngine
             return particleEmitter;
         }
 
-        private static List<ParticleEmitter> Emitters { get; set; }
+        private static List<ParticleEmitter> Emitters = new List<ParticleEmitter>();    
         #endregion
 
         ParticleEmitter(IntPtr ptr)
