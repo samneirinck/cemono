@@ -14,6 +14,8 @@ CScriptbind_ParticleSystem::CScriptbind_ParticleSystem()
 	REGISTER_METHOD(Remove);
 	REGISTER_METHOD(LoadResources);
 
+	REGISTER_METHOD(ActivateEmitter);
+
 	REGISTER_METHOD(GetParticleEmitterSpawnParams);
 	REGISTER_METHOD(SetParticleEmitterSpawnParams);
 	REGISTER_METHOD(GetParticleEmitterEffect);
