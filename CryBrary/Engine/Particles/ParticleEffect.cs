@@ -89,6 +89,8 @@ namespace CryEngine
 
         public bool Enabled { get { return NativeParticleEffectMethods.IsEnabled(Handle); } set { NativeParticleEffectMethods.Enable(Handle, value); } }
 
+        public ParticleEffect Parent { get { return TryGet(NativeParticleEffectMethods.GetParent(Handle)); } }
+
         #region Operator overloads
         /// <summary>
         /// Gets sub-effect by index.
