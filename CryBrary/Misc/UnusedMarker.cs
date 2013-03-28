@@ -88,6 +88,22 @@ namespace CryEngine.Utilities
             return IsUnused(var.X);
         }
 
+        public static Quat Quat
+        {
+            get
+            {
+                var q = new Quat();
+
+                q.W = Float;
+                return q;
+            }
+        }
+
+        public static bool IsUnused(Quat var)
+        {
+            return IsUnused(var.W);
+        }
+
         public static IntPtr IntPtr
         {
             get
