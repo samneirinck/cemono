@@ -70,6 +70,8 @@ public:
 	static pe_status_living GetLivingEntityStatus(IEntity *pEntity);
 	static pe_status_dynamics GetDynamicsEntityStatus(IEntity *pEntity);
 
+	static bool SetPhysicalEntityParams(IPhysicalEntity *pPhysEnt, pe_params &params);
+	static bool GetPhysicalEntityParams(IPhysicalEntity *pPhysEnt, pe_params &params);
 };
 
 #endif //__SCRIPTBIND_PHYSICALWORLD__

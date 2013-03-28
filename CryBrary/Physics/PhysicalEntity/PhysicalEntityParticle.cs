@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 using CryEngine.Utilities;
+using CryEngine.Native;
 
 namespace CryEngine.Physics
 {
@@ -17,6 +18,18 @@ namespace CryEngine.Physics
         public override PhysicalizationType Type
         {
             get { return PhysicalizationType.Particle; }
+        }
+
+        [CLSCompliant(false)]
+        public bool SetParameters(ref ParticleParameters parameters)
+        {
+            return NativePhysicsMethods.SetParticleParams(Handle, ref parameters);
+        }
+
+        [CLSCompliant(false)]
+        public bool GetParameters(ref ParticleParameters parameters)
+        {
+            return NativePhysicsMethods.GetParticleParams(Handle, ref parameters);
         }
     }
 

@@ -29,6 +29,9 @@ CScriptbind_Physics::CScriptbind_Physics()
 
 	REGISTER_METHOD(GetLivingEntityStatus);
 	REGISTER_METHOD(GetDynamicsEntityStatus);
+
+	REGISTER_METHOD_NAME(SetPhysicalEntityParams, "SetParticleParams");
+	REGISTER_METHOD_NAME(SetPhysicalEntityParams, "GetParticleParams");
 }
 
 IPhysicalEntity *CScriptbind_Physics::GetPhysicalEntity(IEntity *pEntity)
@@ -223,4 +226,14 @@ pe_status_dynamics CScriptbind_Physics::GetDynamicsEntityStatus(IEntity *pEntity
 pe_type CScriptbind_Physics::GetPhysicalEntityType(IPhysicalEntity *pPhysEnt)
 {
 	return pPhysEnt->GetType();
+}
+
+bool CScriptbind_Physics::SetPhysicalEntityParams(IPhysicalEntity *pPhysEnt, pe_params &params)
+{
+	return pPhysEnt->SetParams(&params) != 0;
+}
+
+bool CScriptbind_Physics::GetPhysicalEntityParams(IPhysicalEntity *pPhysEnt, pe_params &params)
+{
+	return pPhysEnt->GetParams(&params) != 0;
 }

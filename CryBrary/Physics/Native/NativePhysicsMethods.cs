@@ -38,5 +38,10 @@ namespace CryEngine.Native
         extern internal static LivingPhysicsStatus GetLivingEntityStatus(IntPtr entPtr);
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern internal static DynamicsPhysicsStatus GetDynamicsEntityStatus(IntPtr entPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static bool SetParticleParams(IntPtr physEnt, ref ParticleParameters parameters);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static bool GetParticleParams(IntPtr physEnt, ref ParticleParameters parameters);
     }
 }
