@@ -17,6 +17,8 @@
 /// </summary>
 #define REGISTER_METHOD(method) GetMonoScriptSystem()->RegisterMethodBinding(method, (GetNamespace() + (string)".").append(GetClassName()).append("::").append(#method))
 
+#define REGISTER_METHOD_NAME(method, name) GetMonoScriptSystem()->RegisterMethodBinding(method, (GetNamespace() + (string)".").append(GetClassName()).append("::").append(name))
+
 /// <summary>
 /// </summary>
 struct IMonoScriptBind
