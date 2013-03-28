@@ -37,6 +37,8 @@ struct SMonoPhysicalizeParams
 
 	pe_player_dimensions playerDim;
 	pe_player_dynamics playerDyn;
+
+	pe_params_particle particleParams;
 };
 
 class CScriptbind_Physics : public IMonoScriptBind

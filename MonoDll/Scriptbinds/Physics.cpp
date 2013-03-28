@@ -75,6 +75,8 @@ void CScriptbind_Physics::Physicalize(IEntity *pEntity, SMonoPhysicalizeParams p
 		pp.pPlayerDimensions = &params.playerDim;
 		pp.pPlayerDynamics = &params.playerDyn;
 	}
+	else if(pp.type == PE_PARTICLE)
+		pp.pParticle = &params.particleParams;
 
 	pEntity->Physicalize(pp);
 }

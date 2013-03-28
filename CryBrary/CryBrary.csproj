@@ -208,9 +208,9 @@
     <Compile Include="Physics\BreakageParameters.cs" />
     <Compile Include="Physics\PhysicalEntity\PhysicalEntity.cs" />
     <Compile Include="Physics\PhysicalEntity\PhysicalEntityArea.cs" />
+    <Compile Include="Physics\PhysicalEntity\PhysicalEntityFlags.cs" />
     <Compile Include="Physics\PhysicalEntity\PhysicalEntityLiving.cs" />
     <Compile Include="Physics\PhysicalEntity\PhysicalEntityParticle.cs" />
-    <Compile Include="Physics\PhysicalizationFlags.cs" />
     <Compile Include="Physics\PhysicalizationParams.cs" />
     <Compile Include="Physics\PhysicalizationType.cs" />
     <Compile Include="Physics\PrePhysicsUpdateMode.cs" />

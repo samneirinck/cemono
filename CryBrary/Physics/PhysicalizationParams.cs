@@ -7,6 +7,7 @@ using CryEngine.Physics;
 
 namespace CryEngine
 {
+    [CLSCompliant(false)]
     public struct PhysicalizationParams
     {
         public PhysicalizationParams(PhysicalizationType _type)
@@ -66,7 +67,18 @@ namespace CryEngine
         /// </summary>
         public bool copyJointVelocities;
 
+        /// <summary>
+        /// Player dimensions, only applicable when type is set to <see cref="PhysicalizationType.Living"/>.
+        /// </summary>
         public PlayerDimensions livingDimensions;
+        /// <summary>
+        /// Player dynamics, only applicable when type is set to <see cref="PhysicalizationType.Living"/>.
+        /// </summary>
         public PlayerDynamics livingDynamics;
+
+        /// <summary>
+        /// Particle parameters, only applicable when type is set to <see cref="PhysicalizationType.Particle"/>.
+        /// </summary>
+        public ParticleParameters particleParameters;
     }
 }

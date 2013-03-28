@@ -125,6 +125,7 @@ namespace CryEngine
             set { NativePhysicsMethods.SetVelocity(this.GetIEntity(), value); }
         }
 
+        [CLSCompliant(false)]
         public void Physicalize(PhysicalizationParams physicalizationParams)
         {
             NativePhysicsMethods.Physicalize(this.GetIEntity(), physicalizationParams);
