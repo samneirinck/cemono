@@ -386,11 +386,7 @@ namespace CryEngine
 
         public ParticleEmitter LoadParticleEmitter(ParticleEffect particleEffect, ref ParticleSpawnParameters spawnParams, int slot = -1)
         {
-            var ptr = NativeEntityMethods.LoadParticleEmitter(this.GetIEntity(), slot, particleEffect.Handle, ref spawnParams);
-            if (ptr != IntPtr.Zero)
-                return new ParticleEmitter(ptr);
-
-            return null;
+            return ParticleEmitter.TryGet(NativeEntityMethods.LoadParticleEmitter(this.GetIEntity(), slot, particleEffect.Handle, ref spawnParams));
         }
     }
 }

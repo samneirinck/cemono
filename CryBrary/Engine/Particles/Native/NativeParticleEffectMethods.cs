@@ -15,6 +15,9 @@ namespace CryEngine.Engine.Particles.Native
         extern internal static void LoadResoruces(IntPtr ptr);
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        extern internal static void ActivateEmitter(IntPtr emitter, bool activate);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static ParticleSpawnParameters GetParticleEmitterSpawnParams(IntPtr ptr);
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static void SetParticleEmitterSpawnParams(IntPtr ptr, ref ParticleSpawnParameters spawnParams);

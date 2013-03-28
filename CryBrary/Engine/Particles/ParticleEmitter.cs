@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Collections.Generic;
 
 using CryEngine.Engine.Particles.Native;
 
@@ -6,13 +8,29 @@ namespace CryEngine
 {
     public class ParticleEmitter
     {
-        internal ParticleEmitter(IntPtr ptr)
+        #region Statics
+        internal static ParticleEmitter TryGet(IntPtr handle)
         {
 #if !(RELEASE && RELEASE_DISABLE_CHECKS)
-            if (ptr == IntPtr.Zero)
+            if (handle == IntPtr.Zero)
                 throw new NullPointerException();
 #endif
 
+            var particleEmitter = Emitters.FirstOrDefault(x => x.Handle == handle);
+            if (particleEmitter == null)
+            {
+                particleEmitter = new ParticleEmitter(handle);
+                Emitters.Add(particleEmitter);
+            }
+
+            return particleEmitter;
+        }
+
+        private static List<ParticleEmitter> Emitters { get; set; }
+        #endregion
+
+        ParticleEmitter(IntPtr ptr)
+        {
             Handle = ptr;
         }
 
@@ -35,17 +53,9 @@ namespace CryEngine
         public float PulsePeriod { get { return SpawnParameters.PulsePeriod; } set { var spawnParams = SpawnParameters; spawnParams.PulsePeriod = value; SpawnParameters = spawnParams; } }
         public float Strength { get { return SpawnParameters.Strength; } set { var spawnParams = SpawnParameters; spawnParams.Strength = value; SpawnParameters = spawnParams; } }
 
-        public ParticleEffect ParticleEffect 
-        { 
-            get
-            {
-                var ptr = NativeParticleEffectMethods.GetParticleEmitterEffect(Handle);
-                if (ptr != IntPtr.Zero)
-                    return new ParticleEffect(ptr);
+        public bool Active { set { NativeParticleEffectMethods.ActivateEmitter(Handle, value); } }
 
-                return null;
-            } 
-        }
+        public ParticleEffect ParticleEffect { get { return ParticleEffect.TryGet(NativeParticleEffectMethods.GetParticleEmitterEffect(Handle)); } }
 
         internal IntPtr Handle { get; set; }
     }

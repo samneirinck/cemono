@@ -50,6 +50,11 @@ void CScriptbind_ParticleSystem::LoadResources(IParticleEffect *pEffect)
 	pEffect->LoadResources();
 }
 
+void CScriptbind_ParticleSystem::ActivateEmitter(IParticleEmitter *pEmitter, bool activate)
+{
+	pEmitter->Activate(activate);
+}
+
 SpawnParams CScriptbind_ParticleSystem::GetParticleEmitterSpawnParams(IParticleEmitter *pEmitter)
 {
 	SpawnParams params;

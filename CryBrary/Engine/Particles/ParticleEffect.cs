@@ -31,21 +31,20 @@ namespace CryEngine
             return TryGet(NativeParticleEffectMethods.FindEffect(effectName, loadResources));
         }
 
-        private static ParticleEffect TryGet(IntPtr handle)
+        internal static ParticleEffect TryGet(IntPtr handle)
         {
-            if (handle != IntPtr.Zero)
+#if !(RELEASE && RELEASE_DISABLE_CHECKS)
+            if (handle == IntPtr.Zero)
+                throw new NullPointerException();
+#endif
+            var particleEffect = ParticleEffects.FirstOrDefault(x => x.Handle == handle);
+            if (particleEffect == null)
             {
-                var particleEffect = ParticleEffects.FirstOrDefault(x => x.Handle == handle);
-                if (particleEffect == null)
-                {
-                    particleEffect = new ParticleEffect(handle);
-                    ParticleEffects.Add(particleEffect);
-                }
-
-                return particleEffect;
+                particleEffect = new ParticleEffect(handle);
+                ParticleEffects.Add(particleEffect);
             }
 
-            return null;
+            return particleEffect;
         }
 
         private static List<ParticleEffect> ParticleEffects = new List<ParticleEffect>();
@@ -58,9 +57,9 @@ namespace CryEngine
         /// <param name="pos">World location to place emitter at.</param>
         /// <param name="dir">World rotation of emitter, set to Vec3.Up if null.</param>
         /// <param name="scale">Scale of the emitter.</param>
-        public void Spawn(Vec3 pos, Vec3? dir = null, float scale = 1f, bool independent = true)
+        public ParticleEmitter Spawn(Vec3 pos, Vec3? dir = null, float scale = 1f, bool independent = true)
         {
-            NativeParticleEffectMethods.Spawn(Handle, independent, pos, dir ?? Vec3.Up, scale);
+            return ParticleEmitter.TryGet(NativeParticleEffectMethods.Spawn(Handle, independent, pos, dir ?? Vec3.Up, scale));
         }
 
         public void Remove()

@@ -35,6 +35,8 @@ protected:
 	static void Remove(IParticleEffect *pEffect);
 	static void LoadResources(IParticleEffect *pEffect);
 
+	static void ActivateEmitter(IParticleEmitter *pEmitter, bool activate);
+
 	static SpawnParams GetParticleEmitterSpawnParams(IParticleEmitter *pEmitter);
 	static void SetParticleEmitterSpawnParams(IParticleEmitter *pEmitter, SpawnParams &spawnParams);
 	static IParticleEffect *GetParticleEmitterEffect(IParticleEmitter *pEmitter);
