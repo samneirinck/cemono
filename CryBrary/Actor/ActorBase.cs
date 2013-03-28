@@ -86,9 +86,6 @@ namespace CryEngine
 
             ChannelId = actorInitParams.ChannelId;
 
-            // actor must have physics
-            Physics.Type = PhysicalizationType.Rigid;
-
             var result = base.InternalInitialize(initParams);
 
             OnSpawn();

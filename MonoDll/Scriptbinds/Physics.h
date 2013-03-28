@@ -50,6 +50,7 @@ public:
 	// ~IMonoScriptBind
 
 	static IPhysicalEntity *GetPhysicalEntity(IEntity *pEntity);
+	static pe_type GetPhysicalEntityType(IPhysicalEntity *pPhysEnt);
 
 	static void Physicalize(IEntity *pEntity, SMonoPhysicalizeParams params);
 
@@ -66,6 +67,7 @@ public:
 
 	static pe_status_living GetLivingEntityStatus(IEntity *pEntity);
 	static pe_status_dynamics GetDynamicsEntityStatus(IEntity *pEntity);
+
 };
 
 #endif //__SCRIPTBIND_PHYSICALWORLD__

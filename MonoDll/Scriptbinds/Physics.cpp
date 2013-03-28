@@ -13,6 +13,7 @@
 CScriptbind_Physics::CScriptbind_Physics()
 {
 	REGISTER_METHOD(GetPhysicalEntity);
+	REGISTER_METHOD(GetPhysicalEntityType);
 
 	REGISTER_METHOD(Physicalize);
 	REGISTER_METHOD(Sleep);
@@ -215,4 +216,9 @@ pe_status_dynamics CScriptbind_Physics::GetDynamicsEntityStatus(IEntity *pEntity
 		pEntity->GetPhysics()->GetStatus(&status);
 
 	return status;
+}
+
+pe_type CScriptbind_Physics::GetPhysicalEntityType(IPhysicalEntity *pPhysEnt)
+{
+	return pPhysEnt->GetType();
 }

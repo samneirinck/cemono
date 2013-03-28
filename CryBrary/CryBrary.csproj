@@ -206,6 +206,10 @@
     <Compile Include="Misc\TypeConverters\Color.cs" />
     <Compile Include="Physics\Actions\Impulse.cs" />
     <Compile Include="Physics\BreakageParameters.cs" />
+    <Compile Include="Physics\PhysicalEntity\PhysicalEntity.cs" />
+    <Compile Include="Physics\PhysicalEntity\PhysicalEntityArea.cs" />
+    <Compile Include="Physics\PhysicalEntity\PhysicalEntityLiving.cs" />
+    <Compile Include="Physics\PhysicalEntity\PhysicalEntityParticle.cs" />
     <Compile Include="Physics\PhysicalizationFlags.cs" />
     <Compile Include="Physics\PhysicalizationParams.cs" />
     <Compile Include="Physics\PhysicalizationType.cs" />
@@ -291,7 +295,6 @@
     <Compile Include="Engine\Terrain.cs" />
     <Compile Include="Entity\EntityId.cs" />
     <Compile Include="Entity\Entities\NativeEntity.cs" />
-    <Compile Include="Physics\PhysicalEntity.cs" />
     <Compile Include="Engine\Lua\ScriptTable.cs" />
     <Compile Include="Script Handling\ScriptReloadMessage.cs">
       <SubType>Form</SubType>

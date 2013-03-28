@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Collections.Generic;
 
 using System.Runtime.InteropServices;
 
@@ -16,67 +18,58 @@ namespace CryEngine.Physics
     /// </summary>
     public class PhysicalEntity
     {
-        private PhysicalEntity() 
+        #region Statics
+        internal static PhysicalEntity TryGet(IntPtr IPhysicalEntityHandle)
         {
-            Clear();
+#if !(RELEASE && RELEASE_DISABLE_CHECKS)
+            if (IPhysicalEntityHandle == IntPtr.Zero)
+                throw new NullPointerException();
+#endif
 
-            AutoUpdate = true;
+            var physicalEntity = PhysicalEntities.FirstOrDefault(x => x.Handle == IPhysicalEntityHandle);
+            if (physicalEntity == null)
+            {
+                switch (NativePhysicsMethods.GetPhysicalEntityType(IPhysicalEntityHandle))
+                {
+                    case PhysicalizationType.Static:
+                    case PhysicalizationType.Rigid:
+                    case PhysicalizationType.WheeledVehicle:
+                    case PhysicalizationType.Articulated:
+                    case PhysicalizationType.Soft:
+                    case PhysicalizationType.Rope:
+                        physicalEntity = new PhysicalEntity(IPhysicalEntityHandle);
+                        break;
+                    case PhysicalizationType.Living:
+                        physicalEntity = new PhysicalEntityLiving(IPhysicalEntityHandle);
+                        break;
+                    case PhysicalizationType.Particle:
+                        physicalEntity = new PhysicalEntityParticle(IPhysicalEntityHandle);
+                        break;
+                    case PhysicalizationType.Area:
+                        physicalEntity = new PhysicalEntityArea(IPhysicalEntityHandle);
+                        break;
+                }
+
+                if(physicalEntity != null)
+                    PhysicalEntities.Add(physicalEntity);
+            }
+
+            return physicalEntity;
         }
 
-        internal PhysicalEntity(IntPtr physEntPtr)
-            : this()
+        static List<PhysicalEntity> PhysicalEntities = new List<PhysicalEntity>();
+        #endregion
+
+        protected PhysicalEntity() {}
+
+        protected PhysicalEntity(IntPtr physEntPtr)
         {
             Handle = physEntPtr;
-        }
-
-        internal PhysicalEntity(EntityBase _entity)
-            : this()
-        {
-            owner = _entity;
-            Handle = NativePhysicsMethods.GetPhysicalEntity(Owner.GetIEntity());
         }
 
         public void Break(BreakageParameters breakageParams)
         {
             NativeEntityMethods.BreakIntoPieces(Owner.GetIEntity(), 0, 0, breakageParams);
-        }
-
-        #region Basics
-        /// <summary>
-        /// If true, physics value updates will be automatically applied. Otherwise, Save() must be called manually.
-        /// </summary>
-        public bool AutoUpdate { get; set; }
-
-        /// <summary>
-        /// Save the current physics settings.
-        /// </summary>
-        public void Save()
-        {
-            NativePhysicsMethods.Physicalize(Owner.GetIEntity(), _params);
-        }
-
-        /// <summary>
-        /// Clears the current physics settings.
-        /// </summary>
-        public void Clear()
-        {
-            _params = new PhysicalizationParams 
-            {
-                copyJointVelocities = false,
-                density = -1,
-                stiffnessScale = 0,
-                mass = -1,
-                attachToPart = -1,
-                lod = 0,
-                slot = -1,
-                type = 0,
-                attachToEntity = 0,
-                flagsOR = 0,
-                flagsAND = int.MaxValue,
-
-                playerDim = pe_player_dimensions.Create(),
-                playerDyn = pe_player_dynamics.Create()
-            };
         }
 
         public void AddImpulse(Vec3 vImpulse, Vec3? angImpulse = null, Vec3? point = null)
@@ -103,119 +96,7 @@ namespace CryEngine.Physics
             set { NativePhysicsMethods.Sleep(Owner.GetIEntity(), value); }
         }
 
-        /// <summary>
-        /// The mass of the entity in kg.
-        /// </summary>
-        public float Mass
-        {
-            get { throw new NotImplementedException(); }
-            set { _params.mass = value; _params.density = -1; if (AutoUpdate) Save(); }
-        }
-
-        public float Density
-        {
-            get { throw new NotImplementedException(); }
-            set { _params.density = value; _params.mass = -1; if (AutoUpdate) Save(); }
-        }
-
-        /// <summary>
-        /// The entity slot for which these physical parameters apply.
-        /// </summary>
-        public int Slot
-        {
-            get { throw new NotImplementedException(); }
-            set { _params.slot = value; if (AutoUpdate) Save(); }
-        }
-
-        public PhysicalizationType Type
-        {
-            get { throw new NotImplementedException(); }
-            set { _params.type = value; if (AutoUpdate) Save(); }
-        }
-
-        public PhysicalizationFlags FlagsOR
-        {
-            get { return (PhysicalizationFlags)_params.flagsOR; }
-            set { _params.flagsOR = (int)value; if (AutoUpdate) Save(); }
-        }
-
-        public PhysicalizationFlags FlagsAND
-        {
-            get { return (PhysicalizationFlags)_params.flagsAND; }
-            set { _params.flagsAND = (int)value; if (AutoUpdate) Save(); }
-        }
-
-        /// <summary>
-        /// For characters: the scale of force in joint springs.
-        /// </summary>
-        public float Stiffness
-        {
-            get { throw new NotImplementedException(); }
-            set { _params.stiffnessScale = value; if (AutoUpdate) Save(); }
-        }
-
-        #region Temporary workaround to get player dynamics / dimensions working
-        public float HeightCollider
-        {
-            get { throw new NotImplementedException(); }
-            set { _params.playerDim.heightCollider = value; if (AutoUpdate) Save(); }
-        }
-
-        public Vec3 SizeCollider
-        {
-            get { throw new NotImplementedException(); }
-            set { _params.playerDim.sizeCollider = value; if (AutoUpdate) Save(); }
-        }
-
-        public float HeightPivot
-        {
-            get { throw new NotImplementedException(); }
-            set { _params.playerDim.heightPivot = value; if (AutoUpdate) Save(); }
-        }
-
-        public bool UseCapsule
-        {
-            get { throw new NotImplementedException(); }
-            set { _params.playerDim.bUseCapsule = (value == true ? 1 : 0); if (AutoUpdate) Save(); }
-        }
-
-        public Vec3 Gravity
-        {
-            get { throw new NotImplementedException(); }
-            set { _params.playerDyn.gravity = value; if (AutoUpdate) Save(); }
-        }
-
-        public float AirControl
-        {
-            get { throw new NotImplementedException(); }
-            set { _params.playerDyn.kAirControl = value; if (AutoUpdate) Save(); }
-        }
-
-        public float MinSlideAngle
-        {
-            get { throw new NotImplementedException(); }
-            set { _params.playerDyn.minSlideAngle = value; if (AutoUpdate) Save(); }
-        }
-
-        public float MaxClimbAngle
-        {
-            get { throw new NotImplementedException(); }
-            set { _params.playerDyn.maxClimbAngle = value; if (AutoUpdate) Save(); }
-        }
-
-        public float MinFallAngle
-        {
-            get { throw new NotImplementedException(); }
-            set { _params.playerDyn.minFallAngle = value; if (AutoUpdate) Save(); }
-        }
-
-        public float MaxVelGround
-        {
-            get { throw new NotImplementedException(); }
-            set { _params.playerDyn.maxVelGround = value; if (AutoUpdate) Save(); }
-        }
-        #endregion
-        #endregion
+        public virtual PhysicalizationType Type { get { return NativePhysicsMethods.GetPhysicalEntityType(Handle); } }
 
         PhysicalStatus status;
         public PhysicalStatus Status 
@@ -245,16 +126,13 @@ namespace CryEngine.Physics
                 return owner;
             }
         }
-
-        // Sent directly to the engine8
-        internal PhysicalizationParams _params;
     }
 
-    internal struct pe_player_dynamics
+    public struct PlayerDynamics
     {
-        public static pe_player_dynamics Create()
+        public static PlayerDynamics Create()
         {
-            var dyn = new pe_player_dynamics();
+            var dyn = new PlayerDynamics();
 
             dyn.type = 4;
 
@@ -267,7 +145,7 @@ namespace CryEngine.Physics
             dyn.bSwimming = UnusedMarker.Integer;
             dyn.surface_idx = UnusedMarker.Integer;
             dyn.bActive = UnusedMarker.Integer;
-            dyn.collTypes = UnusedMarker.Integer;
+            dyn.collTypes = (EntityQueryFlags)UnusedMarker.Integer;
             dyn.livingEntToIgnore = UnusedMarker.IntPtr;
             dyn.minSlideAngle = UnusedMarker.Float;
             dyn.maxClimbAngle = UnusedMarker.Float;
@@ -282,7 +160,7 @@ namespace CryEngine.Physics
             return dyn;
         }
 
-        public int type;
+        internal int type;
 
         public float kInertia;    // inertia koefficient, the more it is, the less inertia is; 0 means no inertia
         public float kInertiaAccel; // inertia on acceleration
@@ -299,18 +177,18 @@ namespace CryEngine.Physics
         public float minFallAngle;    // player starts falling when slope is steeper than this
         public float maxVelGround; // player cannot stand of surfaces that are moving faster than this
         public float timeImpulseRecover; // forcefully turns on inertia for that duration after receiving an impulse
-        public int collTypes; // entity types to check collisions against
+        public EntityQueryFlags collTypes; // entity types to check collisions against
         IntPtr livingEntToIgnore;
         int bNetwork; // uses extended history information (obsolete)
         int bActive; // 0 disables all simulation for the character, apart from moving along the requested velocity
         int iRequestedTime; // requests that the player rolls back to that time and re-exucutes pending actions during the next step
     }
 
-    internal struct pe_player_dimensions
+    public struct PlayerDimensions
     {
-        public static pe_player_dimensions Create()
+        internal static PlayerDimensions Create()
         {
-            var dim = new pe_player_dimensions();
+            var dim = new PlayerDimensions();
 
             dim.type = 1;
 
@@ -327,7 +205,7 @@ namespace CryEngine.Physics
             return dim;
         }
 
-        public int type;
+        internal int type;
 
         public float heightPivot; // offset from central ground position that is considered entity center
         public float heightEye; // vertical offset of camera

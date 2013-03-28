@@ -49,7 +49,7 @@ namespace CryEngine
             get
             {
                 foreach (IntPtr ptr in affectedEnts)
-                    yield return new PhysicalEntity(ptr);
+                    yield return PhysicalEntity.TryGet(ptr);
             }
         }
 

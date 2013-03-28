@@ -3,14 +3,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CryEngine.Physics
-{
-    internal struct PhysicalizationParams
-    {
-        public PhysicalizationType type;
+using CryEngine.Physics;
 
-        public int flagsOR;
-        public int flagsAND;
+namespace CryEngine
+{
+    public struct PhysicalizationParams
+    {
+        public PhysicalizationParams(PhysicalizationType _type)
+            : this()
+        {
+            type = _type;
+
+            flagsAND = (PhysicalizationFlags)int.MaxValue;
+            slot = -1;
+            density = -1;
+            mass = -1;
+            attachToPart = -1;
+
+            livingDynamics = PlayerDynamics.Create();
+            livingDimensions = PlayerDimensions.Create();
+        }
+
+        internal PhysicalizationType type;
+
+        public PhysicalizationFlags flagsOR;
+        public PhysicalizationFlags flagsAND;
 
         /// <summary>
         /// Index of object slot, -1 if all slots should be used.
@@ -32,7 +49,7 @@ namespace CryEngine.Physics
         /// <summary>
         /// Physical entity to attach this physics object (Only for Soft physical entity).
         /// </summary>
-        public uint attachToEntity;
+        internal uint attachToEntity;
 
         /// <summary>
         /// Part ID in entity to attach to (Only for Soft physical entity).
@@ -49,7 +66,7 @@ namespace CryEngine.Physics
         /// </summary>
         public bool copyJointVelocities;
 
-        public pe_player_dimensions playerDim;
-        public pe_player_dynamics playerDyn;
+        public PlayerDimensions livingDimensions;
+        public PlayerDynamics livingDynamics;
     }
 }

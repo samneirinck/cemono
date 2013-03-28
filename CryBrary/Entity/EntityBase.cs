@@ -125,12 +125,24 @@ namespace CryEngine
             set { NativePhysicsMethods.SetVelocity(this.GetIEntity(), value); }
         }
 
+        public void Physicalize(PhysicalizationParams physicalizationParams)
+        {
+            NativePhysicsMethods.Physicalize(this.GetIEntity(), physicalizationParams);
+
+            _physics = PhysicalEntity.TryGet(NativePhysicsMethods.GetPhysicalEntity(EntityHandle));
+        }
+
+        public void DePhysicalize()
+        {
+            Physicalize(new PhysicalizationParams(PhysicalizationType.None));
+        }
+
         /// <summary>
         /// Gets the physical entity, contains essential functions for modifying the entitys existing physical state.
         /// </summary>
         public PhysicalEntity Physics
         {
-            get { return _physics ?? (_physics = new PhysicalEntity(this)); }
+            get { return _physics; }
         }
 
         #region Native handles

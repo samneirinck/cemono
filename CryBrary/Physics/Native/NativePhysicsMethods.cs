@@ -12,6 +12,9 @@ namespace CryEngine.Native
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern internal static IntPtr GetPhysicalEntity(IntPtr entityPointer);
 
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern internal static PhysicalizationType GetPhysicalEntityType(IntPtr physicalEntPtr);
+
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern internal static int RayWorldIntersection(Vec3 origin, Vec3 dir, EntityQueryFlags objFlags, RayWorldIntersectionFlags flags, int maxHits, IntPtr[] skipEnts, out object[] hits);
 
