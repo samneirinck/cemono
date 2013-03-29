@@ -21,8 +21,18 @@ namespace CryEngine
             mass = -1;
             attachToPart = -1;
 
-            livingDynamics = PlayerDynamics.Create();
-            livingDimensions = PlayerDimensions.Create();
+			switch(type)
+			{
+				case PhysicalizationType.Living:
+					{
+						livingDynamics = PlayerDynamics.Create();
+						livingDimensions = PlayerDimensions.Create();
+					}
+					break;
+				case PhysicalizationType.Particle:
+					particleParameters = ParticleParameters.Create();
+					break;
+			}
         }
 
         internal PhysicalizationType type;
