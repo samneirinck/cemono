@@ -48,6 +48,16 @@ namespace CryEngine.Advanced
 			return NativeGameObjectMethods.SetAspectProfile(Handle, aspect, profile, fromNetwork);
 		}
 
+		public void EnablePhysicsEvent(bool enable, EntityPhysicsEvents physicsEvent)
+		{
+			NativeGameObjectMethods.EnablePhysicsEvent(Handle, enable, physicsEvent);
+		}
+
+		public bool WantsPhysicsEvent(EntityPhysicsEvents physicsEvent)
+		{
+			return NativeGameObjectMethods.WantsPhysicsEvent(Handle, physicsEvent);
+		}
+
         /// <summary>
         /// Query extension. returns 0 if extension is not there.
         /// </summary>

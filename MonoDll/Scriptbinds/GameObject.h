@@ -46,6 +46,8 @@ protected:
 	static void ChangedNetworkState(IGameObject *pGameObject, int aspect);
 
 	static bool SetAspectProfile(IGameObject *pGameObject, EEntityAspects aspect, uint8 profile, bool fromNetwork = false);
+	static void EnablePhysicsEvent(IGameObject *pGameObject, bool enable, int event);
+	static bool WantsPhysicsEvent(IGameObject *pGameObject, int event);
 	// ~Externals
 };
 

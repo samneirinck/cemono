@@ -32,5 +32,10 @@ namespace CryEngine.Native
 		[CLSCompliant(false)]
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern public static bool SetAspectProfile(IntPtr gameObjectPtr, EntityAspects aspect, ushort profile, bool fromNetwork = false);
-    }
+
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern public static void EnablePhysicsEvent(IntPtr gameObjectPtr, bool enable, EntityPhysicsEvents physicsEvent);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern public static bool WantsPhysicsEvent(IntPtr gameObjectPtr, EntityPhysicsEvents physicsEvent);	
+	}
 }

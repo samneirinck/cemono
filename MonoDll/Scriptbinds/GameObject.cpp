@@ -21,6 +21,9 @@ CScriptbind_GameObject::CScriptbind_GameObject()
 	REGISTER_METHOD(ChangedNetworkState);
 
 	REGISTER_METHOD(SetAspectProfile);
+
+	REGISTER_METHOD(EnablePhysicsEvent);
+	REGISTER_METHOD(WantsPhysicsEvent);
 }
 
 IGameObject *CScriptbind_GameObject::GetGameObject(EntityId id)
@@ -74,4 +77,14 @@ void CScriptbind_GameObject::ChangedNetworkState(IGameObject *pGameObject, int a
 bool CScriptbind_GameObject::SetAspectProfile(IGameObject *pGameObject, EEntityAspects aspect, uint8 profile, bool fromNetwork)
 {
 	return pGameObject->SetAspectProfile(aspect, profile, fromNetwork);
+}
+
+void CScriptbind_GameObject::EnablePhysicsEvent(IGameObject *pGameObject, bool enable, int event)
+{
+	pGameObject->EnablePhysicsEvent(enable, event);
+}
+
+bool CScriptbind_GameObject::WantsPhysicsEvent(IGameObject *pGameObject, int event)
+{
+	return pGameObject->WantsPhysicsEvent(event);
 }
