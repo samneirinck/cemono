@@ -130,7 +130,10 @@ namespace CryEngine
         {
             NativePhysicsMethods.Physicalize(this.GetIEntity(), physicalizationParams);
 
-            _physics = PhysicalEntity.TryGet(NativePhysicsMethods.GetPhysicalEntity(EntityHandle));
+			if (physicalizationParams.type == PhysicalizationType.None)
+				_physics = null;
+			else
+				_physics = PhysicalEntity.TryGet(NativePhysicsMethods.GetPhysicalEntity(EntityHandle));
         }
 
         public void DePhysicalize()
