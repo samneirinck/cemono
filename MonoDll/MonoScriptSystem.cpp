@@ -368,6 +368,7 @@ void CScriptSystem::OnFileChange(const char *fileName)
 
 		if(!GetFocus())
 		{
+			CryLogAlways("CryENGINE did not have focus, waiting..");
 			m_bDetectedChanges = true;
 			return;
 		}
@@ -382,7 +383,8 @@ void CScriptSystem::OnSystemEvent(ESystemEvent event,UINT_PTR wParam,UINT_PTR lp
 	{
 	case ESYSTEM_EVENT_CHANGE_FOCUS:
 		{
-			if(wParam != 0 && m_bDetectedChanges)
+			CryLogAlways("Changed focus %i", wParam);
+			if(wParam != 0 && m_bDetectedChanges && GetFocus())
 			{
 				Reload();
 				m_bDetectedChanges = false;
