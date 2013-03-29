@@ -170,6 +170,7 @@
     <Compile Include="Entity\Editor Properties\EditorPropertyFolder.cs" />
     <Compile Include="Entity\Editor Properties\EditorPropertyLimits.cs" />
     <Compile Include="Entity\Editor Properties\EditorPropertyType.cs" />
+    <Compile Include="Entity\EntityPhysicsEvents.cs" />
     <Compile Include="Entity\Extensions\Attachment\AttachmentObjectType.cs" />
     <Compile Include="Entity\Extensions\Attachment\AttachmentType.cs" />
     <Compile Include="Entity\Game Object\EntityAspects.cs" />
@@ -207,6 +208,10 @@
     <Compile Include="Misc\TypeConverters\Color.cs" />
     <Compile Include="Physics\Actions\Impulse.cs" />
     <Compile Include="Physics\BreakageParameters.cs" />
+    <Compile Include="Physics\PhysicalEntity\Params\ParticleParameters.cs" />
+    <Compile Include="Physics\PhysicalEntity\Params\PhysicalEntityFlagsParameters.cs" />
+    <Compile Include="Physics\PhysicalEntity\Params\PlayerDimensionsParameters.cs" />
+    <Compile Include="Physics\PhysicalEntity\Params\PlayerDynamicsParameters.cs" />
     <Compile Include="Physics\PhysicalEntity\PhysicalEntity.cs" />
     <Compile Include="Physics\PhysicalEntity\PhysicalEntityArea.cs" />
     <Compile Include="Physics\PhysicalEntity\PhysicalEntityFlags.cs" />

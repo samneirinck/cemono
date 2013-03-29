@@ -25,8 +25,8 @@ namespace CryEngine
 			{
 				case PhysicalizationType.Living:
 					{
-						livingDynamics = PlayerDynamics.Create();
-						livingDimensions = PlayerDimensions.Create();
+						livingDynamics = PlayerDynamicsParameters.Create();
+						livingDimensions = PlayerDimensionsParameters.Create();
 					}
 					break;
 				case PhysicalizationType.Particle:
@@ -80,11 +80,11 @@ namespace CryEngine
         /// <summary>
         /// Player dimensions, only applicable when type is set to <see cref="PhysicalizationType.Living"/>.
         /// </summary>
-        public PlayerDimensions livingDimensions;
+        public PlayerDimensionsParameters livingDimensions;
         /// <summary>
         /// Player dynamics, only applicable when type is set to <see cref="PhysicalizationType.Living"/>.
         /// </summary>
-        public PlayerDynamics livingDynamics;
+        public PlayerDynamicsParameters livingDynamics;
 
         /// <summary>
         /// Particle parameters, only applicable when type is set to <see cref="PhysicalizationType.Particle"/>.

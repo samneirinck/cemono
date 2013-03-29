@@ -110,6 +110,18 @@ namespace CryEngine.Physics
             }
         }
 
+		[CLSCompliant(false)]
+		public bool GetFlags(ref PhysicalEntityFlagsParameters flags)
+		{
+			return NativePhysicsMethods.GetFlagParams(Handle, ref flags);
+		}
+
+		[CLSCompliant(false)]
+		public bool SetFlags(ref PhysicalEntityFlagsParameters flags)
+		{
+			return NativePhysicsMethods.SetFlagParams(Handle, ref flags);
+		}
+
         /// <summary>
         /// IPhysicalEntity *
         /// </summary>
