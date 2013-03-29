@@ -39,6 +39,8 @@ namespace CryEngine.Native
         {
             if (entity.IsDestroyed)
                 throw new ScriptInstanceDestroyedException("Attempted to access native entity handle on a destroyed script");
+			if (entity.EntityHandle == IntPtr.Zero)
+				throw new NullPointerException("Attempted to utilize null entity pointer");
 
             return entity.EntityHandle;
         }
