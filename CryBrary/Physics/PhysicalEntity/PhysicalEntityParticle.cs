@@ -40,6 +40,8 @@ namespace CryEngine.Physics
         {
             var pparams = new ParticleParameters();
 
+			pparams.type = 3;
+
             pparams.mass = UnusedMarker.Float;
             pparams.size = UnusedMarker.Float;
             pparams.thickness = UnusedMarker.Float;
