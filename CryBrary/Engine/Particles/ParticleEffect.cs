@@ -28,7 +28,11 @@ namespace CryEngine
         /// <returns>The specified particle effect, or null if failed.</returns>
         public static ParticleEffect Get(string effectName, bool loadResources = true)
         {
-            return TryGet(NativeParticleEffectMethods.FindEffect(effectName, loadResources));
+			var effectHandle = NativeParticleEffectMethods.FindEffect(effectName, loadResources);
+			if (effectHandle == IntPtr.Zero)
+				return null;
+
+			return TryGet(effectHandle);
         }
 
         internal static ParticleEffect TryGet(IntPtr handle)
