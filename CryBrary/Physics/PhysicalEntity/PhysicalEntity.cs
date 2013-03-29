@@ -132,8 +132,14 @@ namespace CryEngine.Physics
         {
             get
             {
-                if (owner == null)
-                    owner = Entity.Get(NativeEntityMethods.GetEntityFromPhysics(Handle));
+				if (owner == null)
+				{
+					var entityHandle = NativeEntityMethods.GetEntityFromPhysics(Handle);
+					if (entityHandle == IntPtr.Zero)
+						return null;
+
+					owner = Entity.Get(entityHandle);
+				}
 
                 return owner;
             }
