@@ -73,6 +73,25 @@ namespace CryEngine.Utilities
         /// <example>"C:\CryENGINE3\Game\Scripts"</example></returns>
         public static string ScriptsFolder { get { return Path.Combine(GameFolder, "Scripts"); } }
 
+		/// <summary>
+		/// Directory from which CryMono loads scripts, e.g. *.cs files.
+		/// </summary>
+		public static string CryMonoScriptsFolder 
+		{
+			get 
+			{
+				CVar cvar;
+				if (CVar.TryGet("mono_scriptDirectory", out cvar))
+				{
+					var alternateScriptsDir = cvar.String;
+					if (!string.IsNullOrEmpty(alternateScriptsDir))
+						return alternateScriptsDir;
+				}
+
+				return ScriptsFolder; 
+			}
+		}
+
         /// <summary>
         /// Gets the directory CryMono uses to store temporary files.
         /// </summary>

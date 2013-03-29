@@ -188,7 +188,7 @@ namespace CryEngine.Compilers.NET
             }
 
             var scripts = new List<string>();
-            var scriptsDirectory = PathUtils.ScriptsFolder;
+			var scriptsDirectory = PathUtils.CryMonoScriptsFolder;
 
             if (Directory.Exists(scriptsDirectory))
             {

@@ -29,6 +29,8 @@ void SCVars::InitCVars(IConsole *pConsole)
 	REGISTER_COMMAND("mono_reload", CmdReload, nullOrCheatFlag, "[Realtime Scripting] Reloads / recompiles all scripts");
 
 	REGISTER_CVAR(mono_softBreakpoints, 1, VF_REQUIRE_APP_RESTART, "[Performance Warning] Enables / Disables soft breakpoints, preventing managed null reference exceptions causing crashes in unmanaged code. \n Not supported along with -DEBUG command line option");
+
+	REGISTER_CVAR(mono_scriptDirectory, "", nullOrCheatFlag, "If set, CryMono will attempt to load its script files (e.g. *.cs) from this directory. Full path only.");
 }
 
 //------------------------------------------------------------------------
@@ -49,4 +51,6 @@ void SCVars::ReleaseCVars()
 	pConsole->RemoveCommand("mono_reload");
 
 	pConsole->UnregisterVariable("mono_softBreakpoints", true);
+
+	pConsole->UnregisterVariable("mono_scriptDirectory", true);
 }

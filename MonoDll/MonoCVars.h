@@ -12,6 +12,8 @@ struct SCVars
 
 	int mono_softBreakpoints;
 
+	const char *mono_scriptDirectory;
+
 	SCVars()
 	{
 		memset(this,0,sizeof(SCVars));
