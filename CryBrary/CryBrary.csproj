@@ -172,6 +172,7 @@
     <Compile Include="Entity\Editor Properties\EditorPropertyType.cs" />
     <Compile Include="Entity\Extensions\Attachment\AttachmentObjectType.cs" />
     <Compile Include="Entity\Extensions\Attachment\AttachmentType.cs" />
+    <Compile Include="Entity\Game Object\EntityAspects.cs" />
     <Compile Include="Entity\Game Object\GameObject.cs" />
     <Compile Include="Entity\Game Object\GameObjectExtension.cs" />
     <Compile Include="Entity\Native\EntityInitializationParams.cs" />

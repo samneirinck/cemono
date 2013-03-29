@@ -42,6 +42,12 @@ namespace CryEngine.Advanced
             Extensions = new List<GameObjectExtension>();
         }
 
+		[CLSCompliant(false)]
+		public bool SetAspectProfile(EntityAspects aspect, ushort profile, bool fromNetwork = false)
+		{
+			return NativeGameObjectMethods.SetAspectProfile(Handle, aspect, profile, fromNetwork);
+		}
+
         /// <summary>
         /// Query extension. returns 0 if extension is not there.
         /// </summary>

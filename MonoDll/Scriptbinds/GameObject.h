@@ -15,6 +15,7 @@ struct IGameObject;
 struct IGameObjectExtension;
 
 enum EPrePhysicsUpdate;
+enum EEntityAspects;
 
 class CScriptbind_GameObject
 	: public IMonoScriptBind
@@ -43,6 +44,8 @@ protected:
 	static void DeactivateExtension(IGameObject *pGameObject, mono::string name);
 
 	static void ChangedNetworkState(IGameObject *pGameObject, int aspect);
+
+	static bool SetAspectProfile(IGameObject *pGameObject, EEntityAspects aspect, uint8 profile, bool fromNetwork = false);
 	// ~Externals
 };
 

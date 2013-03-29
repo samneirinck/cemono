@@ -19,6 +19,8 @@ CScriptbind_GameObject::CScriptbind_GameObject()
 	REGISTER_METHOD(DeactivateExtension);
 
 	REGISTER_METHOD(ChangedNetworkState);
+
+	REGISTER_METHOD(SetAspectProfile);
 }
 
 IGameObject *CScriptbind_GameObject::GetGameObject(EntityId id)
@@ -67,4 +69,9 @@ void CScriptbind_GameObject::DeactivateExtension(IGameObject *pGameObject, mono:
 void CScriptbind_GameObject::ChangedNetworkState(IGameObject *pGameObject, int aspect)
 {
 	pGameObject->ChangedNetworkState((NetworkAspectType)aspect);
+}
+
+bool CScriptbind_GameObject::SetAspectProfile(IGameObject *pGameObject, EEntityAspects aspect, uint8 profile, bool fromNetwork)
+{
+	return pGameObject->SetAspectProfile(aspect, profile, fromNetwork);
 }

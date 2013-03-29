@@ -28,5 +28,9 @@ namespace CryEngine.Native
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         extern public static void ChangedNetworkState(IntPtr gameObjectPtr, int aspect);
+
+		[CLSCompliant(false)]
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		extern public static bool SetAspectProfile(IntPtr gameObjectPtr, EntityAspects aspect, ushort profile, bool fromNetwork = false);
     }
 }
