@@ -42,7 +42,16 @@ namespace CryEngine
         public float Distance { get { return dist; } }
 
         internal IntPtr physicalCollider;
-        public PhysicalEntity PhysicalCollider { get { return PhysicalEntity.TryGet(physicalCollider); } }
+        public PhysicalEntity PhysicalCollider 
+		{
+			get
+			{
+				if (physicalCollider == IntPtr.Zero)
+					return null;
+
+				return PhysicalEntity.TryGet(physicalCollider); 
+			}
+		}
 
         /// <summary>
         /// Entity that the ray collided with.
