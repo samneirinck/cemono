@@ -580,6 +580,9 @@ namespace CryEngine.Serialization
 			var delegateType = ReadType();
 			var methodInfo = ReadMemberInfo() as MethodInfo;
 
+			if (methodInfo == null)
+				return null;
+
 			if (ReadLine() == "target")
 				return Delegate.CreateDelegate(delegateType, StartRead().Value, methodInfo);
 			else
