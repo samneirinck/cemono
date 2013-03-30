@@ -82,7 +82,7 @@ namespace CryEngine.Physics
             if (point != null)
                 impulse.point = point.Value;
 
-           return  NativePhysicsMethods.ActionImpulse(Owner.GetIEntity(), ref impulse);
+           return  NativePhysicsMethods.ActionImpulse(Handle, ref impulse);
         }
 
         /// <summary>
