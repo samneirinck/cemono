@@ -111,15 +111,25 @@ namespace CryEngine.Physics
         }
 
 		[CLSCompliant(false)]
-		public bool GetFlags(ref PhysicalEntityFlagsParameters flags)
+		public bool GetFlags(ref PhysicalFlagsParameters flags)
 		{
 			return NativePhysicsMethods.GetFlagParams(Handle, ref flags);
 		}
 
 		[CLSCompliant(false)]
-		public bool SetFlags(ref PhysicalEntityFlagsParameters flags)
+		public bool SetFlags(ref PhysicalFlagsParameters flags)
 		{
 			return NativePhysicsMethods.SetFlagParams(Handle, ref flags);
+		}
+
+		public bool GetSimulationParameters(ref PhysicalSimulationParameters flags)
+		{
+			return NativePhysicsMethods.GetSimulationParams(Handle, ref flags);
+		}
+
+		public bool SetSimulationParameters(ref PhysicalSimulationParameters flags)
+		{
+			return NativePhysicsMethods.SetSimulationParams(Handle, ref flags);
 		}
 
         /// <summary>

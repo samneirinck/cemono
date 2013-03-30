@@ -209,7 +209,8 @@
     <Compile Include="Physics\Actions\Impulse.cs" />
     <Compile Include="Physics\BreakageParameters.cs" />
     <Compile Include="Physics\PhysicalEntity\Params\ParticleParameters.cs" />
-    <Compile Include="Physics\PhysicalEntity\Params\PhysicalEntityFlagsParameters.cs" />
+    <Compile Include="Physics\PhysicalEntity\Params\PhysicalFlagsParameters.cs" />
+    <Compile Include="Physics\PhysicalEntity\Params\PhysicalSimulationParameters.cs" />
     <Compile Include="Physics\PhysicalEntity\Params\PlayerDimensionsParameters.cs" />
     <Compile Include="Physics\PhysicalEntity\Params\PlayerDynamicsParameters.cs" />
     <Compile Include="Physics\PhysicalEntity\PhysicalEntity.cs" />

@@ -8,11 +8,11 @@ using CryEngine.Utilities;
 namespace CryEngine
 {
 	[CLSCompliant(false)]
-	public struct PhysicalEntityFlagsParameters
+	public struct PhysicalFlagsParameters
 	{
-		public static PhysicalEntityFlagsParameters Create()
+		public static PhysicalFlagsParameters Create()
 		{
-			var parameters = new PhysicalEntityFlagsParameters();
+			var parameters = new PhysicalFlagsParameters();
 
 			parameters.type = 15;
 

@@ -34,7 +34,10 @@ CScriptbind_Physics::CScriptbind_Physics()
 	REGISTER_METHOD_NAME(GetPhysicalEntityParams, "GetParticleParams");
 
 	REGISTER_METHOD_NAME(SetPhysicalEntityParams, "SetFlagParams");
-	REGISTER_METHOD_NAME(GetPhysicalEntityParams, "SetFlagParams");
+	REGISTER_METHOD_NAME(GetPhysicalEntityParams, "GetFlagParams");
+
+	REGISTER_METHOD_NAME(SetPhysicalEntityParams, "SetSimulationParams");
+	REGISTER_METHOD_NAME(GetPhysicalEntityParams, "GetSimulationParams");
 }
 
 IPhysicalEntity *CScriptbind_Physics::GetPhysicalEntity(IEntity *pEntity)
