@@ -147,12 +147,7 @@ namespace CryEngine
         /// <summary>
         /// Sent on entity collision.
         /// </summary>
-        /// <param name="colliderId"></param>
-        /// <param name="hitPos"></param>
-        /// <param name="dir"></param>
-        /// <param name="materialId"></param>
-        /// <param name="contactNormal"></param>
-        protected virtual void OnCollision(EntityId colliderId, Vec3 hitPos, Vec3 dir, short materialId, Vec3 contactNormal) { }
+        protected virtual void OnCollision(ColliderInfo source, ColliderInfo target, Vec3 hitPos, Vec3 contactNormal, float penetration, float radius) { }
 
         /// <summary>
         /// Called after level has been loaded, is not called on serialization.

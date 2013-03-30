@@ -193,6 +193,30 @@ void CMonoActor::ProcessEvent(SEntityEvent& event)
 				m_pAnimatedCharacter->ResetState();
 		}
 		break;
+	case ENTITY_EVENT_COLLISION:
+		{
+			EventPhysCollision *pCollision = (EventPhysCollision *)event.nParam[0];
+
+			SMonoColliderInfo source = SMonoColliderInfo(pCollision, 0);
+			SMonoColliderInfo target = SMonoColliderInfo(pCollision, 1);
+
+			IMonoClass *pColliderInfoClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("ColliderInfo");
+
+			IMonoArray *pArgs = CreateMonoArray(6);
+
+			pArgs->InsertMonoObject(pColliderInfoClass->BoxObject(&source));
+			pArgs->InsertMonoObject(pColliderInfoClass->BoxObject(&target));
+
+			pArgs->Insert(pCollision->pt);
+			pArgs->Insert(pCollision->n);
+
+			pArgs->Insert(pCollision->penetration);
+			pArgs->Insert(pCollision->radius);
+
+			m_pScript->GetClass()->InvokeArray(m_pScript->GetManagedObject(), "OnCollision", pArgs);
+			SAFE_RELEASE(pArgs);
+		}
+		break;
   }  
 }
 

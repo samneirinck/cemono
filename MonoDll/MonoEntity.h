@@ -15,6 +15,30 @@
 #include <IGameObject.h>
 #include <IAnimatedCharacter.h>
 
+struct SMonoColliderInfo
+{
+	SMonoColliderInfo(EventPhysCollision *pCollision, int i)
+	{
+		foreignId = pCollision->iForeignData[i];
+		pForeignData = pCollision->pForeignData[i];
+
+		vloc = pCollision->vloc[i];
+		mass = pCollision->mass[i];
+		partId = pCollision->partid[i];
+		idmat = pCollision->idmat[i];
+		iPrim = pCollision->iPrim[i];
+	}
+
+	int foreignId;
+	void *pForeignData;
+
+	Vec3 vloc;
+	float mass;
+	int partId;
+	short idmat;
+	short iPrim;
+};
+
 struct IMonoObject;
 struct IMonoArray;
 

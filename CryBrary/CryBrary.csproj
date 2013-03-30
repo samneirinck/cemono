@@ -208,6 +208,7 @@
     <Compile Include="Misc\TypeConverters\Color.cs" />
     <Compile Include="Physics\Actions\Impulse.cs" />
     <Compile Include="Physics\BreakageParameters.cs" />
+    <Compile Include="Physics\ColliderInfo.cs" />
     <Compile Include="Physics\PhysicalEntity\Params\ParticleParameters.cs" />
     <Compile Include="Physics\PhysicalEntity\Params\PhysicalFlagsParameters.cs" />
     <Compile Include="Physics\PhysicalEntity\Params\PhysicalSimulationParameters.cs" />

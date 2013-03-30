@@ -76,6 +76,11 @@ namespace CryEngine
         protected virtual void NetSerialize(Serialization.CrySerialize serialize, int aspect, byte profile, int flags) { }
 
         protected virtual void PostSerialize() { }
+
+		/// <summary>
+		/// Sent on entity collision.
+		/// </summary>
+		protected virtual void OnCollision(ColliderInfo source, ColliderInfo target, Vec3 hitPos, Vec3 contactNormal, float penetration, float radius) { }
         #endregion
     }
 }

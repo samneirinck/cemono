@@ -111,13 +111,24 @@ void CMonoEntityExtension::ProcessEvent(SEntityEvent &event)
 		{
 			EventPhysCollision *pCollision = (EventPhysCollision *)event.nParam[0];
 
-			EntityId targetId = 0;
+			SMonoColliderInfo source = SMonoColliderInfo(pCollision, 0);
+			SMonoColliderInfo target = SMonoColliderInfo(pCollision, 1);
 
-			IEntity *pTarget = pCollision->iForeignData[1]==PHYS_FOREIGN_ID_ENTITY ? (IEntity*)pCollision->pForeignData[1]:0;
-			if(pTarget)
-				targetId = pTarget->GetId();
+			IMonoClass *pColliderInfoClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("ColliderInfo");
 
-			m_pScript->CallMethod("OnCollision", targetId, pCollision->pt, pCollision->vloc[0].GetNormalizedSafe(), pCollision->idmat[0], pCollision->n);
+			IMonoArray *pArgs = CreateMonoArray(6);
+
+			pArgs->InsertMonoObject(pColliderInfoClass->BoxObject(&source));
+			pArgs->InsertMonoObject(pColliderInfoClass->BoxObject(&target));
+
+			pArgs->Insert(pCollision->pt);
+			pArgs->Insert(pCollision->n);
+
+			pArgs->Insert(pCollision->penetration);
+			pArgs->Insert(pCollision->radius);
+
+			m_pScript->GetClass()->InvokeArray(m_pScript->GetManagedObject(), "OnCollision", pArgs);
+			SAFE_RELEASE(pArgs);
 		}
 		break;
 	case ENTITY_EVENT_START_GAME:
