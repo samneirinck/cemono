@@ -223,7 +223,6 @@
     <Compile Include="Physics\PrePhysicsUpdateMode.cs" />
     <Compile Include="Physics\Status\DynamicsStatus.cs" />
     <Compile Include="Physics\Status\LivingStatus.cs" />
-    <Compile Include="Physics\Status\Status.cs" />
     <Compile Include="Script Handling\IScriptInitializationParams.cs" />
     <Compile Include="Script Handling\Native\NativeScriptSystemMethods.cs" />
     <Compile Include="Physics\Explosion.cs" />

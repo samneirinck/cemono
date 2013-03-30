@@ -18,8 +18,6 @@ CScriptbind_Physics::CScriptbind_Physics()
 	REGISTER_METHOD(Physicalize);
 	REGISTER_METHOD(Sleep);
 
-	REGISTER_METHOD(AddImpulse);
-
 	REGISTER_METHOD(GetVelocity);
 	REGISTER_METHOD(SetVelocity);
 
@@ -27,8 +25,10 @@ CScriptbind_Physics::CScriptbind_Physics()
 
 	REGISTER_METHOD(SimulateExplosion);
 
-	REGISTER_METHOD(GetLivingEntityStatus);
-	REGISTER_METHOD(GetDynamicsEntityStatus);
+	REGISTER_METHOD_NAME(PhysicalEntityAction, "ActionImpulse");
+
+	REGISTER_METHOD_NAME(GetPhysicalEntityStatus, "GetLivingEntityStatus");
+	REGISTER_METHOD_NAME(GetPhysicalEntityStatus, "GetDynamicsEntityStatus");
 
 	REGISTER_METHOD_NAME(SetPhysicalEntityParams, "SetParticleParams");
 	REGISTER_METHOD_NAME(GetPhysicalEntityParams, "GetParticleParams");
@@ -43,6 +43,11 @@ CScriptbind_Physics::CScriptbind_Physics()
 IPhysicalEntity *CScriptbind_Physics::GetPhysicalEntity(IEntity *pEntity)
 {
 	return pEntity->GetPhysics();
+}
+
+pe_type CScriptbind_Physics::GetPhysicalEntityType(IPhysicalEntity *pPhysEnt)
+{
+	return pPhysEnt->GetType();
 }
 
 void CScriptbind_Physics::Physicalize(IEntity *pEntity, SMonoPhysicalizeParams params)
@@ -90,57 +95,29 @@ void CScriptbind_Physics::Physicalize(IEntity *pEntity, SMonoPhysicalizeParams p
 	pEntity->Physicalize(pp);
 }
 
-void CScriptbind_Physics::Sleep(IEntity *pEntity, bool sleep)
+void CScriptbind_Physics::Sleep(IPhysicalEntity *pPhysEnt, bool sleep)
 {
-	IPhysicalEntity *pPhysicalEntity = pEntity->GetPhysics();
-	if(!pPhysicalEntity)
-		return;
-
 	pe_action_awake awake;
 	awake.bAwake = !sleep;
 
-	pPhysicalEntity->Action(&awake);
+	pPhysEnt->Action(&awake);
 }
 
-void CScriptbind_Physics::AddImpulse(IEntity *pEntity, pe_action_impulse actionImpulse)
+Vec3 CScriptbind_Physics::GetVelocity(IPhysicalEntity *pPhysEnt)
 {
-	pe_action_impulse impulse;
-
-	impulse.angImpulse = actionImpulse.angImpulse;
-	impulse.iApplyTime = actionImpulse.iApplyTime;
-	impulse.impulse = actionImpulse.impulse;
-	impulse.ipart = actionImpulse.ipart;
-	impulse.iSource = actionImpulse.iSource;
-	impulse.partid = actionImpulse.partid;
-	impulse.point = actionImpulse.point;
-
-	if(IPhysicalEntity *pPhysEnt = pEntity->GetPhysics())
-		pPhysEnt->Action(&impulse);
-}
-
-Vec3 CScriptbind_Physics::GetVelocity(IEntity *pEntity)
-{
-	IPhysicalEntity *pPhysicalEntity = pEntity->GetPhysics();
-	if(!pPhysicalEntity)
-		return Vec3(ZERO);
-
 	pe_status_dynamics sd;
-	if(pPhysicalEntity->GetStatus(&sd) != 0)
+	if(pPhysEnt->GetStatus(&sd) != 0)
 		return sd.v;
 
 	return Vec3(0, 0, 0);
 }
 
-void CScriptbind_Physics::SetVelocity(IEntity *pEntity, Vec3 vel)
+void CScriptbind_Physics::SetVelocity(IPhysicalEntity *pPhysEnt, Vec3 vel)
 {
-	IPhysicalEntity *pPhysicalEntity = pEntity->GetPhysics();
-	if(!pPhysicalEntity)
-		return;
-
 	pe_action_set_velocity asv;
 	asv.v = vel;
 
-	pPhysicalEntity->Action(&asv);
+	pPhysEnt->Action(&asv);
 }
 
 int CScriptbind_Physics::RayWorldIntersection(Vec3 origin, Vec3 dir, int objFlags, unsigned int flags, int maxHits, mono::object skipEntities, mono::object &hits)
@@ -211,27 +188,22 @@ mono::object CScriptbind_Physics::SimulateExplosion(pe_explosion explosion)
 	return NULL;
 }
 
-pe_status_living CScriptbind_Physics::GetLivingEntityStatus(IEntity *pEntity)
+bool CScriptbind_Physics::PhysicalEntityAction(IPhysicalEntity *pPhysEnt, pe_action &action)
 {
-	pe_status_living status;
-	if(IPhysicalEntity *pPhysEnt = pEntity->GetPhysics())
-		pEntity->GetPhysics()->GetStatus(&status);
-
-	return status;
+	return pPhysEnt->Action(&action) != 0;
 }
 
-pe_status_dynamics CScriptbind_Physics::GetDynamicsEntityStatus(IEntity *pEntity)
+pe_status_dynamics GetDynamicsEntityStatus(IPhysicalEntity *pPhysEnt)
 {
 	pe_status_dynamics status;
-	if(IPhysicalEntity *pPhysEnt = pEntity->GetPhysics())
-		pEntity->GetPhysics()->GetStatus(&status);
+	pPhysEnt->GetStatus(&status);
 
 	return status;
 }
 
-pe_type CScriptbind_Physics::GetPhysicalEntityType(IPhysicalEntity *pPhysEnt)
+bool CScriptbind_Physics::GetPhysicalEntityStatus(IPhysicalEntity *pPhysEnt, pe_status &status)
 {
-	return pPhysEnt->GetType();
+	return pPhysEnt->GetStatus(&status) != 0;
 }
 
 bool CScriptbind_Physics::SetPhysicalEntityParams(IPhysicalEntity *pPhysEnt, pe_params &params)

@@ -9,13 +9,16 @@ namespace CryEngine.Physics.Status
 {
     public struct DynamicsPhysicsStatus
     {
-        internal DynamicsPhysicsStatus(int uselessParameter)
-            : this()
+		public static DynamicsPhysicsStatus Create()
         {
-            partid = UnusedMarker.Integer;
-            ipart = UnusedMarker.Integer;
+			var status = new DynamicsPhysicsStatus();
 
-            type = 8;
+			status.type = 8;
+
+			status.partid = UnusedMarker.Integer;
+			status.ipart = UnusedMarker.Integer;
+
+			return status;
         }
 
         private int type;

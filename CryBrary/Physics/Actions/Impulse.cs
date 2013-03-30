@@ -6,16 +6,18 @@ using System.Text;
 using CryEngine.Native;
 using CryEngine.Utilities;
 
-namespace CryEngine.Physics.Actions
+namespace CryEngine
 {
-    internal struct pe_action_impulse
+    internal struct PhysicalEntityImpulseAction
     {
-        public static pe_action_impulse Create()
+        public static PhysicalEntityImpulseAction Create()
         {
-            var action = new pe_action_impulse();
+            var action = new PhysicalEntityImpulseAction();
 
             action.type = 2;
             action.iApplyTime = 2;
+			action.iSource = 0;
+			action.impulse = Vec3.Zero;
 
             action.point = UnusedMarker.Vec3;
             action.angImpulse = UnusedMarker.Vec3;

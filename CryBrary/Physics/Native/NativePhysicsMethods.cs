@@ -2,7 +2,6 @@
 using System.Runtime.CompilerServices;
 
 using CryEngine.Physics;
-using CryEngine.Physics.Actions;
 using CryEngine.Physics.Status;
 
 namespace CryEngine.Native
@@ -22,23 +21,23 @@ namespace CryEngine.Native
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern public static void Physicalize(IntPtr entPtr, PhysicalizationParams physicalizationParams);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern public static void Sleep(IntPtr entPtr, bool sleep);
+        extern public static void Sleep(IntPtr physicalEntPtr, bool sleep);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-		extern internal static void AddImpulse(IntPtr entPtr, pe_action_impulse actionImpulse);
-
+		extern public static Vec3 GetVelocity(IntPtr physicalEntPtr);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern public static Vec3 GetVelocity(IntPtr entPtr);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern public static void SetVelocity(IntPtr entPtr, Vec3 velocity);
+		extern public static void SetVelocity(IntPtr physicalEntPtr, Vec3 velocity);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern internal static object[] SimulateExplosion(pe_explosion explosion);
 
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern public static LivingPhysicsStatus GetLivingEntityStatus(IntPtr entPtr);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern public static DynamicsPhysicsStatus GetDynamicsEntityStatus(IntPtr entPtr);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern internal static bool ActionImpulse(IntPtr physEnt, ref PhysicalEntityImpulseAction parameters);
+
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern public static bool GetLivingEntityStatus(IntPtr physEntPtr, ref LivingPhysicsStatus livingStatus);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern public static bool GetDynamicsEntityStatus(IntPtr physEntPtr, ref DynamicsPhysicsStatus dynamicsStatus);
 
 		[CLSCompliant(false)]
 		[MethodImpl(MethodImplOptions.InternalCall)]

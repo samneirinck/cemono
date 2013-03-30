@@ -7,7 +7,6 @@ using System.Runtime.InteropServices;
 using CryEngine.Utilities;
 
 using CryEngine.Physics.Status;
-using CryEngine.Physics.Actions;
 
 using CryEngine.Native;
 
@@ -72,9 +71,9 @@ namespace CryEngine.Physics
             NativeEntityMethods.BreakIntoPieces(Owner.GetIEntity(), 0, 0, breakageParams);
         }
 
-        public void AddImpulse(Vec3 vImpulse, Vec3? angImpulse = null, Vec3? point = null)
+        public bool AddImpulse(Vec3 vImpulse, Vec3? angImpulse = null, Vec3? point = null)
         {
-            var impulse = pe_action_impulse.Create();
+            var impulse = PhysicalEntityImpulseAction.Create();
 
             impulse.impulse = vImpulse;
 
@@ -83,7 +82,7 @@ namespace CryEngine.Physics
             if (point != null)
                 impulse.point = point.Value;
 
-            NativePhysicsMethods.AddImpulse(Owner.GetIEntity(), impulse);
+           return  NativePhysicsMethods.ActionImpulse(Owner.GetIEntity(), ref impulse);
         }
 
         /// <summary>
@@ -93,22 +92,34 @@ namespace CryEngine.Physics
         public bool Resting
         {
             get { throw new NotImplementedException(); }
-            set { NativePhysicsMethods.Sleep(Owner.GetIEntity(), value); }
+            set { NativePhysicsMethods.Sleep(Handle, value); }
         }
 
         public virtual PhysicalizationType Type { get { return NativePhysicsMethods.GetPhysicalEntityType(Handle); } }
 
-        PhysicalStatus status;
-        public PhysicalStatus Status 
-        { 
-            get 
-            {
-                if(status == null)
-                    status = new PhysicalStatus(this); 
+		public LivingPhysicsStatus LivingStatus
+		{
+			get
+			{
+				var status = LivingPhysicsStatus.Create();
 
-                return status;
-            }
-        }
+				NativePhysicsMethods.GetLivingEntityStatus(Handle, ref status);
+
+				return status;
+			}
+		}
+
+		public DynamicsPhysicsStatus DynamicsStatus
+		{
+			get
+			{
+				var status = DynamicsPhysicsStatus.Create();
+
+				NativePhysicsMethods.GetDynamicsEntityStatus(Handle, ref status);
+
+				return status;
+			}
+		}
 
 		[CLSCompliant(false)]
 		public bool GetFlags(ref PhysicalFlagsParameters flags)

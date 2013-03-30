@@ -56,19 +56,18 @@ public:
 
 	static void Physicalize(IEntity *pEntity, SMonoPhysicalizeParams params);
 
-	static void Sleep(IEntity *pEntity, bool sleep);
+	static void Sleep(IPhysicalEntity *pPhysEnt, bool sleep);
 
-	static void AddImpulse(IEntity *pEntity, pe_action_impulse impulse);
-
-	static Vec3 GetVelocity(IEntity *pEntity);
-	static void SetVelocity(IEntity *pEntity, Vec3 vel);
+	static Vec3 GetVelocity(IPhysicalEntity *pPhysEnt);
+	static void SetVelocity(IPhysicalEntity *pPhysEnt, Vec3 vel);
 
 	static int RayWorldIntersection(Vec3, Vec3, int, unsigned int, int, mono::object, mono::object &hits);
 
 	static mono::object SimulateExplosion(pe_explosion explosion);
 
-	static pe_status_living GetLivingEntityStatus(IEntity *pEntity);
-	static pe_status_dynamics GetDynamicsEntityStatus(IEntity *pEntity);
+	static bool PhysicalEntityAction(IPhysicalEntity *pPhysEnt, pe_action &action);
+
+	static bool GetPhysicalEntityStatus(IPhysicalEntity *pPhysEnt, pe_status &status);
 
 	static bool SetPhysicalEntityParams(IPhysicalEntity *pPhysEnt, pe_params &params);
 	static bool GetPhysicalEntityParams(IPhysicalEntity *pPhysEnt, pe_params &params);

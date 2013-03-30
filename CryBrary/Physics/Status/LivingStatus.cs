@@ -9,11 +9,14 @@ namespace CryEngine.Physics.Status
 {
     public struct LivingPhysicsStatus
     {
-        internal LivingPhysicsStatus(int uselessParameter)
-            : this()
-        {
-            type = 2;
-        }
+		public static LivingPhysicsStatus Create()
+		{
+			var status = new LivingPhysicsStatus();
+
+			status.type = 2;
+
+			return status;
+		}
 
         private int type;
 
