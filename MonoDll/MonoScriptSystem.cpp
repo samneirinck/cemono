@@ -497,7 +497,11 @@ IMonoDomain *CScriptSystem::CreateDomain(const char *name, bool setActive)
 
 IMonoDomain *CScriptSystem::GetActiveDomain()
 {
-	return TryGetDomain(mono_domain_get());
+	MonoDomain *pActiveDomain = mono_domain_get();
+	if(pActiveDomain == nullptr)
+		return nullptr;
+
+	return TryGetDomain(pActiveDomain);
 }
 
 CScriptDomain *CScriptSystem::TryGetDomain(MonoDomain *pMonoDomain)
