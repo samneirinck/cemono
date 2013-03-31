@@ -222,7 +222,7 @@ MonoMethod *CScriptClass::GetMonoMethod(const char *methodName, int numParams)
 
 mono::object CScriptClass::GetPropertyValue(mono::object object, const char *propertyName, bool throwOnFail)
 {
-	MonoProperty *pProperty = GetMonoProperty(propertyName);
+	MonoProperty *pProperty = GetMonoProperty(propertyName, false, true);
 	if(pProperty)
 	{
 		MonoObject *pException = nullptr;
@@ -242,7 +242,7 @@ mono::object CScriptClass::GetPropertyValue(mono::object object, const char *pro
 
 void CScriptClass::SetPropertyValue(mono::object object, const char *propertyName, mono::object newValue, bool throwOnFail)
 {
-	MonoProperty *pProperty = GetMonoProperty(propertyName);
+	MonoProperty *pProperty = GetMonoProperty(propertyName, true);
 	if(pProperty)
 	{
 		void *args[1];
