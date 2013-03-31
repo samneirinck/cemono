@@ -245,36 +245,17 @@ struct MonoAnyValue : public ISerializable
 			break;
 		case eMonoAnyType_Unknown:
 			{
-				if(monoObject != nullptr)
+				if(ser.IsWriting())
 				{
-					IMonoScriptSystem *pScriptSystem = GetMonoScriptSystem();
-
-					IMonoDomain *pActiveDomain = pScriptSystem->GetActiveDomain();
-
-					IMonoClass *pCrySerializerClass = pScriptSystem->GetCrySerializerClass();
-					IMonoArray *pArgs = pActiveDomain->CreateArray(1);
-
-					if(ser.IsWriting())
+					if(monoObject != nullptr)
 					{
-						pArgs->InsertMonoObject(monoObject);
+						IMonoObject *pObject = *monoObject;
+						IMonoClass *pObjectClass = pObject->GetClass();
 
-						auto result = pCrySerializerClass->InvokeArray(nullptr, "SerializeToString", pArgs);
-						if(result != nullptr)
-						{
-							string data = pScriptSystem->GetConverter()->ToString((mono::string)result);
-							ser.Value("serializedData", data);
-						}
+						CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "Attempted to serialize unknown managed type %s.%s", pObjectClass->GetNamespace(), pObjectClass->GetName());
 					}
 					else
-					{
-						string data;
-						ser.Value("serializedData", data);
-						pArgs->InsertMonoString(pActiveDomain->CreateMonoString(data));
-
-						monoObject = pCrySerializerClass->InvokeArray(nullptr, "DeserializeFromString", pArgs);
-					}
-
-					SAFE_RELEASE(pArgs);
+						CRY_ASSERT_MESSAGE(false, "Attempted to serialize unknown managed type");
 				}
 			}
 			break;
