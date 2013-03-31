@@ -52,6 +52,7 @@ CScriptDomain::CScriptDomain(const char *name, bool setActive)
 	, m_name(name)
 {
 	m_pDomain = mono_domain_create_appdomain(const_cast<char *>(name), nullptr);
+	CRY_ASSERT(m_pDomain);
 
 	if(setActive)
 		SetActive();
