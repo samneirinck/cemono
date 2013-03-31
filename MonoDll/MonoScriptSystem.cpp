@@ -502,6 +502,8 @@ IMonoDomain *CScriptSystem::GetActiveDomain()
 
 CScriptDomain *CScriptSystem::TryGetDomain(MonoDomain *pMonoDomain)
 {
+	CRY_ASSERT(pMonoDomain);
+
 	for each(auto domain in m_domains)
 	{
 		if(domain->GetMonoDomain() == pMonoDomain)
