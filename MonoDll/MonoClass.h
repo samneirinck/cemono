@@ -69,7 +69,7 @@ private:
 	MonoMethod *GetMonoMethod(const char *name, IMonoArray *pArgs);
 	MonoMethod *GetMonoMethod(const char *name, int numParams);
 
-	MonoProperty *GetMonoProperty(const char *name);
+	MonoProperty *GetMonoProperty(const char *name, bool requireSetter = false, bool requireGetter = false);
 	MonoClassField *GetMonoField(const char *name);
 
 	string m_name;

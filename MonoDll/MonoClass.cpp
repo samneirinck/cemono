@@ -281,7 +281,7 @@ void CScriptClass::SetFieldValue(mono::object object, const char *fieldName, mon
 		g_pScriptSystem->GetCorlibAssembly()->GetException("System", "MissingFieldException", "Failed to locate field %s in class %s", fieldName, GetName())->Throw();
 }
 
-MonoProperty *CScriptClass::GetMonoProperty(const char *name)
+MonoProperty *CScriptClass::GetMonoProperty(const char *name, bool requireSetter, bool requireGetter)
 {
 	MonoClass *pClass = (MonoClass *)m_pObject;
 	MonoProperty *pCurProperty = nullptr;
@@ -296,13 +296,19 @@ MonoProperty *CScriptClass::GetMonoProperty(const char *name)
 			pClass = mono_class_get_parent(pClass);
 			if(pClass == mono_get_object_class())
 				break;
-
 			pIterator = 0;
 			continue;
 		}
 
 		if(!strcmp(mono_property_get_name(pCurProperty), name))
+		{
+			if(requireSetter && mono_property_get_set_method(pCurProperty) == nullptr)
+				continue;
+			if(requireGetter && mono_property_get_get_method(pCurProperty) == nullptr)
+				continue;
+
 			return pCurProperty;
+		}
 	}
 
 	return nullptr;
