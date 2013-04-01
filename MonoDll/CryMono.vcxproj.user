@@ -10,7 +10,7 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LocalDebuggerCommand>$(OutDir)..\..\Editor.exe</LocalDebuggerCommand>
+    <LocalDebuggerCommand>$(SolutionDir)..\..\..\Bin32\Editor.exe</LocalDebuggerCommand>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerCommandArguments>-DX9</LocalDebuggerCommandArguments>
   </PropertyGroup>

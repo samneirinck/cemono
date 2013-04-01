@@ -562,6 +562,7 @@
     <ClInclude Include="Scriptbinds\Time.h" />
     <ClInclude Include="Scriptbinds\ViewSystem.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="SystemEventListener_CryMono.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp" />
@@ -610,6 +611,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='UnitTests|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="SystemEventListener_CryMono.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

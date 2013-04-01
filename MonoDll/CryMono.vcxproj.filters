@@ -153,6 +153,9 @@
     <ClInclude Include="Scriptbinds\Entity.h">
       <Filter>ScriptBinds\Entities</Filter>
     </ClInclude>
+    <ClInclude Include="SystemEventListener_CryMono.h">
+      <Filter>Mono</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -263,6 +266,9 @@
     </ClCompile>
     <ClCompile Include="Scriptbinds\Entity.cpp">
       <Filter>ScriptBinds\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemEventListener_CryMono.cpp">
+      <Filter>Mono</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

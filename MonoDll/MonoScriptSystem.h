@@ -42,7 +42,6 @@ class CScriptSystem
 	: public IMonoScriptSystem
 	, public IFileChangeListener
 	, public IGameFrameworkListener
-	, public ISystemEventListener
 {
 	typedef std::map<const void *, const char *> TMethodBindings;
 
@@ -94,10 +93,6 @@ public:
 	virtual void OnActionEvent(const SActionEvent& event) {} 	
 	// ~IGameFrameworkListener
 
-	// ISystemEventListener
-	virtual void OnSystemEvent(ESystemEvent event,UINT_PTR wparam,UINT_PTR lparam);
-	// ~ISystemEventListener
-
 	CScriptDomain *TryGetDomain(MonoDomain *pDomain);
 	void OnDomainReleased(CScriptDomain *pDomain);
 
@@ -109,6 +104,8 @@ public:
 
 	mono::object InitializeScriptInstance(IMonoObject *pScriptInstance, IMonoArray *pParams); 
 	void ReportScriptInstanceDestroyed(IMonoObject *pScriptInstance, int scriptId);
+
+	bool DetectedChanges() { return m_bDetectedChanges; }
 
 protected:
 	bool CompleteInit();

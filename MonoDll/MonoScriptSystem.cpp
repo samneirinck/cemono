@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "MonoScriptSystem.h"
 
+#include "SystemEventListener_CryMono.h"
+
 #include "MonoAssembly.h"
 #include "MonoCommon.h"
 #include "MonoArray.h"
@@ -145,13 +147,8 @@ CScriptSystem::~CScriptSystem()
 		(*it)->Release();
 	m_domains.clear();
 
-	if(gEnv->pSystem)
-	{
-		// We destroy the script system from the shutdown event, so can't unregister while the system event listener list is iterating.
-		// Should be the last event sent, so not unregistering shouldn't be an issue.
-		//gEnv->pSystem->GetISystemEventDispatcher()->RemoveListener(this);
+	if(gEnv->pGameFramework)
 		gEnv->pGameFramework->UnregisterListener(this);
-	}
 
 	if(IFileChangeMonitor *pFileChangeMonitor = gEnv->pFileChangeMonitor)
 		pFileChangeMonitor->UnregisterListener(this);
@@ -190,7 +187,7 @@ bool CScriptSystem::CompleteInit()
 
 		gEnv->pGameFramework->RegisterListener(this, "CryMono", eFLPriority_Game);
 
-		gEnv->pSystem->GetISystemEventDispatcher()->RegisterListener(this);
+		gEnv->pSystem->GetISystemEventDispatcher()->RegisterListener(&g_systemEventListener_CryMono);
 
 		CryModuleMemoryInfo memInfo;
 		CryModuleGetMemoryInfo(&memInfo);
@@ -277,6 +274,8 @@ bool CScriptSystem::Reload()
 				gEnv->pFlowSystem->ReloadAllNodeTypes();
 
 			m_bReloading = false;
+			m_bDetectedChanges = false;
+
 			return true;
 		}
 		break;
@@ -291,6 +290,8 @@ bool CScriptSystem::Reload()
 			m_pScriptDomain->SetActive();
 
 			m_bReloading = false;
+
+			m_bDetectedChanges = false;
 			return false;
 		}
 		break;
@@ -374,28 +375,6 @@ void CScriptSystem::OnFileChange(const char *fileName)
 		}
 
 		Reload();
-	}
-}
-
-void CScriptSystem::OnSystemEvent(ESystemEvent event,UINT_PTR wParam,UINT_PTR lparam)
-{
-	switch(event)
-	{
-	case ESYSTEM_EVENT_CHANGE_FOCUS:
-		{
-			CryLogAlways("Changed focus %i", wParam);
-			if(wParam != 0 && m_bDetectedChanges && GetFocus())
-			{
-				Reload();
-				m_bDetectedChanges = false;
-			}
-		}
-		break;
-	case ESYSTEM_EVENT_SHUTDOWN:
-		{
-			Release();
-		}
-		break;
 	}
 }
 
