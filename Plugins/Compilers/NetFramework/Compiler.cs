@@ -429,6 +429,9 @@ namespace CryEngine.Compilers.NET
             {
                 if (member.MemberType == MemberTypes.Field || member.MemberType == MemberTypes.Property)
                 {
+					if (member.Name.EndsWith("k__BackingField"))
+						continue;
+
                     PortAttribute portAttribute;
                     member.TryGetAttribute(out portAttribute);
 
