@@ -319,6 +319,8 @@
     <Compile Include="Math\Vec2.cs" />
     <Compile Include="Math\Vec4.cs" />
     <Compile Include="Serialization\SerializedObjectReference.cs" />
+    <Compile Include="Sound\Native\NativeSoundMethods.cs" />
+    <Compile Include="Sound\Sound.cs" />
     <Compile Include="Testing\Assertion.cs" />
     <Compile Include="Testing\Attributes.cs" />
     <Compile Include="Testing\Exceptions.cs" />
