@@ -2,7 +2,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CryMono", "..\MonoDll\CryMono.vcxproj", "{B41C810B-A08F-4AFD-8E68-D4D7ABA39044}"
 	ProjectSection(ProjectDependencies) = postProject
-		{A0504507-678E-44B5-9517-F89EB8575D3F} = {A0504507-678E-44B5-9517-F89EB8575D3F}
 		{4A7993B3-6611-4D9D-B8AB-836D6C27B12B} = {4A7993B3-6611-4D9D-B8AB-836D6C27B12B}
 	EndProjectSection
 EndProject
@@ -29,6 +28,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utils", "Utils", "{B329A376-1AD7-4107-84BE-CE94AE958B82}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pdb2mdb", "..\Utils\pdb2mdb\pdb2mdb.csproj", "{EFA030F1-B5C6-410D-B217-6F40887CC8A5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CharacterCustomization", "..\Plugins\Customization\CharacterCustomization.csproj", "{6DED5394-AE4A-4663-84C3-850A78820EC3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -245,6 +246,34 @@ Global
 		{EFA030F1-B5C6-410D-B217-6F40887CC8A5}.UnitTests|Mixed Platforms.Build.0 = Release|Any CPU
 		{EFA030F1-B5C6-410D-B217-6F40887CC8A5}.UnitTests|x64.ActiveCfg = Release|Any CPU
 		{EFA030F1-B5C6-410D-B217-6F40887CC8A5}.UnitTests|x86.ActiveCfg = Release|Any CPU
+		{6DED5394-AE4A-4663-84C3-850A78820EC3}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{6DED5394-AE4A-4663-84C3-850A78820EC3}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{6DED5394-AE4A-4663-84C3-850A78820EC3}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{6DED5394-AE4A-4663-84C3-850A78820EC3}.Debug|x64.ActiveCfg = Debug|x64
+		{6DED5394-AE4A-4663-84C3-850A78820EC3}.Debug|x64.Build.0 = Debug|x64
+		{6DED5394-AE4A-4663-84C3-850A78820EC3}.Debug|x86.ActiveCfg = Debug|x86
+		{6DED5394-AE4A-4663-84C3-850A78820EC3}.Debug|x86.Build.0 = Debug|x86
+		{6DED5394-AE4A-4663-84C3-850A78820EC3}.Profile|Any CPU.ActiveCfg = Profile|x86
+		{6DED5394-AE4A-4663-84C3-850A78820EC3}.Profile|Mixed Platforms.ActiveCfg = Profile|x86
+		{6DED5394-AE4A-4663-84C3-850A78820EC3}.Profile|Mixed Platforms.Build.0 = Profile|x86
+		{6DED5394-AE4A-4663-84C3-850A78820EC3}.Profile|x64.ActiveCfg = Profile|x64
+		{6DED5394-AE4A-4663-84C3-850A78820EC3}.Profile|x64.Build.0 = Profile|x64
+		{6DED5394-AE4A-4663-84C3-850A78820EC3}.Profile|x86.ActiveCfg = Profile|x86
+		{6DED5394-AE4A-4663-84C3-850A78820EC3}.Profile|x86.Build.0 = Profile|x86
+		{6DED5394-AE4A-4663-84C3-850A78820EC3}.Release|Any CPU.ActiveCfg = Release|x86
+		{6DED5394-AE4A-4663-84C3-850A78820EC3}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{6DED5394-AE4A-4663-84C3-850A78820EC3}.Release|Mixed Platforms.Build.0 = Release|x86
+		{6DED5394-AE4A-4663-84C3-850A78820EC3}.Release|x64.ActiveCfg = Release|x64
+		{6DED5394-AE4A-4663-84C3-850A78820EC3}.Release|x64.Build.0 = Release|x64
+		{6DED5394-AE4A-4663-84C3-850A78820EC3}.Release|x86.ActiveCfg = Release|x86
+		{6DED5394-AE4A-4663-84C3-850A78820EC3}.Release|x86.Build.0 = Release|x86
+		{6DED5394-AE4A-4663-84C3-850A78820EC3}.UnitTests|Any CPU.ActiveCfg = UnitTests|x86
+		{6DED5394-AE4A-4663-84C3-850A78820EC3}.UnitTests|Mixed Platforms.ActiveCfg = UnitTests|x86
+		{6DED5394-AE4A-4663-84C3-850A78820EC3}.UnitTests|Mixed Platforms.Build.0 = UnitTests|x86
+		{6DED5394-AE4A-4663-84C3-850A78820EC3}.UnitTests|x64.ActiveCfg = UnitTests|x64
+		{6DED5394-AE4A-4663-84C3-850A78820EC3}.UnitTests|x64.Build.0 = UnitTests|x64
+		{6DED5394-AE4A-4663-84C3-850A78820EC3}.UnitTests|x86.ActiveCfg = UnitTests|x86
+		{6DED5394-AE4A-4663-84C3-850A78820EC3}.UnitTests|x86.Build.0 = UnitTests|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -253,6 +282,7 @@ Global
 		{AEB958D4-45CA-478B-BA8E-D0E897CE974B} = {B7E82CAA-B45D-4CF5-A700-57B7B3FE4033}
 		{498187B3-E46F-45FA-A202-992AE9FDA01A} = {B7E82CAA-B45D-4CF5-A700-57B7B3FE4033}
 		{A0504507-678E-44B5-9517-F89EB8575D3F} = {42CB6498-6C9A-49FF-A49C-8CD7C7C25EC3}
+		{6DED5394-AE4A-4663-84C3-850A78820EC3} = {42CB6498-6C9A-49FF-A49C-8CD7C7C25EC3}
 		{EFA030F1-B5C6-410D-B217-6F40887CC8A5} = {B329A376-1AD7-4107-84BE-CE94AE958B82}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
