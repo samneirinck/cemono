@@ -238,6 +238,8 @@ struct MonoAnyValue : public ISerializable
 						value.SerializeWith(ser);
 						pArray->InsertAny(value);
 					}
+
+					monoObject = pArray->GetManagedObject();
 				}
 
 				SAFE_RELEASE(pArray);
