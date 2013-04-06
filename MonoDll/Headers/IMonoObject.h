@@ -279,8 +279,13 @@ struct MonoAnyValue : public ISerializable
 			return &f;
 		case eMonoAnyType_Vec3:
 			return Vec3(vec4.x, vec4.y, vec4.z);
+		case eMonoAnyType_Quat:
+			return new Quat(vec4.x, vec4.y, vec4.z, vec4.w);
 		case eMonoAnyType_String:
 			return &str;
+		case eMonoAnyType_Array:
+		case eMonoAnyType_Unknown:
+			return monoObject;
 		}
 	}
 
