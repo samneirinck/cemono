@@ -82,6 +82,13 @@ EMonoAnyType CScriptObject::GetType()
 			return eMonoAnyType_Vec3;
 		else if(!strcmp(className, "Quat"))
 			return eMonoAnyType_Quat;
+		else
+		{
+			string strClassName = className;
+
+			if(!strcmp(strClassName.substr(strClassName.size() - 2, 2).c_str(), "[]"))
+				return eMonoAnyType_Array;
+		}
 	}
 
 	return eMonoAnyType_Unknown;
