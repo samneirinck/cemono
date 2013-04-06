@@ -101,7 +101,11 @@ namespace CryEngine
             var type = entity.GetType();
             while (type != null)
             {
-                var methodInfo = type.GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+				var types = from arg in args
+							where arg != null
+							select arg.GetType();
+
+				var methodInfo = type.GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, types.ToArray(), null);
                 if (methodInfo != null)
                 {
                     methodInfo.Invoke(entity, args);
