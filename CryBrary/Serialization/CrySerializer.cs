@@ -109,7 +109,11 @@ namespace CryEngine.Serialization
             return false;
         }
 
-        void StartWrite(ObjectReference objectReference)
+		/// <summary>
+		/// Starts writing the specified reference.
+		/// </summary>
+		/// <param name="objectReference"></param>
+        public void StartWrite(ObjectReference objectReference)
         {
             WriteLine(objectReference.Name);
 
@@ -228,6 +232,14 @@ namespace CryEngine.Serialization
         {
             var type = objectReference.Value.GetType();
             WriteType(type);
+
+			if (type.Implements<ICrySerializable>())
+			{
+				var crySerializable = objectReference.Value as ICrySerializable;
+				crySerializable.Serialize(this);
+
+				return;
+			}
 
             while (type != null)
             {
@@ -351,7 +363,11 @@ namespace CryEngine.Serialization
             return Reader.ReadLine();
         }
 
-        ObjectReference StartRead()
+		/// <summary>
+		/// Starts reading an reference that was written with <see cref="StartWrite"/>.
+		/// </summary>
+		/// <returns></returns>
+        public ObjectReference StartRead()
         {
             var name = ReadLine();
 
@@ -410,6 +426,14 @@ namespace CryEngine.Serialization
             var type = ReadType();
 
 			objReference.Value = FormatterServices.GetUninitializedObject(type);
+
+			if (type.Implements<ICrySerializable>())
+			{
+				var crySerializable = objReference.Value as ICrySerializable;
+				crySerializable.Deserialize(this);
+
+				return;
+			}
 
             while (type != null)
             {

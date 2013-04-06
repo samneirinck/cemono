@@ -243,6 +243,7 @@
     <Compile Include="Network\RemoteInvocationException.cs" />
     <Compile Include="Script Handling\ScriptReloadResult.cs" />
     <Compile Include="Serialization\CrySerialize.cs" />
+    <Compile Include="Serialization\ICrySerializable.cs" />
     <Compile Include="Serialization\SerializationTarget.cs" />
     <Compile Include="Serialization\SerializationType.cs" />
     <Compile Include="ProjectSettings.cs" />
