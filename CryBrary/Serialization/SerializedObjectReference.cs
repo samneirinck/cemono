@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+
 using System.Reflection;
 
 using CryEngine.Extensions;
@@ -38,15 +40,17 @@ namespace CryEngine.Serialization
             }
             else if (valueType == typeof(string))
                 m_serializationType = SerializationType.String;
-            else if (valueType.Implements<IEnumerable>())
-            {
-                if (valueType.IsGenericType)
-                    m_serializationType = SerializationType.GenericEnumerable;
-                else
-                    m_serializationType = SerializationType.Enumerable;
-            }
+            else if (valueType.IsArray)
+				m_serializationType = SerializationType.Array;
             else if (valueType.IsEnum)
                 m_serializationType = SerializationType.Enum;
+			else if (valueType.Implements<IList>() || valueType.Implements<IDictionary>())
+			{
+				if (valueType.IsGenericType)
+					m_serializationType = SerializationType.GenericEnumerable;
+				else
+					m_serializationType = SerializationType.Enumerable;
+			}
             else
             {
                 if (m_value is Type)

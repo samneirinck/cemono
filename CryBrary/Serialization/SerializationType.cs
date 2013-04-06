@@ -20,8 +20,10 @@ namespace CryEngine.Serialization
         /// </summary>
         ReferenceTypes,
 
-        GenericEnumerable,
-        Enumerable,
+		Array,
+		Enumerable,
+		GenericEnumerable,
+
         Object,
         MemberInfo,
         Delegate,

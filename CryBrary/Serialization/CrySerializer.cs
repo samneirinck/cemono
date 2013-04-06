@@ -135,12 +135,15 @@ namespace CryEngine.Serialization
                 case SerializationType.String:
                     WriteString(objectReference);
                     break;
-                case SerializationType.Enumerable:
-                    WriteEnumerable(objectReference);
+                case SerializationType.Array:
+                    WriteArray(objectReference);
                     break;
-                case SerializationType.GenericEnumerable:
-                    WriteGenericEnumerable(objectReference);
-                    break;
+				case SerializationType.Enumerable:
+					WriteEnumerable(objectReference);
+					break;
+				case SerializationType.GenericEnumerable:
+					WriteGenericEnumerable(objectReference);
+					break;
                 case SerializationType.Enum:
                     WriteEnum(objectReference);
                     break;
@@ -190,17 +193,29 @@ namespace CryEngine.Serialization
             WriteLine(objectReference.Value);
         }
 
-        void WriteEnumerable(ObjectReference objectReference)
-        {
-            var array = (objectReference.Value as IEnumerable).Cast<object>();
-            var numElements = array.Count();
-            WriteLine(numElements);
+		void WriteArray(ObjectReference objectReference)
+		{
+			var array = objectReference.Value as Array;
+			var numElements = array.Length;
+			WriteLine(numElements);
 
-            WriteType(GetIEnumerableElementType(objectReference.Value.GetType()));
+			WriteType(array.GetType().GetElementType());
 
-            for (int i = 0; i < numElements; i++)
-                StartWrite(new ObjectReference(i.ToString(), array.ElementAt(i)));
-        }
+			for (int i = 0; i < numElements; i++)
+				StartWrite(new ObjectReference(i.ToString(), array.GetValue(i)));
+		}
+
+		void WriteEnumerable(ObjectReference objectReference)
+		{
+			var array = (objectReference.Value as IEnumerable).Cast<object>();
+			var numElements = array.Count();
+			WriteLine(numElements);
+
+			WriteType(GetIEnumerableElementType(objectReference.Value.GetType()));
+
+			for (int i = 0; i < numElements; i++)
+				StartWrite(new ObjectReference(i.ToString(), array.ElementAt(i)));
+		}
 
         void WriteGenericEnumerable(ObjectReference objectReference)
         {
@@ -384,8 +399,9 @@ namespace CryEngine.Serialization
                 case SerializationType.Null: break;
                 case SerializationType.Reference: ReadReference(objReference); break;
                 case SerializationType.Object: ReadObject(objReference); break;
-                case SerializationType.GenericEnumerable: ReadGenericEnumerable(objReference); break;
-                case SerializationType.Enumerable: ReadEnumerable(objReference); break;
+                case SerializationType.Array: ReadArray(objReference); break;
+				case SerializationType.GenericEnumerable: ReadGenericEnumerable(objReference); break;
+				case SerializationType.Enumerable: ReadEnumerable(objReference); break;
                 case SerializationType.Enum: ReadEnum(objReference); break;
                 case SerializationType.Any: ReadAny(objReference); break;
                 case SerializationType.String: ReadString(objReference); break;
@@ -475,17 +491,29 @@ namespace CryEngine.Serialization
             }
         }
 
-        void ReadEnumerable(ObjectReference objReference)
-        {
-            var numElements = int.Parse(ReadLine());
-            var type = ReadType();
+		void ReadArray(ObjectReference objReference)
+		{
+			var numElements = int.Parse(ReadLine());
+			var type = ReadType();
 
-            objReference.Value = Array.CreateInstance(type, numElements);
-            var array = objReference.Value as Array;
+			objReference.Value = Array.CreateInstance(type, numElements);
+			var array = objReference.Value as Array;
 
-            for (int i = 0; i != numElements; ++i)
-                array.SetValue(StartRead().Value, i);
-        }
+			for (int i = 0; i != numElements; ++i)
+				array.SetValue(StartRead().Value, i);
+		}
+
+		void ReadEnumerable(ObjectReference objReference)
+		{
+			var numElements = int.Parse(ReadLine());
+			var type = ReadType();
+
+			objReference.Value = Array.CreateInstance(type, numElements);
+			var array = objReference.Value as Array;
+
+			for (int i = 0; i != numElements; ++i)
+				array.SetValue(StartRead().Value, i);
+		}
 
         void ReadGenericEnumerable(ObjectReference objReference)
         {
@@ -604,9 +632,6 @@ namespace CryEngine.Serialization
 			var delegateType = ReadType();
 			var methodInfo = ReadMemberInfo() as MethodInfo;
 
-			if (methodInfo == null)
-				return null;
-
 			if (ReadLine() == "target")
 				return Delegate.CreateDelegate(delegateType, StartRead().Value, methodInfo);
 			else
@@ -684,8 +709,8 @@ namespace CryEngine.Serialization
         static Type GetIEnumerableElementType(Type enumerableType)
         {
             Type type = enumerableType.GetElementType();
-            if (type != null)
-                return type;
+			if (type != null)
+				return type;
 
             // Not an array type, we've got to use an alternate method to get the type of elements contained within.
             if (enumerableType.IsGenericType && enumerableType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
