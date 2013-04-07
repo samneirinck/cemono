@@ -572,7 +572,10 @@ namespace CryEngine.Serialization
             var type = ReadType();
             string valueString = ReadLine();
 
-            objReference.Value = Converter.Convert(valueString, type);
+			if (!string.IsNullOrEmpty(valueString))
+				objReference.Value = Converter.Convert(valueString, type);
+			else
+				objReference.Value = 0;
         }
 
         void ReadString(ObjectReference objReference)
