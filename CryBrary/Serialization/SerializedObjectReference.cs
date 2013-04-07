@@ -2,7 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 
+using System.IO;
 using System.Reflection;
+using System.Threading;
+using System.Linq;
 
 using CryEngine.Extensions;
 using CryEngine.Utilities;
@@ -11,6 +14,20 @@ namespace CryEngine.Serialization
 {
     public class ObjectReference
     {
+		static ObjectReference()
+		{
+			m_forbiddenTypes = new Type[] 
+			{
+				typeof(Stream),
+				typeof(Thread)
+			};
+		}
+
+		/// <summary>
+		/// Types that we can't serialize
+		/// </summary>
+		static Type[] m_forbiddenTypes;
+
         public ObjectReference(string name, SerializationType type)
         {
             m_name = name;
@@ -63,7 +80,9 @@ namespace CryEngine.Serialization
                 {
                     if (m_value is Vec3 && UnusedMarker.IsUnused((Vec3)m_value))
                         m_serializationType = SerializationType.UnusedMarker;
-                    else
+                    else if(m_forbiddenTypes.Contains(valueType))
+						m_serializationType = SerializationType.Null;
+					else
                         m_serializationType = SerializationType.Object;
                 }
             }
