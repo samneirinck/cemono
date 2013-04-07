@@ -19,6 +19,7 @@ namespace CryEngine.Serialization
 			m_forbiddenTypes = new Type[] 
 			{
 				typeof(Stream),
+				typeof(StreamWriter),
 				typeof(Thread)
 			};
 		}
