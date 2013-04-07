@@ -84,9 +84,16 @@ namespace CryEngine
 
         void RemoteInvocation(EntityBase target, MethodInfo method, NetworkTarget netTarget, int channelId, params object[] args)
         {
+			if (!method.ContainsAttribute<RemoteInvocationAttribute>())
+			{
+#if RELEASE
+				return;
+#else
+				throw new AttributeUsageException("Method did not contain RemoteInvocation attribute");
+#endif
+			}
+
 #if !(RELEASE && RELEASE_DISABLE_CHECKS)
-            if (!method.ContainsAttribute<RemoteInvocationAttribute>())
-                throw new AttributeUsageException("Method did not contain RemoteInvocation attribute");
             if (target == null)
                 throw new RemoteInvocationException("Non-static method owner does not derive from EntityBase.");
 #endif
@@ -108,7 +115,12 @@ namespace CryEngine
 				var methodInfo = type.GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, types.ToArray(), null);
                 if (methodInfo != null)
                 {
-                    methodInfo.Invoke(entity, args);
+#if RELEASE
+					if (!method.ContainsAttribute<RemoteInvocationAttribute>())
+						return;
+#endif
+
+					methodInfo.Invoke(entity, args);
 
                     return;
                 }
