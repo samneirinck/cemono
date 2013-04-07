@@ -34,6 +34,8 @@ CScriptbind_Console::CScriptbind_Console()
 	REGISTER_METHOD(SetCVarString);
 
 	REGISTER_METHOD(Execute);
+
+	REGISTER_METHOD(GetCmdArg);
 }
 
 void CScriptbind_Console::HandleException(mono::object exception)
@@ -134,4 +136,12 @@ void CScriptbind_Console::SetCVarString(mono::string name, mono::string val)
 {
 	if(ICVar *pCVar = gEnv->pConsole->GetCVar(ToCryString(name)))
 		pCVar->Set(ToCryString(val));
+}
+
+mono::string CScriptbind_Console::GetCmdArg(mono::string argName, int type)
+{
+	auto cmdline = gEnv->pSystem->GetICmdLine();
+	auto arg = cmdline->FindArg((ECmdLineArgType)type, ToCryString(argName));
+
+	return ToMonoString(arg ? arg->GetValue() : "");
 }
