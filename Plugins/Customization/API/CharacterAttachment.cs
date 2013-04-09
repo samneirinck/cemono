@@ -4,16 +4,14 @@ using System.Linq;
 using System.Xml.Linq;
 using System.Text;
 
-using CryEngine;
-
 namespace CryEngine.CharacterCustomization
 {
-    public class CharacterAttachment
-    {
-        internal CharacterAttachment(CharacterAttachmentSlot slot, XElement element, bool child = false)
-        {
-            Element = element;
-            Slot = slot;
+	public class CharacterAttachment
+	{
+		internal CharacterAttachment(CharacterAttachmentSlot slot, XElement element, bool child = false)
+		{
+			Element = element;
+			Slot = slot;
 
 			if (element == null)
 				Name = "None";
@@ -22,38 +20,30 @@ namespace CryEngine.CharacterCustomization
 				var slotAttachmentNameAttribute = element.Attribute("Name");
 				if (slotAttachmentNameAttribute != null)
 					Name = slotAttachmentNameAttribute.Value;
-				else
-					Name = null;
 
 				var slotAttachmentTypeAttribute = element.Attribute("Type");
-                if (slotAttachmentTypeAttribute != null)
-                    Type = slotAttachmentTypeAttribute.Value;
-                else
-                    Type = "CA_BONE";
+				if (slotAttachmentTypeAttribute != null)
+					Type = slotAttachmentTypeAttribute.Value;
 
 				var slotAttachmentBoneNameAttribute = element.Attribute("BoneName");
-                if (slotAttachmentBoneNameAttribute != null)
-                    BoneName = slotAttachmentBoneNameAttribute.Value;
+				if (slotAttachmentBoneNameAttribute != null)
+					BoneName = slotAttachmentBoneNameAttribute.Value;
 
 				var slotAttachmentObjectAttribute = element.Attribute("Binding");
 				if (slotAttachmentObjectAttribute != null)
 					Object = slotAttachmentObjectAttribute.Value;
 
 				var slotAttachmentFlagsAttribute = element.Attribute("Flags");
-                if (slotAttachmentFlagsAttribute != null)
-                    Flags = slotAttachmentFlagsAttribute.Value;
+				if (slotAttachmentFlagsAttribute != null)
+					Flags = slotAttachmentFlagsAttribute.Value;
 
 				var slotAttachmentPositionAttribute = element.Attribute("Position");
-                if (slotAttachmentPositionAttribute != null)
-                    Position = slotAttachmentPositionAttribute.Value;
-                else
-                    Position = "0,0,0";
+				if (slotAttachmentPositionAttribute != null)
+					Position = slotAttachmentPositionAttribute.Value;
 
 				var slotAttachmentRotationAttribute = element.Attribute("Rotation");
-                if (slotAttachmentRotationAttribute != null)
-                    Rotation = slotAttachmentRotationAttribute.Value;
-                else
-                    Rotation = "1,0,0,0";
+				if (slotAttachmentRotationAttribute != null)
+					Rotation = slotAttachmentRotationAttribute.Value;
 
 				var slotAttachmentMaterials = new List<string>();
 
@@ -61,8 +51,8 @@ namespace CryEngine.CharacterCustomization
 					slotAttachmentMaterials.Add(materialVariation.Attribute("path").Value);
 
 				MaterialVariations = slotAttachmentMaterials.ToArray();
-                if (MaterialVariations.Length != 0)
-                    Material = MaterialVariations.First();
+				if (MaterialVariations.Length != 0)
+					Material = MaterialVariations.First();
 
 				if (!child)
 				{
@@ -82,7 +72,7 @@ namespace CryEngine.CharacterCustomization
 				if (slot.MirroredSlots != null)
 				{
 					MirroredChildren = new CharacterAttachment[slot.MirroredSlots.Length];
-					for(int i = 0; i < slot.MirroredSlots.Length; i++)
+					for (int i = 0; i < slot.MirroredSlots.Length; i++)
 					{
 						var mirroredSlot = slot.MirroredSlots.ElementAt(i);
 						var mirroredAttachmentElement = element.Element(mirroredSlot.Name);
@@ -93,57 +83,57 @@ namespace CryEngine.CharacterCustomization
 					}
 				}
 			}
-        }
+		}
 
-        public string RandomMaterial
-        {
-            get
-            {
+		public string RandomMaterial
+		{
+			get
+			{
 				if (MaterialVariations == null || MaterialVariations.Length == 0)
-                    return Material;
+					return Material;
 
-                var selector = new Random();
+				var selector = new Random();
 
-                return MaterialVariations.ElementAt(selector.Next(MaterialVariations.Length));
-            }
-        }
+				return MaterialVariations.ElementAt(selector.Next(MaterialVariations.Length));
+			}
+		}
 
-        public CharacterAttachment RandomSubAttachment
-        {
-            get
-            {
-                if (SubAttachmentVariations == null || SubAttachmentVariations.Length == 0)
-                    return SubAttachment;
+		public CharacterAttachment RandomSubAttachment
+		{
+			get
+			{
+				if (SubAttachmentVariations == null || SubAttachmentVariations.Length == 0)
+					return SubAttachment;
 
-                var selector = new Random();
+				var selector = new Random();
 
-                return SubAttachmentVariations.ElementAt(selector.Next(SubAttachmentVariations.Length));
-            }
-        }
+				return SubAttachmentVariations.ElementAt(selector.Next(SubAttachmentVariations.Length));
+			}
+		}
 
-        public CharacterAttachmentSlot Slot { get; set; }
+		public CharacterAttachmentSlot Slot { get; set; }
 
-        public string Name { get; set; }
+		public string Name { get; set; }
 
-        public string Type { get; set; }
-        public string BoneName { get; set; }
+		public string Type { get; set; }
+		public string BoneName { get; set; }
 
-        public string Object { get; set; }
+		public string Object { get; set; }
 
-        public string Material { get; set; }
-        public string[] MaterialVariations { get; set; }
+		public string Material { get; set; }
+		public string[] MaterialVariations { get; set; }
 
-        public string Flags { get; set; }
+		public string Flags { get; set; }
 
-        public string Position { get; set; }
-        public string Rotation { get; set; }
+		public string Position { get; set; }
+		public string Rotation { get; set; }
 
-        public CharacterAttachment[] SubAttachmentVariations { get; set; }
-        public CharacterAttachment SubAttachment { get; set; }
+		public CharacterAttachment[] SubAttachmentVariations { get; set; }
+		public CharacterAttachment SubAttachment { get; set; }
 
 		// Only used when mirroring
 		public CharacterAttachment[] MirroredChildren { get; set; }
 
-        internal XElement Element { get; private set; }
-    }
+		internal XElement Element { get; private set; }
+	}
 }
