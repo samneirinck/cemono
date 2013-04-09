@@ -69,12 +69,17 @@ namespace CryEngine
             return ((t0 | t1) && (Math.Abs(T.X - p.T.X) <= epsilon) && (Math.Abs(T.Y - p.T.Y) <= epsilon) && (Math.Abs(T.Z - p.T.Z) <= epsilon));    
         }
 
-        /*public bool IsValid()
-        {
-            if (!T.IsValid()) return false;
-            if (!Q.IsValid()) return false;
-            return true;
-        }*/
+		/// <summary>
+		/// Checks whether the transformation is valid.
+		/// </summary>
+		/// <returns></returns>
+		public bool IsValid
+		{
+			get
+			{
+				return T.IsValid && Q.IsValid;
+			}
+		}
 
         public void Nlerp(QuatT start, QuatT end, float amount)
         {

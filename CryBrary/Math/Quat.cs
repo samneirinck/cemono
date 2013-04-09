@@ -293,6 +293,18 @@ namespace CryEngine
 
         public float RotationZ { get { return (float)Math.Atan2(-ForwardX, ForwardY); } }
 
+		/// <summary>
+		/// Checks whether the quaternion is valid.
+		/// </summary>
+		/// <returns></returns>
+		public bool IsValid
+		{
+			get
+			{
+				return V.IsValid && MathHelpers.IsNumberValid(W);
+			}
+		}
+
         #region Operators
         public static Quat operator *(Quat value, float scale)
         {

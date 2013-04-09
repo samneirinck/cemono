@@ -194,6 +194,20 @@ namespace CryEngine
 			return (value & (value - 1)) == 0;
 		}
 
+		public static bool IsNumberValid(double value)
+		{
+			var mask = (UInt64)(255 << 55);
+
+			return ((UInt64)value & mask) != mask;
+		}
+
+		public static bool IsNumberValid(float value)
+		{
+			var mask = 0xFF << 23;
+
+			return ((UInt32)value & mask) != mask;
+		}
+
         /// <summary>
         /// The value for which all absolute numbers smaller than are considered equal to zero.
         /// </summary>
