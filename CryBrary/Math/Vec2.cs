@@ -90,6 +90,18 @@ namespace CryEngine
             get { return Math.Abs((X * X) + (Y * Y) - 1f) < MathHelpers.ZeroTolerance; }
         }
 
+		/// <summary>
+		/// Checks whether the vector is valid.
+		/// </summary>
+		/// <returns></returns>
+		public bool IsValid
+		{
+			get
+			{
+				return MathHelpers.IsNumberValid(X) && MathHelpers.IsNumberValid(Y);
+			}
+		}
+
         /// <summary>
         /// Gets or sets the component at the specified index.
         /// </summary>

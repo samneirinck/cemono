@@ -42,6 +42,18 @@ namespace CryEngine
         /// </summary>
         public Vec3 Maximum;
 
+		/// <summary>
+		/// Checks whether the bounding box is valid.
+		/// </summary>
+		/// <returns></returns>
+		public bool IsValid
+		{
+			get
+			{
+				return Minimum.IsValid && Maximum.IsValid;
+			}
+		}
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CryEngine.BoundingBox"/> struct.
         /// </summary>

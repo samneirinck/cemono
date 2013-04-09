@@ -196,6 +196,18 @@ namespace CryEngine
             get { return (X * X) + (Y * Y) + (Z * Z) + (W * W); } 
         }
 
+		/// <summary>
+		/// Checks whether the vector is valid.
+		/// </summary>
+		/// <returns></returns>
+		public bool IsValid
+		{
+			get
+			{
+				return MathHelpers.IsNumberValid(X) && MathHelpers.IsNumberValid(Y) && MathHelpers.IsNumberValid(Z) && MathHelpers.IsNumberValid(W);
+			}
+		}
+
         /// <summary>
         /// Converts the vector into a unit vector.
         /// </summary>

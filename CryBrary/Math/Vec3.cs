@@ -284,6 +284,18 @@ namespace CryEngine
             }
         }
 
+		/// <summary>
+		/// Checks whether the vector is valid.
+		/// </summary>
+		/// <returns></returns>
+		public bool IsValid
+		{
+			get
+			{
+				return MathHelpers.IsNumberValid(X) && MathHelpers.IsNumberValid(Y) && MathHelpers.IsNumberValid(Z);
+			}
+		}
+
         #region Operators
         public static Vec3 operator *(Vec3 v, float scale)
         {
