@@ -48,6 +48,8 @@ protected:
 	static void SetCVarFloat(mono::string, float);
 	static void SetCVarInt(mono::string, int);
 	static void SetCVarString(mono::string, mono::string);
+
+	static mono::string GetCmdArg(mono::string argName, int type);
 };
 
 #endif //__LOGGING_BINDING_H__

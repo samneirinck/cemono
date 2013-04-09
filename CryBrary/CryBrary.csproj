@@ -137,6 +137,7 @@
     <Compile Include="Attributes\ConsoleCommandAttribute.cs" />
     <Compile Include="Attributes\CVarAttribute.cs" />
     <Compile Include="Console\ConsoleCommand\DuplicateConsoleCommandException.cs" />
+    <Compile Include="Console\CryConsole.cs" />
     <Compile Include="Console\CVar\ByRefCVar.cs" />
     <Compile Include="Console\CVar\CVarException.cs" />
     <Compile Include="Console\CVar\CVarFlags.cs" />

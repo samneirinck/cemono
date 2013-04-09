@@ -54,5 +54,8 @@ namespace CryEngine.Native
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void HandleException(Exception ex);
+
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		internal static extern string GetCmdArg(string name, int type);
     }
 }
