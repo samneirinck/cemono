@@ -104,11 +104,12 @@ namespace CryEngine
         static void OnRemoteInvocation(string methodName, object[] args, EntityId targetId)
         {
             var entity = Entity.Get(targetId);
+			var localArgs = args ?? new object[0];
 
             var type = entity.GetType();
             while (type != null)
             {
-				var types = from arg in args
+				var types = from arg in localArgs
 							where arg != null
 							select arg.GetType();
 
