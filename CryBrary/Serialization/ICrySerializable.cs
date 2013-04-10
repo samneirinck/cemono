@@ -5,9 +5,9 @@ using System.Text;
 
 namespace CryEngine.Serialization
 {
+	[CLSCompliant(false)]
 	public interface ICrySerializable
 	{
-		void Serialize(CrySerializer serializer);
-		void Deserialize(CrySerializer serializer);
+		void Serialize(ICrySerialize serializer);
 	}
 }

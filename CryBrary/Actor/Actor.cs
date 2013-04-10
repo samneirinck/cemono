@@ -71,9 +71,11 @@ namespace CryEngine
 
         protected virtual void OnPostUpdate() { }
 
-        protected virtual void FullSerialize(Serialization.CrySerialize serialize) { }
+		[CLSCompliant(false)]
+		protected virtual void FullSerialize(Serialization.ICrySerialize serialize) { }
 
-        protected virtual void NetSerialize(Serialization.CrySerialize serialize, int aspect, byte profile, int flags) { }
+		[CLSCompliant(false)]
+		protected virtual void NetSerialize(Serialization.ICrySerialize serialize, int aspect, byte profile, int flags) { }
 
         protected virtual void PostSerialize() { }
 
