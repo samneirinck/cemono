@@ -247,18 +247,21 @@ struct MonoAnyValue : public ISerializable
 			break;
 		case eMonoAnyType_Unknown:
 			{
-				if(ser.IsWriting())
-				{
-					if(monoObject != nullptr)
-					{
-						IMonoObject *pObject = *monoObject;
-						IMonoClass *pObjectClass = pObject->GetClass();
+				if(monoObject == nullptr)
+					return;
 
-						CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "Attempted to serialize unknown managed type %s.%s", pObjectClass->GetNamespace(), pObjectClass->GetName());
-					}
-					else
-						CRY_ASSERT_MESSAGE(false, "Attempted to serialize unknown managed type");
+				IMonoObject *pObject = *monoObject;
+				IMonoClass *pObjectClass = pObject->GetClass();
+
+				if(pObjectClass->ImplementsInterface("ICrySerializable"))
+				{
+					void *params[1];
+					params[0] = &ser;
+
+					pObjectClass->Invoke(monoObject, "Serialize", params, 1);
 				}
+				else
+					CryWarning(VALIDATOR_MODULE_GAME, VALIDATOR_WARNING, "Attempted to serialize managed type %s.%s that did not implement ICrySerializable.", pObjectClass->GetNamespace(), pObjectClass->GetName());
 			}
 			break;
 		}
