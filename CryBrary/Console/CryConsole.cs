@@ -3,7 +3,7 @@ using CryEngine.Native;
 
 namespace CryEngine
 {
-	public enum CmdArgType
+	public enum CommandArgumentType
 	{
 		/// <summary>
 		/// Argument was not preceeded by anything
@@ -28,7 +28,7 @@ namespace CryEngine
 
 	public static class CryConsole
 	{
-		public static string GetCommandLineArg(string name, CmdArgType type)
+		public static string GetCommandLineArgument(string name, CommandArgumentType type)
 		{
 			return NativeCVarMethods.GetCmdArg(name, (int)type);
 		}

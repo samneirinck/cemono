@@ -55,7 +55,7 @@ struct SQueuedProperty
 };
 
 class CMonoEntityExtension
-	: public CGameObjectExtensionHelper<CEntity, IGameObjectExtension>
+	: public CGameObjectExtensionHelper<CMonoEntityExtension, IGameObjectExtension>
 {
 public:
 	CMonoEntityExtension();
