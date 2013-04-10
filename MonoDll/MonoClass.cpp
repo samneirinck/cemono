@@ -348,3 +348,53 @@ mono::object CScriptClass::BoxObject(void *object, IMonoDomain *pDomain)
 
 	return (mono::object)mono_value_box(static_cast<CScriptDomain *>(pDomain)->GetMonoDomain(), (MonoClass *)m_pObject, object);
 }
+
+bool CScriptClass::ImplementsClass(const char *className, const char *nameSpace)
+{
+	MonoClass *pClass = (MonoClass *)m_pObject;
+
+	while (pClass != nullptr)
+	{
+		if(!strcmp(mono_class_get_name(pClass), className) 
+			&& (nameSpace == nullptr || !strcmp(mono_class_get_namespace(pClass), nameSpace)))
+			return true;
+		else
+			CryLogAlways("%s did not match pattern %s", mono_class_get_name(pClass), className);
+
+		pClass = mono_class_get_parent(pClass);
+		if(pClass == mono_get_object_class())
+			break;
+	}
+
+	return false;
+}
+
+bool CScriptClass::ImplementsInterface(const char *interfaceName, const char *nameSpace, bool bSearchDerivedClasses)
+{
+	void *pIterator = 0;
+
+	MonoClass *pClass = (MonoClass *)m_pObject;
+
+	while (pClass != nullptr)
+	{
+		MonoClass *pCurInterface = mono_class_get_interfaces(pClass, &pIterator);
+		if(pCurInterface == nullptr)
+		{
+			if(!bSearchDerivedClasses)
+				return false;
+
+			pClass = mono_class_get_parent(pClass);
+			if(pClass == mono_get_object_class())
+				break;
+
+			pIterator = 0;
+			continue;
+		}
+
+		if(!strcmp(mono_class_get_name(pCurInterface), interfaceName) 
+			&& (nameSpace == nullptr || !strcmp(mono_class_get_namespace(pCurInterface), nameSpace)))
+			return true;
+	}
+
+	return false;
+}
