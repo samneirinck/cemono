@@ -139,8 +139,6 @@ CScriptbind_Entity::CScriptbind_Entity()
 	REGISTER_METHOD(GetTriggerBBox);
 	REGISTER_METHOD(InvalidateTrigger);
 
-	REGISTER_METHOD(AcquireAnimatedCharacter);
-
 	REGISTER_METHOD(Hide);
 	REGISTER_METHOD(IsHidden);
 
@@ -1125,14 +1123,6 @@ void CScriptbind_Entity::InvalidateTrigger(IEntity *pEntity)
 {
 	if(IEntityTriggerProxy *pTriggerProxy = static_cast<IEntityTriggerProxy *>(pEntity->GetProxy(ENTITY_PROXY_TRIGGER)))
 		pTriggerProxy->InvalidateTrigger();
-}
-
-IAnimatedCharacter *CScriptbind_Entity::AcquireAnimatedCharacter(EntityId id)
-{
-	if(IGameObject *pGameObject = gEnv->pGameFramework->GetGameObject(id))
-		return static_cast<IAnimatedCharacter *>(pGameObject->AcquireExtension("AnimatedCharacter"));
-
-	return nullptr;
 }
 
 void CScriptbind_Entity::Hide(IEntity *pEntity, bool hide)

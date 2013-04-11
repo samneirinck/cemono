@@ -207,9 +207,6 @@ namespace CryEngine.Native
         extern public static void InvalidateTrigger(IntPtr entPtr);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern public static IntPtr AcquireAnimatedCharacter(EntityId entId);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
         extern public static void Hide(IntPtr entityId, bool hide);
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern public static bool IsHidden(IntPtr entityId);

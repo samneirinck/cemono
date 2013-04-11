@@ -64,8 +64,12 @@ namespace CryEngine.Native
         {
             if (entity.IsDestroyed)
                 throw new ScriptInstanceDestroyedException("Attempted to access native animated character handle on a destroyed entity");
-            if (entity.AnimatedCharacterHandle == IntPtr.Zero)
-                entity.SetIAnimatedCharacter(NativeEntityMethods.AcquireAnimatedCharacter(entity.Id));
+			if (entity.AnimatedCharacterHandle == IntPtr.Zero)
+			{
+				var animatedCharacterExtension = entity.GameObject.AcquireExtension("AnimatedCharacter");
+
+				entity.SetIAnimatedCharacter(animatedCharacterExtension.Handle);
+			}
 
             return entity.AnimatedCharacterHandle;
         }
