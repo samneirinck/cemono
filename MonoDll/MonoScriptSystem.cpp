@@ -161,6 +161,10 @@ CScriptSystem::~CScriptSystem()
 	SAFE_DELETE(m_pCVars);
 
 	g_pScriptSystem = nullptr;
+
+#ifndef PLUGIN_SDK
+	gEnv->pMonoScriptSystem = nullptr;
+#endif
 }
 
 bool CScriptSystem::CompleteInit()
