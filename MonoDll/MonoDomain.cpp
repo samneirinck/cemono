@@ -202,11 +202,6 @@ mono::object CScriptDomain::BoxAnyValue(MonoAnyValue &any)
 		return (mono::object)mono_value_box(m_pDomain, mono_get_int32_class(), &any.i);
 	case eMonoAnyType_UnsignedInteger:
 		return (mono::object)mono_value_box(m_pDomain, mono_get_uint32_class(), &any.u);
-	case eMonoAnyType_EntityId:
-		{
-			IMonoClass *pEntityIdClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("EntityId");
-			return pEntityIdClass->BoxObject(&mono::entityId(any.u), this);
-		}
 	case eMonoAnyType_Short:
 		return (mono::object)mono_value_box(m_pDomain, mono_get_int16_class(), &any.i);
 	case eMonoAnyType_UnsignedShort:
@@ -214,7 +209,12 @@ mono::object CScriptDomain::BoxAnyValue(MonoAnyValue &any)
 	case eMonoAnyType_Float:
 		return (mono::object)mono_value_box(m_pDomain, mono_get_single_class(), &any.f);
 	case eMonoAnyType_String:
-		MonoWarning("IMonoConverter::BoxAnyValue does not support strings, utilize ToMonoString instead");
+		return (mono::object)CreateMonoString(any.str);
+	case eMonoAnyType_EntityId:
+		{
+			IMonoClass *pEntityIdClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("EntityId");
+			return pEntityIdClass->BoxObject(&mono::entityId(any.u), this);
+		}
 	case eMonoAnyType_Vec3:
 		{
 			IMonoClass *pVec3Class = g_pScriptSystem->GetCryBraryAssembly()->GetClass("Vec3");
@@ -230,6 +230,10 @@ mono::object CScriptDomain::BoxAnyValue(MonoAnyValue &any)
 			return pQuatClass->BoxObject(&any.vec4, this);
 		}
 		break;
+	case eMonoAnyType_Array:
+	case eMonoAnyType_IntPtr:
+	case eMonoAnyType_Unknown:
+		return any.monoObject;
 	}
 
 	return nullptr;

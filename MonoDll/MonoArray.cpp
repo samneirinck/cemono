@@ -102,10 +102,7 @@ void CScriptArray::InsertAny(MonoAnyValue value, int index)
 { 
 	IMonoDomain *pDomain = GetClass()->GetAssembly()->GetDomain();
 
-	if(value.type==eMonoAnyType_String)
-		InsertMonoString(pDomain->CreateMonoString(value.str), index);
-	else
-		InsertMonoObject(pDomain->BoxAnyValue(value), index);
+	InsertMonoObject(pDomain->BoxAnyValue(value), index);
 }
 
 IMonoClass *CScriptArray::GetClass(MonoClass *pClass)

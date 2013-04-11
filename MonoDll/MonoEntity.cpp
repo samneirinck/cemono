@@ -293,7 +293,7 @@ void CMonoEntityExtension::RMIParams::SerializeWith(TSerialize ser)
 			{
 				MonoAnyValue value;
 				value.SerializeWith(ser);
-				pArgs->InsertAny(value);
+				pArgs->InsertAny(value, i);
 			}
 
 			args = pArgs->GetManagedObject();
