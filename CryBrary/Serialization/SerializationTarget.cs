@@ -9,6 +9,7 @@ namespace CryEngine.Serialization
     {
         SaveGame,
         Network,
-        Script
+        Script,
+		RealtimeScripting
     }
 }

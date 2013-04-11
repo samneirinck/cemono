@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace CryEngine.Serialization
 {
-    public struct CrySerialize
+	public struct CrySerialize : ICrySerialize
     {
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         private static extern void BeginGroup(IntPtr handle, string name);

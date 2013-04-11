@@ -10,7 +10,8 @@ using CryEngine.Utilities;
 
 namespace CryEngine.Serialization
 {
-    public class CrySerializer : IFormatter
+	[CLSCompliant(false)]
+    public class CrySerializer : IFormatter, ICrySerialize
     {
 		public static string SerializeToString(object graph)
 		{
@@ -71,6 +72,7 @@ namespace CryEngine.Serialization
 #endif
 
             Writer = new StreamWriter(stream) { AutoFlush = true };
+			Reader = null;
 
             ObjectReferences.Clear();
             m_currentLine = 0;
@@ -364,6 +366,7 @@ namespace CryEngine.Serialization
 #endif
 
             Reader = new StreamReader(stream);
+			Writer = null;
 
             ObjectReferences.Clear();
             m_currentLine = 0;
@@ -446,7 +449,7 @@ namespace CryEngine.Serialization
 			if (type.Implements<ICrySerializable>())
 			{
 				var crySerializable = objReference.Value as ICrySerializable;
-				crySerializable.Deserialize(this);
+				crySerializable.Serialize(this);
 
 				return;
 			}
@@ -729,7 +732,100 @@ namespace CryEngine.Serialization
             return type;
         }
 
-        int m_currentLine;
+		#region ICrySerializable
+		public void BeginGroup(string name) { throw new NotImplementedException(); }
+		public void EndGroup() { throw new NotImplementedException(); }
+
+		public void Value(string name, ref string obj, string policy = null)
+		{
+			if (IsWriting)
+				StartWrite(new ObjectReference(name, obj));
+			else
+				obj = (string)StartRead().Value;
+		}
+
+		public void Value(string name, ref int obj, string policy = null)
+		{
+			if (IsWriting)
+				StartWrite(new ObjectReference(name, obj));
+			else
+				obj = (int)StartRead().Value;
+		}
+
+		public void Value(string name, ref uint obj, string policy = null)
+		{
+			if (IsWriting)
+				StartWrite(new ObjectReference(name, obj));
+			else
+				obj = (uint)StartRead().Value;
+		}
+
+		public void Value(string name, ref bool obj, string policy = null)
+		{
+			if (IsWriting)
+				StartWrite(new ObjectReference(name, obj));
+			else
+				obj = (bool)StartRead().Value;
+		}
+
+		public void Value(string name, ref EntityId obj, string policy = null)
+		{
+			if (IsWriting)
+				StartWrite(new ObjectReference(name, obj));
+			else
+				obj = (EntityId)StartRead().Value;
+		}
+
+		public void Value(string name, ref float obj, string policy = null)
+		{
+			if (IsWriting)
+				StartWrite(new ObjectReference(name, obj));
+			else
+				obj = (float)StartRead().Value;
+		}
+
+		public void Value(string name, ref Vec3 obj, string policy = null)
+		{
+			if (IsWriting)
+				StartWrite(new ObjectReference(name, obj));
+			else
+				obj = (Vec3)StartRead().Value;
+		}
+
+		public void Value(string name, ref Quat obj, string policy = null)
+		{
+			if (IsWriting)
+				StartWrite(new ObjectReference(name, obj));
+			else
+				obj = (Quat)StartRead().Value;
+		}
+
+		public void EnumValue(string name, ref int obj, int first, int last)
+		{
+			if (IsWriting)
+				StartWrite(new ObjectReference(name, obj));
+			else
+				obj = (int)StartRead().Value;
+		}
+
+		public void EnumValue(string name, ref uint obj, uint first, uint last)
+		{
+			if (IsWriting)
+				StartWrite(new ObjectReference(name, obj));
+			else
+				obj = (uint)StartRead().Value;
+		}
+
+
+		public void FlagPartialRead() { throw new NotImplementedException(); }
+
+		public bool IsReading { get { return Reader != null; } }
+		public bool IsWriting { get { return Writer != null; } }
+
+		public SerializationTarget Target { get { return SerializationTarget.RealtimeScripting; } }
+		#endregion
+
+		int m_currentLine;
 
         public SerializationBinder Binder { get { return null; } set { } }
         public ISurrogateSelector SurrogateSelector { get { return null; } set { } }

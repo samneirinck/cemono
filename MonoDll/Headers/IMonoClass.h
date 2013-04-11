@@ -74,21 +74,30 @@ public:
 	virtual void *GetMethodThunk(const char *methodName, int numParams) = 0;
 
 	/// <summary>
-	/// TODO
+	/// Gets the value of a property in the specified instance.
 	/// </summary>
 	virtual mono::object GetPropertyValue(mono::object object, const char *propertyName, bool throwOnFail = true) = 0;
 	/// <summary>
-	/// TODO
+	/// Sets the value of a property in the specified instance.
 	/// </summary>
 	virtual void SetPropertyValue(mono::object object, const char *propertyName, mono::object newValue, bool throwOnFail = true) = 0;
 	/// <summary>
-	/// TODO
+	/// Gets the value of a field in the specified instance.
 	/// </summary>
 	virtual mono::object GetFieldValue(mono::object object, const char *fieldName, bool throwOnFail = true) = 0;
 	/// <summary>
-	/// TODO
+	/// Sets the value of a field in the specified instance.
 	/// </summary>
 	virtual void SetFieldValue(mono::object object, const char *fieldName, mono::object newValue, bool throwOnFail = true) = 0;
+
+	/// <summary>
+	/// Checks whether this class implements another class by name.
+	/// </summary>
+	virtual bool ImplementsClass(const char *className, const char *nameSpace = nullptr) = 0;
+	/// <summary>
+	/// Checks whether this class implements an interface by name.
+	/// </summary>
+	virtual bool ImplementsInterface(const char *interfaceName, const char *nameSpace = nullptr, bool bSearchDerivedClasses = true) = 0;
 };
 
 #endif //__I_MONO_CLASS_H__
