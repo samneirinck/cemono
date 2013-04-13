@@ -275,6 +275,28 @@ namespace CryEngine
             }
         }
 
+		public Vec3 Angles
+		{
+			get
+			{
+				var angles = new Vec3();
+
+				angles.Y = (float)Math.Asin(Math.Max(-1.0, Math.Min(1.0, -(V.X * V.Z - W * V.Y) * 2)));
+				if (Math.Abs(Math.Abs(angles.Y) - (Math.PI * 0.5)) < 0.01)
+				{
+					angles.X = 0;
+					angles.Z = (float)Math.Atan2(-2 * (V.X * V.Y - W * V.Z), 1 - (V.X * V.X + V.Z * V.Z) * 2);
+				}
+				else
+				{
+					angles.X = (float)Math.Atan2((V.Y * V.Z + W * V.X) * 2, 1 - (V.X * V.X + V.Y * V.Y) * 2);
+					angles.Z = (float)Math.Atan2((V.X * V.Y + W * V.Z) * 2, 1 - (V.Z * V.Z + V.Y * V.Y) * 2);
+				}
+
+				return angles;
+			}
+		}
+
         public Vec3 Column0 { get { return new Vec3(2 * (V.X * V.X + W * W) - 1, 2 * (V.Y * V.X + V.Z * W), 2 * (V.Z * V.X - V.Y * W)); } }
 
         public Vec3 Column1 { get { return new Vec3(2 * (V.X * V.Y - V.Z * W), 2 * (V.Y * V.Y + W * W) - 1, 2 * (V.Z * V.Y + V.X * W)); } }

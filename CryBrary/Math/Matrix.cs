@@ -16,7 +16,31 @@ namespace CryEngine
         public float M21;
         public float M22;
 
-        public Matrix33(Matrix34 m)
+		#region Properties
+		public Vec3 Angles
+		{
+			get
+			{
+				var angles = new Vec3();
+
+				angles.Y = (float)Math.Asin(Math.Max(-1.0, Math.Min(1.0, -M20)));
+				if (Math.Abs(Math.Abs(angles.Y) - (Math.PI * 0.5)) < 0.01)
+				{
+					angles.X = 0;
+					angles.Z = (float)Math.Atan2(-M01, M11);
+				}
+				else
+				{
+					angles.X = (float)Math.Atan2(M21, M22);
+					angles.Z = (float)Math.Atan2(M10, M00);
+				}
+
+				return angles;
+			}
+		}
+		#endregion
+
+		public Matrix33(Matrix34 m)
         {
             M00 = m.M00;
             M01 = m.M01; 
@@ -360,8 +384,31 @@ namespace CryEngine
         }
         #endregion
 
-        #region NativeEntityMethods
-        /// <summary>
+#region Properties
+		public Vec3 Angles
+		{
+			get
+			{
+				var angles = new Vec3();
+
+				angles.Y = (float)Math.Asin(Math.Max(-1.0, Math.Min(1.0, -M20)));
+				if (Math.Abs(Math.Abs(angles.Y) - (Math.PI * 0.5)) < 0.01)
+				{
+					angles.X = 0;
+					angles.Z = (float)Math.Atan2(-M01, M11);
+				}
+				else
+				{
+					angles.X = (float)Math.Atan2(M21, M22);
+					angles.Z = (float)Math.Atan2(M10, M00);
+				}
+
+				return angles;
+			}
+		}
+#endregion
+
+		/// <summary>
         /// apply scaling to the columns of the matrix.
         /// </summary>
         /// <param name="s"></param>
@@ -845,7 +892,6 @@ namespace CryEngine
             (Math.Abs(M10 - m.M10) <= e) && (Math.Abs(M11 - m.M11) <= e) && (Math.Abs(M12 - m.M12) <= e) && (Math.Abs(M13 - m.M13) <= e) &&
             (Math.Abs(M20 - m.M20) <= e) && (Math.Abs(M21 - m.M21) <= e) && (Math.Abs(M22 - m.M22) <= e) && (Math.Abs(M23 - m.M23) <= e));
         }
-        #endregion
 
         public override int GetHashCode()
         {
