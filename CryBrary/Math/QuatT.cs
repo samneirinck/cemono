@@ -28,7 +28,7 @@ namespace CryEngine
         public QuatT(Matrix34 m)
         {
             Q = new Quat(m);
-            T = m.GetTranslation();
+            T = m.Translation;
         }
 
         public void SetIdentity()

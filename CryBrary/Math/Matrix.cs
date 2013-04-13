@@ -406,6 +406,40 @@ namespace CryEngine
 				return angles;
 			}
 		}
+
+		Matrix34 Inverted
+		{
+			get
+			{
+				var dst = this;
+
+				dst.Invert();
+
+				return dst;
+			}
+		}
+
+		Matrix34 InvertedFast
+		{
+			get
+			{
+				var dst = new Matrix34();
+				dst.M00 = M00; dst.M01 = M10; dst.M02 = M20; dst.M03 = -M03 * M00 - M13 * M10 - M23 * M20;
+				dst.M10 = M01; dst.M11 = M11; dst.M12 = M21; dst.M13 = -M03 * M01 - M13 * M11 - M23 * M21;
+				dst.M20 = M02; dst.M21 = M12; dst.M22 = M22; dst.M23 = -M03 * M02 - M13 * M12 - M23 * M22;
+				return dst;
+			}
+		}
+
+		public Vec3 Column0 { get { return new Vec3(M00, M10, M20); } }
+
+        public Vec3 Column1 { get {return new Vec3(M01, M11, M21); } }
+
+        public Vec3 Column2 { get {return new Vec3(M02, M12, M22); } }
+
+        public Vec3 Column3 { get {return new Vec3(M03, M13, M23); } }
+
+		public Vec3 Translation { get { return new Vec3(M03, M13, M23); } }
 #endregion
 
 		/// <summary>
@@ -671,15 +705,6 @@ namespace CryEngine
             t = M12; M12 = M21; M21 = t; M23 = -v.X * M20 - v.Y * M21 - v.Z * M22;
         }
 
-        public Matrix34 GetInvertedFast()
-        {
-            var dst = new Matrix34();
-            dst.M00 = M00; dst.M01 = M10; dst.M02 = M20; dst.M03 = -M03 * M00 - M13 * M10 - M23 * M20;
-            dst.M10 = M01; dst.M11 = M11; dst.M12 = M21; dst.M13 = -M03 * M01 - M13 * M11 - M23 * M21;
-            dst.M20 = M02; dst.M21 = M12; dst.M22 = M22; dst.M23 = -M03 * M02 - M13 * M12 - M23 * M22;
-            return dst;
-        }
-
         public void Invert()
         {
             // rescue members    
@@ -706,15 +731,6 @@ namespace CryEngine
             M00 *= det; M01 *= det; M02 *= det; M03 *= det;
             M10 *= det; M11 *= det; M12 *= det; M13 *= det;
             M20 *= det; M21 *= det; M22 *= det; M23 *= det;
-        }
-
-        Matrix34 GetInverted()
-        {
-            Matrix34 dst = this;
-
-            dst.Invert();
-
-            return dst;
         }
 
         /// <summary>
@@ -815,28 +831,11 @@ namespace CryEngine
             M23 = m.M23 * (1 - t) + n.M23 * t;
         }
 
-        //--------------------------------------------------------------------------------
-        //----                  helper functions to access matrix-members     ------------
-        //--------------------------------------------------------------------------------
-
-        public Vec3 GetColumn0() { return new Vec3(M00, M10, M20); }
-
-        public Vec3 GetColumn1() { return new Vec3(M01, M11, M21); }
-
-        public Vec3 GetColumn2() { return new Vec3(M02, M12, M22); }
-
-        public Vec3 GetColumn3() { return new Vec3(M03, M13, M23); }
-
         public void SetTranslation(Vec3 t)
         {
             M03 = t.X;
             M13 = t.Y;
             M23 = t.Z;
-        }
-
-        public Vec3 GetTranslation()
-        {
-            return new Vec3(M03, M13, M23);
         }
 
         public void ScaleTranslation(float s)
@@ -869,20 +868,20 @@ namespace CryEngine
         /// <returns></returns>
         int IsOrthonormal(float threshold = 0.001f)
         {
-            var d0 = Math.Abs(GetColumn0() | GetColumn1()); if (d0 > threshold) return 0;
-            var d1 = Math.Abs(GetColumn0() | GetColumn2()); if (d1 > threshold) return 0;
-            var d2 = Math.Abs(GetColumn1() | GetColumn2()); if (d2 > threshold) return 0;
-            var a = (int)System.Convert.ChangeType((Math.Abs(1 - (GetColumn0() | GetColumn0()))) < threshold, typeof(int));
-            var b = (int)System.Convert.ChangeType((Math.Abs(1 - (GetColumn1() | GetColumn1()))) < threshold, typeof(int));
-            var c = (int)System.Convert.ChangeType((Math.Abs(1 - (GetColumn2() | GetColumn2()))) < threshold, typeof(int));
+            var d0 = Math.Abs(Column0 | Column1); if (d0 > threshold) return 0;
+            var d1 = Math.Abs(Column0 | Column2); if (d1 > threshold) return 0;
+            var d2 = Math.Abs(Column1 | Column2); if (d2 > threshold) return 0;
+            var a = (int)System.Convert.ChangeType((Math.Abs(1 - (Column0 | Column0))) < threshold, typeof(int));
+            var b = (int)System.Convert.ChangeType((Math.Abs(1 - (Column1 | Column1))) < threshold, typeof(int));
+            var c = (int)System.Convert.ChangeType((Math.Abs(1 - (Column2 | Column2))) < threshold, typeof(int));
             return a & b & c;
         }
 
         public int IsOrthonormalRH(float threshold = 0.001f)
         {
-            var a = (int)System.Convert.ChangeType(GetColumn0().IsEquivalent(GetColumn1() % GetColumn2(), threshold), typeof(int));
-            var b = (int)System.Convert.ChangeType(GetColumn1().IsEquivalent(GetColumn2() % GetColumn0(), threshold), typeof(int));
-            var c = (int)System.Convert.ChangeType(GetColumn2().IsEquivalent(GetColumn0() % GetColumn1(), threshold), typeof(int));
+            var a = (int)System.Convert.ChangeType(Column0.IsEquivalent(Column1 % Column2, threshold), typeof(int));
+            var b = (int)System.Convert.ChangeType(Column1.IsEquivalent(Column2 % Column0, threshold), typeof(int));
+            var c = (int)System.Convert.ChangeType(Column2.IsEquivalent(Column0 % Column1, threshold), typeof(int));
             return a & b & c;
         }
 
