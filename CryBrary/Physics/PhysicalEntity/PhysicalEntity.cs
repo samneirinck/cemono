@@ -85,6 +85,17 @@ namespace CryEngine.Physics
            return  NativePhysicsMethods.ActionImpulse(Handle, ref impulse);
         }
 
+
+		/// <summary>
+		/// Gets or sets entity velocity as set by the physics system.
+		/// </summary>
+		public Vec3 Velocity
+		{
+			get { return NativePhysicsMethods.GetVelocity(Handle); }
+			set { NativePhysicsMethods.SetVelocity(Handle, value); }
+		}
+
+
         /// <summary>
         /// Determines if this physical entity is in a sleeping state or not. (Will not be affected by gravity)
         /// Autoamtically wakes upon collision.

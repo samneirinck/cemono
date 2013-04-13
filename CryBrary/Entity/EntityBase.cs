@@ -116,15 +116,6 @@ namespace CryEngine
 
         public Advanced.GameObject GameObject { get { return Advanced.GameObject.Get(Id); } }
 
-        /// <summary>
-        /// Gets or sets entity velocity as set by the physics system.
-        /// </summary>
-        public Vec3 Velocity
-        {
-            get { return NativePhysicsMethods.GetVelocity(this.GetIEntity()); }
-            set { NativePhysicsMethods.SetVelocity(this.GetIEntity(), value); }
-        }
-
         [CLSCompliant(false)]
         public void Physicalize(PhysicalizationParams physicalizationParams)
         {
