@@ -5,8 +5,8 @@ namespace CryEngine
 {
     public struct EditorProperty
     {
-        public EditorProperty(string Name, string Desc, EditorPropertyType Type, EditorPropertyLimits Limits, int Flags = 0)
-            : this(Name, Desc, Type)
+        public EditorProperty(string Name, string Desc, string DefaultValue, EditorPropertyType Type, EditorPropertyLimits Limits, int Flags = 0)
+			: this(Name, Desc, DefaultValue, Type)
         {
             if (Limits.max == 0 && Limits.min == 0)
             {
@@ -21,11 +21,12 @@ namespace CryEngine
             flags = Flags;
         }
 
-        public EditorProperty(string Name, string Desc, EditorPropertyType Type)
+		public EditorProperty(string Name, string Desc, string DefaultValue, EditorPropertyType Type)
             : this()
         {
             name = Name;
             description = Desc;
+			defaultValue = DefaultValue;
 
             type = Type;
         }
@@ -34,9 +35,9 @@ namespace CryEngine
 
         public string description;
 
-#pragma warning disable 414
-        private string editType;
-#pragma warning restore 414
+        public string editType;
+
+		public string defaultValue;
 
         private EditorPropertyType _type;
 

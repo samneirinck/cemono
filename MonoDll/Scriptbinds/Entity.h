@@ -60,6 +60,7 @@ struct SMonoEntityProperty
 	mono::string name;
 	mono::string description;
 	mono::string editType;
+	mono::string defaultValue;
 
 	IEntityPropertyHandler::EPropertyType type;
 	uint32 flags;
@@ -191,8 +192,6 @@ protected:
 	static void StopAnimationsInAllLayers(IEntity *pEnt, int slot);
 
 	bool IsMonoEntity(const char *className);
-
-	void RegisterNativeEntityClass();
 
 	// Scriptbinds
 	static mono::object SpawnEntity(EntitySpawnParams, bool, SMonoEntityInfo &entityInfo);

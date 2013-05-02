@@ -301,7 +301,31 @@ namespace CryEngine.Compilers.NET
 
 				var limits = new EditorPropertyLimits(propertyAttribute.Min, propertyAttribute.Max);
 
-                var property = new EditorProperty(propertyAttribute.Name ?? memberInfo.Name, propertyAttribute.Description, Entity.GetEditorType(memberType, propertyAttribute.Type), limits, propertyAttribute.Flags);
+				var editorType = Entity.GetEditorType(memberType, propertyAttribute.Type);
+
+				var defaultValue = propertyAttribute.DefaultValue;
+				if (defaultValue == null)
+				{
+					switch(editorType)
+					{
+						case EditorPropertyType.Bool:
+							defaultValue = "false";
+							break;
+						case EditorPropertyType.Vec3:
+						case EditorPropertyType.Color:
+							defaultValue = "0,0,0";
+							break;
+						case EditorPropertyType.Float:
+						case EditorPropertyType.Int:
+							defaultValue = "0";
+								break;
+						default:
+							defaultValue = "";
+							break;
+					}
+				}
+
+                var property = new EditorProperty(propertyAttribute.Name ?? memberInfo.Name, propertyAttribute.Description, defaultValue, editorType, limits, propertyAttribute.Flags);
 
                 if (propertyAttribute.Folder == null)
                     propertyAttribute.Folder = "Default";
