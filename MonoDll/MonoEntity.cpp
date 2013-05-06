@@ -18,6 +18,7 @@ CMonoEntityExtension::CMonoEntityExtension()
 	: m_pScript(nullptr)
 	, m_bInitialized(false)
 	, m_pAnimatedCharacter(nullptr)
+	, m_bDestroyed(false)
 {
 }
 
@@ -87,6 +88,10 @@ void CMonoEntityExtension::Reset(bool enteringGamemode)
 
 void CMonoEntityExtension::ProcessEvent(SEntityEvent &event)
 {
+	// Don't attempt to send any events to managed code when the entity has been destroyed.
+	if(m_bDestroyed)
+		return;
+
 	switch(event.event)
 	{
 	case ENTITY_EVENT_LEVEL_LOADED:
@@ -169,6 +174,9 @@ void CMonoEntityExtension::ProcessEvent(SEntityEvent &event)
 		break;
 	case ENTITY_EVENT_PREPHYSICSUPDATE:
 		m_pScript->CallMethod("OnPrePhysicsUpdate");
+		break;
+	case ENTITY_EVENT_DONE: // Entity was destroyed, mark as destroyed.
+		m_bDestroyed = true;
 		break;
 	}
 }
