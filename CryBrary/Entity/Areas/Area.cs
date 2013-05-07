@@ -64,39 +64,20 @@ namespace CryEngine
 			Handle = ptr;
 		}
 
-		public void GetMinMax(ref Vec3 min, ref Vec3 max)
-		{
-			NativeEntityMethods.GetAreaMinMax(Handle, ref min, ref max);
-		}
-
 		public EntityId GetEntityIdByIndex(int index)
 		{
 			return NativeEntityMethods.GetAreaEntityByIdx(Handle, index);
 		}
 
-		public Vec3 Minimum
+		public BoundingBox BoundingBox
 		{
 			get
 			{
-				var min = Vec3.Zero;
-				var max = Vec3.Zero;
+				var bbox = new BoundingBox();
 
-				GetMinMax(ref min, ref max);
+				NativeEntityMethods.GetAreaMinMax(Handle, ref bbox.Minimum, ref bbox.Maximum);
 
-				return min;
-			}
-		}
-
-		public Vec3 Maximum
-		{
-			get
-			{
-				var min = Vec3.Zero;
-				var max = Vec3.Zero;
-
-				GetMinMax(ref min, ref max);
-
-				return max;
+				return bbox;
 			}
 		}
 
