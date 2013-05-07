@@ -44,5 +44,7 @@ namespace CryEngine
         /// If null, not contained in a folder.
         /// </summary>
         public string Folder { get; set; }
+
+		public string DefaultValue { get; set; }
     }
 }

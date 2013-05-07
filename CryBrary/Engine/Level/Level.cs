@@ -12,42 +12,58 @@ namespace CryEngine
     /// Represents a CryENGINE level.
     /// </summary>
     public class Level
-    {
-        private static Dictionary<string, Level> levels;
+	{
+		#region Statics
+		private static List<Level> levels = new List<Level>();
+
+		internal static Level TryGet(IntPtr ptr)
+		{
+			if (ptr == IntPtr.Zero)
+				return null;
+
+			var level = levels.FirstOrDefault(x => x.Handle == ptr);
+			if (level != null)
+				return level;
+
+			level = new Level(ptr);
+			levels.Add(level);
+
+			return level;
+		}
+
+		/// <summary>
+		/// Gets the currently loaded level
+		/// </summary>
+		public static Level Current { get { return TryGet(NativeLevelMethods.GetCurrentLevel()); } }
+
+		/// <summary>
+		/// Loads a new level and returns its level info
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns>The loaded level</returns>
+		public static Level Load(string name)
+		{
+			return TryGet(NativeLevelMethods.LoadLevel(name));
+		}
+
+		/// <summary>
+		/// Unloads the currently loaded level.
+		/// </summary>
+		public static void Unload()
+		{
+			NativeLevelMethods.UnloadLevel();
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether a level is currently loaded.
+		/// </summary>
+		public static bool Loaded { get { return NativeLevelMethods.IsLevelLoaded(); } }
+		#endregion
 
         internal Level(IntPtr ptr)
         {
             Handle = ptr;
-
-            levels = new Dictionary<string, Level>();
         }
-
-        /// <summary>
-        /// Gets the currently loaded level
-        /// </summary>
-        public static Level Current
-        {
-            get
-            {
-                var ptr = NativeLevelMethods.GetCurrentLevel();
-                if (ptr != IntPtr.Zero)
-                {
-                    if (levels.Any(x => x.Value.Handle == ptr))
-                    {
-                        // TODO
-                    }
-                    else
-                        return new Level(ptr);
-                }
-
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether a level is currently loaded.
-        /// </summary>
-        public static bool Loaded { get { return NativeLevelMethods.IsLevelLoaded(); } }
 
         /// <summary>
         /// Gets the level name.
@@ -85,34 +101,6 @@ namespace CryEngine
         public bool HasGameRules { get { return NativeLevelMethods.HasGameRules(Handle); } }
 
         internal IntPtr Handle { get; set; }
-
-        #region Statics
-        /// <summary>
-        /// Loads a new level and returns its level info
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns>The loaded level</returns>
-        public static Level Load(string name)
-        {
-            Level level;
-            if (levels.TryGetValue(name, out level))
-                return level;
-
-            var ptr = NativeLevelMethods.LoadLevel(name);
-            if (ptr != IntPtr.Zero)
-                return new Level(ptr);
-
-            return null;
-        }
-
-        /// <summary>
-        /// Unloads the currently loaded level.
-        /// </summary>
-        public static void Unload()
-        {
-            NativeLevelMethods.UnloadLevel();
-        }
-        #endregion
 
         #region Overrides
         public override bool Equals(object obj)

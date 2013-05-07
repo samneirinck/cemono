@@ -13,10 +13,20 @@
 
 #include "MonoEntity.h"
 
+struct SMonoEntityPropertyInfo
+{
+	SMonoEntityPropertyInfo()
+		: defaultValue("") {}
+
+	IEntityPropertyHandler::SPropertyInfo info;
+
+	const char *defaultValue;
+};
+
 class CEntityPropertyHandler : public IEntityPropertyHandler
 {
 public:
-	CEntityPropertyHandler(std::vector<IEntityPropertyHandler::SPropertyInfo> properties);
+	CEntityPropertyHandler(std::vector<SMonoEntityPropertyInfo> properties);
 	virtual ~CEntityPropertyHandler() {} 
 
 	// IEntityPropertyHandler interface
@@ -29,7 +39,7 @@ public:
 	virtual bool GetPropertyInfo(int index, SPropertyInfo& info ) const;
 	virtual void SetProperty(IEntity* entity, int index, const char* value);
 	virtual const char* GetProperty(IEntity* entity, int index) const;
-	virtual const char* GetDefaultProperty(int index) const { return ""; }
+	virtual const char* GetDefaultProperty(int index) const;
 	virtual void PropertiesChanged(IEntity* entity) {}
 	// -IEntityPropertyHandler
 
@@ -39,7 +49,7 @@ protected:
 
 	typedef std::map<EntityId, DynArray<SQueuedProperty>> TQueuedPropertyMap;
 	TQueuedPropertyMap m_queuedProperties;
-	std::vector<IEntityPropertyHandler::SPropertyInfo> m_properties;
+	std::vector<SMonoEntityPropertyInfo> m_properties;
 };
 
 #endif //__MONO_ENTITY_PROPERTY_HANDLER_H__

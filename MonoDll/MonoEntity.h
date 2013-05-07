@@ -114,6 +114,7 @@ protected:
 	IAnimatedCharacter *m_pAnimatedCharacter;
 
 	bool m_bInitialized;
+	bool m_bDestroyed;
 };
 
 #endif

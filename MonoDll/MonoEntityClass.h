@@ -11,10 +11,12 @@
 
 #include <IEntityClass.h>
 
+struct SMonoEntityPropertyInfo;
+
 class CEntityClass : public IEntityClass
 {
 public:
-	CEntityClass(IEntityClassRegistry::SEntityClassDesc desc, std::vector<IEntityPropertyHandler::SPropertyInfo> properties);
+	CEntityClass(IEntityClassRegistry::SEntityClassDesc desc, std::vector<SMonoEntityPropertyInfo> properties);
 	virtual ~CEntityClass();
 
 	// IEntityClass interface
@@ -54,8 +56,6 @@ protected:
 
 	IEntityPropertyHandler *m_pPropertyHandler;
 	IEntityEventHandler *m_pEventHandler;
-
-	std::vector<IEntityPropertyHandler::SPropertyInfo> m_properties;
 };
 
 #endif //__MONO_ENTITY_CLASS_H__

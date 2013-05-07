@@ -123,6 +123,21 @@ namespace CryEngine
 
             NativeMaterialMethods.SetMaterial(entity.GetIEntity(), mat.Handle, slot);
         }
+
+		internal static Material TryGet(IntPtr ptr)
+		{
+			if (ptr == IntPtr.Zero)
+				return null;
+
+			var mat = materials.FirstOrDefault(x => x.Handle == ptr);
+			if (mat != null)
+				return mat;
+
+			mat = new Material(ptr);
+			materials.Add(mat);
+
+			return mat;
+		}
         #endregion
 
         /// <summary>
@@ -317,20 +332,5 @@ namespace CryEngine
             }
         }
         #endregion
-
-        internal static Material TryGet(IntPtr ptr)
-        {
-            if (ptr == IntPtr.Zero)
-                return null;
-
-            var mat = materials.FirstOrDefault(x => x.Handle == ptr);
-            if (mat != null)
-                return mat;
-
-            mat = new Material(ptr);
-            materials.Add(mat);
-
-            return mat;
-        }
     }
 }

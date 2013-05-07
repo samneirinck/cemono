@@ -4,6 +4,7 @@
 #include "MonoEntity.h"
 #include "NativeEntity.h"
 #include "MonoEntityClass.h"
+#include "MonoEntityPropertyHandler.h"
 
 #include "MonoScriptSystem.h"
 #include "CryScriptInstance.h"
@@ -311,7 +312,7 @@ bool CScriptbind_Entity::RegisterEntityClass(SEntityRegistrationParams params)
 		return false;
 	}
 
-	std::vector<IEntityPropertyHandler::SPropertyInfo> properties;
+	std::vector<SMonoEntityPropertyInfo> properties;
 	if(params.Folders != nullptr)
 	{
 		IMonoArray *pFolderArray = *params.Folders;
@@ -336,9 +337,10 @@ bool CScriptbind_Entity::RegisterEntityClass(SEntityRegistrationParams params)
 
 			if(!bDefaultFolder) // first element contains properties not organized into folders
 			{
-				IEntityPropertyHandler::SPropertyInfo folderInfo;
-				folderInfo.name = ToCryString(folder.name);
-				folderInfo.type = IEntityPropertyHandler::FolderBegin;
+				SMonoEntityPropertyInfo folderInfo;
+
+				folderInfo.info.name = ToCryString(folder.name);
+				folderInfo.info.type = IEntityPropertyHandler::FolderBegin;
 
 				properties.push_back(folderInfo);
 			}
@@ -356,14 +358,16 @@ bool CScriptbind_Entity::RegisterEntityClass(SEntityRegistrationParams params)
 				auto property = pPropertyObject->Unbox<SMonoEntityProperty>();
 				SAFE_RELEASE(pPropertyObject);
 
-				IEntityPropertyHandler::SPropertyInfo propertyInfo;
+				SMonoEntityPropertyInfo propertyInfo;
 
-				propertyInfo.name = ToCryString(property.name);
-				propertyInfo.description = ToCryString(property.description);
-				propertyInfo.editType = ToCryString(property.editType);
-				propertyInfo.type = property.type;
-				propertyInfo.limits.min = property.limits.min;
-				propertyInfo.limits.max = property.limits.max;
+				propertyInfo.info.name = ToCryString(property.name);
+				propertyInfo.info.description = ToCryString(property.description);
+				propertyInfo.info.editType = ToCryString(property.editType);
+				propertyInfo.info.type = property.type;
+				propertyInfo.info.limits.min = property.limits.min;
+				propertyInfo.info.limits.max = property.limits.max;
+
+				propertyInfo.defaultValue = ToCryString(property.defaultValue);
 
 				properties.push_back(propertyInfo);
 			}
@@ -372,9 +376,10 @@ bool CScriptbind_Entity::RegisterEntityClass(SEntityRegistrationParams params)
 
 			if(!bDefaultFolder)
 			{
-				IEntityPropertyHandler::SPropertyInfo folderInfo;
-				folderInfo.name = ToCryString(folder.name);
-				folderInfo.type = IEntityPropertyHandler::FolderEnd;
+				SMonoEntityPropertyInfo folderInfo;
+
+				folderInfo.info.name = ToCryString(folder.name);
+				folderInfo.info.type = IEntityPropertyHandler::FolderEnd;
 
 				properties.push_back(folderInfo);
 			}
@@ -406,30 +411,6 @@ bool CScriptbind_Entity::RegisterEntityClass(SEntityRegistrationParams params)
 mono::string CScriptbind_Entity::GetEntityClassName(IEntity *pEntity)
 {
 	return ToMonoString(pEntity->GetClass()->GetName());
-}
-
-struct SMonoNativeEntityCreator
-	: public IGameObjectExtensionCreatorBase
-{
-	virtual IGameObjectExtension *Create() { return new CNativeEntity(); }
-	virtual void GetGameObjectExtensionRMIData(void **ppRMI, size_t *nCount) { return CNativeEntity::GetGameObjectExtensionRMIData(ppRMI, nCount); }
-};
-
-void CScriptbind_Entity::RegisterNativeEntityClass()
-{
-	const char *className = "[NativeEntity]";
-
-	IEntityClassRegistry::SEntityClassDesc entityClassDesc;
-	entityClassDesc.flags = 0;
-	entityClassDesc.sName = className;
-	entityClassDesc.editorClassInfo.sCategory = "Default";
-
-	std::vector<IEntityPropertyHandler::SPropertyInfo> properties;
-
-	bool result = gEnv->pEntitySystem->GetClassRegistry()->RegisterClass(new CEntityClass(entityClassDesc, properties));
-
-	static SMonoNativeEntityCreator creator;
-	gEnv->pGameFramework->GetIGameObjectSystem()->RegisterExtension(className, &creator, nullptr);
 }
 
 mono::object CScriptbind_Entity::SpawnEntity(EntitySpawnParams monoParams, bool bAutoInit, SMonoEntityInfo &entityInfo)
