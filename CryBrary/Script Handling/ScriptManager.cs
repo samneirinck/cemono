@@ -403,14 +403,17 @@ namespace CryEngine.Initialization
             TryCopyFile(assemblyPath, ref newPath);
 
 #if !RELEASE
-            GenerateDebugDatabaseForAssembly(assemblyPath);
+			if (CVar.Get("mono_generateMdbIfPdbIsPresent").IVal != 0)
+			{
+				GenerateDebugDatabaseForAssembly(assemblyPath);
 
-            var mdbFile = assemblyPath + ".mdb";
-            if (File.Exists(mdbFile)) // success
-            {
-                var newMdbPath = Path.Combine(PathUtils.TempFolder, Path.GetFileName(mdbFile));
-                TryCopyFile(mdbFile, ref newMdbPath);
-            }
+				var mdbFile = assemblyPath + ".mdb";
+				if (File.Exists(mdbFile)) // success
+				{
+					var newMdbPath = Path.Combine(PathUtils.TempFolder, Path.GetFileName(mdbFile));
+					TryCopyFile(mdbFile, ref newMdbPath);
+				}
+			}
 #endif
 
             var assembly =  Assembly.LoadFrom(newPath);

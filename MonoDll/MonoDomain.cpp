@@ -2,6 +2,7 @@
 #include "MonoDomain.h"
 
 #include "MonoScriptSystem.h"
+#include "MonoCVars.h"
 
 #include "MonoAssembly.h"
 #include "DynMonoArray.h"
@@ -136,7 +137,7 @@ IMonoAssembly *CScriptDomain::LoadAssembly(const char *file, bool shadowCopy, bo
 
 	string sAssemblyPath(path);
 #ifndef _RELEASE
-	if(convertPdbToMdb && sAssemblyPath.find("pdb2mdb")==-1)
+	if(g_pMonoCVars->mono_generateMdbIfPdbIsPresent != 0 && convertPdbToMdb && sAssemblyPath.find("pdb2mdb")==-1)
 	{
 		if(IMonoAssembly *pDebugDatabaseCreator = g_pScriptSystem->GetDebugDatabaseCreator())
 		{

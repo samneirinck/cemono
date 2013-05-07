@@ -30,6 +30,8 @@ void SCVars::InitCVars(IConsole *pConsole)
 
 	REGISTER_CVAR(mono_softBreakpoints, 1, VF_REQUIRE_APP_RESTART, "[Performance Warning] Enables / Disables soft breakpoints, preventing managed null reference exceptions causing crashes in unmanaged code. \n Not supported along with -DEBUG command line option");
 
+	REGISTER_CVAR(mono_generateMdbIfPdbIsPresent, 1, VF_NULL, "Toggles on mono debug database (.mdb) generation, if a pdb file is present");
+
 	REGISTER_CVAR(mono_scriptDirectory, "", nullOrCheatFlag, "If set, CryMono will attempt to load its script files (e.g. *.cs) from this directory. Full path only.");
 }
 

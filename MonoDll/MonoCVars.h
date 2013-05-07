@@ -12,6 +12,8 @@ struct SCVars
 
 	int mono_softBreakpoints;
 
+	int mono_generateMdbIfPdbIsPresent;
+
 	const char *mono_scriptDirectory;
 
 	SCVars()
