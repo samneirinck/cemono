@@ -241,5 +241,24 @@ namespace CryEngine.Native
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern internal static void OnScriptInstanceDestroyed(IntPtr entPtr);
+
+		// Area manager
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern public static int GetNumAreas();
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern public static IntPtr GetArea(int areaId);
+
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern public static object[] QueryAreas(Vec3 vPos, int maxResults, bool forceCalculation);
+
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern public static int GetAreaEntityAmount(IntPtr pArea);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern public static EntityId GetAreaEntityByIdx(IntPtr pArea, int index);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern public static void GetAreaMinMax(IntPtr pArea, ref Vec3 min, ref Vec3 max);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern public static int GetAreaPriority(IntPtr pArea);
+		// ~Area manager
     }
 }

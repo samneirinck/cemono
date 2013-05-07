@@ -326,6 +326,18 @@ protected:
 	static void OnScriptInstanceDestroyed(CCryScriptInstance *pScriptInstance);
 	// ~Scriptbinds
 
+	// Area manager scriptbinds
+	static int GetNumAreas();
+	static const IArea *GetArea(int areaId);
+
+	static mono::object QueryAreas(Vec3 vPos, int maxResults, bool forceCalculation);
+
+	static int GetAreaEntityAmount(IArea *pArea);
+	static const EntityId GetAreaEntityByIdx(IArea *pArea, int index);
+	static void GetAreaMinMax(IArea *pArea, Vec3 &min, Vec3 &max);
+	static int GetAreaPriority(IArea *pArea);
+	// ~Area manager scriptbinds
+
 	static std::vector<const char *> m_monoEntityClasses;
 	static IMonoClass *m_pEntityClass;
 };

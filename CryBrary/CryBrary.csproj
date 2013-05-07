@@ -168,6 +168,7 @@
     <Compile Include="Engine\TimeOfDay\SunRaysEffectParams.cs" />
     <Compile Include="Attributes\EditorPropertyAttribute.cs" />
     <Compile Include="Attributes\EntityAttribute.cs" />
+    <Compile Include="Entity\Areas\Area.cs" />
     <Compile Include="Entity\Editor Properties\EditorPropertyFolder.cs" />
     <Compile Include="Entity\Editor Properties\EditorPropertyLimits.cs" />
     <Compile Include="Entity\Editor Properties\EditorPropertyType.cs" />

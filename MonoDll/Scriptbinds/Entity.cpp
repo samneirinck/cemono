@@ -161,6 +161,16 @@ CScriptbind_Entity::CScriptbind_Entity()
 
 	REGISTER_METHOD(OnScriptInstanceDestroyed);
 
+	REGISTER_METHOD(GetNumAreas);
+	REGISTER_METHOD(GetArea);
+
+	REGISTER_METHOD(QueryAreas);
+
+	REGISTER_METHOD(GetAreaEntityAmount);
+	REGISTER_METHOD(GetAreaEntityByIdx);
+	REGISTER_METHOD(GetAreaMinMax);
+	REGISTER_METHOD(GetAreaPriority);
+
 	//RegisterNativeEntityClass();
 
 	g_pScriptSystem->AddListener(this);
@@ -1251,4 +1261,60 @@ int CScriptbind_Entity::GetLodRatio(IEntity *pEntity)
 void CScriptbind_Entity::OnScriptInstanceDestroyed(CCryScriptInstance *pScriptInstance)
 {
 	pScriptInstance->Release();
+}
+
+int CScriptbind_Entity::GetNumAreas()
+{
+	return gEnv->pEntitySystem->GetAreaManager()->GetAreaAmount();
+}
+
+const IArea *CScriptbind_Entity::GetArea(int areaId)
+{
+	return gEnv->pEntitySystem->GetAreaManager()->GetArea(areaId);
+}
+
+mono::object CScriptbind_Entity::QueryAreas(Vec3 vPos, int maxResults, bool forceCalculation)
+{
+	SAreaManagerResult *pResults = new SAreaManagerResult[maxResults];
+
+	gEnv->pEntitySystem->GetAreaManager()->QueryAreas(vPos, pResults, maxResults, forceCalculation);
+
+	IMonoArray *pArray = CreateDynamicMonoArray();
+	IMonoClass *pClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("AreaQueryResult");
+
+	for(int i = 0; i < maxResults; i++)
+	{
+		auto result = pResults[i];
+
+		if(result.pArea != nullptr)
+			pArray->InsertMonoObject(pClass->BoxObject(&result));
+	}
+
+	mono::object managedArray = pArray->GetManagedObject();
+	pArray->Release(false);
+
+	return managedArray;
+}
+
+int CScriptbind_Entity::GetAreaEntityAmount(IArea *pArea)
+{
+	return pArea->GetEntityAmount();
+}
+
+const EntityId CScriptbind_Entity::GetAreaEntityByIdx(IArea *pArea, int index)
+{
+	return pArea->GetEntityByIdx(index);
+}
+
+void CScriptbind_Entity::GetAreaMinMax(IArea *pArea, Vec3 &min, Vec3 &max)
+{
+	Vec3 *pMin = &min;
+	Vec3 *pMax = &max;
+
+	pArea->GetMinMax(&pMin, &pMax);
+}
+
+int CScriptbind_Entity::GetAreaPriority(IArea *pArea)
+{
+	return pArea->GetPriority();
 }

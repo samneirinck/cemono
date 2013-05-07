@@ -120,29 +120,23 @@ namespace CryEngine
         /// Sent when entity enters to the area proximity.
         /// </summary>
         /// <param name="entityId"></param>
-        /// <param name="areaEntityId"></param>
-        /// <param name="fade"></param>
-        protected virtual void OnEnterArea(EntityId entityId, int areaEntityId, float fade) { }
+        protected virtual void OnEnterArea(EntityId entityId, int areaId, EntityId areaEntityId) { }
 
         /// <summary>
         /// Sent when entity moves inside the area proximity.
         /// </summary>
         /// <param name="entityId"></param>
-        /// <param name="areaId"></param>
-        /// <param name="fade"></param>
-        protected virtual void OnMoveInsideArea(EntityId entityId, int areaId, float fade) { }
+		protected virtual void OnMoveInsideArea(EntityId entityId, int areaId, EntityId areaEntityId) { }
 
         /// <summary>
         /// Sent when entity leaves the area proximity.
         /// </summary>
         /// <param name="entityId"></param>
-        /// <param name="areaEntityId"></param>
-        /// <param name="fade"></param>
-        protected virtual void OnLeaveArea(EntityId entityId, int areaEntityId, float fade) { }
+		protected virtual void OnLeaveArea(EntityId entityId, int areaId, EntityId areaEntityId) { }
 
-        protected virtual void OnEnterNearArea(EntityId entityId, int areaId, float fade) { }
-        protected virtual void OnLeaveNearArea(EntityId entityId, int areaId, float fade) { }
-        protected virtual void OnMoveNearArea(EntityId entityId, int areaId, float fade) { }
+		protected virtual void OnEnterNearArea(EntityId entityId, int areaId, EntityId areaEntityId) { }
+		protected virtual void OnLeaveNearArea(EntityId entityId, int areaId, EntityId areaEntityId) { }
+        protected virtual void OnMoveNearArea(EntityId entityId, int areaId, EntityId areaEntityId, float fade) { }
 
         /// <summary>
         /// Sent on entity collision.

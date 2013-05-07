@@ -138,22 +138,22 @@ void CMonoEntityExtension::ProcessEvent(SEntityEvent &event)
 		m_pScript->CallMethod("OnStartLevel");
 		break;
 	case ENTITY_EVENT_ENTERAREA:
-		m_pScript->CallMethod("OnEnterArea", (EntityId)event.nParam[0], (int)event.nParam[1], event.fParam[0]);
+		m_pScript->CallMethod("OnEnterArea", (EntityId)event.nParam[0], (int)event.nParam[1], (EntityId)event.nParam[2]);
 		break;
 	case ENTITY_EVENT_MOVEINSIDEAREA:
-		m_pScript->CallMethod("OnMoveInsideArea", (EntityId)event.nParam[0], (int)event.nParam[1], event.fParam[0]);
+		m_pScript->CallMethod("OnMoveInsideArea", (EntityId)event.nParam[0], (int)event.nParam[1], (EntityId)event.nParam[2]);
 		break;
 	case ENTITY_EVENT_LEAVEAREA:
-		m_pScript->CallMethod("OnLeaveArea", (EntityId)event.nParam[0], (int)event.nParam[1], event.fParam[0]);
+		m_pScript->CallMethod("OnLeaveArea", (EntityId)event.nParam[0], (int)event.nParam[1], (EntityId)event.nParam[2]);
 		break;
 	case ENTITY_EVENT_ENTERNEARAREA:
-		m_pScript->CallMethod("OnEnterNearArea", (EntityId)event.nParam[0], (int)event.nParam[1], event.fParam[0]);
+		m_pScript->CallMethod("OnEnterNearArea", (EntityId)event.nParam[0], (int)event.nParam[1], (EntityId)event.nParam[2]);
 		break;
 	case ENTITY_EVENT_MOVENEARAREA:
-		m_pScript->CallMethod("OnMoveNearArea", (EntityId)event.nParam[0], (int)event.nParam[1], event.fParam[0]);
+		m_pScript->CallMethod("OnMoveNearArea", (EntityId)event.nParam[0], (int)event.nParam[1], (EntityId)event.nParam[2], event.fParam[0]);
 		break;
 	case ENTITY_EVENT_LEAVENEARAREA:
-		m_pScript->CallMethod("OnLeaveNearArea", (EntityId)event.nParam[0], (int)event.nParam[1], event.fParam[0]);
+		m_pScript->CallMethod("OnLeaveNearArea", (EntityId)event.nParam[0], (int)event.nParam[1], (EntityId)event.nParam[2]);
 		break;
 	case ENTITY_EVENT_XFORM:
 		m_pScript->CallMethod("OnMove", (EEntityXFormFlags)event.nParam[0]);
