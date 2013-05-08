@@ -52,7 +52,7 @@ struct SEntityRegistrationParams
 
 	EEntityClassFlags Flags;
 
-	mono::object Folders;
+	mono::object Properties;
 };
 
 struct SMonoEntityProperty
@@ -66,12 +66,6 @@ struct SMonoEntityProperty
 	uint32 flags;
 
 	IEntityPropertyHandler::SPropertyInfo::SLimits limits;
-};
-
-struct SMonoEntityPropertyFolder
-{
-	mono::string name;
-	mono::object properties;
 };
 
 struct SMonoEntityInfo

@@ -16,6 +16,8 @@ namespace CryEngine
         Vec3,
         String,
         Entity,
+		FolderBegin,
+		FolderEnd,
         Object,
         Texture,
         File,

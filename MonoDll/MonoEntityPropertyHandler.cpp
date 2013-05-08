@@ -9,20 +9,10 @@
 
 #include <IEntitySystem.h>
 
-CEntityPropertyHandler::CEntityPropertyHandler(std::vector<SMonoEntityPropertyInfo> properties)
-	: m_properties(properties)
+CEntityPropertyHandler::CEntityPropertyHandler(SMonoEntityPropertyInfo *pProperties, int numProperties)
+	: m_pProperties(pProperties)
+	, m_numProperties(numProperties)
 {
-}
-
-int CEntityPropertyHandler::GetPropertyCount() const
-{
-	return m_properties.size();
-}
-
-bool CEntityPropertyHandler::GetPropertyInfo(int index, SPropertyInfo& info ) const
-{
-	info = m_properties.at(index).info;
-	return true;
 }
 
 SQueuedProperty *CEntityPropertyHandler::GetQueuedProperties(EntityId id, int &numProperties)
@@ -93,7 +83,7 @@ void CEntityPropertyHandler::SetProperty(IEntity *pIEntity, int index, const cha
 
 	// Only true after game has started, limiting this to changes made in Editor.
 	if(pEntity && pEntity->IsInitialized())
-		pEntity->SetPropertyValue(m_properties.at(index).info, value);
+		pEntity->SetPropertyValue(m_pProperties[index].info, value);
 	else
 	{
 		bool exists = false;
@@ -101,7 +91,7 @@ void CEntityPropertyHandler::SetProperty(IEntity *pIEntity, int index, const cha
 		{
 			if((*it).first == id)
 			{
-				(*it).second.push_back(SQueuedProperty(m_properties.at(index).info, value));
+				(*it).second.push_back(SQueuedProperty(m_pProperties[index].info, value));
 
 				exists = true;
 				break;
@@ -110,7 +100,7 @@ void CEntityPropertyHandler::SetProperty(IEntity *pIEntity, int index, const cha
 		if(!exists)
 		{
 			DynArray<SQueuedProperty> queuedPropertiesForEntity;
-			queuedPropertiesForEntity.push_back(SQueuedProperty(m_properties.at(index).info, value));
+			queuedPropertiesForEntity.push_back(SQueuedProperty(m_pProperties[index].info, value));
 
 			m_queuedProperties.insert(TQueuedPropertyMap::value_type(id, queuedPropertiesForEntity));
 		}
@@ -123,15 +113,10 @@ const char *CEntityPropertyHandler::GetProperty(IEntity *pIEntity, int index) co
 	{
 		if(CMonoEntityExtension *pEntity = static_cast<CMonoEntityExtension *>(pGameObject->QueryExtension(pIEntity->GetClass()->GetName())))
 		{
-			if(mono::object result = pEntity->GetScript()->CallMethod("GetPropertyValue", m_properties.at(index).info.name))
+			if(mono::object result = pEntity->GetScript()->CallMethod("GetPropertyValue", m_pProperties[index].info.name))
 				return ToCryString((mono::string)result);
 		}
 	}
 
 	return "";
-}
-
-const char *CEntityPropertyHandler::GetDefaultProperty(int index) const
-{
-	return m_properties.at(index).defaultValue;
 }

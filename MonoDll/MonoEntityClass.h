@@ -16,7 +16,7 @@ struct SMonoEntityPropertyInfo;
 class CEntityClass : public IEntityClass
 {
 public:
-	CEntityClass(IEntityClassRegistry::SEntityClassDesc desc, std::vector<SMonoEntityPropertyInfo> properties);
+	CEntityClass(IEntityClassRegistry::SEntityClassDesc desc, SMonoEntityPropertyInfo *pProperties, int numProperties);
 	virtual ~CEntityClass();
 
 	// IEntityClass interface

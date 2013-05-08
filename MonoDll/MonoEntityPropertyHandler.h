@@ -26,20 +26,33 @@ struct SMonoEntityPropertyInfo
 class CEntityPropertyHandler : public IEntityPropertyHandler
 {
 public:
-	CEntityPropertyHandler(std::vector<SMonoEntityPropertyInfo> properties);
+	CEntityPropertyHandler(SMonoEntityPropertyInfo *pProperties, int numProperties);
 	virtual ~CEntityPropertyHandler() {} 
 
 	// IEntityPropertyHandler interface
-	virtual void GetMemoryUsage( ICrySizer *pSizer ) const { pSizer->Add(m_properties); }
+	virtual void GetMemoryUsage( ICrySizer *pSizer ) const { pSizer->Add(m_pProperties); }
 	virtual void RefreshProperties() {}
 	virtual void LoadEntityXMLProperties(IEntity* entity, const XmlNodeRef& xml);
 	virtual void LoadArchetypeXMLProperties(const char* archetypeName, const XmlNodeRef& xml) {}
 	virtual void InitArchetypeEntity(IEntity* entity, const char* archetypeName, const SEntitySpawnParams& spawnParams) {}
-	virtual int GetPropertyCount() const;
-	virtual bool GetPropertyInfo(int index, SPropertyInfo& info ) const;
+
+	virtual int GetPropertyCount() const { return m_numProperties; }
+
+	virtual bool GetPropertyInfo(int index, SPropertyInfo &info) const
+	{
+		if(index >= m_numProperties)
+			return false;
+
+		info = m_pProperties[index].info;
+		return true;
+	}
+
 	virtual void SetProperty(IEntity* entity, int index, const char* value);
+
 	virtual const char* GetProperty(IEntity* entity, int index) const;
-	virtual const char* GetDefaultProperty(int index) const;
+
+	virtual const char* GetDefaultProperty(int index) const { return m_pProperties[index].defaultValue; }
+
 	virtual void PropertiesChanged(IEntity* entity) {}
 	// -IEntityPropertyHandler
 
@@ -49,7 +62,9 @@ protected:
 
 	typedef std::map<EntityId, DynArray<SQueuedProperty>> TQueuedPropertyMap;
 	TQueuedPropertyMap m_queuedProperties;
-	std::vector<SMonoEntityPropertyInfo> m_properties;
+
+	SMonoEntityPropertyInfo *m_pProperties;
+	int m_numProperties;
 };
 
 #endif //__MONO_ENTITY_PROPERTY_HANDLER_H__

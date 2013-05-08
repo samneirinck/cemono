@@ -234,20 +234,23 @@ namespace CryEngine.Compilers.NET
             int numProperties = entityProperties.Count;
             if (numProperties > 0)
             {
-                var folders = new EditorPropertyFolder[numProperties];
+				var properties = new List<object>();
 
-                for (int i = 0; i < numProperties; i++)
-                {
-                    var folderPair = entityProperties.ElementAt(i);
-                    var folder = new EditorPropertyFolder();
+				foreach (var folder in entityProperties)
+				{
+					if (folder.Key != "Default")
+					{
+						properties.Add(new EditorProperty(folder.Key, null, null, EditorPropertyType.FolderBegin));
 
-                    folder.name = folderPair.Key;
-                    folder.properties = folderPair.Value.Cast<object>().ToArray();
+						properties.AddRange(folder.Value.Cast<object>());
 
-                    folders[i] = folder;
-                }
+						properties.Add(new EditorProperty(folder.Key, null, null, EditorPropertyType.FolderEnd));
+					}
+					else
+						properties.AddRange(folder.Value.Cast<object>());
+				}
 
-                entityRegistrationParams.propertyFolders = folders.Cast<object>().ToArray();
+                entityRegistrationParams.properties = properties.ToArray();
             }
 
             var curType = type;

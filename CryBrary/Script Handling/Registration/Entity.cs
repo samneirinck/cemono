@@ -13,9 +13,8 @@ namespace CryEngine.Initialization
         public EntityClassFlags flags;
 
         /// <summary>
-        /// EntityPropertyFolder array containing properties.
-        /// The first index contains a fake folder which is referred to as the default category.
+        /// EntityProperty array containing properties.
         /// </summary>
-        public object[] propertyFolders;
+        public object[] properties;
     }
 }
