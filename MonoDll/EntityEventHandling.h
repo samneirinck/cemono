@@ -4,6 +4,38 @@
 #include <IEntity.h>
 #include <IMonoObject.h>
 
+#include <CryCharAnimationParams.h>
+
+struct SMonoAnimationEvent
+{
+	SMonoAnimationEvent(const AnimEventInstance *pAnimEvent)
+	{
+		m_time = pAnimEvent->m_time;
+		m_nAnimNumberInQueue = pAnimEvent->m_nAnimNumberInQueue;
+		m_fAnimPriority = pAnimEvent->m_fAnimPriority;
+		m_AnimPathName = ToMonoString(pAnimEvent->m_AnimPathName);
+		m_AnimID = pAnimEvent->m_AnimID;
+		m_EventNameLowercaseCRC32 = pAnimEvent->m_EventNameLowercaseCRC32;
+		m_EventName = ToMonoString(pAnimEvent->m_EventName);
+		m_CustomParameter = ToMonoString(pAnimEvent->m_CustomParameter);
+		m_BonePathName = ToMonoString(pAnimEvent->m_BonePathName);
+		m_vOffset = pAnimEvent->m_vOffset;
+		m_vDir = pAnimEvent->m_vDir;
+	}
+
+	f32 m_time;
+	uint32 m_nAnimNumberInQueue;
+	f32 m_fAnimPriority;
+	mono::string m_AnimPathName;
+	int m_AnimID;
+	uint32 m_EventNameLowercaseCRC32;
+	mono::string m_EventName;
+	mono::string m_CustomParameter; // Meaning depends on event - sound: sound path, effect: effect name
+	mono::string m_BonePathName;
+	Vec3 m_vOffset;
+	Vec3 m_vDir;
+};
+
 /// <summary>
 /// Helper method for making sure that we handle events in the same way for both entities and actors.
 /// </summary>
@@ -89,6 +121,23 @@ inline void HandleEntityEvent(SEntityEvent &event, IEntity *pEntity, IMonoObject
 		break;
 	case ENTITY_EVENT_PREPHYSICSUPDATE:
 		pScript->CallMethod("OnPrePhysicsUpdate");
+		break;
+	case ENTITY_EVENT_ANIM_EVENT:
+		{
+			const AnimEventInstance* pAnimEvent = reinterpret_cast<const AnimEventInstance*>(event.nParam[0]);
+			ICharacterInstance* pCharacter = reinterpret_cast<ICharacterInstance*>(event.nParam[1]);
+
+			IMonoClass *pAnimationEventClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("AnimationEvent");
+
+			SMonoAnimationEvent animEvent(pAnimEvent);
+
+			IMonoArray *pArgs = CreateMonoArray(1);
+
+			pArgs->InsertMonoObject(pAnimationEventClass->BoxObject(&animEvent));
+
+			pScript->GetClass()->InvokeArray(pScript->GetManagedObject(), "OnAnimationEvent", pArgs);
+			SAFE_RELEASE(pArgs);
+		}
 		break;
 	}
 }

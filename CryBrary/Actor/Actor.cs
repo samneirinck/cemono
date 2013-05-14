@@ -119,6 +119,13 @@ namespace CryEngine
 		protected virtual void OnDetachThis(EntityId parent) { }
 
 		protected virtual void OnPrePhysicsUpdate() { }
+
+		/// <summary>
+		/// Called when an animation event (placed on animations via the Character Editor) is encountered.
+		/// </summary>
+		/// <param name="animEvent"></param>
+		[CLSCompliant(false)]
+		protected virtual void OnAnimationEvent(AnimationEvent animEvent) { }
 		#endregion
 
         /// <summary>

@@ -205,6 +205,7 @@
     <Compile Include="Math\Collision.cs" />
     <Compile Include="Math\Plane.cs" />
     <Compile Include="Math\PlaneIntersectionType.cs" />
+    <Compile Include="Misc\AnimationEvent.cs" />
     <Compile Include="Misc\Exceptions\NullPointerException.cs" />
     <Compile Include="Misc\TypeConverters\Color.cs" />
     <Compile Include="Physics\Actions\Impulse.cs" />
