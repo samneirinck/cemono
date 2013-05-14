@@ -46,8 +46,6 @@
 #define MONO_API
 #endif
 
-#define CRYENGINE_3_4_3
-
 //////////////////////////////////////////////////////////////////////////
 //! Reports a warning to validator with WARNING severity.
 inline void MonoWarning( const char *format,... ) PRINTF_PARAMS(1, 2);
