@@ -160,6 +160,9 @@ void CMonoActor::HandleEvent(const SGameObjectEvent &event)
 
 void CMonoActor::ProcessEvent(SEntityEvent& event)
 {
+	if(m_pScript == nullptr)
+		return;
+
 	HandleEntityEvent(event, GetEntity(), m_pScript);
 
 	switch (event.event)
