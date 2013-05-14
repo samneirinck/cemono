@@ -159,6 +159,9 @@
     <ClInclude Include="Scriptbinds\Sound.h">
       <Filter>ScriptBinds</Filter>
     </ClInclude>
+    <ClInclude Include="EntityEventHandling.h">
+      <Filter>EntitySystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />

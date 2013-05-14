@@ -5,6 +5,8 @@
 #include "MonoScriptSystem.h"
 #include "Scriptbinds\Entity.h"
 
+#include "EntityEventHandling.h"
+
 #include <IEntityClass.h>
 
 #include <IMonoScriptSystem.h>
@@ -91,91 +93,15 @@ void CMonoEntityExtension::ProcessEvent(SEntityEvent &event)
 	// Don't attempt to send any events to managed code when the entity has been destroyed.
 	if(m_bDestroyed)
 		return;
+	
+	HandleEntityEvent(event, GetEntity(), m_pScript);
 
 	switch(event.event)
 	{
-	case ENTITY_EVENT_LEVEL_LOADED:
-		m_pScript->CallMethod("OnInit");
-		break;
 	case ENTITY_EVENT_RESET:
-		{
-			bool enterGamemode = event.nParam[0]==1;
-
-			if(!enterGamemode && GetEntity()->GetFlags() & ENTITY_FLAG_NO_SAVE)
-			{
-				gEnv->pEntitySystem->RemoveEntity(GetEntityId());
-				return;
-			}
-
-			m_pScript->CallMethod("OnEditorReset", enterGamemode);
-
-			Reset(enterGamemode);
-		}
+		Reset(event.nParam[0]==1);
 		break;
-	case ENTITY_EVENT_COLLISION:
-		{
-			EventPhysCollision *pCollision = (EventPhysCollision *)event.nParam[0];
-
-			SMonoColliderInfo source = SMonoColliderInfo(pCollision, 0);
-			SMonoColliderInfo target = SMonoColliderInfo(pCollision, 1);
-
-			IMonoClass *pColliderInfoClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("ColliderInfo");
-
-			IMonoArray *pArgs = CreateMonoArray(6);
-
-			pArgs->InsertMonoObject(pColliderInfoClass->BoxObject(&source));
-			pArgs->InsertMonoObject(pColliderInfoClass->BoxObject(&target));
-
-			pArgs->Insert(pCollision->pt);
-			pArgs->Insert(pCollision->n);
-
-			pArgs->Insert(pCollision->penetration);
-			pArgs->Insert(pCollision->radius);
-
-			m_pScript->GetClass()->InvokeArray(m_pScript->GetManagedObject(), "OnCollision", pArgs);
-			SAFE_RELEASE(pArgs);
-		}
-		break;
-	case ENTITY_EVENT_START_GAME:
-		m_pScript->CallMethod("OnStartGame");
-		break;
-	case ENTITY_EVENT_START_LEVEL:
-		m_pScript->CallMethod("OnStartLevel");
-		break;
-	case ENTITY_EVENT_ENTERAREA:
-		m_pScript->CallMethod("OnEnterArea", (EntityId)event.nParam[0], (int)event.nParam[1], (EntityId)event.nParam[2]);
-		break;
-	case ENTITY_EVENT_MOVEINSIDEAREA:
-		m_pScript->CallMethod("OnMoveInsideArea", (EntityId)event.nParam[0], (int)event.nParam[1], (EntityId)event.nParam[2]);
-		break;
-	case ENTITY_EVENT_LEAVEAREA:
-		m_pScript->CallMethod("OnLeaveArea", (EntityId)event.nParam[0], (int)event.nParam[1], (EntityId)event.nParam[2]);
-		break;
-	case ENTITY_EVENT_ENTERNEARAREA:
-		m_pScript->CallMethod("OnEnterNearArea", (EntityId)event.nParam[0], (int)event.nParam[1], (EntityId)event.nParam[2]);
-		break;
-	case ENTITY_EVENT_MOVENEARAREA:
-		m_pScript->CallMethod("OnMoveNearArea", (EntityId)event.nParam[0], (int)event.nParam[1], (EntityId)event.nParam[2], event.fParam[0]);
-		break;
-	case ENTITY_EVENT_LEAVENEARAREA:
-		m_pScript->CallMethod("OnLeaveNearArea", (EntityId)event.nParam[0], (int)event.nParam[1], (EntityId)event.nParam[2]);
-		break;
-	case ENTITY_EVENT_XFORM:
-		m_pScript->CallMethod("OnMove", (EEntityXFormFlags)event.nParam[0]);
-		break;
-	case ENTITY_EVENT_ATTACH:
-		m_pScript->CallMethod("OnAttach", (EntityId)event.nParam[0]);
-		break;
-	case ENTITY_EVENT_DETACH:
-		m_pScript->CallMethod("OnDetach", (EntityId)event.nParam[0]);
-		break;
-	case ENTITY_EVENT_DETACH_THIS:
-		m_pScript->CallMethod("OnDetachThis", (EntityId)event.nParam[0]);
-		break;
-	case ENTITY_EVENT_PREPHYSICSUPDATE:
-		m_pScript->CallMethod("OnPrePhysicsUpdate");
-		break;
-	case ENTITY_EVENT_DONE: // Entity was destroyed, mark as destroyed.
+	case ENTITY_EVENT_DONE:
 		m_bDestroyed = true;
 		break;
 	}

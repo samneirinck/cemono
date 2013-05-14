@@ -4,6 +4,8 @@
 
 #include "MonoScriptSystem.h"
 
+#include "EntityEventHandling.h" 
+
 #include <IGameRulesSystem.h>
 #include <IViewSystem.h>
 #include <ICryAnimation.h>
@@ -158,6 +160,8 @@ void CMonoActor::HandleEvent(const SGameObjectEvent &event)
 
 void CMonoActor::ProcessEvent(SEntityEvent& event)
 {
+	HandleEntityEvent(event, GetEntity(), m_pScript);
+
 	switch (event.event)
 	{
 	case ENTITY_EVENT_UNHIDE:
@@ -177,44 +181,13 @@ void CMonoActor::ProcessEvent(SEntityEvent& event)
 			if (m_pAnimatedCharacter)
 				m_pAnimatedCharacter->ResetState();
 
-			m_pScript->CallMethod("OnEditorReset", event.nParam[0]==1);
 			GetGameObject()->RequestRemoteUpdate(eEA_Physics | eEA_GameClientDynamic | eEA_GameServerDynamic | eEA_GameClientStatic | eEA_GameServerStatic);
-		}
-		break;
-	case ENTITY_EVENT_PREPHYSICSUPDATE:
-		{
-			if(m_pScript)
-				m_pScript->CallMethod("OnPrePhysicsUpdate");
 		}
 		break;
 	case ENTITY_EVENT_INIT:
 		{
 			if (m_pAnimatedCharacter)
 				m_pAnimatedCharacter->ResetState();
-		}
-		break;
-	case ENTITY_EVENT_COLLISION:
-		{
-			EventPhysCollision *pCollision = (EventPhysCollision *)event.nParam[0];
-
-			SMonoColliderInfo source = SMonoColliderInfo(pCollision, 0);
-			SMonoColliderInfo target = SMonoColliderInfo(pCollision, 1);
-
-			IMonoClass *pColliderInfoClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("ColliderInfo");
-
-			IMonoArray *pArgs = CreateMonoArray(6);
-
-			pArgs->InsertMonoObject(pColliderInfoClass->BoxObject(&source));
-			pArgs->InsertMonoObject(pColliderInfoClass->BoxObject(&target));
-
-			pArgs->Insert(pCollision->pt);
-			pArgs->Insert(pCollision->n);
-
-			pArgs->Insert(pCollision->penetration);
-			pArgs->Insert(pCollision->radius);
-
-			m_pScript->GetClass()->InvokeArray(m_pScript->GetManagedObject(), "OnCollision", pArgs);
-			SAFE_RELEASE(pArgs);
 		}
 		break;
   }  
