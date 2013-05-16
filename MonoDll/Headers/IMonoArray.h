@@ -84,10 +84,6 @@ public:
 
 		return nullptr;
 	}
-	/// <summary>
-	/// Retrieves a string at the selected index of the array.
-	/// </summary>
-	virtual const char *GetItemString(int index) = 0;
 
 	template <typename T>
 	inline void Insert(T value, int index = -1);
