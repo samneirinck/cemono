@@ -171,11 +171,16 @@ MonoMethod *CScriptClass::GetMonoMethod(const char *methodName, IMonoArray *pArg
 						else if(itemMonoType == MONO_TYPE_VALUETYPE || monoType == MONO_TYPE_VALUETYPE) {}
 						else
 						{
-							MonoClass *pMethodParameterClass = mono_type_get_class(pType);
-							if(pMethodParameterClass)
-								MonoWarning("Item type %i (%s.%s) at args index %i did not match method type %i (%s.%s)", itemMonoType, mono_class_get_namespace(pItemClass), mono_class_get_name(pItemClass), i, monoType, mono_class_get_namespace(pMethodParameterClass), mono_class_get_name(pMethodParameterClass));
+							if(MonoClass *pMethodParameterClass = mono_type_get_class(pType))
+							{
+								MonoWarning("Parameter mismatch when searching for method %s in class %s.%s, on parameter %i: Provided type %s.%s does not match expected parameter type %s.%s.", 
+									methodName, mono_class_get_namespace(pClass), mono_class_get_name(pClass), i + 1, mono_class_get_namespace(pItemClass), mono_class_get_name(pItemClass), mono_class_get_namespace(pMethodParameterClass), mono_class_get_name(pMethodParameterClass));
+							}
 							else
-								MonoWarning("Item type %i (%s.%s) at args index %i did not match method type %i", itemMonoType, mono_class_get_namespace(pItemClass), mono_class_get_name(pItemClass), i, monoType);
+							{
+								MonoWarning("Parameter mismatch when searching for method %s in class %s.%s, on parameter %i: Provided type %s.%s does not match parameter type.", 
+									methodName, mono_class_get_namespace(pClass), mono_class_get_name(pClass), i + 1, mono_class_get_namespace(pItemClass), mono_class_get_name(pItemClass));
+							}
 							break;
 						}
 					}
