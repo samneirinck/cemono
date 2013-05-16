@@ -15,6 +15,8 @@ CDynScriptArray::CDynScriptArray(MonoDomain *pDomain, IMonoClass *pContainingTyp
 	CRY_ASSERT(m_pElementClass);
 
 	SetManagedObject((MonoObject *)mono_array_new(pDomain, m_pElementClass, size), allowGC);
+	
+	m_elementSize = mono_array_element_size(mono_array_class_get(m_pElementClass, 1));
 }
 
 void CDynScriptArray::Clear()

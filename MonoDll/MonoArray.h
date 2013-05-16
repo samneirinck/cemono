@@ -31,7 +31,7 @@ public:
 	virtual ~CScriptArray();
 
 	// IMonoArray
-	virtual void Clear() override { for(int i = 0; i < GetSize(); i++) mono_array_set((MonoArray *)m_pObject, void *, i, nullptr);  }
+	virtual void Clear() override;
 
 	virtual void Remove(int index) override;
 
@@ -50,8 +50,6 @@ public:
 	virtual void InsertMonoString(mono::string string, int index = -1) override { InsertMonoObject((mono::object)string, index); }
 	virtual void InsertMonoObject(mono::object object, int index = -1) override;
 	// ~IMonoArray
-
-	IMonoClass *GetClass(MonoClass *pClass);
 
 	// IMonoObject
 	virtual void Release(bool triggerGC = true) override 
@@ -74,11 +72,15 @@ public:
 	virtual const char *ToString() override { return CScriptObject::ToString(); }
 	// ~IMonoObject
 
+	IMonoClass *GetClass(MonoClass *pClass);
+
 	static MonoClass *m_pDefaultElementClass;
 
 protected:
 	// index of the last object in the array
 	int m_lastIndex;
+	// Size of each element in the array
+	int m_elementSize;
 
 	MonoClass *m_pElementClass;
 };

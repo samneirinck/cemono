@@ -6,6 +6,8 @@
 
 #include "MonoScriptSystem.h"
 
+#include "MonoHelpers.h"
+
 #include <IMonoClass.h>
 
 MonoClass *CScriptArray::m_pDefaultElementClass = NULL;
@@ -16,6 +18,8 @@ CScriptArray::CScriptArray(mono::object managedArray, bool allowGC)
 
 	SetManagedObject((MonoObject *)managedArray, allowGC);
 	m_pElementClass = mono_class_get_element_class(GetMonoClass());
+
+	m_elementSize = mono_array_element_size(mono_array_class_get(m_pElementClass, 1));
 
 	m_lastIndex = GetSize() - 1;
 }
@@ -30,6 +34,8 @@ CScriptArray::CScriptArray(MonoDomain *pDomain, int size, IMonoClass *pContainin
 	CRY_ASSERT(m_pElementClass);
 
 	SetManagedObject((MonoObject *)mono_array_new(pDomain, m_pElementClass, size), allowGC);
+
+	m_elementSize = mono_array_element_size(mono_array_class_get(m_pElementClass, 1));
 }
 
 CScriptArray::~CScriptArray()
@@ -53,10 +59,19 @@ void CScriptArray::Resize(int size)
 	{
 		if(i < size)
 		{
-			mono_array_set((MonoArray *)m_pObject, MonoObject *, i, mono_array_get(pOldArray, MonoObject *, i));
+			mono_array_set_addr_with_size((MonoArray *)m_pObject, i, m_elementSize, *(void **)mono_array_addr_with_size(pOldArray, m_elementSize, i));
 			m_lastIndex = i;
 		}
 	}
+}
+
+void CScriptArray::Clear()
+{
+	int size = GetSize();
+	for(int i = 0; i < size; i++)
+		mono_array_set_addr_with_size((MonoArray *)m_pObject, i, m_elementSize, nullptr);
+
+	m_lastIndex = -1;
 }
 
 void CScriptArray::Remove(int index)
@@ -65,7 +80,7 @@ void CScriptArray::Remove(int index)
 
 	CRY_ASSERT(index < size);
 
-	mono_array_set((MonoArray *)m_pObject, void *, index, nullptr);
+	mono_array_set_addr_with_size((MonoArray *)m_pObject, index, m_elementSize, nullptr);
 
 	if(index == size - 1)
 		m_lastIndex--;
@@ -74,8 +89,8 @@ void CScriptArray::Remove(int index)
 mono::object CScriptArray::GetItem(int index)
 { 
 	CRY_ASSERT(index < GetSize());
-
-	return (mono::object)mono_array_get((MonoArray *)m_pObject, MonoObject *, index);
+	
+	return *(mono::object *)mono_array_addr_with_size((MonoArray *)m_pObject, m_elementSize, index);
 }
 
 void CScriptArray::InsertMonoObject(mono::object object, int index)
@@ -87,8 +102,8 @@ void CScriptArray::InsertMonoObject(mono::object object, int index)
 	}
 
 	CRY_ASSERT(index < GetSize());
-
-	mono_array_set((MonoArray *)m_pObject, void *, index, object);
+	
+	mono_array_set_addr_with_size((MonoArray *)m_pObject, index, m_elementSize, object);
 }
 
 void CScriptArray::InsertNativePointer(void *ptr, int index)
