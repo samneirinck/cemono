@@ -162,6 +162,7 @@
     <ClInclude Include="EntityEventHandling.h">
       <Filter>EntitySystem</Filter>
     </ClInclude>
+    <ClInclude Include="MonoHelpers.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />

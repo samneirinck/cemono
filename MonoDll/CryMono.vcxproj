@@ -532,6 +532,7 @@
     <ClInclude Include="MonoEntity.h" />
     <ClInclude Include="MonoException.h" />
     <ClInclude Include="MonoFlowNode.h" />
+    <ClInclude Include="MonoHelpers.h" />
     <ClInclude Include="MonoInput.h" />
     <ClInclude Include="NativeEntity.h" />
     <ClInclude Include="PathUtils.h" />
