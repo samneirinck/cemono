@@ -172,8 +172,10 @@ MonoMethod *CScriptClass::GetMonoMethod(const char *methodName, IMonoArray *pArg
 						else
 						{
 							MonoClass *pMethodParameterClass = mono_type_get_class(pType);
-
-							MonoWarning("Item type %i (%s.%s) at args index %i did not match method type %i (%s.%s)", itemMonoType, mono_class_get_namespace(pItemClass), mono_class_get_name(pItemClass), i, monoType, mono_class_get_namespace(pMethodParameterClass), mono_class_get_name(pMethodParameterClass));
+							if(pMethodParameterClass)
+								MonoWarning("Item type %i (%s.%s) at args index %i did not match method type %i (%s.%s)", itemMonoType, mono_class_get_namespace(pItemClass), mono_class_get_name(pItemClass), i, monoType, mono_class_get_namespace(pMethodParameterClass), mono_class_get_name(pMethodParameterClass));
+							else
+								MonoWarning("Item type %i (%s.%s) at args index %i did not match method type %i", itemMonoType, mono_class_get_namespace(pItemClass), mono_class_get_name(pItemClass), i, monoType);
 							break;
 						}
 					}
