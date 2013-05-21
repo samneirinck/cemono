@@ -21,6 +21,10 @@ namespace CryEngine.CharacterCustomization
 				if (slotAttachmentNameAttribute != null)
 					Name = slotAttachmentNameAttribute.Value;
 
+				var slotAttachmentThumbnailAttribute = element.Attribute("Thumbnail");
+				if (slotAttachmentThumbnailAttribute != null)
+					ThumbnailPath = slotAttachmentThumbnailAttribute.Value;
+
 				var slotAttachmentTypeAttribute = element.Attribute("Type");
 				if (slotAttachmentTypeAttribute != null)
 					Type = slotAttachmentTypeAttribute.Value;
@@ -114,6 +118,11 @@ namespace CryEngine.CharacterCustomization
 		public CharacterAttachmentSlot Slot { get; set; }
 
 		public string Name { get; set; }
+
+		/// <summary>
+		/// Path to this attachment's preview image, relative to the game directory.
+		/// </summary>
+		public string ThumbnailPath { get; set; }
 
 		public string Type { get; set; }
 		public string BoneName { get; set; }
