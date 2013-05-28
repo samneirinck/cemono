@@ -53,7 +53,7 @@ namespace CryEngine.CharacterCustomization
         {
             foreach (var slot in Slots)
             {
-                if (slot.Name == slotName)
+                if (slot.Name.Equals(slotName, StringComparison.CurrentCultureIgnoreCase))
                     return slot;
             }
 
