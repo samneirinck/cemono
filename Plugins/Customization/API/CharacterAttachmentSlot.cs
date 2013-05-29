@@ -49,25 +49,18 @@ namespace CryEngine.CharacterCustomization
 				}
 			}
 
-            var slotAttachmentElements = element.Elements("Attachment");
+			// Set up brands
+			var slotBrandElements = element.Elements("Brand");
 
-			int count = slotAttachmentElements.Count();
-			if (CanBeEmpty)
-				count++;
+			int numBrands = slotBrandElements.Count();
+			Brands = new CharacterAttachmentBrand[numBrands];
 
-			var slotAttachments = new CharacterAttachment[count];
+			for(int i = 0; i < numBrands; i++)
+			{
+				var brandElement = slotBrandElements.ElementAt(i);
 
-            for (int i = 0; i < slotAttachmentElements.Count(); i++)
-            {
-                var slotAttachmentElement = slotAttachmentElements.ElementAt(i);
-
-                slotAttachments[i] = new CharacterAttachment(this, slotAttachmentElement);
-            }
-
-			if (CanBeEmpty)
-				slotAttachments[slotAttachmentElements.Count()] = new CharacterAttachment(this, null);
-
-			Attachments = slotAttachments;
+				Brands[i] = new CharacterAttachmentBrand(this, brandElement);
+			}
         }
 
         /// <summary>
@@ -138,14 +131,31 @@ namespace CryEngine.CharacterCustomization
 			return true;
 		}
 
+		public CharacterAttachmentBrand GetBrand(string name)
+		{
+			if (Brands != null)
+			{
+				foreach (var brand in Brands)
+				{
+					if (brand.Name == name)
+						return brand;
+				}
+			}
+
+			return null;
+		}
+
         public CharacterAttachment GetAttachment(string name)
         {
-			if (Attachments != null)
+			if (Brands != null)
 			{
-				foreach (var attachment in Attachments)
+				foreach (var brand in Brands)
 				{
-					if (attachment.Name == name)
-						return attachment;
+					foreach (var attachment in brand.Attachments)
+					{
+						if (attachment.Name == name)
+							return attachment;
+					}
 				}
 			}
 
@@ -165,7 +175,10 @@ namespace CryEngine.CharacterCustomization
 
         public string Name { get; set; }
 
-        public CharacterAttachment[] Attachments { get; set; }
+		/// <summary>
+		/// Brands containing attachments.
+		/// </summary>
+		public CharacterAttachmentBrand[] Brands { get; set; }
 
         /// <summary>
         /// Gets the currently active attachment for this slot.
@@ -181,15 +194,18 @@ namespace CryEngine.CharacterCustomization
                 if (attachmentElement == null)
                     throw new CustomizationConfigurationException(string.Format("Could not find slot element for {0}", Name));
 
-                foreach (var attachment in Attachments)
-                {
-                    var nameAttribute = attachmentElement.Attribute("Name");
-                    if (nameAttribute == null)
-                        continue;
+				foreach (var brand in Brands)
+				{
+					foreach (var attachment in brand.Attachments)
+					{
+						var nameAttribute = attachmentElement.Attribute("Name");
+						if (nameAttribute == null)
+							continue;
 
-                    if (attachment.Name == nameAttribute.Value)
-                        return attachment;
-                }
+						if (attachment.Name == nameAttribute.Value)
+							return attachment;
+					}
+				}
 
                 return null;
             }
@@ -205,10 +221,14 @@ namespace CryEngine.CharacterCustomization
             {
                 var selector = new Random();
 
-                var iRandom = selector.Next(CanBeEmpty ? -1 : 0, Attachments.Length);
+				var iRandom = selector.Next(Brands.Length);
+
+				var brand = Brands[iRandom];
+
+				iRandom = selector.Next(CanBeEmpty ? -1 : 0, brand.Attachments.Length);
 
                 if (iRandom != -1)
-                    return Attachments.ElementAt(iRandom);
+					return brand.Attachments.ElementAt(iRandom);
                 else
                     return null;
             }

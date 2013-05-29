@@ -102,6 +102,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="API\CharacterAttachmentBrand.cs" />
     <Compile Include="API\CharacterAttachment.cs" />
     <Compile Include="API\CharacterAttachmentSlot.cs" />
     <Compile Include="CustomizationManager.cs" />
