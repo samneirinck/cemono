@@ -30,7 +30,7 @@ public:
 	// Path to directory which contains CryMono config & utils, e.g. Mono/ & Plugins/.
 	static string GetConfigPath()
 	{
-		return GetBinaryPath();
+		return GetBinaryPath(true);
 	}
 
 	static string GetEnginePath()
