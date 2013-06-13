@@ -58,7 +58,7 @@ void CScriptbind_ActorSystem::OnSpawn(IEntity *pEntity,SEntitySpawnParams &param
 
 	if(actorType != EMonoActorType_None)
 	{
-		if(IActor *pActor = gEnv->pGameFramework->GetIActorSystem()->GetActor(pEntity->GetId()))
+		if(IActor *pActor = gEnv->pGame->GetIGameFramework()->GetIActorSystem()->GetActor(pEntity->GetId()))
 		{
 			IMonoObject *pScript  = g_pScriptSystem->InstantiateScript(pEntity->GetClass()->GetName(), eScriptFlag_Actor);
 
@@ -77,7 +77,7 @@ void CScriptbind_ActorSystem::OnSpawn(IEntity *pEntity,SEntitySpawnParams &param
 
 SMonoActorInfo CScriptbind_ActorSystem::GetActorInfoByChannelId(uint16 channelId)
 {
-	if(IActor *pActor = gEnv->pGameFramework->GetIActorSystem()->GetActorByChannelId(channelId))
+	if(IActor *pActor = gEnv->pGame->GetIGameFramework()->GetIActorSystem()->GetActorByChannelId(channelId))
 		return SMonoActorInfo(pActor);
 
 	return SMonoActorInfo();
@@ -85,7 +85,7 @@ SMonoActorInfo CScriptbind_ActorSystem::GetActorInfoByChannelId(uint16 channelId
 
 SMonoActorInfo CScriptbind_ActorSystem::GetActorInfoById(EntityId id)
 {
-	if(IActor *pActor = gEnv->pGameFramework->GetIActorSystem()->GetActor(id))
+	if(IActor *pActor = gEnv->pGame->GetIGameFramework()->GetIActorSystem()->GetActor(id))
 		return SMonoActorInfo(pActor);
 
 	return SMonoActorInfo();
@@ -105,7 +105,7 @@ SMonoActorInfo CScriptbind_ActorSystem::CreateActor(int channelId, mono::string 
 {
 	const char *sClassName = ToCryString(className);
 
-	if(IActor *pActor = gEnv->pGameFramework->GetIActorSystem()->CreateActor(channelId, ToCryString(name), sClassName, pos, rot, scale))
+	if(IActor *pActor = gEnv->pGame->GetIGameFramework()->GetIActorSystem()->CreateActor(channelId, ToCryString(name), sClassName, pos, rot, scale))
 		return SMonoActorInfo(pActor);
 
 	return SMonoActorInfo();
@@ -113,12 +113,12 @@ SMonoActorInfo CScriptbind_ActorSystem::CreateActor(int channelId, mono::string 
 
 void CScriptbind_ActorSystem::RemoveActor(EntityId id)
 {
-	gEnv->pGameFramework->GetIActorSystem()->RemoveActor(id);
+	gEnv->pGame->GetIGameFramework()->GetIActorSystem()->RemoveActor(id);
 }
 
 EntityId CScriptbind_ActorSystem::GetClientActorId()
 {
-	return gEnv->pGameFramework->GetClientActorId();
+	return gEnv->pGame->GetIGameFramework()->GetClientActorId();
 }
 
 float CScriptbind_ActorSystem::GetPlayerHealth(IActor *pActor)
@@ -145,7 +145,7 @@ void CScriptbind_ActorSystem::RemoteInvocation(EntityId entityId, EntityId targe
 {
 	CRY_ASSERT(entityId != 0);
 
-	IGameObject *pGameObject = gEnv->pGameFramework->GetGameObject(entityId);
+	IGameObject *pGameObject = gEnv->pGame->GetIGameFramework()->GetGameObject(entityId);
 	CRY_ASSERT(pGameObject);
 
 	CMonoEntityExtension::RMIParams params(args, ToCryString(methodName), targetId);

@@ -28,7 +28,7 @@ CScriptbind_GameObject::CScriptbind_GameObject()
 
 IGameObject *CScriptbind_GameObject::GetGameObject(EntityId id)
 {
-	return gEnv->pGameFramework->GetGameObject(id);
+	return gEnv->pGame->GetIGameFramework()->GetGameObject(id);
 }
 
 void CScriptbind_GameObject::EnablePostUpdates(IGameObject *pGameObject, IGameObjectExtension *pExtension, bool enable)

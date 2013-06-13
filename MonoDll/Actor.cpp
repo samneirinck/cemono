@@ -36,7 +36,7 @@ CMonoActor::~CMonoActor()
 	GetGameObject()->ReleaseView(this);
 	GetGameObject()->ReleaseProfileManager(this);
 
-	if(IActorSystem *pActorSystem = gEnv->pGameFramework->GetIActorSystem())
+	if(IActorSystem *pActorSystem = gEnv->pGame->GetIGameFramework()->GetIActorSystem())
 		pActorSystem->RemoveActor(GetEntityId());
 
 	if(g_pScriptSystem)
@@ -52,7 +52,7 @@ bool CMonoActor::Init(IGameObject *pGameObject)
 	if (!GetGameObject()->CaptureProfileManager(this))
 		return false;
 
-	gEnv->pGameFramework->GetIActorSystem()->AddActor(GetEntityId(), this);
+	gEnv->pGame->GetIGameFramework()->GetIActorSystem()->AddActor(GetEntityId(), this);
 
 	m_pAnimatedCharacter = static_cast<IAnimatedCharacter*>(GetGameObject()->AcquireExtension("AnimatedCharacter"));
 	if (m_pAnimatedCharacter)
@@ -104,8 +104,8 @@ bool CMonoActor::ReloadExtension( IGameObject *pGameObject, const SEntitySpawnPa
 	if (!GetGameObject()->BindToNetwork())
 		return false;
 
-	gEnv->pGameFramework->GetIActorSystem()->RemoveActor(params.prevId);
-	gEnv->pGameFramework->GetIActorSystem()->AddActor(GetEntityId(), this);
+	gEnv->pGame->GetIGameFramework()->GetIActorSystem()->RemoveActor(params.prevId);
+	gEnv->pGame->GetIGameFramework()->GetIActorSystem()->AddActor(GetEntityId(), this);
 
 	SetAspectProfile(eEA_Physics, eAP_NotPhysicalized);
 
@@ -399,7 +399,7 @@ bool CMonoActor::SetAspectProfile( EEntityAspects aspect, uint8 profile )
 void CMonoActor::InitLocalPlayer()
 {
 	GetGameObject()->SetUpdateSlotEnableCondition( this, 0, eUEC_WithoutAI );
-	//gEnv->pGameFramework->GetIActorSystem()->SetLocalPlayerId(GetEntityId());
+	//gEnv->pGame->GetIGameFramework()->GetIActorSystem()->SetLocalPlayerId(GetEntityId());
 }
 
 float CMonoActor::GetHealth() const

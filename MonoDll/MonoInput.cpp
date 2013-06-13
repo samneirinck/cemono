@@ -25,9 +25,9 @@ CScriptbind_Input::CScriptbind_Input()
 CScriptbind_Input::~CScriptbind_Input()
 {
 	// The code below currently crashes the Launcher at shutdown
-	/*if(gEnv->pGameFramework)
+	/*if(gEnv->pGame->GetIGameFramework())
 	{
-		if(IActionMapManager *pActionmapManager = gEnv->pGameFramework->GetIActionMapManager())
+		if(IActionMapManager *pActionmapManager = gEnv->pGame->GetIGameFramework()->GetIActionMapManager())
 			pActionmapManager->RemoveExtraActionListener(this);
 	}*/
 

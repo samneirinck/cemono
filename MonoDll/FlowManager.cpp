@@ -44,7 +44,7 @@ CFlowManager::~CFlowManager()
 
 void CFlowManager::RegisterNode(mono::string monoTypeName)
 {
-	IFlowSystem *pFlowSystem = gEnv->pGameFramework->GetIFlowSystem();
+	IFlowSystem *pFlowSystem = gEnv->pGame->GetIGameFramework()->GetIFlowSystem();
 	if(!pFlowSystem)
 		return;
 

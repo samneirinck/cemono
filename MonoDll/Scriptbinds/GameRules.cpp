@@ -46,5 +46,5 @@ void CScriptbind_GameRules::SetDefaultGameMode(mono::string gamemode)
 //-----------------------------------------------------------------------------
 EntityId CScriptbind_GameRules::GetPlayer()
 {
-	return gEnv->pGameFramework->GetClientActorId();
+	return gEnv->pGame->GetIGameFramework()->GetClientActorId();
 }
