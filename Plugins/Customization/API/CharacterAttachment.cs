@@ -64,7 +64,11 @@ namespace CryEngine.CharacterCustomization
 
 					foreach (var subAttachmentElement in element.Elements("SubAttachment"))
 					{
-						var subAttachmentSlot = Slot.SubAttachmentSlots.First(x => x.Name == subAttachmentElement.Attribute("Slot").Value);
+						var subAttachmentSlotName = subAttachmentElement.Attribute("Slot").Value;
+
+						var subAttachmentSlot = Slot.SubAttachmentSlots.FirstOrDefault(x => x.Name == subAttachmentSlotName);
+						if (subAttachmentSlot == null)
+							throw new CustomizationConfigurationException(string.Format("Failed to find subattachment slot {0} for attachment {1} for primary slot {2}", subAttachmentSlotName, Name, Slot.Name));
 
 						subCharacterAttachments.Add(new CharacterAttachment(subAttachmentSlot, subAttachmentElement, true));
 					}
