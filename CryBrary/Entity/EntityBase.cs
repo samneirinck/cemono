@@ -234,11 +234,9 @@ namespace CryEngine
                 if (links == null)
                     yield break;
 
-                foreach (object obj in links)
+                foreach (Utilities.PointerWrapper wrappedPtr in links)
                 {
-                    var linkPtr = (int)obj;
-
-                    yield return new EntityLink(new IntPtr(linkPtr), this);
+					yield return new EntityLink(wrappedPtr.Handle, this);
                 }
             }
         }

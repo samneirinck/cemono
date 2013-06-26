@@ -105,7 +105,6 @@ enum EMonoAnyType
 
 	eMonoAnyType_String,
 	eMonoAnyType_Array,
-	eMonoAnyType_IntPtr,
 
 	eMonoAnyType_Last
 };
@@ -131,9 +130,6 @@ struct MonoAnyValue : public ISerializable
 	MonoAnyValue(Ang3 value) : type(eMonoAnyType_Vec3) { vec4.x = value.x; vec4.y = value.y; vec4.z = value.z; }
 	MonoAnyValue(Quat value) : type(eMonoAnyType_Quat) { vec4.x = value.v.x; vec4.y = value.v.y; vec4.z = value.v.z; vec4.w = value.w; }
 	MonoAnyValue(mono::object value) : type(eMonoAnyType_Unknown), monoObject(value) { };
-#ifdef WIN64
-	MonoAnyValue(intptr_t value) : type(eMonoAnyType_IntPtr) { i = value; }
-#endif
 
 	virtual void SerializeWith(TSerialize ser) override
 	{

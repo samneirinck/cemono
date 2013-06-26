@@ -668,7 +668,10 @@ mono::object CScriptbind_Entity::GetEntityLinks(IEntity *pEntity)
 	IMonoArray *pDynArray = CreateDynamicMonoArray();
 	while(pLink != nullptr)
 	{
-		pDynArray->InsertAny(reinterpret_cast<intptr_t>(pLink));
+		mono::pointer wrappedPtr(pLink);
+		
+		IMonoClass *pPointerWrapperClass = g_pScriptSystem->GetCryBraryAssembly()->GetClass("PointerWrapper", "CryEngine.Utilities");
+		pDynArray->InsertMonoObject(pPointerWrapperClass->BoxObject(&wrappedPtr));
 
 		pLink = pLink->next;
 	}

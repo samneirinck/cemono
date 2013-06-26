@@ -69,8 +69,6 @@ EMonoAnyType CScriptObject::GetType()
 		return eMonoAnyType_Float;
 	else if(pMonoClass==mono_get_string_class())
 		return eMonoAnyType_String;
-	else if(pMonoClass==mono_get_intptr_class())
-		return eMonoAnyType_IntPtr;
 	else if(pMonoClass == mono_get_array_class())
 		return eMonoAnyType_Array;
 	else
@@ -131,7 +129,6 @@ MonoAnyValue CScriptObject::GetAnyValue()
 			return any;
 		}
 	case eMonoAnyType_Unknown:
-	case eMonoAnyType_IntPtr:
 		return MonoAnyValue((mono::object)m_pObject);
 	}
 
