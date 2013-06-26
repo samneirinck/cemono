@@ -228,7 +228,7 @@ bool CScriptSystem::Reload()
 		m_pScriptManager->CallMethod("Serialize");
 	}
 
-	IMonoDomain *pScriptDomain = CreateDomain("ScriptDomain", true);
+	IMonoDomain *pScriptDomain = CreateDomain("ScriptDomain", nullptr, true);
 
 	IMonoAssembly *pCryBraryAssembly = pScriptDomain->LoadAssembly(PathUtils::GetBinaryPath() + "CryBrary.dll");
 
@@ -474,9 +474,9 @@ IMonoAssembly *CScriptSystem::GetCorlibAssembly()
 	return m_pRootDomain->TryGetAssembly(mono_get_corlib());
 }
 
-IMonoDomain *CScriptSystem::CreateDomain(const char *name, bool setActive)
+IMonoDomain *CScriptSystem::CreateDomain(const char *name, const char *configurationFile, bool setActive)
 {
-	CScriptDomain *pDomain = new CScriptDomain(name, setActive);
+	CScriptDomain *pDomain = new CScriptDomain(name, configurationFile, setActive);
 	m_domains.push_back(pDomain);
 
 	return pDomain;

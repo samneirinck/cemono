@@ -18,7 +18,7 @@ class CScriptDomain : public IMonoDomain
 public:
 	// Create root domain
 	CScriptDomain(ERuntimeVersion runtimeVersion = eRV_2_50727);
-	CScriptDomain(const char *name, bool setActive = false);
+	CScriptDomain(const char *name, const char *configurationFile, bool setActive = false);
 	CScriptDomain(MonoDomain *pMonoDomain) : m_pDomain(pMonoDomain), m_bRootDomain(false), m_name("<unknown>") {}
 	~CScriptDomain();
 

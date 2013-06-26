@@ -72,7 +72,7 @@ public:
 	virtual IMonoAssembly *GetCorlibAssembly() override;
 
 	virtual IMonoDomain *GetRootDomain() override { return (IMonoDomain *)m_pRootDomain; }
-	virtual IMonoDomain *CreateDomain(const char *name, bool setActive = false);
+	virtual IMonoDomain *CreateDomain(const char *name, const char *configurationFile = nullptr, bool setActive = false);
 	virtual IMonoDomain *GetActiveDomain() override;
 	virtual IMonoDomain *GetScriptDomain() { return m_pScriptDomain; }
 

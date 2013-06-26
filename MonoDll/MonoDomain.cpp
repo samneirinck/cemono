@@ -47,12 +47,12 @@ CScriptDomain::CScriptDomain(ERuntimeVersion runtimeVersion)
 		CryFatalError("Failed to initialize root domain with runtime version %s!", version);
 }
 
-CScriptDomain::CScriptDomain(const char *name, bool setActive)
+CScriptDomain::CScriptDomain(const char *name, const char *configurationFile, bool setActive)
 	: m_bRootDomain(false)
 	, m_bDestroying(false)
 	, m_name(name)
 {
-	m_pDomain = mono_domain_create_appdomain(const_cast<char *>(name), nullptr);
+	m_pDomain = mono_domain_create_appdomain(const_cast<char *>(name), const_cast<char *>(configurationFile));
 	CRY_ASSERT(m_pDomain);
 
 	if(setActive)
@@ -232,7 +232,6 @@ mono::object CScriptDomain::BoxAnyValue(MonoAnyValue &any)
 		}
 		break;
 	case eMonoAnyType_Array:
-	case eMonoAnyType_IntPtr:
 	case eMonoAnyType_Unknown:
 		return any.monoObject;
 	}

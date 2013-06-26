@@ -128,7 +128,7 @@ struct IMonoScriptSystem
 	/// <summary>
 	/// Creates a new app domain.
 	/// </summary>
-	virtual IMonoDomain *CreateDomain(const char *name, bool setActive = false) = 0;
+	virtual IMonoDomain *CreateDomain(const char *name, const char *configurationFile = nullptr, bool setActive = false) = 0;
 
 	/// <summary>
 	/// Gets the currently active app domain.
