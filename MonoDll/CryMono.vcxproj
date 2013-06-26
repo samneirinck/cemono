@@ -210,7 +210,7 @@
       <Command>lib /nologo /def:"$(SolutionDir)../mono/msvc/mono.def" /out:"$(SolutionDir)../MonoDll/Libraries/x86/mono.lib" /machine:x86</Command>
     </PreLinkEvent>
     <PostBuildEvent>
-      <Command>Xcopy $(SolutionDir)..\Build\Bin32\* $(SolutionDir)..\..\..\Bin32\* /d /y</Command>
+      <Command>Xcopy $(SolutionDir)..\Build\Bin32\* $(SolutionDir)..\..\..\Bin32\* /d /y /i /s</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -256,7 +256,7 @@
       <Command>lib /nologo /def:"$(SolutionDir)../mono/msvc/mono.def" /out:"$(SolutionDir)../MonoDll/Libraries/x64/mono.lib" /machine:x64</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>Xcopy $(SolutionDir)..\Build\Bin64\* $(SolutionDir)..\..\..\Bin64\* /d /y</Command>
+      <Command>Xcopy $(SolutionDir)..\Build\Bin64\* $(SolutionDir)..\..\..\Bin64\* /d /y /i /s</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -298,7 +298,7 @@
       <Command>lib /nologo /def:"$(SolutionDir)../mono/msvc/mono.def" /out:"$(SolutionDir)../MonoDll/Libraries/x86/mono.lib" /machine:x86</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>Xcopy $(SolutionDir)..\Build\Bin32\* $(SolutionDir)..\..\..\Bin32\* /d /y</Command>
+      <Command>Xcopy $(SolutionDir)..\Build\Bin32\* $(SolutionDir)..\..\..\Bin32\* /d /y /i /s</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
@@ -339,7 +339,7 @@
       <Command>lib /nologo /def:"$(SolutionDir)../mono/msvc/mono.def" /out:"$(SolutionDir)../MonoDll/Libraries/x86/mono.lib" /machine:x86</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>Xcopy $(SolutionDir)..\Build\Bin32\* $(SolutionDir)..\..\..\Bin32\* /d /y</Command>
+      <Command>Xcopy $(SolutionDir)..\Build\Bin32\* $(SolutionDir)..\..\..\Bin32\* /d /y /i /s</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='UnitTests|Win32'">
@@ -380,7 +380,7 @@
       <Command>lib /nologo /def:"$(SolutionDir)../mono/msvc/mono.def" /out:"$(SolutionDir)../MonoDll/Libraries/x86/mono.lib" /machine:x86</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>Xcopy $(SolutionDir)..\Build\Bin32\* $(SolutionDir)..\..\..\Bin32\* /d /y</Command>
+      <Command>Xcopy $(SolutionDir)..\Build\Bin32\* $(SolutionDir)..\..\..\Bin32\* /d /y /i /s</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -422,7 +422,7 @@
       <Command>lib /nologo /def:"$(SolutionDir)../mono/msvc/mono.def" /out:"$(SolutionDir)../MonoDll/Libraries/x64/mono.lib" /machine:x64</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>Xcopy $(SolutionDir)..\Build\Bin64\* $(SolutionDir)..\..\..\Bin64\* /d /y</Command>
+      <Command>Xcopy $(SolutionDir)..\Build\Bin64\* $(SolutionDir)..\..\..\Bin64\* /d /y /i /s</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
@@ -464,7 +464,7 @@
       <Command>lib /nologo /def:"$(SolutionDir)../mono/msvc/mono.def" /out:"$(SolutionDir)../MonoDll/Libraries/x64/mono.lib" /machine:x64</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>Xcopy $(SolutionDir)..\Build\Bin64\* $(SolutionDir)..\..\..\Bin64\* /d /y</Command>
+      <Command>Xcopy $(SolutionDir)..\Build\Bin64\* $(SolutionDir)..\..\..\Bin64\* /d /y /i /s</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='UnitTests|x64'">
@@ -506,7 +506,7 @@
       <Command>lib /nologo /def:"$(SolutionDir)../mono/msvc/mono.def" /out:"$(SolutionDir)../MonoDll/Libraries/x64/mono.lib" /machine:x64</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>Xcopy $(SolutionDir)..\Build\Bin64\* $(SolutionDir)..\..\..\Bin64\* /d /y</Command>
+      <Command>Xcopy $(SolutionDir)..\Build\Bin64\* $(SolutionDir)..\..\..\Bin64\* /d /y /i /s</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
