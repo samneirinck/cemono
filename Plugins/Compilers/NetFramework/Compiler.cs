@@ -28,11 +28,20 @@ namespace CryEngine.Compilers.NET
                     scripts.AddRange(assemblyScripts);
             }
 
-            if (!CompileAndProcess("CSharp", "*.cs", ref scripts)
-                && !CompileAndProcess("VisualBasic", "*.vb", ref scripts))
-            {
-                Debug.DisplayException(new ScriptCompilationException("No scripts to compile were found in the Game/Scripts directory.\n This is not a fatal error, and can be ignored."));
-            }
+			var compileScriptsCVar = CVar.Get("mono_compileScripts");
+			if (compileScriptsCVar == null)
+				Debug.LogAlways("mono_compileScripts was null");
+			else
+				Debug.LogAlways("mono_compileScripts was {0}", compileScriptsCVar.IVal);
+
+			if (compileScriptsCVar != null && compileScriptsCVar.IVal != 0)
+			{
+				if (!CompileAndProcess("CSharp", "*.cs", ref scripts)
+					&& !CompileAndProcess("VisualBasic", "*.vb", ref scripts))
+				{
+					Debug.DisplayException(new ScriptCompilationException("No scripts to compile were found in the Game/Scripts directory.\n This is not a fatal error, and can be ignored."));
+				}
+			}
             
             return scripts;
 		}

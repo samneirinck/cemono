@@ -14,6 +14,7 @@ struct SCVars
 
 	int mono_generateMdbIfPdbIsPresent;
 
+	int mono_compileScripts;
 	const char *mono_scriptDirectory;
 
 	SCVars()
