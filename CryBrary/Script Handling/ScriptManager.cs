@@ -25,8 +25,8 @@ namespace CryEngine.Initialization
     class ScriptManager
     {
         public ScriptManager(bool initialLoad = true, string configPath = "")
-        {
-            PathUtils.ConfigFolder = configPath;
+        { 
+			ProjectSettings.ConfigFolder = configPath;
 
             Instance = this;
 
@@ -36,13 +36,14 @@ namespace CryEngine.Initialization
 
             ProcessedAssemblies = new List<Assembly>();
 
-            if (!Directory.Exists(PathUtils.TempFolder))
-                Directory.CreateDirectory(PathUtils.TempFolder);
+			var tempDirectory = ProjectSettings.TempDirectory;
+			if (!Directory.Exists(tempDirectory))
+				Directory.CreateDirectory(tempDirectory);
             else
             {
                 try
                 {
-                    foreach (var file in Directory.GetFiles(PathUtils.TempFolder))
+					foreach (var file in Directory.GetFiles(tempDirectory))
                     {
                         if (!Path.HasExtension(".scriptdump"))
                             File.Delete(file);
@@ -186,14 +187,14 @@ namespace CryEngine.Initialization
         {
 #if !RELEASE
             // Doesn't exist when unit testing
-            if (Directory.Exists(PathUtils.MonoFolder))
+			if (Directory.Exists(ProjectSettings.MonoFolder))
             {
-                using (XmlWriter writer = XmlWriter.Create(Path.Combine(PathUtils.MonoFolder, "assemblylookup.xml")))
+				using (XmlWriter writer = XmlWriter.Create(Path.Combine(ProjectSettings.MonoFolder, "assemblylookup.xml")))
                 {
                     writer.WriteStartDocument();
                     writer.WriteStartElement("AssemblyLookupTable");
 
-                    var gacFolder = Path.Combine(PathUtils.MonoFolder, "lib", "mono", "gac");
+					var gacFolder = Path.Combine(ProjectSettings.MonoFolder, "lib", "mono", "gac");
                     foreach (var assemblyLocation in Directory.GetFiles(gacFolder, "*.dll", SearchOption.AllDirectories))
                     {
                         var separator = new[] { "__" };
@@ -338,7 +339,7 @@ namespace CryEngine.Initialization
 
         Exception LoadPlugins(bool initialLoad)
         {
-            var pluginsDirectory = PathUtils.PluginsFolder;
+			var pluginsDirectory = ProjectSettings.PluginsFolder;
             if (!Directory.Exists(pluginsDirectory))
                 return null;
 
@@ -398,7 +399,8 @@ namespace CryEngine.Initialization
                 throw new ArgumentException("string cannot be empty!", "assemblyPath");
 #endif
 
-            var newPath = Path.Combine(PathUtils.TempFolder, Path.GetFileName(assemblyPath));
+			var tempDirectory = ProjectSettings.TempDirectory;
+			var newPath = Path.Combine(tempDirectory, Path.GetFileName(assemblyPath));
 
             TryCopyFile(assemblyPath, ref newPath);
 
@@ -410,7 +412,7 @@ namespace CryEngine.Initialization
 				var mdbFile = assemblyPath + ".mdb";
 				if (File.Exists(mdbFile)) // success
 				{
-					var newMdbPath = Path.Combine(PathUtils.TempFolder, Path.GetFileName(mdbFile));
+					var newMdbPath = Path.Combine(tempDirectory, Path.GetFileName(mdbFile));
 					TryCopyFile(mdbFile, ref newMdbPath);
 				}
 			}
@@ -458,7 +460,7 @@ namespace CryEngine.Initialization
 
             if (File.Exists(Path.ChangeExtension(assemblyPath, "pdb")))
             {
-                var assembly = Assembly.LoadFrom(Path.Combine(PathUtils.MonoFolder, "bin", "pdb2mdb.dll"));
+				var assembly = Assembly.LoadFrom(Path.Combine(ProjectSettings.MonoFolder, "bin", "pdb2mdb.dll"));
                 var driver = assembly.GetType("Driver");
                 var convertMethod = driver.GetMethod("Convert", BindingFlags.Static | BindingFlags.Public);
 
@@ -736,7 +738,7 @@ namespace CryEngine.Initialization
         AppDomain ScriptDomain { get; set; }
         IFormatter Formatter { get; set; }
 
-        string SerializedScriptsFile { get { return Path.Combine(PathUtils.TempFolder, "CompiledScripts.scriptdump"); } }
+        string SerializedScriptsFile { get { return Path.Combine(ProjectSettings.TempDirectory, "CompiledScripts.scriptdump"); } }
 
         public static ScriptManager Instance;
     }

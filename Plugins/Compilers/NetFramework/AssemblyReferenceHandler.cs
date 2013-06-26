@@ -18,7 +18,7 @@ namespace CryEngine.Utilities
 	{
 		public AssemblyReferenceHandler()
 		{
-			var gacDirectory = Path.Combine(PathUtils.MonoFolder, "lib", "mono", "gac");
+			var gacDirectory = Path.Combine(ProjectSettings.MonoFolder, "lib", "mono", "gac");
 			if(!Directory.Exists(gacDirectory))
 			{
 				//Debug.LogAlways("AssemblyReferenceHandler failed to initialize, could not locate gac directory.");
@@ -137,7 +137,7 @@ namespace CryEngine.Utilities
 
 		private string GetAssemblyPathFromNamespace(string name)
 		{
-			var assemblyLookup = Path.Combine(PathUtils.MonoFolder, "assemblylookup.xml");
+			var assemblyLookup = Path.Combine(ProjectSettings.MonoFolder, "assemblylookup.xml");
 			if (!File.Exists(assemblyLookup))
 			{
 				Debug.LogAlways("{0} did not exist!", assemblyLookup);

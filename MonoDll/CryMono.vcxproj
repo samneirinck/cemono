@@ -547,6 +547,7 @@
     <ClInclude Include="Headers\IMonoScriptBind.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Scriptbinds\ActorSystem.h" />
+    <ClInclude Include="Scriptbinds\CryPak.h" />
     <ClInclude Include="Scriptbinds\CrySerialize.h" />
     <ClInclude Include="Scriptbinds\Entity.h" />
     <ClInclude Include="Scriptbinds\Console.h" />
@@ -589,6 +590,7 @@
     <ClCompile Include="MonoEntityPropertyHandler.cpp" />
     <ClCompile Include="NativeEntity.cpp" />
     <ClCompile Include="Scriptbinds\ActorSystem.cpp" />
+    <ClCompile Include="Scriptbinds\CryPak.cpp" />
     <ClCompile Include="Scriptbinds\CrySerialize.cpp" />
     <ClCompile Include="Scriptbinds\Entity.cpp" />
     <ClCompile Include="Scriptbinds\Console.cpp" />

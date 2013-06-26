@@ -146,6 +146,8 @@
     <Compile Include="Console\CVar\ExternalCVar.cs" />
     <Compile Include="Console\CVar\StaticCVarField.cs" />
     <Compile Include="Console\CVar\StaticCVarProperty.cs" />
+    <Compile Include="Engine\CryPak\Native\NativeCryPakMethods.cs" />
+    <Compile Include="Engine\CryPak\PathResolutionRules.cs" />
     <Compile Include="Engine\GeometryFormat.cs" />
     <Compile Include="Engine\GeometryType.cs" />
     <Compile Include="Engine\Material\MaterialFlags.cs" />
@@ -362,7 +364,7 @@
     <Compile Include="Misc\PointerWrapper.cs" />
     <Compile Include="Misc\Statistics.cs" />
     <Compile Include="Math\Vec3.cs" />
-    <Compile Include="Misc\PathUtils.cs" />
+    <Compile Include="Engine\CryPak\CryPak.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Script Handling\ScriptManager.cs" />
     <Compile Include="Misc\UnusedMarker.cs" />
