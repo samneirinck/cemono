@@ -11,8 +11,9 @@ namespace CryEngine.CharacterCustomization
 {
     public class CharacterAttachmentSlot
     {
-        internal CharacterAttachmentSlot(XElement element)
+        internal CharacterAttachmentSlot(CustomizationManager manager, XElement element)
         {
+			m_manager = manager;
             Element = element;
 
             Name = element.Attribute("name").Value;
@@ -33,7 +34,7 @@ namespace CryEngine.CharacterCustomization
 				{
 					var subSlotElement = subSlotElements.ElementAt(i);
 
-					SubAttachmentSlots[i] = new CharacterAttachmentSlot(subSlotElement);
+					SubAttachmentSlots[i] = new CharacterAttachmentSlot(manager, subSlotElement);
 				}
 			}
 
@@ -45,7 +46,7 @@ namespace CryEngine.CharacterCustomization
 				{
 					var mirroredSlotElement = mirroredSlotElements.ElementAt(i);
 
-					MirroredSlots[i] = new CharacterAttachmentSlot(mirroredSlotElement);
+					MirroredSlots[i] = new CharacterAttachmentSlot(manager, mirroredSlotElement);
 				}
 			}
 
@@ -115,7 +116,15 @@ namespace CryEngine.CharacterCustomization
 			if (overwrite || attachment.Object != null)
 				attachmentElement.SetAttributeValue("Binding", attachment.Object);
 			if (overwrite || attachment.Material != null)
-				attachmentElement.SetAttributeValue("Material", attachment.Material);
+			{
+				var material = attachment.Material;
+				string materialPath = null;
+
+				if (material != null)
+					materialPath = material.FilePath ?? material.BaseFilePath;
+
+				attachmentElement.SetAttributeValue("Material", materialPath);
+			}
 
 			if (overwrite || attachment.Flags != null)
 				attachmentElement.SetAttributeValue("Flags", attachment.Flags);
@@ -164,7 +173,7 @@ namespace CryEngine.CharacterCustomization
 
 		XElement GetWriteableElement(string name = null)
 		{
-			var attachmentList = CustomizationManager.Instance.CharacterDefinition.Element("CharacterDefinition").Element("AttachmentList");
+			var attachmentList = m_manager.CharacterDefinition.Element("CharacterDefinition").Element("AttachmentList");
 			var attachmentElements = attachmentList.Elements("Attachment");
 
 			if (name == null)
@@ -187,7 +196,7 @@ namespace CryEngine.CharacterCustomization
         {
             get
             {
-                var attachmentList = CustomizationManager.Instance.CharacterDefinition.Element("CharacterDefinition").Element("AttachmentList");
+				var attachmentList = m_manager.CharacterDefinition.Element("CharacterDefinition").Element("AttachmentList");
 
                 var attachmentElements = attachmentList.Elements("Attachment");
 				var attachmentElement = attachmentElements.FirstOrDefault(x => x.Attribute("AName").Value == Name);
@@ -243,5 +252,7 @@ namespace CryEngine.CharacterCustomization
         public bool CanBeEmpty { get; set; }
 
         public bool Hidden { get; set; }
+
+		CustomizationManager m_manager;
     }
 }

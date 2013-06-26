@@ -14,23 +14,34 @@ namespace CryEngine.CharacterCustomization
 {
     public class CustomizationManager
     {
-        public CustomizationManager(string availableAttachmentsDirectory = "Scripts/Config/Attachments", string baseCharacterDefinition = "Scripts/Config/base.cdf")
+		public CustomizationManager(string characterDefinitionLocation, string baseCharacterDefinition = "Scripts/Config/base.cdf", string availableAttachmentsDirectory = "Scripts/Config/Attachments")
         {
-            CharacterDefinitionLocation = Path.Combine(PathUtils.GameFolder, "Scripts/Config/MyCharacter.cdf");
+			var writeableCdfPath = CryPak.AdjustFileName(characterDefinitionLocation, PathResolutionRules.RealPath | PathResolutionRules.ForWriting);
+			CharacterDefinitionLocation = characterDefinitionLocation;
 
-            if (File.Exists(CharacterDefinitionLocation))
-                CharacterDefinition = XDocument.Load(CharacterDefinitionLocation);
+			if (File.Exists(writeableCdfPath))
+				CharacterDefinition = XDocument.Load(writeableCdfPath);
             else
             {
-                File.Copy(Path.Combine(PathUtils.GameFolder, baseCharacterDefinition), CharacterDefinitionLocation);
+				var directory = new DirectoryInfo(Path.GetDirectoryName(writeableCdfPath));
+				while (!directory.Exists)
+				{
+					Directory.CreateDirectory(directory.FullName);
 
-                CharacterDefinition = XDocument.Load(CharacterDefinitionLocation);
+					directory = Directory.GetParent(directory.FullName);
+				}
+
+				File.Copy(Path.Combine(CryPak.GameFolder, baseCharacterDefinition), writeableCdfPath);
+
+				CharacterDefinition = XDocument.Load(writeableCdfPath);
             }
 
-			CharacterAttachmentsLocation = Path.Combine(PathUtils.GameFolder, availableAttachmentsDirectory);
+			CharacterAttachmentsLocation = Path.Combine(CryPak.GameFolder, availableAttachmentsDirectory);
+
+			Initialize();
         }
 
-        void Initialize()
+		void Initialize()
         {
             var slots = new List<CharacterAttachmentSlot>();
             Slots = slots;
@@ -45,7 +56,7 @@ namespace CryEngine.CharacterCustomization
 				if (attachmentSlotElement == null)
 					continue;
 
-				slots.Add(new CharacterAttachmentSlot(attachmentSlotElement));
+				slots.Add(new CharacterAttachmentSlot(this, attachmentSlotElement));
 			}
         }
 
@@ -60,12 +71,9 @@ namespace CryEngine.CharacterCustomization
             return null;
         }
 
-        public void Save(string alternateLocation = null)
+        public void Save()
         {
-            if (alternateLocation == null)
-                alternateLocation = CharacterDefinitionLocation;
-
-            CharacterDefinition.Save(alternateLocation);
+			CharacterDefinition.Save(CryPak.AdjustFileName(CharacterDefinitionLocation, PathResolutionRules.RealPath | PathResolutionRules.ForWriting));
         }
 
         public IEnumerable<CharacterAttachmentSlot> Slots { get; set; }
@@ -75,21 +83,6 @@ namespace CryEngine.CharacterCustomization
         public string CharacterDefinitionLocation { get; set; }
         public string CharacterAttachmentsLocation { get; set; }
 
-        Random Selector = new Random();
-
-        static CustomizationManager _instance;
-        public static CustomizationManager Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new CustomizationManager();
-                    _instance.Initialize();
-                }
-
-                return _instance;
-            }
-        }
+        internal static Random Selector = new Random();
     }
 }

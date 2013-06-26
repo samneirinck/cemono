@@ -49,14 +49,14 @@ namespace CryEngine.CharacterCustomization
 				if (slotAttachmentRotationAttribute != null)
 					Rotation = slotAttachmentRotationAttribute.Value;
 
-				var slotAttachmentMaterials = new List<string>();
+				var slotAttachmentMaterials = new List<CharacterAttachmentMaterial>();
 
-				foreach (var materialVariation in element.Elements("Material"))
-					slotAttachmentMaterials.Add(materialVariation.Attribute("path").Value);
+				foreach (var materialElement in element.Elements("Material"))
+					slotAttachmentMaterials.Add(new CharacterAttachmentMaterial(materialElement));
 
-				MaterialVariations = slotAttachmentMaterials.ToArray();
-				if (MaterialVariations.Length != 0)
-					Material = MaterialVariations.First();
+				Debug.LogAlways("Found {0} materials for {1}", slotAttachmentMaterials.Count, Name);
+				Materials = slotAttachmentMaterials.ToArray();
+				Material = Materials.FirstOrDefault();
 
 				if (!child)
 				{
@@ -93,16 +93,17 @@ namespace CryEngine.CharacterCustomization
 			}
 		}
 
-		public string RandomMaterial
+		public CharacterAttachmentMaterial RandomMaterial
 		{
 			get
 			{
-				if (MaterialVariations == null || MaterialVariations.Length == 0)
-					return Material;
+				if (Materials == null || Materials.Length == 0)
+					return null;
 
 				var selector = new Random();
+				var iRandom = selector.Next(Materials.Length);
 
-				return MaterialVariations.ElementAt(selector.Next(MaterialVariations.Length));
+				return Materials.ElementAt(iRandom);
 			}
 		}
 
@@ -133,8 +134,8 @@ namespace CryEngine.CharacterCustomization
 
 		public string Object { get; set; }
 
-		public string Material { get; set; }
-		public string[] MaterialVariations { get; set; }
+		public CharacterAttachmentMaterial[] Materials { get; set; }
+		public CharacterAttachmentMaterial Material { get; set; }
 
 		public string Flags { get; set; }
 
