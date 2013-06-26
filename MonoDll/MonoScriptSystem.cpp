@@ -230,7 +230,7 @@ bool CScriptSystem::Reload()
 
 	IMonoDomain *pScriptDomain = CreateDomain("ScriptDomain", nullptr, true);
 
-	IMonoAssembly *pCryBraryAssembly = pScriptDomain->LoadAssembly(PathUtils::GetBinaryPath() + "CryBrary.dll");
+	IMonoAssembly *pCryBraryAssembly = pScriptDomain->LoadAssembly(PathUtils::GetBinaryPath(true) + "CryBrary.dll");
 
 	IMonoArray *pCtorParams = CreateMonoArray(2);
 	pCtorParams->InsertAny(m_bFirstReload);
