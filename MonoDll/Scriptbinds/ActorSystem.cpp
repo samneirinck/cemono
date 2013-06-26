@@ -96,7 +96,15 @@ void CScriptbind_ActorSystem::RegisterActorClass(mono::string name, bool isNativ
 	const char *className = ToCryString(name);
 
 	if(!isNative)
-		gEnv->pGameFramework->RegisterFactory(className, (CMonoActor *)0, false, (CMonoActor *)0);
+	{
+		if(gEnv->pEntitySystem->GetClassRegistry()->FindClass(className))
+		{
+			MonoWarning("Aborting registration of actor class %s, a class with the same name already exists", className);
+			return;
+		}
+
+		g_pScriptSystem->GetIGameFramework()->RegisterFactory(className, (CMonoActor *)0, false, (CMonoActor *)0);
+	}
 
 	m_monoActorClasses.insert(TActorClasses::value_type(className, isNative ? EMonoActorType_Native : EMonoActorType_Managed));
 }
